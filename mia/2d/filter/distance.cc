@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/filter/distance.hh>
 
 NS_BEGIN(distance_2d_filter) 

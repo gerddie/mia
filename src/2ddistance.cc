@@ -30,28 +30,25 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/internal/main.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
 
 using namespace std;
 NS_MIA_USE
 
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Distance between binary masks.", 
-	"This program evaluate the average or maximum distance of a mask "
-	"given by a binary image to an image representing a distance map "
-	"and prints the result to stdout. The distance map can be obtained by "
-	"running the filter 'diatance' on a binary image.", 
-	"Evaluate the maximum distance of mask m.v by using the distance field "
-	"distance.v and scale by factor 2.0. The result is written to stdout", 
-	"-i m.v -d distance.v -s 2.0 -m max", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Distance between binary masks."}, 
+	{pdi_description, "This program evaluate the average or maximum distance of a mask "
+	 "given by a binary image to an image representing a distance map "
+	 "and prints the result to stdout. The distance map can be obtained by "
+	 "running the filter 'diatance' on a binary image."}, 
+	{pdi_example_descr, "Evaluate the maximum distance of mask m.v by using "
+	 "the distance field distance.v and scale by factor 2.0. The result is "
+	 "written to stdout"}, 
+	{pdi_example_code, "-i m.v -d distance.v -s 2.0 -m max"}
 }; 
-
-
-
-
 
 enum EOps {dist_avg, 
 	   dist_max, 
@@ -141,14 +138,15 @@ int do_main( int argc, char *argv[] )
 	
 	
 	TDictMap<EOps> combine_option(combine_option_table); 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image", CCmdOption::required)); 
-	options.add(make_opt( dist_filename, "distance-file", 'd', "distance field image", CCmdOption::required)); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input image", 
+			      CCmdOption::required, &imageio)); 
+	options.add(make_opt( dist_filename, "distance-file", 'd', "distance field image (floating point)", 
+			      CCmdOption::required, &imageio)); 
 	options.add(make_opt( scale, "scale", 's', "distance scaling factor")); 
 	options.add(make_opt( method, combine_option, "method", 'm', "distance measuring method")); 
-	
-
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

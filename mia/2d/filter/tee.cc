@@ -19,7 +19,7 @@
  */
 
 #include <mia/2d/filter/tee.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_BEGIN( tee_2dimage_filter)
 
@@ -57,7 +57,8 @@ C2DTeeFilterPluginFactory::C2DTeeFilterPluginFactory():
 	C2DFilterPlugin("tee")
 {
 	add_parameter("file", new CStringParameter(m_filename, true,
-						   "name of the output file to save the image too."));
+						   "name of the output file to save the image too.", 
+						   &C2DImageIOPluginHandler::instance()));
 }
 
 mia::C2DFilter *C2DTeeFilterPluginFactory::do_create()const

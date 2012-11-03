@@ -81,6 +81,18 @@ private:
 
 }; 
 
+/**
+   \ingroup io 
+   \brief template to unify transformation loading 
+   \tparam T the type of the transformation to be loaded
+   \param file the file name of the transformation to be loaded
+   \returns the loaded transformation or an empty shared:ptr
+*/
+template <typename T>
+T load_transform(const std::string& file) {
+	static_assert(sizeof(T) == 0, "this needs to specialized for the handled type"); 
+}
+
 // implementation 
 template <typename D, typename I>
 Transformation<D, I>::Transformation(const I& ipf):

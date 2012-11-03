@@ -97,6 +97,7 @@ void CPluginBase::check_parameters()
 
 void CPluginBase::add_dependend_handlers(HandlerHelpMap& handler_map)
 {
+	TRACE_FUNCTION; 
 	cvdebug() << "Add dependend handler for plugin '" << m_name << "'\n"; 
 	m_parameters.add_dependend_handlers(handler_map); 
 }
@@ -129,9 +130,14 @@ void CPluginBase::get_help_xml(xmlpp::Element& root) const
 {
 	cvdebug() << "Get help for " << m_name << "\n"; 
 	root.set_child_text(get_descr()); 
-	m_parameters.get_help_xml(root);
+	do_get_help_xml(root); 
 }
 
+void CPluginBase::do_get_help_xml(xmlpp::Element& root) const
+{
+	TRACE_FUNCTION; 
+	m_parameters.get_help_xml(root);
+}
 
 void CPluginBase::append_interface(CPluginBase *plugin)
 {
@@ -139,19 +145,6 @@ void CPluginBase::append_interface(CPluginBase *plugin)
 		m_next_interface->append_interface(plugin);
 	else
 		m_next_interface = plugin;
-}
-
-bool CPluginBase::test(bool uninstalled) const
-{
-	TRACE("CPluginBase::test");
-	if (uninstalled)
-		prepare_path();
-	return do_test();
-}
-
-void CPluginBase::prepare_path() const
-{
-	// normally empty
 }
 
 CPluginBase *CPluginBase::next_interface()

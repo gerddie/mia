@@ -41,28 +41,26 @@
 #include "elast.hh"
 
 NS_MIA_USE;
+using namespace std; 
+
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 2D images", 
-	
-	"Fluid dynamic 2D registration", 
-	
-	"This program is used for non-rigid registration based on fluid dynamics. "
-	"It uses SSD as the sole registration criterion.", 
-	
-	"Register image test.v to image ref.v and write the deformation vector field regfield.v. "
-	"Start registration at the smallest size above 16 pixel.", 
-	
-	"-i test.v -r ref.v -o regfield.v -s 16"
+        {pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
+	{pdi_short, "Fluid dynamic 2D registration"}, 
+	{pdi_description, "This program is used for non-rigid registration based on fluid dynamics. "
+	"It uses SSD as the sole registration criterion."}, 
+	{pdi_example_descr, "Register image test.v to image ref.v and write the deformation "
+	 "vector field regfield.v. Start registration at the smallest size above 16 pixel."}, 
+	{pdi_example_code, "-i test.v -r ref.v -o regfield.v -s 16"}
 }; 
 
 inline void register_level(const C2DImage& ModelScale, const C2DImage& RefScale, C2DFVectorfield& Shift,
 			   float regrid_thresh,float epsilon, int level, bool elast, float lambda, float mu,
 			   C2DInterpolatorFactory& ipfactory)
 {
-	FConvert2DImage2float converter;
-	C2DFImage Model = ::mia::filter(converter, ModelScale);
-	C2DFImage  Ref   = ::mia::filter(converter, RefScale);
+	FCopy2DImageToFloatRepn converter;
+	C2DFImage Model = converter(ModelScale);
+	C2DFImage  Ref   = converter(RefScale);
 
 	if (elast) {
 		cerr << "elastic registration" << endl;
@@ -108,15 +106,21 @@ int do_main(int argc, char *argv[])
 	bool elastic;
 	float mu = 1.0;
 	float lambda = 1.0;
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
+	
+	options.set_group("File-IO"); 
 	options.add(make_opt( src_filename, "in-image", 'i', "input (model) image to be registered", 
-			      CCmdOption::required));
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image", 
-			      CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "output vector field"));
-	options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image"));
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out", 'o', "output vector field", 
+			      CCmdOption::not_required, &C2DVFIOPluginHandler::instance()));
+	options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image", 
+			      CCmdOption::not_required, &imageio));
 
+	options.set_group("Registration parameters"); 
 	options.add(make_opt( grid_start, "mgstart", 'm', "multigrid start size"));
 	options.add(make_opt( epsilon, "epsilon", 'e', "optimization breaking condition"));
 	options.add(make_opt( mu, "mu", 0, "elasticity parameter"));
@@ -198,7 +202,7 @@ int do_main(int argc, char *argv[])
 	if (!out_filename.empty()) {
 		C2DIOVectorfield outfield(transform);
 		if (!C2DVFIOPluginHandler::instance().save(out_filename, outfield)){
-			THROW(runtime_error, "Unable to save result field to '" << out_filename << "'");
+			throw create_exception<runtime_error>("Unable to save result field to '", out_filename, "'");
 		}
 	}
 
@@ -206,7 +210,7 @@ int do_main(int argc, char *argv[])
 		FDeformer2D deformer(transform, *ipfactory);
 		P2DImage result = ::mia::filter(deformer, *Model);
 		if (!save_image(def_filename, result))
-			THROW(runtime_error, "Unable to save result to '" << def_filename << "'");
+			throw create_exception<runtime_error>("Unable to save result to '", def_filename, "'");
 	}
 
 	return EXIT_SUCCESS;

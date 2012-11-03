@@ -20,7 +20,6 @@
 
 #include <limits>
 #include <algorithm>
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/fullcost/divcurl.hh>
 
 #include <mia/template/divcurl.cxx>

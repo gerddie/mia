@@ -21,8 +21,8 @@
 #define VSTREAM_DOMAIN "NR-REG"
 
 #include <mia/2d/nonrigidregister.hh>
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/template/nonrigidregister.cxx>
 

@@ -22,7 +22,7 @@
 #ifndef mia_2d_imagetest_hh
 #define mia_2d_imagetest_hh
 
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 NS_MIA_BEGIN
 

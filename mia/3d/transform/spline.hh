@@ -101,9 +101,9 @@ public:
 private:
 	
 	C3DFVector sum(const C3DBounds& start, 
-		       const vector<double>& xweights, 
-		       const vector<double>& yweights, 
-		       const vector<double>& zweights) const;  
+		       const std::vector<double>& xweights, 
+		       const std::vector<double>& yweights, 
+		       const std::vector<double>& zweights) const;  
 	
 	typedef std::vector<std::pair<int, std::vector<float> > > CSplineDerivativeRow; 
 	CSplineDerivativeRow get_derivative_row(size_t nin, size_t nout, double scale) const; 

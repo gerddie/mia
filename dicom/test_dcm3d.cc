@@ -19,7 +19,7 @@
  */
 
 #include <mia/internal/autotest.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <dicom/dcm3d.hh>
 #include <dicom/dicom4mia.hh>
 

@@ -23,7 +23,7 @@
 #include <mia/3d/multicost.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/transformmock.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 #include <mia/internal/autotest.hh>
 

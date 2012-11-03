@@ -44,7 +44,7 @@
 #include <limits>
 #include <cstdlib>
 
-//#include <mia/3d/3DDatafield.cxx>
+//#include <mia/3d/datafield.cxx>
 
 #include <mia/3d/model.hh>
 
@@ -65,13 +65,7 @@ NS_BEGIN(navierpsse_regmodel)
 class C3DNavierRegModel: public C3DRegModel {
 public:
 	C3DNavierRegModel(float mu, float lambda, size_t maxiter, float epsilon);
-
-	bool  test_kernel();
 private:
-
-
-
-
 	virtual void do_solve(const C3DFVectorfield& b, C3DFVectorfield& x) const;
 	virtual float do_force_scale() const;
 
@@ -91,7 +85,6 @@ public:
 	C3DRegModel *do_create()const;
 
 private:
-	virtual bool do_test() const;
 	const string do_get_descr()const;
 
 	float m_mu;
@@ -519,86 +512,6 @@ void C3DNavierRegModel::do_solve(const C3DFVectorfield& b, C3DFVectorfield& v) c
 	free(vcache);
 }
 
-
-
-
-
-bool  C3DNavierRegModel::test_kernel()
-{
-
-	// assume mu = 1, lambda = 2
-	//float a_b = 0.4f;
-	//float a   = 0.1f;
-	//float b_4 = 0.075;
-
-	xchg param = {{m_a_b, m_a, m_b_4, 0.0f}};
-
-	C3DBounds size(3,3,3);
-	size_t mid_index = 1 + size.x + size.x * size.y;
-
-	xchg v[size.x * size.y * size.z];
-
-	xchg *iv = v;
-	C3DFVector b(1.0, 2.0, 3.0);
-
-
-
-	C3DVectorToVF4 convertA;
-	VF4ToC3DVector convertB;
-	xchg vb = convertA(b);
-	for (size_t z = 0; z < size.z; ++z)
-		for (size_t y = 0; y < size.y; ++y)
-			for (size_t x = 0; x < size.x; ++x, ++iv)
-				*iv = convertA(C3DFVector(y * x, 2 * z * y, 3 * x * z));
-
-	xchg *vi = v + mid_index;
-
-#if 0
-	const C3DFVector q_test( 0.75, 0.25, 0.5);
-	const C3DFVector q_eval = get_q(vi);
-
-	cvdebug() << q_eval << " vs. " << q_test << "\n";
-	assert( (q_eval - q_test).norm() < 0.00001);
-
-	// test p eval
-	const C3DFVector p_test( 2.0, 4.0f, 6.0f);
-	const C3DFVector p_eval = get_p(b, vi);
-
-
-	if ((p_eval - p_test).norm() > 0.00001) {
-		cvfail() << p_eval << " vs. " << p_test << "\n";
-		return false;
-	}
-
-	// test q eval
-#endif
-	C3DFVector test0(1.75, 2.25, 3.5);
-
-	C3DFVector test(2.75, 4.25, 6.5);
-
-	float res = solve_at(vb, vi, param, 3, 9);
-	cvdebug() << res << " vs. " << test0.norm() <<"\n";
-	cvdebug() << convertB(v[mid_index]) << " vs. " << test <<"\n";
-
-
-#ifdef __POWERPC__
-	if (fabs(res - test0.norm()) < 0.1) {
-		cvfail() << res << " .vs " << test0.norm() << "\n";
-		return false;
-	}
-
-#else
-	if (fabs(res - test0.norm()) > 0.01) {
-		cvfail() << res << " .vs " << test0.norm() << "\n";
-		return false;
-	}
-#endif
-	return ((test - convertB(v[mid_index])).norm() < 0.0001);
-
-}
-
-
-
 C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 	C3DRegModelPlugin("navierpsse"),
 	m_mu(1.0),
@@ -621,13 +534,6 @@ C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 C3DRegModel *C3DNavierRegModelPlugin::do_create()const
 {
 	return new C3DNavierRegModel(m_mu, m_lambda, m_maxiter, m_epsilon);
-}
-
-bool  C3DNavierRegModelPlugin::do_test() const
-{
-	C3DNavierRegModel model(1.0, 2.0, 10, 0.001);
-
-	return model.test_kernel();
 }
 
 const string C3DNavierRegModelPlugin::do_get_descr()const

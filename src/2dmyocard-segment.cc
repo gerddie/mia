@@ -36,48 +36,27 @@
 #include <mia/core/meanvar.hh>
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/tools.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/fuzzyseg.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2DDatafield.cxx>
+#include <mia/2d/datafield.cxx>
 
 NS_MIA_USE;
+using namespace std; 
 
 const SProgramDescription g_description = {
-	"Work in progress", 
-	"Work in progress", 
-
-	"This program is work in progress", 
-	
-	"Example", 
-	"Example"
+	{pdi_group, "Work in progress"}, 
+	{pdi_short, "Work in progress"}, 
+	{pdi_description, "This program is work in progress"}, 
+	{pdi_example_descr, "Example"}, 
+	{pdi_example_code, "Example"}
 }; 
-
 
 namespace bfs=boost::filesystem; 
-
-
-
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (C2DFImage& image) const {
-		return P2DImage(&image, void_destructor<C2DFImage>()); 
-	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const  {
-		return ::mia::filter(m_converter, *image); 		
-	}
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
-
 
 class CEvaluateSeriesCorrelationToMask: public TFilter<bool> {
 public: 
@@ -127,8 +106,8 @@ bool CEvaluateSeriesCorrelationToMask::operator () (const T2DImage<T>& image)
 {
 	float mask_mean = 0.0; 
 	if (image.get_size() != m_size) {
-		THROW(invalid_argument, "CEvaluateSeriesCorrelationToMask: got image of size " << image.get_size()
-		      << " but expected " << m_size); 
+		throw create_exception<invalid_argument>( "CEvaluateSeriesCorrelationToMask: got image of size ", image.get_size(), 
+						" but expected ", m_size); 
 	}
 
 	auto ii = image.begin(); 
@@ -224,8 +203,8 @@ template <typename T>
 int FAcuumulateGradients::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		THROW(invalid_argument, "Input image has size " << image.get_size() 
-		      << " but expect " << m_sum.get_size()); 
+		throw create_exception<invalid_argument>( "Input image has size ", image.get_size(), 
+						" but expect ", m_sum.get_size()); 
 	}
 	auto vf = get_gradient(image);
 	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
@@ -261,8 +240,8 @@ template <typename T>
 int FMaxGradients::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		THROW(invalid_argument, "Input image has size " << image.get_size() 
-		      << " but expect " << m_sum.get_size()); 
+		throw create_exception<invalid_argument>( "Input image has size ", image.get_size(), 
+						" but expect ", m_sum.get_size()); 
 	}
 	auto vf = get_gradient(image);
 	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
@@ -297,8 +276,8 @@ template <typename T>
 int FMaxIntensity::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		THROW(invalid_argument, "Input image has size " << image.get_size() 
-		      << " but expect " << m_sum.get_size()); 
+		throw create_exception<invalid_argument>( "Input image has size ", image.get_size(), 
+						" but expect ", m_sum.get_size()); 
 	}
 
 	transform(m_sum.begin(), m_sum.end(), image.begin(), m_sum.begin(), 
@@ -464,7 +443,6 @@ int do_main( int argc, char *argv[] )
 	// IO parameters 
 	string in_filename;
 	string out_filename; 
-	string seg_helper; 
 	string save_feature; 
 
 	// this parameter is currently not exported - reading the image data is 
@@ -478,11 +456,13 @@ int do_main( int argc, char *argv[] )
 	size_t skip_images = 2; 
 	size_t max_ica_iterations = 400; 
 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", CCmdOption::required));
-	options.add(make_opt( seg_helper, "seg-helper", 'O', "output a segmentation helper  "));
+	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", 
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base")); 
 
 	options.set_group("ICA");
@@ -503,7 +483,7 @@ int do_main( int argc, char *argv[] )
 	
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 	int rv_idx = -1; 
 	int lv_idx = -1; 

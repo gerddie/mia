@@ -86,8 +86,8 @@ CCorrelationEvaluator::result_type CCorrelationEvaluatorImpl::run(const vector<P
 {
 	// accumulate sums
 	if (skip >= images.size())
-		THROW(invalid_argument, "Want to skip " << skip 
-		      << "images, but series has only " << images.size() << " images"); 
+		throw create_exception<invalid_argument>( "Want to skip ", skip, 
+						"images, but series has only ", images.size() , " images"); 
 	FCorrelationAccumulator acc(images[0]->get_size(), m_thresh);
 	for (auto i = images.begin() + skip; i != images.end(); ++i)
 		mia::accumulate(acc,**i);
@@ -114,8 +114,8 @@ template <typename T>
 bool FCorrelationAccumulator::operator ()(const T2DImage<T>& image)
 {
 	if (image.get_size() != size)
-		THROW(invalid_argument, "Input image size " << size << " expected, but got " <<
-		      image.get_size());
+		throw create_exception<invalid_argument>( "Input image size ", size, " expected, but got ",
+						image.get_size());
 	// sum x
 	transform(image.begin(), image.end(), sx.begin(), sx.begin(), [](T a, T b){ return a + b; });
 
@@ -164,7 +164,7 @@ float FCorrelationAccumulator::corr(double x, double y, double xx, double yy, do
 C2DFImage FCorrelationAccumulator::get_horizontal_corr() const
 {
 	if (!len)
-		THROW(invalid_argument, "No input images");
+		throw create_exception<invalid_argument>( "No input images");
 
 
 	C2DFImage result(C2DBounds(size.x-1, size.y));
@@ -189,7 +189,7 @@ C2DFImage FCorrelationAccumulator::get_horizontal_corr() const
 C2DFImage FCorrelationAccumulator::get_vertical_corr() const
 {
 	if (!len)
-		THROW(invalid_argument, "No input images");
+		throw create_exception<invalid_argument>("No input images");
 
 	C2DFImage result(C2DBounds(size.x, size.y-1));
 

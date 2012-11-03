@@ -22,7 +22,7 @@
 #define mia_2d_ppmatrix_hh
 
 #include <mia/2d/interpolator.hh>
-#include <mia/2d/2DDatafield.hh>
+#include <mia/2d/datafield.hh>
 #include <mia/core/vector.hh>
 
 NS_MIA_BEGIN
@@ -98,7 +98,7 @@ public:
 	void reset(const C2DBounds& size, const C2DFVector& range, const CSplineKernel& kernel, 
 		   double wd, double wr); 
 private: 
-	struct C2DPPDivcurlMatrixImpl *impl; 
+	class C2DPPDivcurlMatrixImpl *impl; 
 
 }; 
 NS_MIA_END

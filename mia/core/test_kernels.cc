@@ -36,16 +36,7 @@ namespace bfs=::boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_spacial_kernels )
 {
-	CPathNameArray searchpath({ bfs::path("core") / bfs::path("spacialkernel"), 
-				bfs::path("spacialkernel")}); 
-
-	C1DSpacialKernelPluginHandler::set_search_path(searchpath);
-
-	const C1DSpacialKernelPluginHandler::Instance& fh = C1DSpacialKernelPluginHandler::instance();
-
-	for (C1DSpacialKernelPluginHandler::Instance::const_iterator i = fh.begin();
-	     i != fh.end(); ++i)
-		i->second->test(true);
+	
 }
 
 

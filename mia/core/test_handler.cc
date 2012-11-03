@@ -47,10 +47,6 @@ BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler )
 
 	BOOST_CHECK(handler.get_plugin_names() == "dummy1 dummy2 dummy3 ");
 
-	BOOST_CHECK(handler.get_plugin("dummy1")->test(true));
-
-	BOOST_CHECK(!handler.get_plugin("dummy2")->test(true));
-
 	BOOST_CHECK(handler.get_plugin("dummy3")->has_property(test_property));
 	BOOST_CHECK(!handler.get_plugin("dummy1")->has_property(test_property));
 

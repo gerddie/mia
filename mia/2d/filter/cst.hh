@@ -21,7 +21,7 @@
 #include <limits>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/cstkernel.hh>
 
 NS_BEGIN(filter_2dimage_cst)
@@ -44,7 +44,7 @@ public:
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-	std::string m_kernel;
+	mia::PCST2DImageKernel m_kernel;
 };
 
 NS_END // end namespace cst_2dimage_filter

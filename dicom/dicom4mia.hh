@@ -23,7 +23,7 @@
 
 #include <mia/core/attributes.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 #ifdef __GNUC__
 #  define EXPORT_DICOM __attribute__((visibility("default")))
@@ -70,7 +70,7 @@ private:
 	void add_attribute(C2DImage& image, const char *key, bool required) const;
 
 	struct CDicomReaderData *impl;
-	string m_filename;
+	std::string m_filename;
 
 };
 

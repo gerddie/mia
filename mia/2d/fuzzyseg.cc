@@ -296,10 +296,11 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 
 	// maximum pixel value in image
 	auto maximum =	max_element(data.begin(), data.end());
+	
 	assert(maximum == data.end() || *maximum >= 1);
+	
 	itype iMax = *maximum;
 
-	// increment maximum Pixel Value by one to take 0 into account
 	cvmsg()  << " The Maximum pixel value is " << (double) iMax << endl;
 
 	unsigned long k = 0;

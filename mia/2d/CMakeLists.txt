@@ -20,20 +20,20 @@
 
 SET(MIA2D_SRC_BASE
   angle.cc
-  2DDatafield.cc
-  2DVectorfield.cc
-  2dfilter.cc
-  2DImage.cc
-  2dimageio.cc
-  2dvfio.cc
+  datafield.cc
+  vectorfield.cc
+  filter.cc
+  image.cc
+  imageio.cc
+  vfio.cc
   BoundingBox.cc
   cost.cc
   correlation_weight.cc 
   creator.cc
   cstkernel.cc 
-  distances.cc
+  distance.cc
   interpolator.cc 
-  fatcost.cc
+#  fatcost.cc
   fftkernel.cc
   fuzzyseg.cc
   fuzzyClusterSolverSOR.cc
@@ -41,19 +41,21 @@ SET(MIA2D_SRC_BASE
   fullcost.cc
   filterchain.cc
   model.cc
-  modelsolverreg.cc
+#  modelsolverreg.cc
   morphshape.cc
   multicost.cc
   nfg.cc
   nonrigidregister.cc 
   polygon.cc
   ppmatrix.cc
+  rgbimageio.cc
   rigidregister.cc
   similarity_profile.cc
   shape.cc
   sparse_image_solver.cc
   splinetransformpenalty.cc
   timestep.cc
+  trackpoint.cc
   transform.cc
   transformio.cc
   transformfactory.cc
@@ -92,14 +94,14 @@ SET(MIA2D_SRC ${MIA2D_SRC_BASE} ${MIA2D_FFTW_CODE})
 
 SET(MIA2D_HEADERS_BASE
   angle.hh
-  2DDatafield.hh 2DDatafield.cxx
-  2dfilter.hh
-  2DImage.hh
-  2dimageio.hh
-  2dimageiotest.hh
-  2DVector.hh
-  2DVectorfield.hh
-  2dvfio.hh
+  datafield.hh datafield.cxx
+  filter.hh
+  image.hh
+  imageio.hh
+  imageiotest.hh
+  vector.hh
+  vectorfield.hh
+  vfio.hh
   BoundingBox.hh
   cost.hh
   correlation_weight.hh 
@@ -107,8 +109,8 @@ SET(MIA2D_HEADERS_BASE
   cstkernel.hh 
   defines2d.hh
   deformer.hh
-  distances.hh
-  fatcost.hh
+  distance.hh
+#  fatcost.hh
   fullcost.hh
   filterchain.hh
   fftkernel.hh
@@ -122,7 +124,7 @@ SET(MIA2D_HEADERS_BASE
   iterator.cxx
   matrix.hh
   model.hh
-  modelsolverreg.hh
+#  modelsolverreg.hh
   morphshape.hh
   multicost.hh
   nonrigidregister.hh
@@ -130,6 +132,7 @@ SET(MIA2D_HEADERS_BASE
   perfusion.hh
   polygon.hh
   ppmatrix.hh
+  rgbimageio.hh
   rigidregister.hh
   shape.hh
   similarity_profile.hh
@@ -137,6 +140,7 @@ SET(MIA2D_HEADERS_BASE
   splinetransformpenalty.hh
   timestep.hh
   trait.hh
+  trackpoint.hh
   transform.hh
   transformmock.hh
   transformio.hh
@@ -162,9 +166,8 @@ SET(MIA2DLIBS mia2d  ${LIBS})
 # because it doesen't resolve all
 # symbols, and in Windows, this is not supported# 
 SET(mia2dtestsrc 
-  2dimageiotest.cc 
-  2dvfiotest.cc 
-  filtertest.cc 
+  imageiotest.cc 
+  vfiotest.cc 
   imagetest.cc
   transformmock.cc
   )
@@ -185,17 +188,17 @@ MACRO(TEST_2DMIA file libs)
 ENDMACRO(TEST_2DMIA file)
 
 TEST_2DMIA(angle mia2d)
-TEST_2DMIA(2ddatafield mia2dtest)
-TEST_2DMIA(2dimage mia2dtest)
-TEST_2DMIA(2dfilter mia2dtest)
-TEST_2DMIA(2dparam mia2dtest)
-TEST_2DMIA(2dvector mia2dtest)
+TEST_2DMIA(datafield mia2dtest)
+TEST_2DMIA(image mia2dtest)
+TEST_2DMIA(filter mia2dtest)
+TEST_2DMIA(param mia2dtest)
+TEST_2DMIA(vector mia2dtest)
 TEST_2DMIA(boundingbox mia2dtest)
-TEST_2DMIA(distances mia2dtest)
+TEST_2DMIA(distance mia2dtest)
 TEST_2DMIA(fullcost mia2dtest)
 TEST_2DMIA(interpol mia2dtest)
 TEST_2DMIA(matrix mia2dtest)
-TEST_2DMIA(modelsolverreg mia2dtest)
+#TEST_2DMIA(modelsolverreg mia2dtest)
 TEST_2DMIA(nfg mia2dtest)
 TEST_2DMIA(cost mia2dtest)
 TEST_2DMIA(iterator mia2dtest)
@@ -212,11 +215,12 @@ TEST_2DMIA(transio mia2d)
 TEST_2DMIA(transform mia2dtest)
 TEST_2DMIA(shape mia2dtest)
 TEST_2DMIA(morphshape mia2dtest)
-TEST_2DMIA(2dimageio mia2dtest)
+TEST_2DMIA(imageio mia2dtest)
 TEST_2DMIA(sparse_image_solver mia2dtest)
 TEST_2DMIA(filter_cast mia2d)
 TEST_2DMIA(splinetransformpenalty mia2d)
 #TEST_2DMIA(fullcost_mi_spline  mia2dtest)
+TEST_2DMIA(trackpoint mia2d)
 
 IF(CMAKE_BUILD_TYPE)
   SET(CONFIG ${CMAKE_BUILD_TYPE})
@@ -265,6 +269,39 @@ TEST_2DMIA(segmentation mia2dmyocardperf)
 TEST_2DMIA(segframe mia2dmyocardperf)
 TEST_2DMIA(segpoint mia2dmyocardperf)
 
+
+#
+#  image IO options 
+#
+OPTION(WITH_PNG "enable support for PNG gray scale images IO and RGB saving" ${SEARCH_LIBS_DEFAULT})
+OPTION(WITH_TIFF "enable support for TIFF gray scale images IO and RGB saving" ${SEARCH_LIBS_DEFAULT})
+OPTION(WITH_JPEG "enable support for JPEG gray scale images IO and RGB saving" ${SEARCH_LIBS_DEFAULT})
+
+IF (WITH_PNG)
+  IF(STRICT_DEPENDECIES)
+    FIND_PACKAGE(PNG REQUIRED)
+  ELSE(STRICT_DEPENDECIES)
+    FIND_PACKAGE(PNG)
+  ENDIF(STRICT_DEPENDECIES)
+ENDIF(WITH_PNG)
+
+IF(WITH_TIFF)
+  IF(STRICT_DEPENDECIES)
+    FIND_PACKAGE(TIFF REQUIRED)
+  ELSE(STRICT_DEPENDECIES)
+    FIND_PACKAGE(TIFF)
+  ENDIF(STRICT_DEPENDECIES)
+ENDIF(WITH_TIFF)
+
+
+IF(WITH_JPEG)
+  IF(STRICT_DEPENDECIES)
+    FIND_PACKAGE(JPEG REQUIRED)
+  ELSE(STRICT_DEPENDECIES)
+    FIND_PACKAGE(JPEG)
+  ENDIF(STRICT_DEPENDECIES)
+ENDIF(WITH_JPEG)
+
 #
 # The plugin directories 
 #
@@ -277,6 +314,7 @@ ADD_SUBDIRECTORY(fft       )
 ADD_SUBDIRECTORY(fullcost  )
 ADD_SUBDIRECTORY(kernel    )
 ADD_SUBDIRECTORY(model     )
+ADD_SUBDIRECTORY(rgbio     )
 ADD_SUBDIRECTORY(shapes    )
 #ADD_SUBDIRECTORY(sparseimgsolver )
 ADD_SUBDIRECTORY(timestep  )

@@ -29,19 +29,21 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Processing of series of 2D images in a 3D fashion (out-of-core)", 
 	
-	"histogram of a series of 2D images", 
+	{pdi_group, 	"Processing of series of 2D images in a 3D fashion (out-of-core)"}, 
+	{pdi_short, "histogram of a series of 2D images"}, 
 	
-	"This program evaluates the histogram over a series of 2D images", 
 	
-	"Evaluate the histogram over all consecutively numbered images that follow the "
-	"numbering pattern inputXXXX.exr and store the output histogram in histo.txt. "
-	"Use the range [0,256] and 64 bins.", 
-
-	"-i input0000.exr -o histo.txt --min 0 --max 256 --bins 64"
+	{pdi_description, "This program evaluates the histogram over a series of 2D images"}, 
+	
+	
+	{pdi_example_descr,"Evaluate the histogram over all consecutively numbered images that follow the "
+	 "numbering pattern inputXXXX.exr and store the output histogram in histo.txt. "
+	 "Use the range [0,256] and 64 bins."}, 
+	
+	
+	{pdi_example_code, "-i input0000.exr -o histo.txt --min 0 --max 256 --bins 64"}
 }; 
-
 
 class CHistAccumulator : public TFilter<bool> {
 public:
@@ -109,8 +111,10 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string in_filename;
 		
+	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required, &imageio));
 	options.add(make_opt( out_filename, "out", 'o', "output file name", CCmdOption::required));
 	options.add(make_opt( hmin, "min", 0, "minimum of histogram range"));
 	options.add(make_opt( hmax, "max", 0, "maximum of histogram range"));
@@ -120,7 +124,7 @@ int do_main( int argc, char *argv[] )
 		return EXIT_SUCCESS; 
 
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+
 
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;

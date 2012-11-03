@@ -35,21 +35,16 @@ using namespace boost;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"2D image registration", 
-
-	"2D image registration", 
-	
-	"This program implements 2D gray scale image registration. "
-	"Depending on the available plug-ins it can accomodate various models and cost-functions. "
-	"So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins). "
-	"The input images must be of the same dimensions and gray scale (whatever bit-depth). "
-	"The vector field will be saved as a EXR image with two frames of float values, one for the X "
-	"and one for the Y values of the vectors. "
-	"Other vector field output plug-ins might be supported depending on the installed plug-ins. ", 
-	
-	NULL, NULL
+        {pdi_group, "2D image registration"}, 
+	{pdi_short, "2D image registration"}, 
+	{pdi_description, "This program implements 2D gray scale image registration. "
+	 "Depending on the available plug-ins it can accomodate various models and cost-functions. "
+	 "So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins). "
+	 "The input images must be of the same dimensions and gray scale (whatever bit-depth). "
+	 "The vector field will be saved as a EXR image with two frames of float values, one for the X "
+	 "and one for the Y values of the vectors. "
+	 "Other vector field output plug-ins might be supported depending on the installed plug-ins. "}
 }; 
-
 
 // set op the command line parameters and run the registration 
 int do_main(int argc, char **argv)

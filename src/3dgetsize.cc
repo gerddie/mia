@@ -25,8 +25,8 @@
 #include <iomanip>
 
 
-#include <mia/3d/3dimageio.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/core.hh>
 
 
@@ -34,25 +34,21 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-
-	"Print the dimensions of a 3D image.", 
-	
-	"Write the dimensions of the input 3D image to stdout.", 
-	
-	"Print out the size of image.v.", 
-	
-	"-i image.v"
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Print the dimensions of a 3D image."}, 
+	{pdi_description, "Write the dimensions of the input 3D image to stdout."}, 
+	{pdi_example_descr, "Print out the size of image.v."}, 
+	{pdi_example_code, "-i image.v"}
 }; 
 
 int do_main( int argc, char *argv[] )
 {
 	string in_filename;
-	const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
+	const auto& imageio3d = C3DImageIOPluginHandler::instance();
 	
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
-			      CCmdOption::required));
+			      CCmdOption::required, &imageio3d));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

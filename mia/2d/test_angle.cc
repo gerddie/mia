@@ -22,7 +22,7 @@
 #include <cmath>
 
 #include <mia/2d/angle.hh>
-
+using namespace mia; 
 
 BOOST_AUTO_TEST_CASE( test_some_angles )
 {

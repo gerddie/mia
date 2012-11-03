@@ -24,8 +24,8 @@
 #include <vector>
 #include <mia/core/dictmap.hh>
 #include <mia/core/waveletslopeclassifier.hh>
-#include <mia/2d/2DImage.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/image.hh>
+#include <mia/2d/filter.hh>
 
 
 NS_MIA_BEGIN
@@ -150,13 +150,13 @@ public:
 	   Save the mixin matrix to a file. 
 	   @param coefs_name output file name 
 	 */
-	void save_coefs(const string&  coefs_name)const; 
+	void save_coefs(const std::string&  coefs_name)const; 
 
 	/**
 	   Save the feature image to some PNG files. 
 	   @param base_name output file name base 
 	 */
-	void save_feature_images(const string&  base_name)const; 
+	void save_feature_images(const std::string&  base_name)const; 
 
 	/**
 	   @param index of the feature image requested, set negative to request the mean image. 

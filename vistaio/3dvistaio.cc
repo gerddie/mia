@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#define VSTREAM_DOMAIN "3dvistaio"
 
 #include <sstream>
 #include <cassert>
@@ -27,7 +28,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 #include <vistaio/vista4mia.hh>
 
@@ -42,7 +43,6 @@ class CVista3DImageIOPlugin : public C3DImageIOPlugin {
 public:
 	CVista3DImageIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -61,21 +61,16 @@ CVista3DImageIOPlugin::CVista3DImageIOPlugin():
 	add_supported_type(it_double);
 	add_property(io_plugin_property_multi_record);
 	add_property(io_plugin_property_has_attributes);
+	add_suffix(".v");
+	add_suffix(".V");
+	add_suffix(".vista");
+	add_suffix(".VISTA");
 }
-
-void CVista3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".v", get_name()));
-	map.insert(pair<string,string>(".V", get_name()));
-	map.insert(pair<string,string>(".vista", get_name()));
-	map.insert(pair<string,string>(".VISTA", get_name()));
-
-}
-
 
 template <typename T>
 P3DImage read_image(VImage image)
 {
+	cvdebug() << "Read  image of type '" << CPixelTypeDict.get_name(pixel_type<T>::value)<< "'\n"; 
 	typedef typename vista_repnkind<T>::type O;
 	T3DImage<T> *result = new T3DImage<T>(C3DBounds(VImageNColumns(image), VImageNRows(image), VImageNBands(image)));
 	P3DImage presult(result);
@@ -122,11 +117,10 @@ CVista3DImageIOPlugin::PData  CVista3DImageIOPlugin::do_load(const string& fname
 	if (!nimages)
 		return CVista3DImageIOPlugin::PData();
 
-
 	CVista3DImageIOPlugin::PData result(new CVista3DImageIOPlugin::Data());
-
 	for (int i = 0; i < nimages; ++i) {
 
+		cvdebug() << "Read image no " << i << "\n"; 
 		P3DImage r = copy_from_vista(images[i]);
 		result->push_back(r);
 
@@ -134,7 +128,6 @@ CVista3DImageIOPlugin::PData  CVista3DImageIOPlugin::do_load(const string& fname
 	}
 
 	VFree(images);
-
 	VDestroyAttrList (attr_list);
 
 	return result;
@@ -181,7 +174,7 @@ bool CVista3DImageIOPlugin::do_save(const string& fname, const C3DImageVector& d
 
 const string CVista3DImageIOPlugin::do_get_descr() const
 {
-	return "a 3dimage io plugin for vista images";
+	return "Vista 3D";
 }
 
 std::string CVista3DImageIOPlugin::do_get_preferred_suffix() const

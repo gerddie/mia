@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <stdexcept>
 
 NS_BEGIN(crop_2dimage_filter)

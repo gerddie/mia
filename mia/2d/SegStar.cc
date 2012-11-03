@@ -50,7 +50,10 @@ CSegStar::CSegStar(const CSegPoint2D& center, float r, const CSegPoint2D& d1,
 CSegStar::CSegStar(const xmlpp::Node& n)
 {
 	TRACE("CSegStar::CSegStar");
-	assert(n.get_name() == "star");
+
+	if (n.get_name() != "star")
+		throw create_exception<runtime_error>("CSegStar: expect node of type 'star', but got '", n.get_name(), "'");
+
 	const xmlpp::Element& node = dynamic_cast<const xmlpp::Element&>(n);
 
 
@@ -60,7 +63,8 @@ CSegStar::CSegStar(const xmlpp::Node& n)
 		throw runtime_error("CSegStar: attribute r not found");
 
 	if (!from_string(rx->get_value(), m_radius)) 
-		THROW(runtime_error, "CSegStar: radius attribute '" << rx->get_value() << "' is not a floating point value");  
+		throw create_exception<runtime_error>("CSegStar: radius attribute '", rx->get_value(), "' is not a floating point value"); 
+
 	cvdebug() << "Got star center (" << m_center.x << ", " << m_center.y << " @ " << m_radius << ")\n";
 
 	xmlpp::Node::NodeList points = node.get_children("point");

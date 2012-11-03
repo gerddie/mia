@@ -24,19 +24,17 @@
 #include <ostream>
 #include <fstream>
 #include <map>
-#include <boost/lambda/lambda.hpp>
 #include <boost/filesystem.hpp>
 
 
-//#include <mia/core/fft1d_r2c.hh>
 #include <queue>
 #include <libxml++/libxml++.h>
 
 
 #include <mia/core.hh>
 #include <mia/core/bfsv23dispatch.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/perfusion.hh>
@@ -44,16 +42,13 @@
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Work in progress", 
-
-	"Work in progress.", 
-	
-	"This program is work in progress", 
-	
-	"Example", 
-	
-	"Example"
+        {pdi_group, "Work in progress"}, 
+	{pdi_short, "Work in progress."}, 
+	{pdi_description, "This program is work in progress"}, 
+	{pdi_example_descr, "Example"}, 
+	{pdi_example_code, "Example"}
 }; 
+
 
 
 namespace bfs=boost::filesystem; 
@@ -63,15 +58,6 @@ public:
 	P2DImage operator () (const C2DFImage& image) const {
 		return P2DImage(new C2DFImage(image)); 
 	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const  {
-		return ::mia::filter(m_converter, *image); 		
-	}
-private: 
-	FConvert2DImage2float m_converter; 
 }; 
 
 void add_feature_mask(P2DImage feature_image, int id, C2DUBImage& mask) 
@@ -121,10 +107,10 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( out_filename, "out-file", 'o', "output file with curves", CCmdOption::required));
 
 	options.set_group("ICA");
-	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.add(make_opt( normalize, "normalize", 0, "normalized ICs", NULL));
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
+	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
-				    "don't strip the mean from the mixing curves", NULL));
+				    "don't strip the mean from the mixing curves"));
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "as they are of other modalities")); 
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 

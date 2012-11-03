@@ -33,8 +33,8 @@
 #include <mia/core/minimizer.hh>
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/3d/nonrigidregister.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/ica.hh>
 
 #include <tbb/task_scheduler_init.h>
@@ -49,23 +49,26 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 3D images", 
 
-	"Non-linear registration of a series of 3D images.",
-	
-	"This program implements a 3D version of the motion compensation algorithm described in "
+	{pdi_group, "Registration of series of 3D images"}, 
+
+	{pdi_short, "Non-linear registration of a series of 3D images."},
+
+	{pdi_description, "This program implements a 3D version of the motion compensation algorithm described in "
 	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
 	"Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\", "
-	"Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004.", 
+	 "Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004."}, 
 
+	{pdi_example_descr,
 	"Register the perfusion series given in images imagesXXXX.v by using 4-class ICA estimation. "
         "Skip two images at the beginning, use at most 4 registration threads, a nlopt based optimizer "
 	"and otherwiese use the default parameters. "
-	"Store the result in registeredXXXX.v ", 
+	 "Store the result in registeredXXXX.v "}, 
 	
-	"-i images0000.v -o  registered%04d.v  -k 2 -C 4 -t 4 "
-	"-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"
+	{pdi_example_code, "-i images0000.v -o  registered%04d.v  -k 2 -C 4 -t 4 "
+	 "-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"}
 }; 
+
 
 
 class C3DFImage2PImage {
@@ -73,14 +76,6 @@ public:
 	P3DImage operator () (const C3DFImage& image) const {
 		return P3DImage(new C3DFImage(image)); 
 	}
-}; 
-
-class Convert2Float {
-public: 
-	Convert2Float(); 
-	C3DFImage operator () (P3DImage image) const; 
-private: 
-	C3DFilterPluginHandler::ProductPtr m_converter; 
 }; 
 
 
@@ -205,32 +200,36 @@ int do_main( int argc, char *argv[] )
 	int max_threads = task_scheduler_init::automatic;
 
 	CCmdOptionList options(g_description);
+	const auto& image3dio = C3DImageIOPluginHandler::instance(); 
 	
 	options.set_group("File-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input images (file pattern)", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "out-file", 'o', "output images (file name pattern)"));
+	options.add(make_opt( in_filename, "in-file", 'i', "input images of consecutively numbered filed (nameXXXX.ext)", 
+			      CCmdOption::required, &image3dio));
+	options.add(make_opt( registered_filebase, "out-file", 'o', "output image name (as C format string including a %04d "
+			      "in order to define the file numbering)", 
+			      CCmdOption::required, &image3dio));
 	
-	options.add(make_opt( save_ref_filename, "save-refs", 0, "save reference images")); 
-	options.add(make_opt( save_reg_filename, "save-regs", 0, 
-				    "save intermediate registered images")); 
-	options.add(make_opt( save_mixing_matrix, "save-coeffs", 0, "save mixing matrix")); 
-	options.add(make_opt( save_features, "save-features", 0, "save feature images")); 
-
+	options.add(make_opt( save_ref_filename, "save-refs", 0, "save reference images, the given string is used as file name base"
+			      ", the number pattern follows the input images, and the output format is always 'vista'")); 
+	options.add(make_opt( save_reg_filename, "save-regs", 0, "save intermediate registered images, the given string is used as file name base"
+			      ", the number pattern follows the input images, and the output format is always 'vista'")); 
+	options.add(make_opt( save_mixing_matrix, "save-coeffs", 0, "save mixing matrix to a text file")); 
+	options.add(make_opt( save_features, "save-features", 0, "save feature images as PNG")); 
 
 	options.set_group("Registration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization", 
+			      CCmdOption::not_required, &CMinimizerPluginHandler::instance()));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
-				    "start coefficinet rate in spines,"
-				    " gets divided by --c-rate-divider with every pass"));
+			      "start coefficinet rate in spines,"
+			      " gets divided by --c-rate-divider with every pass"));
 	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 
-				    "cofficient rate divider for each pass"));
+			      "cofficient rate divider for each pass"));
 	options.add(make_opt( divcurlweight, "start-divcurl", 'd',
-				    "start divcurl weight, gets divided by"
-				    " --divcurl-divider with every pass")); 
+			      "start divcurl weight, gets divided by"
+			      " --divcurl-divider with every pass")); 
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
-				    "divcurl weight scaling with each new pass")); 
-	options.add(make_opt( imagecost, "imagecost", 'w', "image cost")); 
+			      "divcurl weight scaling with each new pass")); 
+	options.add(make_opt( imagecost, "imagecost", 'w', "image cost", CCmdOption::not_required, &C3DFullCostPluginHandler::instance())); 
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
@@ -264,7 +263,7 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw create_exception<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		input_images->push_back(image);
@@ -273,7 +272,7 @@ int do_main( int argc, char *argv[] )
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C3DFImage> series(input_images->size() - skip_images); 
 	transform(input_images->begin() + skip_images, input_images->end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy3DImageToFloatRepn()); 
 	
 
 	// run ICA
@@ -335,7 +334,7 @@ int do_main( int argc, char *argv[] )
 			save_references(save_reg_filename, current_pass, 0, *input_images); 
 
 		transform(input_images->begin() + skip_images, 
-			  input_images->end(), series.begin(), Convert2Float()); 
+			  input_images->end(), series.begin(), FCopy3DImageToFloatRepn()); 
 
 		
 		
@@ -372,18 +371,6 @@ int do_main( int argc, char *argv[] )
 	
 	return success ? EXIT_SUCCESS : EXIT_FAILURE;
 
-}
-
-Convert2Float::Convert2Float()
-{
-	m_converter = C3DFilterPluginHandler::instance().produce("convert:repn=float,map=copy"); 
-}
-
-inline C3DFImage Convert2Float::operator () (P3DImage image) const
-{
-	auto res = m_converter->filter(*image); 
-	
-	return dynamic_cast<C3DFImage&>(*res); 
 }
 
 

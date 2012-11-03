@@ -705,7 +705,7 @@ const T CAttributedData::get_attribute_as(const std::string& key)const
 	if (attr)
 		return dynamic_cast<const TAttribute<T>&>(*attr);
 	else
-		THROW(std::invalid_argument, "CAttributedData: no attribute '" << key << "' found");
+		throw create_exception<std::invalid_argument>("CAttributedData: no attribute '", key, "' found");
 }
 
 

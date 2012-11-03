@@ -24,7 +24,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/bfsv23dispatch.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/angle.hh>
 
 #include <libxml++/libxml++.h>
@@ -39,7 +39,8 @@ using namespace xmlpp;
 namespace bfs=boost::filesystem; 
 
 CSegFrame::CSegFrame():
-	m_has_star(false)
+	m_has_star(false), 
+	m_version(0)
 {
 }
 
@@ -47,12 +48,22 @@ CSegFrame::CSegFrame(const string& image, const CSegStar& star, const Sections& 
 	m_has_star(true),
 	m_star(star), 
 	m_sections(sections),  
-	m_filename(image) 
+	m_filename(image), 
+	m_quality(0),
+	m_brightness(0), 
+	m_contrast(0), 
+	m_version(0)
+
 {
 }
 
-CSegFrame::CSegFrame(const Node& node):
-	m_has_star(false)
+
+CSegFrame::CSegFrame(const Node& node, int version):
+	m_has_star(false), 
+	m_quality(0),
+	m_brightness(0), 
+	m_contrast(0), 
+	m_version(version)
 {
 	TRACE("CSegFrame::CSegFrame"); 
 	const Element& elm = dynamic_cast<const Element&>(node); 
@@ -68,18 +79,26 @@ CSegFrame::CSegFrame(const Node& node):
 	
 	Node::NodeList nodes = elm.get_children(); 
 	
-	for (auto i = nodes.begin(); 
-	     i != nodes.end(); ++i) {
+	for (auto i = nodes.begin(); i != nodes.end(); ++i) {
 
 		if ((*i)->get_name() == "star") {
 			m_star = CSegStar(**i); 
 			m_has_star = true; 
 		}
 		else if ((*i)->get_name() == "section") {
-			m_sections.push_back(CSegSection(**i)); 
+			m_sections.push_back(CSegSection(**i, version)); 
 		}else {
 			cvinfo() << "ignoring unsuported element '" << (*i)->get_name() << "'\n"; 
 		}
+	}
+	
+	if (version > 1) {
+		if (version == 2 && m_sections.size() > 2)
+			cvwarn() << "CSegFrame: gor a version 2 segmentation, but more then two sections, this may be bogus\n";
+			
+		read_attribute_from_node(elm, "quality", m_quality);  
+		read_attribute_from_node(elm, "brightness", m_brightness);  
+		read_attribute_from_node(elm, "contrast", m_contrast);  
 	}
 }
 
@@ -122,16 +141,22 @@ const CSegStar& CSegFrame::get_star() const
 }
 
 
-void CSegFrame::write(Node& node) const
+void CSegFrame::write(Node& node, int version) const
 {
 	Element* self = node.add_child("frame"); 
 	self->set_attribute("image", m_filename); 	
+
+	if (version > 1) {
+		self->set_attribute("quality", to_string<float>(m_quality)); 	
+		self->set_attribute("brightness", to_string<float>(m_brightness)); 	
+		self->set_attribute("contrast", to_string<float>(m_contrast)); 	
+	}
 	
 	if (m_has_star) 
 		m_star.write(*self);
 	for (auto i = m_sections.begin(); 
 	     i != m_sections.end(); ++i) {
-		i->write(*self); 
+		i->write(*self, version); 
 	}
 }
 
@@ -199,10 +224,17 @@ float CSegFrame::get_hausdorff_distance(const CSegFrame& other) const
 C2DUBImage CSegFrame::get_section_masks(const C2DBounds& size) const 
 {
 	C2DUBImage result(size); 
-	unsigned char idx = 1; 
-	for (auto i = m_sections.begin(); 
-	     i != m_sections.end(); ++i, ++idx)
-		i->draw(result, idx); 
+	if (m_version == 2) {
+		// in version 2 all sections are xor-ed,
+		for (auto i = m_sections.begin(); 
+		     i != m_sections.end(); ++i)
+			i->draw_xor(result); 
+	}else {
+		unsigned char idx = 1; 
+		for (auto i = m_sections.begin(); 
+		     i != m_sections.end(); ++i, ++idx)
+			i->draw(result, idx); 
+	}
 	return result; 
 }
 
@@ -210,7 +242,7 @@ void CSegFrame::load_image() const
 {
 	m_image = load_image2d(m_filename); 
 	if (!m_image) 
-		THROW(runtime_error, "unable to find image file '" << m_filename << "'");
+		throw create_exception<runtime_error>( "unable to find image file '", m_filename, "'");
 }
 
 C2DUBImage CSegFrame::get_section_masks() const
@@ -286,7 +318,8 @@ CSegFrame::SectionsStats CSegFrame::get_stats(const C2DUBImage& mask) const
 	if (!m_image)
 		load_image(); 
 	if (mask.get_size() != m_image->get_size()) 
-		THROW(invalid_argument, "Mask image and data image are of different size");
+		throw create_exception<invalid_argument>( "Mask image ",mask.get_size(), " and data image ", 
+						m_image->get_size(), " are of different size");
 	
 	return ::mia::filter(EvalMaskStat(mask), *m_image);  
 
@@ -298,7 +331,7 @@ CSegFrame::SectionsStats CSegFrame::get_stats(size_t n_sections) const
 	if (!m_image) {
 		m_image = load_image2d(m_filename); 
 		if (!m_image) 
-			THROW(runtime_error, "unable to find image file '" << m_filename << "'");
+			throw create_exception<runtime_error>( "unable to find image file '", m_filename, "'");
 	}
 	C2DUBImage mask = get_section_masks(n_sections); 
 	return get_stats(mask); 
@@ -308,5 +341,21 @@ size_t CSegFrame::get_nsections() const
 {
 	return m_sections.size(); 
 }
+
+float CSegFrame::get_quality() const
+{
+	return m_quality; 
+}
+
+float CSegFrame::get_brightness() const
+{
+	return m_brightness; 
+}
+
+float CSegFrame::get_contrast() const
+{
+	return m_contrast; 
+}
+
 
 NS_MIA_END

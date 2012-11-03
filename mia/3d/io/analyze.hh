@@ -21,7 +21,7 @@
 #ifndef mia_3d_io_analyze_hh
 #define mia_3d_io_analyze_hh
 
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_BEGIN(IMAGEIO_3D_ANALYZE)
 
@@ -37,7 +37,6 @@ private:
 
 	virtual PData do_load(const std::string&  filename) const;
 	virtual bool do_save(const std::string& fname, const Data& data) const;
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual const std::string do_get_descr() const;
 	std::string do_get_preferred_suffix() const; 
 

@@ -24,8 +24,8 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/3dvfio.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/vfio.hh>
+#include <mia/3d/image.hh>
 
 #include <vistaio/vista4mia.hh>
 
@@ -40,7 +40,6 @@ class CVista3DVFIOPlugin : public C3DVFIOPlugin {
 public:
 	CVista3DVFIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -50,15 +49,12 @@ CVista3DVFIOPlugin::CVista3DVFIOPlugin():
 	C3DVFIOPlugin("vista")
 {
 	add_supported_type(it_float);
+	add_suffix(".v");
+	add_suffix(".vf");
+	add_suffix(".V");
+	add_suffix(".VF");
 }
 
-void CVista3DVFIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".v", get_name()));
-	map.insert(pair<string,string>(".vf", get_name()));
-	map.insert(pair<string,string>(".V", get_name()));
-	map.insert(pair<string,string>(".VF", get_name()));
-}
 
 CVista3DVFIOPlugin::PData  CVista3DVFIOPlugin::do_load(const string& fname) const
 {
@@ -134,7 +130,6 @@ class CScaled3DVFIOPlugin : public C3DVFIOPlugin {
 public:
 	CScaled3DVFIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -148,12 +143,9 @@ CScaled3DVFIOPlugin::CScaled3DVFIOPlugin():
 	C3DVFIOPlugin("cvista")
 {
 	add_supported_type(it_float);
-}
+	add_suffix(".svf");
+	add_suffix(".SVF");
 
-void CScaled3DVFIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".svf", get_name()));
-	map.insert(pair<string,string>(".SVF", get_name()));
 }
 
 template <typename T>

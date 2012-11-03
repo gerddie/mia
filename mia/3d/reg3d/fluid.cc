@@ -31,8 +31,6 @@ class C3DFluidRegTimeStep: public	C3DRegTimeStep {
 	friend class C3DFluidRegTimeStepPlugin;
 public:
 	C3DFluidRegTimeStep(float min, float max);
-
-	void test() const;
 private:
 	float do_calculate_pertuberation(C3DFVectorfield& io, const C3DFVectorfield& shift) const;
 	bool do_regrid_requested (const C3DFVectorfield& b, const C3DFVectorfield& v, float delta) const;
@@ -157,11 +155,6 @@ bool C3DFluidRegTimeStep::do_regrid_requested (const C3DFVectorfield& u, const C
 	return min_j < 0.5;
 }
 
-void C3DFluidRegTimeStep::test() const
-{
-
-}
-
 bool C3DFluidRegTimeStep::do_has_regrid () const
 
 {
@@ -173,7 +166,6 @@ public:
 	C3DFluidRegTimeStepPlugin();
 private:
 	C3DRegTimeStep *do_create()const;
-	bool do_test() const;
 	const string do_get_descr()const;
 };
 
@@ -186,78 +178,6 @@ C3DFluidRegTimeStepPlugin::C3DFluidRegTimeStepPlugin():
 C3DRegTimeStep *C3DFluidRegTimeStepPlugin::do_create()const
 {
 	return new C3DFluidRegTimeStep(get_min_timestep(), get_max_timestep());
-}
-
-bool C3DFluidRegTimeStepPlugin::do_test() const
-{
-	C3DFluidRegTimeStep plugin(0.5f, 1.5f);
-
-	C3DFVectorfield infield(C3DBounds(3,3,3));
-	C3DFVectorfield outfield(C3DBounds(3,3,3));
-
-	fill(infield.begin(), infield.end(), C3DFVector(0,0,0));
-	fill(outfield.begin(), outfield.end(), C3DFVector(0,0,0));
-
-	infield(0,1,1) = C3DFVector(4,2,6);
-	infield(2,1,1) = C3DFVector(4,8,2);  //  0, 6, -4
-	                                     //  0, 3, -2, (* delta)
-	outfield(0,1,1) = C3DFVector(3,2,1);
-	outfield(2,1,1) = C3DFVector(1,1,2); // -2, -1, 1
-                                             // -2,  2,-1 (out + delta * in)
-
-	infield(1,0,1) = C3DFVector(2,6,4);
-	infield(1,2,1) = C3DFVector(2,8,4);  //  0, 2, 0
-                                             //  0, 1, 0  (* delta)
-	outfield(1,0,1) = C3DFVector(7,1,9);
-	outfield(1,2,1) = C3DFVector(3,6,5); // -4, 5, -4
-                                             // -4, 6, -4 (out + delta * in)
-	infield(1,1,0) = C3DFVector(6,4,0);
-	infield(1,1,2) = C3DFVector(2,6,4);  // -4, 2, 4
-                                             // -2, 1, 2  (* delta)
-	outfield(1,1,0) = C3DFVector(7,1,2);
-	outfield(1,1,2) = C3DFVector(3,6,5); // -4, 5, 3
-                                             // -6, 6, 5 (out + delta * in)
-
-        // I-J:  4  4  6
-   	//      -2 -4 -6  ->det = - 24   +96   ) = 72
-        //       1  4 -3
-	infield(1,1,1)  = C3DFVector(2,-6,-4);
-	// ux =  -4,  -2,  2
-        // uy =  24, -30, 24
-	// uz =  16, -20,-12
-        // ue =  18, -26,  7
-	// vin = -16, 20, -11
-	// vin.norm2 = 777
-	// -8, 10, -5.5
-
-	outfield(1,1,1) = C3DFVector(3,5,4);
-
-	// u =
-
-	size_t center_offset = infield.get_plane_size_xy() + infield.get_size().x + 1;
-
-
-	const float j_at_test = 72.0f;
-	const float j_at = plugin.jacobian_at(outfield.begin() + center_offset, infield.begin() + center_offset, 0.5,
-					      infield.get_size().x, infield.get_plane_size_xy());
-
-	bool success = true;
-	if (j_at_test != j_at) {
-		cvfail() << "jacobian_at = " << j_at << ", expect: " << j_at_test << "\n";
-		success = false;
-	}
-
-	const float pat_at = 777.0f;
-	const float pat = plugin.perturbation_at(1, 1, 1, infield.begin() + center_offset, outfield);
-
-	if (pat != pat_at) {
-		cvfail() << "pertubaration_at = " << pat << ", expect: " << pat_at << "\n";
-		success = false;
-	}
-
-	plugin.apply(infield, outfield, 0.5);
-
-	return success && (outfield(1,1,1) == C3DFVector(-5.0f, 15.0f, -1.5f));
 }
 
 const string C3DFluidRegTimeStepPlugin::do_get_descr()const

@@ -31,16 +31,17 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	
-	"Evaluate the registration force between two 3D images.", 
-	
-	"This program is used to create an image comprising the pixel-wise norm "
-	"of the ggradient of a given cost function.", 
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
 
-	"Evaluate the weigtes sum of SSD between src.v and ref.v and store the result in forcenorm.v.", 
+	{pdi_short, "Evaluate the registration force between two 3D images."}, 
 
-	"-i src.v -r ref.v -c ssd -o forcenorm.v"
+	{pdi_description, "This program is used to create an image comprising the pixel-wise norm "
+	 "of the ggradient of a given cost function."}, 
+
+	{pdi_example_descr, 
+	 "Evaluate the weigtes sum of SSD between src.v and ref.v and store the result in forcenorm.v."}, 
+
+	{pdi_example_code, "-i src.v -r ref.v -c ssd -o forcenorm.v"}
 }; 
 
 
@@ -69,18 +70,17 @@ int do_main(int argc, char **argv)
 	string out_filename;
 	string ref_filename;
 	P3DImageCost cost; 
-	string cost_descr("ssd");
 
-	options.add(make_opt( src_filename, "src-file", 'i', "input image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "output force norm image", CCmdOption::required));
+	const auto& imageio = C3DImageIOPluginHandler::instance();
+
+	options.add(make_opt( src_filename, "src-file", 'i', "input image", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required, &imageio));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "output force norm image", CCmdOption::required, &imageio));
 	options.add(make_opt( cost, "ssd", "cost", 'c', "cost function to use"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
 

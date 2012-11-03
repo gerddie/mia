@@ -27,18 +27,16 @@ using namespace std;
 
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-
-	"Run filters on a 2D image.", 
-	
-	"This program runs a series filters on a given input image. The filters are given as extra parameters "
-	"on the command line and are run in the order in which they are given. To obtain a list of available filters "
-	"you may run 'mia-plugin-help filter/2dimage' from the command line", 
-	
-	"Run a kmeans classification of 5 classes on input.png and then a binarization of the 4th class and store the result"
-	" in result.png", 
-	
-	"-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Run filters on a 2D image."}, 
+	{pdi_description, "This program runs a series filters on a given input image. The filters "
+	 "are given as extra parameters on the command line and are run in the order in which they "
+	 "are given. To obtain a list of available filters you may run\n"
+	 "   'mia-plugin-help filter/2dimage'\n"
+	 "from the command line"}, 
+	{pdi_example_descr, "Run a kmeans classification of 5 classes on input.png and then "
+	 "a binarization of the 4th class and store the result in result.png"}, 
+	{pdi_example_code, "-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4"}
 }; 
 
 int do_main( int argc, char *argv[] )
@@ -51,8 +49,10 @@ int do_main( int argc, char *argv[] )
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", 
+			      CCmdOption::required, &imageio));
 	options.set_group(g_help_optiongroup); 
 	options.add(make_help_opt( "help-filters", 0,
 				   "give some help about the filter plugins", 
@@ -70,7 +70,7 @@ int do_main( int argc, char *argv[] )
 	const C2DImageFilterChain filter_chain(options.get_remaining()); 
 	auto in_image_list = imageio.load(in_filename);
 	if (!in_image_list || in_image_list->empty()) {
-		THROW(invalid_argument, "No images found in " << in_filename); 
+		throw create_exception<invalid_argument>( "No images found in ", in_filename); 
 	}
 	
 	
@@ -78,7 +78,7 @@ int do_main( int argc, char *argv[] )
 		  [&filter_chain](const P2DImage& img){return  filter_chain.run(img);});
 
 	if ( !imageio.save(out_filename, *in_image_list) ){
-		THROW(runtime_error, "Unable to save result to " << out_filename);
+		throw create_exception<runtime_error>( "Unable to save result to ", out_filename);
 	};
 	return EXIT_SUCCESS;
 

@@ -103,13 +103,16 @@ struct FEvalForce: public mia::TFilter<float> {
 	float operator ()( const T& a, const R& b) const {
 		Force gradient = get_gradient(a); 
 		float cost = 0.0; 
-		typename T::const_iterator ai = a.begin();
-		typename R::const_iterator bi = b.begin();
+		auto ai = a.begin();
+		auto bi = b.begin();
+		auto fi = m_force.begin(); 
+		auto gi = gradient.begin(); 
+
 		float scale = m_normalize ? m_scale / a.size() : m_scale; 
 		
-		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
+		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi, ++fi, ++gi) {
 			float delta = float(*ai) - float(*bi); 
-			m_force[i] += gradient[i] * delta * scale;
+			*fi = *gi * delta * scale;
 			cost += delta * delta; 
 		}
 		return 0.5 * cost * scale; 

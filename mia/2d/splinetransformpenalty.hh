@@ -23,7 +23,7 @@
 #define mia_2d_splinetransformpenalty_hh
 
 #include <mia/2d/interpolator.hh>
-#include <mia/2d/2DDatafield.hh>
+#include <mia/2d/datafield.hh>
 #include <mia/core/vector.hh>
 #include <mia/core/product_base.hh>
 
@@ -126,7 +126,7 @@ typedef THandlerSingleton<TFactoryPluginHandler<C2DSplineTransformPenaltyPlugin>
 FACTORY_TRAIT(C2DSplineTransformPenaltyPluginHandler); 
 
 
-EXPORT_2D  C2DSplineTransformPenaltyPluginHandler::ProductPtr produce_2d_spline_transform_penalty(const string& descr); 
+EXPORT_2D  C2DSplineTransformPenaltyPluginHandler::ProductPtr produce_2d_spline_transform_penalty(const std::string& descr); 
 
 NS_MIA_END
 

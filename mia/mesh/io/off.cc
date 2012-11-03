@@ -56,7 +56,6 @@ private:
 	virtual PTriangleMesh do_load(string const &  filename)const;
 	virtual bool do_save(string const &  filename, const CTriangleMesh& data)const;
 	virtual const string  do_get_descr()const;
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 
 #ifndef USE_FILEIO
 	PTriangleMesh do_load_it(istream& inp)const;
@@ -102,19 +101,14 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 
 COffMeshIO::COffMeshIO():CMeshIOPlugin(format)
 {
-
+	add_suffix(".off");
+	add_suffix(".OFF");
 }
 
 
 const string  COffMeshIO::do_get_descr()const
 {
 	return string("plugin to load/store some Geomview OFF Files");
-}
-
-void COffMeshIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".off", get_name()));
-	map.insert(pair<string,string>(".OFF", get_name()));
 }
 
 PTriangleMesh COffMeshIO::do_load(string const &  filename)const

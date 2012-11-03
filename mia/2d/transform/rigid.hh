@@ -22,7 +22,6 @@
 #define mia_2d_rigidtransform_hh
 
 #include <iterator>
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/transform.hh>
 
 
@@ -72,7 +71,6 @@ public:
 
 	virtual const C2DBounds& get_size() const;
 	virtual C2DTransformation *invert() const;
-	virtual bool save(const std::string& filename) const;
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
 	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;

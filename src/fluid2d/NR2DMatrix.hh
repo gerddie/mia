@@ -22,7 +22,7 @@
 #define __nr2dmatrix_h
 
 
-#include <mia/2d/2DDatafield.hh>
+#include <mia/2d/datafield.hh>
 
 NS_MIA_BEGIN
 

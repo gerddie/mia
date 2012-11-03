@@ -24,8 +24,7 @@
 
 static const char info[] =
 	"%s is Copyright\n"
-	"    (c) 1999-2012Leipzig, Germany and Madrid, Spain \n"
-        "         Gert Wollny \n"
+	"    (c) 1999-2012 Leipzig, Germany and Madrid, Spain \n"
 	""
 	"and it comes with  ABSOLUTELY NO WARRANTY. You may redistribute .\n"
 	"it under the terms of the GNU GENERAL PUBLIC LICENSE (see below).\n"
@@ -653,6 +652,8 @@ static const char info[] =
 "copy of the Program in return for a fee.\n"
 "\n"
 "		     END OF TERMS AND CONDITIONS\n"
+"\n"
+"For contact details and more inforation see http://mia.sourceforge.net\n"
 "\n"; 
 
 

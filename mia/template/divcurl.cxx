@@ -20,7 +20,6 @@
 
 #include <limits>
 #include <algorithm>
-#include <boost/lambda/lambda.hpp>
 
 NS_MIA_BEGIN
 template <typename T> 
@@ -39,7 +38,7 @@ double TDivCurlFullCost<T>::do_evaluate(const T& t, CDoubleVector& gradient) con
 	assert(t.get_size() == this->get_current_size()); 
 	double result = t.get_divcurl_cost(m_size_scale * m_weight_div, m_size_scale *m_weight_curl, gradient); 
 	cvdebug() << "TDivCurlFullCost<T>::value = " << result << "\n"; 
-	transform(gradient.begin(), gradient.end(), gradient.begin(), -1.0 * boost::lambda::_1); 
+	std::transform(gradient.begin(), gradient.end(), gradient.begin(), [](double x){return -1.0 * x;}); 
 	return result; 
 }
 
@@ -77,9 +76,9 @@ TDivcurlFullCostPlugin<T>::TDivcurlFullCostPlugin():
 	m_div(1.0), 
 	m_curl(1.0)
 {
-	this->add_parameter("div", new CFloatParameter(m_div, 0.0f, numeric_limits<float>::max(), 
+	this->add_parameter("div", new CFloatParameter(m_div, 0.0f, std::numeric_limits<float>::max(), 
 						 false, "penalty weight on divergence"));
-	this->add_parameter("curl", new CFloatParameter(m_curl, 0.0f, numeric_limits<float>::max(), 
+	this->add_parameter("curl", new CFloatParameter(m_curl, 0.0f, std::numeric_limits<float>::max(), 
 						  false, "penalty weight on curl"));
 }
 

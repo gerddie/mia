@@ -22,7 +22,6 @@
 #define mia_3d_rigidtransform_hh
 
 #include <iterator>
-#include <boost/lambda/lambda.hpp>
 #include <mia/3d/transform.hh>
 
 

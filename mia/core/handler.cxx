@@ -1,3 +1,4 @@
+
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
@@ -50,21 +51,16 @@ using namespace std;
 EXPORT_CORE const std::string get_plugin_root(); 
 
 template <typename I> 
-TPluginHandler<I>::TPluginHandler(const CPathNameArray& searchpath):
+TPluginHandler<I>::TPluginHandler():
 	CPluginHandlerBase(TPlugin<typename I::PlugData,typename I::PlugType>::search_path().string())
 {
-	if (!searchpath.empty())
-		initialise(searchpath); 
-	else{
-		CPathNameArray gsearchpath; 
-		global_searchpath(gsearchpath); 
-		initialise(gsearchpath); 
-	}
+	TRACE_FUNCTION; 
 }
 
 template <typename I>
 void TPluginHandler<I>::global_searchpath(CPathNameArray& searchpath)
 {
+	TRACE_FUNCTION; 
 	bfs::path type_path = TPlugin<typename I::PlugData,typename I::PlugType>::search_path();
 	
 	cvdebug() << "Add plugin searchpath\n"; 
@@ -97,8 +93,14 @@ void TPluginHandler<I>::global_searchpath(CPathNameArray& searchpath)
 
 
 template <typename I>
-void TPluginHandler<I>::initialise(const CPathNameArray& searchpath)
+void TPluginHandler<I>::initialise(CPathNameArray searchpath)
 {
+	TRACE_FUNCTION; 
+
+	if (searchpath.empty())
+		global_searchpath(searchpath); 
+
+
 	// create the pattern match
 	stringstream pattern; 
 
@@ -189,6 +191,7 @@ void TPluginHandler<I>::initialise(const CPathNameArray& searchpath)
 				  << x.what() << "'\n"; 
 		}
 	}
+	do_initialise(); 
 }
 
 template <typename I>
@@ -302,19 +305,13 @@ void TPluginHandler<I>::do_get_xml_help(xmlpp::Element *handlerRoot) const
 	}
 }
 
-
-template <typename T> 
-THandlerSingleton<T>::THandlerSingleton(const CPathNameArray& searchpath):
-	T(searchpath) 
+template <typename I>
+void TPluginHandler<I>::do_initialise()
 {
-	TRACE_FUNCTION; 
-	assert(!m_is_created); 
-	m_is_created = true; 
 }
 
 template <typename T> 
-THandlerSingleton<T>::THandlerSingleton():
-	T(m_searchpath)
+THandlerSingleton<T>::THandlerSingleton()
 {
 	TRACE_FUNCTION; 
 	assert(!m_is_created); 
@@ -328,15 +325,28 @@ const T& THandlerSingleton<T>::instance()
 	CScopedLock lock(m_creation_mutex); 
 	TRACE_FUNCTION; 
 	static THandlerSingleton me; 
+	cvdebug() << "m_is_initialized = " << m_is_initialized << "\n"; 
+	if (!m_is_initialized) {
+		cvdebug() << "not yet initialized: first check passed\n"; 
+		CScopedLock lock(m_initialization_mutex);
+		m_creation_mutex.unlock();
+		if (!m_is_initialized) {
+			m_is_initialized = true; 
+			cvdebug() << "not yet initialized: second check passed\n"; 
+			me.initialise(m_searchpath);
+
+		}
+	}
 	return me; 
 }
 
 template <typename T>
 void THandlerSingleton<T>::set_search_path(const CPathNameArray& searchpath)
 {
+	TRACE_FUNCTION; 
+
 	CScopedLock lock(m_creation_mutex); 
 	typedef typename  T::Interface IF; 
-	TRACE("THandlerSingleton<T>::set_search_path"); 
 	cvdebug() << "Set path: "  << TPlugin<typename IF::PlugData,typename IF::PlugType>::search_path() << '\n'; 
 
 	if (m_is_created) {
@@ -350,6 +360,7 @@ void THandlerSingleton<T>::set_search_path(const CPathNameArray& searchpath)
       //variable is not initialised
 	::new (&m_searchpath) CPathNameArray; 
 #endif
+	cvdebug() << "searchpath=" << searchpath << "\n"; 
 	m_searchpath = searchpath; 
 
 }
@@ -357,11 +368,18 @@ void THandlerSingleton<T>::set_search_path(const CPathNameArray& searchpath)
 
 template <typename T>
 CPathNameArray THandlerSingleton<T>::m_searchpath;
+
 template <typename T>
 bool THandlerSingleton<T>::m_is_created = false; 
 
 template <typename T>
+bool THandlerSingleton<T>::m_is_initialized = false; 
+
+template <typename T>
 CMutex THandlerSingleton<T>::m_creation_mutex; 
+
+template <typename T>
+CMutex THandlerSingleton<T>::m_initialization_mutex; 
 
 
 NS_MIA_END

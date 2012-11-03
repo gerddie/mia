@@ -83,7 +83,7 @@ struct seeded_ws {
 template <template <typename>  class Image, typename  T, typename  S, typename N, typename R, int dim>
 struct seeded_ws<Image, T, S, N, R, dim, false> {
 	static R apply(const Image<T>& /*image*/, const Image<S>& /*seed*/, N /*n*/, bool /*with_borders*/) {
-		throw invalid_argument("C2DRunSeededWS: seed data type not supported"); 
+		throw create_exception<std::invalid_argument>("C2DRunSeededWS: seed data type '", __type_descr<S>::value, "' not supported");
 	}
 }; 
 
@@ -100,7 +100,7 @@ struct dispatch_RunSeededWS : public TFilter<R> {
 
 	template <typename  S>
 	R operator () (const Image<S>& seed) const {
-		const bool supported = is_integral<S>::value && !is_same<S, bool>::value; 
+		const bool supported = std::is_integral<S>::value && !std::is_same<S, bool>::value; 
 		return seeded_ws<Image, T, S, N, R, dim, supported>::apply(m_image, seed, m_neighborhood, m_with_borders); 
 	}
 	N m_neighborhood; 
@@ -161,7 +161,7 @@ TRunSeededWatershed<Image, T, S, dim>::TRunSeededWatershed(const Image<T>& image
 	m_neighborhood(neighborhood), 
 	m_visited(seed.get_size()),
 	m_stored(seed.get_size()),
-	m_watershed(numeric_limits<S>::max()), 
+	m_watershed(std::numeric_limits<S>::max()), 
 	m_with_borders(with_borders)
 {
 	m_result = new Image<S>(seed.get_size(), image); 
@@ -257,15 +257,15 @@ typename TSeededWS<dim>::result_type TSeededWS<dim>::operator () (const Image<T>
 	// read start label image
 	auto in_image_list = m_label_image_key.get();
 	if (!in_image_list || in_image_list->empty())
-		THROW(runtime_error, "C2DSeededWS: no seed image could be loaded");
+		throw create_exception<std::runtime_error>( "C2DSeededWS: no seed image could be loaded");
 	
 	if (in_image_list->size() > 1) 
 		cvwarn() << "C2DSeededWS:got more than one seed image. Ignoring all but first"; 
 	
 	auto seed = (*in_image_list)[0]; 
 	if (seed->get_size() != data.get_size()) {
-		THROW(invalid_argument, "C2DSeededWS: seed and input differ in size: seed " << seed->get_size() 
-		      << ", input " << data.get_size()); 
+		throw create_exception<std::invalid_argument>( "C2DSeededWS: seed and input differ in size: seed " , seed->get_size() 
+		      , ", input " , data.get_size()); 
 	}
 	dispatch_RunSeededWS<Image, T, PNeighbourhood, PImage, dim> ws(m_neighborhood, data, m_with_borders); 
 	return mia::filter(ws, *seed); 

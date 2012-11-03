@@ -23,7 +23,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <boost/filesystem/path.hpp>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 
 NS_MIA_USE

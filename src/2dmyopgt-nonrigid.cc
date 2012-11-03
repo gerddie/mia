@@ -31,8 +31,8 @@
 #include <mia/core.hh>
 
 #include <mia/core/errormacro.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/SegSetWithImages.hh>
@@ -43,21 +43,18 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
-	
-	"Run a registration of a series of 2D images.", 
-	
-	"This program implements the non-linear registration based on Pseudo Ground Thruth for motion compensation "
-	"of series of myocardial perfusion images given as a data set as decribed in Chao Li and Ying Sun, "
-	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
-	"Medical Image Computing and Computer-Assisted Intervention MICCAI 2009, 165-172, 2009. "
-	"Note that for this nonlinear motion correction a preceeding linear registration step is usually required.", 
-
-	"Register the perfusion series given in 'segment.set' by using Pseudo Ground Truth estimation. "
-        "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result in 'registered.set'.", 
-	
-	"-i segment.set -o registered.set -k 2"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
+	{pdi_description, "This program implements the non-linear registration based on Pseudo Ground "
+	 "Thruth for motion compensation of series of myocardial perfusion images given as a "
+	 "data set as decribed in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
+	 "MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing and Computer-Assisted "
+	 "Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear motion correction "
+	 "a preceeding linear registration step is usually required."},
+	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by using Pseudo Ground "
+	 "Truth estimation. Skip two images at the beginning and otherwiese use the default parameters. "
+	 "Store the result in 'registered.set'."}, 
+	{pdi_example_code, "-i segment.set -o registered.set -k 2"}
 };
 
 
@@ -135,7 +132,8 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
+	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered files, the "
+			      "image file type is the same as given in the input data set"));
 
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
@@ -167,8 +165,8 @@ int do_main( int argc, char *argv[] )
 
 	// sanity check 
 	if (input_images.size() < 5 + skip_images) {
-		THROW(invalid_argument, "input set has only " << input_images.size() << " frames, but at least " 
-		      << 5 + skip_images << " frames are required for the registration to make sense"); 
+		throw create_exception<invalid_argument>( "input set has only ", input_images.size(), " frames, but at least ", 
+						5 + skip_images, " frames are required for the registration to make sense"); 
 	}
 	
 	// copy true perfusion set to temporary series

@@ -26,7 +26,7 @@
 
 #include <mia/core/spacial_kernel.hh>
 #include <mia/2d/filtertest.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 
 
@@ -49,23 +49,6 @@ EXPORT_2DTEST void imagefiltertest2d_prepare_plugin_path()
 
 	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 }
-
-
-static void test_2dfilter(const C2DFilterPluginHandler::value_type& i)
-{
-	cvmsg() << "Testing: " << i.second->get_long_name() << "\n";
-	if (!i.second->test(true))
-		BOOST_FAIL(i.second->get_long_name());
-}
-
-void EXPORT_2DTEST add_2dfilter_plugin_test(test_suite* suite)
-{
-	suite->add( BOOST_PARAM_TEST_CASE(&test_2dfilter,
-					  C2DFilterPluginHandler::instance().begin(),
-					  C2DFilterPluginHandler::instance().end()
-					  ));
-}
-
 
 NS_MIA_END
 

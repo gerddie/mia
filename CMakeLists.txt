@@ -43,7 +43,7 @@ SET(VENDOR "Gert Wollny")
 SET(PACKAGE_NAME "mia")
 SET(MAJOR_VERSION 2)
 SET(MINOR_VERSION 0)
-SET(MICRO_VERSION 3)
+SET(MICRO_VERSION 4)
 SET(INTERFACE_AGE 0)
 SET(BINARY_AGE    0)
 
@@ -63,7 +63,7 @@ SET(LIBRARY_SOVERSION_INFO "${MIA_CURRENT}")
 SET(LIBRARY_VERSION_INFO "${MIA_CURRENT}.${MIA_AGE}.${MIA_REVISION}")
 
 OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are availabe" FALSE)
-OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" FALSE)
+OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" TRUE)
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 
 INCLUDE (CheckIncludeFiles)
@@ -225,7 +225,7 @@ ENDIF (MSYS OR MINGW)
 
 IF(UNIX)
   GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
-  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} -lpthread -ldl -L${Boost_LIBRARY_DIRS}")
+  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} -lpthread -ldl")
 ENDIF(UNIX)
 #
 # end BOOST 

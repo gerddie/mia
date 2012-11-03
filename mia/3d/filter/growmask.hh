@@ -18,9 +18,9 @@
  *
  */
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/shape.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_BEGIN(growmask_3dimage_filter)
 
@@ -47,7 +47,6 @@ public:
 	C3DGrowmaskImageFilterFactory();
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-	virtual bool do_test()const {return true;};
 private:
 	std::string m_ref_filename;
 	mia::P3DShape m_shape;

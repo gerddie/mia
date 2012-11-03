@@ -188,7 +188,6 @@ public:
 private:
 
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
 	int m_hw;
@@ -205,12 +204,6 @@ C2DMedianFifoFilterPlugin::C2DMedianFifoFilterPlugin():
 const string C2DMedianFifoFilterPlugin::do_get_descr() const
 {
 	return "median 2D fifo filter";
-}
-
-typedef TFifoFilterSink<C2DImage> C2DImageFifoFilterSink;
-bool C2DMedianFifoFilterPlugin::do_test() const
-{
-	return true;
 }
 
 C2DImageFifoFilter *C2DMedianFifoFilterPlugin::do_create()const

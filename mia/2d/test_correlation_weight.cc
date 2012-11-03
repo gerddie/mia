@@ -21,11 +21,14 @@
 #include <stdexcept>
 #include <climits>
 
-#include <mia/internal/autotest.hh>
 
 #include <mia/core/minimizer.hh>
 #include <mia/2d/correlation_weight.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
+
+#include <mia/internal/autotest.hh>
+using namespace mia; 
+using namespace std; 
 
 struct FixPluginpath {
 	FixPluginpath(); 

@@ -22,23 +22,28 @@
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/transformio.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 
 NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Transform a 3D image.", 
+	{pdi_group,
+	 "Registration, Comparison, and Transformation of 3D images"}, 
+	 
+	 {pdi_short,
+	  "Transform a 3D image."}, 
 
-	"Transform a 3D image by applying a given 3D transformation.", 
+	  {pdi_description,
+	   "Transform a 3D image by applying a given 3D transformation."}, 
 	
-	"Transform an image input.v by the transfromation stored in trans.v "
-        "by using nearest neighbour interpolation ans store the result in output.v",
+	   {pdi_example_descr,
+	    "Transform an image input.v by the transfromation stored in trans.v "
+	    "by using nearest neighbour interpolation ans store the result in output.v"},
 	
-	"-i input.v -t trans.v  -o output.v  -p bspline:d=0"
-	
+	{pdi_example_code,
+	 "-i input.v -t trans.v  -o output.v  -p bspline:d=0"}
 }; 
 
 int do_main(int argc, char **argv)
@@ -50,10 +55,13 @@ int do_main(int argc, char **argv)
 	string trans_filename;
 	string interpolator_kernel;
 	string interpolator_bc("mirror"); 
+	
+	const auto& imageio = C3DImageIOPluginHandler::instance();
+	const auto& transio = C3DTransformationIOPluginHandler::instance(); 
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
-	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "transformed image", CCmdOption::required, &imageio));
+	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", CCmdOption::required, &transio));
 	options.add(make_opt( interpolator_kernel, "interpolator", 'p', 
 			      "override the interpolator provided by the transformation"));
 	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided "
@@ -65,9 +73,7 @@ int do_main(int argc, char **argv)
 		return EXIT_SUCCESS; 
 
 
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
-	auto transformation = C3DTransformationIOPluginHandler::instance().load(trans_filename);
-	
+	auto transformation = transio.load(trans_filename);
 	auto source = imageio.load(src_filename);
 
 	if (!source || source->size() < 1) {
@@ -91,14 +97,11 @@ int do_main(int argc, char **argv)
 	for (auto i = source->begin(); i != source->end(); ++i)
 		*i = (*transformation)(**i);
 	
-	if ( !imageio.save(out_filename, *source) ){
-		string not_save = ("unable to save result to ") + out_filename;
-		throw runtime_error(not_save);
-	};
+	if ( !imageio.save(out_filename, *source) )
+		throw create_exception<runtime_error>("unable to save result to '", out_filename, "'");
+	
 	return EXIT_SUCCESS;
 }
-
-
 
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main)

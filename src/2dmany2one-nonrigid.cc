@@ -32,7 +32,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/internal/main.hh>
 
 #include <tbb/task_scheduler_init.h>
@@ -47,19 +47,15 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_general_help = {
-	"Registration of series of 2D images", 
-	
-	"Registration of a series of 2D images", 
-	
-	"This program registers all images of a conscutively numbered set of images to one common "
-	"user defined reference.", 
-	
-	"Register the image series given by images 'inputXXXX.png' to reference image 30. " 
-	"Skip two images at the beginning and using mutual information as cost function, "
-	"and penalize the transformation by divcurl with weight 5. "
-	"Store the result in 'registeredXXXX.png'.", 
-	
-	"  -i input0000.png -o registered%04d.png -k 2 -r 30 mi divcurl:weight=5"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Registration of a series of 2D images"}, 
+	{pdi_description, "This program registers all images of a conscutively numbered set of images to one common "
+	 "user defined reference."}, 
+	{pdi_example_descr, "Register the image series given by images 'inputXXXX.png' to reference image 30. " 
+	 "Skip two images at the beginning and using mutual information as cost function, "
+	 "and penalize the transformation by divcurl with weight 5. "
+	 "Store the result in 'registeredXXXX.png'."}, 
+	{pdi_example_code, "  -i input0000.png -o registered%04d.png -k 2 -r 30 mi divcurl:weight=5"}
 }; 
 
 C2DFullCostList create_costs(const std::vector<string>& costs, int idx)
@@ -73,7 +69,8 @@ C2DFullCostList create_costs(const std::vector<string>& costs, int idx)
 
 		if (cc.find("image") == 0) {
 			if (cc.find("src") != string::npos  || cc.find("ref") != string::npos) {
-				THROW(invalid_argument, "image cost functions '"<< cc <<"' must not set the 'src' or 'ref' parameter explicitely");
+				throw create_exception<invalid_argument>( "image cost functions '", cc, 
+								"' must not set the 'src' or 'ref' parameter explicitely");
 			}
 			cc.append(cost_descr.str()); 
 		}
@@ -137,6 +134,7 @@ int do_main( int argc, char *argv[] )
 	string minimizer("gsl:opt=gd,step=0.1");
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
+	int skip = 0; 
 
 	int max_threads = task_scheduler_init::automatic;
 	
@@ -146,7 +144,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', 
 				    "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
-				    "file name for registered fiels")); 
+				    "file name for registered images, numbering and pattern are deducted from the input data")); 
 	
 	
 	options.set_group("\nRegistration"); 
@@ -154,6 +152,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
+	options.add(make_opt( skip, "skip", 'k', "skip registration of these images at the beginning of the series")); 
 
 	options.set_group("Processing"); 
 	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
@@ -182,7 +181,7 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P2DImage image = load_image<P2DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw create_exception<runtime_error>( "image '", src_name, "' not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		input_images->push_back(image);

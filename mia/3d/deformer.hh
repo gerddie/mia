@@ -23,8 +23,8 @@
 #define reg3d_deformer_hh
 
 #include <memory>
-#include <mia/3d/3DImage.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/image.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/interpolator.hh>
 
 

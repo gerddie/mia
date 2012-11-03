@@ -25,8 +25,8 @@
 
 #include <vector>
 #include <mia/3d/defines3d.hh>
-#include <mia/3d/3DVector.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/3d/vector.hh>
+#include <mia/2d/image.hh>
 #include <mia/core/iohandler.hh>
 #include <mia/core/ioplugin.hh>
 
@@ -125,7 +125,7 @@ private:
 	
 	float d(float fq, float q, float fv, float v)const; 
 	
-	void dt1d(vector<float>& f, float scale)const; 
+	void dt1d(std::vector<float>& f, float scale)const; 
 	void dt2d(C2DFImage& image)const; 
 	
 	struct SParabola {
@@ -137,8 +137,8 @@ private:
 	
 	C2DBounds m_size; 
 	C3DFVector m_voxel_size; 
-	vector<int> m_k; 
-	vector< vector<SParabola> > m_zdt;
+	std::vector<int> m_k; 
+	std::vector< std::vector<SParabola> > m_zdt;
 	
 };
 
@@ -166,7 +166,7 @@ inline bool operator == (const C2DStackDistanceTransform::DistanceFromPoint& lhs
 typedef TIOPlugin<C2DStackDistanceTransform> C2DStackDistanceTransformIO; 
 
 /// Plug-in handler for the transformation IO plug-ins 
-typedef TIOHandlerSingleton< TIOPluginHandler<C2DStackDistanceTransformIO> > C2DStackDistanceTransformIOPluginHandler;
+typedef THandlerSingleton< TIOPluginHandler<C2DStackDistanceTransformIO> > C2DStackDistanceTransformIOPluginHandler;
 
 /// data key type for temporary storage of 3D transformations \sa CDatapool 
 typedef C2DStackDistanceTransformIOPluginHandler::Instance::DataKey C2DStackDistanceTransformIODataKey;

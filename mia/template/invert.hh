@@ -30,9 +30,9 @@ NS_MIA_BEGIN
 
 ///  @cond DOC_PLUGINS 
 template <class Image> 
-class TInvert: public TImageFilter<Image> {
+class TInvert: public TDataFilter<Image> {
 public: 	
-	typedef typename TImageFilter<Image>::result_type result_type; 
+	typedef typename TDataFilter<Image>::result_type result_type; 
 	TInvert(); 
 
 	template <class  T>
@@ -42,10 +42,10 @@ private:
 };
 
 template <class Image> 
-class TInvertFilterPlugin: public TImageFilterPlugin<Image>  {
+class TInvertFilterPlugin: public TDataFilterPlugin<Image>  {
 public: 
 	TInvertFilterPlugin();
-	virtual TImageFilter<Image> *do_create()const;
+	virtual TDataFilter<Image> *do_create()const;
 	virtual const std::string do_get_descr()const; 
 };
 

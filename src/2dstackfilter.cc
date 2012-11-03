@@ -30,7 +30,7 @@
 #include <ctime>
 
 #include <mia/core.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
 #include <tbb/task_scheduler_init.h>
@@ -40,17 +40,14 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Processing of series of 2D images in a 3D fashion (out-of-core)", 
-
-	"Filter a series of 2D images in a 3D fashion.", 
-	
-	"This program is used to filter and convert a series of 2D gray scale images in a "
-	"3D fashion by running filters (filter/2dimage) as given on the command line.",
-
-	"Run a mean-least-varaiance filter on a series of images that follow the "
-	"numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr", 
-	
-	"-i image0000.exr -o filtered -t exr mlv:w=2"
+        {pdi_group, "Processing of series of 2D images in a 3D fashion (out-of-core)"}, 
+	{pdi_short, "Filter a series of 2D images in a 3D fashion."}, 
+	{pdi_description, "This program is used to filter and convert a series of 2D "
+	 "gray scale images in a 3D fashion by running filters (filter/2dimage) "
+	 "as given on the command line."}, 
+	{pdi_example_descr, "Run a mean-least-varaiance filter on a series of images that follow the "
+	 "numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr"}, 
+	{pdi_example_code, "-i image0000.exr -o filtered -t exr mlv:w=2"}
 }; 
 
 class C2DStackSaver: public  TFifoFilter<P2DImage> {
@@ -127,13 +124,13 @@ int do_main(int argc, char *argv[])
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i',
-			      "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o',
-			      "output file name base", CCmdOption::required));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name base, the actual names is created "
+			      "by adding the file number based on output order and the extension bysed on the 'type' parameter"
+			      , CCmdOption::required, &imageio));
+	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',
 			      "output file type (if not given deduct from output file name)", CCmdOption::required));
-	options.add(make_help_opt( "help-plugins", 0,
+	options.add(make_help_opt( "help-plugins", 0, 
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 

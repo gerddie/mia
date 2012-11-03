@@ -42,19 +42,14 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-
-	"Fuzzy c-means segmentation of a 3D image.", 
-	
-	"This program runs a combined fuzzy c-means clustering and B-field correction "
-	"to facilitate a 3D segmentation of 3D image", 
-	
-	"Run a 5-class segmentation over inpt image input.v and store the class "
-	"probability images in cls.v and the B0-field corrected image in b0.v.", 
-	
-	"-i input.v -c 5 -o b0.v -c cls.v"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Fuzzy c-means segmentation of a 3D image."}, 
+	{pdi_description, "This program runs a combined fuzzy c-means clustering and B-field correction "
+	"to facilitate a 3D segmentation of 3D image"}, 
+	{pdi_example_descr, "Run a 5-class segmentation over inpt image input.v and store the class "
+	"probability images in cls.v and the B0-field corrected image in b0.v."}, 
+	{pdi_example_code, "-i input.v -c 5 -o b0.v -c cls.v"}
 }; 
-
 
 
 int do_main( int argc, char *argv[] )
@@ -67,18 +62,18 @@ int do_main( int argc, char *argv[] )
 	int    noOfClasses = 3;
 	float  residuum = 0.1;
 
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i',
-			      "input image(s) to be segmenetd", CCmdOption::required));
-	options.add(make_opt( cls_filename, "cls-file", 'c',
-			      "output class probability images", CCmdOption::required));
-	options.add(make_opt( out_filename, "b0-file", 'o',
-			      "image corrected for intensity non-uniformity" ));
-	options.add(make_opt( noOfClasses, "no-of-classes", 'n',
-			      "number of classes"));
-	options.add(make_opt( residuum, "residuum", 'r',
-			      "relative residuum"));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be segmenetd", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( cls_filename, "cls-file", 'c', "output class probability images. Note, the "
+			      "used file format must support multible images (best is to use vista)", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "b0-file", 'o', "image corrected for intensity non-uniformity", 
+			      CCmdOption::not_required , &imageio));
+	options.add(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
+	options.add(make_opt( residuum, "residuum", 'r', "relative residuum"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -89,8 +84,7 @@ int do_main( int argc, char *argv[] )
 	if ( in_filename.empty() )
 		throw runtime_error("'--cls-file' ('c') option required\n");
 
-	const C3DImageIOPluginHandler::Instance&
-		imageio = C3DImageIOPluginHandler::instance();
+
 
 	C3DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);
 

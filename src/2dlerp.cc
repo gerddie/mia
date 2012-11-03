@@ -26,7 +26,7 @@
 #include <mia/core.hh>
 #include <mia/internal/main.hh>
 #include <mia/2d.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <sstream>
 #include <iomanip>
 
@@ -35,13 +35,14 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Linearly combine two 2D images.", 
-	"Merge two images by pixel-wise linearly combining their intensities.", 
-	"Combine image inputA.v and inputB.v by using position coordinates "
-	"4, 7, and 9 and write the result to output.v", 
-	"-1 inputA.v -2 inputB.v -p 4,7,9 -o output.v"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Linearly combine two 2D images."}, 
+	{pdi_description, "Merge two images by pixel-wise linearly combining their intensities."}, 
+	{pdi_example_descr, "Combine image inputA.v and inputB.v by using position coordinates "
+	 "4, 7, and 9 and write the result to output.v"}, 
+	{pdi_example_code, "-1 inputA.v -2 inputB.v -p 4,7,9 -o output.v"}
 }; 
+
 
 struct FAddWeighted: public TFilter<P2DImage> {
 	FAddWeighted(float w):
@@ -135,14 +136,14 @@ int do_main(int argc, char **argv)
 
 	vector<float> positions;
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	options.add(make_opt( src1_filename, "first", '1', "first input image ", 
-			      CCmdOption::required));
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( src2_filename, "second", '2', "second input image ", 
-			      CCmdOption::required));
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", 
-			      CCmdOption::required));
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( positions, "positions", 'p', 
 				    "image series positions (first, target, second)", 
 			      CCmdOption::required));

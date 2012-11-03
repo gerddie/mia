@@ -118,22 +118,13 @@ C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 	add_parameter("b", new C3DBoundsParameter(m_b, false, "blocksize"));
 
 	add_parameter("kernel", new CStringParameter(m_filter, false,
-                                                "smoothing filter kernel to be applied"));
+						     "smoothing filter kernel to be applied "
+						     "(filter width is determined based on the scaling factor)"));
 }
 
 C3DFilter *C3DDownscaleFilterPlugin::do_create()const
 {
 	return new CDownscale(m_b, m_filter);
-}
-
-void C3DDownscaleFilterPlugin::prepare_path() const
-{
-}
-
-
-bool  C3DDownscaleFilterPlugin::do_test() const
-{
-	return false;
 }
 
 const string C3DDownscaleFilterPlugin::do_get_descr()const

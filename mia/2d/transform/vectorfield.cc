@@ -18,34 +18,11 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{2D Transformations}
-   
-   \subsection{Vectorfield}
-   \label{transform2d:vf}
-   
-   \begin{description}
-   
-   \item [Plugin:] vf
-   \item [Description:] This plug-in implements a transformation that defines a translation for 
-                        each point of the grid defining the domain of the transformation. 
-   \item [Degrees of Freedom:] with the grid size $(n_x,n_y)$: $2* nx * ny$
-  
-   \end{description}
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   \plugtabend
-
-
-   LatexEnd  
- */
-
 #include <limits>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transform/vectorfield.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2dvfio.hh>
+#include <mia/2d/vfio.hh>
 
 NS_MIA_BEGIN
 using namespace std;
@@ -94,12 +71,6 @@ P2DTransformation C2DGridTransformation::do_upscale(const C2DBounds& size) const
 const C2DBounds& C2DGridTransformation::get_size() const
 {
 	return m_field.get_size();
-}
-
-bool C2DGridTransformation::save(const std::string& filename) const
-{
-	C2DIOVectorfield outfield(m_field);
-	return C2DVFIOPluginHandler::instance().save(filename, outfield);
 }
 
 void C2DGridTransformation::add(const C2DTransformation& a)
@@ -615,7 +586,6 @@ class C2DGridTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DGridTransformCreatorPlugin();
 	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -627,11 +597,6 @@ C2DGridTransformCreatorPlugin::C2DGridTransformCreatorPlugin():
 C2DTransformCreator *C2DGridTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
 	return new C2DGridTransformCreator(ipf);
-}
-
-bool C2DGridTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C2DGridTransformCreatorPlugin::do_get_descr() const

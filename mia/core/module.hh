@@ -28,7 +28,6 @@
 #include <mia/core/dlloader.hh>
 
 NS_MIA_BEGIN
-using namespace std;
 
 /// definition of the Plugin interface loading function
 class CPluginBase;

@@ -19,6 +19,7 @@
  */
 
 #include <mia/core/handlerbase.hh>
+#include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
 
@@ -39,6 +40,7 @@ void CPluginHandlerBase::print_short_help(std::ostream& os) const
 
 void CPluginHandlerBase::print_help(std::ostream& os) const
 {
+	TRACE_FUNCTION; 
 	do_print_help(os); 
 }
 
@@ -56,10 +58,36 @@ const std::string& CPluginHandlerBase::get_descriptor() const
 
 void CPluginHandlerBase::add_dependend_handlers(HandlerHelpMap& handler_map) const
 {
+	TRACE_FUNCTION; 
 	if (handler_map.find(m_descriptor) != handler_map.end()) 
 		return; 
+        cvdebug() << "Add '"  << m_descriptor << "' to dependend handlers\n"; 
 	handler_map[m_descriptor] = this; 	
 	do_add_dependend_handlers(handler_map);
 }
+
+void CPluginHandlerBase::get_string_help_description_xml(std::ostream& os, xmlpp::Element *parent) const
+{
+	auto type = get_handler_type_string_and_help(os); 
+	auto factory = parent->add_child(type);
+	factory->set_attribute("name", get_descriptor());
+	parent->set_attribute("type", type);
+}
+
+std::string CPluginHandlerBase::get_handler_type_string_and_help(std::ostream& MIA_PARAM_UNUSED(os)) const
+{
+	return do_get_handler_type_string(); 
+}
+
+std::string CPluginHandlerBase::get_handler_type_string() const
+{
+	return do_get_handler_type_string(); 
+}
+
+std::string CPluginHandlerBase::do_get_handler_type_string() const
+{
+	return "io";
+}
+
 
 NS_MIA_END

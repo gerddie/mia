@@ -42,30 +42,24 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_general_help = {
-	// .g_program_group =  
-	"Registration of series of 2D images", 
-
-	"Run a serial registration of a series of 2D images.", 
-	
-	// .g_general_help = 
-	"This program runs the non-rigid motion compensation registration of an perfusion image series. "
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Run a serial registration of a series of 2D images."}, 
+	{pdi_description, "This program runs the non-rigid motion compensation registration of an perfusion image series. "
 	"The registration is run in a serial manner, this is, only images in "
 	"temporal succession are registered, and the obtained transformations "
 	"are applied accumulated to reach full registration. "
 	"See e.g. Wollny, G., Ledesma-Carbayo, M.J., Kellman, P., Santos, A. \"A New Similarity Measure "
 	"for Non-Rigid Breathing Motion Compensation of Myocardial Perfusion MRI \". Proc 30th Annual "
-	"International IEEE EMBS Conference, pp. 3389-3392. Vancouver, Aug. 2008, doi:10.1109/IEMBS.2008.4649933,", 
+	 "International IEEE EMBS Conference, pp. 3389-3392. Vancouver, Aug. 2008, doi:10.1109/IEMBS.2008.4649933,"}, 
 	
-	//.g_program_example_descr = 
-	"Register the perfusion series given in 'segment.set' to reference image 30. " 
+	{pdi_example_descr, "Register the perfusion series given in 'segment.set' to reference image 30. " 
         "Skip two images at the beginning and using mutual information as cost function, "
 	"and penalize the transformation by divcurl with weight 5. "
-	"Store the result in 'registered.set'.\n", 
+	 "Store the result in 'registered.set'.\n"}, 
 	
-	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5"
+	
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5"}
 }; 
-
 
 int do_main( int argc, char *argv[] )
 {
@@ -84,6 +78,7 @@ int do_main( int argc, char *argv[] )
 	PMinimizer minimizer;
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
+	int skip = 0; 
 	
 	CCmdOptionList options(g_general_help);
 	
@@ -101,6 +96,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
+	options.add(make_opt( skip, "skip", 'k', "skip registration of these images at the beginning of the series")); 
 
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -139,7 +135,7 @@ int do_main( int argc, char *argv[] )
 
 	
 	// run forward registrations 
-	for (size_t i = 0; i < reference; ++i) {
+	for (size_t i = skip; i < reference; ++i) {
 		P2DTransformation transform = nrr.run(input_images[i], input_images[i+1]);
 		for (size_t j = 0; j <=i ; ++j) {
 			input_images[j] = (*transform)(*input_images[j]);
@@ -161,6 +157,8 @@ int do_main( int argc, char *argv[] )
 	input_set.set_images(input_images); 
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
+	
+	input_set.set_prefered_reference(reference); 
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );

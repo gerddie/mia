@@ -50,4 +50,46 @@ float EXPORT_2D distance_point_line(const C2DFVector& point,
 		return sqrt(npoint);
 }
 
+struct FDistanceTransform : public TFilter<C2DFImage> {
+	template <typename T> 
+	C2DFImage operator()( const T2DImage<T>& image) const {
+		
+		C2DFImage result(image.get_size(), image); 
+		vector<float> buffer(image.get_size().x); 
+		for (size_t y = 0; y < image.get_size().y; ++y) {
+			image.get_data_line_x(y, buffer);
+			dt1d(buffer); 
+			image.put_data_line_x(y, buffer);
+		}
+		buffer.resize(image.get_size().y); 
+		for (size_t x = 0; x < image.get_size().x; ++x) {
+			image.get_data_line_y(x, buffer);
+			dt1d(buffer); 
+			image.put_data_line_y(x, buffer);
+		}
+		
+	}; 
+
+}; 
+
+
+C2DFImage EXPORT_2D distance_transform(const C2DImage& f)
+{
+
+	TRACE_FUNCTION; 
+	vector<float> buffer(f.get_size().x); 
+	for (size_t y = 0; y < image.get_size().y; ++y) {
+		image.get_data_line_x(y, buffer);
+		dt1d(buffer); 
+		image.put_data_line_x(y, buffer);
+	}
+	buffer.resize(image.get_size().y); 
+	for (size_t x = 0; x < image.get_size().x; ++x) {
+		image.get_data_line_y(x, buffer);
+		dt1d(buffer); 
+		image.put_data_line_y(x, buffer);
+	}
+
+}
+
 NS_MIA_END

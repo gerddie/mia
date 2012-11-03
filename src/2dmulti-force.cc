@@ -31,17 +31,14 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 2D images", 
-
-	"Registration force between two images", 
-	
-	"This program evaluates the 2D image cost force norm image of a given cost function set. "
-	"The input images must be of the same dimensions and gray scale (whatever bit-depth). ", 
-	
-	"Evaluate the force normimage weighted sum of costs SSD and NGF of image1.v and image2.v. and store the "
-	"result to force.v.",
-
-	"-o force.v ssd:src=image1.v,ref=image2.v,weight=0.1 ngf:src=image1.v,ref=image2.v,weight=2.0"
+        {pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
+	{pdi_short, "Registration force between two images"}, 
+	{pdi_description, "This program evaluates the 2D image cost force norm image of a given cost function set. "
+	 "The input images must be of the same dimensions and gray scale (whatever bit-depth)."}, 
+	{pdi_example_descr, "Evaluate the force normimage weighted sum of costs SSD and NGF of "
+	 "image1.v and image2.v. and store the result to force.v."}, 
+	{pdi_example_code, "-o force.v ssd:src=image1.v,ref=image2.v,weight=0.1 "
+	 "ngf:src=image1.v,ref=image2.v,weight=2.0"}
 }; 
 
 struct FGetNorm  {
@@ -58,11 +55,12 @@ int do_main(int argc, char **argv)
 	CCmdOptionList options(g_description);
 	string out_filename;
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+	const auto& costcreator = C2DFullCostPluginHandler::instance(); 
 
-	options.add(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOption::required, &imageio));
 
-	if (options.parse(argc, argv, "cost", &C2DFatImageCostPluginHandler::instance()) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &costcreator) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
@@ -75,15 +73,10 @@ int do_main(int argc, char **argv)
 
 	C2DImageFatCostList cost_list;
 	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
-		P2DImageFatCost c = C2DFatImageCostPluginHandler::instance().produce(*i);
-		if (c)
-			cost_list.push_back(c);
+		P2DImageFatCost c = costcreator.produce(*i);
+		assert(c); 
+		cost_list.push_back(c);
 	}
-	if (cost_list.empty()) {
-		cerr << "Could not create a single cost function\n";
-		return EXIT_FAILURE;
-	}
-
 
 	C2DFVectorfield force(cost_list.get_size());
 

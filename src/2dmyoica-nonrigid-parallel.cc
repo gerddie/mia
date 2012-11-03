@@ -33,7 +33,7 @@
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
 
@@ -48,35 +48,20 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
 
-	"Run a registration of a series of 2D images.", 
+	{pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
+	{pdi_description, "This program implements the 2D version of the motion compensation algorithm "
+	 "described in Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion "
+	 "Compensation of Free Breathing acquired Myocardial Perfusion Data by using Independent "
+	 "Component Analysis\", Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004." 
+	 "This version of the program may run all registrations in parallel."}, 
 
-	"This program implements the 2D version of the motion compensation algorithm described in "
-	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
-	"Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\", "
-	"Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004." 
-	"This version of the program may run all registrations in parallel.", 
-	
-	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
-        "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result in 'registered.set'.", 
+	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by using automatic "
+	 "ICA estimation. Skip two images at the beginning and otherwiese use the default parameters. "
+	 "Store the result in 'registered.set'."}, 
 
-	"  -i segment.set -o registered.set -k 2"
-}; 
-
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (const C2DFImage& image) const {
-		return P2DImage(new C2DFImage(image)); 
-	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2"}
 }; 
 
 
@@ -328,7 +313,7 @@ int do_main( int argc, char *argv[] )
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 
 	// run ICA
@@ -344,6 +329,16 @@ int do_main( int argc, char *argv[] )
 			box_scale = false; 
 
 	}		
+
+	if( input_set.get_RV_peak() < 0)  {
+		if (ica->get_RV_peak_time() > 0)
+			input_set.set_RV_peak(ica->get_RV_peak_time() + skip_images); 
+	}
+	if( input_set.get_LV_peak() < 0) {
+		if (ica->get_LV_peak_time() > 0) 
+			input_set.set_LV_peak(ica->get_LV_peak_time() + skip_images);
+	}
+
 	if (!save_crop_feature.empty())
 		ica->save_feature_images(save_crop_feature);
 	
@@ -351,7 +346,8 @@ int do_main( int argc, char *argv[] )
 	vector<C2DFImage> references_float = ica->get_references(); 
 	
 	C2DImageSeries references(references_float.size()); 
-	transform(references_float.begin(), references_float.end(), references.begin(), C2DFImage2PImage()); 
+	transform(references_float.begin(), references_float.end(), references.begin(), 
+		  FWrapStaticDataInSharedPointer<C2DImage>()); 
 
 	// crop if requested
 	if (box_scale) {
@@ -376,7 +372,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw create_exception<runtime_error>("unable to save to '", cropped_filename, "'"); 
 
 	}
 
@@ -401,7 +397,7 @@ int do_main( int argc, char *argv[] )
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	
 		transform(input_set.get_images().begin() + skip_images, 
-			  input_set.get_images().end(), series.begin(), Convert2Float()); 
+			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
 		if (!ica2.run(series)) {
 			ica2.set_approach(FICA_APPROACH_SYMM); 
@@ -415,7 +411,7 @@ int do_main( int argc, char *argv[] )
 			c_rate /= c_rate_divider; 
 		references_float = ica2.get_references(); 
 		transform(references_float.begin(), references_float.end(), 
-			  references.begin(), C2DFImage2PImage()); 
+			  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
 		do_continue =  (!pass || current_pass < pass) && ica2.has_movement(); 
 		
 		// run one more pass if the limit is not reached and no movement identified
@@ -429,16 +425,12 @@ int do_main( int argc, char *argv[] )
 		ica_final.set_max_ica_iterations(max_ica_iterations); 
 	
 	transform(input_set.get_images().begin() + skip_images, 
-		  input_set.get_images().end(), series.begin(), Convert2Float()); 
+		  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 	
 	if (!ica_final.run(series)) {
 			ica_final.set_approach(FICA_APPROACH_SYMM); 
 			ica_final.run(series); 
 	}
-	if( input_set.get_RV_peak() < 0) 
-		input_set.set_RV_peak(ica_final.get_RV_peak_time() + skip_images); 
-	if( input_set.get_LV_peak() < 0) 
-		input_set.set_LV_peak(ica_final.get_LV_peak_time() + skip_images);
 
 	if (!save_crop_feature.empty()) {
 		stringstream cfile; 
@@ -463,10 +455,6 @@ int do_main( int argc, char *argv[] )
 
 
 
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
-}
 
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main); 

@@ -132,10 +132,9 @@ void C2DMorphFifoFilter<Compare>::shift_buffer()
 
 
 C2DMorphFifoFilterPluginBase::C2DMorphFifoFilterPluginBase(const char *name):
-	C2DFifoFilterPlugin(name),
-	m_shape_descr("6n")
+	C2DFifoFilterPlugin(name)
 {
-	add_parameter("shape", new CStringParameter(m_shape_descr, false, "structuring element"));
+	add_parameter("shape", make_param(m_shape, "6n", false, "structuring element"));
 }
 
 
@@ -146,9 +145,9 @@ const string C2DMorphFifoFilterPluginBase::do_get_descr() const
 	return descr.str();
 }
 
-const string& C2DMorphFifoFilterPluginBase::get_shape_descr() const
+mia::P3DShape C2DMorphFifoFilterPluginBase::get_shape() const
 {
-	return m_shape_descr;
+	return m_shape;
 }
 
 
@@ -163,15 +162,7 @@ template <template <typename, bool> class Compare>
 C2DImageFifoFilter *C2DMorphFifoFilterPlugin<Compare>::do_create()const
 {
 	TRACE("C2DMorphFifoFilterPlugin<Compare>::do_create()");
-	const C3DShapePluginHandler::Instance& sh = C3DShapePluginHandler::instance();
-	auto shape = sh.produce(get_shape_descr().c_str());
-	if (!shape) {
-		stringstream errmsg;
-		errmsg << "C2DDilateFifoFilterPlugin: unable to create shape from '"
-		       << get_shape_descr() << "'";
-		throw invalid_argument(errmsg.str());
-	}
-	return new C2DMorphFifoFilter<Compare>(shape);
+	return new C2DMorphFifoFilter<Compare>(get_shape());
 }
 
 C2DDilateFifoFilterPlugin::C2DDilateFifoFilterPlugin():
@@ -179,19 +170,9 @@ C2DDilateFifoFilterPlugin::C2DDilateFifoFilterPlugin():
 {
 }
 
-bool C2DDilateFifoFilterPlugin::do_test() const
-{
-	return true; 
-}
-
 C2DErodeFifoFilterPlugin::C2DErodeFifoFilterPlugin():
 	C2DMorphFifoFilterPlugin<ErodeCompare>("erode")
 {
-}
-
-bool C2DErodeFifoFilterPlugin::do_test() const
-{
-	return true; 
 }
 
 
@@ -200,24 +181,12 @@ C2DOpenFifoFilterPlugin::C2DOpenFifoFilterPlugin():
 {
 }
 
-bool C2DOpenFifoFilterPlugin::do_test() const
-{
-	return true; 
-}
 
 C2DImageFifoFilter *C2DOpenFifoFilterPlugin::do_create()const
 {
 	TRACE("C2DOpenFifoFilterPlugin::do_create()");
-	const C3DShapePluginHandler::Instance& sh = C3DShapePluginHandler::instance();
-	auto shape = sh.produce(get_shape_descr().c_str());
-	if (!shape) {
-		stringstream errmsg;
-		errmsg << "C2DDilateFifoFilterPlugin: unable to create shape from '"
-		       << get_shape_descr() << "'";
-		throw invalid_argument(errmsg.str());
-	}
-	P2DImageFifoFilter inm(new C2DMorphFifoFilter<DilateCompare>(shape));
-	auto result = new C2DMorphFifoFilter<ErodeCompare>(shape);
+	P2DImageFifoFilter inm(new C2DMorphFifoFilter<DilateCompare>(get_shape()));
+	auto result = new C2DMorphFifoFilter<ErodeCompare>(get_shape());
 	result->append_filter(inm);
 	return result;
 }
@@ -228,24 +197,11 @@ C2DCloseFifoFilterPlugin::C2DCloseFifoFilterPlugin():
 {
 }
 
-bool C2DCloseFifoFilterPlugin::do_test() const
-{
-	return true; 
-}
-
 C2DImageFifoFilter *C2DCloseFifoFilterPlugin::do_create()const
 {
 	TRACE("C2DCloseFifoFilterPlugin::do_create()");
-	const C3DShapePluginHandler::Instance& sh = C3DShapePluginHandler::instance();
-	auto shape = sh.produce(get_shape_descr().c_str());
-	if (!shape) {
-		stringstream errmsg;
-		errmsg << "C2DDilateFifoFilterPlugin: unable to create shape from '"
-		       << get_shape_descr() << "'";
-		throw invalid_argument(errmsg.str());
-	}
-	P2DImageFifoFilter inm(new C2DMorphFifoFilter<ErodeCompare>(shape));
-	auto result = new C2DMorphFifoFilter<DilateCompare>(shape);
+	P2DImageFifoFilter inm(new C2DMorphFifoFilter<ErodeCompare>(get_shape()));
+	auto result = new C2DMorphFifoFilter<DilateCompare>(get_shape());
 	result->append_filter(inm);
 	return result;
 }

@@ -73,7 +73,7 @@ C3DTransformation *C3DAffineTransformation::invert()const
 		m_t[ 8] * (m_t[1] * m_t[6] - m_t[2] * m_t[5]); 
 	
 	if (std::fabs(det) < 1e-8) 
-		THROW(invalid_argument, "C3DAffineTransformation::invert(): Matrix is singular"); 
+		throw invalid_argument("C3DAffineTransformation::invert(): Matrix is numerically singular"); 
 	
 	const double inv_det = 1.0 / det; 
 
@@ -251,7 +251,7 @@ P3DTransformation C3DAffineTransformation::do_upscale(const C3DBounds& size) con
 }
 
 
-C3DFMatrix C3DAffineTransformation::derivative_at(const C3DFVector& PARAM_UNUSED(x)) const
+C3DFMatrix C3DAffineTransformation::derivative_at(const C3DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	return C3DFMatrix(C3DFVector(m_t[0], m_t[1], m_t[2]),
 			  C3DFVector(m_t[4], m_t[5], m_t[6]),
@@ -327,7 +327,7 @@ C3DFVector C3DAffineTransformation::operator () (const C3DFVector& x) const
 
 float C3DAffineTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
 {
-	assert(!"not implemented");
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DAffineTransformation doesn't implement a jacobian."); 
 }
 
 void C3DAffineTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
@@ -435,7 +435,7 @@ C3DTransformation::const_iterator C3DAffineTransformation::end_range(const C3DBo
 
 float C3DAffineTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 {
-	assert(!"not implemented");
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DAffineTransformation doesn't implement pertuberate."); 
 }
 
 class C3DAffineTransformCreator: public C3DTransformCreator {
@@ -459,7 +459,6 @@ class C3DAffineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DAffineTransformCreatorPlugin(); 
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -471,11 +470,6 @@ C3DAffineTransformCreatorPlugin::C3DAffineTransformCreatorPlugin():
 C3DTransformCreator *C3DAffineTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
 	return new C3DAffineTransformCreator(ipf);
-}
-
-bool C3DAffineTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C3DAffineTransformCreatorPlugin::do_get_descr() const

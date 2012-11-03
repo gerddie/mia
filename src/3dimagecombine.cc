@@ -23,23 +23,21 @@
 #include <stdexcept>
 #include <sstream>
 
-#include <mia/3d/3dfilter.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/filter.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/core.hh>
 
 using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-	"Combine two 3D images.", 
-	 
-	"This program is used to combine two images using a given image combiner.", 
-	
-	"Take two label images l1.v and l2.v and evaluate the label overlap.", 
-
-	"-1 l1.v -2 l2.v -c map.txt -c labelxmap" 
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images" }, 
+	{pdi_short, "Combine two 3D images."}, 
+	{pdi_description, "This program is used to combine two images using a given image combiner."}, 
+	{pdi_example_descr, "Take two label images l1.v and l2.v and evaluate the label overlap."}, 
+	{pdi_example_code, "-1 l1.v -2 l2.v -c map.txt -c labelxmap"}
 };  
+
 
 int do_main( int argc, char *argv[] )
 {
@@ -49,14 +47,16 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	P3DImageCombiner combiner;
 
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_image1, "image1", '1', "input image  1 to be combined", CCmdOption::required));
-	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", CCmdOption::required));
+	options.add(make_opt( in_image1, "image1", '1', "input image  1 to be combined", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", 
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( combiner, "labelxmap", "combiner", 'c', "combiner operation", CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "output file", CCmdOption::required));
+	options.add(make_opt( out_filename, "out", 'o', "output file", CCmdOption::required, &imageio));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

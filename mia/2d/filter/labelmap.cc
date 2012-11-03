@@ -28,7 +28,7 @@ NS_MIA_USE;
 using namespace std; 
 
 C2DLabelMapFilter::C2DLabelMapFilter(const CLabelMap& lmap):
-	m_map(numeric_limits<unsigned short>::max())
+	m_map(std::numeric_limits<unsigned short>::max())
 {
 	for (size_t i = 0; i < m_map.size(); ++i)
 		m_map[i] = i; 
@@ -81,8 +81,8 @@ C2DFilter *C2DLabelMapFilterPlugin::do_create() const
 	ifstream is(m_map.c_str()); 
 
 	if (!is.good())
-		THROW(runtime_error, "C2DLabelMapFilterPlugin::load_label_map:"
-		      "Unable to open file '" << m_map << "'"); 
+		throw create_exception<runtime_error>("C2DLabelMapFilterPlugin::load_label_map:"
+					    "Unable to open file '", m_map, "'"); 
 	
 	CLabelMap map(is);
 	return new C2DLabelMapFilter(map); 

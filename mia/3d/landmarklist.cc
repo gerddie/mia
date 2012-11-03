@@ -53,7 +53,7 @@ P3DLandmark C3DLandmarklist::get(const std::string& name) const
 	if (p != m_list.end()) 
 		return p->second; 
 	else 
-		THROW(invalid_argument, "Landmark '" << name << "' not found"); 
+		throw create_exception<invalid_argument>("Landmark '", name, "' not found");
 }
 
 C3DLandmarklist::const_iterator C3DLandmarklist::begin() const

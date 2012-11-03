@@ -43,12 +43,8 @@ CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
 	TTranslator<int>::register_for("SeriesNumber");
 	TTranslator<int>::register_for("AcquisitionNumber");
 	TTranslator<int>::register_for("InstanceNumber");
-}
-
-void CDicom2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".dcm", get_name()));
-	map.insert(pair<string,string>(".DCM", get_name()));
+	add_suffix(".dcm");
+	add_suffix(".DCM");
 }
 
 C2DImageIOPlugin::PData CDicom2DImageIOPlugin::do_load(const string& fname) const
@@ -68,12 +64,12 @@ C2DImageIOPlugin::PData CDicom2DImageIOPlugin::do_load(const string& fname) cons
 bool CDicom2DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
 	if (data.empty())
-		THROW(runtime_error, "CDicom2DImageIOPlugin: '" << fname
-		      << "', no images to save");
+		throw create_exception<runtime_error>("CDicom2DImageIOPlugin: '", fname, 
+					    "', no images to save");
 
 	if (data.size() > 1)
-		THROW(runtime_error, "CDicom2DImageIOPlugin: '" << fname
-		      << "' DICOM writer only supports one image per file");
+		throw create_exception<runtime_error>("CDicom2DImageIOPlugin: '", fname, 
+					    "' DICOM writer only supports one image per file");
 
 	CDicomWriter writer(**data.begin());
 	return writer.write(fname.c_str());

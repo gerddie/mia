@@ -31,7 +31,7 @@
 #include <mia/core/filter.hh>
 
 #include <mia/2d/interpolator.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/deformer.hh>
 
 NS_MIA_USE

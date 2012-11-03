@@ -24,7 +24,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 #include <vistaio/vista4mia.hh>
 
@@ -39,7 +39,6 @@ class CVista2DImageIOPlugin : public C2DImageIOPlugin {
 public:
 	CVista2DImageIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -57,14 +56,12 @@ CVista2DImageIOPlugin::CVista2DImageIOPlugin():
 	add_supported_type(it_float);
 	add_supported_type(it_double);
 	add_property(io_plugin_property_multi_record);
-}
 
-void CVista2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".v", get_name()));
-	map.insert(pair<string,string>(".V", get_name()));
-	map.insert(pair<string,string>(".vista", get_name()));
-	map.insert(pair<string,string>(".VISTA", get_name()));
+	add_suffix(".v");
+	add_suffix(".V");
+	add_suffix(".vista");
+	add_suffix(".VISTA");
+
 }
 
 

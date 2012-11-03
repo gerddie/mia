@@ -1,7 +1,11 @@
+SYNOPSIS: 
+
 MIA is a collection of libraries and command line tools for the processing 
 of gray scale images.
 
-For details, help, etc see 
-http://mia.sourceforge.net
+For details, help, etc see http://mia.sourceforge.net
 
- 
+KNOWN BUGS: 
+
+* Image orientation and pixel size information is not honoured in the image registration code. 
+

@@ -21,7 +21,7 @@
 #ifndef mia_3d_filter_downscale_hh
 #define mia_3d_filter_downscale_hh
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_BEGIN(downscale_3dimage_filter)
 
@@ -49,9 +49,6 @@ public:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-
-	virtual bool  do_test() const;
-	void prepare_path() const;
 	mia::C3DBounds m_b;
 	std::string m_filter;
 };

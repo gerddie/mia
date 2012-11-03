@@ -51,7 +51,7 @@
 #include <memory>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/polygon.hh>
-#include <mia/2d/distances.hh>
+#include <mia/2d/distance.hh>
 
 NS_MIA_BEGIN
 using namespace std;

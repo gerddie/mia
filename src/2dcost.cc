@@ -32,15 +32,13 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 2D images", 
+	{pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
+	{pdi_short, "Evaluate the similarity between two 2D images."}, 
+	{pdi_description, 	"This program is used to evaluate the cost between two "
+	 "images by using a given cost function."}, 
+	{pdi_example_descr, "Evaluate the SSD cost function between image1.png and image2.png"}, 
+	{pdi_example_code, "image:src=image1.png,ref=image2.png,cost=ssd"}
 
-	"Evaluate the similarity between two 2D images.", 
-	
-	"This program is used to evaluate the cost between two images by using a given cost function.", 
-	
-	"Evaluate the SSD cost function between image1.png and image2.png", 
-	
-	"image:src=image1.png,ref=image2.png,cost=ssd"
 }; 
 
 // set op the command line parameters and run the registration

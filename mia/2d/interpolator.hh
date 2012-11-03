@@ -43,7 +43,7 @@
 #include <vector>
 #include <mia/core/splinekernel.hh>
 #include <mia/core/boundary_conditions.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 
 NS_MIA_BEGIN

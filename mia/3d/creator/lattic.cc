@@ -24,7 +24,7 @@
 #include <cmath>
 #include <limits>
 #include <mia/core/type_traits.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/creator/lattic.hh>
 
 NS_BEGIN(creator_lattic_3d);

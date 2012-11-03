@@ -59,6 +59,7 @@ typedef THandlerSingleton<TFactoryPluginHandler<C3DFullCostPlugin> > C3DFullCost
 FACTORY_TRAIT(C3DFullCostPluginHandler); 
 /// @endcond 
 
+
 NS_MIA_END
 
 #endif

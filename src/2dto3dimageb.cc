@@ -25,102 +25,41 @@
 #include <stdexcept>
 
 #include <mia/core.hh>
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/imagecollect.hh>
 
 NS_MIA_USE
 using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"Image conversion", 
-
-	"Combine a series of 2D images to a volume.", 
-	
-	"This program is used to convert a series 2D images into a 3D image. "
-	"The 2D images are read as additional command line parameters and the slice "
-	"ordering corresponds to the ordering of the file names on the commend line.", 
-	
-	"Convert a series of images imageXXXX.png to a 3D image 3d.v", 
-	
-	"-i imageXXXX.png -o 3d.v"
-
+        {pdi_group, "Image conversion"}, 
+	{pdi_short, "Combine a series of 2D images to a volume."}, 
+	{pdi_description, "This program is used to convert a series 2D images into a 3D image. "
+	 "The 2D images are read as additional command line parameters and the slice "
+	 "ordering corresponds to the ordering of the file names on the commend line."}, 
+	{pdi_example_descr, "Convert a series of images imageXXXX.png to a 3D image 3d.v"}, 
+	{pdi_example_code, "-i imageXXXX.png -o 3d.v"}
 }; 
-
-struct C3DImageCollector : public TFilter<bool> {
-
-	C3DImageCollector(size_t slices):
-		m_slices(slices),
-		m_cur_slice(0)
-	{
-	}
-
-	template <typename T>
-	bool operator ()(const T2DImage<T>& image) {
-
-		if (!m_image)
-			m_image = std::shared_ptr<C3DImage > (new T3DImage<T>(C3DBounds(image.get_size().x,
-										  image.get_size().y,
-										  m_slices)));
-
-		T3DImage<T> *out_image = dynamic_cast<T3DImage<T> *>(m_image.get());
-		if (!out_image)
-			throw invalid_argument("input images are not all of the same type");
-
-		if (m_cur_slice < m_slices) {
-			if (out_image->get_size().x != image.get_size().x ||
-			    out_image->get_size().y != image.get_size().y)
-				throw invalid_argument("input images are not all of the same size");
-
-			typename T3DImage<T>::iterator out = out_image->begin() +
-				image.get_size().x * image.get_size().y * m_cur_slice;
-
-			copy(image.begin(), image.end(), out);
-		}
-		++ m_cur_slice;
-		return true;
-	}
-
-	std::shared_ptr<C3DImage > result() const {
-		return m_image;
-	}
-
-private:
-	size_t m_slices;
-	size_t m_cur_slice;
-
-	std::shared_ptr<C3DImage > m_image;
-};
-
-/* Revision string */
-const char revision[] = "not specified";
 
 int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
-	string out_filename("3");
-	string out_type;
-
-	const C2DImageIOPluginHandler::Instance& image2dio = C2DImageIOPluginHandler::instance();
-	const C3DImageIOPluginHandler::Instance& image3dio = C3DImageIOPluginHandler::instance();
+	string out_filename;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", 
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 
-	if (options.parse(argc, argv, "sliceimage") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "sliceimage", &C2DImageIOPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 		
 	if (options.get_remaining().empty())
 		throw runtime_error("no slices given ...");
 
-
-	CHistory::instance().append(argv[0], revision, options);
-
-	//size_t start_filenum = 0;
-	//size_t end_filenum  = 0;
-	//size_t format_width = 0;
 
 	char new_line = cverb.show_debug() ? '\n' : '\r';
 
@@ -131,18 +70,12 @@ int do_main( int argc, char *argv[] )
 	for (auto  i = input_images.begin(); i != input_images.end(); ++i) {
 
 		cvmsg() << "Load " << *i << new_line;
-		C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(*i);
-
-		if (in_image_list.get() && in_image_list->size()) {
-			accumulate(ic, **in_image_list->begin());
-		}
+		auto in_image = load_image2d(*i);
+		ic.add(*in_image);
 	}
 	cvmsg() << "\n";
 
-	C3DImageVector result;
-	result.push_back(ic.result());
-
-	if (image3dio.save(out_filename, result))
+        if (save_image(out_filename, ic.get_result()))
 		return EXIT_SUCCESS;
 	else
 		cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;

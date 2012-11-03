@@ -59,11 +59,11 @@ struct __dispatch_parameter_do_set {
 		std::istringstream s(str_value); 
 		s >> value; 
 		if (s.fail()) 
-			THROW(std::invalid_argument, "Value '" << str_value << "' not allowed"); 
+			throw create_exception<std::invalid_argument>("Value '", str_value, "' not allowed"); 
 		while (!s.eof() && s.peek() == ' ') 
 			s >> c; 
 		if (!s.eof()) 
-			THROW(std::invalid_argument, "Value '" << str_value << "' not allowed"); 
+			throw create_exception<std::invalid_argument>("Value '", str_value, "' not allowed"); 
 		return true; 
 	}
 };  
@@ -119,8 +119,8 @@ TRangeParameter<T>::TRangeParameter(T& value, T min, T max, bool required, const
 	m_max(max)
 {
 	if (m_min > m_max) 
-		THROW(std::invalid_argument, "Parameter '"<<descr<<"' TRangeParameter<T,"<< __type_descr<T>::value << ">: min(" 
-		      << m_min <<") > max ("<< m_max << ")  not allowed"); 
+		throw create_exception<std::invalid_argument>("Parameter '",descr,"' TRangeParameter<T,", __type_descr<T>::value , ">: min(" 
+						    , m_min ,") > max (", m_max , ")  not allowed"); 
 }
 
 template <typename T> 
@@ -148,6 +148,7 @@ void TRangeParameter<T>::do_descr(std::ostream& os) const
 template <typename T> 
 void TRangeParameter<T>::do_get_help_xml(xmlpp::Element& self) const
 {
+	TRACE_FUNCTION; 
 	auto dict = self.add_child("range"); 
 	dict->set_attribute("min", to_string<T>(m_min)); 
 	dict->set_attribute("max", to_string<T>(m_max)); 

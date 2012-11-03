@@ -29,11 +29,14 @@
 NS_MIA_BEGIN
 NS_BEGIN(bsplinekernel)
 
+using std::invalid_argument; 
+using std::runtime_error; 
+
 template <int sd, int degree>
 struct bspline {
 	static double apply(double x) {
-		THROW(invalid_argument, "Spline "<< sd << ":derivative degree "
-		      <<  degree << " not supported for spline of degree 2");
+		throw create_exception<invalid_argument>( "Spline ", sd , ":derivative degree "
+		      ,  degree , " not supported for spline of degree 2");
 	}
 };
 
@@ -65,7 +68,7 @@ void CBSplineKernel0::get_derivative_weights(double /*x*/, VWeight& /*weight*/) 
 double CBSplineKernel0::get_weight_at(double x, int degree) const
 {
 	if (degree != 0) {
-		THROW(invalid_argument, "CBSplineKernel0::get_weight_at: degree " <<  degree << 
+		throw create_exception<invalid_argument>( "CBSplineKernel0::get_weight_at: degree " ,  degree , 
 		      "not supported for Haar spline"); 
 	}
 	return abs(x) < 0.5 ? 1.0 : 0.0; 
@@ -75,7 +78,7 @@ void CBSplineKernel0::get_derivative_weights(double /*x*/, VWeight& weight, int 
 	if (degree == 0)
 		weight[0] = 1.0; 
 	else {
-		THROW(invalid_argument, "CBSplineKernel0::get_derivative_weights: degree " <<  degree << 
+		throw create_exception<invalid_argument>( "CBSplineKernel0::get_derivative_weights: degree " ,  degree , 
 		      "not supported for Haar spline"); 
 	}
 }
@@ -119,7 +122,7 @@ double CBSplineKernel1::get_weight_at(double x, int degree) const
 			return 0.0; 
 	}
 	default:
-		THROW(invalid_argument, "CBSplineKernel1::get_weight_at: degree " <<  degree << 
+		throw create_exception<invalid_argument>( "CBSplineKernel1::get_weight_at: degree " ,  degree , 
 		      "not supported for linearly interpolating spline"); 
 	}
 }
@@ -137,7 +140,7 @@ void CBSplineKernel1::get_derivative_weights(double x, VWeight& weight, int degr
 		break; 
 	}
 	default:
-		THROW(invalid_argument, "CBSplineKernel1::get_weight_at: degree " <<  degree << 
+		throw create_exception<invalid_argument>( "CBSplineKernel1::get_weight_at: degree " ,  degree , 
 		      "not supported for linearly interpolating spline"); 
 	}
 }
@@ -187,8 +190,8 @@ double CBSplineKernel2::get_weight_at(double x, int degree) const
 	case 0: return bspline<2,0>::apply(x);
 	case 1: return bspline<2,1>::apply(x);
 	default:
-		THROW(invalid_argument, "B-Spline 2:derivative degree "
-		      <<  degree << " not supported" );
+		throw create_exception<invalid_argument>( "B-Spline 2:derivative degree "
+		      ,  degree , " not supported" );
 	}
 }
 
@@ -340,8 +343,8 @@ double CBSplineKernel3::get_weight_at(double x, int degree) const
 	case 1: return bspline<3,1>::apply(x);
 	case 2: return bspline<3,2>::apply(x);
 	default:
-		THROW(invalid_argument, "B-Spline 3:derivative degree "
-		      <<  degree << " not supported" );
+		throw create_exception<invalid_argument>( "B-Spline 3:derivative degree "
+		      ,  degree , " not supported" );
 	}
 }
 
@@ -504,8 +507,8 @@ double CBSplineKernel4::get_weight_at(double x, int degree) const
 	case 3: return bspline<4,3>::apply(x);
 	case 4: return bspline<4,4>::apply(x);
 	default:
-		THROW(invalid_argument, "B-Spline 3:derivative degree "
-		      <<  degree << " not supported" );
+		throw create_exception<invalid_argument>( "B-Spline 3:derivative degree "
+		      ,  degree , " not supported" );
 	}
 }
 
@@ -567,7 +570,7 @@ void CBSplineKernel4::get_derivative_weights(double x, VWeight& weight, int degr
 		weight[3] = t1 - t0;
 		weight[4] = weight[0] + t0;
 		weight[2] = - weight[0] - weight[1] - weight[3] - weight[4];
-		cvdebug() << "weight[2] = " << fixed << weight[2] << "\n";
+		cvdebug() << "weight[2] = " << weight[2] << "\n";
 	}break;
 	case 3:{
 		weight[0] =  x - 1.0 / 2.0;
@@ -853,8 +856,7 @@ double CBSplineKernel5::get_weight_at(double x, int degree) const
 	case 3: return bspline<5,3>::apply(x);
 	case 4: return bspline<5,4>::apply(x);
 	default:
-		THROW(invalid_argument, "B-Spline5:derivative degree "
-		      <<  degree << " not supported" );
+		throw create_exception<invalid_argument>( "B-Spline5:derivative degree ",  degree , " not supported" );
 	}
 }
 

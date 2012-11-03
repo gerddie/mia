@@ -25,6 +25,7 @@
 
 
 using namespace mia; 
+using namespace std; 
 using namespace resize_3d_filter; 
 
 struct ResizeTestFixture : public TFiltertestFixture<T3DImage>{

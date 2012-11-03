@@ -40,7 +40,7 @@ protected:
 	bool get_filled() const; 
 private:
 	
-	virtual const string do_get_descr() const;
+	virtual const std::string do_get_descr() const;
 	virtual C2DShape *do_create()const;
 
 	int m_width; 
@@ -52,7 +52,7 @@ public:
 	CRectangle2DShapePlugin();
 private:
 	
-	virtual const string do_get_descr() const;
+	virtual const std::string do_get_descr() const;
 	virtual C2DShape *do_create()const;
 	int m_width; 
 	int m_height; 

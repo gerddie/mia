@@ -23,7 +23,7 @@
 #define mia_3d_filter_sepconv_hh
 
 #include <mia/core/spacial_kernel.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_BEGIN(sepconv_3dimage_filter)
 
@@ -55,13 +55,9 @@ public:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-
-	virtual bool  do_test() const;
-	void prepare_path() const;
-
-	std::string m_kx;
-	std::string m_ky;
-	std::string m_kz;
+	mia::P1DSpacialKernel m_kx;
+	mia::P1DSpacialKernel m_ky;
+	mia::P1DSpacialKernel m_kz;
 };
 
 
@@ -71,7 +67,6 @@ public:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	virtual bool do_test() const;
 	int m_w;
 };
 

@@ -20,9 +20,9 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/2d/similarity_profile.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/cost.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 
 namespace bfs=::boost::filesystem;

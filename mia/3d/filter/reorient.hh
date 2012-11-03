@@ -19,7 +19,7 @@
  */
 
 #include <mia/core/dictmap.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 
 // start a namespace to avoid naming conflicts during runtime
@@ -64,7 +64,7 @@ public:
 	C3DReorientImageFilterFactory();
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-	virtual bool do_test()const {return true;};
+
 private:
 	static const mia::TDictMap<C3DReorient::EOrientations>::Table table[];
 	static const mia::TDictMap<C3DReorient::EOrientations> map;

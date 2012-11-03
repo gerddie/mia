@@ -28,8 +28,8 @@
 #include <list>
 #include <string>
 #include <mia/core.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/internal/main.hh>
 
 #include "vfluid.hh"
@@ -40,19 +40,15 @@ using namespace mia;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-
-	"Fluid dynamic 3D registration", 
-	
-	"This program is used for non-rigid registration based on fluid dynamics as described in: "
-	"Wollny, G. and Kruggel, F., 'Computational cost of non-rigid registration algorithms "
-	"based on fluid dynamics', IEEE Transactions on Medical Imaging, 11(8), pp. 946-952, 2002, "
-	"doi:10.1109/TMI.2002.803113. It uses SSD as the sole registration criterion.", 
-	
-	"Register image test.v to image ref.v and write the deformation vector field regfield.v. "
-	"Start registration at the smallest size above 16 pixel.", 
-	
-	"-i test.v -r ref.v -o regfield.v -s 16"
+        {pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Fluid dynamic 3D registration"}, 
+	{pdi_description, "This program is used for non-rigid registration based on fluid dynamics as described in: "
+	 "Wollny, G. and Kruggel, F., 'Computational cost of non-rigid registration algorithms "
+	 "based on fluid dynamics', IEEE Transactions on Medical Imaging, 11(8), pp. 946-952, 2002, "
+	 "doi:10.1109/TMI.2002.803113. It uses SSD as the sole registration criterion."}, 
+	{pdi_example_descr, "Register image test.v to image ref.v and write the deformation vector "
+	 "field regfield.v. Start registration at the smallest size above 16 pixel."}, 
+	{pdi_example_code, "-i test.v -r ref.v -o regfield.v -s 16"}
 }; 
 
 #define MU	  1	// Lame elasticity constants
@@ -185,9 +181,16 @@ int do_main(int argc, char *argv[])
 	bool disable_fullres = false;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required ));
-	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required ));
-	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", CCmdOption::required ));
+
+	const auto& imageio = C3DImageIOPluginHandler::instance();
+
+	options.set_group("File-IO"); 
+	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required, &imageio ));
+	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required, &imageio ));
+	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", 
+			      CCmdOption::required, &C3DVFIOPluginHandler::instance()));
+
+	options.set_group("Registration parameters"); 
 	options.add(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing"));
 	options.add(make_opt( disable_fullres, "disable-fullres", 0,
 			      "disable processing on the full resolution image"));

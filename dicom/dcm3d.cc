@@ -33,7 +33,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/bfsv23dispatch.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_BEGIN(IMAGEIO_3D_DICOM)
 
@@ -52,14 +52,10 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 	TTranslator<int>::register_for("SeriesNumber");
 	TTranslator<int>::register_for("AcquisitionNumber");
 	TTranslator<int>::register_for("InstanceNumber");
-}
+	add_suffix(".dcm");
+	add_suffix(".DCM");
 
-void CDicom3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".dcm", get_name()));
-	map.insert(pair<string,string>(".DCM", get_name()));
 }
-
 
 struct attr_less {
 	bool operator()(const PAttribute& a, const PAttribute& b) {
@@ -111,10 +107,10 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 	}else {
 		target = dynamic_cast<T3DImage<T> *>(m_result.get());
 		if (!target) {
-			THROW(invalid_argument, "Series input images have different pixel type");
+			throw invalid_argument("Series input images have different pixel type");
 		}
 		if (m_size2d != image.get_size()) {
-			THROW(invalid_argument, "Series input images have different slice size");
+			throw invalid_argument("Series input images have different slice size");
 		}
 		float new_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
 		m_delta_z = new_slice_pos - m_slice_pos;
@@ -149,6 +145,12 @@ static P3DImage get_3dimage(CImageInstances& slices)
 
 	return creator.get_image();
 }
+
+std::string CDicom3DImageIOPlugin::do_get_preferred_suffix() const
+{
+	return "dcm"; 
+}
+
 
 C3DImageIOPlugin::PData CDicom3DImageIOPlugin::get_images(const vector<P2DImage>& candidates) const
 {
@@ -301,8 +303,7 @@ bool CSliceSaver::operator () ( const T3DImage<T>& image) const
 bool CDicom3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
 	if (data.empty())
-		THROW(runtime_error, "CDicom3DImageIOPlugin: '" << fname
-		      << "', no images to save");
+		throw create_exception<runtime_error>( "CDicom3DImageIOPlugin: '", fname, "', no images to save");
 
 
 	CSliceSaver saver(fname);
@@ -320,7 +321,7 @@ bool CDicom3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 
 const string CDicom3DImageIOPlugin::do_get_descr() const
 {
-	return "3D image io for DICOM";
+	return "Dicom image series as 3D";
 }
 
 

@@ -20,7 +20,7 @@
 
 #include <limits>
 #include <mia/core/filter.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/fftkernel.hh>
 
 NS_BEGIN(fft_2dimage_filter)
@@ -43,7 +43,7 @@ public:
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-	std::string m_kernel;
+	mia::PFFT2DKernel  m_kernel;
 };
 
 NS_END

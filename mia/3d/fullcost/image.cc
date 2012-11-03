@@ -18,11 +18,12 @@
  *
  */
 
-#include <boost/lambda/lambda.hpp>
 #include <mia/3d/fullcost/image.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_MIA_BEGIN
+
+using namespace std; 
 
 C3DImageFullCost::C3DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
@@ -46,8 +47,8 @@ bool C3DImageFullCost::do_has(const char *property) const
 double C3DImageFullCost::do_value(const C3DTransformation& t) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src); 
-	P3DImage temp  = t(*m_src);
+	assert(m_src_scaled); 
+	P3DImage temp  = t(*m_src_scaled);
 	const double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
 	return result; 
@@ -56,8 +57,8 @@ double C3DImageFullCost::do_value(const C3DTransformation& t) const
 double C3DImageFullCost::do_value() const
 {
 	TRACE_FUNCTION; 
-	assert(m_src); 
-	const double result = m_cost_kernel->value(*m_src); 
+	assert(m_src_scaled); 
+	const double result = m_cost_kernel->value(*m_src_scaled); 
 	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
 	return result; 
 }
@@ -66,27 +67,12 @@ double C3DImageFullCost::do_value() const
 double C3DImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src); 
+	assert(m_src_scaled); 
 	
-	P3DImage temp  = t(*m_src);
-
-	if (m_debug) {
-		// not thread save 
-		static int idx = 0; 
-		static auto  toubyte_converter = 
-			C3DFilterPluginHandler::instance().produce("convert:repn=ubyte"); 
-		stringstream fname; 
-		fname << "test" << setw(5) << setfill('0') << idx << ".v"; 
-		save_image(fname.str(), temp); 
-		idx++;
-	}
-	
+	P3DImage temp  = t(*m_src_scaled);
 	C3DFVectorfield force(get_current_size()); 
-
  	m_cost_kernel->evaluate_force(*temp, 1.0, force); 
-
 	t.translate(force, gradient); 
-
 	double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "Image cost =" << result << "\n"; 
 	return result; 
@@ -179,8 +165,8 @@ C3DImageFullCostPlugin::C3DImageFullCostPlugin():
 	m_cost_kernel("ssd"), 
 	m_debug(false)
 {
-	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
-	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
+	add_parameter("src", new CStringParameter(m_src_name, false, "Study image", &C3DImageIOPluginHandler::instance()));
+	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image", &C3DImageIOPluginHandler::instance()));
 	add_parameter("cost", new CStringParameter(m_cost_kernel, false, "Cost function kernel"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }

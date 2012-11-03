@@ -22,7 +22,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/transformio.hh>
 #include <mia/3d/transformfactory.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/internal/main.hh>
 
 
@@ -30,17 +30,17 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Convert a 3D vectorfield from a 3D transformation.", 
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Convert a 3D vectorfield from a 3D transformation."}, 
 
-	"Creates a 3D transformation from a vector field. The input vector field "
-	"is simply encapsulated into the transformation file format. The boundary "
-	"conditions and the image interpolator kernel can be set at the command line.", 
+	{pdi_description, "Creates a 3D transformation from a vector field. The input vector field "
+	 "is simply encapsulated into the transformation file format. The boundary "
+	 "conditions and the image interpolator kernel can be set at the command line."}, 
 	
-	"Transform the input vector field field.vtk to the transformation trans.v3df and "
-	"specify zero boundary conditions and b-splines of degree 2 for image interpolation.",
+	{pdi_example_descr, "Transform the input vector field field.vtk to the transformation trans.v3df and "
+	 "specify zero boundary conditions and b-splines of degree 2 for image interpolation.",}, 
 	
-	"-i field.vtk -o trans.v3df --imgkernel bspline:d=2 --imgboundary zero"
+	{pdi_example_code, "-i field.vtk -o trans.v3df --imgkernel bspline:d=2 --imgboundary zero"}
 }; 
 
 int do_main(int argc, char **argv)
@@ -53,8 +53,10 @@ int do_main(int argc, char **argv)
 	PSplineKernel image_interpolator; 
 	PSplineBoundaryCondition image_boundary; 
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input transformation ", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input transformation ", 
+			      CCmdOption::required, &C3DVFIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", 
+			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance()));
 
 	options.add(make_opt( image_interpolator, "bspline:d=3", "imgkernel", 'k', "image interpolator kernel which is "
 			      "used when the transformation is applied to an image"));
@@ -86,7 +88,7 @@ int do_main(int argc, char **argv)
 	transform->set_parameters(buffer); 
 	
 	if (!C3DTransformationIOPluginHandler::instance().save(out_filename, *transform)) 
-		THROW(runtime_error, "Unable to save transformation to '" << out_filename << "'"); 
+		throw create_exception<runtime_error>( "Unable to save transformation to '", out_filename, "'"); 
 	
 	return EXIT_SUCCESS;	
 }

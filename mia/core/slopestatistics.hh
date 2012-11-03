@@ -133,9 +133,9 @@ public:
 	
 	/**
 	   Evaluate the change in mean from before the indicated center to the mean 
-	   after the indicated center. 
+	   after the indicated center. The value at the specified center is ignored. 
 	   \param center balance point to evaluate change 
-	   \returns absolute difference in means 
+	   \returns difference in means
 	 */
 	float get_level_change(size_t center) const; 
 	

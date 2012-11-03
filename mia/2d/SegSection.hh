@@ -52,21 +52,24 @@ public:
 	   Constructor to create a segmentation shape and naming it 
 	   @param id ID of the section (and color identifier) 
 	   @param points the points that define a closed polynom representing the shape 
+	   @param is_open describes if points should be interpreted as polygon 
+	   (i.e. the last point connects to the first), or as poly-line only.
 	 */
-	CSegSection(const std::string& id, const Points& points);
+	CSegSection(const std::string& id, const Points& points, bool is_open);
 
 	/**
 	   Constructor to create a segmentation shape based on a XML sub tree 
 	   @param node root of the XML sub tree 
+	   \param version segmentation set version the node stems from. 
 	*/
-	CSegSection(xmlpp::Node& node);
+	CSegSection(xmlpp::Node& node, int version);
 
 	/**
 	   Store the segmented section into a XML sub-tree 
 	   @param node parent node to which the subtree should be added 
+	   \param version segmentation set version the node stems from. 
 	*/
-
-	void write(xmlpp::Node& node) const;
+	void write(xmlpp::Node& node, int version) const;
 
 	/// \returns the ID of the section 
 	const std::string& get_id() const;
@@ -114,9 +117,20 @@ public:
 	   @param color color to use 
 	 */
 	void draw(C2DUBImage& output, unsigned char color)const; 
+
+	/**
+	   Draw the binary shape to a 2D image by xor-ing with what is already in there 
+	   @param output image to draw to 
+	*/
+	void draw_xor(C2DUBImage& output)const; 
+
+	/// \returns whether the curve is open (true) or closed (false). 
+	bool is_open() const; 
+
 private:
 	std::string m_id;
 	Points m_points;
+	bool m_is_open; 
 };
 
 NS_MIA_END

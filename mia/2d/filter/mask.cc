@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/filter/mask.hh>
 
 NS_BEGIN(mask_2dimage_filter)
@@ -133,9 +133,10 @@ C2DMaskImageFilterFactory::C2DMaskImageFilterFactory():
 	m_fill(C2DMask::f_min), 
 	m_inverse(false)
 {
-	add_parameter("input", new CStringParameter(m_mask_filename, true, "second input image file name"));
+	add_parameter("input", new CStringParameter(m_mask_filename, true, "second input image file name", 
+			      &C2DImageIOPluginHandler::instance()));
 	add_parameter("fill", new CDictParameter<C2DMask::EFill>(m_fill, TDictMap<C2DMask::EFill>( FillStyleTable), 
-								 "second input image file name"));
+								 "fill style for pixels outside of the mask"));
 	add_parameter("inverse", new CBoolParameter(m_inverse, false, "set to true to use the inverse of the mask for masking"));
 
 }

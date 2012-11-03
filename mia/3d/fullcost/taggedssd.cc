@@ -21,12 +21,12 @@
 #include <numeric>
 
 #include <mia/core/filter.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/fullcost/taggedssd.hh>
 
-NS_MIA_USE
 NS_BEGIN(taggedssd_3d)
-
+NS_MIA_USE
+using namespace std; 
 
 C3DTaggedSSDCost::C3DTaggedSSDCost(const std::string& src_x, 
 				   const std::string& ref_x, 
@@ -410,12 +410,13 @@ private:
 C3DTaggedSSDCostPlugin::C3DTaggedSSDCostPlugin():
 	C3DFullCostPlugin("taggedssd")
 {
-	add_parameter("srcx", new CStringParameter(m_srcx_name, true, "Study image X-tag"));
-	add_parameter("refx", new CStringParameter(m_refx_name, true, "Reference image  X-tag"));
-	add_parameter("srcy", new CStringParameter(m_srcy_name, true, "Study image Y-tag"));
-	add_parameter("refy", new CStringParameter(m_refy_name, true, "Reference image  Y-tag"));
-	add_parameter("srcz", new CStringParameter(m_srcz_name, true, "Study image Z-tag"));
-	add_parameter("refz", new CStringParameter(m_refz_name, true, "Reference image  Z-tag"));
+	const auto& io = C3DImageIOPluginHandler::instance(); 
+	add_parameter("srcx", new CStringParameter(m_srcx_name, true, "Study image X-tag", &io));
+	add_parameter("refx", new CStringParameter(m_refx_name, true, "Reference image  X-tag", &io));
+	add_parameter("srcy", new CStringParameter(m_srcy_name, true, "Study image Y-tag", &io));
+	add_parameter("refy", new CStringParameter(m_refy_name, true, "Reference image  Y-tag", &io));
+	add_parameter("srcz", new CStringParameter(m_srcz_name, true, "Study image Z-tag", &io));
+	add_parameter("refz", new CStringParameter(m_refz_name, true, "Reference image  Z-tag", &io));
 }
 
 C3DFullCost *C3DTaggedSSDCostPlugin::do_create(float weight) const

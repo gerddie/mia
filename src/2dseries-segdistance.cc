@@ -33,8 +33,8 @@
 #include <mia/core.hh>
 #include <mia/internal/main.hh>
 #include <mia/2d/SegSetWithImages.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 
 using namespace std;
 using namespace mia;
@@ -42,18 +42,14 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-	"Evaluate mean distance between segmentations.", 
-	
-	"Get the mean distance of a segmentation boundary to the reference boundary.", 
-
-	"Evaluate the mean absolute border distanceof the segmentations of set segment.set with "
-	"respect to the segmentation given in frame 20.", 
-	
-	" -i segment.set -r 20"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate mean distance between segmentations."}, 
+	{pdi_description, "Get the mean distance of a segmentation boundary to the reference boundary."}, 
+	{pdi_example_descr, "Evaluate the mean absolute border distanceof the segmentations "
+	 "of set segment.set with respect to the segmentation given in frame 20."}, 
+	{pdi_example_code, " -i segment.set -r 20"}
 }; 
 	
-
 
 double mean_frame_border_distance(const C2DDImage& distance, const C2DBitImage& mask) 
 {
@@ -124,7 +120,7 @@ int do_main(int argc, char *argv[])
 		throw invalid_argument("The requested reference frame is larger then the size of the set."); 
 	
 	if (skip >= (int)src_frames.size()) 
-		THROW(invalid_argument, "Try to skip " << skip << " frames, but series has only " << src_frames.size()); 
+		throw create_exception<invalid_argument>( "Try to skip ", skip, " frames, but series has only ", src_frames.size()); 
 
 	auto isrc_frame = src_frames.begin() + skip;
 	auto esrc_frame = src_frames.end();

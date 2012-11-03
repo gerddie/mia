@@ -160,10 +160,9 @@ MACRO(CREATE_EXE_DOCU name)
 ENDMACRO(CREATE_EXE_DOCU)
 
 
-MACRO(DEFEXE name deps) 
+MACRO(DEFEXE name libraries) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
-  
-  FOREACH(lib ${deps}) 
+  FOREACH(lib ${libraries}) 
     TARGET_LINK_LIBRARIES(mia-${name} ${lib})
   ENDFOREACH(lib)
   

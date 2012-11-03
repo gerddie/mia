@@ -20,11 +20,13 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/fifotestfixture.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/fifof/mlv.hh>
 
 NS_USE(mlv_2dstack_filter);
-NS_MIA_USE;
+NS_MIA_USE; 
+using namespace std; 
+
 
 C3DFilterPluginHandlerTestPath filter3d_plugin_path; 
 

@@ -45,12 +45,10 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
-	"C-means classification of a histogram.", 
-	"This Program reads a histogram from stdin and evaluates a "
-	"cmeans classification of the intensity values into the given number of classes.", 
-	NULL, 
-	NULL
+	{pdi_group,"Miscellaneous programs"}, 
+	{pdi_short,"C-means classification of a histogram."}, 
+	{pdi_description, "This Program reads a histogram from stdin and evaluates a "
+	 "cmeans classification of the intensity values into the given number of classes."}
 }; 
 
 typedef pair<int, int> CClassRange; 
@@ -380,8 +378,8 @@ int do_main(int argc, char *argv[])
 
 	CCmdOptionList options(g_description);
 
-	options.add(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram")); 
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities")); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram", CCmdOption::required)); 
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities", CCmdOption::required)); 
 	
 	options.add(make_opt( nclasses, "nclasses", 'n', "number of classes to partition into")); 
 	options.add(make_opt( max_iter, "max-iter", 'm', "maximum number of iterations")); 

@@ -20,8 +20,8 @@
 
 #include <mia/2d/fullcost/image.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 
 #include <mia/internal/autotest.hh>
 
@@ -80,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 
 	auto t = tff->create(size); 
 	auto params = t->get_parameters(); 
-	fill(params.begin(), params.end(), 0.0); 
+	std::fill(params.begin(), params.end(), 0.0); 
 	t->set_parameters(params); 
 
 	P2DImage src(new C2DFImage(size, src_data ));
@@ -164,7 +164,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 
 	auto t = tff->create(size); 
 	auto params = t->get_parameters(); 
-	fill(params.begin(), params.end(), 0.0); 
+	std::fill(params.begin(), params.end(), 0.0); 
 	t->set_parameters(params); 
 
 	P2DImage src(new C2DUBImage(size, src_data ));

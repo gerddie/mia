@@ -34,21 +34,21 @@ using namespace mia;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate time-intensity curves in masked regions of image series.", 	
+	{pdi_group,	"Tools for Myocardial Perfusion Analysis"}, 
 	
-	"This program is used evaluate various time-intensity curves over a series of images "
+	{pdi_short, "Evaluate time-intensity curves in masked regions of image series."}, 	
+	
+	{pdi_description, "This program is used evaluate various time-intensity curves over a series of images "
 	"given by a segmentation set. Specifically, the program is taylored to evaluate average "
 	"intensities and variations of sections the left ventricle myocardium. "
 	"The segmentation set must contain the segmentations for all slices that will be accessed "
-        "during evaluation. ",
+	 "during evaluation. "},
 
-	"Evaluate the two curve typed for 12 sections from segemntation sets orig.set "
+	{pdi_example_descr,"Evaluate the two curve typed for 12 sections from segemntation sets orig.set "
 	"and reg.set skipping the first 2 frames. The output will be written to curves.txt "
-	"and varcurves.txt respectively.", 
+	 "and varcurves.txt respectively."}, 
 	
-	"-i org.set -g reg.set -c curves.txt -v varcurves.txt -n 12 -k 2"
+	{pdi_example_code,"-i org.set -g reg.set -c curves.txt -v varcurves.txt -n 12 -k 2"}
 }; 
 
 struct SResult {
@@ -104,13 +104,14 @@ int do_main( int argc, char *argv[] )
 	
 	size_t n_sections = 0; 
 	int skip = 2; 
-	int reference = 20; 
+	int reference = -1; 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( org_filename, "original", 'o', "original segmentation set", CCmdOption::required));
 	options.add(make_opt( reg_filename, "registered", 'g', "registered segmentation set", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "images to skip at the begin of the series, if (k < 0) use RV peak of the registered set if set")); 
-	options.add(make_opt( reference, "reference", 'r', "reference image")); 
+	options.add(make_opt( reference, "reference", 'r', "reference frame for automatic curve extraction. If it is set to -1, the LV peak "
+			      "found in the registered set will be used. if this value is also -1 (i.e. not identified), the lastframe will be used.")); 
 	options.add(make_opt( curves_filename, "curves", 'c', "region average value curves, "
 			      "The output files each comprises a table in plain-text format that contains three columns "
 			      "for each section of the LV myocardium: The first column contains the values obtained by "
@@ -142,15 +143,25 @@ int do_main( int argc, char *argv[] )
 	auto original_frames = original.get_frames(); 
 	auto registered_frames = registered.get_frames(); 
 	
+
+	if (reference == -1) {
+		reference = registered.get_prefered_reference(); 
+		if (reference == -1) {
+			reference = registered.get_LV_peak(); 
+			if (reference == -1)
+				reference = registered.get_frames().size() - 1;
+		}
+	}
 	
 	if (original_frames.size() != registered_frames.size()) 
-		THROW(invalid_argument, "original and reference series must have same size"); 
+		throw create_exception<invalid_argument>( "original and reference series must have same size"); 
 	if (reference < skip || reference >= static_cast<long>(original_frames.size()))
-		THROW(invalid_argument, "reference frame must be larger then skip="<<
-		      skip << " and smaller then the length of the series " << original_frames.size()); 
+		throw create_exception<invalid_argument>( "reference frame must be larger then skip=", 
+						skip, " and smaller then the length of the series ", original_frames.size()); 
 	
 	vector<vector<SResult> > curves; 
 	vector<vector<SResult> > varcurves; 
+
 	
 	C2DUBImage org_mask = original_frames[reference].get_section_masks(n_sections); 
 	C2DUBImage reg_mask = registered_frames[reference].get_section_masks(n_sections); 
@@ -161,11 +172,10 @@ int do_main( int argc, char *argv[] )
 
 		if (stats_unregistered.size() != stats_registered.size() ||
 		    stats_registered.size() != stats_handsegmented.size()) {
-			THROW(runtime_error, "Frame " << i << " is not properly segmented,"
-			      << " got org:" << stats_unregistered.size() 
-			      << " reg:" << stats_registered.size() 
-			      << " hand:" << stats_handsegmented.size()
-			      );  
+			throw create_exception<runtime_error>( "Frame ", i, " is not properly segmented,", 
+						     " got org:", stats_unregistered.size(), 
+						     " reg:", stats_registered.size(), 
+						     " hand:", stats_handsegmented.size());  
 		}
 			
 		vector<SResult> c_row(stats_unregistered.size()); 
@@ -187,11 +197,11 @@ int do_main( int argc, char *argv[] )
 	
 	if (!curves_filename.empty()) 
 		if (!normalize_and_save_curves(curves, curves_filename)) 
-			THROW(runtime_error, "Unable to write '" << curves_filename << "'"); 
+			throw create_exception<runtime_error>( "Unable to write '", curves_filename, "'"); 
 
 	if (!varcurves_filename.empty()) 
 		if (!normalize_and_save_curves(varcurves, varcurves_filename)) 
-			THROW(runtime_error, "Unable to write '" << varcurves_filename << "'"); 
+			throw create_exception<runtime_error>( "Unable to write '", varcurves_filename, "'"); 
 	
 	return EXIT_SUCCESS; 
 }

@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 /*
   This code implements the functions needed to support the normalized gradient field 

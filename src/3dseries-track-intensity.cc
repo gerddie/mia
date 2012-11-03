@@ -29,22 +29,30 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/internal/main.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Tools for the Analysis of 3D image series",
-	"Track intensities of pixels in series of 3D images.", 
+	{pdi_group,
+	 "Tools for the Analysis of 3D image series"},
+
+	{pdi_short,
+	 "Track intensities of pixels in series of 3D images."}, 
 	
-	"This program tracks the intensity of a pixel at the given coordinates.", 
 
-	"Evaluate the intensity-time curves at points <12,13,14> and <222,113,214>", 
+	{pdi_description,
+	 "This program tracks the intensity of a pixel at the given coordinates."}, 
 
-	"-i images0000.v -o curves.txt '<12,13,14>' '<222,113,214>'"
+	{pdi_example_descr,
+	 "Evaluate the intensity-time curves at points <12,13,14> and <222,113,214>"}, 
+
+
+	{pdi_example_code,
+	 "-i images0000.v -o curves.txt '<12,13,14>' '<222,113,214>'"}
 }; 
-	
+
 
 class FIntensityGetter: public TFilter<void> { 
 public: 
@@ -96,9 +104,9 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
+			      "input perfusion data set", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-				    "file name for output intensity slopes")); 
+			      "file name for output intensity slopes")); 
 	
 	
 	if (options.parse(argc, argv, "points") != CCmdOptionList::hr_no)
@@ -131,7 +139,7 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw create_exception<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		mia::accumulate(intensity_getter,*image); 

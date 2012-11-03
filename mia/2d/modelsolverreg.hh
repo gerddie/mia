@@ -18,13 +18,14 @@
  *
  */
 
+#if 0 
 #ifndef mia_2d_model_solve_register_hh
 #define mia_2d_model_solve_register_hh
 
 #include <mia/2d/model.hh>
 #include <mia/2d/timestep.hh>
 #include <mia/2d/cost.hh>
-#include <mia/2d/fatcost.hh>
+#include <mia/2d/multicost.hh>
 #include <mia/2d/transformfactory.hh>
 
 NS_MIA_BEGIN
@@ -60,7 +61,7 @@ class CModelSolverRegistration  {
 	/**
 	   Run the regsistration by minimizing the given cost function 
 	 */
-	P2DTransformation operator ()(C2DImageFatCostList& cost) const;
+	P2DTransformation operator ()(C2DFullCostList& cost) const;
 
  private:
 
@@ -69,3 +70,4 @@ class CModelSolverRegistration  {
 
 NS_MIA_END
 #endif
+#endif 

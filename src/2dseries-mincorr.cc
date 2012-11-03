@@ -27,24 +27,21 @@
 #include <queue>
 
 #include <mia/internal/main.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/correlation_weight.hh>
 #include <mia/2d/SegSetWithImages.hh>
 
 NS_MIA_USE;
+using namespace std;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate minimal correlation of time-intensity curves.", 
-	
-	"Given a set of images of temporal sucession, this program evaluates the "
-	"minimal correlation of the time-intensity curve between neighboring pixels.", 
-	
-	"Evaluate the minimal correlation image of a series givemn in  segment.set and "
-	"store the image in OpenEXR format. Skip two images at the beginning of the series.", 
-
-	"-i segment.set -o mincorr.exr -k 2"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate minimal correlation of time-intensity curves."}, 
+	{pdi_description, "Given a set of images of temporal sucession, this program evaluates the "
+	 "minimal correlation of the time-intensity curve between neighboring pixels."}, 
+	{pdi_example_descr, "Evaluate the minimal correlation image of a series givemn in  segment.set and "
+	 "store the image in OpenEXR format. Skip two images at the beginning of the series."}, 
+	{pdi_example_code, "-i segment.set -o mincorr.exr -k 2"}
 }; 
 
 
@@ -92,8 +89,9 @@ int do_main( int argc, char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_name, "in", 'i', "input segmentation set"));
-	options.add(make_opt( out_name, "out", 'o', "output image of minimal correlation"));
+	options.add(make_opt( src_name, "in", 'i', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( out_name, "out", 'o', "output image of minimal correlation", 
+			      CCmdOption::required,  &C2DImageIOPluginHandler::instance()));
 	options.add(make_opt( skip, "skip", 'k', "skip images at beginning of series"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

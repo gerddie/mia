@@ -63,12 +63,12 @@ double TFullCostList<T>::do_evaluate(const T& t, CDoubleVector& gradient) const
 	std::stringstream msg; 
 	msg << "Cost: "; 
 	for (auto i = m_costs.begin(); i != m_costs.end(); ++i) {
-		fill(tmp.begin(), tmp.end(), 0.0); 
+		std::fill(tmp.begin(), tmp.end(), 0.0); 
 		double h = (*i)->evaluate(t, tmp); 
 		msg << h << "("<< (*i)->get_init_string() << ") "; 
 		result += h; 
-		transform(gradient.begin(), gradient.end(), tmp.begin(), gradient.begin(), 
-			  [](double x, double y){return x+y;}); 
+		std::transform(gradient.begin(), gradient.end(), tmp.begin(), gradient.begin(), 
+			       [](double x, double y){return x+y;}); 
 	}
 	cvinfo() << msg.str() << " = " << result << "\n"; 
 	return result; 

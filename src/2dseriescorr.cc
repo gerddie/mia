@@ -28,31 +28,31 @@
 #include <queue>
 
 #include <mia/internal/main.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
 
 
 NS_MIA_USE;
-
+using namespace std;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
 
-	"Evaluate the time-intensity correlation in a series of images.", 
+	{pdi_short, "Evaluate the time-intensity correlation in a series of images."}, 
 	
-	"Given a set of images of temporal sucession, evaluates images that represent "
-	"the time-intensity correlation in horizontal and vertical direction as "
-	"well as average correlation of each pixel with its neighbors. "
-	"All input images must be of the same pixel type and size.", 
+	{pdi_description, "Given a set of images of temporal sucession, evaluates images that represent "
+	 "the time-intensity correlation in horizontal and vertical direction as "
+	 "well as average correlation of each pixel with its neighbors. "
+	 "All input images must be of the same pixel type and size."}, 
 
-	"Evaluate the time-intensity correaltions for an image series "
-	"imageXXXX.png starting at image 2 and stop at image 30. "
-	"Store the results in horizontal.exr, and vertical.exr.", 
 	
-	"-i image0000.png -k 2 -e 30 -z horizontal.exr -t vertical.exr"
+	{pdi_example_descr,"Evaluate the time-intensity correaltions for an image series "
+	 "imageXXXX.png starting at image 2 and stop at image 30. "
+	 "Store the results in horizontal.exr, and vertical.exr."}, 
+	
+	{pdi_example_code,	"-i image0000.png -k 2 -e 30 -z horizontal.exr -t vertical.exr"}
 }; 
-
 
 struct FCorrelationAccumulator : public TFilter<bool> {
 
@@ -93,13 +93,16 @@ int do_main( int argc, char *argv[] )
 	size_t first =  2;
 	size_t last  = 60;
 
-
+	const auto& image2dio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_name, "in-base", 'i', "input file name base"));
-	options.add(make_opt( src_name, "outname", 'o', "output file name to save the avarage per-pixel correlation"));
-	options.add(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name"));
-	options.add(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name"));
+	options.add(make_opt( src_name, "in-base", 'i', "input file name base", CCmdOption::required, &image2dio));
+	options.add(make_opt( src_name, "outname", 'o', "output file name to save the avarage per-pixel correlation", 
+			      CCmdOption::required, &image2dio));
+	options.add(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name", 
+			    CCmdOption::not_required, &image2dio));
+	options.add(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name", 
+			      CCmdOption::not_required, &image2dio));
 	options.add(make_opt( first, "skip", 'k', "skip images at beginning of series"));
 	options.add(make_opt( last, "end", 'e', "last image in series"));
 
@@ -137,13 +140,13 @@ int do_main( int argc, char *argv[] )
 	P2DImage avgcorr = acc.get_avg_corr();
 
 	if (!save_image(out_hor_name, hor))
-		THROW(runtime_error, "unable to save horizontal correlation to '"<<out_hor_name<<"'");
+		throw create_exception<runtime_error>( "unable to save horizontal correlation to '", out_hor_name,"'");
 
 	if (!save_image(out_ver_name, ver))
-		THROW(runtime_error, "unable to save vertical correlation to '"<<out_ver_name<<"'");
+		throw create_exception<runtime_error>( "unable to save vertical correlation to '", out_ver_name, "'");
 
 	if (!save_image(out_name, avgcorr))
-		THROW(runtime_error, "unable to save average correlation to '"<<out_name<<"'");
+		throw create_exception<runtime_error>( "unable to save average correlation to '", out_name, "'");
 
 
 	
@@ -168,8 +171,7 @@ template <typename T>
 bool FCorrelationAccumulator::operator ()(const T2DImage<T>& image)
 {
 	if (image.get_size() != size)
-		THROW(invalid_argument, "Input image size " << size << " expected, but got " <<
-		      image.get_size());
+		throw create_exception<invalid_argument>( "Input image size ",  size,  " expected, but got ", image.get_size());
 	// sum x
 	transform(image.begin(), image.end(), sx.begin(), sx.begin(), 
 		  [](T x, double y){return x + y;}); 
@@ -210,7 +212,7 @@ P2DImage FCorrelationAccumulator::get_horizontal_corr() const
 void FCorrelationAccumulator::evaluate_hor()const
 {
 	if (!len)
-		THROW(invalid_argument, "No input images");
+		throw create_exception<invalid_argument>( "No input images");
 
 	
 	corr_hor = new C2DFImage(C2DBounds(size.x-1, size.y));
@@ -252,7 +254,7 @@ P2DImage FCorrelationAccumulator::get_vertical_corr() const
 void FCorrelationAccumulator::evaluate_ver()const
 {
 	if (!len)
-		THROW(invalid_argument, "No input images");
+		throw create_exception<invalid_argument>( "No input images");
 	
 	corr_ver = new C2DFImage(C2DBounds(size.x, size.y-1));
 	pcorr_ver.reset(corr_ver); 

@@ -31,12 +31,6 @@ using namespace boost;
 namespace bfs=boost::filesystem;
 
 
-void C3DMorphFilterFactory::prepare_path() const
-{
-
-}
-
-
 C3DDilate::C3DDilate(P3DShape shape, bool hint):
 	m_shape(shape),
 	m_more_dark(hint)
@@ -150,22 +144,15 @@ C3DDilateFilterFactory::C3DDilateFilterFactory():
 
 C3DMorphFilterFactory::C3DMorphFilterFactory(const char *name):
 	C3DFilterPlugin(name),
-	m_shape_descr("sphere:r=2"),
 	m_hint("black")
 {
-	add_parameter("shape", new CStringParameter(m_shape_descr, false, "structuring element"));
+	add_parameter("shape", make_param(m_shape, "sphere;r=2", false, "structuring element"));
 	add_parameter("hint", new CStringParameter(m_hint, false, "a hint at the main image content (black|white)"));
 }
 
 
 C3DFilter *C3DMorphFilterFactory::do_create()const
 {
-	cvdebug() << "create shape from " << m_shape_descr << '\n';
-	P3DShape shape(C3DShapePluginHandler::instance().produce(m_shape_descr.c_str()));
-
-	if (!shape)
-		throw runtime_error(string("unable to create a shape from '") + m_shape_descr +string("'"));
-
 	bool bhint = true;
 
 	if (m_hint == string("black"))
@@ -174,7 +161,7 @@ C3DFilter *C3DMorphFilterFactory::do_create()const
 		bhint = false;
 	else
 		throw invalid_argument(string("hint '") + m_hint + string("' not supported"));
-	return dodo_create(shape, bhint);
+	return dodo_create(m_shape, bhint);
 }
 
 
@@ -187,12 +174,6 @@ const string C3DDilateFilterFactory::do_get_descr()const
 {
 	return "3d image stack dilate filter";
 }
-
-bool  C3DDilateFilterFactory::do_test() const
-{
-	return false;
-}
-
 
 C3DErode::C3DErode(P3DShape shape, bool hint):
 	m_shape(shape),
@@ -317,11 +298,6 @@ const string C3DErodeFilterFactory::do_get_descr()const
 	return "3d image stack erode filter";
 }
 
-bool C3DErodeFilterFactory::do_test() const
-{
-	return false;
-}
-
 C3DOpenClose::C3DOpenClose(P3DShape shape, bool hint, bool open):
 	m_erode(shape, hint),
 	m_dilate(shape, hint),
@@ -356,12 +332,6 @@ const string C3DOpenFilterFactory::do_get_descr()const
 	return "morphological open";
 }
 
-bool C3DCloseFilterFactory::do_test() const
-{
-	cvwarn() << "C3DOpenFilterFactory not tested\n";
-	return true;
-}
-
 C3DCloseFilterFactory::C3DCloseFilterFactory():
 	C3DMorphFilterFactory("close")
 {
@@ -375,12 +345,6 @@ C3DFilter *C3DCloseFilterFactory::dodo_create(P3DShape shape, bool hint)const
 const string C3DCloseFilterFactory::do_get_descr()const
 {
 	return "morphological close";
-}
-
-bool C3DOpenFilterFactory::do_test() const
-{
-	cvwarn() << "C3DOpenFilterFactory not tested\n";
-	return true;
 }
 
 

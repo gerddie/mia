@@ -29,7 +29,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dvfio.hh>
+#include <mia/2d/vfio.hh>
 
 
 
@@ -46,7 +46,6 @@ class CEXR2DVFIOPlugin : public C2DVFIOPlugin {
 public:
 	CEXR2DVFIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -57,14 +56,10 @@ CEXR2DVFIOPlugin::CEXR2DVFIOPlugin():
 {
 	add_supported_type(it_float);
 	add_supported_type(it_uint);
-}
 
-void CEXR2DVFIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".exr", get_name()));
-	map.insert(pair<string,string>(".EXR", get_name()));
+	add_suffix(".exr");
+	add_suffix(".EXR");
 }
-
 
 CEXR2DVFIOPlugin::PData  CEXR2DVFIOPlugin::do_load(const string& filename) const
 {

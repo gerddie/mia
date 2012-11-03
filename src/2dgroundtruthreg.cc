@@ -28,8 +28,8 @@
 #include <mia/core.hh>
 
 #include <libxml++/libxml++.h>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/SegSetWithImages.hh>
@@ -42,21 +42,18 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
-	"Registration of a series of 2D images", 
-	
-	"This program implements the non-linear registration based on Pseudo Ground Thruth for motion compensation "
-	"of series of myocardial perfusion images as decribed in Chao Li and Ying Sun, "
-	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
-	"Medical Image Computing and Computer-Assisted Intervention MICCAI 2009, 165-172, 2009. "
-	"Note that for this nonlinear motion correction a preceeding linear registration step is usually required.", 
-
-	"Register the perfusion series given by images imageXXXX.exr by using Pseudo Ground Truth estimation. "
-        "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result images to  'regXXXX.exr'.", 
-
-	
-	"-i imageXXXX.exr -o regXXXX.exr -k 2"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Registration of a series of 2D images"}, 
+	{pdi_description, "This program implements the non-linear registration based on Pseudo "
+	 "Ground Thruth for motion compensation of series of myocardial perfusion images as "
+	 "decribed in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
+	 "MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing and Computer-Assisted "
+	 "Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear motion correction "
+	 "a preceeding linear registration step is usually required."}, 
+	{pdi_example_descr, "Register the perfusion series given by images imageXXXX.exr by using "
+	 "Pseudo Ground Truth estimation. Skip two images at the beginning and otherwiese use the "
+	 "default parameters. Store the result images to  'regXXXX.exr'."}, 
+	{pdi_example_code, "-i imageXXXX.exr -o regXXXX.exr -k 2"}
 };
 
 
@@ -161,7 +158,7 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
+	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered files")); 
 
 	options.set_group("\nPreconditions"); 
 	options.add(make_opt( skip, "skip", 's', "skip images at beginning of series"));
@@ -203,8 +200,8 @@ int do_main( int argc, char *argv[] )
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	
 	if (skip >= input_set.get_frames().size()) {
-		THROW(invalid_argument, "Try to skip " << skip 
-		      << " images, but input set has only " << input_set.get_frames().size() << " images.");  
+		throw create_exception<invalid_argument>("Try to skip ", skip, 
+					       " images, but input set has only ", input_set.get_frames().size(), " images.");
 	}
 	
 	// create ground thruth evaluator 

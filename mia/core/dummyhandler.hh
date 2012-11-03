@@ -50,7 +50,7 @@ public:
 
 
 /// Test IO plugin handler, don't use this in real code  
-typedef TIOHandlerSingleton<TIOPluginHandler<CTestIOPlugin> > CTestIOPluginHandler;
+typedef THandlerSingleton<TIOPluginHandler<CTestIOPlugin> > CTestIOPluginHandler;
 
 
 NS_MIA_END

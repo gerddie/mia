@@ -139,10 +139,12 @@ public:
 	/// A type for the value-index pair \todo change to meaningful name 
 	typedef std::pair<typename Feeder::value_type, size_t> value_type; 
 
+	typedef std::pair<typename Feeder::value_type, typename Feeder::value_type> range_type; 
+
 	/**
 	   Constructor to create the histogram with the given input feeder. 
 	 */
-	THistogram(Feeder f); 
+	THistogram(const Feeder& f); 
 
 	/**
 	   Constructor to create a histogram by copying another histogram and 
@@ -209,6 +211,13 @@ public:
 	/// \returns deviation of the histogram 
 	double deviation() const; 
 
+	/**
+	   return the histogram range that cuts off the \a remove percent of pixels 
+	   from the lower ane upper end of the histogram 
+	   \param remove the amout of pixels to remove from the upper and lower end of the historam [0,40]
+	   \returns the pair <low,high> of the resulting histogram range
+	 */
+	range_type get_reduced_range(double remove) const; 
 private: 
 	Feeder m_feeder; 
 	std::vector<size_t> m_histogram; 
@@ -271,7 +280,7 @@ unsigned char THistogramFeeder<unsigned char>::value(size_t k) const
 }
 
 template <typename Feeder>
-THistogram<Feeder>::THistogram(Feeder f):
+THistogram<Feeder>::THistogram(const Feeder& f):
 	m_feeder(f), 
 	m_histogram(f.size()), 
 	m_n(0)
@@ -410,6 +419,33 @@ double THistogram<Feeder>::deviation() const
 	return sqrt((sum2 - sum * sum / m_n) / (m_n - 1)); 
 }
 
+template <typename Feeder> 
+typename THistogram<Feeder>::range_type 
+THistogram<Feeder>::get_reduced_range(double remove) const
+{
+	assert(remove >= 0.0 && remove < 49.0); 
+	long remove_count = static_cast<long>(remove * m_n / 100.0); 
+
+	range_type result(m_feeder.value(0), m_feeder.value(m_histogram.size() - 1)); 
+
+	if (remove_count > 0)  {
+		long low_end = -1;
+		long counted_pixels_low = 0; 
+		
+		while (counted_pixels_low < remove_count && low_end < (long)m_histogram.size())
+			counted_pixels_low += m_histogram[++low_end];
+		
+		result.first = m_feeder.value(low_end); 
+					    
+		long  high_end = m_histogram.size();
+		long counted_pixels_high = 0; 
+		while (counted_pixels_high <= remove_count && high_end > 0)
+			counted_pixels_high += m_histogram[--high_end];
+		cvdebug() << " int range = " <<  low_end << ", " << high_end << " removing " << remove_count << " pixels at each end\n";
+		result.second = m_feeder.value(high_end);
+	}
+	return result; 
+}
 
 NS_MIA_END
 

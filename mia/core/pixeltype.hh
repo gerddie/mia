@@ -81,64 +81,64 @@ EXPORT_CORE extern const TDictMap<EPixelConversion> CPixelConversionDict;
 */
 template <typename T>
 struct pixel_type {
-	enum {value = it_unknown};
+	static const EPixelType value = it_unknown;
 };
 
 template <>
 struct pixel_type<bool> {
-	enum {value = it_bit};
+	static const EPixelType value = it_bit;
 };
 
 template <>
 struct pixel_type<signed char> {
-	enum {value = it_sbyte};
+	static const EPixelType value = it_sbyte;
 };
 
 template <>
 struct pixel_type<unsigned char> {
-	enum {value = it_ubyte};
+	static const EPixelType value = it_ubyte;
 };
 
 template <>
 struct pixel_type<signed short> {
-	enum {value = it_sshort};
+	static const EPixelType value = it_sshort;
 };
 
 template <>
 struct pixel_type<unsigned short> {
-	enum {value = it_ushort};
+	static const EPixelType value = it_ushort;
 };
 
 template <>
 struct pixel_type<signed int> {
-	enum {value = it_sint};
+	static const EPixelType value = it_sint;
 };
 
 template <>
 struct pixel_type<unsigned int> {
-	enum {value = it_uint};
+	static const EPixelType value = it_uint;
 };
 
 #ifdef LONG_64BIT
 template <>
 struct pixel_type<signed long> {
-	enum {value = it_slong};
+	static const EPixelType value = it_slong;
 };
 
 template <>
 struct pixel_type<unsigned long> {
-	enum {value = it_ulong};
+	static const EPixelType value = it_ulong;
 };
 #endif
 
 template <>
 struct pixel_type<float> {
-	enum {value = it_float};
+	static const EPixelType value = it_float;
 };
 
 template <>
 struct pixel_type<double> {
-	enum {value = it_double};
+	static const EPixelType value = it_double;
 };
 
 ///   @endcond

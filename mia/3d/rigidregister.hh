@@ -46,13 +46,12 @@ public:
 	   @param cost cost function model
 	   @param minimizer GSL provided minimizer
 	   @param transform_creator string describing which transformation is supported
-	   @param ipf interpolator
 	   @param mg_levels number of multi-resolution levels to be used 
 	 */
 
 	C3DRigidRegister(P3DImageCost cost, PMinimizer minimizer,
 			 P3DTransformationFactory transform_creator,
-			 const C3DInterpolatorFactory& ipf,  size_t mg_levels);
+			 size_t mg_levels);
 
 	
 	~C3DRigidRegister();

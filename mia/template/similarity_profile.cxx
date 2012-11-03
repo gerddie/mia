@@ -76,7 +76,7 @@ float TSimilarityProfile<dim>::get_peak_frequency() const
 		cvdebug() << "costs:" << m_cost_values << "\n"; 
 		auto freq = fft.forward(m_cost_values);
 		for (auto i = freq.begin() + 1; i != freq.end(); ++i) {
-			const float n = norm<float>(*i);
+			const float n = std::norm<float>(*i);
 			float snorm = sqrt(n);
 			if (snorm > m_peak_freq)
 				m_peak_freq = snorm; 
@@ -87,7 +87,7 @@ float TSimilarityProfile<dim>::get_peak_frequency() const
 }
 
 template <int dim>
-vector<size_t> TSimilarityProfile<dim>::get_periodic_subset() const
+std::vector<size_t> TSimilarityProfile<dim>::get_periodic_subset() const
 {
 	std::vector<size_t> result; 
 	

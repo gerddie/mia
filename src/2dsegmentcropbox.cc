@@ -31,8 +31,8 @@
 
 #include <mia/core.hh>
 #include <mia/2d/SegSetWithImages.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/internal/main.hh>
 
 
@@ -42,23 +42,18 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate a crop-box around a manual segmentation.", 	
-	
-	"This program is used on a segmentation set and evaluates a bounding box "
-	"that encloses the segmentation in all slices. "
-	"This bounding box is then used to crop the original images, correct "
-        "the segmentation and store a new segmentation set with the cropped images. "
-        "The cropped images will be of the same type as the original images. "
-	"If no segmentation is given in the set, the result is undefined.", 
-
-	"Evaluate the optimal cropping for a segmentation set segment.set and enlarge it by "
-	"3 pixels. Store the resulting set in the file cropped.set.", 
-	
-	"-i segment.set -o cropped.set -e 3"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate a crop-box around a manual segmentation."}, 
+	{pdi_description, "This program is used on a segmentation set and evaluates a bounding box "
+	 "that encloses the segmentation in all slices. "
+	 "This bounding box is then used to crop the original images, correct "
+	 "the segmentation and store a new segmentation set with the cropped images. "
+	 "The cropped images will be of the same type as the original images. "
+	 "If no segmentation is given in the set, the result is undefined."}, 
+	{pdi_example_descr, "Evaluate the optimal cropping for a segmentation set segment.set and enlarge it by "
+	 "3 pixels. Store the resulting set in the file cropped.set."}, 
+	{pdi_example_code, "-i segment.set -o cropped.set -e 3"}
 }; 
-
 
 
 struct 	CSegFrameCropper {
@@ -89,7 +84,8 @@ int do_main(int argc, char *argv[])
 			      "Instead of using the path of the image files as given in the "
 			      "segmentation set, assume the files are located in the current directory"));
 	options.add(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
-	options.add(make_opt( image_name, "cropped-base", 'c', "Base name for the cropped image files"));
+	options.add(make_opt( image_name, "cropped-base", 'c', "Base name for the cropped image files, the file "
+			      "type and numbering will be based on the input image file type and numbering."));
 	options.add(make_opt( enlarge_boundary, "enlarge", 'e',
 			      "Enlarge the area around the obtained sbounding box by this number of "
 			      "pixels in each direction"));

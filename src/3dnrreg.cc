@@ -32,13 +32,12 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Work in progress", 
+	{pdi_group, "Work in progress"},
 	
-	"Non-linear registration of 3D images.", 
-	
-	"This program implements 3D gray scale image registration but "
-	"is currently not funcioning", 
-	NULL, NULL
+	{pdi_short, "Non-linear registration of 3D images."}, 
+
+	{pdi_description, "This program implements 3D gray scale image registration but "
+	 "is currently not funcioning"}
 }; 
 
 

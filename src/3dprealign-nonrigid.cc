@@ -32,7 +32,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/filetools.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/fullcost.hh>
@@ -44,28 +44,23 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 3D images", 
-
-	"Registration of a series of 3D images.",
-
-	"This program runs the non-rigid registration of an image series "
-	"by first registering an already aligned subset of the images to one reference, "
-	"and then by registering the remaining images by using synthetic references. "
-	"The is a 3D version of G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
-	"Quasiperiodicity in Motion Correction of Free-Breathing,\" "
-	"IEEE Transactions on Medical Imaging, 29(8), 2010.", 
-	
-	"Register the image series given by images imageXXXX.v by optimizing a spline based "
-	"transformation with a coefficient rate of 16 pixel ,skipping two images at the "
-	"beginning and using normalized gradient fields as initial cost measure "
-	"and SSD as final measure. Penalize the transformation by using divcurl with aweight of 2.0. "
-	"As optimizer an nlopt based newton method is used.", 
-	
-	"mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2"
-	"-F spline:rate=16 -d 2.0 -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd "
-	"-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"
+        {pdi_group, "Registration of series of 3D images"}, 
+	{pdi_short, "Registration of a series of 3D images."}, 
+	{pdi_description, "This program runs the non-rigid registration of an image series "
+	 "by first registering an already aligned subset of the images to one reference, "
+	 "and then by registering the remaining images by using synthetic references. "
+	 "The is a 3D version of G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
+	 "Quasiperiodicity in Motion Correction of Free-Breathing,\" "
+	 "IEEE Transactions on Medical Imaging, 29(8), 2010."}, 
+	{pdi_example_descr, "Register the image series given by images imageXXXX.v by optimizing a spline based "
+	 "transformation with a coefficient rate of 16 pixel ,skipping two images at the "
+	 "beginning and using normalized gradient fields as initial cost measure "
+	 "and SSD as final measure. Penalize the transformation by using divcurl with aweight of 2.0. "
+	 "As optimizer an nlopt based newton method is used."}, 
+	{pdi_example_code, "mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2"
+	 "-F spline:rate=16 -d 2.0 -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd "
+	 "-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"}
 }; 
-
 
 class C3DFImage2PImage {
 public: 
@@ -111,17 +106,6 @@ private:
 	float m_w;
 };
 
-class Convert2Float : public TFilter<C3DFImage>{
-public: 
-	C3DFImage operator () (P3DImage image) const; 
-
-	template <typename T> 
-	C3DFImage operator () (const T3DImage<T> image) const {
-		C3DFImage result(image.get_size()); 
-		copy(image.begin(), image.end(), result.begin()); 
-		return result; 
-	}
-}; 
 
 
 class C3DMyocardPeriodicRegistration {
@@ -352,9 +336,11 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO");
-	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input images following the naming pattern nameXXXX.ext", 
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
-				    "file name base for registered fiels")); 
+			      "file name base for registered files given as C-format string", 
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance())); 
 	options.add(make_opt(params.save_ref,"save-references", 0, 
 				   "Save synthetic references to files refXXXX.v")); 
 
@@ -403,15 +389,15 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw create_exception<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		in_images.push_back(image);
 	}
 
 	if (skip >= in_images.size()) {
-		THROW(invalid_argument, "Try to skip " << skip 
-		      << " images, but input set has only " << in_images.size() << " images.");  
+		throw create_exception<invalid_argument>( "Try to skip ",  skip, " images, but input set has only ", 
+						in_images.size(), " images.");  
 	}
 
 	C3DImageSeries series(in_images.begin() + skip, in_images.end()); 
@@ -441,8 +427,3 @@ int do_main( int argc, char *argv[] )
 
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main)
-
-inline C3DFImage Convert2Float::operator () (P3DImage image) const
-{
-	return ::mia::filter(*this, *image); 
-}

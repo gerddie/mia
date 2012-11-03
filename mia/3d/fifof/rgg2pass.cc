@@ -51,8 +51,6 @@ public:
 	C2DRGG2PassStackFilterFactory();
 	C2DStackFilterFactory::ProductPtr create(const CParsedOptions& options) const;
 	const string short_descr()const; 
-private: 
-	int do_test() const; 
 };
 
 
@@ -71,20 +69,5 @@ const string C2DRGG2PassStackFilterFactory::short_descr()const
 {
 	return "A 2-pass image stack seeded region growing filter";  
 }
-
-int C2DRGG2PassStackFilterFactory::do_test() const
-{
-	CParsedOptions options; 
-
-	C2DStackFilterFactory::ProductPtr filter = create(options); 
-
-	assert(filter.get()); 
-
-	return 1; 
-}
-
-
-
-
 
 NAMESPACE_END // end namespace rgg2pass_2dstack_filter

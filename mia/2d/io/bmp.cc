@@ -31,7 +31,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_BEGIN(IMAGEIO_2D_BMP)
 
@@ -74,7 +74,6 @@ public:
 	} BMPInfoHeader;
 #pragma pack (8)
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -100,12 +99,9 @@ CBMP2DImageIO::CBMP2DImageIO():
 	add_supported_type(it_ushort);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_bit);
-}
+	add_suffix(".bmp");
+	add_suffix(".BMP");
 
-void CBMP2DImageIO::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".bmp", get_name()));
-	map.insert(pair<string,string>(".BMP", get_name()));
 }
 
 template <class Iterator>
@@ -328,8 +324,7 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 
 	read = fread(&info_header, sizeof(BMPInfoHeader), 1, f);
 	if (read != 1) {
-                THROW(runtime_error, "CBMP2DImageIO::load: unable to read info header from '"
-                << filename << "'");
+                throw create_exception<runtime_error>("CBMP2DImageIO::load: unable to read info header from '", filename, "'");
         }
 
 	cvdebug() << "read info header";

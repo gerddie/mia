@@ -35,18 +35,13 @@ using namespace mia;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate the dice index between segmentations.", 
-	
-	"This program is used to evaluate the per-frame dice index of "
-	"segmented regions of two image series", 
-	
-	"Evaluate the per-frame dice index of the segmentations of set segment.set with "
-        "respect to the segmentation set reference.set skipping two images at the beginning.",
-
-	"-i segment.set -r reference.set -k 2"
-
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate the dice index between segmentations."}, 
+	{pdi_description, "This program is used to evaluate the per-frame dice index of "
+	 "segmented regions of two image series"}, 
+	{pdi_example_descr, "Evaluate the per-frame dice index of the segmentations of set segment.set with "
+	 "respect to the segmentation set reference.set skipping two images at the beginning."}, 
+	{pdi_example_code, "-i segment.set -r reference.set -k 2"}
 }; 
 
 float dice_value(const C2DUBImage& mask1, const C2DUBImage& mask2) 
@@ -95,8 +90,8 @@ int do_main( int argc, char *argv[] )
 		throw invalid_argument("Both series must contain the same number of frames"); 
 	
 	if (skip  >= original_frames.size())
-		THROW(invalid_argument, "skip ("<< skip <<") must be smaller then number of availabe frames("
-		      << original_frames.size() << ")"); 
+		throw create_exception<invalid_argument>( "skip (", skip, ") must be smaller then number of availabe frames(", 
+						original_frames.size(), ")"); 
 	
 
 

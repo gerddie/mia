@@ -23,7 +23,7 @@
 
 
 #include <mia/3d/fullcost.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/3d/cost.hh>
 
 NS_BEGIN(taggedssd_3d)

@@ -23,7 +23,7 @@
 #include <mia/3d/stackdisttrans.hh>
 
 NS_MIA_USE;  
-
+using namespace std; 
 
 BOOST_AUTO_TEST_CASE( test_isotropic_data )
 {

@@ -31,8 +31,8 @@
 
 #include <mia/core.hh>
 #include <mia/2d/SegSet.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/internal/main.hh>
 
 using namespace std;
@@ -42,17 +42,13 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate the Hausdorff distance between segmentations.",
-	
-	"This program is used to evaluate the Hausdorff distance between each frame "
-	"of a perfusion time series of the input set to the corresponding frame of the reference set "
-	"and prints the result to stdout.", 
-
-	"Evaluate the per-slice Hausdorff distance of input.set and reference.set.",
-	
-	"-i input.set -r reference.set"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate the Hausdorff distance between segmentations."}, 
+	{pdi_description, "This program is used to evaluate the Hausdorff distance between each frame "
+	 "of a perfusion time series of the input set to the corresponding frame of the reference set "
+	 "and prints the result to stdout."}, 
+	{pdi_example_descr, "Evaluate the per-slice Hausdorff distance of input.set and reference.set."}, 
+	{pdi_example_code, "-i input.set -r reference.set"}
 }; 
 
 CSegSet load_segmentation(const string& s)

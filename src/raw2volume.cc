@@ -35,18 +35,18 @@ inline bool am_big_endian()
 #endif
 }
 
- 
-const SProgramDescription g_description = {
-	"Image conversion", 
 
-	"Convert raw data into a 3D image", 
+const SProgramDescription g_description = {
+	{pdi_group, "Image conversion"}, 
+
+	{pdi_short, "Convert raw data into a 3D image"}, 
 	
-	"This program is used to convert raw data into 3D images "
-	"with apropriate metadata.", 
+	{pdi_description,"This program is used to convert raw data into 3D images "
+	 "with apropriate metadata."}, 
 	
-	"pixel size of <1.2, 2.3, 3.4> to an Analyze file image.hdr", 
+	{pdi_example_descr, "pixel size of <1.2, 2.3, 3.4> to an Analyze file image.hdr"}, 
 	
-	"-i data.raw -o image.hdr -s \"<10,20,30>\" -k \"<1.2,2.3,3.4>\" -r ushort"
+	{pdi_example_code, "-i data.raw -o image.hdr -s \"<10,20,30>\" -k \"<1.2,2.3,3.4>\" -r ushort"}
 }; 
 
 template <typename I>
@@ -113,7 +113,7 @@ std::shared_ptr<C3DImage > read_image_type(CInputFile& in_file, const C3DBounds&
 		throw runtime_error(errmsg.str());
 	}
 	if (fread(&(*image)(0,0,0), sizeof(T), image->size(),  in_file) != image->size()) {
-		throw runtime_error("Unable to read full image");
+		throw runtime_error("Not enough data for specified image size in input file.");
 	}
 
 	image->set_voxel_size(scale);
@@ -160,7 +160,7 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( in_filename, "in-file", 'i', "input file name", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required, &imageio));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.add(make_opt( high_endian, "big-endian", 'b', "input data is big endian"));
 	options.add(make_opt( scale, "scale", 'f', "scale of input voxels <FX,FY,FZ>"));
@@ -174,12 +174,6 @@ int do_main(int argc, char *argv[])
 	CInputFile in_file(in_filename);
 	if ( !in_file )
 		throw runtime_error(string("Unable to open ")+ in_filename);
-
-	if (size.size() != 3)
-		throw invalid_argument("size takes exactly 3 parameters");
-
-	if (scale.size() != 3)
-		throw invalid_argument("scale takes exactly 3 parameters");
 
 	C3DBounds bsize(size);
 	C3DFVector fscale(scale);

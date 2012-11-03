@@ -22,7 +22,7 @@
 #define mia_3d_creator_hh
 
 #include <mia/core/creator.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 
 NS_MIA_BEGIN
 

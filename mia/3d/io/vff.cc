@@ -32,7 +32,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 
 NS_BEGIN(ns_3d_io_vff)
@@ -156,7 +156,6 @@ public:
 private:
 	virtual PData do_load(string const&  filename)const;
 	virtual bool do_save(string const&  filename, const C3DImageVector& data) const;
-	virtual void do_add_suffixes(multimap<string, string>& map) const;
 	virtual const string do_get_descr() const;
 	bool store_info(const char *key, const char *value, SHeader& h) const;
 };
@@ -173,6 +172,7 @@ CVFF3DImageIO::CVFF3DImageIO():
 //	add_property(io_plugin_property_canpipe);
 	add_supported_type(it_sshort);
 	add_supported_type(it_ubyte);
+	add_suffix(".vff");
 }
 
 
@@ -452,15 +452,9 @@ bool CVFF3DImageIO::do_save(string const&  filename, const C3DImageVector& data)
 	return filter(s, **data.begin());
 }
 
-void CVFF3DImageIO::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".vff", get_name()));
-}
-
-
 const string  CVFF3DImageIO::do_get_descr()const
 {
-	return string("VFF Sun raster format image input/output support");
+	return string("VFF Sun raster format");
 }
 
 NS_END

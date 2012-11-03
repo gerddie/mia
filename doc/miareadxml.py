@@ -165,6 +165,25 @@ class CDictOption(COption):
             parent.append(opttable)
 
 
+class CIOOption(COption):
+    def __init__(self, node):
+        COption.__init__(self, node)
+        self.factory = "unknown/io"
+        for child in node.iter("io"):
+            self.factory = child.get("name")
+            if child.tail is not None:
+                if self.text is not None: 
+                    self.text = self.text + child.tail
+                else:
+                    self.text = child.tail
+
+    def do_print_man(self):
+        print " For supported file types see PLUGINS:%s" % (self.factory)
+
+    def do_write_xml(self, parent):
+        parent.text = parent.text + ". For supported file types see "
+        etree.SubElement(parent, "xref", linkend=make_sec_ancor("SecPlugintype", self.factory))
+        
 class CFactoryOption(COption):
     def __init__(self, node):
         COption.__init__(self, node)
@@ -209,9 +228,10 @@ class CGroup:
         for child in node:
             if child.tag == "option": 
                 p = {
-                     "factory": lambda n: CFactoryOption(n), 
-                     "dict":    lambda n: CDictOption(n),
-                     }.get(child.get("type"), lambda n: COption(n))(child)
+                    "io": lambda n: CIOOption(n), 
+                    "factory": lambda n: CFactoryOption(n), 
+                    "dict":    lambda n: CDictOption(n),
+                    }.get(child.get("type"), lambda n: COption(n))(child)
                 self.options.append(p)
             else:
                 print "unexpected subnode '%s' in 'group'"% (child.tag)
@@ -376,6 +396,31 @@ class CFactoryParam(CParam):
         else:
             raise RuntimeError("Handler %s is used by plugin %s, but is not available" % (self.factory, link))
 
+
+class CIOParam(CParam):
+    def __init__(self, node):
+        CParam.__init__(self,node)
+        self.factory = ""
+        for n in node:
+            if n.tag == "io":
+                self.factory = n.get("name")
+
+    def do_print_man(self):
+        print "For supported file types see PLUGINS:%s" % (self.factory)
+        CParam.do_print_man(self)
+
+    def do_print_xml_help_description(self, row):
+        e = etree.SubElement(row, "entry", align="left", valign="top")
+        e.text = self.text + ". For supported file types see "
+        etree.SubElement(e, "xref", linkend=make_sec_ancor("SecPlugintype", self.factory))
+
+
+    def append_to_handler(self, handlers, link):
+        if handlers.has_key(self.factory):
+            handlers[self.factory].append_user(link)
+        else:
+            raise RuntimeError("Handler %s is used by plugin %s, but is not available" % (self.factory, link))
+
 class CPlugin: 
     def __init__(self, node, handlername):
         if node.tag != "plugin":
@@ -385,18 +430,27 @@ class CPlugin:
         self.handlername = handlername
         self.ancor = make_sec_ancor("plugin"+self.name, self.handlername)
         self.altancor = self.ancor + "alt"
-
+        self.no_params_info = False
         self.params = []
+        self.supported_types = None
+        self.suffixes = None
         for child in node:
             if child.tag == "param": 
                 p = {
                    "range":   lambda n: CRangeParam(n), 
-                   "factory": lambda n: CFactoryParam(n), 
+                   "factory": lambda n: CFactoryParam(n),
+                   "io":      lambda n: CIOParam(n), 
                    "set":     lambda n: CSetParam(n),
                    "dict":    lambda n: CDictParam(n),
                    }.get(child.get("type"), lambda n: CParam(n))(child)
 
                 self.params.append(p)
+            elif child.tag == "noparam": 
+                self.no_params_info = True
+            elif child.tag == "datatypes":
+                self.supported_types = child.text
+            elif child.tag == "suffixes":
+                self.suffixes = child.text
             else:
                 print "unexpected subnode '%s' in 'plugin'"% (child.tag)
 
@@ -419,30 +473,45 @@ class CPlugin:
         node = etree.SubElement(parent, "para", role="plugindescr")
         param_list = self.params
 
-        if len(param_list) > 0:
-            node.text = self.text + ". Supported parameters are:"
-            table = etree.SubElement(node, "informaltable", frame="all", role="pluginparms", pgwide="1")
-            tgroup = etree.SubElement(table, "tgroup", cols="3", colsep="0", rowsep ="0")
-            colspec = etree.SubElement(tgroup, "colspec", colname="c1", colwidth="10%")
-            colspec = etree.SubElement(tgroup, "colspec", colname="c2", colwidth="10%")
-            colspec = etree.SubElement(tgroup, "colspec", colname="c3", colwidth="10%")
-            colspec = etree.SubElement(tgroup, "colspec", colname="c4", colwidth="70%")
-            thead = etree.SubElement(tgroup, "thead")
-            row = etree.SubElement(thead, "row"); 
-            e = etree.SubElement(row, "entry", align="center", valign="top")
-            e.text = "Name"
-            e = etree.SubElement(row, "entry", align="center", valign="top")
-            e.text = "Type"
-            e = etree.SubElement(row, "entry", align="center", valign="top")
-            e.text = "Default"
-            e = etree.SubElement(row, "entry", align="center", valign="top")
-            e.text = "Description"
-            tbody = etree.SubElement(tgroup, "tbody")
-
-            for p in param_list: 
-                p.print_xml_help(tbody)
+        if not self.no_params_info: 
+            if len(param_list) > 0:
+                node.text = self.text + ". Supported parameters are:"
+                table = etree.SubElement(node, "informaltable", frame="all", role="pluginparms", pgwide="1")
+                tgroup = etree.SubElement(table, "tgroup", cols="3", colsep="0", rowsep ="0")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c1", colwidth="10%")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c2", colwidth="10%")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c3", colwidth="10%")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c4", colwidth="70%")
+                thead = etree.SubElement(tgroup, "thead")
+                row = etree.SubElement(thead, "row"); 
+                e = etree.SubElement(row, "entry", align="center", valign="top")
+                e.text = "Name"
+                e = etree.SubElement(row, "entry", align="center", valign="top")
+                e.text = "Type"
+                e = etree.SubElement(row, "entry", align="center", valign="top")
+                e.text = "Default"
+                e = etree.SubElement(row, "entry", align="center", valign="top")
+                e.text = "Description"
+                tbody = etree.SubElement(tgroup, "tbody")
+                
+                for p in param_list: 
+                    p.print_xml_help(tbody)
+            else:
+                node.text = self.text + ". (This plug-in doesn't take parameters)"
         else:
-            node.text = self.text + "(This plug-in doesn't take parameters)"
+            node.text = self.text
+
+        if self.suffixes is not None:
+            suffixes = etree.SubElement(node, "para", role="pluginsubdescr")
+            suf = etree.SubElement(suffixes, "emphasis")
+            suf.text = "Recognized file extensions: "
+            suf.tail =  self.suffixes
+
+        if self.supported_types is not None:
+            datatypes = etree.SubElement(node, "para", role="pluginsubdescr")
+            data = etree.SubElement(datatypes, "emphasis")
+            data.text = "Supported element types: "
+            data.tail = self.supported_types
 
 class CHandler: 
     def __init__(self, node):

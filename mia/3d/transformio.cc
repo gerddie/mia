@@ -36,7 +36,6 @@ template <> const char *  const
 
 template class TIOPlugin<C3DTransformation>;
 template class THandlerSingleton<TIOPluginHandler<C3DTransformationIO> >;
-template class TIOHandlerSingleton<TIOPluginHandler<C3DTransformationIO> >;
 template class TIOPluginHandler<C3DTransformationIO>;
 template class TPluginHandler<C3DTransformationIO>;
 

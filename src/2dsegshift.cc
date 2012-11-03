@@ -31,8 +31,8 @@
 
 #include <mia/core.hh>
 #include <mia/2d/SegSet.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/internal/main.hh>
 
 using namespace std;
@@ -42,21 +42,19 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Translate a segmentation by the given amount.", 
-	
-	"This program move the segmentation(s) of an image series by using a shift "
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Translate a segmentation by the given amount."}, 
+	{pdi_description, "This program move the segmentation(s) of an image series by using a shift "
 	"that is equal for all slices. The program also may remove images from the "
 	"begin of the series. The program can be used to correct the segmentation "
-	"of the images if the images where cropped.", 
-
-	"Shift the segmentations of a set segement.set by -20 pixels in horizontal direction and -30 "
-	"pixels in vertical direction (as if the images where cropped starting at (20,30) "
-	"and store it in translate.set. The shiftes files are named translatedXXXX.png", 
-	
-	"-i segment.set -o translate.set -g translated -S \"<20,30>\""
+	"of the images if the images where cropped."}, 
+	{pdi_example_descr, "Shift the segmentations of a set segement.set by -20 pixels in "
+	 "horizontal direction and -30 pixels in vertical direction (as if the images where "
+	 "cropped starting at (20,30) and store it in translate.set. The shiftes files are "
+	 "named translatedXXXX.png"},
+	{pdi_example_code, "-i segment.set -o translate.set -g translated -S \"<20,30>\""}
 }; 
+
 
 CSegSet load_segmentation(const string& s)
 {

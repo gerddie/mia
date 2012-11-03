@@ -22,7 +22,7 @@
 #include <mia/3d.hh>
 #include <sstream>
 #include <iomanip>
-#include <mia/3d/fatcost.hh>
+#include <mia/3d/multicost.hh>
 
 NS_MIA_USE
 using namespace std;
@@ -30,14 +30,11 @@ using namespace boost;
 
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-
-	"Evaluate similarity of two 3D images.", 
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Evaluate similarity of two 3D images."}, 
+	{pdi_description,
+	 "This program evauates the cost function as given by the free parameters on the command line."}, 
 	
-	"This program evauates the cost function as given by the free parameters on the command line.", 
-
-	"", 
-	""
 }; 
 
 // set op the command line parameters and run the registration
@@ -46,30 +43,22 @@ int do_main(int argc, char **argv)
 
 	CCmdOptionList options(g_description);
 
-	if (options.parse(argc, argv, "cost", &C3DFatImageCostPluginHandler::instance()) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
 
 	auto cost_chain = options.get_remaining();
 
-	if (cost_chain.empty()) {
-		cvfatal() << "require cost functions given as extra parameters\n";
-		return EXIT_FAILURE;
-	}
+	if (cost_chain.empty())
+		throw invalid_argument("You have to give at least one cost functions given as extra parameter");
 
-
-	C3DImageFatCostList cost_list;
+	C3DFullCostList cost_list;
 	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
-		P3DImageFatCost c = C3DFatImageCostPluginHandler::instance().produce(*i);
-		if (c)
-			cost_list.push_back(c);
+		auto c = C3DFullCostPluginHandler::instance().produce(*i);
+		assert(c); 
+		cost_list.push(c);
 	}
-	if (cost_list.empty()) {
-		cerr << "Could not create a single cost function\n";
-		return EXIT_FAILURE;
-	}
-	cout << cost_list.value() << "\n";
-
+	cout << cost_list.cost_value() << "\n";
 	return EXIT_SUCCESS;
 }
 

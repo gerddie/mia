@@ -35,6 +35,7 @@
 NS_MIA_BEGIN
 
 using namespace boost;
+using namespace std; 
 
 
 C2DInterpolatorFactory::C2DInterpolatorFactory(const std::string& kernel, const std::string& bc):

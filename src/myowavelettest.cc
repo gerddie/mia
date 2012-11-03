@@ -38,12 +38,10 @@ NS_MIA_USE;
 using namespace gsl; 
 
 const SProgramDescription g_general_help = {
-	"Miscellaneous programs", 
-	"Wavelet based curve analysis", 
-	"This program runs the wavelet based slope-statistics on the mixing matrix \n"
-	"of a ICA perfusion series.", 
-	NULL, 
-	NULL
+        {pdi_group, "Miscellaneous programs"}, 
+	{pdi_short, "Wavelet based curve analysis"}, 
+	{pdi_description, "This program runs the wavelet based slope-statistics on the mixing matrix "
+	 "of a ICA perfusion series."}
 }; 
 
 const TDictMap<EWaveletType>::Table wavelet_dict[] = {
@@ -68,8 +66,7 @@ int do_main( int argc, char *argv[] )
 
 
 	options.set_group("File-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input data set", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input data set", CCmdOption::required));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
@@ -111,8 +108,8 @@ int do_main( int argc, char *argv[] )
 
 	for (size_t i = 1; i < vx.size(); ++i) 
 		if (table[i].size() != nrows) {
-			THROW(runtime_error, "bogus input table, expect " << nrows  << ", but column " 
-			      << i << " has " << table[i].size() << " rows"); 
+			throw create_exception<runtime_error>( "bogus input table, expect " , nrows  , ", but column " 
+			      , i , " has " , table[i].size() , " rows"); 
 		}
 
 	CWaveletSlopeClassifier classifier(table, false);

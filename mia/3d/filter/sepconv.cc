@@ -115,35 +115,16 @@ CSeparableConvolute::result_type CSeparableConvolute::do_filter(const C3DImage& 
 
 
 C3DSeparableConvoluteFilterPlugin::C3DSeparableConvoluteFilterPlugin():
-	C3DFilterPlugin("sepconv"),
-	m_kx("gauss:w=1"),
-	m_ky("gauss:w=1"),
-	m_kz("gauss:w=1")
+	C3DFilterPlugin("sepconv")
 {
-	add_parameter("kx", new CStringParameter(m_kx, false, "filter kernel in x-direction"));
-	add_parameter("ky", new CStringParameter(m_ky, false, "filter kernel in y-direction"));
-	add_parameter("kz", new CStringParameter(m_ky, false, "filter kernel in z-direction"));
+	add_parameter("kx", make_param(m_kx, "gauss:w=1", false, "filter kernel in x-direction"));
+	add_parameter("ky", make_param(m_ky, "gauss:w=1", false, "filter kernel in y-direction"));
+	add_parameter("kz", make_param(m_kz, "gauss:w=1", false, "filter kernel in z-direction"));
 }
 
 C3DFilter *C3DSeparableConvoluteFilterPlugin::do_create()const
 {
-	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
-	auto kx = skp.produce(m_kx.c_str());
-	auto ky = skp.produce(m_ky.c_str());
-	auto kz = skp.produce(m_kz.c_str());
-
-
-	return new CSeparableConvolute(kx, ky, kz);
-}
-
-void C3DSeparableConvoluteFilterPlugin::prepare_path() const
-{
-}
-
-
-bool C3DSeparableConvoluteFilterPlugin::do_test() const
-{
-	return false;
+	return new CSeparableConvolute(m_kx, m_ky, m_kz);
 }
 
 const string C3DSeparableConvoluteFilterPlugin::do_get_descr()const
@@ -174,13 +155,6 @@ const string C3DGaussFilterPlugin::do_get_descr()const
 {
 	return "isotropic 3D gauss filter";
 }
-
-bool C3DGaussFilterPlugin::do_test() const
-{
-	cvwarn() << "no test!";
-	return true;
-}
-
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {

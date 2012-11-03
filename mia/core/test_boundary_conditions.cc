@@ -21,6 +21,8 @@
 #include <mia/internal/autotest.hh>
 #include <mia/core/boundary_conditions.hh>
 
+using namespace mia; 
+using std::vector; 
 
 CSplineBoundaryConditionTestPath  bc_test_path; 
 

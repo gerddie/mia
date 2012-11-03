@@ -69,7 +69,6 @@ public:
 
 	bool refine();
 
-	virtual bool save(const std::string& filename) const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
@@ -103,7 +102,7 @@ private:
 	void init_grid()const; 
 	C2DFVector interpolate(const C2DFVector& x) const; 
 
-	void run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer)const; 
+	void run_downscaler(C1DScalarFixed& scaler, std::vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds m_range;
 	C2DFVector m_target_c_rate;

@@ -26,19 +26,21 @@
 #include <mia/core/filter.hh>
 
 
+NS_MIA_BEGIN
+
 /**
    \ingroup misc
    \brief Functor to be called by mia::filter to evaluate mean and variance of 
    a series of data. 
 
 */
-struct  FMeanVariance: public TFilter< pair<double, double> >  {
+struct  FMeanVariance: public TFilter< std::pair<double, double> >  {
 
 	/** result type of this functor 
 	    - first = mean
 	    - second = variance 
 	*/
-	typedef TFilter< pair<double, double> >::result_type result_type; 
+	typedef TFilter< std::pair<double, double> >::result_type result_type; 
 	
 	/**
 	   \tparam T container type T holding the data to be analyzed. Must provide
@@ -56,13 +58,13 @@ struct  FMeanVariance: public TFilter< pair<double, double> >  {
    \brief Functor to be called by mia::filter to evaluate median and median average distance (MAD) of 
    a series of data. 
 */
-struct  FMedianMAD: public TFilter< pair<double, double> >  {
+struct  FMedianMAD: public TFilter< std::pair<double, double> >  {
 
 	/** result type of this functor 
 	    - first = median 
 	    - second = MAD 
 	*/
-	typedef TFilter< pair<double, double> >::result_type result_type; 
+	typedef TFilter< std::pair<double, double> >::result_type result_type; 
 	
 	/**
 	   \tparam T container type T holding the data to be analyzed. Must provide
@@ -132,4 +134,5 @@ double FMedianMAD::median(std::vector<double>& buf)const
 	}
 }
 
+NS_MIA_END
 #endif

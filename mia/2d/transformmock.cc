@@ -73,7 +73,7 @@ void C2DTransformMock::set_identity()
 {
 }
 
-C2DFMatrix C2DTransformMock::derivative_at(const C2DFVector& PARAM_UNUSED(x)) const
+C2DFMatrix C2DTransformMock::derivative_at(const C2DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	return C2DFMatrix(C2DFVector(1.1, 2.2), C2DFVector(3.3, 4.4));
 }

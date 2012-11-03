@@ -28,6 +28,8 @@
    is a blue-print of how such a thing could be implemented 
 */
 namespace mia {
+using std::vector; 
+
 template <>
 struct multiply<vector<double> > {
 	static void apply(vector<double>& result, const typename TSparseSolver<vector<double> >::A_mult_x& A, const vector<double>& x)	{

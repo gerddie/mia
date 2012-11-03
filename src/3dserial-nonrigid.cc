@@ -32,7 +32,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/transformfactory.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/internal/main.hh>
 
 using namespace std;
@@ -41,19 +41,18 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_general_help = {
-	"Registration of series of 3D images", 
+	{pdi_group, "Registration of series of 3D images"}, 
+	{pdi_short, "Serial registration of 3D images."}, 
 	
-	"Serial registration of 3D images.", 
-	
-	"This program runs the image registration of a consecutively numbered image series. "
+	{pdi_description, "This program runs the image registration of a consecutively numbered image series. "
 	"The registration is run in a serial manner, this is, only images in "
 	"temporal succession (i.e. consecutive numbers) are registered, and the obtained transformations "
-	"are applied accumulated to reach full registration. ", 
+	"are applied accumulated to reach full registration. "}, 
 	
-	"Run a serial registration of images inputXXXX.v (X digit) to reference image 20 and store the result in regXXXX.v. "
-	"Optimize the sum of squared differences and spline transformations with coefficient rate 10.", 
-
-	"-i input0000.v -o 'reg%04d.v' -f spline:rate=10 -r 20 ssd"
+	{pdi_example_descr, "Run a serial registration of images inputXXXX.v (X digit) to reference "
+	 "image 20 and store the result in regXXXX.v. Optimize the sum of squared differences "
+	 "and spline transformations with coefficient rate 10."}, 
+	{pdi_example_code, "-i input0000.v -o 'reg%04d.v' -f spline:rate=10 -r 20 ssd"}
 }; 
 
 int do_main( int argc, char *argv[] )
@@ -108,7 +107,7 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw create_exception<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		input_images.push_back(image);

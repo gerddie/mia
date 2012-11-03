@@ -34,48 +34,32 @@
 
 #include <mia/core.hh>
 #include <mia/core/bfsv23dispatch.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/transformfactory.hh>
 NS_MIA_USE;
+using namespace std; 
+
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Run an ICA analysis on a series of 2D images", 
-
-	"This program is used to run a ICA on a series of myocardial perfusion "
-	"images given in a segmentation set in order to create sythetic references "
-	"that can be used for motion correction by image registration. "
-	"If the aim is to run a full motion compensation then it is better run "
-        "mia-2dmyoica-nonrigid, since this program is essentially the same without "
-	"the registration bits.", 
-
-	"Evaluate the synthetic references from set segment.set and save them to refXXXX.??? by "
-	"using five independend components, and skipping 2 images. Per default a bounding box "
-	"around the LV will be segmented and scaled by 1.4 and the cropped images will be saved "
-	"to cropXXXX.??? and a segmentation set cropped.set is created. "
-	"The image file type ??? is deducted from the input images in segment.set.", 
-	
-	"-i segment.set -r ref -o ref -k 2 -C 5"
-}; 
-
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (const C2DFImage& image) const {
-		return P2DImage(new C2DFImage(image)); 
-	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Run an ICA analysis on a series of 2D images"}, 
+	{pdi_description, "This program is used to run a ICA on a series of myocardial perfusion "
+	 "images given in a segmentation set in order to create sythetic references "
+	 "that can be used for motion correction by image registration. "
+	 "If the aim is to run a full motion compensation then it is better run "
+	 "mia-2dmyoica-nonrigid, since this program is essentially the same without "
+	 "the registration bits."}, 
+	{pdi_example_descr, "Evaluate the synthetic references from set segment.set and save "
+	 "them to refXXXX.??? by using five independend components, and skipping 2 images. "
+	 "Per default a bounding box around the LV will be segmented and scaled by 1.4 and "
+	 "the cropped images will be saved to cropXXXX.??? and a segmentation set cropped.set "
+	 " is created. The image file type ??? is deducted from the input images in segment.set."}, 
+	{pdi_example_code, "-i segment.set -r ref -o ref -k 2 -C 5"}
 }; 
 
 int do_main( int argc, char *argv[] )
@@ -132,7 +116,7 @@ int do_main( int argc, char *argv[] )
 	
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 
 	// run ICA
@@ -152,7 +136,7 @@ int do_main( int argc, char *argv[] )
 	
 	C2DImageSeries references(references_float.size() + skip_images); 
 	transform(references_float.begin(), references_float.end(), 
-		  references.begin() + skip_images, C2DFImage2PImage()); 
+		  references.begin() + skip_images, FWrapStaticDataInSharedPointer<C2DImage>()); 
 	copy(input_images.begin(), input_images.begin() + skip_images, references.begin()); 
 
 	// crop if requested
@@ -196,7 +180,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 	}
 	
 	//
@@ -213,16 +197,12 @@ int do_main( int argc, char *argv[] )
 		if (outfile2.good())
 			outfile2 << test_regset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 	}
 	return EXIT_SUCCESS; 
 
 };
 
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
-}
 
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main); 

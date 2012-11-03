@@ -25,7 +25,7 @@
 #include <mia/template/dimtrait.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/multicost.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/interpolator.hh>
 
 NS_MIA_BEGIN

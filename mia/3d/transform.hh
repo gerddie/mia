@@ -29,7 +29,7 @@
 #include <mia/core/transformation.hh>
 #include <mia/core/filter.hh>
 #include <mia/3d/matrix.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 #include <mia/3d/interpolator.hh>
 
 NS_MIA_BEGIN
@@ -56,6 +56,7 @@ public:
 	/// @cond LAZY 
 	typedef C3DBounds Size; 
 	typedef C3DImage Data;
+	typedef C3DFVector Vector;
 	typedef C3DInterpolatorFactory InterpolatorFactory;
 	typedef C3DTransformation type; 
 	typedef std::shared_ptr<C3DTransformation> Pointer; 

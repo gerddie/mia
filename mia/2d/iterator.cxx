@@ -145,7 +145,7 @@ template <typename I>
 range2d_iterator<I> range2d_iterator<I>::operator ++(int)
 {
 	range2d_iterator result(*this); 
-	++result; 
+	++(*this); 
 	return result; 
 }
 

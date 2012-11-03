@@ -25,10 +25,13 @@
 #include <mia/3d/transformfactory.hh>
 #include <boost/static_assert.hpp>
 
+NS_MIA_USE; 
+using namespace std; 
+
 CSplineKernelTestPath splinekernel_init_path; 
 C3DTransformCreatorHandlerTestPath transform_creator_test_path; 
 
-NS_MIA_USE; 
+
 namespace bfs=::boost::filesystem; 
 class PrepareTransIOTests {
 public: 

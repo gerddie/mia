@@ -28,17 +28,14 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	
-	"Transform a 3D image by means of a vector field.", 
-	
-	"Transform a 3D image by applying a given 3D transformation that is defined "
-	"by a 3D vector field v according to x:=x-v(x)", 
-	
-	"Transform an image input.v by the transformation defined by the vector field field.v "
-        "by using bspline interpolation of degree 4 and store the result in output.v", 
-	
-	"-i input.v -t field.v  -o output.v  -p bspline:d=4" 
+        {pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Transform a 3D image by means of a vector field."}, 
+	{pdi_description, "Transform a 3D image by applying a given 3D transformation that is defined "
+	"by a 3D vector field v according to x:=x-v(x)"}, 
+	{pdi_example_descr, "Transform an image input.v by the transformation defined by the vector field field.v "
+        "by using bspline interpolation of degree 4 and store the result in output.v"}, 
+	{pdi_example_code, "-i input.v -t field.v  -o output.v  -p bspline:d=4" }
+
 }; 
 
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
@@ -53,10 +50,13 @@ int do_main(int argc, char **argv)
 	string vf_filename;
 	PSplineKernel interpolator_kernel;
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
+	const auto& imageio = C3DImageIOPluginHandler::instance();
+	const auto& vfioh = C3DVFIOPluginHandler::instance();
+
+	options.add(make_opt( src_filename, "in-image", 'i', "input image", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-image", 'o', "transformed image", CCmdOption::required, &imageio));
 	options.add(make_opt( vf_filename, "transformation", 't', "transformation vector field", 
-				    CCmdOption::required));
+			      CCmdOption::required, &vfioh));
 	options.add(make_opt( interpolator_kernel, "bspline:d=3", "interpolator", 'p', "image interpolator kernel"));
 
 
@@ -64,13 +64,9 @@ int do_main(int argc, char **argv)
 		return EXIT_SUCCESS; 
 	
 
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
-	const C3DVFIOPluginHandler::Instance&  vfioh = C3DVFIOPluginHandler::instance();
 
-	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
-	typedef C3DVFIOPluginHandler::Instance::PData P3DVF;
-	PImageVector source    = imageio.load(src_filename);
-	P3DVF transformation   = vfioh.load(vf_filename);
+	auto source    = imageio.load(src_filename);
+	auto transformation   = vfioh.load(vf_filename);
 
 	if (!source || source->size() < 1) {
 		cerr << "no image found in " << src_filename << "\n";
@@ -87,8 +83,7 @@ int do_main(int argc, char **argv)
 	FDeformer3D deformer(*transformation,*ipfactory);
 
 
-	for (C3DImageIOPluginHandler::Instance::Data::iterator i = source->begin();
-	     i != source->end(); ++i)
+	for (auto i = source->begin();  i != source->end(); ++i)
 		*i = filter(deformer, **i);
 
 	if ( !imageio.save(out_filename, *source) ){

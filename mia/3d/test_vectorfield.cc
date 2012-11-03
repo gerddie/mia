@@ -26,7 +26,11 @@
 
 
 #include <mia/core.hh>
-#include <mia/3d/3DVectorfield.hh>
+#include <mia/3d/vectorfield.hh>
+
+NS_MIA_USE; 
+using namespace std; 
+
 
 struct C3DVectorfieldFixture {
 	C3DVectorfieldFixture(); 

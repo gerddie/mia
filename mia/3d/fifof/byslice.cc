@@ -54,10 +54,10 @@ NS_MIA_USE
 using namespace std;
 
 
-C2DBysliceFifoFilter::C2DBysliceFifoFilter(string filter):
-	C2DImageFifoFilter(1, 1, 0)
+C2DBysliceFifoFilter::C2DBysliceFifoFilter(P2DFilter filter):
+	C2DImageFifoFilter(1, 1, 0), 
+	m_filter(filter)
 {
-	m_filter = C2DFilterPluginHandler::instance().produce(filter); 
 }
 
 void C2DBysliceFifoFilter::do_push(::boost::call_traits<P2DImage>::param_type x)
@@ -80,16 +80,15 @@ public:
 private:
 
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
-	string m_filter;
+	P2DFilter m_filter; 
 };
 
 C2DBysliceFifoFilterPlugin::C2DBysliceFifoFilterPlugin():
 	C2DFifoFilterPlugin("byslice")
 {
-	add_parameter("filter", new CStringParameter(m_filter, true , "2D filter to be run"));
+	add_parameter("filter", make_param(m_filter, "", true , "2D filter to be applied"));
 }
 
 const string C2DBysliceFifoFilterPlugin::do_get_descr() const
@@ -97,12 +96,6 @@ const string C2DBysliceFifoFilterPlugin::do_get_descr() const
 	return "Runs a filter on a per slice basis. In essence, this is a wrapper that "
 		"makes it possible to add pure 2D filters to the stack filter pipeline "
 		"without ducplicating the implementation.";
-}
-
-typedef TFifoFilterSink<C2DImage> C2DImageFifoFilterSink;
-bool C2DBysliceFifoFilterPlugin::do_test() const
-{
-	return true;
 }
 
 C2DImageFifoFilter *C2DBysliceFifoFilterPlugin::do_create()const

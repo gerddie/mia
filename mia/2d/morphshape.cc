@@ -35,7 +35,6 @@ C2DMorphShape::C2DMorphShape(P2DShape foreground_mask, P2DShape background_mask)
 	m_foreground_mask(foreground_mask), 
 	m_background_mask(background_mask)
 {
-	auto not_found = m_background_mask->end(); 
 	for (auto f = m_foreground_mask->begin(); f != m_foreground_mask->end(); ++f) {
 		if (m_background_mask->has_location(*f)) {
 			throw invalid_argument("C2DMorphShape: background and foreground mask overlap"); 
@@ -55,14 +54,14 @@ void C2DMorphShape::add_pixel(const value_type& pixel, bool foreground)
 	
 	if (foreground) {
 		if (m_background_mask->has_location(pixel)) {
-			THROW(invalid_argument, "Pixel location " << pixel << 
+			throw create_exception<invalid_argument>( "Pixel location ", pixel , 
 			      " can't be added to the foreground mask, since it it already "
 			      " in the background mask"); 
 		}
 		m_foreground_mask->insert(pixel); 
 	}else{
 		if (m_foreground_mask->has_location(pixel)) {
-			THROW(invalid_argument, "Pixel location " << pixel << 
+			throw create_exception<invalid_argument>( "Pixel location ", pixel, 
 			      " can't be added to the background mask, since it it already "
 			      " in the foreground mask"); 
 		}
@@ -97,7 +96,7 @@ const char *C2DMorphShape::type_descr = "morphshapes";
 
 /*
    - This could be parallized
-   - using abit-image with the infamous vector<bool> implementation is probably a 
+   - using a bit-image with the infamous vector<bool> implementation is probably a 
      bad idea. 
  */
 
@@ -144,7 +143,7 @@ size_t morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, con
 
 /*
    - This could be parallized
-   - using abit-image with the infamous vector<bool> implementation is probably a 
+   - using a bit-image with the infamous vector<bool> implementation is probably a 
      bad idea. 
  */
 
