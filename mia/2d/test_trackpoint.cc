@@ -21,7 +21,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/2d/trackpoint.hh>
-#include <mia/2d/transformfactory.hh>
+#include <mia/2d/inittesthandlers.hh>
 #include <sstream>
 
 using namespace std; 

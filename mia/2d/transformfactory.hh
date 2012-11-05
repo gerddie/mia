@@ -51,18 +51,6 @@ typedef TTransformCreatorPlugin<C2DTransformation>  C2DTransformCreatorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
 
 
-/** 
-    @cond INTERNAL  
-    \ingroup test 
-    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
-*/
-struct EXPORT_2D C2DTransformCreatorHandlerTestPath {
-	C2DTransformCreatorHandlerTestPath(); 
-private: 
-	CSplineKernelTestPath spktp; 
-}; 
-/// @endcond 
-
 /**
    Produce a transformation creator from a string 
    \param descr description of the transformation type

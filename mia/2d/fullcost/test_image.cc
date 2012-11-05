@@ -19,7 +19,7 @@
  */
 
 #include <mia/2d/fullcost/image.hh>
-#include <mia/2d/transformfactory.hh>
+#include <mia/2d/inittesthandlers.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 

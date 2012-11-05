@@ -18,20 +18,33 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
-#include <mia/2d/transformfactory.hh>
-#include <mia/template/transformfactory.cxx>
+#include <config.h> 
+
+#include <mia/2d/inittesthandlers.hh>
+
 
 NS_MIA_BEGIN
+namespace bfs = ::boost::filesystem;
 
-template class TTransformCreator<C2DTransformation>; 
-template class TTransformCreatorPlugin<C2DTransformation>; 
+C2DVFIOPluginHandlerTestPath::C2DVFIOPluginHandlerTestPath()
+{
+	CPathNameArray kernelsearchpath({bfs::path(MIA_BUILD_ROOT"/mia/2d/io")});
+	C2DVFIOPluginHandler::set_search_path(kernelsearchpath);
+
+}
+
+C2DTransformCreatorHandlerTestPath::C2DTransformCreatorHandlerTestPath()
+{
+	CPathNameArray kernelsearchpath({bfs::path(MIA_BUILD_ROOT"/mia/2d/transform")});
+	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
+}
+
+C2DTransformationIOPluginHandlerTestPath::C2DTransformationIOPluginHandlerTestPath()
+{
+	CPathNameArray kernelsearchpath({bfs::path(MIA_BUILD_ROOT"/mia/2d/transio")});
+	C2DTransformationIOPluginHandler::set_search_path(kernelsearchpath);
+}
 
 
-template <> const char *  const 
-TPluginHandler<C2DTransformCreatorPlugin>::m_help =  
-   "These plug-ins define creators for 2D transformations.";
-
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
 
 NS_MIA_END

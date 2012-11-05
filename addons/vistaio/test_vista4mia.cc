@@ -34,6 +34,8 @@
 #include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
 
+#include <mia/2d/inittesthandlers.hh>
+
 #include <mia/3d/transformio.hh>
 #include <mia/3d/transformfactory.hh>
 
@@ -55,6 +57,9 @@ namespace bfs = ::boost::filesystem;
 
 CSplineBoundaryConditionTestPath sbc_test_path; 
 CSplineKernelTestPath init_path; 
+
+C2DTransformCreatorHandlerTestPath trans2dcreate_path; 
+C3DTransformCreatorHandlerTestPath trans3dcreate_path; 
 
 template <typename T>
 void check_value(const CAttributedData& attr_map, const string& key,  T value)
@@ -171,14 +176,6 @@ static void handler_setup()
 	C2DTransformationIOPluginHandler::set_search_path(searchpath);
 	C3DTransformationIOPluginHandler::set_search_path(searchpath);
 
-	CPathNameArray tc2_searchpath; 
-	tc2_searchpath.push_back(bfs::path("../mia/2d/transform"));
-
-	CPathNameArray tc3_searchpath; 
-	tc3_searchpath.push_back(bfs::path("../mia/3d/transform"));
-
-	C2DTransformCreatorHandler::set_search_path(tc2_searchpath);
-	C3DTransformCreatorHandler::set_search_path(tc3_searchpath);
 }
 
 
