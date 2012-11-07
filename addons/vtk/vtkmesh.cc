@@ -18,6 +18,7 @@
  *
  */
 
+#define VSTREAM_DOMAIN "vtkMeshIO"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -27,7 +28,8 @@
 #include <vtk/vtkmesh.hh>
 #include <mia/mesh/triangulate.hh>
 
-namespace vtkmia {
+
+NS_BEGIN(vtkmia)
 using namespace mia; 
 using namespace std; 
 
@@ -40,33 +42,31 @@ CVtkMeshIO::CVtkMeshIO()
 
 }
 
-
-PTriangleMesh CVtkMeshIO::do_load(string const &  filename) const
+static PVertexfield read_vertices( /*const*/ vtkPolyData& mesh) 
 {
-	auto reader = vtkSmartPointer<vtkPolyDataReader>::New();
-	reader->SetFileName(filename);
-	auto mesh = reader->GetOutput(); 
-	
-	auto n_vertices = polydata->GetNumberOfPoints(); 
+	auto n_vertices = mesh.GetNumberOfPoints(); 
 	auto vertices = PVertexfield(new CVertexfield(n_vertices)); 
 	
 	// copy all vertices
 	auto iv = vertices->begin(); 
 	for(auto i = 0; i < n_vertices; i++, ++iv) {
 		double p[3];
-		mesh->GetPoint(i,p);
-		iv->x = p[0]; 
+		mesh.GetPoint(i,p);
+		iv->x = p[0];
 		iv->y = p[1]; 
 		iv->z = p[2]; 
 	}
-	
+	return vertices; 
+}
 
+static PTrianglefield read_triangles( /*const*/ vtkPolyData& mesh)
+{
 	// read all cells, if a cell is formed of more than 3 corners, then triangulate, 
 	// if it hes less then 3 corners, ignore it (no wireframes supported here
 	TPolyTriangulator<CVertexfield, vector<vtkIdType>> triangulator; 
 	auto triangles = PTrianglefield(new CTrianglefield); 
 	vtkIdType npts, *pts;
-	auto polys = mesh->GetPolys(); 
+	auto polys = mesh.GetPolys(); 
 	while(polys->GetNextCell(npts,pts)) {
 		if (npts == 3) {
 			CTrianglefield::value_type t(pts[0], pts[1], pts[2]); 
@@ -81,20 +81,120 @@ PTriangleMesh CVtkMeshIO::do_load(string const &  filename) const
 					 << polygon << "\n";
 		}
 	}	
+	return triangles; 
+}
+
+static void read_scalars(CTriangleMesh& mesh, /*const*/ vtkPointData& point_data)
+{
+	if (!point_data->HasArray(s_scale_array)) 
+		return; 
+
+	auto scales = dynamic_cast<vtkFloatArray>(point_data->GetArray(s_scale_array));
+	if (!scales) {
+		cvinfo() << " got scales field, but is not of type 'vtkFloatArray'\n"; 
+		return;
+	}
+	
+	if (scales->GetNumberOfComponents() != 1)  {
+		cvinfo() << " got scales field, but it has " << scales->GetNumberOfComponents() " " 
+			 << " instead of one.\n"; 
+		return; 
+	}
+	
+	auto n_scale = scales.GetNumberOfTuples(); 
+	if (n_scale != mesh.vertices_size()) {
+		cverr() << "Have " << mesh.vertices_size() << " but got " << n_scale 
+			<< " scale values, ignoring the scales\n"; 
+		return; 
+	}
+
+	auto is = mesh.scales_begin(); 
+	for (auto i = 0; i < n_scale; ++i, ++is)
+		*is = scales.GetValue(i); 
+}
+
+static void read_normals(CTriangleMesh& mesh, /*const*/ vtkPointData& point_data)
+{
+	if (!point_data->HasArray(s_normals_array)) 
+		return; 
+
+	auto normals = dynamic_cast<vtkFloatArray>(point_data->GetArray(s_normals_array));
+	if (!normals) {
+		cvinfo() << " got normals field, but is not of type 'vtkFloatArray'\n"; 
+		return;
+	}
+	
+	if (normals->GetNumberOfComponents() != 3)  {
+		cvinfo() << " got normals field, but it has " << normals->GetNumberOfComponents() " " 
+			 << " instead of three.\n"; 
+		return; 
+	}
+	
+	auto n_normals = normals->GetNumberOfTuples(); 
+	if (n_normals != mesh.vertices_size()) {
+		cverr() << "Have " << mesh.vertices_size() << " but got " << n_normals 
+			<< " normals values, ignoring the normals\n"; 
+		return; 
+	}
+
+	
+	auto is = mesh.scales_begin(); 
+	for (auto i = 0; i < n_scale; ++i, ++is)
+		normals->GetValue(i, &is->x); 
+}
+
+static void read_colors(CTriangleMesh& mesh, /*const*/ vtkPointData& point_data)
+{
+	if (!point_data->HasArray(s_colors_array)) 
+		return; 
+
+	auto colors = dynamic_cast<vtkFloatArray>(point_data->GetArray(s_colors_array));
+	if (!colors) {
+		cvinfo() << " got colors field, but is not of type 'vtkFloatArray'\n"; 
+		return;
+	}
+	
+	if (colors->GetNumberOfComponents() != 3)  {
+		cvinfo() << " got colors field, but it has " << colors->GetNumberOfComponents() " " 
+			 << " instead of three.\n"; 
+		return; 
+	}
+	
+	auto n_colors = colors->GetNumberOfTuples(); 
+	if (n_colors != mesh.vertices_size()) {
+		cverr() << "Have " << mesh.vertices_size() << " but got " << n_colors 
+			<< " colors values, ignoring the colors field\n"; 
+		return; 
+	}
+
+	
+	auto is = mesh.colors_begin(); 
+	for (auto i = 0; i < n_scale; ++i, ++is)
+		colors->GetValue(i, &is->x); 
+}
+
+PTriangleMesh CVtkMeshIO::do_load(string const &  filename) const
+{
+	TRACE_FUNCTION; 
+	
+	auto reader = vtkSmartPointer<vtkPolyDataReader>::New();
+	reader->SetFileName(filename);
+	auto mesh = reader->GetOutput(); 
+	if (!mesh)
+		return PTriangleMesh(); 
+	
+	auto vertices = read_vertices(*mesh); 
+	auto triangles = read_triangles(*mesh); 
 	
         auto out_mesh = PTriangleMesh(new CTriangleMesh(triangles, vertices));
 	
 	// now check for scales, normals, and colors
 	auto point_data = mesh->GetPointData();
 	
-	if (point_data->HasArray(s_scale_array)) {
-		auto scales = dynamic_cast<vtkFloatArray>(point_data->GetArray(s_scale_array));
-		if (scales) {
-			
-		}
-		
-	}
-
+	read_scalars(out_mesh, *point_data); 
+	read_normals(out_mesh, *point_data); 
+	read_colors(out_mesh, *point_data); 
+	
 	return out_mesh; 
 }
 
@@ -170,4 +270,4 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 	return new CVtkMeshIO;
 }
 
-}
+NS_END

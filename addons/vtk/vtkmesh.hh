@@ -34,6 +34,7 @@ private:
         virtual bool do_save(std::string const &  filename, const mia::CTriangleMesh& data) const;
         const std::string  do_get_descr() const;
 
+
         const char * const s_scale_array = "scale"; 
         const char * const s_normal_array = "normals"; 
         const char * const s_color_array = "colors"; 
@@ -49,7 +50,7 @@ private:
 	typedef CTriangleMesh::PNormalfield   PNormalfield; 
 	typedef CTriangleMesh::PColorfield    PColorfield
 	typedef CTriangleMesh::PScalefield    PScalefield;  
-       
+
 };
 
 }
