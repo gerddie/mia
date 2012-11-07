@@ -29,6 +29,82 @@ using namespace vtkmia;
 using namespace mia; 
 using namespace std; 
 
+class  MeshVtkIOFixture {
+protected: 
+	MeshVtkIOFixture(); 
+	
+	
+	void test_expected(const CTriangleMesh& changed, const CTriangleMesh& test) const;
+	
+	typedef CTriangleMesh::CTrianglefield::value_type Triangle;
+	typedef CTriangleMesh::CColorfield::value_type Color;
+	CTriangleMesh mesh; 
+}; 
+
+
+BOOST_FIXTURE_TEST_CASE(test_simple_store_and_load, MeshVtkIOFixture)
+{
+	CVtkMeshIO io; 
+	BOOST_REQUIRE(io.save("testsavemesh.vtk", mesh));
+	
+	auto loaded_mesh = io.load("testsavemesh.vtk");
+	BOOST_REQUIRE(loaded_mesh); 
+	
+	test_expected(*loaded_mesh, mesh);
+
+}
+
+MeshVtkIOFixture::MeshVtkIOFixture():mesh(4,4)
+{
+	
+	CTriangleMesh::CVertexfield vertices{
+		C3DFVector(1,5,8), C3DFVector(5,3,3), C3DFVector(3,4,1), C3DFVector(2,1,4)}; 
+	
+	typedef T3DVector<unsigned int> Triangle; 
+	CTriangleMesh::CTrianglefield triangles{
+		Triangle(0,1,2), Triangle(1,2,3), Triangle(0,2,3), Triangle(0,3,1)}; 
+	copy(vertices.begin(), vertices.end(), mesh.vertices_begin()); 
+	copy(triangles.begin(), triangles.end(), mesh.triangles_begin());
+}
+
+void MeshVtkIOFixture::test_expected(const CTriangleMesh& changed, const CTriangleMesh& test) const
+{
+	BOOST_CHECK_EQUAL(changed.vertices_size(), test.vertices_size()); 
+	BOOST_CHECK_EQUAL(changed.triangle_size(), test.triangle_size()); 
+	BOOST_CHECK_EQUAL(changed.get_available_data(), test.get_available_data()); 
+	
+	for(auto ic = changed.vertices_begin(), it = test.vertices_begin(); 
+	    ic != changed.vertices_end(); ++ic, ++it) {
+		BOOST_CHECK_EQUAL(*ic, *it); 
+	}
+
+	for(auto ic = changed.triangles_begin(), it = test.triangles_begin(); 
+	    ic != changed.triangles_end(); ++ic, ++it) {
+		BOOST_CHECK_EQUAL(*ic, *it); 
+	}
+	
+	if (test.get_available_data() & CTriangleMesh::ed_normal) {
+		for(auto ic = changed.normals_begin(), it = test.normals_begin(); 
+		    ic != changed.normals_end(); ++ic, ++it) {
+			BOOST_CHECK_EQUAL(*ic, *it); 
+		}
+	}
+
+	if (test.get_available_data() & CTriangleMesh::ed_color){
+		for(auto ic = changed.color_begin(), it = test.color_begin(); 
+		    ic != changed.color_end(); ++ic, ++it) {
+			BOOST_CHECK_EQUAL(*ic, *it); 
+		}
+	}
+	
+	if (test.get_available_data() & CTriangleMesh::ed_scale){
+		for(auto ic = changed.scale_begin(), it = test.scale_begin(); 
+		    ic != changed.scale_end(); ++ic, ++it) {
+			BOOST_CHECK_EQUAL(*ic, *it); 
+		}
+	}
+}
+
 
 
 

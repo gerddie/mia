@@ -28,28 +28,28 @@ namespace vtkmia {
 
 class CVtkMeshIO: public mia::CMeshIOPlugin {
 public:
+	typedef mia::CTriangleMesh::CTrianglefield CTrianglefield; 
+	typedef mia::CTriangleMesh::CVertexfield   CVertexfield; 
+	typedef mia::CTriangleMesh::CNormalfield   CNormalfield; 
+	typedef mia::CTriangleMesh::CColorfield    CColorfield; 
+	typedef mia::CTriangleMesh::CScalefield    CScalefield;  
+
+	typedef mia::CTriangleMesh::PTrianglefield PTrianglefield; 
+	typedef mia::CTriangleMesh::PVertexfield   PVertexfield; 
+	typedef mia::CTriangleMesh::PNormalfield   PNormalfield; 
+	typedef mia::CTriangleMesh::PColorfield    PColorfield; 
+	typedef mia::CTriangleMesh::PScalefield    PScalefield;  
+
+	static const char * const  s_scale_array;
+	static const char * const  s_normal_array;
+	static const char * const  s_color_array;
+
 	CVtkMeshIO();
 private:
-        virtual PTriangleMesh do_load(std::string const &  filename) const;
+        virtual mia::PTriangleMesh do_load(std::string const &  filename) const;
         virtual bool do_save(std::string const &  filename, const mia::CTriangleMesh& data) const;
         const std::string  do_get_descr() const;
 
-
-        const char * const s_scale_array = "scale"; 
-        const char * const s_normal_array = "normals"; 
-        const char * const s_color_array = "colors"; 
-
-	typedef CTriangleMesh::CTrianglefield CTrianglefield; 
-	typedef CTriangleMesh::CVertexfield   CVertexfield; 
-	typedef CTriangleMesh::CNormalfield   CNormalfield; 
-	typedef CTriangleMesh::CColorfield    CColorfield
-	typedef CTriangleMesh::CScalefield    CScalefield;  
-
-	typedef CTriangleMesh::PTrianglefield PTrianglefield; 
-	typedef CTriangleMesh::PVertexfield   PVertexfield; 
-	typedef CTriangleMesh::PNormalfield   PNormalfield; 
-	typedef CTriangleMesh::PColorfield    PColorfield
-	typedef CTriangleMesh::PScalefield    PScalefield;  
 
 };
 
