@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE(test_store_and_load_with_all, MeshVtkIOFixture)
 	
 	test_expected(*loaded_mesh, mesh);
 	
-//	unlink("testsavemesh.vtk"); 
+	unlink("testsavemesh.vtk"); 
 }
 
 
