@@ -24,6 +24,7 @@
 #include <mia/internal/autotest.hh>
 #include <mia/3d/imageio.hh>
 #include <vtk/vtkmesh.hh>
+#include <unistd.h>
 
 using namespace vtkmia; 
 using namespace mia; 
@@ -74,7 +75,8 @@ BOOST_FIXTURE_TEST_CASE(test_store_and_load_with_all, MeshVtkIOFixture)
 	BOOST_REQUIRE(loaded_mesh); 
 	
 	test_expected(*loaded_mesh, mesh);
-
+	
+	unlink("testsavemesh.vtk"); 
 }
 
 
