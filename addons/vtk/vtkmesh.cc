@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "vtkMeshIO"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -168,8 +167,10 @@ static void read_normals(CTriangleMesh& mesh, /*const*/ vtkPointData& point_data
 
 	
 	auto is = mesh.normals_begin(); 
-	for (auto i = 0; i < n_normals; ++i, ++is)
+	for (auto i = 0; i < n_normals; ++i, ++is) {
 		normals->GetTupleValue(i, &is->x); 
+		cvdebug() << i << ": read normal " << *is << "\n"; 
+	}
 }
 
 static void read_colors(CTriangleMesh& mesh, /*const*/ vtkPointData& point_data)
@@ -260,11 +261,10 @@ bool CVtkMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh) co
 	if (mesh.get_available_data() & CTriangleMesh::ed_color) {
 		auto colors = vtkSmartPointer<vtkFloatArray>::New();
 		colors->SetName(s_color_array);
+		colors->SetNumberOfComponents (3); 
 		for_each(mesh.color_begin(), mesh.color_end(), 
 			 [&colors](CTriangleMesh::color_type c) -> void {
-				 colors->InsertNextValue(c.x);
-				 colors->InsertNextValue(c.y);
-				 colors->InsertNextValue(c.z);
+				 colors->InsertNextTuple(&c.x);
 			 }); 
 		point_data->AddArray(colors); 
 	}
@@ -272,11 +272,10 @@ bool CVtkMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh) co
 	if (mesh.get_available_data() & CTriangleMesh::ed_normal) {
 		auto normals = vtkSmartPointer<vtkFloatArray>::New();
 		normals->SetName(s_normal_array); 
+		normals->SetNumberOfComponents (3); 
 		for_each(mesh.normals_begin(), mesh.normals_end(), 
 			 [&normals](CTriangleMesh::normal_type n) -> void {
-				 normals->InsertNextValue(n.x);
-				 normals->InsertNextValue(n.y);
-				 normals->InsertNextValue(n.z);
+				 normals->InsertNextTuple(&n.x);
 			 }); 
 		point_data->AddArray(normals); 
 	}

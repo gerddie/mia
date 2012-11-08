@@ -54,6 +54,30 @@ BOOST_FIXTURE_TEST_CASE(test_simple_store_and_load, MeshVtkIOFixture)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(test_store_and_load_with_all, MeshVtkIOFixture)
+{
+	CTriangleMesh::CNormalfield nfield({C3DFVector(2,3,1), C3DFVector(7,6,2), 
+				C3DFVector(2,4,3), C3DFVector(5,6,4)}); 
+	CTriangleMesh::CColorfield cfield({Color(2,3,1), Color(4,1,5), Color(1,6,7), Color(1,1,8)});
+	CTriangleMesh::CScalefield sfield({1,2,3,4}); 
+	
+	copy(nfield.begin(), nfield.end(), mesh.normals_begin()); 
+	copy(cfield.begin(), cfield.end(), mesh.color_begin()); 
+	copy(sfield.begin(), sfield.end(), mesh.scale_begin()); 
+
+
+
+	CVtkMeshIO io; 
+	BOOST_REQUIRE(io.save("testsavemesh.vtk", mesh));
+	
+	auto loaded_mesh = io.load("testsavemesh.vtk");
+	BOOST_REQUIRE(loaded_mesh); 
+	
+	test_expected(*loaded_mesh, mesh);
+
+}
+
+
 MeshVtkIOFixture::MeshVtkIOFixture():mesh(4,4)
 {
 	
