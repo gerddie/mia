@@ -120,10 +120,11 @@ static CVtkMeshIO::PTrianglefield read_triangles(const CVtkMeshIO::CVertexfield&
 
 static void read_scalars(CTriangleMesh& mesh, /*const*/ vtkPointData& point_data)
 {
-        if (!point_data.HasArray(CVtkMeshIO::s_scale_array)) 
+	auto abstract_scalars = point_data.GetScalars(); 
+        if (!abstract_scalars) 
 		return; 
 
-	auto scales = dynamic_cast<vtkFloatArray*>(point_data.GetArray(CVtkMeshIO::s_scale_array));
+	auto scales = dynamic_cast<vtkFloatArray*>(abstract_scalars);
 	if (!scales) {
 		cvinfo() << " got scales field, but is not of type 'vtkFloatArray'\n"; 
 		return;
@@ -149,13 +150,14 @@ static void read_scalars(CTriangleMesh& mesh, /*const*/ vtkPointData& point_data
 
 static void read_normals(CTriangleMesh& mesh, /*const*/ vtkPointData& point_data)
 {
-	if (!point_data.HasArray(CVtkMeshIO::s_normal_array)) 
+	auto abstract_normals = point_data.GetNormals(); 
+	if (!abstract_normals) 
 		return; 
-
-	auto normals = dynamic_cast<vtkFloatArray*>(point_data.GetArray(CVtkMeshIO::s_normal_array));
+	
+	auto normals = dynamic_cast<vtkFloatArray*>(abstract_normals);
 	if (!normals) {
 		cvinfo() << " got normals field, but is not of type 'vtkFloatArray'\n"; 
-		return;
+		return; 
 	}
 	
 	if (normals->GetNumberOfComponents() != 3)  {
@@ -261,7 +263,7 @@ bool CVtkMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh) co
 		scales->SetName(s_scale_array); 
 		for_each(mesh.scale_begin(), mesh.scale_end(), 
 			  [&scales](CTriangleMesh::scale_type s){scales->InsertNextValue(s);}); 
-		point_data->AddArray(scales); 
+		point_data->SetScalars(scales); 
 	}
 
 	if (mesh.get_available_data() & CTriangleMesh::ed_color) {
@@ -283,7 +285,7 @@ bool CVtkMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh) co
 			 [&normals](CTriangleMesh::normal_type n) -> void {
 				 normals->InsertNextTuple(&n.x);
 			 }); 
-		point_data->AddArray(normals); 
+		point_data->SetNormals(normals); 
 	}
 	
 	// write it 
