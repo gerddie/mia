@@ -24,13 +24,11 @@ IF(WITH_VTKIO)
   FIND_PACKAGE(VTK)
   IF(VTK_FOUND)
     INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
-        
-    SET(image3dio_path ${PLUGIN_INSTALL_PATH}/3dimage/io)
     SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
     
     SET(VTK_LINK_LIBS_MESH ${VTK_LIBRARIES} miamesh)
 
-    PLUGIN_WITH_TEST_AND_PREFIX("mesh" vtkmesh "${VTK_LINK_LIBS_MESH}" "${meshio_path}")
+    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("mesh" vtkmesh "${VTK_LINK_LIBS_MESH}" "${meshio_path}")
 
 
   ELSEIF(VTK_FOUND)
