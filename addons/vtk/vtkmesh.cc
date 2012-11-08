@@ -93,12 +93,18 @@ static CVtkMeshIO::PTrianglefield read_triangles(const CVtkMeshIO::CVertexfield&
 				continue; 
 			}
 			
-			
 			for (int i = 2; i < npts; ++i)  {
 				CVtkMeshIO::CTrianglefield::value_type t; 
 				t.x = pts[i-2]; 
-				t.y = pts[i-1]; 
-				t.z = pts[i];
+				// in triangle strips, every other triangle is winded in the other direction 
+				// misses test to see if we got it right
+				if (i & 1) {
+					t.z = pts[i-1]; 
+					t.y = pts[i];
+				} else {
+					t.y = pts[i-1]; 
+					t.z = pts[i];
+				}
 				triangles->push_back(t); 
 			}
 		}
@@ -283,13 +289,17 @@ bool CVtkMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh) co
 	// write it 
 	auto writer = vtkSmartPointer<vtkPolyDataWriter>::New();
 	writer->SetFileName(filename.c_str());
+	writer->SetFileTypeToBinary(); 
 	writer->SetInput(data); 
 	return writer->Write(); 
 }
 
 const string  CVtkMeshIO::do_get_descr() const
 {
-	return "VTK mesh in-and output"; 
+	return "A subset of VTK mesh in-and output: Triangle meshes are written, and triangle "
+		"meshes and triangle strips are read. Additional per-vertex attributes are supported: 'normals', "
+		"'colors' for three component colors, and 'scale' for a scalar value attached to each vertex. "
+		"The data is written by the vtkPolyDataWriter in binary format.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
