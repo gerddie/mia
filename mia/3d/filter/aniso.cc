@@ -21,7 +21,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/disctmap.hh>
 #include <mia/core/histogram.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_MIA_USE
 using namespace std;
@@ -180,7 +180,6 @@ public:
 private: 
 	virtual C3DFilterPlugin::ProductPtr do_create()const;
 	virtual const string do_get_descr()const; 
-	virtual void do_test() const; 
 	
 	TDictMap<EEdgeStop> m_edge_stop_idmap; 
 
@@ -219,32 +218,6 @@ C3DFilter *C3DAnisoFilterFactory::do_create()const
 const string C3DAnisoFilterFactory::do_get_descr()const
 {
 	return "anisotropic diffusion filter" 
-}
-
-void C3DAnisoFilterFactory::do_test() const
-{
-	test_get_gradient(); 
-
-	// test MAD
-	C3DBounds size(7,8,9); 
-	C3DUBImage image(size); 
-	CGradientField grad(image.size()); 
-	SGradients ginit = {0,0,0,0,0,0}; 
-	fill(grad.begin(), grad.end(), ginit); 
-	usigned char k = 0; 
-	
-	for (C3DUBImage::iterator i = image.begin(); i != image.end(); ++i, ++k)
-		*i = 2 * k; 
-	
-	
-       
-	
-	
-
-
-	C3DAnisoDiffFilter aif_tuckey(psi_tuckey, 10, 0.1, 0.0); 
-	aif_tuckey.self_test(); 
-	
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

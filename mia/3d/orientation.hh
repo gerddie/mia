@@ -25,68 +25,76 @@
 #include <istream>
 
 #include <mia/core/attributes.hh>
-#include <mia/3d/transform.hh>
-
+#include <mia/3d/quaternion.hh>
+#include <mia/3d/matrix.hh>
+#include <mia/core/vector.hh>
 
 NS_MIA_BEGIN
+
 
 /**
    \ingroup basic 
    Basic image orientations based on the head 
  */
 enum E3DImageAxisOrientation {
-	ior_unknown = 0,   /**< stopper index */
+
 	ior_default = 1,   /**< look from above or below at the head */  
 
-	ior_xyz = 1,       /**< look from above or below at the head */  
-	ior_xzy = 2,       /**< look from behind or the font on the head */
-	ior_yxz = 3,        /**<look from above or below at the head */
-	ior_yzx = 4,        /**<look from left or right on the head */
-	ior_zxy = 5,        /**<look from behind or the font on the head */
-	ior_zyx = 6,        /**<look from left or right on the head */
+	ior_xyz         = 1,       /**< transversal head first */  
+	ior_xyz_flipped = 2,       /**< transversal feet first */  
+	ior_yxz         = 3,       /**< transversal head first xy transposed  */
+	ior_yxz_flipped = 4,       /**< transversal feet first xy transposed  */
+
+	ior_xzy         = 5,       /**< coronal face first */
+	ior_xzy_flipped = 6,       /**< coronal back first */
+	ior_zxy         = 7,       /**< coronal face first xz transposed */
+	ior_zxy_flipped = 8,       /**< coronal back first xz transposed */
+
+	ior_yzx         = 9,        /**< saggital left first */
+	ior_yzx_flipped =10,        /**< saggital right first */
+	ior_zyx         =11,        /**< saggital left first zy transposed */
+	ior_zyx_flipped =12,        /**< saggital right first zy transposed */
 
 
-	ior_axial = 1,     /**< look from above or below at the head */  
-	ior_coronal = 2,   /**< look from behind or the font on the head */
-	ior_saggital = 4,  /**<look from left or right on the head */
-	
-};
+	ior_axial = 1,     /**< standard axial/transversal orientation  */  
+	ior_coronal = 5,   /**< standard coronal orientation */
+	ior_saggital = 9,  /**< standard saggital orientation */
 
-
-
+	ior_unknown = 13,   /**< stopper index */	
+		};
 
 /**
    \brief This class represents the oriantation and position of a 3D data set. 
-
+   
    This class represents the oriantation and position of a 3D data set, by using 
    the following parameters: 
    - the location of the first data pixel (corresponds to DICOM tag (00020,00032)
    - the rotation about this point (corresponds to DICOM tag (00020,00037)
    - the axis ordering (axial, saggital, coronal) 
    - the flipping of the data 
-
+   
 */
 
 class C3DOrientationAndPosition {
-
+	
 	C3DOrientationAndPosition(); 
-
+	
 	C3DOrientationAndPosition(E3DImageAxisOrientation axis, 
 				  const C3DFVector& origin, 
 				  const C3DFVector& scale, 
 				  const Quaternion& rot); 
 	
-	P3DTransformation get_transform() const; 
-
-	P3DTransformation get_inverse_transform() const; 
+	void get_transform_parameters(CDoubleVector& params) const; 
+	
+	void get_inverse_transform_parameters(CDoubleVector& params) const; 
 
 	C3DOrientationAndPosition& operator +=(const C3DOrientationAndPosition& other); 
-
+	
 	bool operator == (const C3DOrientationAndPosition& other) const; 
-
+	
 private:
-
-	const C3DFMatrix get_axis_switch_matrix() const: 
+	
+	const C3DFMatrix& get_axis_switch_matrix() const; 
 	
 	E3DImageAxisOrientation m_axisorder; 
 	C3DFVector m_origin; 

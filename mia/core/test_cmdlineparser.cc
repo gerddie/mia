@@ -40,14 +40,13 @@ private:
 
 };
 
-const SProgramDescription general_help = {
-	"Test", 
-	"program tests", 
-	"This program tests the command line parser.", 
-	NULL, 
-	NULL
-}; 
-
+const SProgramDescription general_help{
+	{pdi_group, "Test"}, 
+	{pdi_short, "program tests"}, 
+	{pdi_description, "This program tests the command line parser."}, 
+	{pdi_example_descr, "Example text"}, 
+	{pdi_example_code, "Example command"}
+};
 
 BOOST_FIXTURE_TEST_CASE( test_set_option, CmdlineParserFixture )
 {
@@ -95,10 +94,11 @@ BOOST_FIXTURE_TEST_CASE( test_string_vector_option, CmdlineParserFixture )
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_float_vector_option, CmdlineParserFixture )
+
+BOOST_FIXTURE_TEST_CASE( test_float_vector_option_expect_two, CmdlineParserFixture )
 {
 	const char *str_value = "1.2,1.4";
-	vector<float> value;
+	vector<float> value(2);
 	PCmdOption popt(make_opt(value, "float", 's', "a float vector option"));
 	try {
 		popt->set_value(str_value);
@@ -110,6 +110,14 @@ BOOST_FIXTURE_TEST_CASE( test_float_vector_option, CmdlineParserFixture )
 	catch (invalid_argument& x) {
 		BOOST_FAIL(x.what());
 	}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_float_vector_option_expect_two_failed, CmdlineParserFixture )
+{
+	const char *str_value = "1.2,1.4,2.3";
+	vector<float> value(2);
+	PCmdOption popt(make_opt(value, "float", 's', "a float vector option"));
+	BOOST_CHECK_THROW(popt->set_value(str_value), invalid_argument); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_string_option, CmdlineParserFixture )
@@ -127,6 +135,7 @@ BOOST_FIXTURE_TEST_CASE( test_string_option, CmdlineParserFixture )
 		BOOST_FAIL(x.what());
 	}
 }
+
 
 BOOST_FIXTURE_TEST_CASE( test_float_option, CmdlineParserFixture )
 {
@@ -366,11 +375,11 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 }
 
 const SProgramDescription general_help_test = {
-	"Test", 
-	"Short descr",
-	"This program tests the command line parser.", 
-	"Example text", 
-	"Example command"
+	{pdi_group,"Test"}, 
+	{pdi_short,"Short descr"},
+	{pdi_description,"This program tests the command line parser."}, 
+	{pdi_example_descr, "Example text"}, 
+	{pdi_example_code, "Example command"}
 }; 
 
 BOOST_FIXTURE_TEST_CASE( test_parser_usage_output, CmdlineParserFixture )
@@ -412,8 +421,10 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "                        verbosity of output, print messages of given \n"
 			  "                        level and higher priorities. Supported \n"
 			  "                        priorities starting at lowest level are: \n"
+#ifndef NDEBUG 
 			  "                          trace: Function call trace\n"
 			  "                          debug: Debug output\n"
+#endif 
 			  "                          info: Low level messages\n"
 			  "                          message: Normal messages\n"
 			  "                          warning: Warnings\n"
@@ -428,13 +439,27 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "Example usage:\n  Example text\n"
 			  "    \n    test-program Example command\n\n"
 			  "Copyright:\n"
-			  "  This software is copyright (c) Gert Wollny et al. It comes with  \n"
-			  "  ABSOLUTELY NO WARRANTY and you may redistribute it under the terms \n"
-			  "  of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). For more \n"
-			  "  information run the program with the option '--copyright'.\n  \n"); 
+			  "  This software is Copyright (c) 1999-2012 Leipzig, Germany and \n"
+			  "  Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and you may \n"
+			  "  redistribute it under the terms of the GNU GENERAL PUBLIC LICENSE \n"
+			  "  Version 3 (or later). For more information run the program with the\n"
+			  "  option '--copyright'.\n  \n"); 
   
 
 	BOOST_CHECK_EQUAL(output.str().size(), test.size()); 
 	BOOST_CHECK_EQUAL(output.str(), test); 
+
+	if (output.str() != test) {
+		auto io = output.str().begin(); 
+		auto it = test.begin(); 
+		while (io != output.str().end() && it != test.end()) {
+			if (*io == *it) 
+				cerr << *io; 
+			else 
+				break; 
+			++io; 
+			++it; 
+		}
+	}
 }
 

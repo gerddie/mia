@@ -36,9 +36,11 @@ TIOPlugin<D>::TIOPlugin(const char *name):
 
 
 template <typename D> 
-void TIOPlugin<D>::add_suffixes(std::multimap<std::string, std::string>& map) const
+void TIOPlugin<D>::add_suffixes(std::multimap<std::string, std::string>& map)const 
 {
-	do_add_suffixes(map); 
+	for (auto s = m_suffixes.begin(); s != m_suffixes.end(); ++s) 
+		map.insert(std::pair<std::string, std::string>(*s, this->get_name())); 
+
 }
 
 template <typename D> 
@@ -56,6 +58,36 @@ bool TIOPlugin<D>::save(const std::string& fname, const Data& data) const
 	return do_save(fname, data);
 }
 
+template <typename I, typename T>
+std::string get_values_as_string(I begin, I end, T translate)
+{
+	assert(begin != end); 
+	std::stringstream str; 
+	str << translate(*begin++); 
+	while (begin != end) 
+		str << ", " << translate(*begin++); 
+	return str.str(); 
+}
+
+template <typename D> 
+void TIOPlugin<D>::do_get_help_xml(xmlpp::Element& root) const
+{
+	//flag that docu should not print help about non-existent parameters 
+	root.add_child("noparam"); 
+
+	if (!m_suffixes.empty()) {
+		auto suffix_docu = root.add_child("suffixes");
+		auto s = get_values_as_string(m_suffixes.begin(), m_suffixes.end(),
+					      [](const std::string& s){return s;}); 
+		suffix_docu->set_child_text(s); 
+	}
+	if (!m_typeset.empty()) {
+		auto type_docu = root.add_child("datatypes");
+		auto s = get_values_as_string(m_typeset.begin(), m_typeset.end(),
+					      [](EPixelType pt){return CPixelTypeDict.get_help(pt);}); 
+		type_docu->set_child_text(s); 
+	}
+}
 
 template <typename D> 
 const typename TIOPlugin<D>::PixelTypeSet& TIOPlugin<D>::supported_pixel_types() const
@@ -71,11 +103,16 @@ void TIOPlugin<D>::add_supported_type(EPixelType t)
 	m_typeset.insert(t); 
 }
 
-// io plugins are not tested internally
 template <typename D> 
-bool TIOPlugin<D>::do_test() const
+void TIOPlugin<D>::add_suffix(const std::string& suffix)
 {
-	return true; 
+	m_suffixes.insert(suffix); 
+}
+
+template <typename D> 
+const typename TIOPlugin<D>::SuffixSet& TIOPlugin<D>::get_suffixes() const
+{
+	return m_suffixes; 
 }
 
 template <typename D> 

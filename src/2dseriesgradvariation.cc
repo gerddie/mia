@@ -29,8 +29,8 @@
 #include <stdexcept>
 //#include <boost/algorithm/minmax_element.hpp>
 
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/core.hh>
 
@@ -38,21 +38,22 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
 
-	"Evaluate the time-intensity gradient variation in a series of images.", 
+	{pdi_short, "Evaluate the time-intensity gradient variation in a series of images."}, 
 	
-	"Given a set of images of temporal sucession, this program evaluates the "
-	"gradient variation of the pixel-wise time-intensity curves of this series. "
-	"If the input image set provides a segmentation, then this segmentation can "
-	"be used to create a bounding box and restrict evaluation to this box. ", 
+	{pdi_description, "Given a set of images of temporal sucession, this program evaluates the "
+	 "gradient variation of the pixel-wise time-intensity curves of this series. "
+	 "If the input image set provides a segmentation, then this segmentation can "
+	 "be used to create a bounding box and restrict evaluation to this box. "}, 
 
-	"Evaluate the gradient-variation image of the bounding box surrounding the segmentation "
-	"from a series 'segment.set'. The bounding box will be enlarged by 3 pixels in all directions. "
-	"Store the image in OpenEXR format.", 
+	{pdi_example_descr, "Evaluate the gradient-variation image of the bounding box surrounding the segmentation "
+	 "from a series 'segment.set'. The bounding box will be enlarged by 3 pixels in all directions. "
+	 "Store the image in OpenEXR format."}, 
 	
-	" -i segment.set -o gradvar.exr -c -e 3"
+	{pdi_example_code,	" -i segment.set -o gradvar.exr -c -e 3"}
 }; 
+
 
 struct C2DVarAccumulator : public TFilter<bool> {
 
@@ -134,12 +135,12 @@ int do_main( int argc, char *argv[] )
 	size_t skip = 0;
 	size_t enlarge_boundary = 5;
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required, &imageio));
 	options.add(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
 	options.add(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
 	options.add(make_opt( crop, "crop", 'c', "crop image before running statistics"));

@@ -383,13 +383,38 @@ protected:
 	 */
 	virtual void do_descr(std::ostream& os) const;
 private:
-	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
+	virtual bool do_set(const std::string& str_value);
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const; 
+
 	T& m_value;
 	T m_default_value; 
 };
+
+
+/// an string parameter
+class CStringParameter: public  CParameter {
+public: 
+	CStringParameter(std::string& value, bool required, const char *descr, 
+			 const CPluginHandlerBase *plugin_hint = NULL); 
+
+private: 
+	virtual void do_reset();
+	virtual bool do_set(const std::string& str_value);
+	virtual std::string do_get_default_value() const; 
+	virtual std::string do_get_value_as_string() const; 
+
+	virtual void do_descr(std::ostream& os) const;
+	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map)const; 
+
+
+	std::string& m_value;
+	std::string m_default_value; 
+	const CPluginHandlerBase *m_plugin_hint; 
+}; 
+
 
 /// an integer parameter (with range)
 typedef TRangeParameter<int> CIntParameter;
@@ -399,8 +424,6 @@ typedef TRangeParameter<unsigned int> CUIntParameter;
 typedef TRangeParameter<float> CFloatParameter;
 /// a double parameter (with range)
 typedef TRangeParameter<double> CDoubleParameter;
-/// an string parameter
-typedef CTParameter<std::string> CStringParameter;
 /// boolean parameter
 typedef CTParameter<bool> CBoolParameter;
 
@@ -448,6 +471,15 @@ CParameter *make_param(std::unique_ptr<T>& value, const std::string& init,  bool
 	return new TFactoryParameter<F>(value, init, required, descr);
 	
 }
+
+
+template <typename T> 
+CParameter *make_param(T& value, bool required, const char *descr) 
+{                       
+	return new TParameter<T>(value, required, descr);
+}
+
+
 
 //// implementations 
 
@@ -499,6 +531,7 @@ void CDictParameter<T>::do_descr(std::ostream& os) const
 template <typename T>
 void CDictParameter<T>::do_get_help_xml(xmlpp::Element& self) const
 {
+	TRACE_FUNCTION; 
 	auto dict = self.add_child("dict"); 
 	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
 		auto v = dict->add_child("value"); 

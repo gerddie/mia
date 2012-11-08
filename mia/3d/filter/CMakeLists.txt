@@ -33,12 +33,13 @@ SET(filters3dNew
   median 
   mlv 
   morphological 
-  reorient 
+#  reorient 
   resize
   scale
   seededwatershed
   selectbig
   sepconv 
+  tee
   watershed
   )
 

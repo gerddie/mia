@@ -294,7 +294,6 @@ public:
 private:
 
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
 	mutable int m_hw;
@@ -311,11 +310,6 @@ C2DMLVnFifoFilterPlugin::C2DMLVnFifoFilterPlugin():
 const string C2DMLVnFifoFilterPlugin::do_get_descr() const
 {
 	return "Mean of Least Variance 2D stack image filter";
-}
-
-bool C2DMLVnFifoFilterPlugin::do_test() const
-{
-	return true;
 }
 
 C2DImageFifoFilter *C2DMLVnFifoFilterPlugin::do_create()const

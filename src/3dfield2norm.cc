@@ -19,22 +19,19 @@
  */
 
 
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/core/cmdlineparser.hh>
 
 NS_MIA_USE;
+using namespace std; 
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
-
-	"Evaluate the norm image of a 3D vector field.", 
-	
-	"This program converts a 3d vector field to an image of its voxel-wise norm.", 
-
-	"Evaluate the norm image norm.v from a vector field field.v.", 
-	
-	"-i field.v -o norm.v"
+        {pdi_group, "Miscellaneous programs"}, 
+	{pdi_short, "Evaluate the norm image of a 3D vector field."}, 
+	{pdi_description, "This program converts a 3d vector field to an image of its voxel-wise norm."}, 
+	{pdi_example_descr, "Evaluate the norm image norm.v from a vector field field.v."}, 
+	{pdi_example_code, "-i field.v -o norm.v"}
 }; 
 
 struct FVector2Norm {
@@ -50,8 +47,8 @@ int do_main(int argc, char *argv[])
 	
 	CCmdOptionList options(g_description);
 	
-	options.add(make_opt( src_filename, "in", 'i', "input vector field", CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "output image", CCmdOption::required));
+	options.add(make_opt( src_filename, "in", 'i', "input vector field", CCmdOption::required, &C3DVFIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out", 'o', "output image", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

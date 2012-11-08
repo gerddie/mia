@@ -150,7 +150,6 @@ public:
 	C2DRegModel *do_create()const;
 
 private:
-	bool do_test() const;
 	const string do_get_descr()const;
 
 	float m_mu;
@@ -185,11 +184,6 @@ C2DRegModel *C2DNavierRegModelPlugin::do_create()const
 {
 	return new C2DNavierRegModel(m_mu, m_lambda,
 				     m_maxiter, m_omega, m_epsilon);
-}
-
-bool C2DNavierRegModelPlugin::do_test() const
-{
-	return true;
 }
 
 const string C2DNavierRegModelPlugin::do_get_descr()const

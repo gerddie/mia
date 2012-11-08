@@ -119,17 +119,16 @@ void ensure_single_refered(std::shared_ptr<T >& data)
 void CTriangleMeshData::evaluate_normals()
 {
 	assert(m_vertices && m_triangles);
-	cvdebug() << "CTriangleMeshData::evaluate_normals()\n";
+	cvdebug() << "CTriangleMeshData::evaluate_normals() from " << m_vertices->size() << " vertices\n";
 
-	int errors = 0;
-	if (!m_normals)
+	if (!m_normals || m_normals->empty() )
 		// if no normals are available yet, created them
 		m_normals.reset(new CTriangleMesh::CNormalfield(m_vertices->size()));
 	else
 		// before overwriting the normales, make sure we work on this set
 		ensure_single_refered(m_normals);
 	// zero out normals
-	m_normals->clear();
+	fill(m_normals->begin(), m_normals->end(), C3DFVector::_0); 
 
 	// the writable iterators, index operators  do check against multiple referencing of the data.
 	// We only need read access, therefore a const reference makes sure,
@@ -139,43 +138,42 @@ void CTriangleMeshData::evaluate_normals()
 
 	cvdebug() << "Mesh has " << ctriangles.size() << " triangles\n";
 	// run overall triangles
-	CTriangleMesh::const_triangle_iterator t = ctriangles.begin();
-	CTriangleMesh::const_triangle_iterator et = ctriangles.end();
+	auto t = ctriangles.begin();
+	auto et = ctriangles.end();
 
+	int i = 0; 
 	while (t != et) {
 		C3DFVector e1 = (*m_vertices)[t->x] - (*m_vertices)[t->y];
 		C3DFVector e2 = (*m_vertices)[t->z] - (*m_vertices)[t->y];
 		C3DFVector e3 = (*m_vertices)[t->z] - (*m_vertices)[t->x];
 		C3DFVector help_normal = e2 ^ e1;
-		if (help_normal.norm2() == 0 && errors < 10) {
-			cverr() <<"CTriangleMeshData::evaluate_normals(): triangle "<< *t << " has zero normal\n";
-			++errors;
-			continue;
+		if (help_normal.norm2() > 0) {
+			float weight1 = acos((dot(e1,e2)) / (e1.norm() * e2.norm()));
+			float weight2 = acos((dot(e3,e2)) / (e3.norm() * e2.norm()));
+			(*m_normals)[t->y] += weight1 * help_normal;
+			(*m_normals)[t->z] += weight2 * help_normal;
+			
+			float weight3 = M_PI - weight1  - weight2;
+			
+			(*m_normals)[t->x] += weight3 * help_normal;
+		}else {
+			cverr() <<"CTriangleMeshData::evaluate_normals(): triangle " << i << ":" << *t << " with corners [" 
+				<< e1 << e2 << e3 << "] has zero normal\n";
 		}
-		float weight1 = acos((dot(e1,e2)) / (e1.norm() * e2.norm()));
-		float weight2 = acos((dot(e3,e2)) / (e3.norm() * e2.norm()));
-		(*m_normals)[t->y] += weight1 * help_normal;
-		(*m_normals)[t->z] += weight2 * help_normal;
-
-		float weight3 = M_PI - weight1  - weight2;
-
-		(*m_normals)[t->x] += weight3 * help_normal;
 		++t;
+		++i; 
 	}
 
+	cvdebug() << "normalize " << m_normals->size() << " normals\n"; 
 	// normalize the normals
-	CTriangleMesh::normal_iterator bn = m_normals->begin();
-	CTriangleMesh::normal_iterator en = m_normals->end();
-
-	while (bn != en) {
-		float norm = (*bn).norm();
-		if (norm > 0)
-			*bn /= norm;
-		++bn;
-	}
+	for_each(m_normals->begin(), m_normals->end(), 
+		 [](C3DFVector& n) -> void {
+			 float norm = n.norm();
+			 if (norm > 0) {
+				 n /= norm;
+			 }
+		 }); 
 }
-// void CTriangleMeshData::evaluate_normals()
-//
 
 
 CTriangleMesh::CTriangleMesh(const CTriangleMesh& orig):
@@ -189,6 +187,11 @@ CTriangleMesh::CTriangleMesh( PTrianglefield triangles,  PVertexfield vertices,
 			      PColorfield colors,
 			      PScalefield scale):
 	data(new CTriangleMeshData(triangles, vertices, normals, colors, scale))
+{
+}
+
+CTriangleMesh::CTriangleMesh(int n_triangles, int n_vertices):
+	data(new CTriangleMeshData(n_triangles, n_vertices))
 {
 }
 
@@ -454,7 +457,9 @@ void CTriangleMesh::evaluate_normals()
 	data->evaluate_normals();
 }
 
-const char *io_mesh_type::data_descr = "mesh";
+
+
+const char *CTriangleMesh::data_descr = "mesh";
 NS_MIA_END
 
 #include <mia/core/ioplugin.cxx>
@@ -466,11 +471,11 @@ template <> const char *  const
 TPluginHandler<CMeshIOPlugin>::m_help =  
    "These plug-ins implement loading and saving of simple triangular meshes from and to various file formats.";
 
-template class TIOPlugin<io_mesh_type>;
+template class TIOPlugin<CTriangleMesh>;
 template class TPluginHandler<CMeshIOPlugin>;
 template class TIOPluginHandler<CMeshIOPlugin>;
 template class THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
-template class TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
+
 
 
 NS_MIA_END

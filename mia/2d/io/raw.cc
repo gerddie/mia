@@ -31,7 +31,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_BEGIN(IMAGEIO_2D_RAW)
 
@@ -48,7 +48,6 @@ public:
 	friend struct C2DRawImageSaver;
 
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -66,12 +65,10 @@ CRaw2DImageIO::CRaw2DImageIO():
 	add_supported_type(it_sbyte);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_bit);
-}
 
-void CRaw2DImageIO::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".raw", get_name()));
-	map.insert(pair<string,string>(".RAW", get_name()));
+	add_suffix(".raw");
+	add_suffix(".RAW");
+
 }
 
 CRaw2DImageIO::PData CRaw2DImageIO::do_load(string const& /*filename*/)const

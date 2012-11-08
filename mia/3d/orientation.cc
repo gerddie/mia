@@ -38,7 +38,7 @@ C3DOrientationAndPosition::C3DOrientationAndPosition(E3DImageAxisOrientation axi
 	m_axisorder(axis), 
 	m_origin(origin), 
 	m_scale(scale), 
-	m_rotation(rotation)
+	m_rotation(rot)
 {
 }
 
@@ -46,9 +46,9 @@ void C3DOrientationAndPosition::get_transform_parameters(CDoubleVector& params) 
 {
 	assert(params.size() == 12); 
 
-	const C3DMatrix& axis_switch = get_axis_switch_matrix(); 
+	const C3DFMatrix& axis_switch = get_axis_switch_matrix(); 
 	const C3DFMatrix rot = m_rotation.get_rotation_matrix(); 
-	const C3DFMatrix scale(C3DFVector(m_scale.x, 0, 0), C3DFVector(0, m_scale.y, 0), C3DFVector(0,0, m_scalele.z)); 
+	const C3DFMatrix scale(C3DFVector(m_scale.x, 0, 0), C3DFVector(0, m_scale.y, 0), C3DFVector(0,0, m_scale.z)); 
 
 	C3DFMatrix rs = axis_switch * (rot * scale);
 	C3DFVector t = axis_switch * m_origin;
@@ -76,14 +76,14 @@ void C3DOrientationAndPosition::get_transform_parameters(CDoubleVector& params) 
 
 }
 
-void get_inverse_transform_parameters(CDoubleVector& params) const
+void C3DOrientationAndPosition::get_inverse_transform_parameters(CDoubleVector& params) const
 {
 	assert(params.size() == 12);
-	const C3DMatrix& axis_switch = get_axis_switch_matrix(); 
+	const C3DFMatrix& axis_switch = get_axis_switch_matrix(); 
 	const C3DFMatrix rot = m_rotation.get_rotation_matrix().transposed(); 
 	const C3DFMatrix scale(C3DFVector(1.0/m_scale.x, 0, 0), 
 			       C3DFVector(0, 1.0/m_scale.y, 0), 
-			       C3DFVector(0,0, 1.0/m_scalele.z)); 
+			       C3DFVector(0,0, 1.0/m_scale.z)); 
 
 	const C3DFMatrix sr = scale * rot;
 	const C3DFVector mt = C3DFVector::_0 - m_origin; 
@@ -115,7 +115,7 @@ void get_inverse_transform_parameters(CDoubleVector& params) const
 
 }
 
-const C3DFMatrix& C3DOriantationAndPosition::get_axis_switch_matrix() const
+const C3DFMatrix& C3DOrientationAndPosition::get_axis_switch_matrix() const
 {
 	switch (m_axisorder) {
 	case ior_xyz: return ms_order_XYZ; 
@@ -130,17 +130,15 @@ const C3DFMatrix& C3DOriantationAndPosition::get_axis_switch_matrix() const
 	}
 }
 
-C3DOriantationAndPosition& operator +=(const C3DOriantationAndPosition& other); 
+C3DOrientationAndPosition& C3DOrientationAndPosition::operator +=(const C3DOrientationAndPosition& other)
+{
+	assert(0 && "to be implemented"); 
+}
 
-bool operator == (const C3DOriantationAndPosition& other) const; 
-
-private:
-	
-	E3DImageAxisOrientation m_axisorder; 
-	C3DFVector m_origin; 
-	C3DFVector m_scale; 
-	Quaternion m_rotation; 
-	bool m_flipped;
+bool C3DOrientationAndPosition::operator == (const C3DOrientationAndPosition& other) const
+{
+	assert(0 && "to be implemented"); 
+}
 
 
 EXPORT_3D  std::ostream& operator << (std::ostream& os, E3DImageAxisOrientation orient)

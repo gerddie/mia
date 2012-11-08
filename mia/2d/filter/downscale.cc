@@ -113,7 +113,8 @@ C2DDownscaleFilterPlugin::C2DDownscaleFilterPlugin():
 
 	add_parameter("kernel", new CStringParameter(m_filter, false,
 						     "smoothing filter kernel to be applied, the "
-						     "size of the filter is estimated based on the blocksize."));
+						     "size of the filter is estimated based on the blocksize.", 
+						     &C2DFilterPluginHandler::instance()));
 }
 
 C2DFilter *C2DDownscaleFilterPlugin::do_create()const

@@ -19,7 +19,7 @@
  */
 
 // this is for the definition of the 2D image plugin base classes
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 // start a namespace to avoid naming conflicts during runtime
 
@@ -55,7 +55,6 @@ public:
 	C2DSelectBigImageFilterFactory();
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-	virtual bool do_test()const {return true;};
 };
 
 NS_END

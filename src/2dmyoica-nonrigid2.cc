@@ -41,40 +41,22 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
-
-	"Run a registration of a series of 2D images.", 
-	
-	"This program runs the non-rigid registration of an perfusion image series."
-	"In each pass, first an ICA analysis is run to estimate and eliminate " 
-	"the periodic movement and create reference images with intensities similar "
-	"to the corresponding original image. Then non-rigid registration is run "
-	"using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the "
-	"divcurl cost weight are changed in each pass according to given parameters."
-	"In the first pass a bounding box around the LV myocardium may be extracted" 
-	"to speed up computation\n"
-	"Special note to this implemnentation: the registration is always run from the "
-	"original images to avoid the accumulation of interpolation errors.", 
-
-	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
-        "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result in 'registered.set'.", 
-
-	"  -i segment.set -o registered.set -k 2"
-}; 
-
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (const C2DFImage& image) const {
-		return P2DImage(new C2DFImage(image)); 
-	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
+	{pdi_description, "This program runs the non-rigid registration of an perfusion image series."
+	 "In each pass, first an ICA analysis is run to estimate and eliminate " 
+	 "the periodic movement and create reference images with intensities similar "
+	 "to the corresponding original image. Then non-rigid registration is run "
+	 "using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the "
+	 "divcurl cost weight are changed in each pass according to given parameters."
+	 "In the first pass a bounding box around the LV myocardium may be extracted" 
+	 "to speed up computation\n"
+	 "Special note to this implemnentation: the registration is always run from the "
+	 "original images to avoid the accumulation of interpolation errors."}, 
+ 	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by "
+	 "using automatic ICA estimation. Skip two images at the beginning and otherwiese "
+	 "use the default parameters. Store the result in 'registered.set'."}, 
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2"}
 }; 
 
 C2DFullCostList create_costs(double divcurlweight, double imageweight)
@@ -109,7 +91,7 @@ void segment_and_crop_input(CSegSetWithImages&  input_set,
 	auto cropper = ica.get_crop_filter(box_scale, crop_start, 
 					   segmethod, save_crop_feature); 
 	if (!cropper)
-		THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
+		throw create_exception<runtime_error>( "Cropping was requested, but segmentation failed"); 
 	C2DImageSeries input_images = input_set.get_images(); 
 	for(auto i = input_images.begin(); i != input_images.end(); ++i)
 		*i = cropper->filter(**i); 
@@ -256,7 +238,7 @@ int do_main( int argc, char *argv[] )
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 
 	// run ICA
@@ -275,7 +257,8 @@ int do_main( int argc, char *argv[] )
 	vector<C2DFImage> references_float = ica->get_references(); 
 	
 	C2DImageSeries references(references_float.size()); 
-	transform(references_float.begin(), references_float.end(), references.begin(), C2DFImage2PImage()); 
+	transform(references_float.begin(), references_float.end(), references.begin(), 
+		  FWrapStaticDataInSharedPointer<C2DImage>()); 
 
 	// crop if requested
 	if (box_scale) {
@@ -295,7 +278,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 
 	}
 	vector<P2DTransformation> transformations; 
@@ -319,7 +302,7 @@ int do_main( int argc, char *argv[] )
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	
 		transform(registered.begin() + skip_images, 
-			  registered.end(), series.begin(), Convert2Float()); 
+			  registered.end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
 		if (!ica2.run(series))
 			ica2.set_approach(FICA_APPROACH_SYMM); 
@@ -330,7 +313,7 @@ int do_main( int argc, char *argv[] )
 			c_rate /= c_rate_divider; 
 		references_float = ica2.get_references(); 
 		transform(references_float.begin(), references_float.end(), 
-			  references.begin(), C2DFImage2PImage()); 
+			  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
 		do_continue =  (!pass || current_pass < pass) && ica2.has_movement(); 
 		if (!do_continue && !save_crop_feature.empty()) {
 			stringstream cfile; 
@@ -366,13 +349,6 @@ int do_main( int argc, char *argv[] )
 
 }
 
-
-
-
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
-}
 
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main); 

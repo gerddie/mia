@@ -30,7 +30,7 @@
 #include <mia/internal/main.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 
 
@@ -45,18 +45,15 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
-	
-	"Non-linear registration of a series of 2D images.", 
-
-	"This program runs non-rigid registration of a series of images given in an image set. "
-	"All images are registered to one user defined reference image.", 
-
-	"Register the perfusion series given in segment.set by optimizing a spline based "
-	"transformation with a coefficient rate of 16 pixel "
-	"using Mutual Information and penalize the transformation by using divcurl with aweight of 2.0.", 
-
-	"-i segment.set -o registered.set -F spline:rate=16 image:cost=mi,weight=2.0 divcurl:weight=2.0"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Non-linear registration of a series of 2D images."}, 
+	{pdi_description, "This program runs non-rigid registration of a series of "
+	 "images given in an image set. All images are registered to one user defined reference image."}, 
+	{pdi_example_descr, "Register the perfusion series given in segment.set by optimizing a "
+	 "spline based transformation with a coefficient rate of 16 pixel using Mutual Information "
+	 "and penalize the transformation by using divcurl with aweight of 2.0."}, 
+	{pdi_example_code, "-i segment.set -o registered.set -F spline:rate=16 "
+	 "image:cost=mi,weight=2.0 divcurl:weight=2.0"}
 }; 
 
 C2DFullCostList create_costs(const vector<string>& costs, int idx)
@@ -148,7 +145,8 @@ int do_main( int argc, char *argv[] )
 				    "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', 
 				    "output perfusion data set", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "out-filebase", 0, "file name for registered fiels")); 
+	options.add(make_opt( registered_filebase, "out-filebase", 0, "file name basae for registered files, file "
+			      "Wtype is deducted from the image file type in the input data set.")); 
 
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( skip, "skip", 'k', "Skip images at the beginning of the series"));
@@ -201,6 +199,8 @@ int do_main( int argc, char *argv[] )
 	input_set.set_images(input_images); 									  
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
+
+	input_set.set_prefered_reference(reference); 
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );

@@ -20,7 +20,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/spacial_kernel.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 
 #include <limits>
@@ -52,9 +52,6 @@ public:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-
-	virtual void prepare_path() const;
-
 	mia::P1DSpacialKernel m_kx;
 	mia::P1DSpacialKernel m_ky;
 };

@@ -113,6 +113,9 @@ public:
 	/// @ returns a string containing the supported file type suffixes
 	const std::string get_supported_suffixes() const; 
 
+	/// @ returns a saet containing the supported file type suffixes
+	const std::set<std::string> get_supported_suffix_set() const; 
+
 	/**
 	   Translate the file type decriptor to the file suffix. 
 	   \param type type descriptor (plugin name);
@@ -125,15 +128,24 @@ protected:
 	/**
 	   constructor that is provided with a list of plugin search path. 
 	 */
-	TIOPluginHandler(const CPathNameArray& searchpath); 
+	TIOPluginHandler(); 
 
 private: 	
+
+	void do_initialise(); 
 	// a map of plugins 
 
 	CSuffixmap m_suffixmap; 
 
 	// list of supported compressd file suffixes
 	std::set<std::string> m_compress_sfx; 
+
+
+	// print out info about the available plug-ins 
+	void do_print_help(std::ostream& os) const;
+
+	std::string get_handler_type_string_and_help(std::ostream& os) const; 
+	std::string do_get_handler_type_string() const; 
 
 	/**
 	   Private plugin to handle the virtual data pool IO  
@@ -142,50 +154,15 @@ private:
 	public: 
 		CDatapoolPlugin(); 
 	private: 
-		void do_add_suffixes(typename TIOPluginHandler<I>::CSuffixmap& map) const; 
 		PData do_load(const std::string& fname) const;
 		bool do_save(const std::string& fname, 
 			     const typename Interface::Data& data) const; 
 		const std::string do_get_descr() const;
+		std::string do_get_preferred_suffix() const; 
+			
 	}; 
 	CDatapoolPlugin *m_pool_plugin; 
 }; 
-
-/**
-    \ingroup plugin
-    
-    \brief Singleton of the IO plugin handler 
-    
-    This makes a singleton from the IO plugin handler. This specification is needed 
-    to enable tests on plugin loading, where the search path has to be changed to 
-    the location of the uninstalled plug-ins. 
-    \tparam T must be some instanciation of TIOPluginHandler. 
-    \remark why is this not templated over the plugin interface I like above? 
-*/
-template <typename T>
-class EXPORT_HANDLER TIOHandlerSingleton : public THandlerSingleton<T> {
-public: 
-	/// inherit the suffix map of the handler class 
-	typedef typename T::CSuffixmap CSuffixmap; 
-	
-	/**
-	   Constructor used to override the plugin search path for testing 
-	   \param searchpath 
-	 */
-	TIOHandlerSingleton(const CPathNameArray& searchpath):
-		THandlerSingleton<T>(searchpath)
-		{
-		}
-
-	TIOHandlerSingleton()
-		{
-		}
-
-	/// \returns a reference to the only instance of the plugin handler 
-	static const T& instance(); 
-
-}; 
-
 
 /**
    \brief Explicitely instanciate all that is needed for an IO plugin 
@@ -194,7 +171,6 @@ public:
 #define EXPLICITE_INSTANCEIATE_IO_HANDLER(IOTYPE)			\
 	template class TIOPlugin<IOTYPE>;				\
 	template class THandlerSingleton<TIOPluginHandler<TIOPlugin<IOTYPE>>>;	\
-	template class TIOHandlerSingleton<TIOPluginHandler<TIOPlugin<IOTYPE>>>; \
 	template class TIOPluginHandler<TIOPlugin<IOTYPE>>;		\
 	template class TPluginHandler<TIOPlugin<IOTYPE>>		\
 
@@ -204,9 +180,10 @@ public:
    \remark what is this for? 
 */
 template <typename T>
-T load_image(const std::string& filename UNUSED)
+T load_image(const std::string& MIA_PARAM_UNUSED(filename))
 {
-	return T(); 
+	static_assert(sizeof(T) == 0, "The call to load_image must be resolved to a template specialization"); 
+
 }
 
 NS_MIA_END

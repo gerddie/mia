@@ -96,12 +96,10 @@ NS_MIA_END
 // remove the __attribute__ syntax if the compiler is not GCC compatible 
 #  define __attribute__(x) 
 #  define UNUSED 
-#else 
-#  define UNUSED __attribute__((unused))
 #endif
 
-#ifndef PARAM_UNUSED
-#define PARAM_UNUSED(x) x __attribute__((unused))
+#ifndef MIA_PARAM_UNUSED
+#define MIA_PARAM_UNUSED(x) x __attribute__((unused))
 #endif 
 
 

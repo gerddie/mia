@@ -20,7 +20,7 @@
 
 #include <mia/internal/plugintester.hh> 
 #include <mia/3d/creator/lattic.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 using namespace creator_lattic_3d;
 using namespace mia;

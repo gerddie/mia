@@ -24,8 +24,8 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/core.hh>
 #include <mia/internal/main.hh>
 
@@ -43,18 +43,15 @@ size_t log10(size_t x)
 }
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-
-	"Run filters on a series of 2D images.", 
-	
-	"This program runs a series filters on a series of consecutive numbered input image. "
-	"The filters are given as extra parameters "
-	"on the command line and are run in the order in which they are given.", 
-	
-	"Run a kmeans classification of 5 classes on images inputXXXX.png (X being digits) "
-	"and then a binarization of the 4th class and store the result in resultXXXX.png", 
-	
-	"-i input0000.png -o result -t png kmeans:c=5 binarize:min=4,max=4" 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+        {pdi_short,	"Run filters on a series of 2D images."}, 
+	{pdi_description, 	"This program runs a series filters on a series of "
+	 "consecutive numbered input image. The filters are given as extra parameters "
+	 "on the command line and are run in the order in which they are given."}, 
+	{pdi_example_descr, "Run a kmeans classification of 5 classes on images inputXXXX.png "
+	 "(X being digits) and then a binarization of the 4th class and store the result in "
+	 "resultXXXX.png"}, 
+	{pdi_example_code, "-i input0000.png -o result -t png kmeans:c=5 binarize:min=4,max=4"}
 }; 
 
 int do_main( int argc, char *argv[] )
@@ -70,9 +67,11 @@ int do_main( int argc, char *argv[] )
 		
 	
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name base", CCmdOption::required));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name base, the file type is set "
+			      " accurding to the 'type' option", CCmdOption::required, &imageio));
+	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',"output file type, if "
+			      "not given the input type is used"));
 		
 	options.set_group(g_help_optiongroup); 
 	options.add(make_help_opt( "help-filters", 0,

@@ -22,8 +22,8 @@
 #include <boost/filesystem.hpp>
 #include <mia/core/errormacro.hh>
 #include <mia/2d/SegSetWithImages.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 
 
 
@@ -69,7 +69,9 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 void CSegSetWithImages::set_images(const C2DImageSeries& series)
 {
 	if (series.size() != get_frames().size()) 
-		THROW(invalid_argument, "image set and number of segmentation frames must have same number of images"); 
+		throw create_exception<invalid_argument>("image set size (", series.size(), 
+					       ") and number of segmentation frames ",
+					       get_frames().size(), "must have same number of images"); 
 	m_images = series; 
 }
 
@@ -88,7 +90,7 @@ void CSegSetWithImages::save_images(const string& filename) const
 			image_name : (src_path / bfs::path(image_name)).string(); 
                         
 		if (!save_image(filename, *iimage))
-			THROW(runtime_error, "unable to save image to " << image_name ); 
+			throw create_exception<runtime_error>("CSegSetWithImages:unable to save image to '",image_name, "'" ); 
 		++iframe; 
 		++iimage; 
 	}

@@ -37,7 +37,7 @@ typedef TIOPlugin<C3DLandmarklist> C3DLandmarklistIOPlugin;
    @ingroup io 
    @brief 3D Landmark list IO plugin handler 
 */
-typedef TIOHandlerSingleton<TIOPluginHandler<C3DLandmarklistIOPlugin> > C3DLandmarklistIOPluginHandler;
+typedef THandlerSingleton<TIOPluginHandler<C3DLandmarklistIOPlugin> > C3DLandmarklistIOPluginHandler;
 
 /**   
       \ingroup tests 

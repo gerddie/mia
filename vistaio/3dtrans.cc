@@ -32,29 +32,30 @@
 NS_BEGIN(vista_3dtrans_io)
 
 NS_MIA_USE
-
+using namespace std; 
 
 class C3DVistaTransformationIO: public C3DTransformationIO {
 public: 	
 	C3DVistaTransformationIO(); 
 private: 
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual PData do_load(const std::string& fname) const;
 	virtual bool do_save(const std::string& fname, const C3DTransformation& data) const;
 	const string do_get_descr() const;
+	std::string do_get_preferred_suffix() const; 
 }; 
 
 
 C3DVistaTransformationIO::C3DVistaTransformationIO():
 	C3DTransformationIO("vista")
 {
+	add_suffix(".v3dt");
+	add_suffix(".v");
+
 }
 
-void C3DVistaTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
+std::string C3DVistaTransformationIO::do_get_preferred_suffix() const
 {
-	cvdebug() << "Add suffixes for '" << get_name() << "': v3dt v\n"; 
-	map.insert(pair<string,string>(".v3dt", get_name()));
-	map.insert(pair<string,string>(".v", get_name()));
+	return "v3dt"; 
 }
 
 P3DTransformation C3DVistaTransformationIO::do_load(const std::string& fname) const

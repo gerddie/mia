@@ -21,7 +21,7 @@
 #ifndef mia_3d_filter_median_hh
 #define mia_3d_filter_median_hh
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_BEGIN(median_3dimage_filter)
 
@@ -57,7 +57,6 @@ public:
 private:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string  do_get_descr() const;
-	virtual bool do_test() const;
 	int m_hw;
 };
 
@@ -69,7 +68,6 @@ public:
 private:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string  do_get_descr() const;
-	virtual bool do_test() const;
 	int m_hw;
 	float m_thresh;
 };

@@ -35,7 +35,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -52,7 +52,6 @@ class CTiff2DImageIO: public C2DImageIOPlugin {
 public:
 	CTiff2DImageIO();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -67,14 +66,12 @@ CTiff2DImageIO::CTiff2DImageIO():
 	add_supported_type(it_uint);
 	add_supported_type(it_ushort);
 	add_supported_type(it_ubyte);
-}
 
-void CTiff2DImageIO::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".tif", get_name()));
-	map.insert(pair<string,string>(".tiff", get_name()));
-	map.insert(pair<string,string>(".TIF", get_name()));
-	map.insert(pair<string,string>(".TIFF", get_name()));
+	add_suffix(".tif");
+	add_suffix(".tiff");
+	add_suffix(".TIF");
+	add_suffix(".TIFF");
+
 }
 
 typedef TIFF * PTIFF;

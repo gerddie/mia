@@ -42,7 +42,7 @@ int CFlagString::get(const string& flags)const
 	for (auto i = flags.begin(); i != flags.end(); ++i) {
 		auto f = m_map.find(*i);
 		if (f == m_map.end())
-			THROW(invalid_argument, "CFlagString::get: flag '" << *i << "' unknown");
+			throw create_exception<invalid_argument>("CFlagString::get: flag '", *i, "' unknown");
 		result |= f->second;
 	}
 	return result;

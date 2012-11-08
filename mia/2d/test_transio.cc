@@ -21,9 +21,10 @@
 #include <mia/internal/autotest.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
-#include <boost/static_assert.hpp>
 
 NS_MIA_USE; 
+using std::stringstream; 
+
 namespace bfs=::boost::filesystem; 
 
 CSplineKernelTestPath spline_kernel_path_init; 

@@ -22,7 +22,7 @@
 #define mia_3d_filter_morphological_hh
 
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/shape.hh>
 
 NS_BEGIN(morph_3dimage_filter)
@@ -75,10 +75,8 @@ public:
 private:
 	virtual mia::C3DFilter *do_create()const;
 	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const = 0;
-	virtual void prepare_path() const;
 
-
-	std::string m_shape_descr;
+	mia::P3DShape m_shape;
 	std::string m_hint;
 };
 
@@ -89,8 +87,6 @@ private:
 	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
-
-	virtual bool do_test() const;
 };
 
 
@@ -101,9 +97,6 @@ private:
 	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
-
-	virtual bool do_test() const;
-
 };
 
 
@@ -114,9 +107,6 @@ private:
 	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
-
-	virtual bool do_test() const;
-
 };
 
 class C3DCloseFilterFactory: public C3DMorphFilterFactory {
@@ -126,8 +116,6 @@ private:
 	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
-
-	virtual bool do_test() const;
 };
 
 

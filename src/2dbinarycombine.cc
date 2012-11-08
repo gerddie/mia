@@ -30,7 +30,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 
 using namespace std;
@@ -95,11 +95,12 @@ const TDictMap<EBinops>::Table g_binops_table[] = {
 const TDictMap<EBinops> g_binops_dict(g_binops_table);
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Combine two binary masks.", 
-	"This program is used to combine two binary images by some kind of operation.", 
-	NULL, 
-	NULL
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Combine two binary images."}, 
+	{pdi_description, "This program is used to combine two binary images by some kind of operation."}, 
+	{pdi_example_descr, "Combine the binary images b1.png and b2.png by using the 'nor' operation " 
+	 "and store the result in b1nor2.png."}, 
+	{pdi_example_code, "-1 b1.png -2 b2.png -p nor -o b1nor2.png"}
 }; 
 
 int do_main( int argc, char *argv[] )
@@ -110,12 +111,12 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	EBinops op = bin_nor; 
 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options(g_description);
-	
-	options.add(make_opt( filename1, "file1", '1', "input mask image 1", CCmdOption::required)); 
-	options.add(make_opt( filename2, "file2", '2', "input input mask image 2", CCmdOption::required)); 
+	options.add(make_opt( filename1, "file1", '1', "input mask image 1", CCmdOption::required, &imageio)); 
+	options.add(make_opt( filename2, "file2", '2', "input input mask image 2", CCmdOption::required, &imageio)); 
 	options.add(make_opt(op, g_binops_dict, "operation", 'p', "Operation to be applied")); 
-	options.add(make_opt( out_filename, "out-file", 'o', "output mask image", CCmdOption::required)); 
+	options.add(make_opt( out_filename, "out-file", 'o', "output mask image", CCmdOption::required, &imageio)); 
 
 
 
@@ -133,7 +134,7 @@ int do_main( int argc, char *argv[] )
 		P2DImage result = binary_op(img1, img2, op); 
 			
 		if ( !save_image(out_filename, result) ){
-			THROW(runtime_error, "cannot save result to " << out_filename); 
+			throw create_exception<runtime_error>( "cannot save result to ", out_filename); 
 		}
 			
 	}catch (bad_cast& x) {

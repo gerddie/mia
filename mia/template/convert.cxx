@@ -37,7 +37,7 @@ TConvert<Image>::TConvert(EPixelType pt, EPixelConversion ct, float a, float b):
 template <typename T, bool is_float> 
 struct __get_range {
 	static double apply() {
-		return double(numeric_limits<T>::max()) - double(numeric_limits<T>::min()) + 1; 
+		return double(std::numeric_limits<T>::max()) - double(std::numeric_limits<T>::min()) + 1; 
 	}
 };
 
@@ -60,14 +60,14 @@ struct __get_range<bool, false> {
 template <typename  T, bool is_float>
 struct __dispatch_min {
 	static double apply(long double x) {
-		return (x > numeric_limits<T>::min()) ? x : numeric_limits<T>::min(); 
+		return (x > std::numeric_limits<T>::min()) ? x : std::numeric_limits<T>::min(); 
 	}
 }; 
 
 template <typename  T>
 struct __dispatch_min<T, true> {
 	static double apply(long double x) {
-		return (x > -numeric_limits<T>::max()) ? x : -numeric_limits<T>::max(); 
+		return (x > -std::numeric_limits<T>::max()) ? x : -std::numeric_limits<T>::max(); 
 	}
 }; 
 
@@ -111,8 +111,8 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		my = 0.0; 
 		break; 
 	case pc_range: {
-		pair<S, S> src_minmax = get_minmax<S>::apply(); 
-		pair<T, T> trgt_minmax = get_minmax<T>::apply(); 
+		auto src_minmax = get_minmax<S>::apply(); 
+		auto trgt_minmax = get_minmax<T>::apply(); 
 
 		cvdebug() << "src_minmax = (" << src_minmax.first << ", " << src_minmax.second << ")\n"; 
 		cvdebug() << "trgt_minmax = (" << trgt_minmax.first << ", " << trgt_minmax.second << ")\n"; 
@@ -125,9 +125,8 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		break; 
 	}
 	case pc_opt: {
-		pair<T, T> trgt_minmax = get_minmax<T>::apply(); 
-		pair<typename T2DImage<S>::const_iterator, typename T2DImage<S>::const_iterator> 
-			src_minmax = ::boost::minmax_element(src.begin(), src.end()); 
+		auto trgt_minmax = get_minmax<T>::apply(); 
+		auto src_minmax = ::boost::minmax_element(src.begin(), src.end()); 
 		
 		cvdebug() << "src_minmax = (" << *src_minmax.first << ", " << *src_minmax.second << ")\n"; 
 		cvdebug() << "trgt_minmax = (" << trgt_minmax.first << ", " << trgt_minmax.second << ")\n"; 
@@ -144,7 +143,7 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		break; 
 	}
 	case pc_opt_stat: {
-		const pair<T, T> trgt_minmax = get_minmax<T>::apply(); 
+		const auto trgt_minmax = get_minmax<T>::apply(); 
 		const double q_trgt_range = 0.25 * (trgt_minmax.second - trgt_minmax.first); 
 		const auto meanvar = mean_var(src.begin(), src.end()); 
 		if (meanvar.second > 0) 
@@ -161,7 +160,7 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 	cvdebug() << "a=" << a << ", mx=" << mx << ", my= "<< my << '\n'; 
 	FPixelConverter<T,S> cv(a, mx, my);
 	
-	transform(src.begin(), src.end(), result->begin(), cv); 
+	std::transform(src.begin(), src.end(), result->begin(), cv); 
 	
 	return typename TConvert<Image>::result_type(result); 
 }
@@ -202,7 +201,7 @@ typename TConvert<Image>::result_type TConvert<Image>::do_filter(const Image& im
 
 template <class Image>
 TConvertFilterPlugin<Image>::TConvertFilterPlugin():
-	TImageFilterPlugin<Image>("convert"), 
+	TDataFilterPlugin<Image>("convert"), 
 	m_pixeltype(it_ubyte), 
 	m_convert(pc_opt),  
 	m_a(1.0), 
@@ -220,10 +219,10 @@ TConvertFilterPlugin<Image>::TConvertFilterPlugin():
 }
 
 template <class Image>
-TImageFilter<Image> *TConvertFilterPlugin<Image>::do_create()const
+TDataFilter<Image> *TConvertFilterPlugin<Image>::do_create()const
 {
 	if (m_pixeltype == it_bit)
-		throw invalid_argument("TConvert: for conversion to bit images you better use the 'binarize' filter"); 
+		throw std::invalid_argument("TConvert: for conversion to bit images you better use the 'binarize' filter"); 
 
 	return new TConvert<Image>(m_pixeltype,m_convert,m_a,m_b);
 }

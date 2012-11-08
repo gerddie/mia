@@ -32,7 +32,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/transformfactory.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 #include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
@@ -45,23 +45,24 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 3D images", 
+	{pdi_group, "Registration of series of 3D images"}, 
 
-	"Registration of series of 3D images", 	
+	{pdi_short, "Registration of series of 3D images"},
 	
-	"This program runs the non-rigid registration of an image series by "
-	"registereing all images to a user-selected reference.",
-
-	"Register the images given as numbered files imagesXXXX.v by optimizing a spline based " 
+	{pdi_description, "This program runs the non-rigid registration of an image series by "
+	 "registereing all images to a user-selected reference."},
+	
+	{pdi_example_descr,"Register the images given as numbered files imagesXXXX.v by optimizing a spline based " 
         "transformation with a coefficient rate of 16 pixel "
         "using  a weighted combination of normalized gradient fields "
         "and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0. "
-	"Store the resultsing images in registeredXXXX.v.", 
-
-	"-i images0000.v -o  registered%04d.v -F spline:rate=16 "
-	"image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0"
+	 "Store the resultsing images in registeredXXXX.v."}, 
+	 
+	{pdi_example_code, "-i images0000.v -o  registered%04d.v -F spline:rate=16 "
+	 "image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0"}
 	
 }; 
+
 
 C3DFullCostList create_costs(const std::vector<string>& costs, int idx)
 {
@@ -140,14 +141,15 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "out-file", 'o', 
-				    "file name for registered fiels")); 
-	
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", 			      
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
+	options.add(make_opt( registered_filebase, "out-file", 'o', "file name for registered files", 
+			      CCmdOption::not_required, &C3DImageIOPluginHandler::instance())); 
 	
 	options.set_group("\nRegistration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization", 
+			      CCmdOption::not_required, &CMinimizerPluginHandler::instance()
+			    ));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
@@ -179,7 +181,7 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw create_exception<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		input_images->push_back(image);

@@ -31,7 +31,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_BEGIN(ns_3d_io_inria)
 
@@ -71,8 +71,8 @@ private:
 
 	virtual PData do_load(const string&  filename) const;
 	virtual bool do_save(const string& fname, const Data& data) const;
-	virtual void do_add_suffixes(multimap<string, string>& map) const;
 	virtual const string do_get_descr() const;
+	std::string do_get_preferred_suffix() const; 
 };
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
@@ -95,6 +95,7 @@ CInria3DImageIOPlugin::CInria3DImageIOPlugin():
 	add_supported_type(it_sint);
 	add_supported_type(it_float);
 	add_supported_type(it_double);
+	add_suffix(".inr");
 }
 
 
@@ -566,14 +567,15 @@ bool CInria3DImageIOPlugin::do_save(string const&  filename, const C3DImageVecto
 	return filter(s, **data.begin());
 }
 
-void CInria3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
+
+std::string CInria3DImageIOPlugin::do_get_preferred_suffix() const
 {
-	map.insert(pair<string,string>(".inr", get_name()));
+	return "inr"; 
 }
 
 const string  CInria3DImageIOPlugin::do_get_descr() const
 {
-	return string("INRIA image input/output support");
+	return string("INRIA image");
 }
 
 

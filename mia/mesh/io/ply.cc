@@ -50,7 +50,6 @@ private:
 	virtual bool do_save(string const &  filename, const CTriangleMesh& data)const;
 
 	virtual const std::string  do_get_descr()const;
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	bool do_save_it(const CTriangleMesh& mesh, std::ostream& os)const;
 };
 
@@ -61,17 +60,14 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 
 TPlyMeshIO::TPlyMeshIO():CMeshIOPlugin(format)
 {
+	add_suffix(".ply");
+	add_suffix(".PLY");
+
 }
 
 const string  TPlyMeshIO::do_get_descr()const
 {
 	return string("Ply triangle mesh input/output support");
-}
-
-void TPlyMeshIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".ply", get_name()));
-	map.insert(pair<string,string>(".PLY", get_name()));
 }
 
 const string kennung("ply");

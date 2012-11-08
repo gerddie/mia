@@ -26,7 +26,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 //#include <mia/core/errormacro.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 
 
@@ -41,7 +41,6 @@ class CPNG2DImageIOPlugin : public C2DImageIOPlugin {
 public:
 	CPNG2DImageIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -54,12 +53,8 @@ CPNG2DImageIOPlugin::CPNG2DImageIOPlugin():
 	add_supported_type(it_ubyte);
 	add_supported_type(it_ushort);
 	add_property(io_plugin_property_has_attributes);
-}
-
-void CPNG2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".png", get_name()));
-	map.insert(pair<string,string>(".PNG", get_name()));
+	add_suffix(".png");
+	add_suffix(".PNG");
 }
 
 template <typename T>
@@ -317,9 +312,8 @@ template <typename T>
 CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image)const
 {
 	if (!pixel_trait<T>::supported ) {
-		THROW(invalid_argument, "input pixel format '"
-		      << typeid(T).name()
-		      << "' not supported by png writer");
+		throw create_exception<invalid_argument>("Input pixel format '", typeid(T).name(), 
+					       "' not supported by png writer");
 	}
 
 	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,

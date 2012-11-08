@@ -22,7 +22,7 @@
 #ifndef mia_3d_cost_ngf_hh
 #define mia_3d_cost_ngf_hh
 
-#include <mia/3d/3DVectorfield.hh>
+#include <mia/3d/vectorfield.hh>
 #include <mia/3d/cost.hh>
 #include <mia/3d/matrix.hh>
 
@@ -89,7 +89,6 @@ public:
 private:
 	virtual mia::C3DImageCost *do_create()const;
 
-	bool do_test() const;
 	const std::string do_get_descr()const;
 	std::string m_kernel;
 };

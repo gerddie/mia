@@ -22,7 +22,7 @@
 #include <fstream>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/ica.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -415,7 +415,7 @@ void C2DPerfusionAnalysisImpl::save_coefs(const string&  coefs_name) const
 		coef_file << "\n";
 	}
 	if (!coef_file.good())
-		THROW(runtime_error, "unable to save coefficients to " << coefs_name);
+		throw create_exception<runtime_error>("unable to save coefficients to '", coefs_name, "'");
 }
 
 

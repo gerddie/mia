@@ -24,7 +24,7 @@
 #include <vector>
 #include <mia/2d/SegStar.hh>
 #include <mia/2d/SegSection.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 NS_MIA_BEGIN
 
@@ -63,8 +63,9 @@ public:
 	/**
 	   Construct the segmentation frame from a XML root node
 	   \param node
+	   \param version segmentation set version the node stems from. 
 	 */
-	CSegFrame(const xmlpp::Node& node);
+	CSegFrame(const xmlpp::Node& node, int version);
 
 	/// \returns the file name of the corresponding image 
 	const std::string& get_imagename() const;
@@ -101,8 +102,9 @@ public:
 	/**
 	   Append the segmentation frame to a XML node 
 	   @param node parent node to append the frame description to 
+	   @param version segmentation set file version that should be used to save the data
 	 */
-	void write(xmlpp::Node& node) const;
+	void write(xmlpp::Node& node, int version) const;
 
 	/**
 	   Shift the segmentation frame and change the file name to the new name 
@@ -182,6 +184,22 @@ public:
 	   \returns number of segmented sections 
 	 */
 	size_t get_nsections() const; 
+
+	/**
+	   \returns slice quality rating 
+	 */
+	float get_quality() const; 
+
+	/**
+	   \returns proposed brightness correction 
+	 */
+	float get_brightness() const; 
+	
+         /**
+	    \returns proposed contrast correction 
+	 */
+	float get_contrast() const; 
+	
 private:
 	void load_image() const; 
 
@@ -190,6 +208,11 @@ private:
 	Sections m_sections;
 	std::string m_filename;
 	mutable P2DImage m_image; 
+
+	float m_quality; 
+	float m_brightness; 
+	float m_contrast; 
+	int m_version; 
 };
 
 NS_MIA_END

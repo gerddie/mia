@@ -31,31 +31,29 @@
 #include <dlfcn.h>
 
 #include <mia/core.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/3d/2dimagefifofilter.hh>
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 
 
 using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Processing of series of 2D images in a 3D fashion (out-of-core)", 
-
-	"Evaluate the distance between two binary shapes.", 
+	{pdi_group, "Processing of series of 2D images in a 3D fashion (out-of-core)"}, 
+	{pdi_short, "Evaluate the distance between two binary shapes."}, 
 	
-	"This program takes two binary masks as input and evaluates the distance of one "
+	{pdi_description, "This program takes two binary masks as input and evaluates the distance of one "
 	"mask with respect to the other in voxel space. The output is given as text file "
 	"with the coordinates of the source voxels and their distance to the reference "
-	"mask. Correction for voxel size must be done after processing.",
+	 "mask. Correction for voxel size must be done after processing."},
 
-	"Evaluate the distance of the mask given in the images srcXXXX.png to the mask "
-	"given in refXXXX.png and save the result to distances.txt", 
+	{pdi_example_descr, "Evaluate the distance of the mask given in the images srcXXXX.png to the mask "
+	 "given in refXXXX.png and save the result to distances.txt"}, 
 	
-	"-i srcXXXX.png -r refXXXX.png -o distances.txt"
-
-
+	{pdi_example_code, "-i srcXXXX.png -r refXXXX.png -o distances.txt"}
 }; 
+
 
 const float g_far = numeric_limits<float>::max(); 
 
@@ -231,11 +229,11 @@ void C3DDT::get_slice(size_t s, const C2DImage& image, vector<pair<C3DBounds, fl
 	
 	const C2DBitImage *src = dynamic_cast<const C2DBitImage*>(&image);
 	if (!src) {
-		THROW(invalid_argument, "input image " << s << "not of type bit"); 
+		throw create_exception<invalid_argument>( "input image ", s, "not of type bit"); 
 	}
 	
 	if (src->get_size() != _M_size) {
-		THROW(invalid_argument, "input image " << s << "has a dffernt size then reference"); 
+		throw create_exception<invalid_argument>( "input image ", s, "has a dffernt size then reference"); 
 	}
 	
 	C2DFImage slice_tmp(_M_size); 

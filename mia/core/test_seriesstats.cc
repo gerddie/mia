@@ -24,6 +24,8 @@
 
 NS_MIA_USE; 
 
+using std::vector; 
+
 BOOST_AUTO_TEST_CASE( test_seriesstats )
 {
 	FIntensityStatsAccumulator acc; 

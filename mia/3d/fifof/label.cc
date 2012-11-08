@@ -128,8 +128,10 @@ void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 				if (m_last_label < numeric_limits<unsigned short>::max()) 
 					*usi = m_last_label++;
 				else 
-					THROW(invalid_argument, "C2DLabelStackFilter: numer of connected components exeeds supported limit of " <<
-					      numeric_limits<unsigned short>::max() << ", sorry can't continue\n");   
+					throw create_exception<invalid_argument>("C2DLabelStackFilter: number of connected components is about to "
+								       "exeed the  supported limit of ",
+								       numeric_limits<unsigned short>::max(), 
+								       ", sorry can't continue\n");
 				*ii = false; 
 				grow(x,y,input,*usi); 
 			}
@@ -222,8 +224,8 @@ void C2DLabelStackFilter::post_finalize()
 		ofstream outfile(m_map_file.c_str(), ios_base::out );
 		m_target.save(outfile); 
 		if (!outfile.good()) {
-			THROW(runtime_error, "C2DLabelStackFilter: failed to save labale join map to '"
-			      << m_map_file << "'"); 
+			throw create_exception<runtime_error>("C2DLabelStackFilter: failed to save labale join map to '", 
+						    m_map_file, "'"); 
 		}
 	}
 }
@@ -240,19 +242,17 @@ public:
 private:
 
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
-	string m_neighborhood;
+	mia::P2DShape m_neighbourhood; 
 	string m_mapfile;
 };
 
 C2DLabelFifoFilterPlugin::C2DLabelFifoFilterPlugin():
-	C2DFifoFilterPlugin("label"),
-	m_neighborhood("4n")
+	C2DFifoFilterPlugin("label")
 {
-	add_parameter("n", new CStringParameter(m_neighborhood, false, 
-						"2D neighborhood shape to define connectedness"));
+	add_parameter("n", make_param(m_neighbourhood, "4n", false, 
+				      "2D neighbourhood shape to define connectedness"));
 	add_parameter("map", new CStringParameter(m_mapfile, true, 
 						  "Mapfile to save label numbers that are joined"));
 }
@@ -262,15 +262,9 @@ const string C2DLabelFifoFilterPlugin::do_get_descr() const
 	return "Stack Label filter";
 }
 
-bool C2DLabelFifoFilterPlugin::do_test() const
-{
-	return true;
-}
-
 C2DImageFifoFilter *C2DLabelFifoFilterPlugin::do_create()const
 {
-	auto shape = C2DShapePluginHandler::instance().produce(m_neighborhood); 
-	return new C2DLabelStackFilter(m_mapfile, shape);
+	return new C2DLabelStackFilter(m_mapfile, m_neighbourhood);
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

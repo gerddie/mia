@@ -32,14 +32,13 @@
 #include <iostream>
 
 NS_MIA_BEGIN
-
+using namespace std; 
 namespace bs=boost::serialization; 
 
 class C3DXMLTransformationIO: public C3DTransformationIO {
 public: 	
 	C3DXMLTransformationIO(); 
 private: 
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual PData do_load(const std::string& fname) const;
 	virtual bool do_save(const std::string& fname, const C3DTransformation& data) const;
 	const string do_get_descr() const;
@@ -49,12 +48,9 @@ private:
 C3DXMLTransformationIO::C3DXMLTransformationIO():
 	C3DTransformationIO("xml")
 {
+	add_suffix(".x3dt");
 }
 
-void C3DXMLTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".x3dt", get_name()));
-}
 
 P3DTransformation C3DXMLTransformationIO::do_load(const std::string& fname) const
 {

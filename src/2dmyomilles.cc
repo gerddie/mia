@@ -25,6 +25,7 @@
 #include <boost/filesystem.hpp>
 #include <itpp/signal/fastica.h>
 
+#include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
@@ -32,7 +33,7 @@
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/perfusion.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
 
@@ -41,40 +42,18 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (const C2DFImage& image) const {
-		return P2DImage(new C2DFImage(image)); 
-	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
-
 const SProgramDescription g_description = {
-	// .g_program_group =  
-	"Registration of series of 2D images", 
-
-	"Run a registration of a series of 2D images.", 	
-	// .g_general_help = 
-	"This program is use to run a modified version of the ICA based registration approach "
-	"described in Milles et al. 'Fully Automated Motion Correction in First-Pass Myocardial Perfusion "
-	"MR Image Sequences', Trans. Med. Imaging., 27(11), 1611-1621, 2008. Changes include the extraction " 
-	"of the quasi-periodic movement in free breathingly acquired data sets and the option to run "
-	"affine or rigid registration instead of the optimization of translations only.\n", 
-	
-	//.g_program_example_descr = 
-	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
-        "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result in 'registered.set'.\n", 
-	
-	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
+	{pdi_description, "This program is use to run a modified version of the ICA based registration approach "
+	 "described in Milles et al. 'Fully Automated Motion Correction in First-Pass Myocardial Perfusion "
+	 "MR Image Sequences', Trans. Med. Imaging., 27(11), 1611-1621, 2008. Changes include the extraction " 
+	 "of the quasi-periodic movement in free breathingly acquired data sets and the option to run "
+	 "affine or rigid registration instead of the optimization of translations only.\n"}, 
+	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by using "
+	 "automatic ICA estimation. Skip two images at the beginning and otherwiese use the default parameters. "
+	 "Store the result in 'registered.set'.\n"}, 
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2"}
 }; 
 
 void save_references(const string& save_ref, int current_pass, int skip_images, const C2DImageSeries& references)
@@ -171,7 +150,7 @@ int do_main( int argc, char *argv[] )
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 	
 	// run ICA
@@ -198,18 +177,19 @@ int do_main( int argc, char *argv[] )
 		input_set.set_LV_peak(ica.get_LV_peak_time() + skip_images);
 
 
-	
+
 	vector<C2DFImage> references_float = ica.get_references();
 	
 	C2DImageSeries references(references_float.size()); 
-	transform(references_float.begin(), references_float.end(), references.begin(), C2DFImage2PImage()); 
-
+	transform(references_float.begin(), references_float.end(), references.begin(), 
+		  FWrapStaticDataInSharedPointer<C2DImage>() );
+	
 	// crop if requested
 	if (box_scale) {
 		C2DBounds crop_start; 
 		auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
 		if (!cropper) {
-			THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
+			throw create_exception<runtime_error>( "Cropping was requested, but segmentation failed"); 
 		}
 		
 		for(auto i = input_images.begin(); i != input_images.end(); ++i)
@@ -240,7 +220,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 
 	}
 	
@@ -263,14 +243,14 @@ int do_main( int argc, char *argv[] )
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	
 		transform(input_images.begin() + skip_images, 
-			  input_images.end(), series.begin(), Convert2Float()); 
+			  input_images.end(), series.begin(), FCopy2DImageToFloatRepn()); 
 		if (!ica2.run(series))
 			ica2.set_approach(FICA_APPROACH_SYMM); 
 		if (ica2.run(series) ) {
 			references_float = ica2.get_references(); 
 
 			transform(references_float.begin(), references_float.end(), 
-				  references.begin(), C2DFImage2PImage()); 
+				  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
 
 			if (!ref_filebase.empty())
 				save_references(ref_filebase, current_pass, skip_images, references); 
@@ -304,13 +284,6 @@ int do_main( int argc, char *argv[] )
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 
-}
-
-
-
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
 }
 
 

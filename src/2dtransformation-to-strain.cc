@@ -24,8 +24,8 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/file.hh>
 #include <mia/2d/transformio.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2DDatafield.cxx>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/datafield.cxx>
 #include <miaconfig.h>
 
 #include <cstring>
@@ -37,16 +37,13 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 2D images", 
-	"Green strain tensor.", 
-
-	"Evaluate the Green strain tensor corresponding to a given 2Dtransformation.", 
-	
-	"Evaluate the Green strain tensor from the transformation stored in trans.v "
-        "and save it to output.v",
-	
-	"-i  trans.v  -o output.v"
-	
+        {pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
+	{pdi_short, "Green strain tensor."}, 
+	{pdi_description, "Evaluate the Green strain tensor corresponding to "
+	 "a given 2D transformation for each grid point."}, 
+	{pdi_example_descr, "Evaluate the Green strain tensor from the transformation stored in trans.v "
+	 "and save it to output.v"}, 
+	{pdi_example_code, "-i  trans.v  -o output.mt"}
 }; 
 
 int do_main(int argc, char **argv)
@@ -56,12 +53,12 @@ int do_main(int argc, char **argv)
 	string trans_filename;
 	string out_filename;
 
-	options.add(make_opt( trans_filename, "in-file", 'i', "input transformation", CCmdOption::required));
+	options.add(make_opt( trans_filename, "in-file", 'i', "input transformation", 
+			      CCmdOption::required, &C2DTransformationIOPluginHandler::instance()));
 	options.add(make_opt( out_filename, "out-file", 'o', "output Green's strain tensor", CCmdOption::required));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
 
 	auto transformation = C2DTransformationIOPluginHandler::instance().load(trans_filename);
 
@@ -86,8 +83,7 @@ int do_main(int argc, char **argv)
 	// save 
 	COutputFile output(out_filename); 
 	if (!output) 
-		THROW(runtime_error, "Unable to open '" << output << "' for writing:" <<
-		      strerror(errno)); 
+		throw create_exception<runtime_error>( "Unable to open '", out_filename, "' for writing:", strerror(errno)); 
 	
 
 	fprintf(output, "MIA\n"); 
@@ -105,8 +101,7 @@ int do_main(int argc, char **argv)
 	fprintf(output, "}\n\xC" );
 
 	if (fwrite(&tensorfield[0], sizeof(float),  tensorfield.size(), output) != tensorfield.size()) {
-		THROW(runtime_error, "Unable to write data to '" << output << "':" <<
-		      strerror(errno)); 
+		throw create_exception<runtime_error>( "Unable to write data to '", out_filename, "':", strerror(errno)); 
 	}
 	
 	return EXIT_SUCCESS;

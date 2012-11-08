@@ -19,7 +19,7 @@
  */
 
 #include <mia/core/filter.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 NS_BEGIN(ngfnorm_2dimage_filter)
 

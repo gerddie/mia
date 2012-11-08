@@ -23,25 +23,25 @@
 #include <stdexcept>
 #include <sstream>
 
-#include <mia/3d/3dimageio.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/core.hh>
 
 using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
-
-	"Add attributes to the meta data of a 3D image.", 
-
-	"This program appends all the meta-data attributes found in a 2D input image "
-	"to a 3D image (if the output format supports such attributes). "
-	"Attributes that are already present in the 3D image are not overwritten.", 
+	{pdi_group, "Miscellaneous programs"}, 
 	
-	"Append the attributes found in 2d.v to 3d.v and store the result in attr3d.v", 
+	{pdi_short, "Add attributes to the meta data of a 3D image."}, 
+	
+	{pdi_description, "This program appends all the meta-data attributes found in a 2D input image "
+	"to a 3D image (if the output format supports such attributes). "
+	 "Attributes that are already present in the 3D image are not overwritten."}, 
+	
+	{pdi_example_descr, "Append the attributes found in 2d.v to 3d.v and store the result in attr3d.v"}, 
 
-	" -i 3d.v -o attr3d.v -a 2d.v"
+	{pdi_example_code, " -i 3d.v -o attr3d.v -a 2d.v"}
 }; 
 
 int do_main( int argc, char *argv[] )
@@ -51,17 +51,17 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string attr_image;
 
-	const C2DImageIOPluginHandler::Instance& image2dio = C2DImageIOPluginHandler::instance();
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const auto& image2dio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", CCmdOption::required));
-	options.add(make_opt( attr_image, "attr", 'a',
-				    "2D image providing the attributes", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) with the added attributes", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( attr_image, "attr", 'a', "2D image providing the attributes", 
+			      CCmdOption::required, &image2dio));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -72,18 +72,16 @@ int do_main( int argc, char *argv[] )
 	//CHistory::instance().append(argv[0], "unknown", options);
 
 	// read image
-	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
-	C2DImageIOPluginHandler::Instance::PData  attr_image_list = image2dio.load(attr_image);
+	auto  in_image_list = imageio.load(in_filename);
+	auto  attr_image_list = image2dio.load(attr_image);
 
 
 	if ( in_image_list.get() && in_image_list->size() &&
 	     attr_image_list.get() && attr_image_list->size() ) {
 
 		P2DImage attr_image = *attr_image_list->begin();
-		for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-			     i != in_image_list->end(); ++i)
-			for (CAttributeMap::const_iterator a = attr_image->begin_attributes();
-			     a != attr_image->end_attributes(); ++a) {
+		for (auto i = in_image_list->begin();  i != in_image_list->end(); ++i)
+			for (auto a = attr_image->begin_attributes();  a != attr_image->end_attributes(); ++a) {
 				if (!(*i)->has_attribute(a->first))
 					(*i)->set_attribute(a->first, a->second);
 			}

@@ -19,7 +19,7 @@
  */
 
 #include <stdexcept>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 #include "mextypemap.hh"
 
 using namespace mia; 

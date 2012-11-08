@@ -40,7 +40,6 @@ private:
 	virtual PTriangleMesh do_load(string const &  filename) const;
 	virtual bool do_save(string const &  filename, const CTriangleMesh& data) const;
 	const string  do_get_descr() const;
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 };
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
@@ -56,6 +55,11 @@ CVistaMeshIO::CVistaMeshIO():
 	CMeshIOPlugin(format)
 {
 	//add_property(io_plugin_property_history);
+	add_suffix(".v");
+	add_suffix(".V");
+	add_suffix(".vmesh");
+	add_suffix(".VMESH");
+
 }
 
 const string  CVistaMeshIO::do_get_descr()const
@@ -808,14 +812,6 @@ bool CVistaMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh)c
 	VDestroyAttrList(list);
 
 	return result;
-}
-
-void CVistaMeshIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".v", get_name()));
-	map.insert(pair<string,string>(".V", get_name()));
-	map.insert(pair<string,string>(".vmesh", get_name()));
-	map.insert(pair<string,string>(".VMESH", get_name()));
 }
 
 NS_END

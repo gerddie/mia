@@ -28,19 +28,15 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	
-	"Evaluate the intensity variation of pixels in a series of images.", 
-	
-	"This program evaluates the pixel-wise accumulated intensity variation of "
-	"a set of image given on the command line. "
-	"If the input image files contain more then one image all images are used. "
-	"All images must be of the same size.", 
-	
-	"Evaluate the pixel-vise intensity variation of images i1.png, i2.png, "
-	"i3.png, and i4.png and store the result to var.v.",
-
-	"-o var.v i1.png i2.png i3.png i4.png"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Evaluate the intensity variation of pixels in a series of images."}, 
+	{pdi_description, "This program evaluates the pixel-wise accumulated intensity "
+	 "variation of a set of image given on the command line. "
+	 "If the input image files contain more then one image all images are used. "
+	 "All images must be of the same size."}, 
+	{pdi_example_descr, "Evaluate the pixel-vise intensity variation of images i1.png, i2.png, "
+	 "i3.png, and i4.png and store the result to var.v."}, 
+	{pdi_example_code, "-o var.v i1.png i2.png i3.png i4.png"}
 }; 
 
 
@@ -57,7 +53,7 @@ public:
 			m_sum = C2DDImage(image.get_size(), image);
 			m_sum2 = C2DDImage(image.get_size());
 		}else if (image.get_size() != m_sum.get_size()) {
-			THROW(invalid_argument, "input images differ in size");
+			throw create_exception<invalid_argument>( "input images differ in size");
 		}
 
 		transform(image.begin(), image.end(), m_sum.begin(), m_sum.begin(), 
@@ -96,9 +92,9 @@ int do_main( int argc, char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required, &imageio));
 
-	if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "image", &imageio) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

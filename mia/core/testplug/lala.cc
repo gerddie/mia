@@ -28,22 +28,16 @@ class CLalaIOPlugin : public CTestIOPlugin {
 public:
 	CLalaIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
-	bool do_test()const;
 	std::string do_get_preferred_suffix() const; 
 };
 
 CLalaIOPlugin::CLalaIOPlugin():
 	CTestIOPlugin("la")
 {
-}
-
-void CLalaIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".la", get_name()));
+	add_suffix(".la"); 
 }
 
 CLalaIOPlugin::PData  CLalaIOPlugin::do_load(const string& /*fname*/) const
@@ -65,11 +59,6 @@ const string CLalaIOPlugin::do_get_descr() const
 std::string CLalaIOPlugin::do_get_preferred_suffix() const
 {
 	return "hey"; 
-}
-
-bool CLalaIOPlugin::do_test()const
-{
-	return true;
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()

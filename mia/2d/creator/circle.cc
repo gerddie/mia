@@ -122,7 +122,6 @@ public:
 private:
 	virtual C2DImageCreator *do_create()const;
 	virtual const string do_get_descr()const;
-	virtual bool do_test() const;
 	float m_f;
 	float m_p;
 };
@@ -144,12 +143,6 @@ C2DImageCreator *C2DCircleCreatorPlugin::do_create()const
 const string C2DCircleCreatorPlugin::do_get_descr()const
 {
 	return "2D circle creation program";
-}
-
-bool C2DCircleCreatorPlugin::do_test() const
-{
-	cverr() << "C2DCircleCreatorPlugin::do_test not implemented\n";
-	return true;
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

@@ -25,10 +25,10 @@
 
 #include <mia/core/sqmin.hh>
 #include <mia/3d/register.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_MIA_BEGIN
-using namespace boost;
+using namespace std;
 
 
 // an image copy operator that keeps the type of the internal images
@@ -235,7 +235,6 @@ P3DFVectorfield C3DImageRegister::operator () (const C3DImage& source, const C3D
 void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result)
 
 {
-	double cost_value;
 	size_t iter = 0;
 	size_t inertia = 5;
 	bool better = false;
@@ -265,7 +264,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 
 	do {
 		++iter;
-		cost_value = new_cost_value;
+	
 
 		force.clear();
 		m_cost.evaluate_force(*temp, m_model.get_force_scale(), force);
@@ -405,7 +404,6 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result)
 
 {
-	double cost_value;
 	size_t iter = 0;
 	size_t inertia = 5;
 	bool better = false;
@@ -434,8 +432,8 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 
 	do {
 		++iter;
-		cost_value = new_cost_value;
 
+		float cost_value = new_cost_value;
 		force.clear();
 		m_cost.evaluate_force(*temp,  m_model.get_force_scale(), force);
 		C3DBounds l(0,0,0);

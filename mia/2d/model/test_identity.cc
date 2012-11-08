@@ -22,6 +22,7 @@
 
 #include <mia/2d/model/identity.hh>
 
+using namespace mia; 
 using namespace identity_regmodel;
 
 BOOST_AUTO_TEST_CASE( test_modelsolver )

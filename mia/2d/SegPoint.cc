@@ -30,6 +30,25 @@ NS_MIA_BEGIN
 using namespace xmlpp;
 using namespace std;
 
+void read_attribute_from_node(const Element& elm, const std::string& key, bool& out_value, bool required)
+{
+	auto attr = elm.get_attribute(key);
+	if (!attr) {
+		if (required) 
+			throw create_exception<runtime_error>( elm.get_name(), ":required attribute '", key, "' not found"); 
+		else
+			return; 
+	}
+	
+	if (attr->get_value() == string("false")) 
+		out_value = false; 
+	else if (attr->get_value() == string("true")) 
+		out_value = true; 
+	else 
+		throw create_exception<runtime_error>( elm.get_name(), ":attribute '", key, "' has bogus value '", 
+						       attr->get_value(), "'");
+}
+
 CSegPoint2D::CSegPoint2D()
 {
 }
@@ -60,12 +79,12 @@ CSegPoint2D::CSegPoint2D(const Node& node)
 		throw runtime_error("SegSection:Point attribute x or y not found");
 	
 	if (!from_string(ax->get_value(), x)) 
-		THROW(runtime_error, "CSegPoint2D: x attribute '" 
-		      << ax->get_value() << "' is not a floating point value"); 
+		throw create_exception<runtime_error>( "CSegPoint2D: x attribute '", 
+					     ax->get_value(), "' is not a floating point value"); 
 
 	if (!from_string(ay->get_value(), y)) 
-		THROW(runtime_error, "CSegPoint2D: y attribute '" 
-		      << ay->get_value() << "' is not a floating point value"); 
+		throw create_exception<runtime_error>( "CSegPoint2D: y attribute '", 
+					     ay->get_value(), "' is not a floating point value");
 }
 
 void CSegPoint2D::write(Node& node) const

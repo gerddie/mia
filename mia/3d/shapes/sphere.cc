@@ -72,37 +72,4 @@ const string CSphere3DShapeFactory::do_get_descr()const
 	return string("Closed spherical shape neighborhood including the pixels within a given radius r.");
 }
 
-bool CSphere3DShapeFactory::do_test()const
-{
-	for (size_t l = 1; l < 3; ++l) {
-
-		size_t s = 2 * l +1;
-		size_t r2 = l*l;
-
-		CSphere3DShape shape(l);
-
-		C3DShape::Mask mask = shape.get_mask();
-		if (mask.get_size().x != mask.get_size().z ||
-		    mask.get_size().x != mask.get_size().y ||
-		    mask.get_size().x != s) {
-			cvfail() << "Sphere shape creator: mask size error\n";
-			return false;
-		}
-
-		for ( size_t z = 0; z < s; ++z)
-			for ( size_t y = 0; y < s; ++y)
-				for ( size_t x = 0; x < s; ++x) {
-					float r_h = (x - l) * (x - l) + (y - l) * (y -l) + (z - l) * (z -l);
-					if (mask(x,y,z) && r_h > r2) {
-						cvfail() << get_name() <<"mask point outside radius\n";
-						return false;
-					}
-					if (!mask(x,y,z) && r_h <= r2) {
-						cvfail() << get_name() <<"non-mask point inside radius\n";
-						return false;
-					}
-				}
-	}
-	return true;
-}
 NS_MIA_END

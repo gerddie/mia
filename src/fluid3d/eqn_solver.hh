@@ -25,7 +25,7 @@
 #include <config.h>
 #endif
 
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 
 class TLinEqnSolver {
 public:

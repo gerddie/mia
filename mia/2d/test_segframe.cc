@@ -24,19 +24,19 @@
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/BoundingBox.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <libxml++/libxml++.h>
 
-
-namespace bfs=boost::filesystem;
-C2DImageIOPluginHandlerTestPath test_imageio_path; 
-C2DTransformCreatorHandlerTestPath test_transform_creator_path; 
-
-NS_MIA_USE
+using namespace mia; 
 using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace xmlpp;
+namespace bfs=boost::filesystem;
+
+C2DImageIOPluginHandlerTestPath test_imageio_path; 
+C2DTransformCreatorHandlerTestPath test_transform_creator_path; 
+
 
 
 
@@ -75,7 +75,7 @@ void FrameTestRead::init(const char *init_str)
 	const xmlpp::Node::NodeList nodes = root->get_children();
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
-	frame = CSegFrame (**nodes.begin());
+	frame = CSegFrame (**nodes.begin(), 1);
 }
 
 
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 
 	xmlpp::Document document;
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
-	frame.write(*nodeRoot);
+	frame.write(*nodeRoot, 1);
 
 	const string xmldoc = document.write_to_string();
 	const string testdoc(testframe_shifted);
@@ -280,7 +280,7 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
 	}
 
 	CSegFrame::Sections sections; 
-	sections.push_back(CSegSection("test", points));
+	sections.push_back(CSegSection("test", points, false));
 	
 	CSegFrame frame("testimage.@", star, sections);
 
@@ -455,19 +455,19 @@ BOOST_AUTO_TEST_CASE(segframe_write)
 		points.push_back(CSegPoint2D(x_init[i], y_init[i]));
 
 
-	sections.push_back(CSegSection("white", points));
+	sections.push_back(CSegSection("white", points, 1));
 
 	points.clear();
 	for (size_t i = 0; i  < size; ++i)
 		points.push_back(CSegPoint2D(x_init2[i], y_init2[i]));
 
-	sections.push_back(CSegSection("red", points));
+	sections.push_back(CSegSection("red", points, 1));
 
 	CSegFrame frame("image.png", star, sections);
 
 	xmlpp::Document document;
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
-	frame.write(*nodeRoot);
+	frame.write(*nodeRoot, 1);
 
 	const string xmldoc = document.write_to_string();
 	const string testdoc(testframe_init);

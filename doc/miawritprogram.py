@@ -151,7 +151,11 @@ def get_plugins(name, handler):
    head = get_bridgehead("Plugin consumers:")
    section.append(head)
    para = etree.SubElement(section, "para", role="consumer")
+   handler_users = []
    for u in handler.users:
+       handler_users.append(u)
+   handler_users.sort()
+   for u in handler_users:
       etree.SubElement(para, "xref", linkend=u)
 
    return section

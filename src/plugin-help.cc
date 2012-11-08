@@ -30,24 +30,13 @@
 using namespace std; 
 NS_MIA_USE;
 
-
-const char *g_program_group = "Help"; 
-
-const char *g_general_help = 
-	"This program is used to print out help about the availabel plug-ins\n"; 
-
-const char *g_program_example_descr = 
-	"Print out the help about the 2D filter plugins .\n"; 
-const char *g_program_example_code = "filter/2d"; 
-
 const SProgramDescription description = {
-	g_program_group, 
-	"Print help about plug-in groups", 
-	g_general_help, 
-	g_program_example_descr, 
-	g_program_example_code
+	{pdi_group, "Help"}, 
+	{pdi_short, "Print help about plug-in groups"},
+	{pdi_description, "This program is used to print out help about the availabel plug-ins\n"}, 
+	{pdi_example_descr, "Print out the help about the 2D filter plugins .\n"},  
+	{pdi_example_code, "filter/2d"}
 }; 
-
 
 
 map<string, const CPluginHandlerBase*> collect_handlers()

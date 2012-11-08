@@ -26,6 +26,8 @@ extern "C" {
 
 NS_BEGIN(minimizer_gdsq)
 using namespace mia; 
+using namespace std; 
+
 
 CGDSQMinimizer::CGDSQMinimizer(double start_step, double step_scale, 
 			       double xtol, double gtol, double ftolr, 

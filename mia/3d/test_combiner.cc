@@ -22,7 +22,7 @@
 #include <boost/test/parameterized_test.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/core/history.hh>
 #include <mia/core/spacial_kernel.hh>
 

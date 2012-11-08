@@ -31,7 +31,7 @@
 #include <mia/core/fullstats.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
@@ -45,28 +45,25 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_general_help = {
-	// .g_program_group =  
-	"Registration of series of 2D images", 
-	"Run a registration of a series of 2D images.", 
+        {pdi_group,  "Registration of series of 2D images"}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
 	
-	// .g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series "
-	"preferable aquired letting the patient breath freely. " 
-	"The registration algoritm implementes "
-	"G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
-	"Quasiperiodicity in Motion Correction of Free-Breathing,\" "
-	"IEEE Transactions on Medical Imaging, 29(8), 2010\n", 
+	{pdi_description, "This program runs the non-rigid registration of an perfusion image series "
+	 "preferable aquired letting the patient breath freely. " 
+	 "The registration algoritm implementes "
+	 "G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
+	 "Quasiperiodicity in Motion Correction of Free-Breathing,\" "
+	 "IEEE Transactions on Medical Imaging, 29(8), 2010\n"}, 
 
-	//.g_program_example_descr = 
-	"Register the perfusion series given in 'segment.set'. " 
-        "Skip two images at the beginning, usa spline transformation of a knot rate 16 pixels, "
-	"and penalize the transformation by divcurl with weight 5. "
-	"Store the result in 'registered.set'.\n", 
+	{pdi_example_descr, "Register the perfusion series given in 'segment.set'. " 
+	 "Skip two images at the beginning, usa spline transformation of a knot rate 16 pixels, "
+	 "and penalize the transformation by divcurl with weight 5. "
+	 "Store the result in 'registered.set'.\n"}, 
 	
-	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"}
 }; 
 
+		
 class C2DFImage2PImage {
 public: 
 	P2DImage operator () (const C2DFImage& image) const {
@@ -110,13 +107,6 @@ struct FAddWeighted: public TFilter<P2DImage> {
 private:
 	float m_w;
 };
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
 
 
 class C2DMyocardPeriodicRegistration {
@@ -399,8 +389,8 @@ int do_main( int argc, char *argv[] )
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries in_images = input_set.get_images(); 
 	if (skip >= in_images.size()) {
-		THROW(invalid_argument, "Try to skip " << skip 
-		      << " images, but input set has only " << in_images.size() << " images.");  
+		throw create_exception<invalid_argument>( "Try to skip ", skip, " images, "
+						"but input set has only ", in_images.size(), " images.");  
 	}
 
 	C2DImageSeries series(in_images.begin() + skip, in_images.end()); 
@@ -426,17 +416,13 @@ int do_main( int argc, char *argv[] )
 			frames[i + skip].inv_transform(*transforms[i]);
 	}
 	
+	input_set.set_prefered_reference(mpr.get_ref_idx() + skip); 
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
 		outfile << outset->write_to_string_formatted();
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
-}
-
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
 }
 
 #include <mia/internal/main.hh>

@@ -24,6 +24,7 @@
 
 
 using namespace mia; 
+using namespace std; 
 
 C2DFilterPluginHandlerTestPath filter_test_path; 
 

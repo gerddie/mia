@@ -457,7 +457,6 @@ pair<int,int> CSlopeStatisticsImpl::get_peak_level_and_time_index() const
 
 float CSlopeStatistics::get_level_change(size_t center) const
 {
-	FUNCTION_NOT_TESTED; 
 	return impl->get_level_change(center); 
 }
 

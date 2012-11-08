@@ -33,7 +33,7 @@
 
 
 #include <mia/3d/fuzzyseg.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/datapool.hh>
 
@@ -42,25 +42,23 @@ using namespace std;
 namespace bfs = ::boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
 
-	"Extract the brain from a 3D T1 MRI head image.", 
-	
-	"This program is used to extract the brain from T1 MR images. "
+	{pdi_short, "Extract the brain from a 3D T1 MRI head image."}, 
+
+	{pdi_description, "This program is used to extract the brain from T1 MR images. "
 	"It first runs a combined fuzzy c-means clustering and B-field correction "
 	"to facilitate a 3D segmentation of 3D image. "
 	"Then various fiters are run to obtain a white matter segmentation as initial "
 	"mask that is then used to run a region growing to obtain a mask of the whole brain. "
-	"Finally, this mask is used to extact the brain from the B0 field corrected images.", 
-
-	"Create a mask from the input image by running a 5-class segmentation over inpt image input.v "
-        "and use class 4 as white matter class and store the masked image in masked.v "
-	"and the B0-field corrected image in b0.v", 
+	 "Finally, this mask is used to extact the brain from the B0 field corrected images."}, 
 	
-	"-i input.v -n 5 -w 4 -o masked.v"
+	{pdi_example_descr, "Create a mask from the input image by running a 5-class segmentation over inpt image input.v "
+	 "and use class 4 as white matter class and store the masked image in masked.v "
+	 "and the B0-field corrected image in b0.v"}, 
+
+	{pdi_example_code, "-i input.v -n 5 -w 4 -o masked.v"}
 }; 
-	
-
 
 int do_main( int argc, char *argv[] )
 {
@@ -74,10 +72,12 @@ int do_main( int argc, char *argv[] )
 	string growshape("18n");
 	float  wmclassprob = 0.7;
 
+	const auto& imageio = C3DImageIOPluginHandler::instance(); 
+	
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-			      "input image(s) to be segmented", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "brain mask", CCmdOption::required ));
+			      "input image(s) to be segmented", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "brain mask", CCmdOption::required, &imageio));
 	options.add(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
 	options.add(make_opt( wmclass,     "wm-class",      'w', "index of white matter"));
 	options.add(make_opt( wmclassprob, "wm-prob", 'p',

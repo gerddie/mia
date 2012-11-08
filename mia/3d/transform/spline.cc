@@ -18,32 +18,6 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{3D Transformations}
-   
-   \subsection{B-spline based transformation}
-   \label{transform3d:spline}
-   
-   \begin{description}
-   
-   \item [Plugin:] spline
-   \item [Description:] 
-   \item [Degrees of Freedom:] depends on the coefficient rate and the size of the domain where the 
-      transformation is defined on 
-  
-   \end{description}
-
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   interp & string & interpolating B-spline kernel (bsplineX, omoms3) with X the degree (2-5)& bspline3 \\ 
-   rate   & float  & coefficient rate (currently the same in all dimenions & 10 \\
-   \plugtabend
-
-   LatexEnd  
- */
-
-
 #include <cstdlib>
 #include <cassert>
 #include <limits>
@@ -53,7 +27,7 @@
 #include <sstream>
 #include <mia/3d/transform/spline.hh>
 #include <mia/3d/transformfactory.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/core/index.hh>
 
 #ifdef HAVE_BLAS
@@ -166,8 +140,6 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	m_x_boundary->set_width(m_coefficients.get_size().x); 
 	m_y_boundary->set_width(m_coefficients.get_size().y); 
 	m_z_boundary->set_width(m_coefficients.get_size().z); 
-
-	reinit();
 }
 
 C3DSplineTransformation::~C3DSplineTransformation()
@@ -182,7 +154,7 @@ void C3DSplineTransformation::set_coefficients(const C3DFVectorfield& field)
 	m_x_boundary->set_width(m_coefficients.get_size().x); 
 	m_y_boundary->set_width(m_coefficients.get_size().y); 
 	m_z_boundary->set_width(m_coefficients.get_size().z); 
-//	m_target_c_rate =  C3DFVector(m_range) / C3DFVector(field.get_size() - m_enlarge);
+	init_grid(); 
 }
 
 void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DFVectorfield& field)
@@ -354,6 +326,7 @@ void C3DSplineTransformation::set_parameters(const CDoubleVector& params)
 		f->y = *r++;
 		f->z = *r++;
 	}
+	init_grid(); 
 }
 
 bool C3DSplineTransformation::refine()
@@ -393,6 +366,7 @@ bool C3DSplineTransformation::refine()
 	set_coefficients(coeffs);
 	reinit();
 	m_grid_valid = false; 
+	init_grid(); 
 	return true; 
 }
 
@@ -415,9 +389,22 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 
 void C3DSplineTransformation::add(const C3DTransformation& a)
 {
+	// it is very likely that this is not correct, especially if a is not a spline transformation 
 	TRACE_FUNCTION;
-	assert(a.get_size() == get_size());
 
+	if (degrees_of_freedom() < a.degrees_of_freedom()) {
+		throw create_exception<invalid_argument>("C3DSplineTransformation::add: trying to add a transformation "
+							 "with a more degrees of freedom (", a.degrees_of_freedom(), 
+							 " versus ", degrees_of_freedom(), ")"); 
+	}
+	if (a.get_size() != get_size()) {
+		throw create_exception<invalid_argument>("C3DSplineTransformation::add: trying to add a transformation "
+							 "with domain ", a.get_size(), 
+							 " to a transformation with domain ", get_size());
+	}
+	
+	cvwarn() << "Adding to a spline transformation is probably not very accurate\n"; 
+	
 	reinit();
 	a.reinit();
 	
@@ -530,6 +517,7 @@ void C3DSplineTransformation::set_identity()
 {
 	TRACE_FUNCTION;
 	fill(m_coefficients.begin(), m_coefficients.end(), C3DFVector());
+	m_grid_valid = false;  
 }
 
 float C3DSplineTransformation::get_max_transform() const
@@ -569,111 +557,106 @@ void C3DSplineTransformation::init_grid()const
 
 	TRACE_FUNCTION; 
 	CScopedLock lock(m_mutex); 
-	if (!m_grid_valid) {
-		cvdebug() << "initialize grid\n"; 
-		if (!m_current_grid || (m_current_grid->get_size() != m_range)) {
-			cvdebug() << "initialize grid field\n"; 
-			m_current_grid.reset(new C3DFVectorfield(m_range)); 
+	if (!m_current_grid || (m_current_grid->get_size() != m_range)) {
+		cvdebug() << "initialize grid field\n"; 
+		m_current_grid.reset(new C3DFVectorfield(m_range)); 
+	}
+	const int size_xy = m_range.x * m_range.y * 3; 
+	const int size_xz = m_range.x * m_coefficients.get_size().z * 3; 
+	const int size_yz = m_coefficients.get_size().z * m_coefficients.get_size().y * 3; 
+	
+	const int max_data_length = max( max(size_xy, size_xz), size_yz);
+	
+	// create the buffers 
+	unsigned int nelm = m_kernel->size(); 
+	vector< vector<float> > in_buffer; 
+	for (unsigned int i = 0; i < nelm; ++i) 
+		in_buffer.push_back(vector<float>(max_data_length));
+	vector<float> out_buffer(max_data_length);
+	
+	
+	C3DFVectorfield tmp(C3DBounds(m_range.x, 
+				      m_coefficients.get_size().y, 
+				      m_coefficients.get_size().z));
+	
+	
+	CCircularIndex idxx(nelm, m_y_indices[0]); 
+	for(size_t x = 0; x < m_range.x; ++x) {
+		auto w = m_x_weights[x]; 
+		int start = m_x_indices[x];
+		
+		idxx.new_start(start); 
+		
+		// fill with slices 
+		auto fill = idxx.fill(); 
+		while (fill < nelm && start + fill < m_coefficients.get_size().x) {
+			m_coefficients.read_xslice_flat(start + fill, in_buffer[idxx.next()]);
+			idxx.insert_one(); 
+			fill = idxx.fill(); 
 		}
-		const int size_xy = m_range.x * m_range.y * 3; 
-		const int size_xz = m_range.x * m_coefficients.get_size().z * 3; 
-		const int size_yz = m_coefficients.get_size().z * m_coefficients.get_size().y * 3; 
 		
-		const int max_data_length = max( max(size_xy, size_xz), size_yz);
-
-		// create the buffers 
-		unsigned int nelm = m_kernel->size(); 
-		vector< vector<float> > in_buffer; 
-		for (unsigned int i = 0; i < nelm; ++i) 
-			in_buffer.push_back(vector<float>(max_data_length));
-		vector<float> out_buffer(max_data_length);
+		memset(&out_buffer[0], 0, size_yz * sizeof(float)); 
 		
-		
-		C3DFVectorfield tmp(C3DBounds(m_range.x, 
-					      m_coefficients.get_size().y, 
-					      m_coefficients.get_size().z));
-		
-		
-		CCircularIndex idxx(nelm, m_y_indices[0]); 
-		for(size_t x = 0; x < m_range.x; ++x) {
-			auto w = m_x_weights[x]; 
-			int start = m_x_indices[x];
-			
-			cvdebug() << "x = " << x << "\n"; 
-			idxx.new_start(start); 
-			
-			// fill with slices 
-			auto fill = idxx.fill(); 
-			while (fill < nelm && start + fill < m_coefficients.get_size().x) {
-				m_coefficients.read_xslice_flat(start + fill, in_buffer[idxx.next()]);
-				idxx.insert_one(); 
-				fill = idxx.fill(); 
-			}
-			
-			memset(&out_buffer[0], 0, size_yz * sizeof(float)); 
-			
-			for (unsigned int i = 0; i < w.size(); ++i) {
-				cblas_saxpy(size_yz, w[i], &in_buffer[idxx.value(i)][0], 1, 
-					    &out_buffer[0], 1);
-			}
-			tmp.write_xslice_flat(x, out_buffer); 
+		for (unsigned int i = 0; i < w.size(); ++i) {
+			cblas_saxpy(size_yz, w[i], &in_buffer[idxx.value(i)][0], 1, 
+				    &out_buffer[0], 1);
 		}
-
-		C3DFVectorfield tmp2(C3DBounds(m_range.x, 
-					       m_range.y, 
-					       m_coefficients.get_size().z));
+		tmp.write_xslice_flat(x, out_buffer); 
+	}
+	
+	C3DFVectorfield tmp2(C3DBounds(m_range.x, 
+				       m_range.y, 
+				       m_coefficients.get_size().z));
+	
+	CCircularIndex idxy(nelm, m_y_indices[0]); 
+	for(size_t y = 0; y < m_range.y; ++y) {
+		auto w = m_y_weights[y]; 
+		int start = m_y_indices[y];
 		
-		CCircularIndex idxy(nelm, m_y_indices[0]); 
-		for(size_t y = 0; y < m_range.y; ++y) {
-			auto w = m_y_weights[y]; 
-			int start = m_y_indices[y];
-			cvdebug() << "y = " << y << "\n"; 
-			
-			idxy.new_start(start); 
-			
-			// fill with slices 
-			auto fill = idxy.fill(); 
-			while (fill < nelm  && start + fill < m_coefficients.get_size().y) {
-				tmp.read_yslice_flat(start + fill, in_buffer[idxy.next()]);
-				idxy.insert_one(); 
-				fill = idxy.fill(); 
-			}
-			
-			memset(&out_buffer[0], 0, size_xz * sizeof(float)); 
-			
-			for (unsigned int i = 0; i < w.size(); ++i) {
-				cblas_saxpy(size_xz, w[i], &in_buffer[idxy.value(i)][0], 1, 
-					    &out_buffer[0], 1);
-			}
-			tmp2.write_yslice_flat(y, out_buffer); 
+		idxy.new_start(start); 
+		
+		// fill with slices 
+		auto fill = idxy.fill(); 
+		while (fill < nelm  && start + fill < m_coefficients.get_size().y) {
+			tmp.read_yslice_flat(start + fill, in_buffer[idxy.next()]);
+			idxy.insert_one(); 
+			fill = idxy.fill(); 
 		}
-
 		
-		// prepare the output field 
-		auto i = m_current_grid->begin(); 
-		C3DFVector X; 
-		for (size_t z = 0; z < m_range.z; ++z) {
-			X.z = z; 
-			for (size_t y = 0; y < m_range.y; ++y) {
-				X.y = y; 
-				for (size_t x = 0; x < m_range.x; ++x, ++i) {
+		memset(&out_buffer[0], 0, size_xz * sizeof(float)); 
+		
+		for (unsigned int i = 0; i < w.size(); ++i) {
+			cblas_saxpy(size_xz, w[i], &in_buffer[idxy.value(i)][0], 1, 
+				    &out_buffer[0], 1);
+		}
+		tmp2.write_yslice_flat(y, out_buffer); 
+	}
+	
+	
+	// prepare the output field 
+	auto i = m_current_grid->begin(); 
+	C3DFVector X; 
+	for (size_t z = 0; z < m_range.z; ++z) {
+		X.z = z; 
+		for (size_t y = 0; y < m_range.y; ++y) {
+			X.y = y; 
+			for (size_t x = 0; x < m_range.x; ++x, ++i) {
 					X.x = x; 
 					*i = X; 
 				}
-			}
 		}
-		for(size_t iz = 0; iz < m_range.z; ++iz) {
-			auto zweight = m_z_weights[iz]; 
-			int i = m_z_indices[iz];
-
-			// warning: this code assumes that the 3DVector is a POD-like structure, i.e. no VMT 
-			// and that x is the first stored element 
-			for (auto w  = zweight.begin(); w != zweight.end(); ++w, ++i) {
-				cblas_saxpy(size_xy, -(*w), &tmp2(0,0,i).x, 1, &(*m_current_grid)(0,0,iz).x, 1); 
-			}
-		}
-		m_grid_valid = true; 
 	}
+	for(size_t iz = 0; iz < m_range.z; ++iz) {
+		auto zweight = m_z_weights[iz]; 
+		int i = m_z_indices[iz];
+		
+		// warning: this code assumes that the 3DVector is a POD-like structure, i.e. no VMT 
+		// and that x is the first stored element 
+		for (auto w  = zweight.begin(); w != zweight.end(); ++w, ++i) {
+			cblas_saxpy(size_xy, -(*w), &tmp2(0,0,i).x, 1, &(*m_current_grid)(0,0,iz).x, 1); 
+		}
+	}
+	m_grid_valid = true; 
 }
 
 #else 
@@ -1102,7 +1085,6 @@ class C3DSplineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DSplineTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
 	PSplineKernel m_kernel;
@@ -1144,14 +1126,6 @@ C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create(const C3DInterpo
 		rate3d.z = m_rate; 
 
 	return new C3DSplinebigTransformCreator(m_kernel, rate3d, ipf, m_debug);
-}
-
-bool C3DSplineTransformCreatorPlugin::do_test() const
-{
-	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
-
-	return true;
 }
 
 const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const

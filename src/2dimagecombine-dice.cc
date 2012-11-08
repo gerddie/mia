@@ -31,20 +31,21 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/internal/main.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
 
 using namespace std;
 NS_MIA_USE
 
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Evaluate the dice index between two binary 2D images.", 
-	"This program evaluate the dice index of two binary masks given as binary images. "
-	"The result is written to stdout.", 
-	"Evaluate the dice index of maks1.png and mask2.png", 
-	"-1 mask1.png -2 mask2.png", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Evaluate the dice index between two binary 2D images."}, 
+	{pdi_description, "This program evaluate the dice index of two binary masks given as binary images. "
+	 "The result is written to stdout."
+	}, 
+	{pdi_example_descr, "Evaluate the dice index of maks1.png and mask2.png"}, 
+	{pdi_example_code, "-1 mask1.png -2 mask2.png"}
 }; 
 
 template <typename I1, typename I2, typename F>
@@ -82,12 +83,13 @@ float get_dice_index(const C2DBitImage& mask1, const C2DBitImage& mask2)
 int do_main( int argc, char *argv[] )
 {
 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 	string in_filename1;
 	string in_filename2;
 	
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename1, "in-file-1", '1', "input image 1", CCmdOption::required)); 
-	options.add(make_opt( in_filename2, "in-file-2", '2', "input image 1", CCmdOption::required)); 
+	options.add(make_opt( in_filename1, "in-file-1", '1', "input image 1", CCmdOption::required, &imageio)); 
+	options.add(make_opt( in_filename2, "in-file-2", '2', "input image 1", CCmdOption::required, &imageio)); 
 
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

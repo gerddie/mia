@@ -21,7 +21,7 @@
 #ifndef mia_3d_filter_label_hh
 #define mia_3d_filter_label_hh
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/shape.hh>
 
 
@@ -29,7 +29,7 @@ NS_BEGIN(label_3dimage_filter)
 
 class CLabel: public mia::C3DFilter {
 public:
-	CLabel(mia::P3DShape& m_mask);
+	CLabel(mia::P3DShape m_mask);
 
 private:
 	void grow_region(const mia::C3DBounds& loc, const mia::C3DBitImage& input,
@@ -44,9 +44,7 @@ public:
 private:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-
-	virtual bool do_test() const;
-	std::string m_mask_descr;
+	mia::P3DShape m_mask;
 };
 
 NS_END

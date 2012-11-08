@@ -78,7 +78,6 @@ public:
 	virtual Product *create(const CParsedOptions& options, char const *params) __attribute__((warn_unused_result));
 	
 private:
-	virtual bool do_test() const __attribute__((deprecated)); 
 	virtual Product *do_create() const __attribute__((warn_unused_result)) = 0 ;
 	CMutex m_mutex; 
 };
@@ -96,12 +95,11 @@ class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< I > {
 protected: 
 	//! \name Constructors
         //@{
-        /*! \brief Initializes the plugin handler based on a given plugin search path list 
-	  \param searchpath list of directories to search for plugins 
+        /*! \brief Initializes the plugin handler 
 	*/
 
 	
-	TFactoryPluginHandler(const CPathNameArray& searchpath); 
+	TFactoryPluginHandler(); 
         //@}
 public: 
 	/// The type of the the object this plug in hander produces 
@@ -147,7 +145,12 @@ public:
 	 */
 	void set_caching(bool enable) const; 
 
+
 private: 
+	std::string get_handler_type_string_and_help(std::ostream& os) const; 
+	
+	std::string do_get_handler_type_string() const; 
+	
 	typename I::Product *produce_raw(const std::string& plugindescr) const;
 
 	mutable TProductCache<ProductPtr> m_cache; 
@@ -187,14 +190,13 @@ typename TFactory<I>::Product *TFactory<I>::create(const CParsedOptions& options
 			msg << "    " << i->first << "=" << i->second << "\n";
 		}
 		cverr() << msg.str(); 
-		throw logic_error("Probably a race condition"); 
+		throw std::logic_error("Probably a race condition"); 
 
 	}
 }
 
 template <typename  I>
-TFactoryPluginHandler<I>::TFactoryPluginHandler(const CPathNameArray& searchpath):
-	TPluginHandler< I >(searchpath), 
+TFactoryPluginHandler<I>::TFactoryPluginHandler():
 	m_cache(this->get_descriptor())
 {
 	set_caching(__cache_policy<I>::apply()); 
@@ -226,22 +228,35 @@ TFactoryPluginHandler<I>::produce_unique(const std::string& plugindescr) const
 {
 	return UniqueProduct(this->produce_raw(plugindescr)); 
 }
+
+template <typename  I>
+std::string TFactoryPluginHandler<I>::get_handler_type_string_and_help(std::ostream& os) const
+{
+	os << " The string value will be used to construct a plug-in."; 
+	return do_get_handler_type_string(); 
+}
+
+template <typename  I>
+std::string TFactoryPluginHandler<I>::do_get_handler_type_string() const
+{
+	return "factory"; 
+}
 	
 template <typename  I>
 typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& params)const
 {
 	if (params.empty()) {
-		THROW(invalid_argument, "Factory " << this->get_descriptor() <<": Empty description string given. "
-		      "Supported plug-ins are '" << this->get_plugin_names() << "'. " 
-		      "Set description to 'help' for more information."); 
+		throw create_exception<std::invalid_argument>("Factory ", this->get_descriptor(), ": Empty description string given. "
+						    "Supported plug-ins are '", this->get_plugin_names(), "'. " 
+						    "Set description to 'help' for more information."); 
 	}
 	
 	CComplexOptionParser param_list(params);
 		
 	if (param_list.size() < 1) {
-		THROW(invalid_argument, "Factory " << this->get_descriptor()<< ": Description string '"
-		      << params << "' can not be interpreted. "
-		      "Supported plug-ins are '" << this->get_plugin_names() << "'. " 
+		throw create_exception<std::invalid_argument>( "Factory " , this->get_descriptor(), ": Description string '"
+		      , params , "' can not be interpreted. "
+		      "Supported plug-ins are '" , this->get_plugin_names() , "'. " 
 		      "Set description to 'help' for more information."); 
 	}
 		
@@ -261,13 +276,6 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& pa
 	DEBUG_ASSERT_RELEASE_THROW(factory, "A plug-in was not found but 'this->plugin' did not throw");
 	return factory->create(param_list.begin()->second,params.c_str());
 
-}
-
-template <typename I>
-bool TFactory<I>::do_test() const
-{
-	cvfail() << "do_test() is obsolete\n"; 
-	return false; 
 }
 
 /**     

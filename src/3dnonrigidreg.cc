@@ -33,22 +33,18 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Non-linear registration of 3D images", 
-	
-	"This program implements the registration of two gray scale 3D images.", 
-	
-	"Register image test.v to image ref.v by using a spline transformation with a "
-	"coefficient rate of 5  and write the registered image to reg.v. "
-	"Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
-	"as transformation smoothness penalty. ",
-	
-	"-i test.v -r ref.v -o reg.v -l 2 -f spline:rate=3  image:cost=ssd divcurl:weight=10"
+        {pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Non-linear registration of 3D images"}, 
+	{pdi_description, "This program implements the registration of two gray scale 3D images."}, 
+	{pdi_example_descr, "Register image test.v to image ref.v by using a spline transformation with a "
+	 "coefficient rate of 5  and write the registered image to reg.v. "
+	 "Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
+	 "as transformation smoothness penalty. "}, 
+	{pdi_example_code, "-i test.v -r ref.v -o reg.v -l 2 -f spline:rate=3  image:cost=ssd divcurl:weight=10"}
 };
 
 int do_main( int argc, char *argv[] )
 {
-	string cost_function("ssd"); 
 	string src_filename;
 	string ref_filename;
 	string out_filename;
@@ -59,14 +55,21 @@ int do_main( int argc, char *argv[] )
 	cvdebug() << "auto transform_creator\n"; 
 	P3DTransformationFactory transform_creator; 
 
+
+	const auto& image3dio =  C3DImageIOPluginHandler::instance(); 
+	const auto& transform3dio =  C3DTransformationIOPluginHandler::instance(); 
 	size_t mg_levels = 3;
 
 	CCmdOptionList options(g_description);
 	options.set_group("IO"); 
-	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
-	options.add(make_opt( trans_filename, "trans", 't', "output transformation"));
+	options.add(make_opt( src_filename, "in", 'i', "test image", 
+			      CCmdOption::required, &image3dio));
+	options.add(make_opt( ref_filename, "ref", 'r', "reference image", 
+			      CCmdOption::required, &image3dio));
+	options.add(make_opt( out_filename, "out", 'o', "registered output image", 
+			      CCmdOption::required, &image3dio));
+	options.add(make_opt( trans_filename, "trans", 't', "output transformation", 
+			      CCmdOption::not_required, &transform3dio));
 	
 	options.set_group("Registration"); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));

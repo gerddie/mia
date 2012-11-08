@@ -41,14 +41,14 @@ struct DummyPluginFixture {
 
 DummyPluginFixture::DummyPluginFixture()
 {
-	CTestIOPluginHandler::set_search_path({bfs::path("testplug")});
+	TRACE_FUNCTION; 
+	CPathNameArray sp{bfs::path("testplug")}; 
+	CTestIOPluginHandler::set_search_path(sp);
 }
 
 
 BOOST_FIXTURE_TEST_CASE(  test_dummy_io, DummyPluginFixture )
 {
-	CTestIOPluginHandler::set_search_path({bfs::path("testplug")});
-
 	const CTestIOPluginHandler::Instance&  handler = CTestIOPluginHandler::instance();
 
 	BOOST_CHECK_EQUAL(handler.size(), 3u);
@@ -76,21 +76,21 @@ BOOST_FIXTURE_TEST_CASE(  test_dummy_io, DummyPluginFixture )
 BOOST_FIXTURE_TEST_CASE(  test_preferred_suffix, DummyPluginFixture )
 {
 	const CTestIOPluginHandler::Instance&  handler = CTestIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("datapool"), "datapool");
+	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("datapool"), "@");
 	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("la"), "hey");
 
 	BOOST_CHECK_THROW(handler.get_preferred_suffix("nonsense"), invalid_argument);
 }
 
-BOOST_AUTO_TEST_CASE(  test_datapool_io )
+BOOST_FIXTURE_TEST_CASE(  test_datapool_io, DummyPluginFixture )
 {
 	const CTestIOPluginHandler::Instance&  handler = CTestIOPluginHandler::instance();
 
 	CDummyType data("testdata");
 
-	BOOST_CHECK(handler.save("testdummy.datapool", data));
+	BOOST_CHECK(handler.save("testdummy.@", data));
 	try {
-		std::shared_ptr<CDummyType > value = handler.load("testdummy.datapool");
+		std::shared_ptr<CDummyType > value = handler.load("testdummy.@");
 	}
 	catch (std::exception& x) {
 		BOOST_FAIL(x.what());

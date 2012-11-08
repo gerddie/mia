@@ -108,13 +108,6 @@ const string C2DSeparableConvoluteFilterPlugin::do_get_descr()const
 	return "2D image intensity separaple convolution filter";
 }
 
-void C2DSeparableConvoluteFilterPlugin::prepare_path() const
-{
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/bfs::path("core")/bfs::path("spacialkernel"));
-	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
-}
-
 C2DGaussFilterPlugin::C2DGaussFilterPlugin():
 	C2DFilterPlugin("gauss"),
 	m_w(1)
@@ -125,7 +118,7 @@ C2DGaussFilterPlugin::C2DGaussFilterPlugin():
 
 C2DFilter *C2DGaussFilterPlugin::do_create()const
 {
-	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
+	const auto&  skp = C1DSpacialKernelPluginHandler::instance();
 
 	stringstream fdescr;
 	fdescr << "gauss:w=" << m_w;

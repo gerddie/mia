@@ -24,6 +24,7 @@
 
 
 using namespace std; 
+using namespace mia; 
 
 struct PluginTestFixture {
 	
@@ -99,14 +100,6 @@ BOOST_FIXTURE_TEST_CASE(test_C3DTransformCreatorHandler,PluginTestFixture)
 		"affine", "rigid", "spline", "translate"
 	}; 
 	test(C3DTransformCreatorHandler::instance().get_set(), test_data); 
-}
-
-BOOST_FIXTURE_TEST_CASE(test_C3DFatImageCostPluginHandler,PluginTestFixture) 
-{
-	set<string> test_data = { 
-		"ssd", "ngf"
-	}; 
-	test(C3DFatImageCostPluginHandler::instance().get_set(), test_data); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_C3DRegTimeStepPluginHandler,PluginTestFixture) 

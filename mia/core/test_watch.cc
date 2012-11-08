@@ -27,6 +27,8 @@
 #include <sys/time.h>
 #endif 
 
+using namespace mia; 
+
 void don_t_optimize_x_away(double /*x*/) 
 {
 }

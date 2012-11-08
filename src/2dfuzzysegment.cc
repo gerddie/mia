@@ -35,22 +35,18 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-
-	"A fuzzy c-means segmentation of a 2D image", 
-	
-	"This program runs a combined fuzzy c-means clustering and B-field correction "
-	"to facilitate a fuzzy segmentation of 2D image. cf D.L. Pham and J.L.Prince, "
-	"\"An adaptive fuzzy C-means algorithm for image segmentation in the presence "
-	"of intensity inhomogeneities\", Pat. Rec. Let., 20:57-68,1999", 
-	
-	"Run a 5-class segmentation over input image input.v and store the class "
-	"probability images in cls.v and the B0-field corrected image in b0.v.", 
-	
-	"-i input.v -c 5 -o b0.v -c cls.v"
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "A fuzzy c-means segmentation of a 2D image"}, 
+	{pdi_description, "This program runs a combined fuzzy c-means clustering and "
+	 "B-field correction to facilitate a fuzzy segmentation of 2D image. cf D.L. "
+	 "Pham and J.L.Prince, \"An adaptive fuzzy C-means algorithm for image "
+	 "segmentation in the presence of intensity inhomogeneities\", Pat. Rec. "
+	 "Let., 20:57-68,1999"}, 
+	{pdi_example_descr, "Run a 5-class segmentation over input image input.v "
+	 "and store the class probability images in cls.v and the B0-field corrected "
+	 "image in b0.v."}, 
+	{pdi_example_code, "-i input.v -c 5 -o b0.v -c cls.v"}
 }; 
-
-
 
 int do_main( int argc, char *argv[] )
 {
@@ -63,17 +59,20 @@ int do_main( int argc, char *argv[] )
 	int    noOfClasses = 3;
 	SFuzzySegParams params; 
 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+
 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-			      "input image(s) to be segmenetd", CCmdOption::required));
+			      "input image(s) to be segmenetd", CCmdOption::required, &imageio));
 	options.add(make_opt( cls_filename, "cls-file", 'c',
-			      "output class probability images", CCmdOption::required));
-	options.add(make_opt( out_filename, "b0-file", 'o',
-			      "image corrected for intensity non-uniformity" ));
-	options.add(make_opt( gain_filename, "gain-file", 'g',
-			      "gain field (floating point valued)" ));
+			      "output class probability images (floating point values and multi-image)", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "b0-file", 'o', "image corrected for intensity non-uniformity", 
+			      CCmdOption::not_required, &imageio ));
+	options.add(make_opt( gain_filename, "gain-file", 'g', "gain field (floating point valued)", 
+			      CCmdOption::required, &imageio ));
 
 	options.add(make_opt( noOfClasses, "no-of-classes", 'n',
 			      "number of classes"));
@@ -90,8 +89,6 @@ int do_main( int argc, char *argv[] )
 	if ( in_filename.empty() )
 		throw runtime_error("'--cls-file' ('c') option required\n");
 
-	const C2DImageIOPluginHandler::Instance&
-		imageio = C2DImageIOPluginHandler::instance();
 
 	C2DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);
 
@@ -133,7 +130,7 @@ int do_main( int argc, char *argv[] )
 
 	if (!gain_filename.empty()) {
 		if (!save_image(gain_filename, gain)) 
-			THROW(runtime_error, "unable to save gain field to '" << gain_filename << "'"); 
+			throw create_exception<runtime_error>( "unable to save gain field to '", gain_filename, "'"); 
 	}
 	
 	return EXIT_SUCCESS;

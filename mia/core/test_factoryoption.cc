@@ -61,8 +61,7 @@ public:
 
 class CFactoryMockPluginHandler : public TFactoryPluginHandler<CFactoryMock> {
 public: 
-	CFactoryMockPluginHandler(const CPathNameArray& searchpath):
-		TFactoryPluginHandler<CFactoryMock>(searchpath)
+	CFactoryMockPluginHandler()
 	{
 		add_plugin(new CFactoryMock()); 
 	}
@@ -96,11 +95,9 @@ BOOST_AUTO_TEST_CASE( test_a_factory_option )
 }
 
 const SProgramDescription general_help = {
-	"Test", 
-	"Short, descr", 
-	"This program tests the command line parser.", 
-	NULL, 
-	NULL
+	{pdi_group,"Test"}, 
+	{pdi_short,"Test factory option"}, 
+	{pdi_description,"This program tests the command line parser."}
 }; 
 
 

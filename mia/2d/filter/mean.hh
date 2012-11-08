@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 NS_BEGIN( mean_2dimage_filter)
 

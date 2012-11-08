@@ -21,6 +21,8 @@
 #include <mia/internal/autotest.hh>
 #include <mia/core/flagstring.hh>
 
+using namespace mia; 
+
 enum ETestFlags {
 	tf_none = 0,
 	tf_one  = 1,

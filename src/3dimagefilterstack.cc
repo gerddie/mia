@@ -24,8 +24,8 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <mia/3d/3dfilter.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/filter.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/core.hh>
 
 using namespace std;
@@ -42,19 +42,20 @@ size_t log10(size_t x)
 }
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
 
-	"Filter a series of 3D images.", 
+	{pdi_short, "Filter a series of 3D images."}, 
 
-	"This program is used to filter and convert a consecutive numbered series "
-	"gray of scale images. File names must follow the pattern 'dataXXXX.v' "
-	"(X being digits), i.e. the numbering comes right before the dot. ", 
-	
-	"Run a mean-least-varaiance filter on a series of images that follow the " 
-	"numbering pattern imageXXXX.hdr and store the output in images filteredXXXX.hdr", 
-	
-	"-i image0000.hdr -o filtered -t hdr mlv:w=2"
+	{pdi_description, "This program is used to filter and convert a consecutive numbered series "
+	 "gray of scale images. File names must follow the pattern 'dataXXXX.v' "
+	 "(X being digits), i.e. the numbering comes right before the dot. "}, 
+
+	{pdi_example_descr, "Run a mean-least-varaiance filter on a series of images that follow the " 
+	 "numbering pattern imageXXXX.hdr and store the output in images filteredXXXX.hdr"}, 
+
+	{pdi_example_code, "-i image0000.hdr -o filtered -t hdr mlv:w=2"}
 }; 
+
 
 int do_main( int argc, char *argv[] )
 {
@@ -63,13 +64,14 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string out_type;
 
-	const C3DFilterPluginHandler::Instance& filter_plugins = C3DFilterPluginHandler::instance();
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const auto& filter_plugins = C3DFilterPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name base", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name base, numbers are added accorfing to the input file pattern, and "
+			      "the file  extension is added according to the 'type' option.", CCmdOption::required, &imageio));
 	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOption::required));
 	
 	options.add(make_help_opt( "help-plugins", 0,

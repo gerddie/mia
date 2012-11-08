@@ -20,6 +20,8 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/2d/cost/ngf.hh>
+#include <mia/2d/interpolator.hh>
+#include <mia/core/splinekernel.hh>
 #include <cmath>
 
 

@@ -25,11 +25,12 @@
 NS_BEGIN(sort_label_2dimage_filter)
 
 NS_MIA_USE; 
+using namespace std; 
 
 template <typename T>
 struct CSortLabel_dispatch {
 	static P2DImage apply(const T2DImage<T>& /*image*/) {
-		THROW(invalid_argument, "Unsupported input label type " << __type_descr<T>::value);  
+		throw create_exception<invalid_argument>("Unsupported input label type ", __type_descr<T>::value);  
 	}
 }; 
 

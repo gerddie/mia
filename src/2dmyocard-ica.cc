@@ -29,32 +29,32 @@
 #include <mia/core/fft1d_r2c.hh>
 #include <queue>
 
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
 #include <mia/core/slopeclassifier.hh>
 
 NS_MIA_USE;
+using namespace std; 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Run an ICA analysis on a series of 2D images"}, 
 
-	"Run an ICA analysis on a series of 2D images", 
-
-	"This program is used to run a ICA on a series of myocardial perfusion images to create "
-        "sythetic references that can be used for motion correction by image registration. "
-	"If the aim is to run a full motion compensation then it is better to create a "
-	"segmentation set and use mia-2dmyoica-nonrigid. "
-	"If the input data is given by means of a segmentation set, then on can "
-	"also use mia-2dmyocard-icaseries.\n"
-	"This program is essentially used to test different options on how to run the ICA for" 
-	"reference image creation.", 
-
-	"Evaluate the synthetic references from images imageXXXX.exr and save them to "
-	"refXXXX.exr by using five independend components, mean stripping, normalizing, "
-	"and skipping 2 images.", 
+	{pdi_description, "This program is used to run a ICA on a series of myocardial "
+	 "perfusion images to create sythetic references that can be used for motion correction "
+	 "by image registration. If the aim is to run a full motion compensation then it is "
+	 "better to create a segmentation set and use mia-2dmyoica-nonrigid. If the input data "
+	 "is given by means of a segmentation set, then on can also use mia-2dmyocard-icaseries.\n"
+	 "This program is essentially used to test different options on how to run the ICA for" 
+	 "reference image creation."}, 
 	
-	"-i imageXXXX.exr -o ref -k 2 -C 5 -m -n"
+	{pdi_example_descr, "Evaluate the synthetic references from images imageXXXX.exr and save them to "
+	 "refXXXX.exr by using five independend components, mean stripping, normalizing, "
+	 "and skipping 2 images."}, 
+	
+	
+	{pdi_example_code, "-i imageXXXX.exr -o ref -k 2 -C 5 -m -n"}
 }; 
 
 unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean,
@@ -102,7 +102,7 @@ void save_feature_image_unnamed(const string& base, int id, size_t max_comp,
 	stringstream fname;
 	fname << base << "-" << "-" << max_comp <<  id << ".exr";
 	if (!save_image(fname.str(), ica.get_feature_image(id)))
-		THROW(runtime_error, "unable to save " << fname.str() << "\n");
+		throw create_exception<runtime_error>( "unable to save ", fname.str(), "\n");
 
 }
 
@@ -115,12 +115,12 @@ void save_feature_image(const string& base, const string& descr, int id, size_t 
 		fname << base << "-" << descr << "-" << max_comp << ".exr";
 		cvinfo() << "save id=" << id << " as feature '" << descr << "'\n";
 		if (!save_image(fname.str(), ica.get_feature_image(id)))
-			THROW(runtime_error, "unable to save " << fname.str() << "\n");
+			throw create_exception<runtime_error>( "unable to save ", fname.str(), "\n");
 	}else{
 		fname << base << "-" << descr << "-" << max_comp << ".exr";
 		P2DImage image(ica.get_mean_image().clone());
 		if (!save_image(fname.str(), image))
-			THROW(runtime_error, "unable to save " << fname.str() << "\n");
+			throw create_exception<runtime_error>( "unable to save ", fname.str(), "\n");
 	}
 }
 
@@ -129,7 +129,7 @@ void save_feature_image(const string& base, const string& descr, size_t max_comp
 	stringstream fname;
 	fname << base << "-" << descr << "-" << max_comp << ".exr";
 	if (!save_image(fname.str(), image))
-		THROW(runtime_error, "unable to save " << fname.str() << "\n");
+		throw create_exception<runtime_error>( "unable to save '", fname.str(), "'");
 }
 
 void save_feature_image_png(const string& base, const string& descr, P2DImage image)
@@ -137,7 +137,7 @@ void save_feature_image_png(const string& base, const string& descr, P2DImage im
 	stringstream fname;
 	fname << base << "-" << descr << ".png";
 	if (!save_image(fname.str(), image))
-		THROW(runtime_error, "unable to save " << fname.str() << "\n");
+		throw create_exception<runtime_error>( "unable to save ", fname.str(), "\n");
 }
 
 
@@ -153,7 +153,7 @@ void save_coefs(const string&  coefs_name, const C2DImageSeriesICA& ica)
 		coef_file << "\n";
 	}
 	if (!coef_file.good())
-		THROW(runtime_error, "unable to save coefficients to " << coefs_name);
+		throw create_exception<runtime_error>( "unable to save coefficients to '", coefs_name, "'");
 }
 
 CICAAnalysis::IndexSet get_all_without_periodic(const CSlopeClassifier::Columns& curves, bool strip_mean)
@@ -185,7 +185,7 @@ public:
 				}
 			}
 		if (!n)
-			THROW(invalid_argument, "GetRegionCenter: provided an empty region");
+			throw create_exception<invalid_argument>( "GetRegionCenter: provided an empty region");
 		return result / float(n);
 	};
 };
@@ -360,14 +360,15 @@ int do_main( int argc, char *argv[] )
 	bool auto_comp = false;
 	int max_iterations = 0;
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 	
 	CCmdOptionList options(g_description); 
-	options.add(make_opt( src_name, "in-base", 'i', "input file name base"));
+	options.add(make_opt( src_name, "in-base", 'i', "input file name ofolloing pattern nameXXXX.ext X=numbers" , 
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file"));
 	options.add(make_opt( out_name, "out-base", 'o', "output file name base"));
 
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
+	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',
 				    "output file type"));
 
 	options.add(make_opt( first, "skip", 'k', "skip images at beginning of series"));
@@ -405,20 +406,20 @@ int do_main( int argc, char *argv[] )
 		end_filenum = last;
 
 	if (start_filenum + components >= end_filenum) {
-		THROW(invalid_argument, "require at least " << components << " images");
+		throw create_exception<invalid_argument>( "require at least ", components, " images");
 	}
 
 	// load images
 	vector<C2DFImage> series;
-	FConvert2DImage2float converter;
+	FCopy2DImageToFloatRepn converter;
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
 		P2DImage image = load_image<P2DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw create_exception<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
-		series.push_back(::mia::filter(converter, *image));
+		series.push_back(converter(*image));
 	}
 
 
@@ -501,17 +502,17 @@ int do_main( int argc, char *argv[] )
 				reference = cropper->filter(*reference);
 				P2DImage crop_source = cropper->filter(*load_image2d(src_name));
 				if (!save_image(scrop_name.str(), crop_source))
-					THROW(runtime_error, "unable to save " << scrop_name.str() << "\n");
+					throw create_exception<runtime_error>( "unable to save ", scrop_name.str(), "\n");
 			}else  {
 				if (!save_image(scrop_name.str(), load_image2d(src_name)))
-					THROW(runtime_error, "unable to save " << scrop_name.str() << "\n");
+					throw create_exception<runtime_error>( "unable to save ", scrop_name.str(), "\n");
 			}
 		}
 		stringstream fname;
 		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type;
 
 		if (!save_image(fname.str(), reference))
-			THROW(runtime_error, "unable to save " << fname.str() << "\n");
+			throw create_exception<runtime_error>( "unable to save ", fname.str(), "\n");
 		cvdebug() << "wrote '" << fname.str() << "\n";
 	}
 

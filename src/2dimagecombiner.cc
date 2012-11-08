@@ -21,7 +21,7 @@
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/2d.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/internal/main.hh>
 
 NS_MIA_USE;
@@ -30,15 +30,12 @@ using boost::any_cast;
 
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	
-	"Combine two 2D images.", 
-	
-	"Combine two image by a given operation.", 
-	
-	"Combine image A.exr and image B.exr  by adding the intensity values and save the output to sum.exr.", 
-	
-	"-i A.exr -r B.exr -o sum.exr -p add"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Combine two 2D images."}, 
+	{pdi_description, "Combine two image by a given operation."}, 
+	{pdi_example_descr, "Combine image A.exr and image B.exr  by adding the intensity "
+	 "values and save the output to sum.exr."}, 
+	{pdi_example_code, "-i A.exr -r B.exr -o sum.exr -p add"}
 }; 
 
 int do_main( int argc, char *argv[] )
@@ -50,15 +47,17 @@ int do_main( int argc, char *argv[] )
 
 	C2DImageCombinerPluginHandler::ProductPtr combiner;
 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+	
 	stringstream combiner_names;
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in1_filename, "in-file-1", '1', 
-				    "first input image to be combined", CCmdOption::required));
+			      "first input image to be combined", CCmdOption::required, &imageio));
 	options.add(make_opt( in2_filename, "in-file-2", '2', 
-				    "second input image to be combined", CCmdOption::required));
+				    "second input image to be combined", CCmdOption::required, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", CCmdOption::required));
+				    "output image(s) that have been filtered", CCmdOption::required, &imageio));
 	options.add(make_opt( combiner, "absdiff", "operation", 'p', "operation to be applied"));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
@@ -73,7 +72,7 @@ int do_main( int argc, char *argv[] )
 
 	auto output = combiner->combine(*image1, *image2); 
 	if (!save_image(out_filename, output)) 
-		THROW(runtime_error, "unable to save result in '" << out_filename << "'");
+		throw create_exception<runtime_error>( "unable to save result in '", out_filename, "'");
 	
 	return EXIT_SUCCESS;
 }

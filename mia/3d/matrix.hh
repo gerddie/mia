@@ -22,7 +22,7 @@
 #ifndef __mia_3d_matrix_hh
 #define __mia_3d_matrix_hh
 
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 #include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN

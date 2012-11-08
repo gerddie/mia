@@ -20,7 +20,7 @@
 
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/internal/main.hh>
 
 
@@ -28,14 +28,11 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Compare two Vectorfields.", 
-
-	"Compare two vector fields and print out the difference norm per pixel.", 
-	
-	"Compare vector fields vf1.v and vf2.v and print out all differences above 0.01.",
-	
-	"-1 vf1.v -2 vf2.v -d 0.01"
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images" }, 
+	{pdi_short, "Compare two Vectorfields."}, 
+	{pdi_description, "Compare two vector fields and print the out the difference norm per pixel to cout it it is larger than delta."}, 
+	{pdi_example_descr, "Compare vector fields vf1.v and vf2.v and print out all differences above 0.01."}, 
+	{pdi_example_code, "-1 vf1.v -2 vf2.v -d 0.01"}
 }; 
 
 int do_main(int argc, char **argv)
@@ -46,20 +43,21 @@ int do_main(int argc, char **argv)
 	string vf2_filename;
 	float delta = 0.0; 
 
+	const auto& vfio =C3DVFIOPluginHandler::instance(); 
 
-	options.add(make_opt( vf1_filename, "in-file-1", '1', "input vector field 1", CCmdOption::required));
-	options.add(make_opt( vf2_filename, "in-file-2", '2', "input vector field 2", CCmdOption::required));
+	options.add(make_opt( vf1_filename, "in-file-1", '1', "input vector field 1", CCmdOption::required, &vfio));
+	options.add(make_opt( vf2_filename, "in-file-2", '2', "input vector field 2", CCmdOption::required, &vfio));
 	options.add(make_opt( delta, "delta", 'd', "Maximum difference between vector to be ignored"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
-	auto vf1 = C3DVFIOPluginHandler::instance().load(vf1_filename); 
-	auto vf2 = C3DVFIOPluginHandler::instance().load(vf2_filename); 
+	auto vf1 = vfio.load(vf1_filename); 
+	auto vf2 = vfio.load(vf2_filename); 
 
 	if (vf1->get_size() != vf2->get_size()) {
-		cvfail() << "Field sizes are different: vf1=" << vf1->get_size()
-			 << ", vf2="<< vf2->get_size() << "\n"; 
+		cverr() << "Field sizes are different: vf1=" << vf1->get_size()
+			  << ", vf2="<< vf2->get_size() << "\n"; 
 		return EXIT_FAILURE;	
 	}
 
@@ -73,10 +71,10 @@ int do_main(int argc, char **argv)
 		auto d = (*ivf1 - *ivf2).norm(); 
 		if (d > delta) {
 			diff = true; 
-			cvfail() << "At " << ivf1.pos()
-				 << ", vf1=" << *ivf1 
-				 << ", vf2=" << *ivf2 
-				 << ", delta = " << *ivf1 - *ivf2 << " (" << d << ")\n"; 
+			cout << "At " << ivf1.pos()
+			     << ", vf1=" << *ivf1 
+			     << ", vf2=" << *ivf2 
+			     << ", delta = " << *ivf1 - *ivf2 << " (" << d << ")\n"; 
 		}
 		++ivf1; 
 		++ivf2; 

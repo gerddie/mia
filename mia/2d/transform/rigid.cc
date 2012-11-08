@@ -19,29 +19,6 @@
  */
 
 
-/* 
-  LatexBeginPluginDescription{2D Transformations}
-   
-   \subsection{Rigid}
-   \label{transform2d:rigid}
-   
-   \begin{description}
-   
-   \item [Plugin:] rigid
-   \item [Description:] Rigid transformations - i.r. rotations and translations are allowed. 
-   \item [Degrees of Freedom:] 3 
-  
-   \end{description}
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   \plugtabend
-
-
-   LatexEnd  
- */
-
-
 #include <fstream>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transformfactory.hh>
@@ -118,17 +95,6 @@ C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFV
 	m_rotation(rotation),
 	m_matrix_valid(false)
 {
-}
-
-bool C2DRigidTransformation::save(const std::string& filename) const
-{
-	ofstream file(filename.c_str());
-	file << "Transformation: 2D\n"
-	     << "Matrix: ";
-	for (size_t i = 0; i < 6 ; ++i)
-		file << m_t[i] << " ";
-	file << "\n";
-	return file.good();
 }
 
 size_t C2DRigidTransformation::degrees_of_freedom() const
@@ -227,7 +193,7 @@ P2DTransformation C2DRigidTransformation::do_upscale(const C2DBounds& size) cons
 	return P2DTransformation(new C2DRigidTransformation(size, new_trans, m_rotation, get_interpolator_factory()));
 }
 
-C2DFMatrix C2DRigidTransformation::derivative_at(const C2DFVector& PARAM_UNUSED(x)) const
+C2DFMatrix C2DRigidTransformation::derivative_at(const C2DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	if (!m_matrix_valid)
 		evaluate_matrix(); 
@@ -236,7 +202,7 @@ C2DFMatrix C2DRigidTransformation::derivative_at(const C2DFVector& PARAM_UNUSED(
 			  C2DFVector(m_t[3], m_t[4]));
 }
 
-C2DFMatrix C2DRigidTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y)) const
+C2DFMatrix C2DRigidTransformation::derivative_at(int MIA_PARAM_UNUSED(x), int MIA_PARAM_UNUSED(y)) const
 {
 	if (!m_matrix_valid)
 		evaluate_matrix(); 
@@ -392,7 +358,6 @@ class C2DRigidTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DRigidTransformCreatorPlugin();
 	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -404,11 +369,6 @@ C2DRigidTransformCreatorPlugin::C2DRigidTransformCreatorPlugin():
 C2DTransformCreator *C2DRigidTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
 	return new C2DRigidTransformCreator(ipf);
-}
-
-bool C2DRigidTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C2DRigidTransformCreatorPlugin::do_get_descr() const

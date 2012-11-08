@@ -20,7 +20,7 @@
 
 #include <memory>
 #include <mia/core/filter.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/interpolator.hh>
 
 NS_BEGIN(scale_3dimage_filter)

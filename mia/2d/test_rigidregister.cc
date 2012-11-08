@@ -28,10 +28,11 @@
 #include <mia/2d/transformfactory.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/minimizer.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 
-NS_MIA_USE
+using namespace mia; 
+using namespace std; 
 namespace bfs=boost::filesystem;
 
 CSplineKernelTestPath init_splinekernel_path; 

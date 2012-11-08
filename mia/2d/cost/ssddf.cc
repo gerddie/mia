@@ -110,8 +110,6 @@ public:
 	virtual const string do_get_descr()const; 
 private: 
 
-	virtual bool do_test() const; 
-
 	float m_min; 
 	float m_max; 
 };
@@ -127,39 +125,6 @@ C2DSSDCostPlugin::ProductPtr C2DSSDCostPlugin::do_create()const
 	return C2DSSDCostPlugin::ProductPtr(new CSSDCost()); 
 }
 
-bool C2DSSDCostPlugin::do_test() const
-{
-	bool success = true; 
-	const float src_data[16] = {
-		0, 0, 0, 0, 
-		0, 3, 1, 0, 
-		0, 6, 7, 0, 
-		0, 0, 0, 0
-	}; 
-	const float ref_data[16] = {
-		0, 0, 0, 0, 
-		0, 2, 3, 0, 
-		0, 1, 2, 0, 
-		0, 0, 0, 0
-	}; 
-
-	C2DFImage *fsrc = new C2DFImage(C2DBounds(4,4), src_data ); 
-	C2DFImage *fref = new C2DFImage(C2DBounds(4,4), ref_data ); 
-	std::shared_ptr<C2DImage > src(fsrc); 
-	std::shared_ptr<C2DImage > ref(fref); 
-
-	CSSDCost cost; 
-
-	success &= (cost.value(*src, *ref) == 55.0); 
-	
-	C2DFVectorfield force(C2DBounds(4,4)); 
-	
-	cost.evaluate_force(*src, *ref, 2.0, force); 
-
-	success &=  (force(1,1) == C2DFVector(-2.0, 5.0)); 
-
-	return success; 
-}
 
 const string C2DSSDCostPlugin::do_get_descr()const
 {

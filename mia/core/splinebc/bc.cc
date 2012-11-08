@@ -18,39 +18,11 @@
  *
  */
 
-
-
-/* 
-   LatexBeginPluginDescription{Spline Interpolation Boundary Conditions}
-   
-   \subsection{Mirror on Boundary}
-   \label{splinebc:mirror}
-   
-   \begin{description}
-   
-   \item [Plugin:] mirror
-   \item [Description:] This plug-in mirror-on-boundary spline interpolation kernels. 
-       A index $i$ into a coeficient vector of length $w$ is translated according to 
-       \begin{equation*}
-         i^* := \left\{ 
-	               \begin{array}{lll} 
-		       |i| & \text{for} &   |i| mod (2w-2) < w\\
-		       2 w - 2 - |i| & \multicolumn{2}{l}{otherwise}
-		       \end{array}
-		       \right.
-       \end{equation*}
-
-   \plugtabstart
-   w & int &  length of the coefficient vector (in the according dimension) &  0 \\
-   \plugtabend
-   \end{description}
-
-   LatexEnd  
-*/
-
 #include <mia/core/splinebc/bc.hh>
 
 NS_MIA_BEGIN
+
+using std::invalid_argument; 
 
 CMirrorOnBoundary::CMirrorOnBoundary():
 	m_width2(0)
@@ -116,38 +88,6 @@ double CMirrorOnBoundary::initial_anti_coeff(const std::vector<double>& coeff, d
 	
 }
 
-/*
-   LatexBeginPluginDescription{Spline Interpolation Boundary Conditions}
-
-   \subsection{Zero boundary condition}
-   \label{splinebc:zero}
-   
-   \begin{description}
-   
-   \item [Plugin:] zero
-   \item [Description:] This plug-in sets those spline weights to zero that correspond to the indices that fall outside 
-                        the coefficient vector index domain. The according indices are set to zero to avoid memory access errors. 
-			Given spline weights $s_i$: 
-       \begin{equation*}
-         s_i^* := \left\{ 
-	               \begin{array}{lll} 
-		       0 & \text{for} &  i < 0\\
-		       0 & \text{for} & i \ge w \\
-		       s_i  & \multicolumn{2}{l}{otherwise}
-		       \end{array}
-		       \right.
-       \end{equation*}
-
-   \plugtabstart
-   w & int &  length of the coefficient vector (in the according dimension) &  0 \\
-   \plugtabend
-   \item[Remark:] This boudary condition is not supported by spline kernels of a degree equal or larger then 4.    
-   
-   \end{description}
-
-
-   LatexEnd  
- */
 
 
 CZeroBoundary::CZeroBoundary(int width):
@@ -168,7 +108,8 @@ void CZeroBoundary::test_supported(int npoles) const
 	 */
 
 	if (npoles > 1) {
-		THROW(invalid_argument, "Currently, zero-boundary not supported for splines with more then one pole");  
+		throw create_exception<invalid_argument>( "CZeroBoundary: Got ", npoles, ", but currently, "
+						"zero-boundary are not supported for splines with more then one pole");  
 	}
 }
 
@@ -208,36 +149,6 @@ double CZeroBoundary::initial_anti_coeff(const std::vector<double>& coeff, doubl
 }
 
 
-/*
-   LatexBeginPluginDescription{Spline Interpolation Boundary Conditions}
-   \subsection{Repeat boundary value}
-   \label{splinebc:repeat}
-   
-   \begin{description}
-   
-   \item [Plugin:] repeat
-   \item [Description:] This plug-in resets the indices outside the coefficient vector index range 
-                      the the corresponding extrem. 
-       \begin{equation*}
-         i^* := \left\{ 
-	               \begin{array}{lll} 
-		       0 & \text{for} &   i < 0\\
-		       w-1 & \text{for} &  i \ge w \\
-		       i  & \multicolumn{2}{l}{otherwise}
-		       \end{array}
-		       \right.
-       \end{equation*}
-
-   \plugtabstart
-   w & int &  length of the coefficient vector (in the according dimension) &  0 \\
-   \plugtabend
-   \item[Remark:] This boudary condition is not supported by spline kernels of a degree equal or larger then 4. 
-   
-   \end{description}
-
-   LatexEnd  
-*/
-
 CRepeatBoundary::CRepeatBoundary():
 	m_widthm1(0)
 {
@@ -257,7 +168,8 @@ CRepeatBoundary::CRepeatBoundary(int width):
 void CRepeatBoundary::test_supported(int npoles) const
 {
 	if (npoles > 1) {
-		THROW(invalid_argument, "Currently, repeat-boundary not supported for splines woth more then one pole");  
+		throw create_exception<invalid_argument>( "CRepeatBoundary:Got ", npoles, "poles, but currently, repeat-boundary is"
+						"not supported for splines with more then one pole");
 	}
 }
 

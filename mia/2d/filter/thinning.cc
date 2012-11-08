@@ -22,6 +22,7 @@
 
 NS_BEGIN(thinning_2dimage_filter) 
 using namespace mia;
+using namespace std;
 
 C2DThinningImageFilter::C2DThinningImageFilter(int max_iterations):
 	C2D2MaskMorphImageFilter(max_iterations)

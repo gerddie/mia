@@ -26,6 +26,7 @@
 #include <mia/2d/groundtruthproblem.hh>
 
 using namespace mia;
+using namespace std;
 
 const size_t N = 5;
 const C2DBounds slice_size(3,3);

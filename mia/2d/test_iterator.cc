@@ -22,8 +22,8 @@
 #define VSTREAM_DOMAIN "ITERATOR"
 
 #include <mia/internal/autotest.hh>
-#include <mia/2d/2DVectorfield.hh>
-#include <mia/2d/2DDatafield.cxx>
+#include <mia/2d/vectorfield.hh>
+#include <mia/2d/datafield.cxx>
 #include <mia/2d/iterator.cxx>
 
 NS_MIA_USE;

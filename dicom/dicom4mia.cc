@@ -36,7 +36,7 @@
 #include <dcmtk/dcmnet/diutil.h>
 #include <dcmtk/dcmjpeg/djdecode.h>
 
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_MIA_BEGIN
 
@@ -204,21 +204,21 @@ P2DImage CDicomReader::load_image()const
 P2DImage CDicomReader::get_image() const
 {
 	if (samples_per_pixel() != 1) {
-		THROW(invalid_argument, "CDicomReader: '"<< m_filename
-		      <<"' Image has more then one color channel");
+		throw create_exception<invalid_argument>( "CDicomReader: '", m_filename, 
+						"' Image has more then one color channel");
 	}
 	int bbpa = bits_allocated();
 	int bbp  = bits_used();
 	if (bbp > bbpa) {
-		THROW(invalid_argument, "CDicomReader: '"<< m_filename
-		      <<"' Bogus image - more bits per pixel used then allocated");
+		throw create_exception<invalid_argument>( "CDicomReader: '", m_filename, 
+						"' Bogus image - more bits per pixel used then allocated");
 	}
 
 	if (bbpa == 16)
 		return load_image<unsigned short>();
 
-	THROW(invalid_argument, "CDicomReader: '"<< m_filename
-	      << "' don't support " << bbp << " bits per pixel (yet)");
+	throw create_exception<invalid_argument>( "CDicomReader: '", m_filename, 
+					"' doesn't support ", bbp,  " bits per pixel.");
 }
 
 
@@ -245,8 +245,8 @@ Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required)
 	OFCondition success = dcm.getDataset()->findAndGetUint16(tagKey, value);
 
 	if (success.bad() && required){
-		THROW(runtime_error, "CDicom2DImageIOPlugin: unable to get value for '"
-		      << tagKey << " ':" << status.text());
+		throw create_exception<runtime_error>( "CDicom2DImageIOPlugin: unable to get value for '", 
+					     tagKey, " ':", status.text());
 	}
 	return value;
 }
@@ -264,7 +264,7 @@ string CDicomReaderData::getAttribute(const string& key, bool required)
 	    return string(value.data());
 
 	if (required) {
-		THROW(runtime_error, "DICOM read: Required value '" << key << "' not found");
+		throw create_exception<runtime_error>( "DICOM read: Required value '", key, "' not found");
 	}
 	return string(); 
 }
@@ -274,7 +274,7 @@ void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& im
 {
 	OFCondition status = dcm.loadAllDataIntoMemory();
 	if (status.bad()) {
-		THROW(runtime_error, "DICOM: error loading pixel data:"<< status.text());
+		throw create_exception<runtime_error>( "DICOM: error loading pixel data:", status.text());
 	}
 
 	const Uint16 *values;
@@ -282,12 +282,12 @@ void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& im
 	OFCondition cnd = dcm.getDataset()->findAndGetUint16Array(DCM_PixelData, values, &count, false);
 	if (cnd.good()) {
 		if (image.size() != count) {
-			THROW(runtime_error, "bogus file, expect " << image.size() << " pixels, "
-			      << "but got data for " << count << " pixels");
+			throw create_exception<runtime_error>( "bogus file, expect ", image.size(), " pixels, ", 
+						     "but got data for ", count, " pixels");
 		}
 		copy(values, values+count, image.begin());
 	}else {
-		THROW(runtime_error, "DICOM: required value PixelData:" << status.text());
+		throw create_exception<runtime_error>( "DICOM: required value PixelData:", status.text());
 	}
 }
 
@@ -297,13 +297,13 @@ void CDicomReaderData::getPixelData(T2DImage<T>& image)
 	OFString of_transfer_syntax;
 	OFCondition success = dcm.getMetaInfo()->findAndGetOFString(DCM_TransferSyntaxUID, of_transfer_syntax);
 	if (success.bad()) {
-		THROW(runtime_error, "Unable to determine transfer syntax");
+		throw create_exception<runtime_error>( "Unable to determine transfer syntax");
 	}
 	dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
 	
 	if (!dcm.getDataset()->canWriteXfer(EXS_LittleEndianExplicit)) {
 		string transfer_syntax(of_transfer_syntax.data());
-		THROW(runtime_error, "DICOM: Unsupported data encoding '" <<  transfer_syntax << "'");
+		throw create_exception<runtime_error>( "DICOM: Unsupported data encoding '", transfer_syntax, "'");
 	}
 
 	getPixelData_LittleEndianExplicitTransfer(image);
@@ -314,7 +314,7 @@ C2DFVector CDicomReaderData::getPixelSize()
 	OFString help;
 	OFCondition success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 0);
 	if (success.bad()) {
-		THROW(runtime_error, "Required attribute 'PixelSpacing' not found");
+		throw create_exception<runtime_error>( "Required attribute 'PixelSpacing' not found");
 	}
 	C2DFVector result;
 
@@ -323,7 +323,7 @@ C2DFVector CDicomReaderData::getPixelSize()
 
 	success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 1);
 	if (success.bad()) {
-		THROW(runtime_error, "Required attribute 'PixelSpacing' not found");
+		throw create_exception<runtime_error>( "Required attribute 'PixelSpacing' not found");
 	}
 	istringstream sheight(help.data());
 	sheight >> result.y;
@@ -384,9 +384,8 @@ struct pixel_trait<unsigned short> {
 template <typename T>
 CDicomImageSaver::result_type CDicomImageSaver::operator ()(const T2DImage<T>& image)const
 {
-	if (!pixel_trait<T>::supported) {
-		THROW(invalid_argument, "DICOM: unsupporrted pixel type");
-	}
+	if (!pixel_trait<T>::supported)
+		throw create_exception<invalid_argument>( "DICOM: unsupported pixel type '", __type_descr<T>::value, "'"); 
 
 	parent->setValueUint16(DCM_BitsAllocated, pixel_trait<T>::AllocSize);
 	parent->setValueUint16(DCM_BitsStored, pixel_trait<T>::UseSize);

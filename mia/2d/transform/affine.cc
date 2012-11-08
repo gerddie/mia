@@ -68,7 +68,7 @@ C2DTransformation *C2DAffineTransformation::invert()const
 {
 	const double det = m_t[0] * m_t[4] - m_t[1] * m_t[3]; 
 	if (fabs(det) < 1e-6) 
-		THROW(invalid_argument, "C2DAffineTransformation::invert(): Matrix is singular"); 
+		throw invalid_argument("C2DAffineTransformation::invert(): Matrix is singular"); 
 	
 	const double inv_det = 1.0 / det; 
 
@@ -92,17 +92,6 @@ C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size,
 	m_t(transform),
 	m_size(size)
 {
-}
-
-bool C2DAffineTransformation::save(const std::string& filename) const
-{
-	ofstream file(filename.c_str());
-	file << "Transformation: 2D\n"
-	     << "Matrix: ";
-	for (size_t i = 0; i < 6 ; ++i)
-		file << m_t[i] << " ";
-	file << "\n";
-	return file.good();
 }
 
 size_t C2DAffineTransformation::degrees_of_freedom() const
@@ -225,13 +214,13 @@ P2DTransformation C2DAffineTransformation::do_upscale(const C2DBounds& size) con
 	return P2DTransformation(result);
 }
 
-C2DFMatrix C2DAffineTransformation::derivative_at(const C2DFVector& PARAM_UNUSED(x)) const
+C2DFMatrix C2DAffineTransformation::derivative_at(const C2DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	return C2DFMatrix(C2DFVector(m_t[0], m_t[1]),
 			  C2DFVector(m_t[3], m_t[4]));
 }
 
-C2DFMatrix C2DAffineTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y)) const
+C2DFMatrix C2DAffineTransformation::derivative_at(int MIA_PARAM_UNUSED(x), int MIA_PARAM_UNUSED(y)) const
 {
 	return C2DFMatrix(C2DFVector(m_t[0], m_t[1]),
 			  C2DFVector(m_t[3], m_t[4]));
@@ -383,7 +372,6 @@ class C2DAffineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DAffineTransformCreatorPlugin();
 	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -395,11 +383,6 @@ C2DAffineTransformCreatorPlugin::C2DAffineTransformCreatorPlugin():
 C2DTransformCreator *C2DAffineTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
 	return new C2DAffineTransformCreator(ipf);
-}
-
-bool C2DAffineTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C2DAffineTransformCreatorPlugin::do_get_descr() const

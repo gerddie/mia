@@ -156,6 +156,21 @@ BOOST_AUTO_TEST_CASE( test_histogram3)
 
 }
 
+BOOST_AUTO_TEST_CASE( test_histogram_cut_5)
+{
+	const size_t nsamples = 100;
+
+	THistogram<THistogramFeeder<double> > h(THistogramFeeder<double>(1,100,100));
+
+	for (size_t i = 0; i < nsamples; ++i)
+		h.push(i+1);
+
+	auto range = h.get_reduced_range(5); 
+	BOOST_CHECK_EQUAL(range.first, 5); 
+	BOOST_CHECK_EQUAL(range.second, 95);
+}
+
+
 struct FNormalDistribution {
 	FNormalDistribution(float mean, float sigma) :
 		m_mean(mean),

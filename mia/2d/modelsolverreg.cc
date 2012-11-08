@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
+#if 0 
 #include <mia/2d/modelsolverreg.hh>
 
 NS_MIA_BEGIN
@@ -32,10 +32,10 @@ public:
 				     size_t max_iter,
 				     float outer_epsilon);
 
-	P2DTransformation apply(C2DImageFatCostList& cost) const;
+	P2DTransformation apply(C2DFullCostList& cost) const;
 
 private:
-	void register_level(C2DImageFatCostList& cost, C2DTransformation& result)const;
+	void register_level(C2DFullCostList& cost, C2DTransformation& result)const;
 
 	P2DTransformationFactory m_trans_factory;
 	P2DRegModel    m_model;
@@ -62,7 +62,7 @@ CModelSolverRegistration::CModelSolverRegistration(P2DRegModel model,
 {
 }
 
-P2DTransformation CModelSolverRegistration::operator ()(C2DImageFatCostList& cost) const
+P2DTransformation CModelSolverRegistration::operator ()(C2DFullCostList& cost) const
 {
 	return m_impl->apply(cost);
 }
@@ -83,7 +83,7 @@ CModelSolverRegistrationImpl::CModelSolverRegistrationImpl(P2DRegModel model,
 }
 
 
-P2DTransformation CModelSolverRegistrationImpl::apply(C2DImageFatCostList& cost) const
+P2DTransformation CModelSolverRegistrationImpl::apply(C2DFullCostList& cost) const
 {
 	size_t x_shift = log2(cost.get_size().x / m_start_size);
 	size_t y_shift = log2(cost.get_size().y / m_start_size);
@@ -222,3 +222,4 @@ void CModelSolverRegistrationImpl::register_level(C2DImageFatCostList& cost, C2D
 }
 
 NS_MIA_END
+#endif 

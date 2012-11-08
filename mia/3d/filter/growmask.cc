@@ -26,7 +26,7 @@
 
 // this is for the definition of the 3D image plugin base classes
 #include <mia/3d/filter/growmask.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 
 NS_BEGIN(growmask_3dimage_filter)
@@ -109,7 +109,8 @@ C3DGrowmaskImageFilterFactory::C3DGrowmaskImageFilterFactory():
 	C3DFilterPlugin("growmask"),
 	m_min(1.0)
 {
-	add_parameter("ref", new CStringParameter(m_ref_filename, true, "reference image for mask region growing"));
+	add_parameter("ref", new CStringParameter(m_ref_filename, true, "reference image for mask region growing", 
+			      &C3DImageIOPluginHandler::instance()));
 	add_parameter("shape", make_param(m_shape, "6n", false, "neighborhood mask"));
 	add_parameter("min", new CFloatParameter(m_min, -numeric_limits<float>::max(),
 						 numeric_limits<float>::max(), false,

@@ -25,8 +25,8 @@
 #include <stdexcept>
 #include <sstream>
 
-#include <mia/3d/3dfilter.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/filter.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/3d/shape.hh>
 #include <mia/core.hh>
 
@@ -34,23 +34,19 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-
-	"Mask an area by seeded region growing", 
-	
-	"3D image segmentation based on region growing from a seed point. "
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Mask an area by seeded region growing"}, 
+	{pdi_description, "3D image segmentation based on region growing from a seed point. "
 	"Neighboring points are added, either when their intensity is "
 	"equal or higher than that of the seed point, or of the intensity "
 	"is lower or equal then that of the neighoring point. "
 	"After region growing is finished, this mask is used to zero out "
-	"the region in the original image yielding the resulting image. ", 
-	
-	"Run a region growing on input.v starting at point <10,23,21> and "
-	"use the 18n neighbourhood.", 
-	
-	"-i image.v -o masked.v -s '<10,23,21>' -n 18n" 
-}; 
+	"the region in the original image yielding the resulting image. "}, 
+	{pdi_example_descr, "Run a region growing on input.v starting at point <10,23,21> and "
+	"use the 18n neighbourhood."}, 
+	{pdi_example_code, "-i image.v -o masked.v -s '<10,23,21>' -n 18n"}
 
+}; 
 
 
 class FMask : public TFilter <P3DImage> {
@@ -137,39 +133,32 @@ int do_main(int argc, char *argv[] )
 	string in_filename;
 	string out_filename;
 	C3DBounds seed_point(0,0,0);
-	string shape_descr("6n");
+	P3DShape shape; 
 
-	const C3DImageIOPluginHandler::Instance& imageio =
-		C3DImageIOPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", 
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( seed_point, "seed", 's', "seed point"));
 
-	options.add(make_opt( shape_descr, "neighborhood", 'n', "neighborhood shape"));
+	options.add(make_opt( shape, "6n", "neighborhood", 'n', "neighborhood shape"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
-
-
 	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
 
 	if (in_image_list.get() && in_image_list->size()) {
-		P3DShape shape(C3DShapePluginHandler::instance().produce(shape_descr.c_str()));
 		FMask mask(seed_point, shape);
 
-		for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-		     i != in_image_list->end(); ++i)
+		for (auto i = in_image_list->begin();     i != in_image_list->end(); ++i)
 			*i = mia::filter(mask,**i);
-		if ( !imageio.save(out_filename, *in_image_list) ){
-			string not_save = ("unable to save result to ") + out_filename;
-			throw runtime_error(not_save);
-		};
+		if ( !imageio.save(out_filename, *in_image_list) )
+			throw create_exception<runtime_error>("unable to save result to '",out_filename, "'");
 	}
 	return EXIT_SUCCESS;
 }

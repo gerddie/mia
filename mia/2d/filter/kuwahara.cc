@@ -19,7 +19,7 @@
  */
 
 #include <limits>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <libmia/filter2dimage.hh>
 
 

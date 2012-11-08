@@ -31,17 +31,14 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	
-	"Create a synthetic 2D image.", 
-	
-	"This program is used to create test images.", 
-	
-	"Create a 2D image containing a lattic with standard parameters of size <64,128> and pixel type"
-	" 'float' and save the result to lattic.v", 
-	
-	"-o lattic.v -s '<64,128>' -r float -j lattic"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short,  "Create a synthetic 2D image."}, 
+	{pdi_description, "This program is used to create test images."}, 
+	{pdi_example_descr, "Create a 2D image containing a lattic with standard parameters of size "
+	 "<64,128> and pixel type 'float' and save the result to lattic.v"}, 
+	{pdi_example_code, "-o lattic.v -s '<64,128>' -r float -j lattic"}
 }; 
+
 
 int do_main(int argc, char *argv[])
 {
@@ -51,11 +48,11 @@ int do_main(int argc, char *argv[])
 	EPixelType pixel_type = it_ubyte;
 	C2DBounds size(128,128);
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", 
-				    CCmdOption::required));
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( size, "size", 's', "size of the object"));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.add(make_opt( creator, "", "object", 'j', "object to be created", CCmdOption::required));

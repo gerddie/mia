@@ -21,7 +21,7 @@
 #ifndef __mia_2d_boundingbox_hh
 #define __mia_2d_boundingbox_hh
 
-#include <mia/2d/2DVector.hh>
+#include <mia/2d/vector.hh>
 #include <mia/2d/defines2d.hh>
 
 

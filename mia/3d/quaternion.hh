@@ -24,8 +24,8 @@
 
 #include <ostream>
 #include <mia/3d/defines3d.hh>
-#include <mia/3d/3DVector.hh>
 #include <mia/3d/matrix.hh>
+#include <mia/3d/vector.hh>
 
 
 NS_MIA_BEGIN 
@@ -92,17 +92,6 @@ public:
 	/// \returns the Euler angles that correspond to the rotation described by this quaternion 
 	C3DDVector get_euler_angles() const;
 
-
-	/**
-	   Evaluate the rotation of a point by this quaternion 
-	   \tparam value type of the vector elements 
-	   \param x input coordinates
-	   \returns rotated point coordinates 
-	 */
-	template <typename T> 
-	T3DVector<T> rotate(const T3DVector<T>& x) const; 
-
-
 	/**
 	   in-place adding  
 	   \param other 
@@ -149,13 +138,6 @@ private:
 	C3DDVector m_v; 
 	double m_w; 
 }; 
-
-template <typename T> 
-T3DVector<T> Quaternion::rotate(const T3DVector<T>& x) const
-{
-	assert(0 && "not yet implemented"); 
-}
-
 
 bool EXPORT_3D operator == (const Quaternion& a, const Quaternion& b); 
 bool EXPORT_3D operator != (const Quaternion& a, const Quaternion& b); 

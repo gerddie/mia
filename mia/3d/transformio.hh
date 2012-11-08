@@ -38,13 +38,51 @@ typedef TIOPlugin<C3DTransformation> C3DTransformationIO;
    \ingroup io
    \brief Plug-in handler for the transformation IO plug-ins 
 */
-typedef TIOHandlerSingleton< TIOPluginHandler<C3DTransformationIO> > C3DTransformationIOPluginHandler;
+typedef THandlerSingleton< TIOPluginHandler<C3DTransformationIO> > C3DTransformationIOPluginHandler;
 
 /**
    \ingroup io
    \brief data key type for temporary storage of 3D transformations \sa CDatapool 
 */
 typedef C3DTransformationIOPluginHandler::Instance::DataKey C3DTransformationDataKey;
+
+
+/**
+   \ingroup io 
+   \brief convenienance function to load a transformation 
+   \param file file name to load the transformation from
+   \returns the loaded transformation or an empty std::shared_ptr 
+*/
+inline P3DTransformation load_3dtransform(const std::string& file)
+{
+	return C3DTransformationIOPluginHandler::instance().load(file); 
+}
+
+/**
+   \ingroup io 
+   \brief specialized version to load a transformation 
+   \param file file name to load the transformation from
+   \returns the loaded transformation or an empty std::shared_ptr 
+ */
+template <>
+inline P3DTransformation load_transform<P3DTransformation>(const std::string& file)
+{
+	return load_3dtransform(file); 
+}
+
+
+/**
+   \ingroup io 
+   \brief convenienance function to save a transformation 
+   \param file file name to store the transformation in 
+   \param transform the transformation to be stored
+*/
+inline bool save_transform(const std::string& file, const C3DTransformation& transform)
+{
+	return C3DTransformationIOPluginHandler::instance().save(file, transform); 
+}
+
+
 NS_MIA_END
 
 

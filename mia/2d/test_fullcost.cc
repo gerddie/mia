@@ -23,7 +23,7 @@
 #include <mia/2d/fullcost.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/transformmock.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 #include <mia/internal/autotest.hh>
 

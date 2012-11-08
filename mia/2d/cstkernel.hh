@@ -28,8 +28,8 @@
 #include <mia/core/factory.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/cstplan.hh>
-#include <mia/2d/2DDatafield.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/datafield.hh>
+#include <mia/2d/image.hh>
 
 NS_MIA_BEGIN
 
@@ -88,7 +88,7 @@ private:
         virtual CPlan *do_prepare(fftwf_r2r_kind fw_kind, const std::vector<int>& size) = 0;
 
 	fftwf_r2r_kind m_forward;
-	auto_ptr<CPlan> m_plan;
+	std::unique_ptr<CPlan> m_plan;
 };
 
 /**

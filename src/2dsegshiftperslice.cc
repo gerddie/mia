@@ -32,8 +32,8 @@
 #include <mia/core.hh>
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/SegSet.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/internal/main.hh>
 
 using namespace std;
@@ -42,19 +42,19 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
 
-	"Translate a segmentation by the given amount.", 
+	{pdi_short, "Translate a segmentation by the given amount."}, 
 	
-	"This program move the segmentation(s) of an image series by using a shift "
-	"that is given on a per-slice base. The program can be used to correct the "
-	"segmentation of the images if a linear registration was executed that only "
-	"applies a translation and does not correct the segmentation automatically. ", 
+	{pdi_description, "This program move the segmentation(s) of an image series by using a shift "
+	 "that is given on a per-slice base. The program can be used to correct the "
+	 "segmentation of the images if a linear registration was executed that only "
+	 "applies a translation and does not correct the segmentation automatically. "}, 
 
-	"Shirt the segmentation given in set segment.set by files shiftXXXX.txt and "
-	"store the result in shifted.set. Note, the numbering of the shiftXXXX.txx files must coincide.", 
-
-	"-i segment.set -o shifted.set -g shifted -S shift",  
+	{pdi_example_descr, "Shirt the segmentation given in set segment.set by files shiftXXXX.txt and "
+	 "store the result in shifted.set. Note, the numbering of the shiftXXXX.txx files must coincide."}, 
+	
+	{pdi_example_code, "-i segment.set -o shifted.set -g shifted -S shift"},  
 }; 
 
 CSegSet load_segmentation(const string& s)

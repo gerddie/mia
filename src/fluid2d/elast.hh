@@ -25,7 +25,7 @@
 #include <config.h>
 #endif
 
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 #include <mia/2d/interpolator.hh>
 
 #include "Pixel.hh"

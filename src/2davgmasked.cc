@@ -26,7 +26,7 @@
 #include <stdexcept>
 
 #include <mia/core.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 
 
@@ -35,12 +35,11 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Evaluate average intensities of an image series.", 
-	"This program is used to evaluate the average intensity and its variation of a series "
-	"of images in a given masked region.", 
-	NULL, 
-	NULL
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Evaluate average intensities of an image series."}, 
+	{pdi_description, "Evaluate average intensities of an image series"
+	 "This program is used to evaluate the average intensity and its variation of a series "
+	 "of images in a given masked region."}, 
 }; 
 
 struct C2DStat : public TFilter<bool> {
@@ -99,11 +98,11 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string mask_filename;
 
-	const C2DImageIOPluginHandler::Instance& image2dio = C2DImageIOPluginHandler::instance();
+	const auto& image2dio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-files", 'i', "input image(s)", CCmdOption::required));
-	options.add(make_opt( mask_filename, "mask-file", 'm', "mask image, must be of type byte", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-files", 'i', "input image(s)", CCmdOption::required, &image2dio));
+	options.add(make_opt( mask_filename, "mask-file", 'm', "mask image, must be of type byte", CCmdOption::required, &image2dio));
 
 	if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 

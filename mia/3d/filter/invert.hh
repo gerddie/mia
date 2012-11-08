@@ -21,7 +21,7 @@
 #include <limits>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/template/invert.hh>
 
 

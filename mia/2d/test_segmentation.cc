@@ -24,7 +24,7 @@
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/BoundingBox.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 #include <libxml++/libxml++.h>
 
@@ -93,6 +93,7 @@ extern const char *testset_init2;
 extern const char *testset_init3;
 extern const char *testset_bboxtest;
 extern const char *testset_shift_and_rename;
+extern const char *testset_version_2; 
 
 struct SegStarFixture {
 	void init(const char *init_str);
@@ -219,11 +220,11 @@ BOOST_AUTO_TEST_CASE(segment_section_write)
 	for (size_t i = 0; i  < size; ++i)
 		points.push_back(CSegPoint2D(x_init[i], y_init[i]));
 
-	CSegSection section("white", points);
+	CSegSection section("white", points, 1);
 
 	xmlpp::Document document;
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
-	section.write(*nodeRoot);
+	section.write(*nodeRoot, 1);
 
 	const string xmldoc = document.write_to_string();
 	const string testdoc(testsection_init);
@@ -440,6 +441,153 @@ BOOST_FIXTURE_TEST_CASE( test_segset_shift_and_rename, SegSetReadFixture )
 	}
 }
 
+BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read_write, SegSetReadFixture )
+{
+	init(testset_version_2);
+
+	const auto& frames = segset.get_frames();
+	BOOST_CHECK_EQUAL(frames.size(), 1u);
+	
+	BOOST_CHECK_EQUAL(segset.get_LV_peak(), 2);
+	BOOST_CHECK_EQUAL(segset.get_RV_peak(), 1);
+	BOOST_CHECK_EQUAL(segset.get_prefered_reference(), 0);
+	
+	const auto& frame = frames[0]; 
+	BOOST_CHECK_EQUAL(frame.get_imagename(), "moved0000.png");
+
+	BOOST_CHECK_EQUAL(frame.get_star().m_radius, 21);
+	BOOST_CHECK_EQUAL(frame.get_star().m_center.y, 128); 
+	BOOST_CHECK_EQUAL(frame.get_star().m_center.x, 112); 
+
+	BOOST_CHECK_EQUAL(frame.get_quality(), 4); 
+	BOOST_CHECK_EQUAL(frame.get_brightness(), 0.625); 
+	BOOST_CHECK_EQUAL(frame.get_contrast(), 1.5); 
+
+	const auto& sections = frame.get_sections(); 
+	BOOST_CHECK_EQUAL(sections.size(), 2u); 
+
+	const auto& sec1 = sections[0]; 
+	BOOST_CHECK(sec1.is_open()); 
+	BOOST_CHECK_EQUAL(sec1.get_points().size(), 3u); 
+	
+	float test_x = 2.1; 
+	float test_y = 1.1; 
+
+	for (auto i = sec1.get_points().begin(); i != sec1.get_points().end(); ++i, test_x += 1.0, test_y += 1.0){
+		BOOST_CHECK_EQUAL(i->x, test_x); 
+		BOOST_CHECK_EQUAL(i->y, test_y);
+	}
+
+	const auto& sec2 = sections[1]; 
+	BOOST_CHECK(!sec2.is_open()); 
+	BOOST_CHECK_EQUAL(sec2.get_points().size(), 3u); 
+	
+	test_x = 2.25; 
+	test_y = 1.2; 
+
+	for (auto i = sec2.get_points().begin(); i != sec2.get_points().end(); ++i, test_x += 1.0, test_y += 1.0){
+		BOOST_CHECK_EQUAL(i->x, test_x); 
+		BOOST_CHECK_EQUAL(i->y, test_y);
+	}
+
+	unique_ptr<xmlpp::Document> document(segset.write());
+	const string xmldoc = document->write_to_string();
+	const string testdoc(testset_version_2);
+	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
+	BOOST_CHECK_EQUAL(xmldoc, testdoc);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw, SegSetReadFixture )
+{
+
+	const char *testset_version_2_draw =
+		"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
+		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
+		"<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
+		"<star y=\"128\" x=\"112\" r=\"21\">"
+		"<point y=\"20\" x=\"10\"/>"
+		"<point y=\"10\" x=\"20\"/>"
+		"<point y=\"4\" x=\"0\"/>"
+		"</star>"
+		"<section color=\"white\" open=\"false\">"
+		"<point y=\"1\" x=\"2\"/>"
+		"<point y=\"9\" x=\"2\"/>"
+		"<point y=\"9\" x=\"8\"/>"
+		"<point y=\"1\" x=\"8\"/>"
+		"</section>"
+		"<section color=\"blue\" open=\"false\">"
+		"<point y=\"3\" x=\"4\"/>"
+		"<point y=\"7\" x=\"4\"/>"
+		"<point y=\"7\" x=\"6\"/>"
+		"<point y=\"3\" x=\"6\"/>"
+		"</section>"
+		"</frame></workset>\n";
+	
+	init(testset_version_2_draw);
+
+	const auto& frames = segset.get_frames();
+	BOOST_REQUIRE(frames.size() > 0); 
+
+	C2DUBImage mask = frames[0].get_section_masks(C2DBounds(12,13)); 
+	vector<unsigned char> test_image = {
+		0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,1,1,1,1,1,1,0,0,0,0,
+		0,0,1,1,1,1,1,1,0,0,0,0,
+		0,0,1,1,0,0,1,1,0,0,0,0,
+		0,0,1,1,0,0,1,1,0,0,0,0,
+		0,0,1,1,0,0,1,1,0,0,0,0,
+		0,0,1,1,0,0,1,1,0,0,0,0,
+		0,0,1,1,1,1,1,1,0,0,0,0,
+		0,0,1,1,1,1,1,1,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0
+	};
+
+	auto m = mask.begin(); 
+	auto t = test_image.begin(); 
+	for (int y = 0; y < 12; ++y) 
+		for (int x = 0; x < 12; ++x, ++m, ++t) {
+			if (*m != *t) 
+				cvdebug() << "(" << x << ", " << y << ")=" << (int)*m << "!=" << (int)*t << "\n"; 
+			BOOST_CHECK_EQUAL(*m, *t); 
+		}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw_fail, SegSetReadFixture )
+{
+
+	const char *testset_version_2_draw =
+		"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
+		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
+		"<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
+		"<star y=\"128\" x=\"112\" r=\"21\">"
+		"<point y=\"20\" x=\"10\"/>"
+		"<point y=\"10\" x=\"20\"/>"
+		"<point y=\"4\" x=\"0\"/>"
+		"</star>"
+		"<section color=\"white\" open=\"true\">"
+		"<point y=\"1\" x=\"2\"/>"
+		"<point y=\"9\" x=\"2\"/>"
+		"<point y=\"9\" x=\"8\"/>"
+		"<point y=\"1\" x=\"8\"/>"
+		"</section>"
+		"<section color=\"blue\" open=\"false\">"
+		"<point y=\"3\" x=\"4\"/>"
+		"<point y=\"7\" x=\"4\"/>"
+		"<point y=\"7\" x=\"6\"/>"
+		"<point y=\"3\" x=\"6\"/>"
+		"</section>"
+		"</frame></workset>\n";
+	
+	init(testset_version_2_draw);
+
+	const auto& frames = segset.get_frames();
+	// one section is not closed, and can, therefore, not be drawn properly 
+	BOOST_CHECK_THROW(frames[0].get_section_masks(C2DBounds(12,13)), invalid_argument); 
+}
 
 void SegSetReadFixture::init(const char *data)
 {
@@ -458,7 +606,7 @@ void SectionTestRead::init(const char *init_str)
 	const xmlpp::Element *root = document->get_root_node ();
 	const xmlpp::Node::NodeList nodes = root->get_children();
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
-	section = CSegSection(**nodes.begin());
+	section = CSegSection(**nodes.begin(), 1);
 
 }
 
@@ -522,7 +670,7 @@ const char *testsection_init2 = "<?xml version=\"1.0\"?>\n<test><section color=\
 
 
 const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
-	"<description><RVpeak value=\"0\"/><LVpeak value=\"1\"/></description>"
+	"<description><RVpeak value=\"0\"/><LVpeak value=\"1\"/><PreferedRef value=\"1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -560,7 +708,7 @@ const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
-	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/><PreferedRef value=\"-1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -578,7 +726,7 @@ const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
-	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/><PreferedRef value=\"-1\"/></description>"
 	" <frame image=\"image.png\">"
 	"  <star y=\"118\" x=\"109\" r=\"21\">"
 	"   <point y=\"20\" x=\"10\"/>"
@@ -598,8 +746,9 @@ const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
 const char *testset_bboxtest =
 "<?xml version=\"1.0\"?>\n<workset>"
   "<description>"
-	"<RVpeak value=\"-1\"/>"
-	"<LVpeak value=\"-1\"/>"
+	"<RVpeak value=\"2\"/>"
+	"<LVpeak value=\"3\"/>"
+	"<PreferedRef value=\"1\"/>"
   "</description>"
   "<frame image=\"data0000.png\">"
       "<star y=\"118\" x=\"109\" r=\"21\">"
@@ -635,7 +784,7 @@ const char *testset_bboxtest =
 
 const char *testset_shift_and_rename =
 "<?xml version=\"1.0\"?>\n<workset>"
-	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
+	"<description><RVpeak value=\"2\"/><LVpeak value=\"3\"/><PreferedRef value=\"1\"/></description>"
   "<frame image=\"moved0000.png\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"
         "<point y=\"20\" x=\"10\"/>"
@@ -665,3 +814,28 @@ const char *testset_shift_and_rename =
       "<point y=\"114.96\" x=\"97.08\"/>"
     "</section>"
   "</frame></workset>\n";
+
+
+const char *testset_version_2 =
+"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
+	"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
+  "<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
+      "<star y=\"128\" x=\"112\" r=\"21\">"
+        "<point y=\"20\" x=\"10\"/>"
+	"<point y=\"10\" x=\"20\"/>"
+	"<point y=\"4\" x=\"0\"/>"
+      "</star>"
+    "<section color=\"white\" open=\"true\">"
+      "<point y=\"1.1\" x=\"2.1\"/>"
+      "<point y=\"2.1\" x=\"3.1\"/>"
+      "<point y=\"3.1\" x=\"4.1\"/>"
+    "</section>"
+    "<section color=\"green\" open=\"false\">"
+      "<point y=\"1.2\" x=\"2.25\"/>"
+      "<point y=\"2.2\" x=\"3.25\"/>"
+      "<point y=\"3.2\" x=\"4.25\"/>"
+    "</section>"
+  "</frame></workset>\n";
+
+
+

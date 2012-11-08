@@ -30,7 +30,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_BEGIN(vtk_3dimage_io)
 
@@ -74,7 +74,6 @@ private:
 
 	virtual PData do_load(const string&  filename) const;
 	virtual bool do_save(const string& fname, const Data& data) const;
-	virtual void do_add_suffixes(multimap<string, string>& map) const;
 	virtual const string do_get_descr() const;
 };
 
@@ -97,6 +96,7 @@ CVtk3DImageIOPlugin::CVtk3DImageIOPlugin():
 	add_supported_type(it_sint);
 	add_supported_type(it_float);
 	add_supported_type(it_double);
+	add_suffix(".vtk");
 }
 
 
@@ -558,14 +558,10 @@ bool CVtk3DImageIOPlugin::do_save(string const&  filename, const C3DImageVector&
 	return filter(s, **data.begin());
 }
 
-void CVtk3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".vtk", get_name()));
-}
 
 const string  CVtk3DImageIOPlugin::do_get_descr() const
 {
-	return string("VTK image input/output support");
+	return string("Kitware Inc Visualization Toolkit image");
 }
 
 

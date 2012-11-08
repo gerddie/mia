@@ -82,7 +82,7 @@ struct TFilter {
 
 
 template <class D>
-class EXPORT_HANDLER TImageFilter: public TFilter< std::shared_ptr<D > >, public CProductBase {
+class EXPORT_HANDLER TDataFilter: public TFilter< std::shared_ptr<D > >, public CProductBase {
 public:
 
 	/// plugin handler helper type 
@@ -94,12 +94,12 @@ public:
 	typedef D Image; 
 	
 	/// pointer type of the data filtered by this filter 
-	typedef std::shared_ptr<TImageFilter<D> > Pointer; 
+	typedef std::shared_ptr<TDataFilter<D> > Pointer; 
 
 	/// result type of this filter 
 	typedef typename TFilter< std::shared_ptr<D > >::result_type result_type;
 	
-	virtual ~TImageFilter();
+	virtual ~TDataFilter();
 
 	/** run the filter 
 	   \param image must be of a type that has Binder trait defined.  
@@ -127,18 +127,13 @@ private:
  */
 
 template <class Image>
-class EXPORT_HANDLER TImageFilterPlugin: public TFactory<TImageFilter<Image> > {
+class EXPORT_HANDLER TDataFilterPlugin: public TFactory<TDataFilter<Image> > {
 public:
-	typedef typename TFactory<TImageFilter<Image> >::Product Product; 
+	typedef typename TFactory<TDataFilter<Image> >::Product Product; 
 	/// Constructor that sets the plug-in name 
-	TImageFilterPlugin(char const * const  name):
-		TFactory<TImageFilter<Image> >(name)
+	TDataFilterPlugin(char const * const  name):
+		TFactory<TDataFilter<Image> >(name)
 	{}
-private:
-	virtual bool do_test() const {
-		cvwarn() << "TImageFilterPlugin::do_test is obsolete, use individual tests for the plugins\n";
-		return true;
-	};
 };
 
 /**
@@ -218,7 +213,7 @@ static typename F::result_type filter(const F& f, const B& b)
 	case it_double:return f(DC(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -254,7 +249,7 @@ static typename F::result_type filter_inplace(const F& f, B& b)
 	case it_double:return f(DV(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -289,7 +284,7 @@ static typename F::result_type accumulate(F& f, const B& data)
 	case it_double:return f(DC(typename D::Ddouble,data));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -326,7 +321,7 @@ static typename F::result_type filter_equal(const F& f, const B& a, const B& b)
 	case it_double:return f( DC(typename D::Ddouble, a), DC(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -363,7 +358,7 @@ static void filter_equal_inplace(const F& f, const B& a, B& b)
 	case it_double: f( DC(typename D::Ddouble, a), DV(typename D::Ddouble,b));break;
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -399,7 +394,7 @@ static typename F::result_type filter_and_output(const F& f, const B& a, O& b)
 	case it_double: return f(DC(typename D::Ddouble, a), b);break;
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter_and_output: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter_and_output: unsupported pixel type in image");
 	}
 }
 
@@ -425,7 +420,7 @@ static typename F::result_type _filter(const F& f, const A& a, const B& b)
 	case it_double:return f(DC(typename D::Ddouble,a), b);
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 /// \endcond
@@ -463,7 +458,7 @@ static typename F::result_type filter(const F& f, const A& a, const B& b)
 	case it_double:return _filter(f, a, DC(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -489,7 +484,7 @@ static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 	case it_double:return f(DC(typename D::Ddouble,a), b);
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 /// \endcond
@@ -526,7 +521,7 @@ static typename F::result_type accumulate(F& f, const A& a, const B& b)
 	case it_double:return _accumulate(f, a, DC(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::accumulate: unsupported pixel type in image");
+		throw std::invalid_argument("mia::accumulate: unsupported pixel type in image");
 	}
 }
 
@@ -536,27 +531,27 @@ static typename F::result_type accumulate(F& f, const A& a, const B& b)
 
 
 template <class D>
-TImageFilter<D>::~TImageFilter()
+TDataFilter<D>::~TDataFilter()
 {
 }
 
 template <class D>
-typename TImageFilter<D>::result_type
-TImageFilter<D>::filter(const D& image) const
+typename TDataFilter<D>::result_type
+TDataFilter<D>::filter(const D& image) const
 {
 	return do_filter(image);
 }
 
 template <class D>
-typename TImageFilter<D>::result_type
-TImageFilter<D>::filter(std::shared_ptr<D> pimage) const
+typename TDataFilter<D>::result_type
+TDataFilter<D>::filter(std::shared_ptr<D> pimage) const
 {
 	return do_filter(pimage);
 }
 
 template <class D>
-typename TImageFilter<D>::result_type
-TImageFilter<D>::do_filter(std::shared_ptr<D> pimage) const
+typename TDataFilter<D>::result_type
+TDataFilter<D>::do_filter(std::shared_ptr<D> pimage) const
 {
 	return do_filter(*pimage); 
 }

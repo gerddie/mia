@@ -192,8 +192,7 @@ int CSplineKernel::get_indices(double x, VIndex& index) const
 
 double CSplineKernel::get_weight_at(double /*x*/, int degree) const
 {
-	THROW(invalid_argument, "B-Spline: derivative degree "
-	      <<  degree << " not supported" );
+	throw create_exception<invalid_argument>("B-Spline: derivative degree ", degree," not supported" );
 }
 
 const vector<double>& CSplineKernel::get_poles() const

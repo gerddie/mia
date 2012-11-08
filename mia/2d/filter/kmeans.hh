@@ -25,7 +25,7 @@
 
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 NS_BEGIN( kmeans_2dimage_filter)
 

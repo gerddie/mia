@@ -52,13 +52,18 @@ typedef TTransformCreatorPlugin<C3DTransformation>  C3DTransformCreatorPlugin;
    \brief Transform creator plugin handler 
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
+ 
 
-
-inline P3DTransformationFactory produce_3dtransformation_creator(const std::string& descr) 
+/**
+   Create a transformation creator from the given description
+   \param descr
+   \returns the transformation creator 
+ */
+inline 
+P3DTransformationFactory produce_3dtransform_factory(const std::string& descr) 
 {
 	return C3DTransformCreatorHandler::instance().produce(descr); 
 }
-
 
 /** 
     @cond INTERNAL 
@@ -69,6 +74,7 @@ struct EXPORT_3D C3DTransformCreatorHandlerTestPath {
 	C3DTransformCreatorHandlerTestPath(); 
 private: 
 	CSplineKernelTestPath spktp; 
+	CSplineBoundaryConditionTestPath spctp;
 }; 
 /// @endcond
 

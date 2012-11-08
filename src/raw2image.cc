@@ -29,16 +29,12 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"Image conversion", 
-	
-	"Convert raw data into a 2D image", 
-	
-	"This program is used to convert raw data to a 2D file format.", 
-	
-	"Convert a data set data.raw of size <10,20> of short integer data with a "
-	"pixel size of <1.2, 2.3> to a PNG file image.png", 
-	
-	"-i data.raw -o image.png -s '<10,20>' -k '<1.2,2.3>' -r ushort"
+	{pdi_group, "Image conversion"}, 
+	{pdi_short,  "Convert raw data into a 2D image"}, 
+	{pdi_description, "This program is used to convert raw data to a 2D file format."}, 
+	{pdi_example_descr, "Convert a data set data.raw of size <10,20> of short integer data with a "
+	 "pixel size of <1.2, 2.3> to a PNG file image.png"}, 
+	{pdi_example_code, "-i data.raw -o image.png -s '<10,20>' -k '<1.2,2.3>' -r ushort"}
 }; 
 
 inline bool am_big_endian()
@@ -135,7 +131,7 @@ P2DImage read_image_type(CInputFile& in_file, const C2DBounds& size, const C2DFV
 		throw runtime_error(errmsg.str());
 	}
 	if (fread(&(*image)(0,0), sizeof(T), image->size(),  in_file) != image->size()) {
-		throw runtime_error("Unable to read full image");
+		throw runtime_error("Not enough data for specified image size in input file.");
 	}
 
 	image->set_pixel_size(scale);
@@ -177,7 +173,7 @@ int do_main(int argc, char *argv[])
 	string type;
 	size_t skip = 0;
 
-	const C2DImageIOPluginHandler::Instance&  imageio = C2DImageIOPluginHandler::instance();
+	const auto&  imageio = C2DImageIOPluginHandler::instance();
 
 	if (imageio.get_set().empty())
 		throw runtime_error("Sorry, no 2D output formats supported");
@@ -185,7 +181,7 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( in_filename, "in-file", 'i', "input file name", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required, &imageio));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.add(make_opt( high_endian, "big-endian", 'b', "input data is big endian"));
 	options.add(make_opt( scale, "scale", 'f', "scale of input pixels <FX,FY>"));

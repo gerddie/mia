@@ -21,7 +21,7 @@
 #include <functional>
 #include <stdexcept>
 #include <boost/type_traits.hpp>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <libmia/fftkernel.hh>
 
 // to avoid the indention
@@ -66,8 +66,6 @@ public:
 	C2DImageFFTFilterFactory();
 	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
-private: 
-	virtual int do_test() const; 
 };
 
 
@@ -225,13 +223,6 @@ struct FCompare {
 		return ::fabs(a-b) < 0.0001; 
 	}
 };
-
-
-int C2DImageFFTFilterFactory::do_test() const 
-{
-	return 0; 
-}
-
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {

@@ -51,6 +51,7 @@ CGSLFDFMinimizer::CGSLFDFMinimizer(const gsl_multimin_fdfminimizer_type *ot,
 	m_start_step(start_step)
 {
 	add(property_gradient); 
+	
 }
 
 CGSLFDFMinimizer::~CGSLFDFMinimizer()

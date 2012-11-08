@@ -22,6 +22,8 @@
 #include <mia/2d/deformer.hh>
 
 NS_MIA_BEGIN
+using namespace std; 
+
 
 C2DTransformation::C2DTransformation(const C2DInterpolatorFactory& ipf):
 	Transformation<C2DImage, C2DInterpolatorFactory>(ipf)

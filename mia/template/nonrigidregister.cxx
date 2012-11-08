@@ -72,7 +72,7 @@ public:
 
 	void reset_counters(); 
 	
-	typedef shared_ptr<TNonrigRegGradientProblem<dim> > PNonrigRegGradientProblem; 
+	typedef std::shared_ptr<TNonrigRegGradientProblem<dim> > PNonrigRegGradientProblem; 
 private:
 	double  do_f(const CDoubleVector& x);
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
@@ -171,7 +171,7 @@ public:
 
 		// I want a conversion filter, that makes the images together zero mean 
 		// and diversion 1
-		stringstream filter_descr; 
+		std::stringstream filter_descr; 
 		filter_descr << "convert:repn=float,map=linear,b=" << -mean/sigma << ",a=" << 1.0/sigma; 
 		cvinfo() << "Will convert using the filter:" << filter_descr.str() << "\n"; 
 		
@@ -224,41 +224,35 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		ref_name = ref_ss.str(); 
 	}
 
+
+	save_image(src_name, src);
+	save_image(ref_name, ref);
+	m_costs.reinit(); 
+	
+	Size global_size; 
+	if (!m_costs.get_full_size(global_size))
+		throw std::invalid_argument("Nonrigidregister: the given combination of cost functions doesn't"
+					    "agree on the size of the registration problem"); 
+	
 	do {
 
-		// this should be replaced by a per-dimension shift that honours a minimum size of the 
-		// downscaled images -  this is especially important in 3D
 		shift--;
 
-		Size BlockSize; 
-                BlockSize.fill(1 << shift);
-		cvinfo() << "Blocksize = " << BlockSize  << "\n";
+		int scale_factor = 1 << shift; 
+		Size local_size = global_size / scale_factor; 
 
-		stringstream downscale_descr;
-		downscale_descr << "downscale:b=[" << BlockSize<<"]";
-		auto downscaler = FilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
-		PImage src_scaled = shift ? downscaler->filter(*src) : src;
-		PImage ref_scaled = shift ? downscaler->filter(*ref) : ref;
+		if (transform) {
+			cvinfo() << "Upscale transform\n"; 
+			transform = transform->upscale(local_size);
+			cvinfo() << "done\n"; 
+		}else{
+			cvinfo() << "Create transform\n"; 
+			transform = m_transform_creator->create(local_size);
+			cvinfo() << "done\n"; 
+		}
 
-		if (transform)
-			transform = transform->upscale(src_scaled->get_size());
-		else
-			transform = m_transform_creator->create(src_scaled->get_size());
-
-		/**
-		   This code is somewhat ugly, it stored the images in the internal buffer 
-		   and then it forces the cost function to reload the images
-		   However, currently the downscaling does not support a specific target size
-		 */
-		save_image(src_name, src_scaled);
-		save_image(ref_name, ref_scaled);
-		m_costs.reinit(); 
-		
-		// currently this call does nothing, however it should replace the three lines above 
-		// and the cost function should handle the image scaling 
-
-		m_costs.set_size(src_scaled->get_size()); 
+		m_costs.set_size(local_size); 
 		
 		std::shared_ptr<TNonrigRegGradientProblem<dim> > 
 			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform));
@@ -266,7 +260,8 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		m_minimizer->set_problem(gp);
 
 		auto x = transform->get_parameters();
-		cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
+		cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
+
 		m_minimizer->run(x);
 		if (m_refinement_minimizer) {
 			m_refinement_minimizer->set_problem(gp);
@@ -276,11 +271,13 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		transform->set_parameters(x);
 	
 		// run the registration at refined splines 
+
+
 		if (transform->refine()) {
 			gp->reset_counters(); 
 			m_minimizer->set_problem(gp);
 			x = transform->get_parameters();
-			cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
+			cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
 			m_minimizer->run(x);
 			if (m_refinement_minimizer) {
 				m_refinement_minimizer->set_problem(gp);
@@ -304,8 +301,8 @@ TNonrigidRegisterImpl<dim>::run() const
 	m_costs.reinit(); 
 	Size global_size; 
 	if (!m_costs.get_full_size(global_size))
-		throw invalid_argument("Nonrigidregister: the given combination of cost functions doesn't"
-				       "agree on the size of the registration problem"); 
+		throw std::invalid_argument("Nonrigidregister: the given combination of cost functions doesn't"
+					    "agree on the size of the registration problem"); 
 
 	int shift = m_mg_levels;
 
@@ -317,10 +314,15 @@ TNonrigidRegisterImpl<dim>::run() const
 		int scale_factor = 1 << shift; 
 		Size local_size = global_size / scale_factor; 
 		
-		if (transform)
+		if (transform) {
+			cvinfo() << "Upscale transform\n"; 
 			transform = transform->upscale(local_size);
-		else
+			cvinfo() << "done\n"; 
+		}else{
+			cvinfo() << "Create transform\n"; 
 			transform = m_transform_creator->create(local_size);
+			cvinfo() << "done\n"; 
+		}
 
 		m_costs.set_size(local_size); 
 		
@@ -330,7 +332,7 @@ TNonrigidRegisterImpl<dim>::run() const
 		m_minimizer->set_problem(gp);
 
 		auto x = transform->get_parameters();
-		cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
+
 		m_minimizer->run(x);
 		cvmsg() << "\ndone\n";
 		transform->set_parameters(x);
@@ -378,10 +380,10 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
 	
 	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
 	m_func_evals++; 
-	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
-		<< ",fe="<<setw(4)<<m_func_evals<<"]=" 
-		<< setw(20) << setprecision(12) << result 
-		<< "ratio:" << setw(20) << setprecision(12) 
+	cvmsg() << "Cost[fg=" << std::setw(4) << m_grad_evals 
+		<< ",fe=" << std::setw(4) << m_func_evals<<"]=" 
+		<< std::setw(20) << std::setprecision(12) << result 
+		<< "ratio:" << std::setw(20) << std::setprecision(12) 
 		<< result / m_start_cost  << endline; 
 	return result; 
 }
@@ -406,7 +408,7 @@ template <int dim>
 double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDoubleVector&  g)
 {
 	m_transf.set_parameters(x);
-	fill(g.begin(), g.end(), 0.0); 
+	std::fill(g.begin(), g.end(), 0.0); 
 	double result = m_costs.evaluate(m_transf, g);
 
 	if (!m_func_evals && !m_grad_evals) 
@@ -414,10 +416,10 @@ double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDo
 
 	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
 
-	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
-		<< ",fe="<<setw(4)<<m_func_evals<<"]= with " 
-		<< setw(20) << setprecision(12) << result 
-		<< " ratio:" << setw(20) << setprecision(12) << result / m_start_cost <<  endline; 
+	cvmsg() << "Cost[fg="<<std::setw(4)<<m_grad_evals 
+		<< ",fe="<<std::setw(4)<<m_func_evals<<"]= with " 
+		<< std::setw(20) << std::setprecision(12) << result 
+		<< " ratio:" << std::setw(20) << std::setprecision(12) << result / m_start_cost <<  endline; 
 	return result; 
 }
 

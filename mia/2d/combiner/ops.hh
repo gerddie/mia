@@ -21,7 +21,7 @@
 #ifndef mia_2d_combiner_ops_hh
 #define mia_2d_combiner_ops_hh
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/combiner/plugin.hh>
 
 

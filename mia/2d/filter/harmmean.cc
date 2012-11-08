@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 namespace harmmean_2dimage_filter {
 NS_MIA_USE;
@@ -59,8 +59,6 @@ public:
 	CHarmonicMean2DImageFilterFactory();
 	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
-private: 
-	virtual int do_test() const; 
 };
 	
 template <class T>

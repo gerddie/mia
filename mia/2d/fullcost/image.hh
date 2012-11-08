@@ -23,7 +23,7 @@
 
 
 #include <mia/2d/fullcost.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/cost.hh>
 
 NS_MIA_BEGIN

@@ -30,7 +30,7 @@
 
 #include <mia/internal/main.hh>
 #include <mia/2d/filterchain.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/core.hh>
 
@@ -38,22 +38,22 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
 
-	"Evaluate pixel-wise time-intensity gradient of a 2D image series.", 
+	{pdi_short, "Evaluate pixel-wise time-intensity gradient of a 2D image series."}, 
 	
-	"Given a set of images of temporal sucession, evaluate the temporal "
-	"pixel-wise gaussian and evaluate pixel-wise its MAD." 
-	"A spacial pre-filtering may be applied by specifying additional plugins "
-	"(filter/2dimage)", 
+	{pdi_description, "Given a set of images of temporal sucession, evaluate the temporal "
+	 "pixel-wise gaussian and evaluate pixel-wise its MAD." 
+	 "A spacial pre-filtering may be applied by specifying additional plugins "
+	 "(filter/2dimage)"}, 
 	
-	"Evaluate the MAD-image of the bounding box surrounding the segmentation "
-	"from a series segment.set after applying a temporal Gaussian "
-	"filter of width 5. No spacial filtering will be applied. "
-	"The bounding box will be enlarged by 3 pixels in all directions. "
-	"Store the image in OpenEXR format.", 
-	
-	"-i segment.set -o mad.exr -g 2 -c -e 3"
+	{pdi_example_descr, "Evaluate the MAD-image of the bounding box surrounding the segmentation "
+	 "from a series segment.set after applying a temporal Gaussian "
+	 "filter of width 5. No spacial filtering will be applied. "
+	 "The bounding box will be enlarged by 3 pixels in all directions. "
+	 "Store the image in OpenEXR format."}, 
+	 
+	{pdi_example_code, "-i segment.set -o mad.exr -g 2 -c -e 3"}
 };
 
 template <typename T>
@@ -194,7 +194,7 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required, &imageio));
 	options.add(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
 	options.add(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
 	options.add(make_opt( crop, "crop", 'c', "crop image before running statistics"));

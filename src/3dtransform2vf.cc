@@ -21,7 +21,7 @@
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/transformio.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/internal/main.hh>
 
 
@@ -29,15 +29,13 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Create Vectorfield from a transformation.", 
-
-	"Create a 3D vector field from a given transformation. The output vector field will "
-	"have the dimesions as given in the transformation description.", 
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Create Vectorfield from a transformation."}, 
+	{pdi_description, "Create a 3D vector field from a given transformation. The output vector field will "
+	 "have the dimesions as given in the transformation description."}, 
+	{pdi_example_descr, "Transform the input transformation trans.v3df to a vector field field.vtk."}, 
+	{pdi_example_code, "-i trans.v3df   -o field.vtk"}
 	
-	"Transform the input transformation trans.v3df to a vector field field.vtk.",
-	
-	"-i trans.v3df   -o field.vtk"
 }; 
 
 int do_main(int argc, char **argv)
@@ -48,8 +46,10 @@ int do_main(int argc, char **argv)
 	string out_filename;
 
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input transformation ", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input transformation ", 
+			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", 
+			      CCmdOption::required, &C3DVFIOPluginHandler::instance()));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

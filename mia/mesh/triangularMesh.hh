@@ -31,7 +31,7 @@
 #include <mia/core/iodata.hh>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 
 #ifdef WIN32
 #  ifdef miamesh_EXPORTS
@@ -62,7 +62,14 @@ NS_MIA_BEGIN
 class EXPORT_MESH CTriangleMesh: public CIOData {
 
 public:
+	/** The type description provides information about the data type that is
+	    used by the plug-in system */
+        static const char *data_descr;
 
+	typedef CTriangleMesh type; 
+
+
+	typedef std::shared_ptr<CTriangleMesh> Pointer; 
 
 	/// these are some flags to indicate, which data is actually available
 	enum EData {ed_none = 0,
@@ -117,10 +124,10 @@ public:
 	CTriangleMesh(const CTriangleMesh& orig);
 
 	/** contruct an mesh with uninitialized data
-	    \param n_vertices number of vertices
 	    \param n_triangles number of triangles
+	    \param n_vertices number of vertices
 	*/
-	CTriangleMesh(int n_vertices, int n_triangles);
+	CTriangleMesh(int n_triangles, int n_vertices);
 
 	/** creates a new mesh from given input data
 	    \param triangles the triangle data (required)
@@ -270,7 +277,7 @@ private:
 };
 
 /// Pointer type of the CTriangle mesh class
-typedef std::shared_ptr<CTriangleMesh > PTriangleMesh;
+typedef CTriangleMesh::Pointer PTriangleMesh;
 
 /** This function is used to generate  the deformation scale of a mesh as the
     scalar product of the surface normal and a deformation field.
@@ -297,7 +304,7 @@ void colorize_mesh(CTriangleMesh  *mesh, const Deformation& deform)
 	CTriangleMesh::const_normal_iterator nb = cmesh.normals_begin();
 
 	while (sb != se)
-		*sb++ = *nb++ * deform(*vb++);
+		*sb++ = dot(*nb++, deform.apply(*vb++));
 
 }
 
@@ -325,16 +332,12 @@ CTriangleMesh colorize_mesh(const CTriangleMesh& mesh, const Deformation& deform
    void distance_transform(CTriangleMesh *mesh, const CTriangleMesh& reference);
 */
 
-struct io_mesh_type {
-    typedef CTriangleMesh type;
-    static const char *data_descr;
-};
 
 /// IO plugin for triangular meshes
-typedef TIOPlugin<io_mesh_type> CMeshIOPlugin;
+typedef TIOPlugin<CTriangleMesh> CMeshIOPlugin;
 
 /// Plug-in handler for triangulat mesh IO 
-typedef TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;
+typedef THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;
 
 
 NS_MIA_END

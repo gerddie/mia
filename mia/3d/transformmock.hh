@@ -34,7 +34,8 @@ NS_MIA_BEGIN
    It is used only for testing purpouses. 
  */
 
-struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
+class  EXPORT_3D C3DTransformMock: public C3DTransformation {
+public: 
 	/// @cond TESTINTERFACE 
 	C3DTransformMock();
 	C3DTransformMock(const C3DBounds& size, const C3DInterpolatorFactory& ipf);

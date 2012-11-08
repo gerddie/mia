@@ -28,17 +28,20 @@
 NS_MIA_BEGIN
 using namespace std;
 
-CSegSection::CSegSection()
+CSegSection::CSegSection():
+	m_is_open(false)
 {
 }
 
-CSegSection::CSegSection(const string& id, const Points& points):
+CSegSection::CSegSection(const string& id, const Points& points, bool is_open):
 	m_id(id),
-	m_points(points)
+	m_points(points), 
+	m_is_open(is_open)
 {
 }
 
-CSegSection::CSegSection(xmlpp::Node& node)
+CSegSection::CSegSection(xmlpp::Node& node, int version):
+	m_is_open(false)
 {
 	TRACE("CSegSection::CSegSection");
 
@@ -53,6 +56,10 @@ CSegSection::CSegSection(xmlpp::Node& node)
 
 	for (auto i = points.begin(); i != points.end(); ++i)
 		m_points.push_back(CSegPoint2D(**i));
+
+	if (version > 1) {
+		read_attribute_from_node(elm, "open", m_is_open);  
+	}
 }
 
 const string& CSegSection::get_id() const
@@ -90,10 +97,14 @@ void CSegSection::inv_transform(const C2DTransformation& t)
 }
 
 
-void CSegSection::write(xmlpp::Node& node) const
+void CSegSection::write(xmlpp::Node& node, int version) const
 {
 	xmlpp::Element* nodeChild = node.add_child("section");
 	nodeChild->set_attribute("color", m_id);
+
+	if (version > 1) {
+		nodeChild->set_attribute("open", m_is_open ? "true" : "false");
+	}
 
 	Points::const_iterator ip = m_points.begin();
 	Points::const_iterator ep = m_points.end();
@@ -138,19 +149,18 @@ float CSegSection::get_hausdorff_distance(const CSegSection& other) const
 	return p1.get_hausdorff_distance(p2);
 }
 
-void CSegSection::draw(C2DUBImage& mask, unsigned char color)const
+template <typename FDrawOperator> 
+void draw_private(C2DUBImage& mask, const CSegSection::Points& points,  const FDrawOperator& op)
 {
-	//  adapted from public-domain code by Darel Rex Finley, 2007
-	
 	for (size_t y=0; y < mask.get_size().y; y++) {
 		vector<int> nodeX; 
-		int j=m_points.size()-1;
-		for (size_t i=0; i<m_points.size(); i++) {
-			if ((m_points[i].y <= y && m_points[j].y > y) || 
-			    (m_points[j].y <= y && m_points[i].y > y) ) {
-				nodeX.push_back( (int) (m_points[i].x + 
-						       ( y - m_points[i].y)/(m_points[j].y-m_points[i].y)
-							*(m_points[j].x - m_points[i].x)) + 0.5); 
+		int j=points.size()-1;
+		for (size_t i=0; i<points.size(); i++) {
+			if ((points[i].y <= y && points[j].y > y) || 
+			    (points[j].y <= y && points[i].y > y) ) {
+				nodeX.push_back( (int) (points[i].x + 
+						       ( y - points[i].y)/(points[j].y-points[i].y)
+							*(points[j].x - points[i].x)) + 0.5); 
 			}
 			j=i; 
 		}
@@ -167,10 +177,32 @@ void CSegSection::draw(C2DUBImage& mask, unsigned char color)const
 				if (nodeX[i+1] > (int)mask.get_size().x) 
 					nodeX[i+1]=mask.get_size().x;
 				for (int j=nodeX[i]; j<nodeX[i+1]; j++) 
-					mask(j,y) = color;
+					op(mask(j,y));
 			}
 		}
 	}
+	
+}
+
+void CSegSection::draw_xor(C2DUBImage& mask)const
+{
+	if (m_is_open) 
+		throw invalid_argument("CSegSection: Section not closed, hence no filled polygon can be drawn"); 
+	auto xor_draw = [](unsigned char& pixel) { pixel ^= 1 ;}; 
+	draw_private(mask, m_points, xor_draw); 
+}
+
+void CSegSection::draw(C2DUBImage& mask, unsigned char color)const
+{
+	if (m_is_open) 
+		throw invalid_argument("CSegSection: Section not closed, hence no filled polygon can be drawn"); 
+	auto color_draw = [color](unsigned char& pixel) { pixel = color;};
+	draw_private(mask, m_points, color_draw); 
+}
+
+bool CSegSection::is_open() const
+{
+	return m_is_open; 
 }
 
 NS_MIA_END

@@ -32,7 +32,7 @@ using namespace boost;
 
 NS_BEGIN(label_3dimage_filter)
 
-CLabel::CLabel(P3DShape& mask):
+CLabel::CLabel(P3DShape mask):
 	m_mask(mask)
 {
 }
@@ -98,28 +98,19 @@ CLabel::result_type CLabel::do_filter(const C3DImage& image) const
 }
 
 C3DLabelFilterPlugin::C3DLabelFilterPlugin():
-	C3DFilterPlugin("label"),
-	m_mask_descr("6n")
+	C3DFilterPlugin("label")
 {
-	add_parameter("n", new CStringParameter(m_mask_descr, false, "neighborhood mask")) ;
+	add_parameter("n", make_param(m_mask, "6n", false, "neighborhood mask")) ;
 }
 
 C3DFilter *C3DLabelFilterPlugin::do_create()const
 {
-	P3DShape mask = C3DShapePluginHandler::instance().produce(m_mask_descr.c_str());
-	if (!mask)
-		return NULL;
-	return new CLabel(mask);
+	return new CLabel(m_mask);
 }
 
 const string C3DLabelFilterPlugin::do_get_descr()const
 {
 	return "A filter to label the  connected components of a binary image.";
-}
-
-bool  C3DLabelFilterPlugin::do_test() const
-{
-	return true;
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

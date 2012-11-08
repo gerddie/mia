@@ -21,6 +21,7 @@
 #include <mia/2d/shapes/rect.hh>
 
 NS_MIA_BEGIN
+using namespace std; 
 
 CRectangle2DShape::CRectangle2DShape(int width, int height, bool filled) 
 {

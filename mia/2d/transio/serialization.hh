@@ -56,7 +56,9 @@ void load(Archive & ar, mia::P2DTransformation & t, unsigned int )
 	auto creator = mia::C2DTransformCreatorHandler::instance().produce(init);  
 	t = creator->create(size); 
 	auto params = t->get_parameters(); 
-	assert(params.size() == help.size()); 
+	DEBUG_ASSERT_RELEASE_THROW(params.size() == help.size(), 
+				   "bogus transformation file: provides ", 
+				   help.size(), " parameters, but transformation needs ", params.size()); 
 	std::copy(help.begin(), help.end(), params.begin()); 
 	t->set_parameters(params); 
 }

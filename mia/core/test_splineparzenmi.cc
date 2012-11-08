@@ -51,7 +51,7 @@ struct SplineMutualInformationFixture  {
 BOOST_FIXTURE_TEST_CASE( test_same_image_entropy, SplineMutualInformationFixture ) 
 {
         PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline:d=0"); 
-        CSplineParzenMI smi(256, haar, 256, haar); 
+        CSplineParzenMI smi(256, haar, 256, haar, 0); 
 	smi.fill(reference.begin(), reference.end(), reference.begin(), reference.end()); 
         BOOST_CHECK_CLOSE(smi.value(), -5.1013951881429653, 0.1); 
 }
@@ -60,7 +60,7 @@ BOOST_FIXTURE_TEST_CASE( test_same_image_entropy, SplineMutualInformationFixture
 BOOST_FIXTURE_TEST_CASE( test_different_image_entropy, SplineMutualInformationFixture ) 
 {
         PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline:d=0"); 
-        CSplineParzenMI smi(256, haar, 256, haar); 
+        CSplineParzenMI smi(256, haar, 256, haar,0); 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
 	
         // this test value is not really evaluated ...
@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE( test_same_image_gradient_is_zero, SplineMutualInformati
 
 BOOST_FIXTURE_TEST_CASE( test_differnt_image_gradient_is_not_zero, SplineMutualInformationFixture ) 
 {
-        CSplineParzenMI smi(bins, rkernel, bins, mkernel); 
+        CSplineParzenMI smi(bins, rkernel, bins, mkernel,0); 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
         int cnt = 0; 
         for (double m = 0; m < 256; m += 1)
@@ -99,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE( test_differnt_image_gradient_is_not_zero, SplineMutualI
 
 BOOST_FIXTURE_TEST_CASE( test_different_image_gradient, SplineMutualInformationFixture ) 
 {
-        CSplineParzenMI smi(bins, rkernel, bins, mkernel); 
+        CSplineParzenMI smi(bins, rkernel, bins, mkernel,0); 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
         int cnt = 0; 
         for (double m = 0; m < 256; m += 1)

@@ -25,7 +25,6 @@
 #include <cassert>
 #include <vector>
 #include <memory>
-#include <boost/lambda/lambda.hpp>
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/interpolator1d.hh>

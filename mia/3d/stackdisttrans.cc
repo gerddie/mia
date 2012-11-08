@@ -140,7 +140,8 @@ C2DStackDistanceTransform::get_slice(size_t s, const C2DImage& image) const
 	auto src = dynamic_cast<const C2DBitImage&>(image); 
 
 	if (src.get_size() != m_size) {
-		THROW(invalid_argument, "input image " << s << "has a dffernt size then reference"); 
+		throw create_exception<invalid_argument>( "input image nr ", s, "has a dffernt size ", src.get_size(), 
+						" then reference ", m_size); 
 	}
 
 	C2DFVector pixel_size = image.get_pixel_size(); 
@@ -253,7 +254,6 @@ TPluginHandler<C2DStackDistanceTransformIO>::m_help =
 
 template class TIOPlugin<C2DStackDistanceTransform>;
 template class THandlerSingleton<TIOPluginHandler<C2DStackDistanceTransformIO> >;
-template class TIOHandlerSingleton<TIOPluginHandler<C2DStackDistanceTransformIO> >;
 template class TIOPluginHandler<C2DStackDistanceTransformIO>;
 template class TPluginHandler<C2DStackDistanceTransformIO>;
 

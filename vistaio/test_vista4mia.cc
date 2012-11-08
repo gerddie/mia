@@ -27,10 +27,10 @@
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dimageiotest.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/imageiotest.hh>
 
-#include <mia/2d/2dvfio.hh>
+#include <mia/2d/vfio.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
 
@@ -38,11 +38,11 @@
 #include <mia/3d/transformfactory.hh>
 
 
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dimageiotest.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/imageiotest.hh>
 
-#include <mia/3d/3dvfio.hh>
-#include <mia/3d/3dvfiotest.hh>
+#include <mia/3d/vfio.hh>
+#include <mia/3d/vfiotest.hh>
 
 #include "vista4mia.hh"
 
@@ -247,7 +247,7 @@ static void test_2dtransform_io()
 		
 		stringstream fname; 
 		fname << transforms[t] << "." << "v2dt"; 
-		cvdebug() << "store to '" << fname << "'\n"; 
+		cvdebug() << "store to '" << fname.str() << "'\n"; 
 		BOOST_CHECK(C2DTransformationIOPluginHandler::instance().save(fname.str(), *tr)); 
 		
 		auto t_loaded = C2DTransformationIOPluginHandler::instance().load(fname.str()); 
@@ -294,7 +294,7 @@ static void test_3dtransform_io()
 		
 		stringstream fname; 
 		fname << transforms[t] << "." << "v3dt"; 
-		cvdebug() << "store to '" << fname << "'\n"; 
+		cvdebug() << "store to '" << fname.str() << "'\n"; 
 		BOOST_CHECK(C3DTransformationIOPluginHandler::instance().save(fname.str(), *tr)); 
 		
 		auto t_loaded = C3DTransformationIOPluginHandler::instance().load(fname.str()); 
@@ -338,11 +338,9 @@ bool init_unit_test_suite( )
 }
 
 const SProgramDescription description = {
-	"Tests", 
-	"Vista tests", 
-	"This program runs a set of tests.", 
-	NULL, 
-	NULL
+        {pdi_group, "Tests"}, 
+	{pdi_short, "Vista tests"}, 
+	{pdi_description, "This program runs a set of tests."}
 };
 
 int BOOST_TEST_CALL_DECL

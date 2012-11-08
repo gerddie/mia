@@ -24,48 +24,42 @@
 #include <stdexcept>
 #include <sstream>
 
-#include <mia/3d/3dfilter.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/filter.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/core.hh>
 
 using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-
-	"Filter a 3D images.", 
-	
-	"This program is used to filter and convert gray scale 3D images.", 
-
-	"Run a mean-least-varaiance filter on input.v, then run a 5-class k-means classification"
-	"and binarize by selecting the 4th class.", 
-
-	"-i image.v -o filtered.v mlv:w=2 kmeans:c=5 binarize:min=4,max=4" 
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Filter a 3D images."}, 
+	{pdi_description, "This program is used to filter and convert gray scale 3D images."}, 
+	{pdi_example_descr, "Run a mean-least-varaiance filter on input.v, then "
+	 "run a 5-class k-means classification and binarize by selecting the 4th class."}, 
+	{pdi_example_code, "-i image.v -o filtered.v mlv:w=2 kmeans:c=5 binarize:min=4,max=4" }
 }; 
-	
+
 
 int do_main( int argc, char *argv[] )
 {
 	string in_filename;
 	string out_filename;
 
-	const C3DFilterPluginHandler::Instance& filter_plugins = C3DFilterPluginHandler::instance();
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const auto& filter_plugins = C3DFilterPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 	stringstream filter_names;
 
 	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", CCmdOption::required));
-	options.add(make_help_opt( "help-plugins", 0,
-					 "give some help about the filter plugins", 
-					 new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", 
+			      CCmdOption::required, &imageio));
+	options.add(make_help_opt( "help-plugins", 0, "give some help about the filter plugins", 
+				   new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
 
 	if (options.parse(argc, argv, "filter", &filter_plugins) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

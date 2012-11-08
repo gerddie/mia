@@ -209,7 +209,7 @@ P3DTransformation C3DRigidTransformation::do_upscale(const C3DBounds& size) cons
 	return P3DTransformation(new C3DRigidTransformation(size, new_trans, m_rotation, get_interpolator_factory()));
 }
 
-C3DFMatrix C3DRigidTransformation::derivative_at(const C3DFVector& PARAM_UNUSED(x)) const
+C3DFMatrix C3DRigidTransformation::derivative_at(const C3DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	if (!m_matrix_valid)
 		evaluate_matrix();
@@ -219,7 +219,8 @@ C3DFMatrix C3DRigidTransformation::derivative_at(const C3DFVector& PARAM_UNUSED(
 		C3DFVector(m_t[2], m_t[6], m_t[10]));
 }
 
-C3DFMatrix C3DRigidTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y), int PARAM_UNUSED(z)) const
+C3DFMatrix C3DRigidTransformation::derivative_at(int MIA_PARAM_UNUSED(x), int MIA_PARAM_UNUSED(y), 
+						 int MIA_PARAM_UNUSED(z)) const
 {
 	if (!m_matrix_valid)
 		evaluate_matrix();
@@ -302,7 +303,8 @@ C3DFVector C3DRigidTransformation::operator () (const C3DFVector& x) const
 
 float C3DRigidTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
 {
-	assert(!"not implemented");
+	// a rigid transformation doesn't introduce a volume change
+	return 1.0; 
 }
 
 void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
@@ -403,7 +405,7 @@ C3DTransformation::const_iterator C3DRigidTransformation::end_range(const C3DBou
 
 float C3DRigidTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 {
-	assert(!"not implemented");
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DAffineTransformation doesn't implement pertuberate."); 
 }
 
 class C3DRigidTransformCreator: public C3DTransformCreator {
@@ -427,7 +429,6 @@ class C3DRigidTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DRigidTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -439,11 +440,6 @@ C3DRigidTransformCreatorPlugin::C3DRigidTransformCreatorPlugin():
 C3DTransformCreator *C3DRigidTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
 	return new C3DRigidTransformCreator(ipf);
-}
-
-bool C3DRigidTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C3DRigidTransformCreatorPlugin::do_get_descr() const

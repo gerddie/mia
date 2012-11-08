@@ -34,14 +34,13 @@
 #include <iostream>
 
 NS_MIA_BEGIN
-
+using namespace std; 
 namespace bs=boost::serialization; 
 
 class C3DBBSTransformationIO: public C3DTransformationIO {
 public: 	
 	C3DBBSTransformationIO(); 
 private: 
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual PData do_load(const std::string& fname) const;
 	virtual bool do_save(const std::string& fname, const C3DTransformation& data) const;
 	const string do_get_descr() const;
@@ -51,11 +50,7 @@ private:
 C3DBBSTransformationIO::C3DBBSTransformationIO():
 	C3DTransformationIO("bbs")
 {
-}
-
-void C3DBBSTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".bbs", get_name()));
+	add_suffix(".bbs");
 }
 
 P3DTransformation C3DBBSTransformationIO::do_load(const std::string& fname) const

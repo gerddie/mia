@@ -27,36 +27,35 @@
 #include <limits>
 #include <numeric>
 #include <mia/core/ica_template.hh>
-#include <boost/lambda/lambda.hpp>
 
 NS_MIA_BEGIN
 
 template <class Data> 
-TDataSeriesICA<Data>::TDataSeriesICA(const vector<Data>& initializer, bool strip_mean):
+TDataSeriesICA<Data>::TDataSeriesICA(const std::vector<Data>& initializer, bool strip_mean):
 	m_analysis(initializer.size(), initializer.empty() ? 0 : initializer[0].size())
 {
 	TRACE_FUNCTION; 
 	if (initializer.empty())
-		throw invalid_argument("TDataSeriesICA: empty series not supported");
+		throw std::invalid_argument("TDataSeriesICA: empty series not supported");
 
 	m_size = initializer[0].get_size(); 
 	m_mean = Data(m_size); 
 
 	if (strip_mean) {
 		for(size_t i = 0; i < initializer.size(); ++i) {
-			transform(initializer[i].begin(), initializer[i].end(),
-				  m_mean.begin(), m_mean.begin(),
-				  boost::lambda::_1 + boost::lambda::_2);
+			std::transform(initializer[i].begin(), initializer[i].end(),
+				       m_mean.begin(), m_mean.begin(), 
+				       [](float x, float y){return x+y;});
 		}
 		float scale = 1.0f / initializer.size();
-		transform(m_mean.begin(), m_mean.end(), m_mean.begin(),
-			  boost::lambda::_1 * scale );
+		std::transform(m_mean.begin(), m_mean.end(), m_mean.begin(),
+			       [&scale](float x){return x * scale;});
 
-		vector<float> help(initializer[0].size());
+		std::vector<float> help(initializer[0].size());
 		for(size_t i = 0; i < initializer.size(); ++i) {
-			transform(initializer[i].begin(), initializer[i].end(),
-				  m_mean.begin(), help.begin(), 
-				  boost::lambda::_1 - boost::lambda::_2);
+			std::transform(initializer[i].begin(), initializer[i].end(),
+				       m_mean.begin(), help.begin(), 
+				       [](float x, float y){return  x - y;});
 			m_analysis.set_row(i, help.begin(), help.end());
 		}
 	}else
@@ -97,8 +96,8 @@ Data TDataSeriesICA<Data>::get_mix(size_t idx) const
 	std::vector<float> mix = m_analysis.get_mix(idx);
 	Data result(m_size);
 	assert( result.size() == mix.size());
-	transform(mix.begin(), mix.end(), m_mean.begin(), result.begin(), 
-		  boost::lambda::_1 + boost::lambda::_2);
+	std::transform(mix.begin(), mix.end(), m_mean.begin(), result.begin(), 
+		       [](float x, float y){return x+y;});
 	return result;
 }
 
@@ -109,8 +108,8 @@ Data TDataSeriesICA<Data>::get_incomplete_mix(size_t idx, const IndexSet& skip) 
 	std::vector<float> mix = m_analysis.get_incomplete_mix(idx, skip);
 	Data result(m_size);
 	assert( result.size() == mix.size());
-	transform(mix.begin(), mix.end(), m_mean.begin(), result.begin(), 
-		  boost::lambda::_1 + boost::lambda::_2);
+	std::transform(mix.begin(), mix.end(), m_mean.begin(), result.begin(), 
+		       [](float x, float y){return x+y;});
 	return result;
 }
 
@@ -121,8 +120,8 @@ Data TDataSeriesICA<Data>::get_partial_mix(size_t idx, const IndexSet& comps) co
 	std::vector<float> mix = m_analysis.get_partial_mix(idx, comps);
 	Data result(m_size);
 	assert( result.size() == mix.size());
-	transform(mix.begin(), mix.end(), m_mean.begin(), result.begin(), 
-		  boost::lambda::_1 + boost::lambda::_2);
+	std::transform(mix.begin(), mix.end(), m_mean.begin(), result.begin(), 
+		       [](float x, float y){return x+y;});
 	return result;
 }
 
@@ -138,8 +137,8 @@ typename TDataSeriesICA<Data>::PData TDataSeriesICA<Data>::get_feature_image(siz
 {
 	Data *result = new Data(m_size); 
 	PData presult(result); 
-	const vector<float> feature = m_analysis.get_feature_row(idx); 
-	copy(feature.begin(), feature.end(), result->begin()); 
+	const std::vector<float> feature = m_analysis.get_feature_row(idx); 
+	std::copy(feature.begin(), feature.end(), result->begin()); 
 	return presult; 
 }
 
@@ -148,8 +147,8 @@ typename TDataSeriesICA<Data>::PData TDataSeriesICA<Data>::get_delta_feature(con
 {
 	Data *result = new Data(m_size); 
 	PData presult(result); 
-	const vector<float> feature = m_analysis.get_delta_feature(plus, minus); 
-	copy(feature.begin(), feature.end(), result->begin()); 
+	const std::vector<float> feature = m_analysis.get_delta_feature(plus, minus); 
+	std::copy(feature.begin(), feature.end(), result->begin()); 
 	return presult; 
 }
 
@@ -168,9 +167,9 @@ void TDataSeriesICA<Data>::normalize()
 template <class Data> 
 void  TDataSeriesICA<Data>::normalize_Mix()
 {
-	vector<float> mean = m_analysis.normalize_Mix(); 
+	std::vector<float> mean = m_analysis.normalize_Mix(); 
 	transform(m_mean.begin(), m_mean.end(), mean.begin(), m_mean.begin(), 
-		  boost::lambda::_1 + boost::lambda::_2); 
+		  [](float x, float y){return x+y;}); 
 }
 
 template <class Data> 

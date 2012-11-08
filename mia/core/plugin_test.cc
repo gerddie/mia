@@ -29,11 +29,9 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_general_help = {
-	"Test", 
-	"This program runs plugin-tests.", 
-	NULL, 
-	NULL
-}; 
+	{pdi_group, "Test"}, 
+	{pdi_head,"This program runs plugin-tests."}
+};
 
 bool uninstalled = false;
 bool passed = true;

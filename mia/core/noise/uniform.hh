@@ -43,7 +43,6 @@ public:
 private: 
 	mia::CNoiseGenerator *do_create() const; 
 	virtual const std::string do_get_descr()const; 
-	bool do_test()const; 
 	unsigned int m_param_seed; 
 	float m_param_a; 
 	float m_param_b; 

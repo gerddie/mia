@@ -38,7 +38,6 @@
 
 
 NS_MIA_BEGIN
-using namespace std; 
 
 /**
    \ingroup filtering

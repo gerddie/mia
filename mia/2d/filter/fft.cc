@@ -109,13 +109,12 @@ P2DImage C2DFft::do_filter(const C2DImage& image) const
 C2DFilterPluginFactory::C2DFilterPluginFactory():
 	C2DFilterPlugin("fft")
 {
-	add_parameter("k", new CStringParameter(m_kernel, true, "filter kernel"));
+	add_parameter("k", mape_param(m_kernel, "", true, "filter kernel"));
 }
 
 C2DFilter *C2DFilterPluginFactory::do_create()const
 {
-	PFFT2DKernel k = CFFT2DKernelPluginHandler::instance().produce(m_kernel.c_str());
-	return new C2DFft(k);
+	return new C2DFft(m_kernel);
 }
 
 const string C2DFilterPluginFactory::do_get_descr()const

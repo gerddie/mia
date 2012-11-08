@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/shape.hh>
 #include <iomanip>
 #include <limits>
@@ -74,8 +74,6 @@ public:
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual mia::C2DFilter *dodo_create(mia::P2DShape shape, bool hint) const = 0;
-
-	virtual void prepare_path() const;
 
 	mia::P2DShape m_shape;
 	std::string m_hint;

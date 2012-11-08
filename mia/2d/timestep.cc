@@ -75,8 +75,10 @@ bool C2DRegTimeStep::has_regrid () const
 }
 float C2DRegTimeStep::get_delta(float maxshift) const
 {
+	// maxshift should be the result of a norm() and hence not negative
+	// if maxshift == 0.0 then the registration is finished and we shouldn't call this function 
 	assert(maxshift > 0.0f);
-	return (m_current / maxshift);
+	return m_current / maxshift;
 }
 
 C2DRegTimeStepPlugin::C2DRegTimeStepPlugin(const char *name):

@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_BEGIN(IMAGEIO_3D_DICOM)
 
@@ -31,10 +31,10 @@ public:
 private:
 
 	mia::C3DImageIOPlugin::PData get_images(const std::vector<mia::P2DImage>& candidates) const;
-	void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	PData do_load(const std::string& fname) const;
 	bool do_save(const std::string& fname, const Data& data) const;
 	const std::string do_get_descr() const;
+	std::string do_get_preferred_suffix() const; 
 };
 
 NS_END
