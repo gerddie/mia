@@ -53,10 +53,8 @@ IF(WITH_OpenEXR)
     SET(DEPLIBS mia2dtest mia2d ${BASELIBS})
     TARGET_LINK_LIBRARIES(test-openexr ${DEPLIBS} ${BOOST_UNITTEST})
     
-    IF(NOT WIN32)
-      #a wrapper script is needed, to add the current build dir to the search path for dlopen
-      ADD_TEST(exr sh ${CMAKE_CURRENT_SOURCE_DIR}/test-openexr.sh )
-    ENDIF(NOT WIN32)  
+    ADD_TEST(exr test-openexr)
+    
     
   ENDIF(EXR_LIBRARIES AND EXR_INCLUDE_DIRS)
   
