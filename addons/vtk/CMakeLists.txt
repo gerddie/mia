@@ -25,10 +25,14 @@ IF(WITH_VTKIO)
   IF(VTK_FOUND)
     INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
     SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
+    SET(vfio_path "${PLUGIN_INSTALL_PATH}/3dvf/io")
     
     SET(VTK_LINK_LIBS_MESH ${VTK_LIBRARIES} miamesh)
 
+
+    
     SINGLEPLUGIN_WITH_TEST_AND_PREFIX("mesh" vtkmesh "${VTK_LINK_LIBS_MESH}" "${meshio_path}")
+    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("vfio" vtkvf "${VTK_LINK_LIBS_MESH}" "${vfio_path}")
 
 
   ELSEIF(VTK_FOUND)
