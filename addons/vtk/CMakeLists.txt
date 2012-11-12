@@ -32,7 +32,7 @@ IF(WITH_VTKIO)
 
     
     SINGLEPLUGIN_WITH_TEST_AND_PREFIX("mesh" vtkmesh "${VTK_LINK_LIBS_MESH}" "${meshio_path}")
-    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("vfio" vtkvf "${VTK_LINK_LIBS_MESH}" "${vfio_path}")
+    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-vfio" vtkvf "${VTK_LINK_LIBS_MESH}" "${vfio_path}")
 
 
   ELSEIF(VTK_FOUND)
