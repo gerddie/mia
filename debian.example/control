@@ -1,7 +1,7 @@
 Source: mia
 Priority: extra
 Maintainer: Gert Wollny <gw.fossdev@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), cmake (>= 2.8),  libboost-all-dev (>= 1.46.1),  libxml++2.6-dev (>= 2.34.1), libitpp-dev (>= 4.2), libtbb-dev (>= 3.0),  libopenexr-dev (>= 1.6.1), libpng-dev,  libdcmtk2-dev (>= 3.6.0), libtiff4-dev (>= 3.9.5), nlopt-dev (>= 2.2.4), libgsl0-dev (>= 1.14),  libblas-dev, python-lxml, doxygen, libfftw3-dev, xsltproc, docbook-xsl
+Build-Depends: debhelper (>= 8.0.0), cmake (>= 2.8),  libboost-all-dev (>= 1.46.1),  libxml++2.6-dev (>= 2.34.1), libitpp-dev (>= 4.2), libtbb-dev (>= 3.0),  libopenexr-dev (>= 1.6.1), libpng-dev,  libdcmtk2-dev (>= 3.6.0), libtiff4-dev (>= 3.9.5), nlopt-dev (>= 2.2.4), libgsl0-dev (>= 1.14),  libblas-dev, python-lxml, doxygen, libfftw3-dev, xsltproc, docbook-xsl, libvtk5-dev
 Standards-Version: 3.9.2
 Section: libs
 Homepage: http://mia.sourceforge.net
