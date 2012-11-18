@@ -25,15 +25,15 @@
 #endif
 
 /* Later in this file: */
-static int ParseArgValues (int *, int, char **, VOptionDescRec *);
+static int ParseArgValues (int *, int, char **, VistaIOOptionDescRec *);
 
 /* The following provide distinguished values for the found field of a
-   VOptionDescRec: */
-VBoolean V_RequiredOpt;
-VBoolean V_OptionalOpt;
+   VistaIOOptionDescRec: */
+VistaIOBoolean VistaIO_RequiredOpt;
+VistaIOBoolean VistaIO_OptionalOpt;
 
-VShort VERBOSE = 2;		
-VBoolean v_found = 0;		/* mpi-hack: v_found */
+VistaIOShort VERBOSE = 2;		
+VistaIOBoolean v_found = 0;		/* mpi-hack: v_found */
 
 /*! \brief Identify the files specified by command line arguments.
  *
@@ -43,8 +43,8 @@ VBoolean v_found = 0;		/* mpi-hack: v_found */
  *       any switch (e.g., vview file1 file2)
  *   (3) by piping to/from stdin or stdout (e.g., vview < file1).
  *
- *  VIdentifyFiles collects file names from these three sources once
- *  VParseCommand has been called to parse the command's switches.
+ *  VistaIOIdentifyFiles collects file names from these three sources once
+ *  VistaIOParseCommand has been called to parse the command's switches.
  *  It looks first for the keyword, then for unclaimed command line
  *  arguments, and finally for a file or pipe attached to stdin or stdout.
  *
@@ -54,16 +54,16 @@ VBoolean v_found = 0;		/* mpi-hack: v_found */
  *  \param  argc
  *  \param  argv
  *  \param  fd
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-VBoolean VIdentifyFiles (int noptions, VOptionDescRec options[],
-			 VStringConst keyword, int *argc, char **argv, int fd)
+VistaIOBoolean VistaIOIdentifyFiles (int noptions, VistaIOOptionDescRec options[],
+			 VistaIOStringConst keyword, int *argc, char **argv, int fd)
 {
-	VOptionDescRec *opt;
-	VArgVector *vec;
-	VBoolean switch_found = FALSE;
-	VStringConst *values;
+	VistaIOOptionDescRec *opt;
+	VistaIOArgVector *vec;
+	VistaIOBoolean switch_found = FALSE;
+	VistaIOStringConst *values;
 	struct stat stat_buf;
 	int i, j, n;
 
@@ -73,21 +73,21 @@ VBoolean VIdentifyFiles (int noptions, VOptionDescRec options[],
 		if (strcmp (keyword, opt->keyword) == 0)
 			break;
 	if (i == noptions)
-		VError ("VIdentifyFiles: Option -%s not defined in option table", keyword);
+		VistaIOError ("VistaIOIdentifyFiles: Option -%s not defined in option table", keyword);
 
 	/* The option table entry must specify a location for storing filenames: */
 	if (!opt->value)
-		VError ("VIdentifyFiles: No value storage for option -%s",
+		VistaIOError ("VistaIOIdentifyFiles: No value storage for option -%s",
 			keyword);
-	vec = ((VArgVector *) opt->value);
+	vec = ((VistaIOArgVector *) opt->value);
 
 	/* Whether or not the option was present on the command line should have
 	   been recorded in a "found" flag: */
-	if (opt->found && opt->found != VRequiredOpt
-	    && opt->found != VOptionalOpt)
+	if (opt->found && opt->found != VistaIORequiredOpt
+	    && opt->found != VistaIOOptionalOpt)
 		switch_found = *(opt->found);
 	else
-		VError ("VIdentifyFiles: No \"found\" flag for option -%s",
+		VistaIOError ("VistaIOIdentifyFiles: No \"found\" flag for option -%s",
 			keyword);
 
 	/* If a -in or -out switch was specified, it supplies the files' names: */
@@ -101,10 +101,10 @@ VBoolean VIdentifyFiles (int noptions, VOptionDescRec options[],
 		/* If any number are permitted, allocate storage for all of them: */
 		if (opt->number == 0) {
 			vec->vector =
-				VMalloc ((*argc - 1) * sizeof (VStringConst));
-			values = (VStringConst *) vec->vector;
+				VistaIOMalloc ((*argc - 1) * sizeof (VistaIOStringConst));
+			values = (VistaIOStringConst *) vec->vector;
 		} else
-			values = (VStringConst *) opt->value;
+			values = (VistaIOStringConst *) opt->value;
 
 		/* Accept arguments as filenames provided they don't begin with
 		   a single -: */
@@ -148,7 +148,7 @@ VBoolean VIdentifyFiles (int noptions, VOptionDescRec options[],
 	   is connected to a pipe or file (not the terminal): */
 	if (fd >= 0) {
 		if (fstat (fd, &stat_buf) == -1)
-			VSystemError ("Failed to fstat() fd %d", fd);
+			VistaIOSystemError ("Failed to fstat() fd %d", fd);
 		if (!S_ISREG (stat_buf.st_mode)
 #ifdef S_ISSOCK
 /* The ISSOCK macro is only available in POSIX_STDC;
@@ -169,50 +169,50 @@ VBoolean VIdentifyFiles (int noptions, VOptionDescRec options[],
 	/* Record the file as being "-": */
 	if (opt->number == 0) {
 		vec->number = 1;
-		vec->vector = VMalloc (sizeof (VStringConst));
-		((VStringConst *) vec->vector)[0] = "-";
+		vec->vector = VistaIOMalloc (sizeof (VistaIOStringConst));
+		((VistaIOStringConst *) vec->vector)[0] = "-";
 	} else
-		*((VStringConst *) opt->value) = "-";
+		*((VistaIOStringConst *) opt->value) = "-";
 	return TRUE;
 }
 
 
 /*
- *  VParseCommand
+ *  VistaIOParseCommand
  *
  *  Parse command line arguments according to a table of option descriptors.
  *  Unrecognized options are left in argv, and argc is adjusted to reflect
  *  their number.
  *  If an erroneous (as opposed to simply unrecognized) argument is
- *  encountered, VParseCommand returns FALSE; otherwise, TRUE.
+ *  encountered, VistaIOParseCommand returns FALSE; otherwise, TRUE.
  *
- *  The -help option is recognized explicitly. If it is present, VParseCommand
+ *  The -help option is recognized explicitly. If it is present, VistaIOParseCommand
  *  returns indicating that all arguments were recognized, but that an error
  *  occurred. This should force the caller to simply print usage information.
  */
 
-VBoolean VParseCommand (int noptions, VOptionDescRec options[], int *argc,
+VistaIOBoolean VistaIOParseCommand (int noptions, VistaIOOptionDescRec options[], int *argc,
 			char **argv)
 {
 	int arg, nvalues, i, j;
 	char *cp;
-	VBoolean *opts_seen, result = TRUE, missing_val = FALSE;
-	VOptionDescRec *opt, *opt_t;
+	VistaIOBoolean *opts_seen, result = TRUE, missing_val = FALSE;
+	VistaIOOptionDescRec *opt, *opt_t;
 
 	/* Note the program's name: */
-	VSetProgramName (argv[0]);
+	VistaIOSetProgramName (argv[0]);
 
 	/* Allocate storage for a set of flags indicating which
 	   arguments have been seen: */
-	opts_seen = VCalloc (noptions, sizeof (VBoolean));
+	opts_seen = VistaIOCalloc (noptions, sizeof (VistaIOBoolean));
 
 	/* Initialize any "found" flags to false, and the number field of any
-	   VArgVector values to zero: */
+	   VistaIOArgVector values to zero: */
 	for (opt = options + noptions - 1; opt >= options; opt--) {
 		if (opt->found)
 			*opt->found = FALSE;
 		if (opt->number == 0 && opt->value)
-			((VArgVector *) opt->value)->number = 0;
+			((VistaIOArgVector *) opt->value)->number = 0;
 	}
 
 	/* For each argument supplied with the command: */
@@ -262,8 +262,8 @@ VBoolean VParseCommand (int noptions, VOptionDescRec options[], int *argc,
 
 			/* If it has been seen, delete its previous value: */
 			if (opt->number == 0) {
-				VFree (((VArgVector *) opt->value)->vector);
-				((VArgVector *) opt->value)->number = 0;
+				VistaIOFree (((VistaIOArgVector *) opt->value)->vector);
+				((VistaIOArgVector *) opt->value)->number = 0;
 			}
 		} else
 			opts_seen[opt - options] = TRUE;
@@ -271,21 +271,21 @@ VBoolean VParseCommand (int noptions, VOptionDescRec options[], int *argc,
 		/* Swallow any value(s) that follow: */
 		switch (opt->repn) {
 
-		case VBitRepn:
+		case VistaIOBitRepn:
 		case VUByteRepn:
 		case VSByteRepn:
-		case VShortRepn:
-		case VLongRepn:
-		case VFloatRepn:
-		case VDoubleRepn:
-		case VBooleanRepn:
-		case VStringRepn:
+		case VistaIOShortRepn:
+		case VistaIOLongRepn:
+		case VistaIOFloatRepn:
+		case VistaIODoubleRepn:
+		case VistaIOBooleanRepn:
+		case VistaIOStringRepn:
 			nvalues = ParseArgValues (&arg, *argc, argv, opt);
 			break;
 
 		default:
-			VError ("Parsing of command options with %s values "
-				"is not implemented", VRepnName (opt->repn));
+			VistaIOError ("Parsing of command options with %s values "
+				"is not implemented", VistaIORepnName (opt->repn));
 			nvalues = 0;	/* to quiet lint */
 		}
 
@@ -320,7 +320,7 @@ VBoolean VParseCommand (int noptions, VOptionDescRec options[], int *argc,
 		}
 
 		if (opt->number == 0)
-			((VArgVector *) opt->value)->number = nvalues;
+			((VistaIOArgVector *) opt->value)->number = nvalues;
 
 		/* Note that a value was successfully obtained for this option: */
 		if (opt->found)
@@ -331,13 +331,13 @@ VBoolean VParseCommand (int noptions, VOptionDescRec options[], int *argc,
 
 	/* Ensure that each mandatory option was seen: */
 	for (i = 0; i < noptions; i++)
-		if (options[i].found == VRequiredOpt && !opts_seen[i]) {
+		if (options[i].found == VistaIORequiredOpt && !opts_seen[i]) {
 			fprintf (stderr,
 				 "%s: Option -%s must be specified.\n",
 				 argv[0], options[i].keyword);
 			result = FALSE;
 		}
-	VFree ((VPointer) opts_seen);
+	VistaIOFree ((VistaIOPointer) opts_seen);
 
 	/* Squeeze together the remaining arguments in argv: */
 	for (i = j = 1; i < *argc; i++)
@@ -356,12 +356,12 @@ VBoolean VParseCommand (int noptions, VOptionDescRec options[], int *argc,
  */
 
 static int ParseArgValues (int *arg, int argc, char **argv,
-			   VOptionDescRec * opt)
+			   VistaIOOptionDescRec * opt)
 {
-	VArgVector *vec = (VArgVector *) opt->value;
-	VPointer values;
+	VistaIOArgVector *vec = (VistaIOArgVector *) opt->value;
+	VistaIOPointer values;
 	int nvalues = 0;
-	VDictEntry *dict = opt->dict;
+	VistaIODictEntry *dict = opt->dict;
 	char *cp;
 
 	/* Locate the place we're to store the argument values: */
@@ -369,14 +369,14 @@ static int ParseArgValues (int *arg, int argc, char **argv,
 		/* If a variable number of arguments is expected, allocate storage
 		   to hold them: */
 		vec->vector = values =
-			VMalloc ((argc - *arg) * VRepnSize (opt->repn));
+			VistaIOMalloc ((argc - *arg) * VistaIORepnSize (opt->repn));
 	} else
 		values = opt->value;
 
 	/* If no dictionary is specified for a boolean-valued option, use the
 	   default one of true, false, yes, no... */
-	if (opt->repn == VBooleanRepn && !dict)
-		dict = VBooleanDict;
+	if (opt->repn == VistaIOBooleanRepn && !dict)
+		dict = VistaIOBooleanDict;
 
 	/* Parse argument values until we've reached the required number,
 	   we've run out of entered arguments, or we encounter one that
@@ -385,7 +385,7 @@ static int ParseArgValues (int *arg, int argc, char **argv,
 		cp = argv[*arg];
 
 		/* Special treatment for string-valued options: */
-		if (opt->repn == VStringRepn) {
+		if (opt->repn == VistaIOStringRepn) {
 
 			/* An argument of the form -string is not interpreted as a
 			   string value: */
@@ -398,18 +398,18 @@ static int ParseArgValues (int *arg, int argc, char **argv,
 		}
 
 		/* Convert the argument to the specified internal form: */
-		if (!VDecodeAttrValue (cp, dict, opt->repn, values))
+		if (!VistaIODecodeAttrValue (cp, dict, opt->repn, values))
 			break;
 		nvalues++;
-		values = (VPointer) ((char *)values + VRepnSize (opt->repn));
+		values = (VistaIOPointer) ((char *)values + VistaIORepnSize (opt->repn));
 		argv[(*arg)++] = NULL;
 	}
 
 	/* Special treatment of boolean-valued options: if the option has just
 	   one value associated with it then treat -option <other options> like
 	   -option true <other options>: */
-	if (opt->repn == VBooleanRepn && opt->number == 1 && nvalues == 0) {
-		*(VBoolean *) opt->value = TRUE;
+	if (opt->repn == VistaIOBooleanRepn && opt->number == 1 && nvalues == 0) {
+		*(VistaIOBoolean *) opt->value = TRUE;
 		nvalues = 1;
 	}
 
@@ -418,7 +418,7 @@ static int ParseArgValues (int *arg, int argc, char **argv,
 
 
 /*
- *  VParseFilterCmd
+ *  VistaIOParseFilterCmd
  *
  *  Does all of the standard command line parsing and file location needed
  *  by Vista modules with a maximum of one input and output file.
@@ -434,7 +434,7 @@ static int ParseArgValues (int *arg, int argc, char **argv,
  *  routine so that they do not need to be specified in options arguments.
  */
 
-VDictEntry VerboseDict[] = {
+VistaIODictEntry VerboseDict[] = {
 	{"err", 0}
 	,
 	{"warn", 1}
@@ -444,28 +444,28 @@ VDictEntry VerboseDict[] = {
 	{NULL}
 };
 
-void VParseFilterCmd (int noptions, VOptionDescRec opts[],
+void VistaIOParseFilterCmd (int noptions, VistaIOOptionDescRec opts[],
 		      int argc, char **argv, FILE ** inp, FILE ** outp)
 {
-	static VStringConst in_file = NULL, out_file = NULL;
-	static VBoolean in_found = 0, out_found = 0;
-	static VShort v = 0;
+	static VistaIOStringConst in_file = NULL, out_file = NULL;
+	static VistaIOBoolean in_found = 0, out_found = 0;
+	static VistaIOShort v = 0;
 
 	/* mpi-hack: add the option verbose to the option array */
-	static VOptionDescRec io_opts[] = {
-		{"in", VStringRepn, 1, &in_file, &in_found, NULL,
+	static VistaIOOptionDescRec io_opts[] = {
+		{"in", VistaIOStringRepn, 1, &in_file, &in_found, NULL,
 		 "Input file"},
-		{"out", VStringRepn, 1, &out_file, &out_found, NULL,
+		{"out", VistaIOStringRepn, 1, &out_file, &out_found, NULL,
 		 "Output file"},
-		{"verbose", VShortRepn, 1, (VPointer) & v, &v_found,
+		{"verbose", VistaIOShortRepn, 1, (VistaIOPointer) & v, &v_found,
 		 VerboseDict, "Verbosity level"}
 	};
 	int i, n;
-	VOptionDescRec options[100];
+	VistaIOOptionDescRec options[100];
 
 	/* Check that number of options will not overflow the options array. */
 	if (noptions >= 98) {
-		VWarning ("VParseFilterCmd: Too many options allowed");
+		VistaIOWarning ("VistaIOParseFilterCmd: Too many options allowed");
 		noptions = 98;
 	}
 
@@ -483,9 +483,9 @@ void VParseFilterCmd (int noptions, VOptionDescRec opts[],
 		options[n] = opts[i];
 
 	/* Parse command line arguments and identify the input and output files: */
-	if (!VParseCommand (n, options, &argc, argv) ||
-	    (inp && !VIdentifyFiles (n, options, "in", &argc, argv, 0)) ||
-	    (outp && !VIdentifyFiles (n, options, "out", &argc, argv, 1))) {
+	if (!VistaIOParseCommand (n, options, &argc, argv) ||
+	    (inp && !VistaIOIdentifyFiles (n, options, "in", &argc, argv, 0)) ||
+	    (outp && !VistaIOIdentifyFiles (n, options, "out", &argc, argv, 1))) {
 		goto Usage;
 	}
 
@@ -494,8 +494,8 @@ void VParseFilterCmd (int noptions, VOptionDescRec opts[],
 
 	/* Any remaining unparsed arguments are erroneous: */
 	if (argc > 1) {
-		VReportBadArgs (argc, argv);
-	      Usage:VReportUsage (argv[0], n, options,
+		VistaIOReportBadArgs (argc, argv);
+	      Usage:VistaIOReportUsage (argv[0], n, options,
 			      inp ? (outp ? "[infile] [outfile]" : "[infile]")
 			      : (outp ? "[outfile]" : NULL));
 		exit (EXIT_FAILURE);
@@ -503,19 +503,19 @@ void VParseFilterCmd (int noptions, VOptionDescRec opts[],
 
 	/* Open the input and output files: */
 	if (inp)
-		*inp = VOpenInputFile (in_file, TRUE);
+		*inp = VistaIOOpenInputFile (in_file, TRUE);
 	if (outp)
-		*outp = VOpenOutputFile (out_file, TRUE);
+		*outp = VistaIOOpenOutputFile (out_file, TRUE);
 }
 
 
 /*
- *  VPrintOptions
+ *  VistaIOPrintOptions
  *
  *  Print the settings of a set of command line options.
  */
 
-void VPrintOptions (FILE * f, int noptions, VOptionDescRec options[])
+void VistaIOPrintOptions (FILE * f, int noptions, VistaIOOptionDescRec options[])
 {
 	int i;
 
@@ -526,7 +526,7 @@ void VPrintOptions (FILE * f, int noptions, VOptionDescRec options[])
 		if (options->blurb)
 			fprintf (f, "%s ", options->blurb);
 		fprintf (f, "(%s): ", options->keyword);
-		VPrintOptionValue (f, options);
+		VistaIOPrintOptionValue (f, options);
 		fputc ('\n', f);
 	}
 
@@ -535,34 +535,34 @@ void VPrintOptions (FILE * f, int noptions, VOptionDescRec options[])
 
 
 /*
- *  VPrintOptionValue
+ *  VistaIOPrintOptionValue
  *
  *  Print the value of a specified option.
  */
 
-int VPrintOptionValue (FILE * f, VOptionDescRec * option)
+int VistaIOPrintOptionValue (FILE * f, VistaIOOptionDescRec * option)
 {
 	int n, i, col = 0;
 	char *vp;
-	VDictEntry *dict;
-	VLong ivalue;
-	VDouble fvalue = 0.0;
-	VStringConst svalue;
+	VistaIODictEntry *dict;
+	VistaIOLong ivalue;
+	VistaIODouble fvalue = 0.0;
+	VistaIOStringConst svalue;
 
 	if (option->number == 0) {
-		n = ((VArgVector *) option->value)->number;
-		vp = (char *)((VArgVector *) option->value)->vector;
+		n = ((VistaIOArgVector *) option->value)->number;
+		vp = (char *)((VistaIOArgVector *) option->value)->vector;
 	} else {
 		n = option->number;
 		vp = (char *)option->value;
 	}
-	for (i = 0; i < n; i++, vp += VRepnSize (option->repn)) {
+	for (i = 0; i < n; i++, vp += VistaIORepnSize (option->repn)) {
 		if (i > 0)
 			fputc (' ', f);
 		switch (option->repn) {
 
-		case VBitRepn:
-			ivalue = *(VBit *) vp;
+		case VistaIOBitRepn:
+			ivalue = *(VistaIOBit *) vp;
 			goto PrintLong;
 
 		case VUByteRepn:
@@ -573,50 +573,50 @@ int VPrintOptionValue (FILE * f, VOptionDescRec * option)
 			ivalue = *(VSByte *) vp;
 			goto PrintLong;
 
-		case VShortRepn:
-			ivalue = *(VShort *) vp;
+		case VistaIOShortRepn:
+			ivalue = *(VistaIOShort *) vp;
 			goto PrintLong;
 
-		case VLongRepn:
-			ivalue = *(VLong *) vp;
+		case VistaIOLongRepn:
+			ivalue = *(VistaIOLong *) vp;
 
 		PrintLong:if (option->dict &&
 			      (dict =
-			       VLookupDictValue (option->dict, VLongRepn,
+			       VistaIOLookupDictValue (option->dict, VistaIOLongRepn,
 						 ivalue)))
 				col += fprintf (f, "%s", dict->keyword);
 			else
 				col += fprintf (f, "%d", ivalue);
 			break;
 			
-		case VFloatRepn:
-			fvalue = *(VFloat *) vp;
+		case VistaIOFloatRepn:
+			fvalue = *(VistaIOFloat *) vp;
 			goto PrintDbl;
 			
-		case VDoubleRepn:
-			fvalue = *(VDouble *) vp;
+		case VistaIODoubleRepn:
+			fvalue = *(VistaIODouble *) vp;
 
 		PrintDbl:if (option->dict &&
 			     (dict =
-			      VLookupDictValue (option->dict, VDoubleRepn,
+			      VistaIOLookupDictValue (option->dict, VistaIODoubleRepn,
 						fvalue)))
 				col += fprintf (f, "%s", dict->keyword);
 			else
 				col += fprintf (f, "%g", fvalue);
 			break;
 			
-		case VBooleanRepn:
+		case VistaIOBooleanRepn:
 			col += fprintf (f, "%s",
-					*(VBoolean *) vp ? "true" : "false");
+					*(VistaIOBoolean *) vp ? "true" : "false");
 			break;
 			
-		case VStringRepn:
-			svalue = *(VString *) vp;
+		case VistaIOStringRepn:
+			svalue = *(VistaIOString *) vp;
 			if (!svalue)
 				svalue = "(none)";
 			else if (option->dict &&
 				 (dict =
-				  VLookupDictValue (option->dict, VStringRepn,
+				  VistaIOLookupDictValue (option->dict, VistaIOStringRepn,
 						    svalue)))
 				svalue = dict->keyword;
 			col += fprintf (f, "%s", svalue);
@@ -632,13 +632,13 @@ int VPrintOptionValue (FILE * f, VOptionDescRec * option)
 
 
 /*
- *  VReportBadArgs
+ *  VistaIOReportBadArgs
  *
  *  Report the remaining command line arguments in argv as ones that could
  *  not be recognized.
  */
 
-void VReportBadArgs (int argc, char **argv)
+void VistaIOReportBadArgs (int argc, char **argv)
 {
 	int i;
 
@@ -653,14 +653,14 @@ void VReportBadArgs (int argc, char **argv)
 
 
 /*
- *  VReportUsage
+ *  VistaIOReportUsage
  *
  *  Print, to stderr, information about how to use a program based on
  *  the contents of its command argument parsing table.
  */
 
-void VReportUsage (VStringConst program, int noptions,
-		   VOptionDescRec options[], VStringConst other_args)
+void VistaIOReportUsage (VistaIOStringConst program, int noptions,
+		   VistaIOOptionDescRec options[], VistaIOStringConst other_args)
 {
 	fprintf (stderr, "\nUsage: %s <options>", program);
 	if (other_args)
@@ -668,22 +668,22 @@ void VReportUsage (VStringConst program, int noptions,
 	fprintf (stderr, ", where <options> includes:\n");
 	fprintf (stderr, "    -help\n\tDisplay this help and exit.\n");
 	/* Print a line describing each possible option: */
-	VReportValidOptions (noptions, options);
+	VistaIOReportValidOptions (noptions, options);
 }
 
 
 /*
- *  VReportValidOptions
+ *  VistaIOReportValidOptions
  *
  *  Print, to stderr, a summary of program options based on the contents of
  *  a command argument parsing table
  */
 
-void VReportValidOptions (int noptions, VOptionDescRec options[])
+void VistaIOReportValidOptions (int noptions, VistaIOOptionDescRec options[])
 {
 	int i, j;
-	VDictEntry *dict;
-	VStringConst cp;
+	VistaIODictEntry *dict;
+	VistaIOStringConst cp;
 
 	/* Print a line describing each possible option: */
 	for (i = 0; i < noptions; i++, options++) {
@@ -692,11 +692,11 @@ void VReportValidOptions (int noptions, VOptionDescRec options[])
 		fprintf (stderr, "    -%s ", options->keyword);
 
 		/* Get a name for the type of value needed: */
-		if (VIsIntegerRepn (options->repn))
+		if (VistaIOIsIntegerRepn (options->repn))
 			cp = "integer";
-		else if (VIsFloatPtRepn (options->repn))
+		else if (VistaIOIsFloatPtRepn (options->repn))
 			cp = "number";
-		else if (options->repn == VBooleanRepn)
+		else if (options->repn == VistaIOBooleanRepn)
 			cp = "boolean";
 		else
 			cp = "string";
@@ -708,7 +708,7 @@ void VReportValidOptions (int noptions, VOptionDescRec options[])
 					fputs (" | ", stderr);
 				fputs (dict->keyword, stderr);
 			}
-		} else if (options->repn == VBooleanRepn
+		} else if (options->repn == VistaIOBooleanRepn
 			   && options->number == 1) {
 			fputs ("[ true | false ]", stderr);
 		} else if (options->number <= 1) {
@@ -737,11 +737,11 @@ void VReportValidOptions (int noptions, VOptionDescRec options[])
 		/* Print any blurb available, and default value(s): */
 		if (options->blurb)
 			fprintf (stderr, "%s. ", options->blurb);
-		if (options->found == VRequiredOpt)
+		if (options->found == VistaIORequiredOpt)
 			fputs ("Required.", stderr);
 		else if (options->number > 0) {
 			fprintf (stderr, "Default: ");
-			VPrintOptionValue (stderr, options);
+			VistaIOPrintOptionValue (stderr, options);
 		}
 		fputc ('\n', stderr);
 	}

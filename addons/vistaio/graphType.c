@@ -25,45 +25,45 @@
  */
 
 /* Later in this file: */
-static VDecodeMethod VGraphDecodeMethod;
-static VEncodeAttrMethod VGraphEncodeAttrMethod;
-static VEncodeDataMethod VGraphEncodeDataMethod;
+static VistaIODecodeMethod VistaIOGraphDecodeMethod;
+static VistaIOEncodeAttrMethod VistaIOGraphEncodeAttrMethod;
+static VistaIOEncodeDataMethod VistaIOGraphEncodeDataMethod;
 
 /* Used in Type.c to register this type: */
-VTypeMethods VGraphMethods = {
-	(VCopyMethod *) VCopyGraph,	/* copy a VGraph */
-	(VDestroyMethod *) VDestroyGraph,	/* destroy a VGraph */
-	VGraphDecodeMethod,	/* decode a VGraph's value */
-	VGraphEncodeAttrMethod,	/* encode a VGraph's attr list */
-	VGraphEncodeDataMethod	/* encode a VGraph's binary data */
+VistaIOTypeMethods VistaIOGraphMethods = {
+	(VistaIOCopyMethod *) VistaIOCopyGraph,	/* copy a VistaIOGraph */
+	(VistaIODestroyMethod *) VistaIODestroyGraph,	/* destroy a VistaIOGraph */
+	VistaIOGraphDecodeMethod,	/* decode a VistaIOGraph's value */
+	VistaIOGraphEncodeAttrMethod,	/* encode a VistaIOGraph's attr list */
+	VistaIOGraphEncodeDataMethod	/* encode a VistaIOGraph's binary data */
 };
 
-/*! \brief Convert an attribute list plus binary data to a VGraph object.
+/*! \brief Convert an attribute list plus binary data to a VistaIOGraph object.
  *
  *  The "decode" method registered for the "Graph" type.
  *  
  *  \param  name
  *  \param  b
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-static VPointer VGraphDecodeMethod (VStringConst name, VBundle b)
+static VistaIOPointer VistaIOGraphDecodeMethod (VistaIOStringConst name, VistaIOBundle b)
 {
-	VGraph graph;
-	VLong size, nfields, node_repn, useWeights;
-	VAttrList list;
-	VLong idx, nadj;
+	VistaIOGraph graph;
+	VistaIOLong size, nfields, node_repn, useWeights;
+	VistaIOAttrList list;
+	VistaIOLong idx, nadj;
 	int length;
 	size_t len;
-	VNode n;
-	VPointer p, ptr;
-	VAdjacency adj;
+	VistaIONode n;
+	VistaIOPointer p, ptr;
+	VistaIOAdjacency adj;
 
 #define Extract(name, dict, locn, required)	\
-	VExtractAttr (b->list, name, dict, VLongRepn, & locn, required)
+	VistaIOExtractAttr (b->list, name, dict, VistaIOLongRepn, & locn, required)
 
 	/* Extract the required attribute values for Graph. */
-	if (!Extract (VRepnAttr, VNumericRepnDict, node_repn, TRUE) ||
+	if (!Extract (VistaIORepnAttr, VistaIONumericRepnDict, node_repn, TRUE) ||
 	    !Extract (VNNodeFieldsAttr, NULL, nfields, TRUE) ||
 	    !Extract (VNNodeWeightsAttr, NULL, useWeights, TRUE))
 		return NULL;
@@ -72,19 +72,19 @@ static VPointer VGraphDecodeMethod (VStringConst name, VBundle b)
 	    Extract (VNGraphNodesAttr, NULL, size, TRUE) == FALSE)
 		return NULL;
 	if (size <= 0 || nfields <= 0) {
-		VWarning ("VGraphReadDataMethod: Bad Graph file attributes");
+		VistaIOWarning ("VistaIOGraphReadDataMethod: Bad Graph file attributes");
 		return NULL;
 	}
 
 	/* Create the Graph data structure. */
-	graph = VCreateGraph ((int)size, (int)nfields,
-			      (VRepnKind) node_repn, (int)useWeights);
+	graph = VistaIOCreateGraph ((int)size, (int)nfields,
+			      (VistaIORepnKind) node_repn, (int)useWeights);
 	if (!graph)
 		return NULL;
 
 	/* Give it whatever attributes remain: */
-	list = VGraphAttrList (graph);
-	VGraphAttrList (graph) = b->list;
+	list = VistaIOGraphAttrList (graph);
+	VistaIOGraphAttrList (graph) = b->list;
 	b->list = list;
 
 	length = b->length;
@@ -94,7 +94,7 @@ static VPointer VGraphDecodeMethod (VStringConst name, VBundle b)
 
 #define unpack(repn, cnt, dest) \
     ptr = dest; \
-    if (VUnpackData(repn, cnt, p, VMsbFirst, & len, & ptr, 0) == 0) return 0; \
+    if (VistaIOUnpackData(repn, cnt, p, VistaIOMsbFirst, & len, & ptr, 0) == 0) return 0; \
     p = (char *) p + len; length -= len; len = length; \
     if (length < 0) goto Fail;
 	len = length;
@@ -102,21 +102,21 @@ static VPointer VGraphDecodeMethod (VStringConst name, VBundle b)
 	while (length > 0) {
 
 		/* Get the index : */
-		unpack (VLongRepn, 1, &idx);
-		graph->table[idx - 1] = n = VCalloc (1, VNodeSize (graph));
+		unpack (VistaIOLongRepn, 1, &idx);
+		graph->table[idx - 1] = n = VistaIOCalloc (1, VistaIONodeSize (graph));
 		if (idx > graph->lastUsed)
 			graph->lastUsed = idx;
 		graph->nnodes++;
 
 		/* Get the number of adjacencies : */
-		unpack (VLongRepn, 1, &nadj);
+		unpack (VistaIOLongRepn, 1, &nadj);
 
 		/* Unpack the adjacencies : */
 		while (nadj--) {
-			adj = VMalloc (sizeof (VAdjRec));
-			unpack (VLongRepn, 1, &adj->id);
+			adj = VistaIOMalloc (sizeof (VistaIOAdjRec));
+			unpack (VistaIOLongRepn, 1, &adj->id);
 			if (graph->useWeights) {
-				unpack (VFloatRepn, 1, &adj->weight);
+				unpack (VistaIOFloatRepn, 1, &adj->weight);
 			} else
 				adj->weight = 0.0;
 			adj->next = n->base.head;
@@ -125,7 +125,7 @@ static VPointer VGraphDecodeMethod (VStringConst name, VBundle b)
 
 		/* Unpack the node itself: */
 		if (graph->useWeights) {
-			unpack (VFloatRepn, 1, &(n->base.weight));
+			unpack (VistaIOFloatRepn, 1, &(n->base.weight));
 		} else
 			n->base.weight = 0.0;
 		unpack (graph->node_repn, graph->nfields, n->data);
@@ -133,39 +133,39 @@ static VPointer VGraphDecodeMethod (VStringConst name, VBundle b)
 	return graph;
 
       Fail:
-	VWarning ("VGraphDecodeMethod: %s graph has wrong data length", name);
-	VDestroyGraph (graph);
+	VistaIOWarning ("VistaIOGraphDecodeMethod: %s graph has wrong data length", name);
+	VistaIODestroyGraph (graph);
 	return NULL;
 #undef Extract
 }
 
 
-/*! \brief Encode an attribute list value for a VGraph object.
+/*! \brief Encode an attribute list value for a VistaIOGraph object.
  *
  *  The "encode_attrs" method registered for the "Graph" type.
  *  
  *  \param  value
  *  \param  lengthp
- *  \return VAttrList
+ *  \return VistaIOAttrList
  */
 
-static VAttrList VGraphEncodeAttrMethod (VPointer value, size_t * lengthp)
+static VistaIOAttrList VistaIOGraphEncodeAttrMethod (VistaIOPointer value, size_t * lengthp)
 {
-	VGraph graph = value;
-	VAttrList list;
+	VistaIOGraph graph = value;
+	VistaIOAttrList list;
 	size_t len, nadj;
 	int i, slong, sfloat, spriv, nnodes;
-	VNode n;
-	VAdjacency adj;
+	VistaIONode n;
+	VistaIOAdjacency adj;
 
 	/* Compute the file space needed for the Graph's binary data: */
 	len = 0;
-	slong = VRepnPrecision (VLongRepn) / 8;
-	sfloat = VRepnPrecision (VFloatRepn) / 8;
-	spriv = graph->nfields * VRepnPrecision (graph->node_repn) / 8;
+	slong = VistaIORepnPrecision (VistaIOLongRepn) / 8;
+	sfloat = VistaIORepnPrecision (VistaIOFloatRepn) / 8;
+	spriv = graph->nfields * VistaIORepnPrecision (graph->node_repn) / 8;
 	nnodes = 0;
 	for (i = 1; i <= graph->size; i++) {
-		n = VGraphGetNode (graph, i);
+		n = VistaIOGraphGetNode (graph, i);
 		if (n == 0)
 			continue;
 		nnodes++;
@@ -189,22 +189,22 @@ static VAttrList VGraphEncodeAttrMethod (VPointer value, size_t * lengthp)
 	graph->nnodes = nnodes;			/* just to be safe for now... */
 
 	/* Temporarily prepend several attributes to the edge set's list: */
-	if ((list = VGraphAttrList (graph)) == NULL)
-		list = VGraphAttrList (graph) = VCreateAttrList ();
-	VPrependAttr (list, VRepnAttr, VNumericRepnDict, VLongRepn,
-		      (VLong) graph->node_repn);
-	VPrependAttr (list, VNNodeFieldsAttr, NULL, VLongRepn,
-		      (VLong) graph->nfields);
-	VPrependAttr (list, VNGraphSizeAttr, NULL, VLongRepn,
-		      (VLong) graph->size);
-	VPrependAttr (list, VNNodeWeightsAttr, NULL, VLongRepn,
-		      (VLong) graph->useWeights);
+	if ((list = VistaIOGraphAttrList (graph)) == NULL)
+		list = VistaIOGraphAttrList (graph) = VistaIOCreateAttrList ();
+	VistaIOPrependAttr (list, VistaIORepnAttr, VistaIONumericRepnDict, VistaIOLongRepn,
+		      (VistaIOLong) graph->node_repn);
+	VistaIOPrependAttr (list, VNNodeFieldsAttr, NULL, VistaIOLongRepn,
+		      (VistaIOLong) graph->nfields);
+	VistaIOPrependAttr (list, VNGraphSizeAttr, NULL, VistaIOLongRepn,
+		      (VistaIOLong) graph->size);
+	VistaIOPrependAttr (list, VNNodeWeightsAttr, NULL, VistaIOLongRepn,
+		      (VistaIOLong) graph->useWeights);
 
 	return list;
 }
 
 
-/*! \brief Encode the edge and point fields for a VGraph object.
+/*! \brief Encode the edge and point fields for a VistaIOGraph object.
  *
  *  The "encode_data" method registered for the "Graph" type.
  *  
@@ -212,29 +212,29 @@ static VAttrList VGraphEncodeAttrMethod (VPointer value, size_t * lengthp)
  *  \param  list
  *  \param  length
  *  \param  free_itp
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-static VPointer VGraphEncodeDataMethod (VPointer value, VAttrList list,
-					size_t length, VBoolean * free_itp)
+static VistaIOPointer VistaIOGraphEncodeDataMethod (VistaIOPointer value, VistaIOAttrList list,
+					size_t length, VistaIOBoolean * free_itp)
 {
-	VGraph graph = value;
-	VAttrListPosn posn;
-	VNode n;
+	VistaIOGraph graph = value;
+	VistaIOAttrListPosn posn;
+	VistaIONode n;
 	size_t len;
-	VPointer p, ptr;
-	VAdjacency adj;
+	VistaIOPointer p, ptr;
+	VistaIOAdjacency adj;
 	int i, nadj;
 
 #define pack(repn, cnt, dest) \
-    if (! VPackData (repn, cnt, dest, VMsbFirst, &len, &p, NULL)) return NULL; \
+    if (! VistaIOPackData (repn, cnt, dest, VistaIOMsbFirst, &len, &p, NULL)) return NULL; \
     p = (char *) p + len; length -= len; len = length;
 
-	/* Remove the attributes prepended by the VGraphEncodeAttrsMethod: */
-	for (VFirstAttr (list, &posn);
-	     strcmp (VGetAttrName (&posn), VRepnAttr) != 0;
-	     VDeleteAttr (&posn));
-	VDeleteAttr (&posn);
+	/* Remove the attributes prepended by the VistaIOGraphEncodeAttrsMethod: */
+	for (VistaIOFirstAttr (list, &posn);
+	     strcmp (VistaIOGetAttrName (&posn), VistaIORepnAttr) != 0;
+	     VistaIODeleteAttr (&posn));
+	VistaIODeleteAttr (&posn);
 
 	/* Allocate a buffer for the encoded data: */
 	if (length == 0) {
@@ -242,13 +242,13 @@ static VPointer VGraphEncodeDataMethod (VPointer value, VAttrList list,
 		return value;	/* we may return anything != 0 here */
 	};
 
-	p = ptr = VMalloc (length);
+	p = ptr = VistaIOMalloc (length);
 	len = length;
 
 	/* Pack each node: */
 	for (i = 1; i <= graph->size; i++) {
 
-		n = VGraphGetNode (graph, i);
+		n = VistaIOGraphGetNode (graph, i);
 		if (n == 0)
 			continue;
 
@@ -257,20 +257,20 @@ static VPointer VGraphEncodeDataMethod (VPointer value, VAttrList list,
 			nadj++;
 
 		/* Pack the header */
-		pack (VLongRepn, 1, &i);
-		pack (VLongRepn, 1, &nadj);
+		pack (VistaIOLongRepn, 1, &i);
+		pack (VistaIOLongRepn, 1, &nadj);
 
 		/* Pack the adjacencies : */
 		for (adj = n->base.head; adj; adj = adj->next) {
-			pack (VLongRepn, 1, &adj->id);
+			pack (VistaIOLongRepn, 1, &adj->id);
 			if (graph->useWeights) {
-				pack (VFloatRepn, 1, &adj->weight);
+				pack (VistaIOFloatRepn, 1, &adj->weight);
 			};
 		};
 
 		/* Pack the node itself: */
 		if (graph->useWeights) {
-			pack (VFloatRepn, 1, &(n->base.weight));
+			pack (VistaIOFloatRepn, 1, &(n->base.weight));
 		};
 		pack (graph->node_repn, graph->nfields, n->data);
 	}
@@ -279,7 +279,7 @@ static VPointer VGraphEncodeDataMethod (VPointer value, VAttrList list,
 	return ptr;
 }
 
-/*! \brief Allocates memory for a VGraph structure and initializes its fields.
+/*! \brief Allocates memory for a VistaIOGraph structure and initializes its fields.
  *    
  *  Initially, this contains an empty node table, so each node must still
  *  be initialized.
@@ -291,30 +291,30 @@ static VPointer VGraphEncodeDataMethod (VPointer value, VAttrList list,
  *  \return Returns a pointer to the graph if successful, NULL otherwise.
  */
 
-EXPORT_VISTA VGraph VCreateGraph (int size, int nfields, VRepnKind repn, int useW)
+EXPORT_VISTA VistaIOGraph VistaIOCreateGraph (int size, int nfields, VistaIORepnKind repn, int useW)
 {
-	VGraph graph;
+	VistaIOGraph graph;
 
 	/* Check parameters: */
 	if (size < 1 || nfields < 1)
-		VWarning ("VCreateGraph: Invalid number of nodes or fields.");
+		VistaIOWarning ("VistaIOCreateGraph: Invalid number of nodes or fields.");
 
-	/* Allocate memory for the VGraph, and the node table: */
-	graph = VMalloc (sizeof (VGraphRec));
+	/* Allocate memory for the VistaIOGraph, and the node table: */
+	graph = VistaIOMalloc (sizeof (VistaIOGraphRec));
 	if (graph == NULL)
 		return NULL;
 
-	graph->table = VCalloc (size, sizeof (VNode));
+	graph->table = VistaIOCalloc (size, sizeof (VistaIONode));
 	if (graph->table == NULL) {
-		VFree (graph);
+		VistaIOFree (graph);
 		return NULL;
 	};
 
-	/* Initialize the VGraph: */
+	/* Initialize the VistaIOGraph: */
 	graph->nnodes = 0;
 	graph->nfields = nfields;
 	graph->node_repn = repn;
-	graph->attributes = VCreateAttrList ();
+	graph->attributes = VistaIOCreateAttrList ();
 	graph->lastUsed = 0;
 	graph->size = size;
 	graph->useWeights = useW;
@@ -329,22 +329,22 @@ EXPORT_VISTA VGraph VCreateGraph (int size, int nfields, VRepnKind repn, int use
  *  \param i
  */
 
-static void VDestroyNodeSimple (VGraph graph, int i)
+static void VistaIODestroyNodeSimple (VistaIOGraph graph, int i)
 {
-	VAdjacency p, q;
-	VNode n;
+	VistaIOAdjacency p, q;
+	VistaIONode n;
 
-	n = VGraphGetNode (graph, i);
+	n = VistaIOGraphGetNode (graph, i);
 	if (n == 0)
 		return;
 
 	/* destroy adjacency list */
 	for (p = n->base.head; p; p = q) {
 		q = p->next;
-		VFree (p);
+		VistaIOFree (p);
 	};
-	VFree (n);
-	VGraphGetNode (graph, i) = 0;
+	VistaIOFree (n);
+	VistaIOGraphGetNode (graph, i) = 0;
 	graph->nnodes--;
 	assert(graph->nnodes >= 0);
 }
@@ -354,37 +354,37 @@ static void VDestroyNodeSimple (VGraph graph, int i)
  *  \param graph
  */
 
-EXPORT_VISTA void VDestroyGraph (VGraph graph)
+EXPORT_VISTA void VistaIODestroyGraph (VistaIOGraph graph)
 {
 	int i;
 
 	/* destroy each node */
 	for (i = 1; i <= graph->size; i++)
-		VDestroyNodeSimple (graph, i);
+		VistaIODestroyNodeSimple (graph, i);
 
 	/* destroy the table */
-	VFree (graph->table);
+	VistaIOFree (graph->table);
 	graph->table = 0;
 	graph->size = 0;	/* again, make it sure */
-	VDestroyAttrList (graph->attributes);
-	VFree (graph);
+	VistaIODestroyAttrList (graph->attributes);
+	VistaIOFree (graph);
 }
 
 /*! \brief Copy a node excluding links
  *
  *  \param  graph
  *  \param  src
- *  \return VNode
+ *  \return VistaIONode
  */
 
-static VNode VCopyNodeShallow (VGraph graph, VNode src)
+static VistaIONode VistaIOCopyNodeShallow (VistaIOGraph graph, VistaIONode src)
 {
-	VNode dst;
+	VistaIONode dst;
 
 	if (src == 0)
 		return 0;
-	dst = VCalloc (1, VNodeSize (graph));
-	memcpy (dst, src, VNodeSize (graph));
+	dst = VistaIOCalloc (1, VistaIONodeSize (graph));
+	memcpy (dst, src, VistaIONodeSize (graph));
 	dst->base.head = 0;
 	return dst;
 }
@@ -393,20 +393,20 @@ static VNode VCopyNodeShallow (VGraph graph, VNode src)
  *
  *  \param  graph
  *  \param  src
- *  \return VNode
+ *  \return VistaIONode
  */
 
-static VNode VCopyNodeDeep (VGraph graph, VNode src)
+static VistaIONode VistaIOCopyNodeDeep (VistaIOGraph graph, VistaIONode src)
 {
-	VNode dst;
-	VAdjacency o, n;
+	VistaIONode dst;
+	VistaIOAdjacency o, n;
 	int cnt;
 
 	if (src == 0)
 		return 0;
 
 	/* allocate and copy base part */
-	dst = VCalloc (1, VNodeSize (graph));
+	dst = VistaIOCalloc (1, VistaIONodeSize (graph));
 	dst->base.hops = src->base.hops;
 	dst->base.visited = src->base.visited;
 	dst->base.weight = src->base.weight;
@@ -414,7 +414,7 @@ static VNode VCopyNodeDeep (VGraph graph, VNode src)
 
 	/* copy all adjacencies */
 	for (o = src->base.head; o; o = o->next) {
-		n = VMalloc (sizeof (VAdjRec));
+		n = VistaIOMalloc (sizeof (VistaIOAdjRec));
 		n->id = o->id;
 		n->weight = o->weight;
 		n->next = dst->base.head;
@@ -422,40 +422,40 @@ static VNode VCopyNodeDeep (VGraph graph, VNode src)
 	};
 
 	/* copy private area */
-	cnt = (graph->nfields * VRepnPrecision (graph->node_repn)) / 8;
+	cnt = (graph->nfields * VistaIORepnPrecision (graph->node_repn)) / 8;
 	memcpy (dst->data, src->data, cnt);
 	return dst;
 }
 
-/*! \brief Copy a VGraph object.
+/*! \brief Copy a VistaIOGraph object.
  *
  *  Note that no compaction is performed, since this would require
  *  a recalculation of all indices,
  *
  *  \param  src
- *  \return VGraph
+ *  \return VistaIOGraph
  */
 
-EXPORT_VISTA VGraph VCopyGraph (VGraph src)
+EXPORT_VISTA VistaIOGraph VistaIOCopyGraph (VistaIOGraph src)
 {
-	VGraph dst;
+	VistaIOGraph dst;
 	int i;
 
-	dst = VCreateGraph (src->size, src->nfields, src->node_repn,
+	dst = VistaIOCreateGraph (src->size, src->nfields, src->node_repn,
 			    src->useWeights);
 
 	/* copy each used node in table */
 	for (i = 1; i <= src->size; i++)
 		dst->table[i - 1] =
-			VCopyNodeDeep (src, VGraphGetNode (src, i));
+			VistaIOCopyNodeDeep (src, VistaIOGraphGetNode (src, i));
 
 	dst->nnodes = src->nnodes;
 	dst->lastUsed = src->lastUsed;
 
-	if (VGraphAttrList (dst))
-		VDestroyAttrList (VGraphAttrList (dst));
-	if (VGraphAttrList (src))
-		VGraphAttrList (dst) = VCopyAttrList (VGraphAttrList (src));
+	if (VistaIOGraphAttrList (dst))
+		VistaIODestroyAttrList (VistaIOGraphAttrList (dst));
+	if (VistaIOGraphAttrList (src))
+		VistaIOGraphAttrList (dst) = VistaIOCopyAttrList (VistaIOGraphAttrList (src));
 	return dst;
 }
 
@@ -469,9 +469,9 @@ EXPORT_VISTA VGraph VCopyGraph (VGraph src)
  *  \return int
  */
 
-EXPORT_VISTA int VReadGraphs (FILE * file, VAttrList * attrs, VGraph ** graphs)
+EXPORT_VISTA int VistaIOReadGraphs (FILE * file, VistaIOAttrList * attrs, VistaIOGraph ** graphs)
 {
-	return VReadObjects (file, VGraphRepn, attrs, (VPointer **) graphs);
+	return VistaIOReadObjects (file, VistaIOGraphRepn, attrs, (VistaIOPointer **) graphs);
 }
 
 
@@ -481,13 +481,13 @@ EXPORT_VISTA int VReadGraphs (FILE * file, VAttrList * attrs, VGraph ** graphs)
  *  \param  attrs
  *  \param  n
  *  \param  graphs
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VWriteGraphs (FILE * file, VAttrList attrs, int n, VGraph graphs[])
+EXPORT_VISTA VistaIOBoolean VistaIOWriteGraphs (FILE * file, VistaIOAttrList attrs, int n, VistaIOGraph graphs[])
 {
-	return VWriteObjects (file, VGraphRepn, attrs, n,
-			      (VPointer *) graphs);
+	return VistaIOWriteObjects (file, VistaIOGraphRepn, attrs, n,
+			      (VistaIOPointer *) graphs);
 }
 
 /*! \brief Find a node in a Vista graph structure.
@@ -497,29 +497,29 @@ EXPORT_VISTA VBoolean VWriteGraphs (FILE * file, VAttrList attrs, int n, VGraph 
  *  \return Return reference to this node.
  */
 
-EXPORT_VISTA int VGraphLookupNode (VGraph graph, VNode node)
+EXPORT_VISTA int VistaIOGraphLookupNode (VistaIOGraph graph, VistaIONode node)
 {
-	int n = (graph->nfields * VRepnPrecision (graph->node_repn)) / 8;
+	int n = (graph->nfields * VistaIORepnPrecision (graph->node_repn)) / 8;
 	int i;
 
 	for (i = 1; i <= graph->lastUsed; i++) {
-		if (VGraphNodeIsFree (graph, i))
+		if (VistaIOGraphNodeIsFree (graph, i))
 			continue;
-		if (memcmp (node->data, VGraphGetNode (graph, i)->data, n) == 0)
+		if (memcmp (node->data, VistaIOGraphGetNode (graph, i)->data, n) == 0)
 			return i;
 	};
 	return 0;
 }
 
-static int growGraph (VGraph graph)
+static int growGraph (VistaIOGraph graph)
      /* note that we grow just a pointer table */
 {
 	int newsize = (graph->size * 3) / 2;
-	VNode *t = VCalloc (newsize, sizeof (VNode));
+	VistaIONode *t = VistaIOCalloc (newsize, sizeof (VistaIONode));
 	if (t == 0)
 		return 0;
-	memcpy (t, graph->table, graph->size * sizeof (VNode));
-	VFree (graph->table);
+	memcpy (t, graph->table, graph->size * sizeof (VistaIONode));
+	VistaIOFree (graph->table);
 	graph->table = t;
 	graph->size = newsize;
 	return newsize;
@@ -532,14 +532,14 @@ static int growGraph (VGraph graph)
  *  \return Return reference to this node.
  */
 
-EXPORT_VISTA int VGraphAddNode (VGraph graph, VNode node)
+EXPORT_VISTA int VistaIOGraphAddNode (VistaIOGraph graph, VistaIONode node)
 {
-	int i = VGraphLookupNode (graph, node);
+	int i = VistaIOGraphLookupNode (graph, node);
 	if (i) return i;
 	if (graph->lastUsed == graph->size)
 		if (growGraph (graph) == 0)
 			return 0;
-	graph->table[graph->lastUsed++] = VCopyNodeShallow (graph, node);
+	graph->table[graph->lastUsed++] = VistaIOCopyNodeShallow (graph, node);
 	graph->nnodes++;
 	return graph->lastUsed;
 }
@@ -555,10 +555,10 @@ EXPORT_VISTA int VGraphAddNode (VGraph graph, VNode node)
  *  \return int
  */
 
-EXPORT_VISTA int VGraphAddNodeAt (VGraph graph, VNode node, int position)
+EXPORT_VISTA int VistaIOGraphAddNodeAt (VistaIOGraph graph, VistaIONode node, int position)
 {
-	VDestroyNodeSimple (graph, position);
-	VGraphGetNode (graph, position) = VCopyNodeShallow (graph, node);
+	VistaIODestroyNodeSimple (graph, position);
+	VistaIOGraphGetNode (graph, position) = VistaIOCopyNodeShallow (graph, node);
 	graph->nnodes++;
 	if (position > graph->lastUsed)
 		graph->lastUsed = position;
@@ -573,15 +573,15 @@ EXPORT_VISTA int VGraphAddNodeAt (VGraph graph, VNode node, int position)
  *  \return Return TRUE if successful.
  */
 
-EXPORT_VISTA int VGraphLinkNodes (VGraph graph, int a, int b)
+EXPORT_VISTA int VistaIOGraphLinkNodes (VistaIOGraph graph, int a, int b)
 {
-	VNode n;
-	VAdjacency adj;
+	VistaIONode n;
+	VistaIOAdjacency adj;
 
-	if (VGraphNodeIsFree (graph, a) || VGraphNodeIsFree (graph, b))
+	if (VistaIOGraphNodeIsFree (graph, a) || VistaIOGraphNodeIsFree (graph, b))
 		return FALSE;
-	n = VGraphGetNode (graph, a);
-	adj = VMalloc (sizeof (VAdjRec));
+	n = VistaIOGraphGetNode (graph, a);
+	adj = VistaIOMalloc (sizeof (VistaIOAdjRec));
 	adj->id = b;
 	adj->weight = 0;
 	adj->next = n->base.head;
@@ -599,14 +599,14 @@ EXPORT_VISTA int VGraphLinkNodes (VGraph graph, int a, int b)
  *  \return int
  */
 
-EXPORT_VISTA int VGraphUnlinkNodes (VGraph graph, int a, int b)
+EXPORT_VISTA int VistaIOGraphUnlinkNodes (VistaIOGraph graph, int a, int b)
 {
-	VNode n;
-	VAdjacency adj, prev;
+	VistaIONode n;
+	VistaIOAdjacency adj, prev;
 
-	if (VGraphNodeIsFree (graph, a) || VGraphNodeIsFree (graph, b))
+	if (VistaIOGraphNodeIsFree (graph, a) || VistaIOGraphNodeIsFree (graph, b))
 		return FALSE;
-	n = VGraphGetNode (graph, a);
+	n = VistaIOGraphGetNode (graph, a);
 	prev = 0;
 	for (adj = n->base.head; adj; adj = adj->next) {
 		if (adj->id == (unsigned int)b) {
@@ -614,7 +614,7 @@ EXPORT_VISTA int VGraphUnlinkNodes (VGraph graph, int a, int b)
 				prev->next = adj->next;
 			else
 				n->base.head = adj->next;
-			VFree (adj);
+			VistaIOFree (adj);
 			return TRUE;
 		};
 		prev = adj;
@@ -622,10 +622,10 @@ EXPORT_VISTA int VGraphUnlinkNodes (VGraph graph, int a, int b)
 	return FALSE;
 }
 
-static VNode seqNode (VGraph graph, int i)
+static VistaIONode seqNode (VistaIOGraph graph, int i)
 {
 	while (i <= graph->lastUsed) {
-		VNode n = VGraphGetNode (graph, i);
+		VistaIONode n = VistaIOGraphGetNode (graph, i);
 		if (n) {
 			graph->iter = i;
 			return n;
@@ -638,10 +638,10 @@ static VNode seqNode (VGraph graph, int i)
 /*! \brief
  *
  *  \param  graph
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-EXPORT_VISTA VPointer VGraphFirstNode (VGraph graph)
+EXPORT_VISTA VistaIOPointer VistaIOGraphFirstNode (VistaIOGraph graph)
 {
 	return graph ? seqNode (graph, 1) : 0;
 }
@@ -649,10 +649,10 @@ EXPORT_VISTA VPointer VGraphFirstNode (VGraph graph)
 /*! \brief
  *
  *  \param  graph
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-EXPORT_VISTA VPointer VGraphNextNode (VGraph graph)
+EXPORT_VISTA VistaIOPointer VistaIOGraphNextNode (VistaIOGraph graph)
 {
 	return graph ? seqNode (graph, graph->iter + 1) : 0;
 }
@@ -662,18 +662,18 @@ EXPORT_VISTA VPointer VGraphNextNode (VGraph graph)
  *  \param  graph
  */
 
-EXPORT_VISTA void VGraphClearVisit (VGraph graph)
+EXPORT_VISTA void VistaIOGraphClearVisit (VistaIOGraph graph)
 {
-	VNode n;
+	VistaIONode n;
 	int i;
 
 	if (graph == 0)
 		return;
 	for (i = 1; i <= graph->lastUsed; i++) {
-		if (VGraphNodeIsFree (graph, i))
+		if (VistaIOGraphNodeIsFree (graph, i))
 			continue;
-		n = VGraphGetNode (graph, i);
-		VNodeClearVisit (&n->base);
+		n = VistaIOGraphGetNode (graph, i);
+		VistaIONodeClearVisit (&n->base);
 	};
 }
 
@@ -684,35 +684,35 @@ EXPORT_VISTA void VGraphClearVisit (VGraph graph)
  *  \return Return TRUE if successful.
  */
 
-EXPORT_VISTA int VGraphResizeFields (VGraph graph, int newfields)
+EXPORT_VISTA int VistaIOGraphResizeFields (VistaIOGraph graph, int newfields)
 {
-	VNode o, n;
+	VistaIONode o, n;
 	int i;
 	int nsize =
-		sizeof (VNodeBaseRec) +
-		(newfields * VRepnPrecision (graph->node_repn)) / 8;
-	int osize = VNodeSize (graph);
+		sizeof (VistaIONodeBaseRec) +
+		(newfields * VistaIORepnPrecision (graph->node_repn)) / 8;
+	int osize = VistaIONodeSize (graph);
 	if (newfields <= graph->nfields)
 		return TRUE;
 	for (i = 1; i <= graph->lastUsed; i++) {
-		if (VGraphNodeIsFree (graph, i))
+		if (VistaIOGraphNodeIsFree (graph, i))
 			continue;
-		o = VGraphGetNode (graph, i);
-		n = VCalloc (1, nsize);
+		o = VistaIOGraphGetNode (graph, i);
+		n = VistaIOCalloc (1, nsize);
 		memcpy (n, o, osize);
-		VGraphGetNode (graph, i) = n;
-		VFree (o);
+		VistaIOGraphGetNode (graph, i) = n;
+		VistaIOFree (o);
 	};
 	graph->nfields = newfields;
 	return TRUE;
 }
 
-static int firstUnvisitedNode (VGraph graph)
+static int firstUnvisitedNode (VistaIOGraph graph)
 {
 	int i;
 
 	for (i = 1; i <= graph->lastUsed; i++) {
-		VNode n = VGraphGetNode (graph, i);
+		VistaIONode n = VistaIOGraphGetNode (graph, i);
 		if (n && n->base.hops == 0)
 			return i;
 	};
@@ -726,23 +726,23 @@ static int firstUnvisitedNode (VGraph graph)
  *  \return int
  */
 
-EXPORT_VISTA int VGraphVisitNodesFrom (VGraph graph, int i)
+EXPORT_VISTA int VistaIOGraphVisitNodesFrom (VistaIOGraph graph, int i)
 {
-	VAdjacency adj;
-	VNode n, p;
+	VistaIOAdjacency adj;
+	VistaIONode n, p;
 	int cycles = 0;
 
-	if (graph == 0 || (n = VGraphGetNode (graph, i)) == 0)
+	if (graph == 0 || (n = VistaIOGraphGetNode (graph, i)) == 0)
 		return 0;
 	if (n->base.hops > 0)
 		return 1;
 	n->base.hops++;
 
 	for (adj = n->base.head; adj; adj = adj->next) {
-		p = VGraphGetNode (graph, adj->id);
+		p = VistaIOGraphGetNode (graph, adj->id);
 		if (p && p->base.hops > 0)
 			continue;
-		cycles += VGraphVisitNodesFrom (graph, adj->id);
+		cycles += VistaIOGraphVisitNodesFrom (graph, adj->id);
 	};
 	return cycles;
 }
@@ -752,14 +752,14 @@ EXPORT_VISTA int VGraphVisitNodesFrom (VGraph graph, int i)
  *  \param  graph
  */
 
-EXPORT_VISTA void VGraphClearHops (VGraph graph)
+EXPORT_VISTA void VistaIOGraphClearHops (VistaIOGraph graph)
 {
 	int i;
 
 	if (graph == 0)
 		return;
 	for (i = 1; i <= graph->lastUsed; i++) {
-		VNode n = VGraphGetNode (graph, i);
+		VistaIONode n = VistaIOGraphGetNode (graph, i);
 		if (n)
 			n->base.hops = 0;
 	};
@@ -771,17 +771,17 @@ EXPORT_VISTA void VGraphClearHops (VGraph graph)
  *  \return Returns number of cycles in a graph
  */
 
-EXPORT_VISTA int VGraphNCycles (VGraph graph)
+EXPORT_VISTA int VistaIOGraphNCycles (VistaIOGraph graph)
 {
 	int cycles = 0;
 
-	VGraphClearHops (graph);
+	VistaIOGraphClearHops (graph);
 	while (1) {
 		/* get the first unvisited node */
 		int n = firstUnvisitedNode (graph);
 		if (n == 0)
 			return cycles;
-		cycles += VGraphVisitNodesFrom (graph, n);
+		cycles += VistaIOGraphVisitNodesFrom (graph, n);
 	};
 }
 
@@ -789,25 +789,25 @@ EXPORT_VISTA int VGraphNCycles (VGraph graph)
  *         and places them into a new graph
  *
  *  \param  src
- *  \return VGraph
+ *  \return VistaIOGraph
  */
 
-EXPORT_VISTA VGraph VGraphExtractNodes (VGraph src)
+EXPORT_VISTA VistaIOGraph VistaIOGraphExtractNodes (VistaIOGraph src)
 {
-	VGraph dst;
-	VAdjacency adj;
-	VNode n;
+	VistaIOGraph dst;
+	VistaIOAdjacency adj;
+	VistaIONode n;
 	int i, j;
 
 	/* create a destination graph much like src */
-	dst = VCreateGraph (src->size, src->nfields, src->node_repn,
+	dst = VistaIOCreateGraph (src->size, src->nfields, src->node_repn,
 			    src->useWeights);
 
 	/* copy selected nodes from src */
 	for (i = j = 1; i <= src->lastUsed; i++) {
-		n = VGraphGetNode (src, i);
+		n = VistaIOGraphGetNode (src, i);
 		if (n && n->base.hops)
-			dst->table[j++] = VCopyNodeShallow (src, n);
+			dst->table[j++] = VistaIOCopyNodeShallow (src, n);
 	};
 
 	/* set number of nodes used */
@@ -816,26 +816,26 @@ EXPORT_VISTA VGraph VGraphExtractNodes (VGraph src)
 
 	/* now link nodes in new graph */
 	for (i = 1; i <= dst->lastUsed; i++) {
-		n = VGraphGetNode (dst, i);
+		n = VistaIOGraphGetNode (dst, i);
 		if (n == 0)
 			continue;
 
-		j = VGraphLookupNode (src, n);
+		j = VistaIOGraphLookupNode (src, n);
 		if (j == 0)
 			continue;
-		n = VGraphGetNode (src, j);
+		n = VistaIOGraphGetNode (src, j);
 		for (adj = n->base.head; adj; adj = adj->next) {
-			n = VGraphGetNode (src, adj->id);
-			j = VGraphLookupNode (dst, n);
+			n = VistaIOGraphGetNode (src, adj->id);
+			j = VistaIOGraphLookupNode (dst, n);
 			if (j)
-				VGraphLinkNodes (dst, i, j);
+				VistaIOGraphLinkNodes (dst, i, j);
 		};
 	};
 
-	if (VGraphAttrList (dst))
-		VDestroyAttrList (VGraphAttrList (dst));
-	if (VGraphAttrList (src))
-		VGraphAttrList (dst) = VCopyAttrList (VGraphAttrList (src));
+	if (VistaIOGraphAttrList (dst))
+		VistaIODestroyAttrList (VistaIOGraphAttrList (dst));
+	if (VistaIOGraphAttrList (src))
+		VistaIOGraphAttrList (dst) = VistaIOCopyAttrList (VistaIOGraphAttrList (src));
 	return dst;
 }
 
@@ -846,13 +846,13 @@ EXPORT_VISTA VGraph VGraphExtractNodes (VGraph src)
  *  \param  i
  */
 
-EXPORT_VISTA void VGraphToggleNodesFrom (VGraph graph, int i)
+EXPORT_VISTA void VistaIOGraphToggleNodesFrom (VistaIOGraph graph, int i)
 {
-	VAdjacency adj;
-	VNode n, p;
+	VistaIOAdjacency adj;
+	VistaIONode n, p;
 
 	/* find a valid starting point */
-	if (graph == 0 || (n = VGraphGetNode (graph, i)) == 0)
+	if (graph == 0 || (n = VistaIOGraphGetNode (graph, i)) == 0)
 		return;
 
 	/* mark this node and toggle the hops field */
@@ -863,10 +863,10 @@ EXPORT_VISTA void VGraphToggleNodesFrom (VGraph graph, int i)
 
 	/* now look at the neighbors */
 	for (adj = n->base.head; adj; adj = adj->next) {
-		p = VGraphGetNode (graph, adj->id);
+		p = VistaIOGraphGetNode (graph, adj->id);
 		if (p && p->base.visited)
 			continue;
-		VGraphToggleNodesFrom (graph, adj->id);
+		VistaIOGraphToggleNodesFrom (graph, adj->id);
 	};
 }
 
@@ -876,37 +876,37 @@ EXPORT_VISTA void VGraphToggleNodesFrom (VGraph graph, int i)
  *  \param  i
  */
 
-EXPORT_VISTA void VDestroyNode (VGraph graph, int i)
+EXPORT_VISTA void VistaIODestroyNode (VistaIOGraph graph, int i)
 {
-	VAdjacency p, q;
-	VNode n;
+	VistaIOAdjacency p, q;
+	VistaIONode n;
 
-	n = VGraphGetNode (graph, i);
+	n = VistaIOGraphGetNode (graph, i);
 	if (n == 0)
 		return;
 
 	/* destroy adjacency list */
 	for (p = n->base.head; p; p = q) {
 		/* remove connection from other node to this node */
-		VGraphUnlinkNodes (graph, p->id, i);
+		VistaIOGraphUnlinkNodes (graph, p->id, i);
 		q = p->next;
-		VFree (p);
+		VistaIOFree (p);
 	};
-	VFree (n);
-	VGraphGetNode (graph, i) = 0;
+	VistaIOFree (n);
+	VistaIOGraphGetNode (graph, i) = 0;
 	graph->nnodes--;
 	assert(graph->nnodes >= 0);
 }
 
-static void VGraphRemoveNodes (VGraph graph)
+static void VistaIOGraphRemoveNodes (VistaIOGraph graph)
      /* remove all nodes in which the visited flag is set */
 {
 	int i;
 
 	for (i = 1; i <= graph->lastUsed; i++) {
-		VNode n = VGraphGetNode (graph, i);
+		VistaIONode n = VistaIOGraphGetNode (graph, i);
 		if (n && n->base.visited)
-			VDestroyNode (graph, i);
+			VistaIODestroyNode (graph, i);
 	};
 }
 
@@ -916,10 +916,10 @@ static void VGraphRemoveNodes (VGraph graph)
  *  \param i
  */
 
-EXPORT_VISTA void VGraphDestroyNodesFrom (VGraph graph, int i)
+EXPORT_VISTA void VistaIOGraphDestroyNodesFrom (VistaIOGraph graph, int i)
 {
-	VGraphToggleNodesFrom (graph, i);
-	VGraphRemoveNodes (graph);
+	VistaIOGraphToggleNodesFrom (graph, i);
+	VistaIOGraphRemoveNodes (graph);
 }
 
 /*! \brief make bidrectional link between nodes a and b
@@ -929,28 +929,28 @@ EXPORT_VISTA void VGraphDestroyNodesFrom (VGraph graph, int i)
  *  \param  b
  */
 
-EXPORT_VISTA void VGraphLinkNodesBi (VGraph graph, VLong a, VLong b)
+EXPORT_VISTA void VistaIOGraphLinkNodesBi (VistaIOGraph graph, VistaIOLong a, VistaIOLong b)
 {
-	VNode n;
-	VAdjacency adj;
+	VistaIONode n;
+	VistaIOAdjacency adj;
 
 	if (a == 0 || b == 0 || a == b)
 		return;
-	n = VGraphGetNode (graph, a);
+	n = VistaIOGraphGetNode (graph, a);
 	if (n == NULL)
 		return;
 	for (adj = n->base.head; adj; adj = adj->next)
 		if (adj->id == (unsigned long)b)
 			goto rev;
-	VGraphLinkNodes (graph, a, b);
+	VistaIOGraphLinkNodes (graph, a, b);
       rev:
-	n = VGraphGetNode (graph, b);
+	n = VistaIOGraphGetNode (graph, b);
 	if (n == NULL)
 		return;
 	for (adj = n->base.head; adj; adj = adj->next)
 		if (adj->id == (unsigned long)a)
 			return;
-	VGraphLinkNodes (graph, b, a);
+	VistaIOGraphLinkNodes (graph, b, a);
 }
 
 /*! \brief remove bidrectional link between nodes a and b
@@ -960,10 +960,10 @@ EXPORT_VISTA void VGraphLinkNodesBi (VGraph graph, VLong a, VLong b)
  *  \param  b
  */
 
-EXPORT_VISTA void VGraphUnlinkNodesBi (VGraph graph, VLong a, VLong b)
+EXPORT_VISTA void VistaIOGraphUnlinkNodesBi (VistaIOGraph graph, VistaIOLong a, VistaIOLong b)
 {
-	VGraphUnlinkNodes (graph, a, b);
-	VGraphUnlinkNodes (graph, b, a);
+	VistaIOGraphUnlinkNodes (graph, a, b);
+	VistaIOGraphUnlinkNodes (graph, b, a);
 }
 
 /*! \brief
@@ -971,17 +971,17 @@ EXPORT_VISTA void VGraphUnlinkNodesBi (VGraph graph, VLong a, VLong b)
  *  \param  graph
  *  \param  a
  *  \param  b
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VGraphHasLink (VGraph graph, int a, int b)
+EXPORT_VISTA VistaIOBoolean VistaIOGraphHasLink (VistaIOGraph graph, int a, int b)
 {
-	VNode n;
-	VAdjacency adj; 
+	VistaIONode n;
+	VistaIOAdjacency adj; 
 	
 	if (a == 0 || b == 0 || a == b)
 		return FALSE;
-	n = VGraphGetNode (graph, a);
+	n = VistaIOGraphGetNode (graph, a);
 	
 	for (adj = n->base.head; adj; adj = adj->next)
 		if (adj->id == b)

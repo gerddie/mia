@@ -29,20 +29,20 @@
 
 
 /* Later in this file: */
-static VDecodeMethod     VCPEListDecodeMethod;
-static VEncodeAttrMethod VCPEListEncodeAttrMethod;
-static VEncodeDataMethod VCPEListEncodeDataMethod;
-static VCPEList VCopyCPEList(VCPEList src);
-static void VDestroyCPEList(VCPEList field);  
+static VistaIODecodeMethod     VCPEListDecodeMethod;
+static VistaIOEncodeAttrMethod VCPEListEncodeAttrMethod;
+static VistaIOEncodeDataMethod VCPEListEncodeDataMethod;
+static VCPEList VistaIOCopyCPEList(VCPEList src);
+static void VistaIODestroyCPEList(VCPEList field);  
 
 /* Used in Type.c to register this type: */
 
-VTypeMethods VCPEListMethods = {
-	(VCopyMethod*)VCopyCPEList,		  /* copy a VField3D */
-	(VDestroyMethod*)VDestroyCPEList,	          /* destroy a VField3D */
-	VCPEListDecodeMethod,	  /* decode a VField3D's value */
-	VCPEListEncodeAttrMethod,	  /* encode a VField3D's attr list */
-	VCPEListEncodeDataMethod	  /* encode a VField3D's binary data */
+VistaIOTypeMethods VCPEListMethods = {
+	(VistaIOCopyMethod*)VistaIOCopyCPEList,		  /* copy a VistaIOField3D */
+	(VistaIODestroyMethod*)VistaIODestroyCPEList,	          /* destroy a VistaIOField3D */
+	VCPEListDecodeMethod,	  /* decode a VistaIOField3D's value */
+	VCPEListEncodeAttrMethod,	  /* encode a VistaIOField3D's attr list */
+	VCPEListEncodeDataMethod	  /* encode a VistaIOField3D's binary data */
 };
 
 /*! \brief
@@ -51,7 +51,7 @@ VTypeMethods VCPEListMethods = {
  *  \return VCPEList
  */
 
-VCPEList VCreateCPEList(VLong _n_element)
+VCPEList VistaIOCreateCPEList(VistaIOLong _n_element)
 {
 	VCPEList result = (VCPEList)malloc(sizeof(VCPEListRec));
 	result->n_length = _n_element; 
@@ -59,11 +59,11 @@ VCPEList VCreateCPEList(VLong _n_element)
 
 	result->data = malloc(result->nsize);
 	if (!result->data) {
-		VWarning("VCreateCPEList: Unable to allocate %d byte of memory",result->nsize);
+		VistaIOWarning("VistaIOCreateCPEList: Unable to allocate %d byte of memory",result->nsize);
 		return NULL; 
 	}
 	memset(result->data,0,result->nsize);
-	result->attr=VCreateAttrList();
+	result->attr=VistaIOCreateAttrList();
 	return result; 
 }
 
@@ -72,11 +72,11 @@ VCPEList VCreateCPEList(VLong _n_element)
  *  \param  field
  */
 
-void VDestroyCPEList (VCPEList field)
+void VistaIODestroyCPEList (VCPEList field)
 {
 	free(field->data);
 	if (field->attr)
-		VDestroyAttrList(field->attr);
+		VistaIODestroyAttrList(field->attr);
 	free(field);
 }
 
@@ -86,22 +86,22 @@ void VDestroyCPEList (VCPEList field)
  *  \return VCPEList
  */
 
-VCPEList VCopyCPEList (VCPEList src)
+VCPEList VistaIOCopyCPEList (VCPEList src)
 {
 	VCPEList result;
 	
-	result = VCreateCPEList(src->n_length);
+	result = VistaIOCreateCPEList(src->n_length);
 	if (result) {
 		memcpy(result->data, src->data, src->nsize);
-		VDestroyAttrList(result->attr);
-		result->attr = VCopyAttrList(src->attr);
+		VistaIODestroyAttrList(result->attr);
+		result->attr = VistaIOCopyAttrList(src->attr);
 	}
 	return result; 
 }
 
 /*! \brief The "decode" method registered for the "Graph" type.
  *  
- *  Convert an attribute list plus binary data to a VGraph object.
+ *  Convert an attribute list plus binary data to a VistaIOGraph object.
  *
  *  \param  f
  *  \param  n
@@ -128,15 +128,15 @@ static void convert_list(VCPE r,int n)
 
 #endif
 
-static VPointer VCPEListDecodeMethod (VStringConst name, VBundle b)
+static VistaIOPointer VCPEListDecodeMethod (VistaIOStringConst name, VistaIOBundle b)
 {
 	VCPEList cplist;
-	VLong n_length;
-	VAttrList list;
+	VistaIOLong n_length;
+	VistaIOAttrList list;
 
-	if (!VExtractAttr (b->list,CPLIST_LENGTH,NULL, VLongRepn, &n_length, TRUE)) return NULL;
+	if (!VistaIOExtractAttr (b->list,CPLIST_LENGTH,NULL, VistaIOLongRepn, &n_length, TRUE)) return NULL;
 	
-	cplist = VCreateCPEList(n_length);
+	cplist = VistaIOCreateCPEList(n_length);
 	if (!cplist)
 		return NULL; 
 	
@@ -155,22 +155,22 @@ static VPointer VCPEListDecodeMethod (VStringConst name, VBundle b)
 
 
 /*
- *  VGraphEncodeAttrMethod
+ *  VistaIOGraphEncodeAttrMethod
  *
  *  The "encode_attrs" method registered for the "Graph" type.
- *  Encode an attribute list value for a VGraph object.
+ *  Encode an attribute list value for a VistaIOGraph object.
  */
 
-static VAttrList VCPEListEncodeAttrMethod (VPointer value, size_t *lengthp)
+static VistaIOAttrList VCPEListEncodeAttrMethod (VistaIOPointer value, size_t *lengthp)
 {
 	VCPEList cplist = value;
-	VAttrList list;
+	VistaIOAttrList list;
 
 	/* Temporarily prepend several attributes to the edge set's list: */
 	if ((list = cplist->attr) == NULL)
-		list = cplist->attr = VCreateAttrList ();
+		list = cplist->attr = VistaIOCreateAttrList ();
 	
-	VPrependAttr (list, CPLIST_LENGTH, NULL, VLongRepn,(VLong)cplist->n_length);  
+	VistaIOPrependAttr (list, CPLIST_LENGTH, NULL, VistaIOLongRepn,(VistaIOLong)cplist->n_length);  
 	*lengthp = cplist->nsize;
 	
 	return list;
@@ -178,23 +178,23 @@ static VAttrList VCPEListEncodeAttrMethod (VPointer value, size_t *lengthp)
 
 
 /*
- *  VGraphEncodeDataMethod
+ *  VistaIOGraphEncodeDataMethod
  *
  *  The "encode_data" method registered for the "Graph" type.
- *  Encode the edge and point lists for a VGraph object.
+ *  Encode the edge and point lists for a VistaIOGraph object.
  */
 
-static VPointer VCPEListEncodeDataMethod (VPointer value, VAttrList list,
-					size_t length, VBoolean *free_itp)
+static VistaIOPointer VCPEListEncodeDataMethod (VistaIOPointer value, VistaIOAttrList list,
+					size_t length, VistaIOBoolean *free_itp)
 {
 	VCPEList cplist = value;
-	VAttrListPosn posn;
-	VPointer p;
+	VistaIOAttrListPosn posn;
+	VistaIOPointer p;
 
 	/* Remove the attributes prepended by the VCPEListEncodeAttrsMethod: */
-	for (VFirstAttr (list, & posn);
-	     strcmp (VGetAttrName (& posn), CPLIST_LENGTH) != 0; VDeleteAttr (& posn));
-	VDeleteAttr (& posn);
+	for (VistaIOFirstAttr (list, & posn);
+	     strcmp (VistaIOGetAttrName (& posn), CPLIST_LENGTH) != 0; VistaIODeleteAttr (& posn));
+	VistaIODeleteAttr (& posn);
 	
 	/* Allocate a buffer for the encoded data: */
 	if (length == 0)  {
@@ -202,7 +202,7 @@ static VPointer VCPEListEncodeDataMethod (VPointer value, VAttrList list,
 		return value;			/* we may return anything != 0 here */
 	};
 	
-	p  = VMalloc (length);
+	p  = VistaIOMalloc (length);
 	memcpy(p, cplist->data, length);
 	
 #ifdef WORDS_BIGENDIAN

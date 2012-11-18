@@ -24,7 +24,7 @@
  */
 
 /* Keywords for representing TRUE or FALSE: */
-EXPORT_VISTA VDictEntry VBooleanDict[] = {
+EXPORT_VISTA VistaIODictEntry VistaIOBooleanDict[] = {
 	{"false", FALSE}
 	,
 	{"true", TRUE}
@@ -41,18 +41,18 @@ EXPORT_VISTA VDictEntry VBooleanDict[] = {
 };
 
 /* Keywords for representing kinds of numeric representation: */
-EXPORT_VISTA VDictEntry VNumericRepnDict[] = {
-	{"bit", VBitRepn}
+EXPORT_VISTA VistaIODictEntry VistaIONumericRepnDict[] = {
+	{"bit", VistaIOBitRepn}
 	,
-	{"double", VDoubleRepn}
+	{"double", VistaIODoubleRepn}
 	,
-	{"float", VFloatRepn}
+	{"float", VistaIOFloatRepn}
 	,
-	{"long", VLongRepn}
+	{"long", VistaIOLongRepn}
 	,
 	{"sbyte", VSByteRepn}
 	,
-	{"short", VShortRepn}
+	{"short", VistaIOShortRepn}
 	,
 	{"ubyte", VUByteRepn}
 	,
@@ -67,10 +67,10 @@ EXPORT_VISTA VDictEntry VNumericRepnDict[] = {
  *
  *  \param  dict
  *  \param  keyword
- *  \return VDictEntry
+ *  \return VistaIODictEntry
  */
 
-VDictEntry *VLookupDictKeyword (VDictEntry * dict, VStringConst keyword)
+VistaIODictEntry *VistaIOLookupDictKeyword (VistaIODictEntry * dict, VistaIOStringConst keyword)
 {
 	if (dict)
 		for (; dict->keyword; dict++)
@@ -84,30 +84,30 @@ VDictEntry *VLookupDictKeyword (VDictEntry * dict, VStringConst keyword)
  *
  *  Calling sequence:
  *
- *	VLookupDictValue (VDictEntry *dict, VRepnKind repn, xxx value)
+ *	VistaIOLookupDictValue (VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
  *
  *  where xxx is a type that corresponds to repn.
  *
  *  \param  dict
  *  \param  repn
- *  \return VDictEntry
+ *  \return VistaIODictEntry
  */
 
-VDictEntry *VLookupDictValue (VDictEntry * dict, VRepnKind repn, ...)
+VistaIODictEntry *VistaIOLookupDictValue (VistaIODictEntry * dict, VistaIORepnKind repn, ...)
 {
 	va_list args;
-	VLong i_value = 0;
-	VDouble f_value = 0.0;
-	VString s_value = NULL;
-	VBoolean i_valid;
+	VistaIOLong i_value = 0;
+	VistaIODouble f_value = 0.0;
+	VistaIOString s_value = NULL;
+	VistaIOBoolean i_valid;
 
 	/* Unravel the arguments passed: */
 	if (!dict)
 		return NULL;
 	va_start (args, repn);
 	switch (repn) {
-	case VBitRepn:
-		i_value = va_arg (args, VBitPromoted);
+	case VistaIOBitRepn:
+		i_value = va_arg (args, VistaIOBitPromoted);
 		break;
 	case VUByteRepn:
 		i_value = va_arg (args, VUBytePromoted);
@@ -115,39 +115,39 @@ VDictEntry *VLookupDictValue (VDictEntry * dict, VRepnKind repn, ...)
 	case VSByteRepn:
 		i_value = va_arg (args, VSBytePromoted);
 		break;
-	case VShortRepn:
-		i_value = va_arg (args, VShortPromoted);
+	case VistaIOShortRepn:
+		i_value = va_arg (args, VistaIOShortPromoted);
 		break;
-	case VLongRepn:
-		i_value = va_arg (args, VLongPromoted);
+	case VistaIOLongRepn:
+		i_value = va_arg (args, VistaIOLongPromoted);
 		break;
-	case VFloatRepn:
-		f_value = va_arg (args, VFloatPromoted);
+	case VistaIOFloatRepn:
+		f_value = va_arg (args, VistaIOFloatPromoted);
 		break;
-	case VDoubleRepn:
-		f_value = va_arg (args, VDoublePromoted);
+	case VistaIODoubleRepn:
+		f_value = va_arg (args, VistaIODoublePromoted);
 		break;
-	case VBooleanRepn:
-		i_value = va_arg (args, VBooleanPromoted);
+	case VistaIOBooleanRepn:
+		i_value = va_arg (args, VistaIOBooleanPromoted);
 		break;
-	case VStringRepn:
-		s_value = va_arg (args, VString);
+	case VistaIOStringRepn:
+		s_value = va_arg (args, VistaIOString);
 		break;
 	default:
-		VError ("VLookupDictValue: Can't lookup %s value",
-			VRepnName (repn));
+		VistaIOError ("VistaIOLookupDictValue: Can't lookup %s value",
+			VistaIORepnName (repn));
 	}
 	va_end (args);
 
 	/* Search the dictionary by value: */
 	switch (repn) {
 
-	case VBitRepn:
+	case VistaIOBitRepn:
 	case VUByteRepn:
 	case VSByteRepn:
-	case VShortRepn:
-	case VLongRepn:
-	case VBooleanRepn:
+	case VistaIOShortRepn:
+	case VistaIOLongRepn:
+	case VistaIOBooleanRepn:
 		for (; dict->keyword; dict++) {
 
 			/* Is the entry's value only stored as a string? */
@@ -155,8 +155,8 @@ VDictEntry *VLookupDictValue (VDictEntry * dict, VRepnKind repn, ...)
 
 				/* Yes -- try to convert the string to an integer, and
 				   cache that value: */
-				if (!VDecodeAttrValue
-				    (dict->svalue, NULL, VLongRepn,
+				if (!VistaIODecodeAttrValue
+				    (dict->svalue, NULL, VistaIOLongRepn,
 				     &dict->ivalue))
 					break;
 				dict->icached = TRUE;
@@ -168,8 +168,8 @@ VDictEntry *VLookupDictValue (VDictEntry * dict, VRepnKind repn, ...)
 		}
 		break;
 
-	case VFloatRepn:
-	case VDoubleRepn:
+	case VistaIOFloatRepn:
+	case VistaIODoubleRepn:
 		for (; dict->keyword; dict++) {
 
 			/* Does the entry include a cached floating point value? */
@@ -177,8 +177,8 @@ VDictEntry *VLookupDictValue (VDictEntry * dict, VRepnKind repn, ...)
 
 				/* No -- obtain it from an integer or string value: */
 				if (dict->svalue) {
-					if (!VDecodeAttrValue
-					    (dict->svalue, NULL, VDoubleRepn,
+					if (!VistaIODecodeAttrValue
+					    (dict->svalue, NULL, VistaIODoubleRepn,
 					     &dict->fvalue))
 						break;
 				} else
@@ -192,12 +192,12 @@ VDictEntry *VLookupDictValue (VDictEntry * dict, VRepnKind repn, ...)
 		}
 		break;
 
-	case VStringRepn:
+	case VistaIOStringRepn:
 
 		/* In case we're searching a dictionary with only integer values
 		   stored, try to convert the supplied string value to an integer: */
 		i_valid =
-			VDecodeAttrValue (s_value, NULL, VLongRepn, &i_value);
+			VistaIODecodeAttrValue (s_value, NULL, VistaIOLongRepn, &i_value);
 
 		for (; dict->keyword; dict++) {
 

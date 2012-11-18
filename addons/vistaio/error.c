@@ -24,11 +24,11 @@
 #endif
 
 /* Name of the program, for use in error messages: */
-static VStringConst programName;
+static VistaIOStringConst programName;
 
 /* Routines to call to report errors: */
-static VErrorHandler *errorHandler = VDefaultError;
-static VWarningHandler *warningHandler = VDefaultWarning;
+static VistaIOErrorHandler *errorHandler = VistaIODefaultError;
+static VistaIOWarningHandler *warningHandler = VistaIODefaultWarning;
 
 /* Maximum length of an error message: */
 #define maxErrorMessageLength	500
@@ -36,8 +36,8 @@ static VWarningHandler *warningHandler = VDefaultWarning;
 int VERBOSE = 1; 
 
 /* Later in this file: */
-static void FormatMsg (char *, VStringConst, VStringConst, va_list *,
-		       VStringConst);
+static void FormatMsg (char *, VistaIOStringConst, VistaIOStringConst, va_list *,
+		       VistaIOStringConst);
 
 
 /*! \brief Establish a caller-supplied routine as the handler for error messages.
@@ -45,9 +45,9 @@ static void FormatMsg (char *, VStringConst, VStringConst, va_list *,
  *  \param fnc
  */
 
-EXPORT_VISTA void VSetErrorHandler (VErrorHandler * fnc)
+EXPORT_VISTA void VistaIOSetErrorHandler (VistaIOErrorHandler * fnc)
 {
-	errorHandler = fnc ? fnc : VDefaultError;
+	errorHandler = fnc ? fnc : VistaIODefaultError;
 }
 
 
@@ -56,9 +56,9 @@ EXPORT_VISTA void VSetErrorHandler (VErrorHandler * fnc)
  *  \param  fnc
  */
 
-EXPORT_VISTA void VSetWarningHandler (VWarningHandler * fnc)
+EXPORT_VISTA void VistaIOSetWarningHandler (VistaIOWarningHandler * fnc)
 {
-	warningHandler = fnc ? fnc : VDefaultWarning;
+	warningHandler = fnc ? fnc : VistaIODefaultWarning;
 }
 
 
@@ -67,7 +67,7 @@ EXPORT_VISTA void VSetWarningHandler (VWarningHandler * fnc)
  *  \param name
  */
 
-EXPORT_VISTA void VSetProgramName (VStringConst name)
+EXPORT_VISTA void VistaIOSetProgramName (VistaIOStringConst name)
 {
 	programName = name;
 }
@@ -78,7 +78,7 @@ EXPORT_VISTA void VSetProgramName (VStringConst name)
  *  \param format
  */
 
-EXPORT_VISTA void VError (VStringConst format, ...)
+EXPORT_VISTA void VistaIOError (VistaIOStringConst format, ...)
 {
 	va_list args;
 	char buf[maxErrorMessageLength + 3];
@@ -98,7 +98,7 @@ EXPORT_VISTA void VError (VStringConst format, ...)
  *  \param  format
  */
 
-EXPORT_VISTA void VWarning (VStringConst format, ...)
+EXPORT_VISTA void VistaIOWarning (VistaIOStringConst format, ...)
 {
 	va_list args;
 	char buf[maxErrorMessageLength + 3];
@@ -118,7 +118,7 @@ EXPORT_VISTA void VWarning (VStringConst format, ...)
  *  \param format
  */
 
-EXPORT_VISTA void VMessage (VStringConst format, ...)
+EXPORT_VISTA void VistaIOMessage (VistaIOStringConst format, ...)
 {
 	va_list args;
 	char buf[maxErrorMessageLength + 3];
@@ -137,7 +137,7 @@ EXPORT_VISTA void VMessage (VStringConst format, ...)
  *  \param format
  */
 
-EXPORT_VISTA void VSystemError (VStringConst format, ...)
+EXPORT_VISTA void VistaIOSystemError (VistaIOStringConst format, ...)
 {
 	va_list args;
 	char buf[maxErrorMessageLength + 3];
@@ -158,7 +158,7 @@ EXPORT_VISTA void VSystemError (VStringConst format, ...)
  *  \param format
  */
 
-EXPORT_VISTA void VSystemWarning (VStringConst format, ...)
+EXPORT_VISTA void VistaIOSystemWarning (VistaIOStringConst format, ...)
 {
 	va_list args;
 	char buf[maxErrorMessageLength + 3];
@@ -174,8 +174,8 @@ EXPORT_VISTA void VSystemWarning (VStringConst format, ...)
  *  FormatMsg -- format an error message for output.
  */
 
-static void FormatMsg (char *buf, VStringConst severity, VStringConst format,
-		       va_list * args, VStringConst extra)
+static void FormatMsg (char *buf, VistaIOStringConst severity, VistaIOStringConst format,
+		       va_list * args, VistaIOStringConst extra)
 {
 	if (programName)
 		snprintf (buf, maxErrorMessageLength,"%s: %s: ", programName, severity);
@@ -193,7 +193,7 @@ static void FormatMsg (char *buf, VStringConst severity, VStringConst format,
  *  \param msg
  */
 
-EXPORT_VISTA void VDefaultError (VStringConst msg)
+EXPORT_VISTA void VistaIODefaultError (VistaIOStringConst msg)
 {
 	fputs (msg, stderr);
 	exit (EXIT_FAILURE);
@@ -205,7 +205,7 @@ EXPORT_VISTA void VDefaultError (VStringConst msg)
  *  \param msg
  */
 
-EXPORT_VISTA void VDefaultWarning (VStringConst msg)
+EXPORT_VISTA void VistaIODefaultWarning (VistaIOStringConst msg)
 {
 	fputs (msg, stderr);
 }

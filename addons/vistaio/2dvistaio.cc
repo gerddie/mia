@@ -66,20 +66,20 @@ CVista2DImageIOPlugin::CVista2DImageIOPlugin():
 
 
 template <typename T>
-void read_image(VImage image, CVista2DImageIOPlugin::Data& result_list, int aqnr)
+void read_image(VistaIOImage image, CVista2DImageIOPlugin::Data& result_list, int aqnr)
 {
-	size_t n = VImageNBands(image);
-	size_t slice_size = VImageNColumns(image)* VImageNRows(image);
+	size_t n = VistaIOImageNBands(image);
+	size_t slice_size = VistaIOImageNColumns(image)* VistaIOImageNRows(image);
 	typedef typename vista_repnkind<T>::type O;
-	O *begin = (O*)VPixelPtr(image,0,0,0);
+	O *begin = (O*)VistaIOPixelPtr(image,0,0,0);
 	O *end = begin + slice_size;
 
 	size_t idx = 0; 
 	while (idx < n) {
-		T2DImage<T> *result = new T2DImage<T>(C2DBounds(VImageNColumns(image), VImageNRows(image)));
+		T2DImage<T> *result = new T2DImage<T>(C2DBounds(VistaIOImageNColumns(image), VistaIOImageNRows(image)));
 		P2DImage presult(result);
 		std::copy(begin, end, result->begin());
-		copy_attr_list(*result, VImageAttrList(image));
+		copy_attr_list(*result, VistaIOImageAttrList(image));
 
 		presult->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(idx))); 
 		if (!presult->has_attribute(IDAcquisitionNumber))
@@ -91,18 +91,18 @@ void read_image(VImage image, CVista2DImageIOPlugin::Data& result_list, int aqnr
 	}
 }
 
-void copy_from_vista(VImage image, CVista2DImageIOPlugin::Data& result, int i)
+void copy_from_vista(VistaIOImage image, CVista2DImageIOPlugin::Data& result, int i)
 {
 	// this could be changed to add a bunch of images
 	// however, then one would also have to write these as such ...
-	switch (VPixelRepn(image)) {
-	case VBitRepn : return read_image<bool>(image, result, i);
+	switch (VistaIOPixelRepn(image)) {
+	case VistaIOBitRepn : return read_image<bool>(image, result, i);
 	case VUByteRepn : return read_image<unsigned char>(image, result, i);
 	case VSByteRepn : return read_image<signed char>(image, result, i);
-	case VShortRepn : return read_image<signed short>(image, result, i);
-	case VLongRepn : return read_image<signed int>(image, result, i);
-	case VFloatRepn : return read_image<float>(image, result, i);
-	case VDoubleRepn : return read_image<double>(image, result, i);
+	case VistaIOShortRepn : return read_image<signed short>(image, result, i);
+	case VistaIOLongRepn : return read_image<signed int>(image, result, i);
+	case VistaIOFloatRepn : return read_image<float>(image, result, i);
+	case VistaIODoubleRepn : return read_image<double>(image, result, i);
 	default:
 		throw invalid_argument("2d vista load: Unknown pixel format");
 	}
@@ -112,9 +112,9 @@ CVista2DImageIOPlugin::PData  CVista2DImageIOPlugin::do_load(const string& fname
 {
 	CInputFile f(fname);
 
-	VImage *images = NULL;
-	VAttrList attr_list = NULL;
-	int nimages = VReadImages(f, &attr_list, &images);
+	VistaIOImage *images = NULL;
+	VistaIOAttrList attr_list = NULL;
+	int nimages = VistaIOReadImages(f, &attr_list, &images);
 	if (!nimages)
 		return 	CVista2DImageIOPlugin::PData();
 
@@ -122,11 +122,11 @@ CVista2DImageIOPlugin::PData  CVista2DImageIOPlugin::do_load(const string& fname
 
 	for (int i = 0; i < nimages; ++i) {
 		copy_from_vista(images[i], *result, i);
-		VDestroyImage(images[i]);
+		VistaIODestroyImage(images[i]);
 	}
 
-	VFree(images);
-	VDestroyAttrList (attr_list);
+	VistaIOFree(images);
+	VistaIODestroyAttrList (attr_list);
 
 	return result;
 }
@@ -136,17 +136,17 @@ CVista2DImageIOPlugin::PData  CVista2DImageIOPlugin::do_load(const string& fname
 
 
 
-struct CVImageCreator: public TFilter <VImage> {
+struct CVImageCreator: public TFilter <VistaIOImage> {
 	template <typename T>
-	VImage operator ()( const T2DImage<T>& image) const;
+	VistaIOImage operator ()( const T2DImage<T>& image) const;
 };
 
 template <typename T>
-VImage CVImageCreator::operator ()( const T2DImage<T>& image) const
+VistaIOImage CVImageCreator::operator ()( const T2DImage<T>& image) const
 {
 	typedef dispatch_creat_vimage<typename T2DImage<T>::const_iterator, typename vista_repnkind<T>::type> dispatcher;
-	VImage result = dispatcher::apply(image.begin(), image.end(), image.get_size().x, image.get_size().y, 1);
-	copy_attr_list(VImageAttrList(result), image);
+	VistaIOImage result = dispatcher::apply(image.begin(), image.end(), image.get_size().x, image.get_size().y, 1);
+	copy_attr_list(VistaIOImageAttrList(result), image);
 	return result;
 }
 
@@ -155,20 +155,20 @@ bool CVista2DImageIOPlugin::do_save(const string& fname, const C2DImageVector& d
 
 	COutputFile f(fname);
 
-	vector<VImage> images(data.size());
+	vector<VistaIOImage> images(data.size());
 
 	CVImageCreator creator;
-	vector<VImage>::iterator img = images.begin();
+	vector<VistaIOImage>::iterator img = images.begin();
 	for (C2DImageVector::const_iterator i = data.begin();
 	     i != data.end(); ++i, ++img) {
 		*img = filter(creator, **i);
 	}
 
-	bool result = VWriteImages(f, NULL, data.size(), &images[0]) == TRUE;
+	bool result = VistaIOWriteImages(f, NULL, data.size(), &images[0]) == TRUE;
 
 	// clean up
-	for (vector<VImage>::iterator i = images.begin(); i != images.end(); ++i)
-		VDestroyImage(*i);
+	for (vector<VistaIOImage>::iterator i = images.begin(); i != images.end(); ++i)
+		VistaIODestroyImage(*i);
 
 	return result;
 }

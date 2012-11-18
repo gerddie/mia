@@ -29,12 +29,12 @@
 #define FailTest(put)	    if ((put) == EOF) goto Fail
 
 /*! \struct DataBlock
- *  \brief  Description of object with data block to be written later by VWriteFile
+ *  \brief  Description of object with data block to be written later by VistaIOWriteFile
  */
 
 typedef struct {
-	VAttrListPosn posn;	/* identify of object's attribute */
-	VAttrList list;		/* attr list value referring to data */
+	VistaIOAttrListPosn posn;	/* identify of object's attribute */
+	VistaIOAttrList list;		/* attr list value referring to data */
 	size_t length;		/* length of data block */
 } DataBlock;
 
@@ -46,18 +46,18 @@ typedef struct {
 
 /* Local variables: */
 static long offset;		/* current offset into file's binary data */
-static VList data_list;		/* list of data blocks to write later */
+static VistaIOList data_list;		/* list of data blocks to write later */
 
 /* Later in this file: */
-static VBoolean ReadHeader (FILE *);
-static VAttrList ReadAttrList (FILE *, ReadStringBuf *);
-static char *ReadString (FILE *, char, VStringConst, ReadStringBuf *);
-static VBoolean ReadDelimiter (FILE *);
-static VBoolean ReadData (FILE *, VAttrList, VReadFileFilterProc *);
-static VBoolean WriteAttrList (FILE *, VAttrList, int);
-static VBoolean WriteAttr (FILE *, VAttrListPosn *, int);
-static VBoolean WriteString (FILE *, const char *);
-static VBoolean MySeek (FILE *, long);
+static VistaIOBoolean ReadHeader (FILE *);
+static VistaIOAttrList ReadAttrList (FILE *, ReadStringBuf *);
+static char *ReadString (FILE *, char, VistaIOStringConst, ReadStringBuf *);
+static VistaIOBoolean ReadDelimiter (FILE *);
+static VistaIOBoolean ReadData (FILE *, VistaIOAttrList, VistaIOReadFileFilterProc *);
+static VistaIOBoolean WriteAttrList (FILE *, VistaIOAttrList, int);
+static VistaIOBoolean WriteAttr (FILE *, VistaIOAttrListPosn *, int);
+static VistaIOBoolean WriteString (FILE *, const char *);
+static VistaIOBoolean MySeek (FILE *, long);
 
 
 
@@ -65,23 +65,23 @@ static void EmptyShowProgress(int pos, int length, void *data)
 {
 }
 
-static VShowProgressFunc VShowReadProgress = EmptyShowProgress;
-static VShowProgressFunc VShowWriteProgress = EmptyShowProgress;
-static void *VProgressData = NULL;
+static VistaIOShowProgressFunc VistaIOShowReadProgress = EmptyShowProgress;
+static VistaIOShowProgressFunc VistaIOShowWriteProgress = EmptyShowProgress;
+static void *VistaIOProgressData = NULL;
 
 
-EXPORT_VISTA void VSetProgressIndicator(VShowProgressFunc show_read, VShowProgressFunc show_write, void *data)
+EXPORT_VISTA void VistaIOSetProgressIndicator(VistaIOShowProgressFunc show_read, VistaIOShowProgressFunc show_write, void *data)
 {
-	VShowReadProgress = show_read;
-	VShowWriteProgress = show_write;
-	VProgressData = data;
+	VistaIOShowReadProgress = show_read;
+	VistaIOShowWriteProgress = show_write;
+	VistaIOProgressData = data;
 }
 
-EXPORT_VISTA void VResetProgressIndicator(void)
+EXPORT_VISTA void VistaIOResetProgressIndicator(void)
 {
-	VShowReadProgress = EmptyShowProgress;
-	VShowWriteProgress = EmptyShowProgress;
-	VProgressData = NULL;
+	VistaIOShowReadProgress = EmptyShowProgress;
+	VistaIOShowWriteProgress = EmptyShowProgress;
+	VistaIOProgressData = NULL;
 }
 
 /*! \brief Open an input or output file, with "-" representing stdin or stdout.
@@ -91,14 +91,14 @@ EXPORT_VISTA void VResetProgressIndicator(void)
  *  \return If nofail is TRUE, any failure is a fatal error.
  */
 
-FILE *VOpenInputFile (VStringConst filename, VBoolean nofail)
+FILE *VistaIOOpenInputFile (VistaIOStringConst filename, VistaIOBoolean nofail)
 {
 	FILE *f;
 
 	if (filename == NULL || strcmp (filename, "-") == 0)
 		f = stdin;
 	else if (!(f = fopen (filename, "r")))
-		(nofail ? &VError : &VWarning)
+		(nofail ? &VistaIOError : &VistaIOWarning)
 			("Unable to open input file %s", filename);
 	return f;
 }
@@ -110,14 +110,14 @@ FILE *VOpenInputFile (VStringConst filename, VBoolean nofail)
  *  \return FILE
  */
 
-FILE *VOpenOutputFile (VStringConst filename, VBoolean nofail)
+FILE *VistaIOOpenOutputFile (VistaIOStringConst filename, VistaIOBoolean nofail)
 {
 	FILE *f;
 
 	if (filename == NULL || strcmp (filename, "-") == 0)
 		f = stdout;
 	else if (!(f = fopen (filename, "w")))
-		(nofail ? &VError : &VWarning)
+		(nofail ? &VistaIOError : &VistaIOWarning)
 			("Unable to open output file %s", filename);
 	return f;
 }
@@ -133,41 +133,41 @@ FILE *VOpenOutputFile (VStringConst filename, VBoolean nofail)
  *  \return int
  */
 
-int VReadObjects (FILE * file, VRepnKind repn, VAttrList * attributes,
-		  VPointer ** objects)
+int VistaIOReadObjects (FILE * file, VistaIORepnKind repn, VistaIOAttrList * attributes,
+		  VistaIOPointer ** objects)
 {
-	VAttrList list;
-	VAttrListPosn posn;
+	VistaIOAttrList list;
+	VistaIOAttrListPosn posn;
 	int i, nobjects = 0;
-	VPointer *vector;
+	VistaIOPointer *vector;
 
 	/* Read the file's contents: */
-	list = VReadFile (file, NULL);
+	list = VistaIOReadFile (file, NULL);
 	if (!list)
 		return FALSE;
 
 	/* Count the objects found: */
-	for (VFirstAttr (list, &posn); VAttrExists (&posn); VNextAttr (&posn))
-		nobjects += (VGetAttrRepn (&posn) == repn);
+	for (VistaIOFirstAttr (list, &posn); VistaIOAttrExists (&posn); VistaIONextAttr (&posn))
+		nobjects += (VistaIOGetAttrRepn (&posn) == repn);
 	if (nobjects == 0) {
-		VWarning ("VReadObjects: No %s objects present in stream",
-			  VRepnName (repn));
-		VDestroyAttrList (list);
+		VistaIOWarning ("VistaIOReadObjects: No %s objects present in stream",
+			  VistaIORepnName (repn));
+		VistaIODestroyAttrList (list);
 		return FALSE;
 	}
 
 	/* Allocate a vector of that many object pointers: */
-	vector = VMalloc (nobjects * sizeof (VPointer));
+	vector = VistaIOMalloc (nobjects * sizeof (VistaIOPointer));
 
 	/* Extract the objects from the attribute list and place them in the
 	   vector: */
-	for (VFirstAttr (list, &posn), i = 0; VAttrExists (&posn);)
-		if (VGetAttrRepn (&posn) == repn) {
-			VGetAttrValue (&posn, NULL, repn, vector + i);
-			VDeleteAttr (&posn);
+	for (VistaIOFirstAttr (list, &posn), i = 0; VistaIOAttrExists (&posn);)
+		if (VistaIOGetAttrRepn (&posn) == repn) {
+			VistaIOGetAttrValue (&posn, NULL, repn, vector + i);
+			VistaIODeleteAttr (&posn);
 			i++;
 		} else
-			VNextAttr (&posn);
+			VistaIONextAttr (&posn);
 
 	/* Return the objects and the remaining attributes: */
 	*attributes = list;
@@ -181,12 +181,12 @@ int VReadObjects (FILE * file, VRepnKind repn, VAttrList * attributes,
  *
  *  \param  f
  *  \param  filter
- *  \return VAttrList
+ *  \return VistaIOAttrList
  */
 
-EXPORT_VISTA VAttrList VReadFile (FILE * f, VReadFileFilterProc * filter)
+EXPORT_VISTA VistaIOAttrList VistaIOReadFile (FILE * f, VistaIOReadFileFilterProc * filter)
 {
-	VAttrList list;
+	VistaIOAttrList list;
 	int i;
  	ReadStringBuf sbuf = {0,0};
 
@@ -197,12 +197,12 @@ EXPORT_VISTA VAttrList VReadFile (FILE * f, VReadFileFilterProc * filter)
 		i = fgetc (f);
 		ungetc (i, f);
 		if (i == 'I') {
-			VImage image = VReadUbcIff (f);
+			VistaIOImage image = VistaIOReadUbcIff (f);
 
 			if (!image)
 				return FALSE;
-			list = VCreateAttrList ();
-			VSetAttr (list, "image", NULL, VImageRepn, image);
+			list = VistaIOCreateAttrList ();
+			VistaIOSetAttr (list, "image", NULL, VistaIOImageRepn, image);
 			return list;
 		}
 	}
@@ -215,7 +215,7 @@ EXPORT_VISTA VAttrList VReadFile (FILE * f, VReadFileFilterProc * filter)
 
 	list = ReadAttrList (f, &sbuf);
 	if (sbuf.max_len)
-		VFree(sbuf.buf);
+		VistaIOFree(sbuf.buf);
 	/* Read all attributes in the file: */
 	if (!list)
 		return NULL;
@@ -223,7 +223,7 @@ EXPORT_VISTA VAttrList VReadFile (FILE * f, VReadFileFilterProc * filter)
 	/* Swallow the delimiter and read the binary data following it: */
 	offset = 0;
 	if (!ReadDelimiter (f) || !ReadData (f, list, filter)) {
-		VDestroyAttrList (list);
+		VistaIODestroyAttrList (list);
 		return NULL;
 	}
 
@@ -231,7 +231,7 @@ EXPORT_VISTA VAttrList VReadFile (FILE * f, VReadFileFilterProc * filter)
 	i = fgetc (f);
 	if (i != EOF) {
 		ungetc (i, f);
-		VWarning ("VReadFile: File continues beyond expected EOF");
+		VistaIOWarning ("VistaIOReadFile: File continues beyond expected EOF");
 	}
 	return list;
 }
@@ -243,28 +243,28 @@ EXPORT_VISTA VAttrList VReadFile (FILE * f, VReadFileFilterProc * filter)
  *  is produced but TRUE is still returned.
  *
  *  \param  f
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-static VBoolean ReadHeader (FILE * f)
+static VistaIOBoolean ReadHeader (FILE * f)
 {
 	int version;
 
-	if (fscanf (f, VFileHeader " %d", &version) != 1) {
-		VWarning ("VReadFile: Vista data file header not found");
+	if (fscanf (f, VistaIOFileHeader " %d", &version) != 1) {
+		VistaIOWarning ("VistaIOReadFile: Vista data file header not found");
 		return FALSE;
 	}
 
-	if (version == VFileVersion)
+	if (version == VistaIOFileVersion)
 		return TRUE;
 
-	if (version == 1 && VFileVersion == 2) {
-		VWarning ("VReadFile: Obsolete data file -- pipe it thru v1to2");
+	if (version == 1 && VistaIOFileVersion == 2) {
+		VistaIOWarning ("VistaIOReadFile: Obsolete data file -- pipe it thru v1to2");
 		return TRUE;
 	}
 
-	VWarning ("VReadFile: Vista data file isn't version %d",
-		  VFileVersion);
+	VistaIOWarning ("VistaIOReadFile: Vista data file isn't version %d",
+		  VistaIOFileVersion);
 	return FALSE;
 }
 
@@ -275,18 +275,18 @@ static VBoolean ReadHeader (FILE * f)
  *  Read a list of attributes from a stream.
  */
 
-static VAttrList ReadAttrList (FILE * f, ReadStringBuf *sbuf)
+static VistaIOAttrList ReadAttrList (FILE * f, ReadStringBuf *sbuf)
 {
-	VAttrList sublist, list = VCreateAttrList ();
-	VAttrRec *a;
+	VistaIOAttrList sublist, list = VistaIOCreateAttrList ();
+	VistaIOAttrRec *a;
 	int ch = 0;
 	size_t name_size;
-	VBundle b;
-	char buf[2], *str, name_buf[VMaxAttrNameLength + 1];
+	VistaIOBundle b;
+	char buf[2], *str, name_buf[VistaIOMaxAttrNameLength + 1];
 
 	/* Swallow a { marking the start of the attribute list: */
 	if (fscanf (f, " %1s", buf) != 1 || buf[0] != '{') {
-		VWarning ("VReadFile: Missing {");
+		VistaIOWarning ("VistaIOReadFile: Missing {");
 		goto Fail;
 	}
 
@@ -296,7 +296,7 @@ static VAttrList ReadAttrList (FILE * f, ReadStringBuf *sbuf)
 
 		/* Read a : */
 		if (fscanf (f, " %1s", buf) != 1 || buf[0] != ':') {
-			VWarning ("VReadFile: Invalid %s attribute", name_buf);
+			VistaIOWarning ("VistaIOReadFile: Invalid %s attribute", name_buf);
 			goto Fail;
 		}
 
@@ -312,9 +312,9 @@ static VAttrList ReadAttrList (FILE * f, ReadStringBuf *sbuf)
 			ungetc ('{', f);
 			if (!(sublist = ReadAttrList (f, sbuf)))
 				goto Fail;
-			a = VMalloc (sizeof (VAttrRec) + name_size);
+			a = VistaIOMalloc (sizeof (VistaIOAttrRec) + name_size);
 			a->value = sublist;
-			a->repn = VAttrListRepn;
+			a->repn = VistaIOAttrListRepn;
 
 		} else if (buf[0] != '}' && buf[0] != '\n') {/* non-empty attr */
 
@@ -330,29 +330,29 @@ static VAttrList ReadAttrList (FILE * f, ReadStringBuf *sbuf)
 
 				/* ...then it's a typed value -- the word is it's type name
 				   and the { is the start of it's attribute list value. */
-				b = VCreateBundle (str, NULL, 0, NULL);
+				b = VistaIOCreateBundle (str, NULL, 0, NULL);
 				if (!(sublist = ReadAttrList (f, sbuf))) {
-					VFree (b);
+					VistaIOFree (b);
 					goto Fail;
 				}
 				b->list = sublist;
-				a = VMalloc (sizeof (VAttrRec) + name_size);
-				a->repn = VBundleRepn;
+				a = VistaIOMalloc (sizeof (VistaIOAttrRec) + name_size);
+				a->repn = VistaIOBundleRepn;
 				a->value = b;
 			} else {
 
 				/* ...otherwise store it as a simple string value: */
-				a = VMalloc (sizeof (VAttrRec) + name_size +
+				a = VistaIOMalloc (sizeof (VistaIOAttrRec) + name_size +
 					     strlen (str) + 1);
-				a->repn = VStringRepn;
+				a->repn = VistaIOStringRepn;
 				a->value = a->name + name_size + 1;
 				strcpy (a->value, str);
 			}
 		}else{
 			ungetc (buf[0], f);
-			a = VMalloc (sizeof (VAttrRec) + name_size +
+			a = VistaIOMalloc (sizeof (VistaIOAttrRec) + name_size +
 				     strlen ("") + 1);
-			a->repn = VStringRepn;
+			a->repn = VistaIOStringRepn;
 			a->value = a->name + name_size + 1;
 			strcpy (a->value, "");
 		}
@@ -371,8 +371,8 @@ static VAttrList ReadAttrList (FILE * f, ReadStringBuf *sbuf)
 
 	/* Swallow the terminating "}": */
 	if (fscanf (f, " %1s", buf) != 1 || buf[0] != '}') {
-		VWarning ("VReadFile: Missing }");
-	      Fail:VDestroyAttrList (list);
+		VistaIOWarning ("VistaIOReadFile: Missing }");
+	      Fail:VistaIODestroyAttrList (list);
 		return NULL;
 	}
 	return list;
@@ -394,14 +394,14 @@ static VAttrList ReadAttrList (FILE * f, ReadStringBuf *sbuf)
 
 #define StringAllocIncrement	100	/* each round of buffer resizing */
 
-static char *ReadString (FILE * f, char ch, VStringConst name, ReadStringBuf *buf)
+static char *ReadString (FILE * f, char ch, VistaIOStringConst name, ReadStringBuf *buf)
 {
-	VBoolean escaped = (ch == '"');
+	VistaIOBoolean escaped = (ch == '"');
 	size_t len = 0;
 	char *cp;
 
 	if (!buf->buf) {
-		buf->buf = VMalloc (StringAllocIncrement);
+		buf->buf = VistaIOMalloc (StringAllocIncrement);
 		buf->max_len = StringAllocIncrement;
 	}
 
@@ -414,7 +414,7 @@ static char *ReadString (FILE * f, char ch, VStringConst name, ReadStringBuf *bu
 
 		/* Check for premature EOF: */
 		if (ch == EOF) {
-			VWarning ("VReadFile: EOF encountered in %s attribute", name);
+			VistaIOWarning ("VistaIOReadFile: EOF encountered in %s attribute", name);
 			return NULL;
 		}
 
@@ -437,7 +437,7 @@ static char *ReadString (FILE * f, char ch, VStringConst name, ReadStringBuf *bu
 		/* If the buffer in which we're accumulating the value is full,
 		   allocate a larger one: */
 		if (++len == buf->max_len) {
-			buf->buf = VRealloc (buf->buf, buf->max_len += StringAllocIncrement);
+			buf->buf = VistaIORealloc (buf->buf, buf->max_len += StringAllocIncrement);
 			cp = buf->buf + len - 1;
 		}
 
@@ -458,23 +458,23 @@ static char *ReadString (FILE * f, char ch, VStringConst name, ReadStringBuf *bu
  *  Read a Vista data file delimiter.
  */
 
-static VBoolean ReadDelimiter (FILE * f)
+static VistaIOBoolean ReadDelimiter (FILE * f)
 {
 	int ch;
 	const char *cp;
-	static char *msg = "VReadFile: Vista data file delimiter not found";
+	static char *msg = "VistaIOReadFile: Vista data file delimiter not found";
 
 	/* Skip whitespace up to the first character of the delimeter: */
-	while ((ch = fgetc (f)) != VFileDelimiter[0])
+	while ((ch = fgetc (f)) != VistaIOFileDelimiter[0])
 		if (ch == EOF || !isspace (ch & 0x7F)) {
-			VWarning (msg);
+			VistaIOWarning (msg);
 			return FALSE;
 		}
 
 	/* Swallow remaining characters of the delimiter: */
-	for (cp = &VFileDelimiter[1]; *cp; cp++)
+	for (cp = &VistaIOFileDelimiter[1]; *cp; cp++)
 		if (*cp != fgetc (f)) {
-			VWarning (msg);
+			VistaIOWarning (msg);
 			return FALSE;
 		}
 
@@ -488,32 +488,32 @@ static VBoolean ReadDelimiter (FILE * f)
  *  Read the binary data accompanying attributes.
  */
 
-static VBoolean ReadData (FILE * f, VAttrList list,
-			  VReadFileFilterProc * filter)
+static VistaIOBoolean ReadData (FILE * f, VistaIOAttrList list,
+			  VistaIOReadFileFilterProc * filter)
 {
-	VAttrListPosn posn, subposn;
-	VAttrList sublist;
-	VBundle b;
-	VRepnKind repn;
-	VBoolean read_data, data_found, length_found;
-	VLong data, length;
-	VTypeMethods *methods;
-	VPointer value;
+	VistaIOAttrListPosn posn, subposn;
+	VistaIOAttrList sublist;
+	VistaIOBundle b;
+	VistaIORepnKind repn;
+	VistaIOBoolean read_data, data_found, length_found;
+	VistaIOLong data, length;
+	VistaIOTypeMethods *methods;
+	VistaIOPointer value;
 
-	for (VFirstAttr (list, &posn); VAttrExists (&posn); VNextAttr (&posn)) {
-		switch (VGetAttrRepn (&posn)) {
+	for (VistaIOFirstAttr (list, &posn); VistaIOAttrExists (&posn); VistaIONextAttr (&posn)) {
+		switch (VistaIOGetAttrRepn (&posn)) {
 
-		case VAttrListRepn:
+		case VistaIOAttrListRepn:
 
 			/* Recurse on nested attribute list: */
-			VGetAttrValue (&posn, NULL, VAttrListRepn, &sublist);
+			VistaIOGetAttrValue (&posn, NULL, VistaIOAttrListRepn, &sublist);
 			if (!ReadData (f, sublist, filter))
 				return FALSE;
 			break;
 
-		case VBundleRepn:
-			VGetAttrValue (&posn, NULL, VBundleRepn, &b);
-			repn = VLookupType (b->type_name);
+		case VistaIOBundleRepn:
+			VistaIOGetAttrValue (&posn, NULL, VistaIOBundleRepn, &b);
+			repn = VistaIOLookupType (b->type_name);
 
 			/* If a filter routine was supplied, ask it whether to bother
 			   with the binary data: */
@@ -521,40 +521,40 @@ static VBoolean ReadData (FILE * f, VAttrList list,
 
 			/* Extract any data and length attributes in the object's value: */
 			if ((data_found =
-			     VLookupAttr (b->list, VDataAttr, &subposn))) {
-				if (!VGetAttrValue
-				    (&subposn, NULL, VLongRepn, &data)) {
-					VWarning ("VReadFile: "
+			     VistaIOLookupAttr (b->list, VistaIODataAttr, &subposn))) {
+				if (!VistaIOGetAttrValue
+				    (&subposn, NULL, VistaIOLongRepn, &data)) {
+					VistaIOWarning ("VistaIOReadFile: "
 						  "%s attribute's data attribute incorrect",
-						  VGetAttrName (&posn));
+						  VistaIOGetAttrName (&posn));
 					return FALSE;
 				}
-				VDeleteAttr (&subposn);
+				VistaIODeleteAttr (&subposn);
 			}
 			if ((length_found =
-			     VLookupAttr (b->list, VLengthAttr, &subposn))) {
-				if (!(VGetAttrValue
-				      (&subposn, NULL, VLongRepn, &length))) {
-					VWarning ("VReadFile: "
+			     VistaIOLookupAttr (b->list, VistaIOLengthAttr, &subposn))) {
+				if (!(VistaIOGetAttrValue
+				      (&subposn, NULL, VistaIOLongRepn, &length))) {
+					VistaIOWarning ("VistaIOReadFile: "
 						  "%s attribute's length attribute incorrect",
-						  VGetAttrName (&posn));
+						  VistaIOGetAttrName (&posn));
 					return FALSE;
 				}
-				VDeleteAttr (&subposn);
+				VistaIODeleteAttr (&subposn);
 			}
 
 			/* None or both must be present: */
 			if (data_found ^ length_found) {
-				VWarning ("VReadFile: %s attribute has %s but not %s", VGetAttrName (&posn), data_found ? "data" : "length", data_found ? "length" : "data");
+				VistaIOWarning ("VistaIOReadFile: %s attribute has %s but not %s", VistaIOGetAttrName (&posn), data_found ? "data" : "length", data_found ? "length" : "data");
 				return FALSE;
 			}
 
 			/* Read the binary data associated with the object: */
 			if (data_found) {
 				if (data < offset) {
-					VWarning ("VReadFile: "
+					VistaIOWarning ("VistaIOReadFile: "
 						  "%s attribute's data attribute incorrect",
-						  VGetAttrName (&posn));
+						  VistaIOGetAttrName (&posn));
 					return FALSE;
 				}
 
@@ -568,8 +568,8 @@ static VBoolean ReadData (FILE * f, VAttrList list,
 				    fseek (f, (long)data - offset,
 					   SEEK_CUR) == -1 && errno == ESPIPE
 				    && !MySeek (f, data - offset)) {
-					VSystemWarning
-						("VReadFile: Seek within file failed");
+					VistaIOSystemWarning
+						("VistaIOReadFile: Seek within file failed");
 					return FALSE;
 				}
 
@@ -577,9 +577,9 @@ static VBoolean ReadData (FILE * f, VAttrList list,
 					int pos = 0;
 					int togo = length;
 
-					b->data = VMalloc (b->length = length);
+					b->data = VistaIOMalloc (b->length = length);
 					if (!b->data) {
-						VWarning ("VReadFile: unable to allocate memory");
+						VistaIOWarning ("VistaIOReadFile: unable to allocate memory");
 						return FALSE;
 					}
 
@@ -588,13 +588,13 @@ static VBoolean ReadData (FILE * f, VAttrList list,
 						int read_length = togo < 100000 ? togo : 100000;
 						if (fread ((char *)(b->data) + pos, 1,
 							   read_length, f) != read_length) {
-							VWarning ("VReadFile: Read from stream failed");
+							VistaIOWarning ("VistaIOReadFile: Read from stream failed");
 							return FALSE;
 						}
 						pos += read_length;
 						togo -= read_length;
 
-						VShowReadProgress(pos, length, VProgressData);
+						VistaIOShowReadProgress(pos, length, VistaIOProgressData);
 					}
 					offset = data + length;
 				} else
@@ -609,18 +609,18 @@ static VBoolean ReadData (FILE * f, VAttrList list,
 
 			/* If the object's type is registered and has a decode method,
 			   invoke it to decode the binary data: */
-			if (read_data && repn != VUnknownRepn &&
-			    (methods = VRepnMethods (repn))
+			if (read_data && repn != VistaIOUnknownRepn &&
+			    (methods = VistaIORepnMethods (repn))
 			    && methods->decode) {
 				if (!
 				    (value =
-				     (methods->decode) (VGetAttrName (&posn),
+				     (methods->decode) (VistaIOGetAttrName (&posn),
 							b)))
 					return FALSE;
 
 				/* Replace the old typed value with the newly decoded one: */
-				VSetAttrValue (&posn, NULL, repn, value);
-				VDestroyBundle (b);
+				VistaIOSetAttrValue (&posn, NULL, repn, value);
+				VistaIODestroyBundle (b);
 			}
 			break;
 
@@ -640,74 +640,74 @@ static VBoolean ReadData (FILE * f, VAttrList list,
  *  \param  attributes
  *  \param  nobjects
  *  \param  objects
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-VBoolean VWriteObjects (FILE * file, VRepnKind repn, VAttrList attributes,
-			int nobjects, VPointer objects[])
+VistaIOBoolean VistaIOWriteObjects (FILE * file, VistaIORepnKind repn, VistaIOAttrList attributes,
+			int nobjects, VistaIOPointer objects[])
 {
-	VAttrList list;
-	VAttrListPosn posn;
+	VistaIOAttrList list;
+	VistaIOAttrListPosn posn;
 	int i;
-	VBoolean result;
+	VistaIOBoolean result;
 
 	/* Create an attribute list if none was supplied: */
-	list = attributes ? attributes : VCreateAttrList ();
+	list = attributes ? attributes : VistaIOCreateAttrList ();
 
 	/* Prepend to the attribute list an attribute for each object: */
 	for (i = nobjects - 1; i >= 0; i--)
-		VPrependAttr (list, VRepnName (repn), NULL, repn, objects[i]);
+		VistaIOPrependAttr (list, VistaIORepnName (repn), NULL, repn, objects[i]);
 
 	/* Write the attribute list: */
-	result = VWriteFile (file, list);
+	result = VistaIOWriteFile (file, list);
 
 	/* Remove the attributes just prepended: */
-	VFirstAttr (list, &posn);
+	VistaIOFirstAttr (list, &posn);
 	for (i = 0; i < nobjects; i++)
-		VDeleteAttr (&posn);
+		VistaIODeleteAttr (&posn);
 	if (list != attributes)
-		VDestroyAttrList (list);
+		VistaIODestroyAttrList (list);
 
 	return result;
 }
 
 
-/*! \brief VWriteFile
+/*! \brief VistaIOWriteFile
  *
  *  \param  f
  *  \param  list
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VWriteFile (FILE * f, VAttrList list)
+EXPORT_VISTA VistaIOBoolean VistaIOWriteFile (FILE * f, VistaIOAttrList list)
 {
 	DataBlock *db;
-	VBundle b;
-	VTypeMethods *methods;
-	VRepnKind repn;
-	VPointer value, ptr;
-	VBoolean free_it;
-	VBoolean result = 0;
+	VistaIOBundle b;
+	VistaIOTypeMethods *methods;
+	VistaIORepnKind repn;
+	VistaIOPointer value, ptr;
+	VistaIOBoolean free_it;
+	VistaIOBoolean result = 0;
 
 	/* Write the Vista data file header, attribute list, and delimeter
 	   while queuing on data_list any binary data blocks to be written: */
 	offset = 0;
-	data_list = VListCreate ();
-	FailTest (fprintf (f, "%s %d ", VFileHeader, VFileVersion));
+	data_list = VistaIOListCreate ();
+	FailTest (fprintf (f, "%s %d ", VistaIOFileHeader, VistaIOFileVersion));
 	if (!WriteAttrList (f, list, 1)) {
-		VListDestroy (data_list, VFree);
+		VistaIOListDestroy (data_list, VistaIOFree);
 		return FALSE;
 	}
-	FailTest (fputs ("\n" VFileDelimiter, f));
+	FailTest (fputs ("\n" VistaIOFileDelimiter, f));
 	fflush (f);
 
 	/* Traverse data_list to write the binary data blocks: */
-	for (db = VListFirst (data_list); db; db = VListNext (data_list)) {
-		repn = VGetAttrRepn (&db->posn);
-		if (repn == VBundleRepn) {
+	for (db = VistaIOListFirst (data_list); db; db = VistaIOListNext (data_list)) {
+		repn = VistaIOGetAttrRepn (&db->posn);
+		if (repn == VistaIOBundleRepn) {
 
 			/* A typed value includes its binary data block explicitly: */
-			VGetAttrValue (&db->posn, NULL, VBundleRepn, &b);
+			VistaIOGetAttrValue (&db->posn, NULL, VistaIOBundleRepn, &b);
 			ptr = b->data;
 			free_it = FALSE;
 
@@ -715,8 +715,8 @@ EXPORT_VISTA VBoolean VWriteFile (FILE * f, VAttrList list)
 
 			/* For any other representation, obtain the binary data block
 			   from its encode_data method: */
-			VGetAttrValue (&db->posn, NULL, repn, &value);
-			methods = VRepnMethods (repn);
+			VistaIOGetAttrValue (&db->posn, NULL, repn, &value);
+			methods = VistaIORepnMethods (repn);
 			ptr = (methods->encode_data)
 				(value, db->list, db->length, &free_it);
 			if (!ptr)
@@ -733,20 +733,20 @@ EXPORT_VISTA VBoolean VWriteFile (FILE * f, VAttrList list)
 				result = fwrite (((char *)ptr) + pos, 1, write_length, f) == write_length;
 				pos += write_length;
 				togo -= write_length;
-				VShowWriteProgress(pos, db->length, VProgressData);
+				VistaIOShowWriteProgress(pos, db->length, VistaIOProgressData);
 			}
 			if (free_it)
-				VFree (ptr);
+				VistaIOFree (ptr);
 			if (!result)
 				goto Fail;
 		}
 	}
-	VListDestroy (data_list, VFree);
+	VistaIOListDestroy (data_list, VistaIOFree);
 	return TRUE;
 
       Fail:
-	VWarning ("VWriteFile: Write to stream failed");
-	VListDestroy (data_list, VFree);
+	VistaIOWarning ("VistaIOWriteFile: Write to stream failed");
+	VistaIOListDestroy (data_list, VistaIOFree);
 	return FALSE;
 }
 
@@ -756,16 +756,16 @@ EXPORT_VISTA VBoolean VWriteFile (FILE * f, VAttrList list)
  *  \param  f
  */
 
-static VBoolean WriteAttrList (FILE * f, VAttrList list, int indent)
+static VistaIOBoolean WriteAttrList (FILE * f, VistaIOAttrList list, int indent)
 {
-	VAttrListPosn posn;
+	VistaIOAttrListPosn posn;
 	int i;
 
 	/* Write the { marking the beginning of the attribute list: */
 	FailTest (fputs ("{\n", f));
 
 	/* Write each attribute in the list: */
-	for (VFirstAttr (list, &posn); VAttrExists (&posn); VNextAttr (&posn))
+	for (VistaIOFirstAttr (list, &posn); VistaIOAttrExists (&posn); VistaIONextAttr (&posn))
 		if (!WriteAttr (f, &posn, indent))
 			return FALSE;
 
@@ -776,7 +776,7 @@ static VBoolean WriteAttrList (FILE * f, VAttrList list, int indent)
 	return TRUE;
 
       Fail:
-	VWarning ("VWriteFile: Write to stream failed");
+	VistaIOWarning ("VistaIOWriteFile: Write to stream failed");
 	return FALSE;
 }
 
@@ -788,19 +788,19 @@ static VBoolean WriteAttrList (FILE * f, VAttrList list, int indent)
  *  itself an attribute list, it is indented by indent+1 tabs.
  */
 
-static VBoolean WriteAttr (FILE * f, VAttrListPosn * posn, int indent)
+static VistaIOBoolean WriteAttr (FILE * f, VistaIOAttrListPosn * posn, int indent)
 {
 	int i;
 	char *str;
-	VRepnKind repn;
-	VAttrList sublist;
-	VBundle b;
+	VistaIORepnKind repn;
+	VistaIOAttrList sublist;
+	VistaIOBundle b;
 	DataBlock *db;
-	VTypeMethods *methods;
+	VistaIOTypeMethods *methods;
 	size_t length;
-	VPointer value;
-	VBoolean result;
-	VAttrListPosn subposn;
+	VistaIOPointer value;
+	VistaIOBoolean result;
+	VistaIOAttrListPosn subposn;
 
 	/* Indent by the specified amount: */
 	for (i = 0; i < indent; i++)
@@ -808,19 +808,19 @@ static VBoolean WriteAttr (FILE * f, VAttrListPosn * posn, int indent)
 	indent++;
 
 	/* Output the attribute's name: */
-	FailTest (fprintf (f, "%s: ", VGetAttrName (posn)));
+	FailTest (fprintf (f, "%s: ", VistaIOGetAttrName (posn)));
 
 	/* Ouput its value: */
-	switch (repn = VGetAttrRepn (posn)) {
+	switch (repn = VistaIOGetAttrRepn (posn)) {
 
-	case VAttrListRepn:
-		VGetAttrValue (posn, NULL, VAttrListRepn,
-			       (VPointer) & sublist);
+	case VistaIOAttrListRepn:
+		VistaIOGetAttrValue (posn, NULL, VistaIOAttrListRepn,
+			       (VistaIOPointer) & sublist);
 		result = WriteAttrList (f, sublist, indent);
 		break;
 
-	case VBundleRepn:
-		VGetAttrValue (posn, NULL, VBundleRepn, (VBundle) & b);
+	case VistaIOBundleRepn:
+		VistaIOGetAttrValue (posn, NULL, VistaIOBundleRepn, (VistaIOBundle) & b);
 		if (!WriteString (f, b->type_name))
 			return FALSE;
 		FailTest (fputc (' ', f));
@@ -829,18 +829,18 @@ static VBoolean WriteAttr (FILE * f, VAttrListPosn * posn, int indent)
 		if (b->length > 0) {
 
 			/* Include "data" and "length" attributes in its attribute list: */
-			VPrependAttr (b->list, VLengthAttr, NULL, VLongRepn,
-				      (VLong) b->length);
-			VPrependAttr (b->list, VDataAttr, NULL, VLongRepn,
-				      (VLong) offset);
+			VistaIOPrependAttr (b->list, VistaIOLengthAttr, NULL, VistaIOLongRepn,
+				      (VistaIOLong) b->length);
+			VistaIOPrependAttr (b->list, VistaIODataAttr, NULL, VistaIOLongRepn,
+				      (VistaIOLong) offset);
 
 			/* Add it to the queue of binary data blocks to be written: */
 			offset += b->length;
-			db = VNew (DataBlock);
+			db = VistaIONew (DataBlock);
 			db->posn = *posn;
 			db->list = b->list;
 			db->length = b->length;
-			VListAppend (data_list, db);
+			VistaIOListAppend (data_list, db);
 		}
 
 		/* Write the typed value's attribute list: */
@@ -848,63 +848,63 @@ static VBoolean WriteAttr (FILE * f, VAttrListPosn * posn, int indent)
 
 		/* Remove the "data" and "length" attributes added earlier: */
 		if (b->length > 0) {
-			VFirstAttr (b->list, &subposn);
-			VDeleteAttr (&subposn);
-			VDeleteAttr (&subposn);
+			VistaIOFirstAttr (b->list, &subposn);
+			VistaIODeleteAttr (&subposn);
+			VistaIODeleteAttr (&subposn);
 		}
 		break;
 
-	case VStringRepn:
-		VGetAttrValue (posn, NULL, VStringRepn, (VPointer) & str);
+	case VistaIOStringRepn:
+		VistaIOGetAttrValue (posn, NULL, VistaIOStringRepn, (VistaIOPointer) & str);
 		result = WriteString (f, str);
 		break;
 
 	default:
-		if (!(methods = VRepnMethods (repn)) ||
+		if (!(methods = VistaIORepnMethods (repn)) ||
 		    !methods->encode_attr || !methods->encode_data) {
-			VWarning ("VWriteFile: "
+			VistaIOWarning ("VistaIOWriteFile: "
 				  "%s attribute has unwriteable representation: %s",
-				  VGetAttrName (posn), VRepnName (repn));
+				  VistaIOGetAttrName (posn), VistaIORepnName (repn));
 			return FALSE;
 		}
 
 		/* Write the type name: */
-		if (!WriteString (f, VRepnName (repn)))
+		if (!WriteString (f, VistaIORepnName (repn)))
 			return FALSE;
 		FailTest (fputc (' ', f));
 
 		/* Invoke the object type's encode_attr method to obtain an
 		   attribute list: */
-		VGetAttrValue (posn, NULL, repn, &value);
+		VistaIOGetAttrValue (posn, NULL, repn, &value);
 		sublist = (methods->encode_attr) (value, &length);
 
 		/* If binary data is indicated... */
 		if (length > 0) {
 
 			/* Include "data" and "length" attributes in the attr list: */
-			VPrependAttr (sublist, VLengthAttr, NULL, VLongRepn,
-				      (VLong) length);
-			VPrependAttr (sublist, VDataAttr, NULL, VLongRepn,
-				      (VLong) offset);
+			VistaIOPrependAttr (sublist, VistaIOLengthAttr, NULL, VistaIOLongRepn,
+				      (VistaIOLong) length);
+			VistaIOPrependAttr (sublist, VistaIODataAttr, NULL, VistaIOLongRepn,
+				      (VistaIOLong) offset);
 
 			offset += length;
 		}
 
 		/* Add the object to the queue of binary data blocks to be written: */
-		db = VNew (DataBlock);
+		db = VistaIONew (DataBlock);
 		db->posn = *posn;
 		db->list = sublist;
 		db->length = length;
-		VListAppend (data_list, db);
+		VistaIOListAppend (data_list, db);
 
 		/* Write the typed value's attribute list: */
 		result = WriteAttrList (f, sublist, indent);
 
 		/* Remove the "data" and "length" attributes added earlier: */
 		if (length > 0) {
-			VFirstAttr (sublist, &subposn);
-			VDeleteAttr (&subposn);
-			VDeleteAttr (&subposn);
+			VistaIOFirstAttr (sublist, &subposn);
+			VistaIODeleteAttr (&subposn);
+			VistaIODeleteAttr (&subposn);
 		}
 	}
 
@@ -914,7 +914,7 @@ static VBoolean WriteAttr (FILE * f, VAttrListPosn * posn, int indent)
 	return result;
 
       Fail:
-	VWarning ("VWriteFile: Write to stream failed");
+	VistaIOWarning ("VistaIOWriteFile: Write to stream failed");
 	return FALSE;
 }
 
@@ -925,7 +925,7 @@ static VBoolean WriteAttr (FILE * f, VAttrListPosn * posn, int indent)
  *  Write a string, quoting it if necessary.
  */
 
-static VBoolean WriteString (FILE * f, const char *str)
+static VistaIOBoolean WriteString (FILE * f, const char *str)
 {
 	const char *cp;
 	int ch;
@@ -959,7 +959,7 @@ static VBoolean WriteString (FILE * f, const char *str)
 	return TRUE;
 
       Fail:
-	VWarning ("VWriteFile: Write to stream failed");
+	VistaIOWarning ("VistaIOWriteFile: Write to stream failed");
 	return FALSE;
 }
 
@@ -971,13 +971,13 @@ static VBoolean WriteString (FILE * f, const char *str)
  *  work on pipes.
  */
 
-static VBoolean MySeek (FILE * f, long bytes)
+static VistaIOBoolean MySeek (FILE * f, long bytes)
 {
 	int len;
 	char buf[1000];
 
 	while (bytes > 0) {
-		len = VMin (bytes, sizeof (buf));
+		len = VistaIOMin (bytes, sizeof (buf));
 		if (fread (buf, 1, len, f) != len)
 			return FALSE;
 		bytes -= len;

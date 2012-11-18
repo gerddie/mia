@@ -64,11 +64,11 @@ extern "C" {
 	
 	
 	/*! \brief Vista data type to hold the list of critical points */	
-	typedef struct VFieldCPListRec {
-		VLong n_length;  /*!< number of critical points in list */
-		VAttrList attr;  /*!< vista attribute list */
-		VPointer data;   /*!< pointer to the actual data */
-		VLong nsize;     /*!< size of data block in bytes \a data points to */
+	typedef struct VistaIOFieldCPListRec {
+		VistaIOLong n_length;  /*!< number of critical points in list */
+		VistaIOAttrList attr;  /*!< vista attribute list */
+		VistaIOPointer data;   /*!< pointer to the actual data */
+		VistaIOLong nsize;     /*!< size of data block in bytes \a data points to */
 	} VCPEListRec;
 	
 	/*! \brief  Definition of the pointer how it is used in the vista library.*/ 
@@ -78,7 +78,7 @@ extern "C" {
 	    \param _n_element number of elements in the list
 	    \retval An empty VCPEList with space for \a _n_element critical points
 	*/
-	VCPEList VCreateCPEList(VLong _n_element);
+	VCPEList VistaIOCreateCPEList(VistaIOLong _n_element);
 	
 	/** name of the length attribute in the vista file */
 #define CPLIST_LENGTH  "n_length"
@@ -86,7 +86,7 @@ extern "C" {
 	    to make the data type available.
 	    \remark as a side effect VCPEListRepn is set. 
 	*/
-	void VRegisterCPEList();
+	void VistaIORegisterCPEList();
 
 #ifdef __cplusplus
 }

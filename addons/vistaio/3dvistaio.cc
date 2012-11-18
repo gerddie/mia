@@ -68,34 +68,34 @@ CVista3DImageIOPlugin::CVista3DImageIOPlugin():
 }
 
 template <typename T>
-P3DImage read_image(VImage image)
+P3DImage read_image(VistaIOImage image)
 {
 	cvdebug() << "Read  image of type '" << CPixelTypeDict.get_name(pixel_type<T>::value)<< "'\n"; 
 	typedef typename vista_repnkind<T>::type O;
-	T3DImage<T> *result = new T3DImage<T>(C3DBounds(VImageNColumns(image), VImageNRows(image), VImageNBands(image)));
+	T3DImage<T> *result = new T3DImage<T>(C3DBounds(VistaIOImageNColumns(image), VistaIOImageNRows(image), VistaIOImageNBands(image)));
 	P3DImage presult(result);
 
-	O *begin = (O*)VPixelPtr(image,0,0,0);
+	O *begin = (O*)VistaIOPixelPtr(image,0,0,0);
 	O *end = begin + result->size();
 	std::copy(begin, end, result->begin());
 
-	copy_attr_list(*result, VImageAttrList(image));
+	copy_attr_list(*result, VistaIOImageAttrList(image));
 
 	return presult;
 }
 
-P3DImage copy_from_vista(VImage image)
+P3DImage copy_from_vista(VistaIOImage image)
 {
 	// this could be changed to add a bunch of images
 	// however, then one would also have to write these as such ...
-	switch (VPixelRepn(image)) {
-	case VBitRepn : return read_image<bool>(image);
+	switch (VistaIOPixelRepn(image)) {
+	case VistaIOBitRepn : return read_image<bool>(image);
 	case VUByteRepn : return read_image<unsigned char>(image);
 	case VSByteRepn : return read_image<signed char>(image);
-	case VShortRepn : return read_image<signed short>(image);
-	case VLongRepn : return read_image<signed int>(image);
-	case VFloatRepn : return read_image<float>(image);
-	case VDoubleRepn : return read_image<double>(image);
+	case VistaIOShortRepn : return read_image<signed short>(image);
+	case VistaIOLongRepn : return read_image<signed int>(image);
+	case VistaIOFloatRepn : return read_image<float>(image);
+	case VistaIODoubleRepn : return read_image<double>(image);
 	default:
 		throw invalid_argument("3d vista load: Unknown pixel format");
 	}
@@ -110,9 +110,9 @@ CVista3DImageIOPlugin::PData  CVista3DImageIOPlugin::do_load(const string& fname
 		throw runtime_error(msg.str());
 	}
 
-	VImage *images;
-	VAttrList attr_list;
-	int nimages = VReadImages(f, &attr_list, &images);
+	VistaIOImage *images;
+	VistaIOAttrList attr_list;
+	int nimages = VistaIOReadImages(f, &attr_list, &images);
 	// a vista file?
 	if (!nimages)
 		return CVista3DImageIOPlugin::PData();
@@ -124,29 +124,29 @@ CVista3DImageIOPlugin::PData  CVista3DImageIOPlugin::do_load(const string& fname
 		P3DImage r = copy_from_vista(images[i]);
 		result->push_back(r);
 
-		VDestroyImage(images[i]);
+		VistaIODestroyImage(images[i]);
 	}
 
-	VFree(images);
-	VDestroyAttrList (attr_list);
+	VistaIOFree(images);
+	VistaIODestroyAttrList (attr_list);
 
 	return result;
 }
 
 
-struct CVImageCreator: public TFilter <VImage> {
+struct CVImageCreator: public TFilter <VistaIOImage> {
 	template <typename T>
-	VImage operator ()( const T3DImage<T>& image) const;
+	VistaIOImage operator ()( const T3DImage<T>& image) const;
 };
 
 template <typename T>
-VImage CVImageCreator::operator ()( const T3DImage<T>& image) const
+VistaIOImage CVImageCreator::operator ()( const T3DImage<T>& image) const
 {
 	typedef dispatch_creat_vimage<typename T3DImage<T>::const_iterator,
 		typename vista_repnkind<T>::type> dispatcher;
-	VImage result =  dispatcher::apply(image.begin(), image.end(),
+	VistaIOImage result =  dispatcher::apply(image.begin(), image.end(),
 					   image.get_size().x, image.get_size().y, image.get_size().z);
-	copy_attr_list(VImageAttrList(result), image);
+	copy_attr_list(VistaIOImageAttrList(result), image);
 	return result;
 }
 
@@ -155,19 +155,19 @@ bool CVista3DImageIOPlugin::do_save(const string& fname, const C3DImageVector& d
 
 	COutputFile f(fname);
 
-	vector<VImage> images(data.size());
+	vector<VistaIOImage> images(data.size());
 
 	CVImageCreator creator;
-	vector<VImage>::iterator img = images.begin();
+	vector<VistaIOImage>::iterator img = images.begin();
 	for (C3DImageVector::const_iterator i = data.begin();
 	     i != data.end(); ++i, ++img) {
 		*img = filter(creator, **i);
 	}
 
-	bool result = VWriteImages(f, NULL, data.size(), &images[0]) == TRUE;
+	bool result = VistaIOWriteImages(f, NULL, data.size(), &images[0]) == TRUE;
 
-	for (vector<VImage>::iterator i = images.begin(); i != images.end(); ++i)
-		VDestroyImage(*i);
+	for (vector<VistaIOImage>::iterator i = images.begin(); i != images.end(); ++i)
+		VistaIODestroyImage(*i);
 
 	return result;
 }

@@ -27,17 +27,17 @@
  *  \return Volumes
  */
 
-Volumes VCreateVolumes (short nbands, short nrows, short ncols)
+Volumes VistaIOCreateVolumes (short nbands, short nrows, short ncols)
 {
 	Volumes volumes;
 
 	/* allocate memory: */
-	volumes = VMalloc (sizeof (VolumesRec));
+	volumes = VistaIOMalloc (sizeof (VolumesRec));
 	if (!volumes)
 		return NULL;
 
 	/* initialize structure: */
-	volumes->attributes = VCreateAttrList ();
+	volumes->attributes = VistaIOCreateAttrList ();
 	volumes->first = NULL;
 	volumes->nvolumes = 0;
 	volumes->nbands = nbands;
@@ -58,13 +58,13 @@ Volumes VCreateVolumes (short nbands, short nrows, short ncols)
  *  \return Volume
  */
 
-Volume VCreateVolume (short label, short nbands, short nrows, short ncolumns,
+Volume VistaIOCreateVolume (short label, short nbands, short nrows, short ncolumns,
 		      short nbuckets)
 {
 	Volume vol;
 	int i;
 
-	vol = VMalloc (sizeof (VolumeRec));
+	vol = VistaIOMalloc (sizeof (VolumeRec));
 	vol->label = label;
 	vol->nbands = nbands;
 	vol->nrows = nrows;
@@ -77,7 +77,7 @@ Volume VCreateVolume (short label, short nbands, short nrows, short ncolumns,
 		vol->nbuckets = MAXHASHLEN;
 	else
 		vol->nbuckets = (short)nbuckets;
-	vol->bucket = (VBucket) VMalloc (sizeof (VBucketRec) * vol->nbuckets);
+	vol->bucket = (VistaIOBucket) VistaIOMalloc (sizeof (VistaIOBucketRec) * vol->nbuckets);
 	if (!vol->bucket)
 		return NULL;
 
@@ -97,13 +97,13 @@ Volume VCreateVolume (short label, short nbands, short nrows, short ncolumns,
  *  \return Volume
  */
 
-Volume VCopyVolume (Volume src)
+Volume VistaIOCopyVolume (Volume src)
 {
 	Volume dest;
-	VTrack s, t, s_prev;
+	VistaIOTrack s, t, s_prev;
 	int i, j, ntracks;
 
-	dest = VCreateVolume (src->label, src->nbands, src->nrows,
+	dest = VistaIOCreateVolume (src->label, src->nbands, src->nrows,
 			      src->ncolumns, src->nbuckets);
 	dest->ntracks = src->ntracks;
 
@@ -117,7 +117,7 @@ Volume VCopyVolume (Volume src)
 		if (ntracks == 0)
 			continue;
 
-		s = VMalloc (sizeof (VTrackRec));
+		s = VistaIOMalloc (sizeof (VistaIOTrackRec));
 		dest->bucket[i].first = s;
 		s_prev = NULL;
 		t = src->bucket[i].first;
@@ -130,7 +130,7 @@ Volume VCopyVolume (Volume src)
 
 			s->previous = s_prev;
 			s_prev = s;
-			s->next = VMalloc (sizeof (VTrackRec));
+			s->next = VistaIOMalloc (sizeof (VistaIOTrackRec));
 			s = s->next;
 			t = t->next;
 		}
@@ -161,10 +161,10 @@ Volume VCopyVolume (Volume src)
  *  \param  t
  */
 
-void AddTrack (Volume v, VTrack t)
+void AddTrack (Volume v, VistaIOTrack t)
 {
 	int i;
-	VTrack s, r;
+	VistaIOTrack s, r;
 
 	i = VolumeHash (v->nbands, t->band, t->row, v->nbuckets);
 
@@ -213,7 +213,7 @@ void AddTrack (Volume v, VTrack t)
  *  \param  vol
  */
 
-void VAddVolume (Volumes volumes, Volume vol)
+void VistaIOAddVolume (Volumes volumes, Volume vol)
 {
 	Volume u = NULL, v = NULL;
 
@@ -240,22 +240,22 @@ void VAddVolume (Volumes volumes, Volume vol)
  *  \return Volumes
  */
 
-Volumes VCopyVolumes (Volumes src)
+Volumes VistaIOCopyVolumes (Volumes src)
 {
 	Volumes dest;
 	Volume v;
 
-	dest = VCreateVolumes (src->nbands, src->nrows, src->ncolumns);
+	dest = VistaIOCreateVolumes (src->nbands, src->nrows, src->ncolumns);
 	if (!dest)
 		return NULL;
 
 	for (v = src->first; v != NULL; v = v->next) {
-		VAddVolume (dest, VCopyVolume (v));
+		VistaIOAddVolume (dest, VistaIOCopyVolume (v));
 	}
 
 	if (VolumesAttrList (src))
 		VolumesAttrList (dest) =
-			VCopyAttrList (VolumesAttrList (src));
+			VistaIOCopyAttrList (VolumesAttrList (src));
 	else
 		VolumesAttrList (dest) = NULL;
 
@@ -268,10 +268,10 @@ Volumes VCopyVolumes (Volumes src)
  *  \param v
  */
 
-void VDestroyVolume (Volume v)
+void VistaIODestroyVolume (Volume v)
 {
 	int i, n;
-	VTrack t, s;
+	VistaIOTrack t, s;
 
 	for (i = 0; i < v->nbuckets; i++) {
 		t = v->bucket[i].first;
@@ -279,19 +279,19 @@ void VDestroyVolume (Volume v)
 		while (t != NULL) {
 			s = t;
 			t = t->next;
-			VFree (s);
+			VistaIOFree (s);
 			n++;
 		}
 		if (n > v->bucket[i].ntracks)
-			VError ("VDestroyVolume: free error");
+			VistaIOError ("VistaIODestroyVolume: free error");
 	}
 
 	v->nbuckets = 0;
 	v->ntracks = 0;
 	v->next = NULL;
-	VFree (v->bucket);
+	VistaIOFree (v->bucket);
 	v->bucket = NULL;
-	VFree (v);
+	VistaIOFree (v);
 }
 
 
@@ -300,7 +300,7 @@ void VDestroyVolume (Volume v)
  *  \param volumes
  */
 
-void VDestroyVolumes (Volumes volumes)
+void VistaIODestroyVolumes (Volumes volumes)
 {
 	Volume v, w;
 
@@ -309,11 +309,11 @@ void VDestroyVolumes (Volumes volumes)
 	while (v != NULL) {
 		w = v;
 		v = v->next;
-		VDestroyVolume (w);
+		VistaIODestroyVolume (w);
 	}
 	volumes->first = NULL;
-	VDestroyAttrList (volumes->attributes);
-	VFree (volumes);
+	VistaIODestroyAttrList (volumes->attributes);
+	VistaIOFree (volumes);
 }
 
 /*! \brief
@@ -324,10 +324,10 @@ void VDestroyVolumes (Volumes volumes)
  *  \return int
  */
  
-int VReadVolumes (FILE * file, VAttrList * attributes, Volumes ** volumes)
+int VistaIOReadVolumes (FILE * file, VistaIOAttrList * attributes, Volumes ** volumes)
 {
-	return VReadObjects (file, VolumesRepn, attributes,
-			     (VPointer **) volumes);
+	return VistaIOReadObjects (file, VolumesRepn, attributes,
+			     (VistaIOPointer **) volumes);
 }
 
 /*! \brief
@@ -336,12 +336,12 @@ int VReadVolumes (FILE * file, VAttrList * attributes, Volumes ** volumes)
  *  \param  attributes
  *  \param  nvolumes
  *  \param  volumes
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-VBoolean VWriteVolumes (FILE * file, VAttrList attributes, int nvolumes,
+VistaIOBoolean VistaIOWriteVolumes (FILE * file, VistaIOAttrList attributes, int nvolumes,
 			Volumes * volumes)
 {
-	return VWriteObjects (file, VolumesRepn, attributes, nvolumes,
-			      (VPointer *) volumes);
+	return VistaIOWriteObjects (file, VolumesRepn, attributes, nvolumes,
+			      (VistaIOPointer *) volumes);
 }

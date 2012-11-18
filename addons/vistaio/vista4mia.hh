@@ -41,7 +41,7 @@
 
 template <typename T>
 struct vista_repnkind {
-	enum {value = VUnknownRepn};
+	enum {value = VistaIOUnknownRepn};
 	typedef void type;
 };
 
@@ -59,53 +59,53 @@ struct vista_repnkind<signed char> {
 
 template <>
 struct vista_repnkind<short> {
-	enum {value = VShortRepn};
-	typedef VShort type;
+	enum {value = VistaIOShortRepn};
+	typedef VistaIOShort type;
 };
 
 template <>
 struct vista_repnkind<int> {
-	enum {value = VLongRepn};
-	typedef VLong type;
+	enum {value = VistaIOLongRepn};
+	typedef VistaIOLong type;
 };
 
 template <>
 struct vista_repnkind<float> {
-	enum {value = VFloatRepn};
-	typedef VFloat type;
+	enum {value = VistaIOFloatRepn};
+	typedef VistaIOFloat type;
 };
 
 template <>
 struct vista_repnkind<double> {
-	enum {value = VDoubleRepn};
-	typedef VDouble type;
+	enum {value = VistaIODoubleRepn};
+	typedef VistaIODouble type;
 };
 
 template <>
 struct vista_repnkind<bool> {
-	enum {value = VBitRepn};
-	typedef VBit type;
+	enum {value = VistaIOBitRepn};
+	typedef VistaIOBit type;
 };
 
 template <>
 struct vista_repnkind<std::string> {
-	enum {value = VStringRepn};
-	typedef VString type;
+	enum {value = VistaIOStringRepn};
+	typedef VistaIOString type;
 };
 
 
 template <typename I, typename O>
 struct dispatch_creat_vimage {
-	static VImage apply(I begin, I end, size_t x, size_t y, size_t z) {
-		VImage result = VCreateImage(z, y, x, (VRepnKind)vista_repnkind<typename std::iterator_traits<I>::value_type>::value);
-		std::copy(begin, end, (O *)VPixelPtr(result,0,0,0));
+	static VistaIOImage apply(I begin, I end, size_t x, size_t y, size_t z) {
+		VistaIOImage result = VistaIOCreateImage(z, y, x, (VistaIORepnKind)vista_repnkind<typename std::iterator_traits<I>::value_type>::value);
+		std::copy(begin, end, (O *)VistaIOPixelPtr(result,0,0,0));
 		return result;
 	}
 };
 
 template <typename I>
 struct dispatch_creat_vimage<I, void> {
-	static VImage apply(I /*begin*/, I /*end*/, size_t /*x*/, size_t /*y*/, size_t /*z*/) {
+	static VistaIOImage apply(I /*begin*/, I /*end*/, size_t /*x*/, size_t /*y*/, size_t /*z*/) {
 		throw std::invalid_argument("unsupported pixel format in saving to vista");
 		return NULL;
 	}
@@ -113,22 +113,22 @@ struct dispatch_creat_vimage<I, void> {
 
 NS_MIA_BEGIN
 
-VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const mia::CAttributedData& attributes);
-VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributedData& attributes, const VAttrList target);
+VISTA4MIA_EXPORT void copy_attr_list(VistaIOAttrList target, const mia::CAttributedData& attributes);
+VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributedData& attributes, const VistaIOAttrList target);
 
 /**
    Helper class to indice atomatic destruction of vista attribute lists. 
  */
 class CVAttrList {
 public: 
-	CVAttrList(VAttrList list); 
+	CVAttrList(VistaIOAttrList list); 
 	~CVAttrList(); 
-	operator VAttrList(); 
+	operator VistaIOAttrList(); 
 	bool operator !() const; 
 	
-	VAttrList operator ->(); 
+	VistaIOAttrList operator ->(); 
 private: 
-	VAttrList m_list; 
+	VistaIOAttrList m_list; 
 		
 }; 
 

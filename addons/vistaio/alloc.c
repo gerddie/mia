@@ -22,17 +22,17 @@
 /*! \brief Perform error checking on malloc() call.
  *
  *  \param  size
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VMalloc (size_t size)
+VistaIOPointer VistaIOMalloc (size_t size)
 {
-	VPointer p;
+	VistaIOPointer p;
 
 	if (size == 0)
 		return NULL;
-	if (!(p = (VPointer) malloc (size)))
-		VSystemError ("VMalloc: Memory allocation failure");
+	if (!(p = (VistaIOPointer) malloc (size)))
+		VistaIOSystemError ("VistaIOMalloc: Memory allocation failure");
 	return p;
 }
 
@@ -41,19 +41,19 @@ VPointer VMalloc (size_t size)
  *
  *  \param  p
  *  \param  size
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VRealloc (VPointer p, size_t size)
+VistaIOPointer VistaIORealloc (VistaIOPointer p, size_t size)
 {
 	if (size == 0) {
-		VFree (p);
+		VistaIOFree (p);
 		return NULL;
 	}
 	if (!p)
-		return VMalloc (size);
-	if (!(p = (VPointer) realloc (p, size)))
-		VSystemError ("VRealloc: Memory allocation failure");
+		return VistaIOMalloc (size);
+	if (!(p = (VistaIOPointer) realloc (p, size)))
+		VistaIOSystemError ("VistaIORealloc: Memory allocation failure");
 	return p;
 }
 
@@ -62,17 +62,17 @@ VPointer VRealloc (VPointer p, size_t size)
  *
  *  \param  n
  *  \param  size
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VCalloc (size_t n, size_t size)
+VistaIOPointer VistaIOCalloc (size_t n, size_t size)
 {
-	VPointer p;
+	VistaIOPointer p;
 
 	if (n == 0 || size == 0)
 		return NULL;
-	if (!(p = (VPointer) calloc (n, size)))
-		VSystemError ("VCalloc: Memory allocation failure");
+	if (!(p = (VistaIOPointer) calloc (n, size)))
+		VistaIOSystemError ("VistaIOCalloc: Memory allocation failure");
 	return p;
 }
 
@@ -82,7 +82,7 @@ VPointer VCalloc (size_t n, size_t size)
  *  \param p
  */
 
-EXPORT_VISTA void VFree (VPointer p)
+EXPORT_VISTA void VistaIOFree (VistaIOPointer p)
 {
 	if (p)
 		free ((char *)p);

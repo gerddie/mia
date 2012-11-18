@@ -19,7 +19,7 @@
 
 #include "vistaio/vistaio.h"
 
-/*! \brief Allocates memory for a VEdges structure and initializes its fields.
+/*! \brief Allocates memory for a VistaIOEdges structure and initializes its fields.
  *    
  *  Initially, this contains zero edges, so each edge must still
  *  be created and added to this record.
@@ -31,22 +31,22 @@
  *  \return Returns a pointer to the edges if successful, NULL otherwise.
  */
 
-VEdges VCreateEdges (int nrows, int ncolumns, int nedge_fields,
+VistaIOEdges VistaIOCreateEdges (int nrows, int ncolumns, int nedge_fields,
 		     int npoint_fields)
 {
-	VEdges edges;
+	VistaIOEdges edges;
 
 	/* Check parameters: */
 	if (nrows < 1 || ncolumns < 1)
-		VWarning ("VCreateEdges: Invalid number of rows or columns.");
+		VistaIOWarning ("VistaIOCreateEdges: Invalid number of rows or columns.");
 
-	/* Allocate memory for the VEdges, its indices, and pixel values: */
-	edges = VMalloc (sizeof (VEdgesRec));
+	/* Allocate memory for the VistaIOEdges, its indices, and pixel values: */
+	edges = VistaIOMalloc (sizeof (VistaIOEdgesRec));
 
-	/* Initialize the VEdges: */
+	/* Initialize the VistaIOEdges: */
 	edges->nrows = nrows;
 	edges->ncolumns = ncolumns;
-	edges->attributes = VCreateAttrList ();
+	edges->attributes = VistaIOCreateAttrList ();
 	edges->nedge_fields = nedge_fields;
 	edges->npoint_fields = npoint_fields;
 	edges->nedges = edges->npoints = 0;
@@ -68,18 +68,18 @@ VEdges VCreateEdges (int nrows, int ncolumns, int nedge_fields,
  *  \param  points
  *  \param  closed indicates if this is a closed edge.
  *  \param  copy
- *  \return VEdge
+ *  \return VistaIOEdge
  */
 
-VEdge VAddEdge (VEdges edges, VFloat * edge_fields, int npoints,
-		VFloat * points, VBooleanPromoted closed,
-		VBooleanPromoted copy)
+VistaIOEdge VistaIOAddEdge (VistaIOEdges edges, VistaIOFloat * edge_fields, int npoints,
+		VistaIOFloat * points, VistaIOBooleanPromoted closed,
+		VistaIOBooleanPromoted copy)
 {
-	VEdge edge = VMalloc (sizeof (VEdgeRec));
+	VistaIOEdge edge = VistaIOMalloc (sizeof (VistaIOEdgeRec));
 	size_t fsize, psize, isize;
 	int i;
-	VPointer p;
-	VFloat *pdata;
+	VistaIOPointer p;
+	VistaIOFloat *pdata;
 
 	/* Add the edge to the end of the current list of edges in order to
 	   maintain a consistent ordering of edges during IO. */
@@ -93,34 +93,34 @@ VEdge VAddEdge (VEdges edges, VFloat * edge_fields, int npoints,
 	edges->npoints += npoints;
 	edge->npoints = npoints;
 	edge->closed = closed;
-	isize = sizeof (VFloat *) * npoints;	/* Size of points index array. */
+	isize = sizeof (VistaIOFloat *) * npoints;	/* Size of points index array. */
 
 	/* If copying data, enough space is allocated to hold everything. */
 	if (copy) {
 #ifndef __alpha
-		fsize = sizeof (VFloat) * edges->nedge_fields;
-		psize = sizeof (VFloat) * npoints * edges->npoint_fields;
+		fsize = sizeof (VistaIOFloat) * edges->nedge_fields;
+		psize = sizeof (VistaIOFloat) * npoints * edges->npoint_fields;
 #else
 		/* pointers must be quadword-aligned on a DEC alpha */
 #define quadalign(a)	((((a)-1)/8+1)*8)
-		fsize = quadalign (sizeof (VFloat) * edges->nedge_fields);
-		psize = quadalign (sizeof (VFloat) * npoints *
+		fsize = quadalign (sizeof (VistaIOFloat) * edges->nedge_fields);
+		psize = quadalign (sizeof (VistaIOFloat) * npoints *
 				   edges->npoint_fields);
 #endif
-		p = VMalloc (fsize + psize + isize);
+		p = VistaIOMalloc (fsize + psize + isize);
 		edge->free = p;
-		edge->edge_fields = (VFloat *) p;
+		edge->edge_fields = (VistaIOFloat *) p;
 		if (fsize > 0)
 			memcpy (p, edge_fields, fsize);
-		pdata = (VFloat *) ((char *)p + fsize);
+		pdata = (VistaIOFloat *) ((char *)p + fsize);
 		memcpy (pdata, points, psize);
-		edge->point_index = (VFloat **) ((char *)p + fsize + psize);
+		edge->point_index = (VistaIOFloat **) ((char *)p + fsize + psize);
 	} else {
-		p = VMalloc (isize);
+		p = VistaIOMalloc (isize);
 		edge->free = p;
 		edge->edge_fields = edge_fields;
 		pdata = points;
-		edge->point_index = (VFloat **) p;
+		edge->point_index = (VistaIOFloat **) p;
 	}
 
 	/* Initialize index array into set of points. */
@@ -131,27 +131,27 @@ VEdge VAddEdge (VEdges edges, VFloat * edge_fields, int npoints,
 }
 
 
-/*! \brief Copy a VEdges object.
+/*! \brief Copy a VistaIOEdges object.
  *
  *  \param  src
- *  \return VEdges
+ *  \return VistaIOEdges
  */
 
-VEdges VCopyEdges (VEdges src)
+VistaIOEdges VistaIOCopyEdges (VistaIOEdges src)
 {
-	VEdges result;
-	VEdge e;
+	VistaIOEdges result;
+	VistaIOEdge e;
 
-	result = VCreateEdges (src->nrows, src->ncolumns, src->nedge_fields,
+	result = VistaIOCreateEdges (src->nrows, src->ncolumns, src->nedge_fields,
 			       src->npoint_fields);
 	for (e = src->first; e != NULL; e = e->next)
-		VAddEdge (result, e->edge_fields, e->npoints,
+		VistaIOAddEdge (result, e->edge_fields, e->npoints,
 			  e->point_index[0], e->closed, TRUE);
-	if (VEdgesAttrList (result))
-		VDestroyAttrList (VEdgesAttrList (result));
-	if (VEdgesAttrList (src))
-		VEdgesAttrList (result) =
-			VCopyAttrList (VEdgesAttrList (src));
+	if (VistaIOEdgesAttrList (result))
+		VistaIODestroyAttrList (VistaIOEdgesAttrList (result));
+	if (VistaIOEdgesAttrList (src))
+		VistaIOEdgesAttrList (result) =
+			VistaIOCopyAttrList (VistaIOEdgesAttrList (src));
 	return result;
 }
 
@@ -161,19 +161,19 @@ VEdges VCopyEdges (VEdges src)
  *  \param edges
  */
 
-void VDestroyEdges (VEdges edges)
+void VistaIODestroyEdges (VistaIOEdges edges)
 {
-	VEdge edge, next_edge;
+	VistaIOEdge edge, next_edge;
 
 	for (edge = edges->first; edge; edge = next_edge) {
 		next_edge = edge->next;
 		if (edge->free)
-			VFree (edge->free);
+			VistaIOFree (edge->free);
 	}
 	if (edges->free)
-		VFree (edges->free);
-	VDestroyAttrList (edges->attributes);
-	VFree (edges);
+		VistaIOFree (edges->free);
+	VistaIODestroyAttrList (edges->attributes);
+	VistaIOFree (edges);
 }
 
 
@@ -185,10 +185,10 @@ void VDestroyEdges (VEdges edges)
  *  \param  edge_sets
  */
 
-int VReadEdges (FILE * file, VAttrList * attributes, VEdges ** edge_sets)
+int VistaIOReadEdges (FILE * file, VistaIOAttrList * attributes, VistaIOEdges ** edge_sets)
 {
-	return VReadObjects (file, VEdgesRepn, attributes,
-			     (VPointer **) edge_sets);
+	return VistaIOReadObjects (file, VistaIOEdgesRepn, attributes,
+			     (VistaIOPointer **) edge_sets);
 }
 
 
@@ -198,12 +198,12 @@ int VReadEdges (FILE * file, VAttrList * attributes, VEdges ** edge_sets)
  *  \param  attributes
  *  \param  nedge_sets
  *  \param  edge_sets
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-VBoolean VWriteEdges (FILE * file, VAttrList attributes, int nedge_sets,
-		      VEdges edge_sets[])
+VistaIOBoolean VistaIOWriteEdges (FILE * file, VistaIOAttrList attributes, int nedge_sets,
+		      VistaIOEdges edge_sets[])
 {
-	return VWriteObjects (file, VEdgesRepn, attributes, nedge_sets,
-			      (VPointer *) edge_sets);
+	return VistaIOWriteObjects (file, VistaIOEdgesRepn, attributes, nedge_sets,
+			      (VistaIOPointer *) edge_sets);
 }

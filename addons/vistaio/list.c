@@ -20,8 +20,8 @@
 #include "vistaio/vistaio.h"
 
 /* Later in this file: */
-static VNodePtrType MakeNode (VPointer item, VNodePtrType prev,
-			      VNodePtrType next);
+static VistaIONodePtrType MakeNode (VistaIOPointer item, VistaIONodePtrType prev,
+			      VistaIONodePtrType next);
 
 
 /*
@@ -30,10 +30,10 @@ static VNodePtrType MakeNode (VPointer item, VNodePtrType prev,
  * Make a node
  */
 
-static VNodePtrType MakeNode (VPointer item, VNodePtrType prev,
-			      VNodePtrType next)
+static VistaIONodePtrType MakeNode (VistaIOPointer item, VistaIONodePtrType prev,
+			      VistaIONodePtrType next)
 {
-	VNodePtrType result = VMalloc (sizeof (struct V_Node));
+	VistaIONodePtrType result = VistaIOMalloc (sizeof (struct VistaIO_Node));
 
 	result->item = item;
 	result->prev = prev;
@@ -45,17 +45,17 @@ static VNodePtrType MakeNode (VPointer item, VNodePtrType prev,
 
 /*! \brief Make a new, empty list, and returns its reference.
  *
- *  \return VList
+ *  \return VistaIOList
  */
 
-VList VListCreate (void)
+VistaIOList VistaIOListCreate (void)
 {
-	VList vlist = VMalloc (sizeof (struct V_List));
-	VNodePtrType dummy_head, dummy_tail;
+	VistaIOList vlist = VistaIOMalloc (sizeof (struct VistaIO_List));
+	VistaIONodePtrType dummy_head, dummy_tail;
 
-	dummy_head = VMalloc (sizeof (struct V_Node));
+	dummy_head = VistaIOMalloc (sizeof (struct VistaIO_Node));
 
-	dummy_tail = VMalloc (sizeof (struct V_Node));
+	dummy_tail = VistaIOMalloc (sizeof (struct VistaIO_Node));
 
 	dummy_head->item = NULL;
 	dummy_head->prev = NULL;
@@ -78,10 +78,10 @@ VList VListCreate (void)
  *         and make the first item the current item.
  *
  *  \param  vlist
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VListFirst (VList vlist)
+VistaIOPointer VistaIOListFirst (VistaIOList vlist)
 {
 	if (vlist->count == 0)	/* empty vist, move beyond beginning */
 		vlist->current = vlist->head;
@@ -96,10 +96,10 @@ VPointer VListFirst (VList vlist)
  *         and make the last item the current item.
  *
  *  \param  vlist
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VListLast (VList vlist)
+VistaIOPointer VistaIOListLast (VistaIOList vlist)
 {
 	if (vlist->count == 0)	/* empty vlist, move beyond end */
 		vlist->current = vlist->tail;
@@ -115,10 +115,10 @@ VPointer VListLast (VList vlist)
  *         item is beyond the end of vlist.
  *
  *  \param  vlist
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VListNext (VList vlist)
+VistaIOPointer VistaIOListNext (VistaIOList vlist)
 {
 	if (vlist->current == vlist->tail)
 		/* already beyond end, no action */
@@ -135,10 +135,10 @@ VPointer VListNext (VList vlist)
  *         item is before the beginning of vlist.
  *
  *  \param  vlist
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VListPrev (VList vlist)
+VistaIOPointer VistaIOListPrev (VistaIOList vlist)
 {
 	if (vlist->current == vlist->head)
 		/* already before beginning, no action */
@@ -162,9 +162,9 @@ VPointer VListPrev (VList vlist)
  *  \param  item
  */
 
-void VListAdd (VList vlist, VPointer item)
+void VistaIOListAdd (VistaIOList vlist, VistaIOPointer item)
 {
-	VNodePtrType add_me;
+	VistaIONodePtrType add_me;
 
 	if (vlist->current == vlist->tail)
 		/* current pointer beyond end, add to end */
@@ -190,9 +190,9 @@ void VListAdd (VList vlist, VPointer item)
  *  \param item
  */
 
-void VListInsert (VList vlist, VPointer item)
+void VistaIOListInsert (VistaIOList vlist, VistaIOPointer item)
 {
-	VNodePtrType add_me;
+	VistaIONodePtrType add_me;
 
 	if (vlist->current == vlist->head)
 		/* current pointer before beginning, add to beginning */
@@ -214,10 +214,10 @@ void VListInsert (VList vlist, VPointer item)
  *  \param item
  */
 
-void VListAppend (VList vlist, VPointer item)
+void VistaIOListAppend (VistaIOList vlist, VistaIOPointer item)
 {
 	vlist->current = vlist->tail;	/* move beyond end */
-	VListAdd (vlist, item);
+	VistaIOListAdd (vlist, item);
 }
 
 
@@ -228,10 +228,10 @@ void VListAppend (VList vlist, VPointer item)
  *  \param item 
  */
 
-void VListPrepend (VList vlist, VPointer item)
+void VistaIOListPrepend (VistaIOList vlist, VistaIOPointer item)
 {
 	vlist->current = vlist->head;	/* move before beginning */
-	VListAdd (vlist, item);
+	VistaIOListAdd (vlist, item);
 }
 
 
@@ -240,13 +240,13 @@ void VListPrepend (VList vlist, VPointer item)
  *  Make the next item the current one.
  *
  *  \param  vlist
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VListRemove (VList vlist)
+VistaIOPointer VistaIOListRemove (VistaIOList vlist)
 {
-	VPointer return_me;
-	VNodePtrType free_me;
+	VistaIOPointer return_me;
+	VistaIONodePtrType free_me;
 
 	return_me = vlist->current->item;
 
@@ -261,7 +261,7 @@ VPointer VListRemove (VList vlist)
 		free_me = vlist->current;
 		vlist->current = vlist->current->next;
 
-		VFree (free_me);
+		VistaIOFree (free_me);
 		vlist->count--;
 	}
 
@@ -278,9 +278,9 @@ VPointer VListRemove (VList vlist)
  *  \param  vlist2
  */
 
-void VListConcat (VList vlist1, VList vlist2)
+void VistaIOListConcat (VistaIOList vlist1, VistaIOList vlist2)
 {
-	VNodePtrType free_me, free_me_too;
+	VistaIONodePtrType free_me, free_me_too;
 
 	free_me = vlist1->tail;
 	free_me_too = vlist2->head;
@@ -296,9 +296,9 @@ void VListConcat (VList vlist1, VList vlist2)
 	vlist1->tail = vlist2->tail;
 	vlist1->count += vlist2->count;
 
-	VFree (free_me);
-	VFree (free_me_too);
-	VFree (vlist2);
+	VistaIOFree (free_me);
+	VistaIOFree (free_me_too);
+	VistaIOFree (vlist2);
 }
 
 
@@ -308,19 +308,19 @@ void VListConcat (VList vlist1, VList vlist2)
  *  \param item_free A pointer to a routine that frees an item.
  */
 
-void VListDestroy (VList vlist, void (*item_free) ())
+void VistaIOListDestroy (VistaIOList vlist, void (*item_free) ())
 {
-	VPointer free_me;
+	VistaIOPointer free_me;
 
 	vlist->current = vlist->head->next;
 	while (vlist->current != vlist->tail) {
-		free_me = VListRemove (vlist);
+		free_me = VistaIOListRemove (vlist);
 		(*item_free) (free_me);
 	}
 
-	VFree (vlist->head);
-	VFree (vlist->tail);
-	VFree (vlist);
+	VistaIOFree (vlist->head);
+	VistaIOFree (vlist->tail);
+	VistaIOFree (vlist);
 }
 
 
@@ -329,16 +329,16 @@ void VListDestroy (VList vlist, void (*item_free) ())
  *  Make the new last item the current one.
  *  
  *  \param  vlist
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VListTrim (VList vlist)
+VistaIOPointer VistaIOListTrim (VistaIOList vlist)
 {
-	VPointer return_me;
+	VistaIOPointer return_me;
 
-	return_me = VListLast (vlist);
-	VListRemove (vlist);
-	VListLast (vlist);
+	return_me = VistaIOListLast (vlist);
+	VistaIOListRemove (vlist);
+	VistaIOListLast (vlist);
 
 	return return_me;
 }
@@ -350,10 +350,10 @@ VPointer VListTrim (VList vlist)
  *  \param  vlist
  *  \param  comp
  *  \param  comp_arg
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-VPointer VListSearch (VList vlist, int (*comp) (), VPointer comp_arg)
+VistaIOPointer VistaIOListSearch (VistaIOList vlist, int (*comp) (), VistaIOPointer comp_arg)
 {
 	if (vlist->current == vlist->head)
 		/* before beginning, go to next node */

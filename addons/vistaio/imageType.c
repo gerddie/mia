@@ -24,58 +24,58 @@
  */
 
 /* Later in this file: */
-static VCopyMethod VImageCopyMethod;
-static VDecodeMethod VImageDecodeMethod;
-static VEncodeAttrMethod VImageEncodeAttrMethod;
-static VEncodeDataMethod VImageEncodeDataMethod;
+static VistaIOCopyMethod VistaIOImageCopyMethod;
+static VistaIODecodeMethod VistaIOImageDecodeMethod;
+static VistaIOEncodeAttrMethod VistaIOImageEncodeAttrMethod;
+static VistaIOEncodeDataMethod VistaIOImageEncodeDataMethod;
 
 /* Used in Type.c to register this type: */
-VTypeMethods VImageMethods = {
-	VImageCopyMethod,	/* copy a VImage */
-	(VDestroyMethod *) VDestroyImage,	/* destroy a VImage */
-	VImageDecodeMethod,	/* decode a VImage's value */
-	VImageEncodeAttrMethod,	/* encode a VImage's attr list */
-	VImageEncodeDataMethod	/* encode a VImage's binary data */
+VistaIOTypeMethods VistaIOImageMethods = {
+	VistaIOImageCopyMethod,	/* copy a VistaIOImage */
+	(VistaIODestroyMethod *) VistaIODestroyImage,	/* destroy a VistaIOImage */
+	VistaIOImageDecodeMethod,	/* decode a VistaIOImage's value */
+	VistaIOImageEncodeAttrMethod,	/* encode a VistaIOImage's attr list */
+	VistaIOImageEncodeDataMethod	/* encode a VistaIOImage's binary data */
 };
 
 
 /*
- *  VImageCopyMethod
+ *  VistaIOImageCopyMethod
  *
  *  The "copy" method registered for the "image" type.
- *  Copy a VImage object.
+ *  Copy a VistaIOImage object.
  */
 
-static VPointer VImageCopyMethod (VPointer value)
+static VistaIOPointer VistaIOImageCopyMethod (VistaIOPointer value)
 {
-	return VCopyImage ((VImage) value, NULL, VAllBands);
+	return VistaIOCopyImage ((VistaIOImage) value, NULL, VistaIOAllBands);
 }
 
 
 /*
- *  VImageDecodeMethod
+ *  VistaIOImageDecodeMethod
  *
  *  The "decode" method registered for the "image" type.
- *  Convert an attribute list plus binary data to a VImage object.
+ *  Convert an attribute list plus binary data to a VistaIOImage object.
  */
 
-static VPointer VImageDecodeMethod (VStringConst name, VBundle b)
+static VistaIOPointer VistaIOImageDecodeMethod (VistaIOStringConst name, VistaIOBundle b)
 {
-	VImage image;
-	VLong nbands, nrows, ncolumns, pixel_repn;
-	VLong nframes, nviewpoints, ncolors, ncomponents;
-	VAttrList list;
+	VistaIOImage image;
+	VistaIOLong nbands, nrows, ncolumns, pixel_repn;
+	VistaIOLong nframes, nviewpoints, ncolors, ncomponents;
+	VistaIOAttrList list;
 	size_t length;
 
 #define Extract(name, dict, locn, required)	\
-	VExtractAttr (b->list, name, dict, VLongRepn, & locn, required)
+	VistaIOExtractAttr (b->list, name, dict, VistaIOLongRepn, & locn, required)
 
 	/* Extract the number of bands, rows, columns, pixel repn, etc.: */
 	nbands = nframes = nviewpoints = ncolors = ncomponents = 1;	/* defaults */
 	if (!Extract (VNBandsAttr, NULL, nbands, FALSE) ||
 	    !Extract (VNRowsAttr, NULL, nrows, TRUE) ||
 	    !Extract (VNColumnsAttr, NULL, ncolumns, TRUE) ||
-	    !Extract (VRepnAttr, VNumericRepnDict, pixel_repn, TRUE) ||
+	    !Extract (VistaIORepnAttr, VistaIONumericRepnDict, pixel_repn, TRUE) ||
 	    !Extract (VNFramesAttr, NULL, nframes, FALSE) ||
 	    !Extract (VNViewpointsAttr, NULL, nviewpoints, FALSE) ||
 	    !Extract (VNColorsAttr, NULL, ncolors, FALSE) ||
@@ -90,41 +90,41 @@ static VPointer VImageDecodeMethod (VStringConst name, VBundle b)
 		    ncolors == 1 && ncomponents == 1)
 			ncomponents = nbands;
 		else {
-			VWarning ("VImageDecodeMethod: %s image has inconsistent nbands", name);
+			VistaIOWarning ("VistaIOImageDecodeMethod: %s image has inconsistent nbands", name);
 			return NULL;
 		}
 	}
 
 	/* Create an image with the specified properties: */
-	if (!(image = VCreateImage ((int)nbands, (int)nrows, (int)ncolumns,
-				    (VRepnKind) pixel_repn)))
+	if (!(image = VistaIOCreateImage ((int)nbands, (int)nrows, (int)ncolumns,
+				    (VistaIORepnKind) pixel_repn)))
 		return NULL;
-	VImageNFrames (image) = nframes;
-	VImageNViewpoints (image) = nviewpoints;
-	VImageNColors (image) = ncolors;
-	VImageNComponents (image) = ncomponents;
+	VistaIOImageNFrames (image) = nframes;
+	VistaIOImageNViewpoints (image) = nviewpoints;
+	VistaIOImageNColors (image) = ncolors;
+	VistaIOImageNComponents (image) = ncomponents;
 
 	/* Give it whatever attributes remain: */
-	list = VImageAttrList (image);
-	VImageAttrList (image) = b->list;
+	list = VistaIOImageAttrList (image);
+	VistaIOImageAttrList (image) = b->list;
 	b->list = list;
 
 	/* Check that the expected amount of binary data was read: */
-	length = VImageNPixels (image);
-	if (VPixelRepn (image) == VBitRepn)
+	length = VistaIOImageNPixels (image);
+	if (VistaIOPixelRepn (image) == VistaIOBitRepn)
 		length = (length + 7) / 8;
 	else
-		length *= VPixelPrecision (image) / 8;
+		length *= VistaIOPixelPrecision (image) / 8;
 	if (length != b->length) {
-		VWarning ("VImageDecodeMethod: %s image has wrong data length", name);
-	      Fail:VDestroyImage (image);
+		VistaIOWarning ("VistaIOImageDecodeMethod: %s image has wrong data length", name);
+	      Fail:VistaIODestroyImage (image);
 		return NULL;
 	}
 
 	/* Unpack the binary pixel data: */
-	length = VImageSize (image);
-	if (!VUnpackData (VPixelRepn (image), VImageNPixels (image),
-			  b->data, VMsbFirst, &length, &VImageData (image),
+	length = VistaIOImageSize (image);
+	if (!VistaIOUnpackData (VistaIOPixelRepn (image), VistaIOImageNPixels (image),
+			  b->data, VistaIOMsbFirst, &length, &VistaIOImageData (image),
 			  NULL))
 		goto Fail;
 	return image;
@@ -134,43 +134,43 @@ static VPointer VImageDecodeMethod (VStringConst name, VBundle b)
 
 
 /*
- *  VImageEncodeAttrMethod
+ *  VistaIOImageEncodeAttrMethod
  *
  *  The "encode_attrs" method registered for the "image" type.
- *  Encode an attribute list value for a VImage object.
+ *  Encode an attribute list value for a VistaIOImage object.
  */
 
-static VAttrList VImageEncodeAttrMethod (VPointer value, size_t * lengthp)
+static VistaIOAttrList VistaIOImageEncodeAttrMethod (VistaIOPointer value, size_t * lengthp)
 {
-	VImage image = value;
-	VAttrList list;
+	VistaIOImage image = value;
+	VistaIOAttrList list;
 	size_t length;
 
 #define OptionallyPrepend(value, name)				\
 	if (value != 1)							\
-	    VPrependAttr (list, name, NULL, VLongRepn, (VLong) value)
+	    VistaIOPrependAttr (list, name, NULL, VistaIOLongRepn, (VistaIOLong) value)
 
 	/* Temporarily prepend several attributes to the image's attribute list: */
-	if ((list = VImageAttrList (image)) == NULL)
-		list = VImageAttrList (image) = VCreateAttrList ();
-	VPrependAttr (list, VRepnAttr, VNumericRepnDict, VLongRepn,
-		      (VLong) VPixelRepn (image));
-	VPrependAttr (list, VNColumnsAttr, NULL, VLongRepn,
-		      (VLong) VImageNColumns (image));
-	VPrependAttr (list, VNRowsAttr, NULL, VLongRepn,
-		      (VLong) VImageNRows (image));
-	OptionallyPrepend (VImageNComponents (image), VNComponentsAttr);
-	OptionallyPrepend (VImageNColors (image), VNColorsAttr);
-	OptionallyPrepend (VImageNViewpoints (image), VNViewpointsAttr);
-	OptionallyPrepend (VImageNFrames (image), VNFramesAttr);
-	OptionallyPrepend (VImageNBands (image), VNBandsAttr);
+	if ((list = VistaIOImageAttrList (image)) == NULL)
+		list = VistaIOImageAttrList (image) = VistaIOCreateAttrList ();
+	VistaIOPrependAttr (list, VistaIORepnAttr, VistaIONumericRepnDict, VistaIOLongRepn,
+		      (VistaIOLong) VistaIOPixelRepn (image));
+	VistaIOPrependAttr (list, VNColumnsAttr, NULL, VistaIOLongRepn,
+		      (VistaIOLong) VistaIOImageNColumns (image));
+	VistaIOPrependAttr (list, VNRowsAttr, NULL, VistaIOLongRepn,
+		      (VistaIOLong) VistaIOImageNRows (image));
+	OptionallyPrepend (VistaIOImageNComponents (image), VNComponentsAttr);
+	OptionallyPrepend (VistaIOImageNColors (image), VNColorsAttr);
+	OptionallyPrepend (VistaIOImageNViewpoints (image), VNViewpointsAttr);
+	OptionallyPrepend (VistaIOImageNFrames (image), VNFramesAttr);
+	OptionallyPrepend (VistaIOImageNBands (image), VNBandsAttr);
 
 	/* Compute the file space needed for the image's binary data: */
-	length = VImageNPixels (image);
-	if (VPixelRepn (image) == VBitRepn)
+	length = VistaIOImageNPixels (image);
+	if (VistaIOPixelRepn (image) == VistaIOBitRepn)
 		length = (length + 7) / 8;
 	else
-		length *= VPixelPrecision (image) / 8;
+		length *= VistaIOPixelPrecision (image) / 8;
 	*lengthp = length;
 
 	return list;
@@ -180,31 +180,31 @@ static VAttrList VImageEncodeAttrMethod (VPointer value, size_t * lengthp)
 
 
 /*
- *  VImageEncodeDataMethod
+ *  VistaIOImageEncodeDataMethod
  *
  *  The "encode_data" method registered for the "image" type.
- *  Encode the pixel values for a VImage object.
+ *  Encode the pixel values for a VistaIOImage object.
  */
 
-static VPointer VImageEncodeDataMethod (VPointer value, VAttrList list,
-					size_t length, VBoolean * free_itp)
+static VistaIOPointer VistaIOImageEncodeDataMethod (VistaIOPointer value, VistaIOAttrList list,
+					size_t length, VistaIOBoolean * free_itp)
 {
-	VImage image = value;
-	VAttrListPosn posn;
+	VistaIOImage image = value;
+	VistaIOAttrListPosn posn;
 	size_t len;
-	VPointer ptr;
+	VistaIOPointer ptr;
 
-	/* Remove the attributes prepended by the VImageEncodeAttrsMethod: */
-	for (VFirstAttr (list, &posn);
-	     strcmp (VGetAttrName (&posn), VRepnAttr) != 0;
-	     VDeleteAttr (&posn));
-	VDeleteAttr (&posn);
+	/* Remove the attributes prepended by the VistaIOImageEncodeAttrsMethod: */
+	for (VistaIOFirstAttr (list, &posn);
+	     strcmp (VistaIOGetAttrName (&posn), VistaIORepnAttr) != 0;
+	     VistaIODeleteAttr (&posn));
+	VistaIODeleteAttr (&posn);
 
 	/* Pack and return pixel data: */
-	if (!VPackData (VPixelRepn (image), VImageNPixels (image),
-			VImageData (image), VMsbFirst, &len, &ptr, free_itp))
+	if (!VistaIOPackData (VistaIOPixelRepn (image), VistaIOImageNPixels (image),
+			VistaIOImageData (image), VistaIOMsbFirst, &len, &ptr, free_itp))
 		return NULL;
 	if (len != length)
-		VError ("VImageEncodeDataMethod: Encoded data has unexpected length");
+		VistaIOError ("VistaIOImageEncodeDataMethod: Encoded data has unexpected length");
 	return ptr;
 }

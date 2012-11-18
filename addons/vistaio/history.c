@@ -35,33 +35,33 @@
 #define MAXPARAMLENGTH 400
 
 char*
-VGetOptionValue (VOptionDescRec *option)
+VistaIOGetOptionValue (VistaIOOptionDescRec *option)
 {
   char *ret;
   int n, i;
   char *vp;
-  VDictEntry *dict;
-  VLong ivalue;
-  VDouble fvalue = 0.0;
-  VStringConst svalue;
+  VistaIODictEntry *dict;
+  VistaIOLong ivalue;
+  VistaIODouble fvalue = 0.0;
+  VistaIOStringConst svalue;
 
   ret = (char*)malloc(MAXPARAMLENGTH);
 
 
   if (option->number == 0) {
-    n = ((VArgVector *) option->value)->number;
-    vp = (char *) ((VArgVector *) option->value)->vector;
+    n = ((VistaIOArgVector *) option->value)->number;
+    vp = (char *) ((VistaIOArgVector *) option->value)->vector;
   } else {
     n = option->number;
     vp = (char *) option->value;
 
   }
-  for (i = 0; i < n; i++, vp += VRepnSize (option->repn)) {
+  for (i = 0; i < n; i++, vp += VistaIORepnSize (option->repn)) {
 
     switch (option->repn) {
 
-    case VBitRepn:
-      ivalue = * (VBit *) vp;
+    case VistaIOBitRepn:
+      ivalue = * (VistaIOBit *) vp;
       goto PrintLong;
 
     case VUByteRepn:
@@ -72,35 +72,35 @@ VGetOptionValue (VOptionDescRec *option)
       ivalue = * (VSByte *) vp;
       goto PrintLong;
 
-    case VShortRepn:
-      ivalue = * (VShort *) vp;
+    case VistaIOShortRepn:
+      ivalue = * (VistaIOShort *) vp;
       goto PrintLong;
 
-    case VLongRepn:
-      ivalue = * (VLong *) vp;
+    case VistaIOLongRepn:
+      ivalue = * (VistaIOLong *) vp;
     PrintLong:
       snprintf (ret, MAXPARAMLENGTH,"%d", ivalue);
       break;
 
-    case VFloatRepn:
-      fvalue = * (VFloat *) vp;
+    case VistaIOFloatRepn:
+      fvalue = * (VistaIOFloat *) vp;
       goto PrintDbl;
 
-    case VDoubleRepn:
-      fvalue = * (VDouble *) vp;
+    case VistaIODoubleRepn:
+      fvalue = * (VistaIODouble *) vp;
     PrintDbl:
       snprintf (ret, MAXPARAMLENGTH, "%g", fvalue);
       break;
 
-    case VBooleanRepn:
-	    snprintf (ret,MAXPARAMLENGTH, "%s", * (VBoolean *) vp ? "true" : "false");
+    case VistaIOBooleanRepn:
+	    snprintf (ret,MAXPARAMLENGTH, "%s", * (VistaIOBoolean *) vp ? "true" : "false");
 	    break;
-    case VStringRepn:
-	    svalue = * (VString *) vp;
+    case VistaIOStringRepn:
+	    svalue = * (VistaIOString *) vp;
       if (! svalue)
 	      svalue = "(none)";
       else if (option->dict &&
-               (dict = VLookupDictValue (option->dict, VDoubleRepn,
+               (dict = VistaIOLookupDictValue (option->dict, VistaIODoubleRepn,
                                          svalue)))
 	      svalue = dict->keyword;
       snprintf (ret, MAXPARAMLENGTH, "%s", svalue);
@@ -115,7 +115,7 @@ VGetOptionValue (VOptionDescRec *option)
 }
 
 char*
-VGetHistory(int noptions,VOptionDescRec *options,char *name)
+VistaIOGetHistory(int noptions,VistaIOOptionDescRec *options,char *name)
 {
   int i,k;
   char *history;
@@ -134,9 +134,9 @@ VGetHistory(int noptions,VOptionDescRec *options,char *name)
       tok = strtok(NULL, " ");
       sversion = strdup(tok);
     }
-    else VWarning("History function can not grab program version");
+    else VistaIOWarning("History function can not grab program version");
   }
-  else VWarning("History function can not grab program name");
+  else VistaIOWarning("History function can not grab program name");
 
 
   history = (char*) malloc(sizeof(char*) * MAXPARAMLENGTH);
@@ -152,7 +152,7 @@ VGetHistory(int noptions,VOptionDescRec *options,char *name)
       if (strncmp(options->keyword, ignore[k], strlen(ignore[k])) == 0)
 	goto out;
     }
-    item = VGetOptionValue (options);
+    item = VistaIOGetOptionValue (options);
     strncat(history, "-", 1);
     strncat(history, options->keyword, strlen(options->keyword));
     strncat(history, " ", 1);
@@ -168,88 +168,88 @@ VGetHistory(int noptions,VOptionDescRec *options,char *name)
   return history;
 }
 
-VAttrList
-VReadHistory(VAttrList *list)
+VistaIOAttrList
+VistaIOReadHistory(VistaIOAttrList *list)
 {
   int i = 0;
-  VStringConst temponame;
-  VAttrListPosn posn;
-  VAttrList history_list=NULL;
+  VistaIOStringConst temponame;
+  VistaIOAttrListPosn posn;
+  VistaIOAttrList history_list=NULL;
   char *temptok, history[]="history";
-  VString str;
+  VistaIOString str;
 
-  for (VLastAttr((*list),&posn);VAttrExists(&posn);VPrevAttr(&posn)) {
+  for (VistaIOLastAttr((*list),&posn);VistaIOAttrExists(&posn);VistaIOPrevAttr(&posn)) {
 
-    if (strncmp(VGetAttrName(&posn), history, strlen(history)) != 0 )
+    if (strncmp(VistaIOGetAttrName(&posn), history, strlen(history)) != 0 )
       continue;
 
     /* old history format by SH */
-    if (VGetAttrRepn(&posn) == VStringRepn ) {
-      if (history_list==NULL) history_list = VCreateAttrList();
-      VGetAttrValue(&posn, NULL, VStringRepn, &str);
+    if (VistaIOGetAttrRepn(&posn) == VistaIOStringRepn ) {
+      if (history_list==NULL) history_list = VistaIOCreateAttrList();
+      VistaIOGetAttrValue(&posn, NULL, VistaIOStringRepn, &str);
       temptok=strtok(str, " ");
       temponame = strdup(temptok);
       temptok = strtok(NULL, "\0");
-      VPrependAttr(history_list, temponame, NULL, VStringRepn, temptok);
+      VistaIOPrependAttr(history_list, temponame, NULL, VistaIOStringRepn, temptok);
       i++;
     }
     /* new history format */
-    if (VGetAttrRepn(&posn) == VAttrListRepn ) {
-      if (i>0) VError("type mismatch while reading history");
-      VGetAttrValue(&posn, NULL, VAttrListRepn, &history_list);
+    if (VistaIOGetAttrRepn(&posn) == VistaIOAttrListRepn ) {
+      if (i>0) VistaIOError("type mismatch while reading history");
+      VistaIOGetAttrValue(&posn, NULL, VistaIOAttrListRepn, &history_list);
       break;
     }
   }
 
   /* Warning */
   if (history_list == NULL)
-    VWarning("VReadHistory: No history items found");
+    VistaIOWarning("VistaIOReadHistory: No history items found");
 
   return history_list;
 }
 
 void
-VPrependHistory(int noptions,VOptionDescRec *options,char *name,VAttrList *list)
+VistaIOPrependHistory(int noptions,VistaIOOptionDescRec *options,char *name,VistaIOAttrList *list)
 {
   char *tok;
   char *newhistory;
-  VStringConst oname;
+  VistaIOStringConst oname;
 
   /* Generate the new history entry */
-  if ((newhistory = VGetHistory(noptions,options,name)) == NULL)
-    VError("Error while building history string\n");
+  if ((newhistory = VistaIOGetHistory(noptions,options,name)) == NULL)
+    VistaIOError("Error while building history string\n");
 
   tok = strtok(newhistory, " ");
   oname = strdup(tok);
   tok = strtok(NULL, "\0");
 
   /* Prepend history list */
-  if ((*list) == NULL) (*list) = VCreateAttrList();
-  VPrependAttr( (*list) ,oname, NULL, VStringRepn, tok);
+  if ((*list) == NULL) (*list) = VistaIOCreateAttrList();
+  VistaIOPrependAttr( (*list) ,oname, NULL, VistaIOStringRepn, tok);
 }
 
 void
-VHistory(int noptions,VOptionDescRec *options,char *name,VAttrList *in_list,VAttrList *out_list)
+VistaIOHistory(int noptions,VistaIOOptionDescRec *options,char *name,VistaIOAttrList *in_list,VistaIOAttrList *out_list)
 {
-   VAttrList history_list=NULL;
-  VAttrListPosn posn;
-  /*VBoolean sw=FALSE;*/
+   VistaIOAttrList history_list=NULL;
+  VistaIOAttrListPosn posn;
+  /*VistaIOBoolean sw=FALSE;*/
   char history[]="history";
-  /*VString str; */
+  /*VistaIOString str; */
 
   /* Read history from list */
-  history_list = VReadHistory(in_list);
+  history_list = VistaIOReadHistory(in_list);
 
   /* Prepend new history entry */
-  VPrependHistory(noptions,options,name,&history_list);
+  VistaIOPrependHistory(noptions,options,name,&history_list);
 
   /* DELETE ANY history attributes in dest */
-  for (VLastAttr((*out_list),&posn);VAttrExists(&posn);VPrevAttr(&posn)) {
-    if (strncmp(VGetAttrName(&posn), history, strlen(history)) == 0 )
-      VDeleteAttr(&posn);
+  for (VistaIOLastAttr((*out_list),&posn);VistaIOAttrExists(&posn);VistaIOPrevAttr(&posn)) {
+    if (strncmp(VistaIOGetAttrName(&posn), history, strlen(history)) == 0 )
+      VistaIODeleteAttr(&posn);
   }
 
   /* Prepend history in dest */
-  VPrependAttr( (*out_list),history,NULL,VAttrListRepn,history_list);
+  VistaIOPrependAttr( (*out_list),history,NULL,VistaIOAttrListRepn,history_list);
 
 }

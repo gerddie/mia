@@ -31,46 +31,46 @@
 extern "C" {
 #endif
 
-	typedef struct VField2DRec {
-		VLong x_dim;
-		VLong y_dim;
-		VRepnKind repn;
-		VLong nsize_element;
-		VAttrList attr; 
+	typedef struct VistaIOField2DRec {
+		VistaIOLong x_dim;
+		VistaIOLong y_dim;
+		VistaIORepnKind repn;
+		VistaIOLong nsize_element;
+		VistaIOAttrList attr; 
                 union {
-                        VPointer data;
-                        VPointerConst cdata;
+                        VistaIOPointer data;
+                        VistaIOPointerConst cdata;
                 } p; 
-		VBoolean owns_data; 
-		VLong nsize; 
-	} VField2DRec, *VField2D;
+		VistaIOBoolean owns_data; 
+		VistaIOLong nsize; 
+	} VistaIOField2DRec, *VistaIOField2D;
 	
-	EXPORT_VISTA VField2D VCreateField2DFrom(VLong _x_dim, 
-				VLong _y_dim, 
-				VLong nsize_elemet,
-				VRepnKind repn,
-				VPointerConst data);
+	EXPORT_VISTA VistaIOField2D VistaIOCreateField2DFrom(VistaIOLong _x_dim, 
+				VistaIOLong _y_dim, 
+				VistaIOLong nsize_elemet,
+				VistaIORepnKind repn,
+				VistaIOPointerConst data);
 	
-	EXPORT_VISTA VField2D VCreateField2D(VLong _x_dim, 
-				VLong _y_dim, 
-				VLong nsize_elemet,
-				VRepnKind repn);
+	EXPORT_VISTA VistaIOField2D VistaIOCreateField2D(VistaIOLong _x_dim, 
+				VistaIOLong _y_dim, 
+				VistaIOLong nsize_elemet,
+				VistaIORepnKind repn);
 	
 	/* destroy the field and release all data (if owned) */
-	EXPORT_VISTA void VDestroyField2D (VField2D field);
+	EXPORT_VISTA void VistaIODestroyField2D (VistaIOField2D field);
 	
 	/* copy the data field with all data */ 
-	EXPORT_VISTA VField2D VCopyField2D (VField2D src);
+	EXPORT_VISTA VistaIOField2D VistaIOCopyField2D (VistaIOField2D src);
 	
 	/* mirrors the datafield without copying the real data*/
-	EXPORT_VISTA VField2D VMirrorField2D(VField2D src);
+	EXPORT_VISTA VistaIOField2D VistaIOMirrorField2D(VistaIOField2D src);
 	
 	
-#define VField2DElement(FIELD, X, Y, type) &((type*)FIELD->data)[field->nsize_element * (x + nx * Y )]
+#define VistaIOField2DElement(FIELD, X, Y, type) &((type*)FIELD->data)[field->nsize_element * (x + nx * Y )]
 	
-	EXPORT_VISTA char *VGetField2DListName(VField2D field);	
+	EXPORT_VISTA char *VistaIOGetField2DListName(VistaIOField2D field);	
 
-extern VTypeMethods VField2DMethods; 
+extern VistaIOTypeMethods VistaIOField2DMethods; 
 	
 #ifdef __cplusplus
 }

@@ -24,14 +24,14 @@
  */
 
 /* Later in this file: */
-static VDecodeMethod VolumesDecodeMethod;
-static VEncodeAttrMethod VolumesEncodeAttrMethod;
-static VEncodeDataMethod VolumesEncodeDataMethod;
+static VistaIODecodeMethod VolumesDecodeMethod;
+static VistaIOEncodeAttrMethod VolumesEncodeAttrMethod;
+static VistaIOEncodeDataMethod VolumesEncodeDataMethod;
 
 /* Used in Type.c to register this type: */
-VTypeMethods VolumesMethods = {
-	(VCopyMethod *) VCopyVolumes,	/* copy a Volumes */
-	(VDestroyMethod *) VDestroyVolumes,	/* destroy a Volumes */
+VistaIOTypeMethods VolumesMethods = {
+	(VistaIOCopyMethod *) VistaIOCopyVolumes,	/* copy a Volumes */
+	(VistaIODestroyMethod *) VistaIODestroyVolumes,	/* destroy a Volumes */
 	VolumesDecodeMethod,	/* decode a Volumes's value */
 	VolumesEncodeAttrMethod,	/* encode a Volumes's attr list */
 	VolumesEncodeDataMethod	/* encode a Volumes's binary data */
@@ -46,27 +46,27 @@ VTypeMethods VolumesMethods = {
  *
  *  \param  name
  *  \param  b
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-static VPointer VolumesDecodeMethod (VStringConst name, VBundle b)
+static VistaIOPointer VolumesDecodeMethod (VistaIOStringConst name, VistaIOBundle b)
 {
 	Volumes volumes;
-	VAttrList list;
+	VistaIOAttrList list;
 	int nels, i, j;
 	size_t length;
-	VShort hashlen, nbands, nrows, ncols;
+	VistaIOShort hashlen, nbands, nrows, ncols;
 	short nt1, nt2;
 	short label;
-	VShort nvolumes;
-	VLong ntracks;
+	VistaIOShort nvolumes;
+	VistaIOLong ntracks;
 	short *p;
-	VTrack t;
-	VPointer data;
+	VistaIOTrack t;
+	VistaIOPointer data;
 	Volume vol;
 
 #define Extract(name, dict, locn, required)	\
-  VExtractAttr (b->list, name, dict, VShortRepn, & locn, required)
+  VistaIOExtractAttr (b->list, name, dict, VistaIOShortRepn, & locn, required)
 
 	/* Extract the required attribute values for Volumes. */
 	if (!Extract (VolNVolumesAttr, NULL, nvolumes, TRUE) ||
@@ -75,12 +75,12 @@ static VPointer VolumesDecodeMethod (VStringConst name, VBundle b)
 	    !Extract (VolNColumnsAttr, NULL, ncols, TRUE))
 		return NULL;
 	if (nvolumes <= 0) {
-		VWarning ("VolumesReadDataMethod: Bad Volumes file attributes");
+		VistaIOWarning ("VolumesReadDataMethod: Bad Volumes file attributes");
 		return NULL;
 	}
 
 	/* Create the Volumes data structure. */
-	volumes = VCreateVolumes (nbands, nrows, ncols);
+	volumes = VistaIOCreateVolumes (nbands, nrows, ncols);
 	if (!volumes)
 		return NULL;
 
@@ -90,37 +90,37 @@ static VPointer VolumesDecodeMethod (VStringConst name, VBundle b)
 	b->list = list;
 
 	/* check amount of binary data: */
-	nels = b->length / (VRepnPrecision (VShortRepn) / 8);
-	length = nels * (VRepnPrecision (VShortRepn) / 8);
+	nels = b->length / (VistaIORepnPrecision (VistaIOShortRepn) / 8);
+	length = nels * (VistaIORepnPrecision (VistaIOShortRepn) / 8);
 
 	/* Allocate storage for the Volumes binary data: */
-	data = VMalloc (nels * sizeof (VShort));
+	data = VistaIOMalloc (nels * sizeof (VistaIOShort));
 
 	/* Unpack the binary data: */
-	if (!VUnpackData
-	    (VShortRepn, nels, b->data, VMsbFirst, &length, &data, NULL))
-		VError ("error unpacking data");
+	if (!VistaIOUnpackData
+	    (VistaIOShortRepn, nels, b->data, VistaIOMsbFirst, &length, &data, NULL))
+		VistaIOError ("error unpacking data");
 
-	p = (VShort *) data;
+	p = (VistaIOShort *) data;
 	for (i = 0; i < nvolumes; i++) {
 		nt1 = *p++;
 		nt2 = *p++;
 		ntracks =
 			(long)nt1 + (long)nt2 -
-			(long)VRepnMinValue (VShortRepn);
+			(long)VistaIORepnMinValue (VistaIOShortRepn);
 		hashlen = *p++;
 		nbands = *p++;
 		label = *p++;
-		vol = VCreateVolume (label, nbands, nrows, ncols, hashlen);
+		vol = VistaIOCreateVolume (label, nbands, nrows, ncols, hashlen);
 		for (j = 0; j < ntracks; j++) {
-			t = VMalloc (sizeof (VTrackRec));
+			t = VistaIOMalloc (sizeof (VistaIOTrackRec));
 			t->band = *p++;
 			t->row = *p++;
 			t->col = *p++;
 			t->length = *p++;
 			AddTrack (vol, t);
 		}
-		VAddVolume (volumes, vol);
+		VistaIOAddVolume (volumes, vol);
 	}
 	return volumes;
 
@@ -136,27 +136,27 @@ static VPointer VolumesDecodeMethod (VStringConst name, VBundle b)
  *
  *  \param  value
  *  \param  lengthp
- *  \return VAttrList
+ *  \return VistaIOAttrList
  */
 
-static VAttrList VolumesEncodeAttrMethod (VPointer value, size_t * lengthp)
+static VistaIOAttrList VolumesEncodeAttrMethod (VistaIOPointer value, size_t * lengthp)
 {
 	Volumes volumes = value;
 	Volume v;
-	VAttrList list;
-	VLong ntracks;
+	VistaIOAttrList list;
+	VistaIOLong ntracks;
 
 	/* Temporarily prepend several attributes to the edge set's list: */
 	if ((list = VolumesAttrList (volumes)) == NULL)
-		list = VolumesAttrList (volumes) = VCreateAttrList ();
-	VPrependAttr (list, VolNVolumesAttr, NULL, VShortRepn,
-		      (VShort) volumes->nvolumes);
-	VPrependAttr (list, VolNBandsAttr, NULL, VShortRepn,
-		      (VShort) volumes->nbands);
-	VPrependAttr (list, VolNRowsAttr, NULL, VShortRepn,
-		      (VShort) volumes->nrows);
-	VPrependAttr (list, VolNColumnsAttr, NULL, VShortRepn,
-		      (VShort) volumes->ncolumns);
+		list = VolumesAttrList (volumes) = VistaIOCreateAttrList ();
+	VistaIOPrependAttr (list, VolNVolumesAttr, NULL, VistaIOShortRepn,
+		      (VistaIOShort) volumes->nvolumes);
+	VistaIOPrependAttr (list, VolNBandsAttr, NULL, VistaIOShortRepn,
+		      (VistaIOShort) volumes->nbands);
+	VistaIOPrependAttr (list, VolNRowsAttr, NULL, VistaIOShortRepn,
+		      (VistaIOShort) volumes->nrows);
+	VistaIOPrependAttr (list, VolNColumnsAttr, NULL, VistaIOShortRepn,
+		      (VistaIOShort) volumes->ncolumns);
 
 	/* Compute the file space needed for the Volumes's binary data: */
 
@@ -165,13 +165,13 @@ static VAttrList VolumesEncodeAttrMethod (VPointer value, size_t * lengthp)
 		ntracks += v->ntracks;
 
 	/*
-	   *lengthp = (VRepnPrecision (VShortRepn) / 8)
+	   *lengthp = (VistaIORepnPrecision (VistaIOShortRepn) / 8)
 	   * ((ntracks * 4) + (volumes->nvolumes * 2))
-	   + (2 * VRepnPrecision (VShortRepn) / 8) * volumes->nvolumes;
+	   + (2 * VistaIORepnPrecision (VistaIOShortRepn) / 8) * volumes->nvolumes;
 	 */
 
 	*lengthp =
-		(VRepnPrecision (VShortRepn) / 8) * (4 * ntracks +
+		(VistaIORepnPrecision (VistaIOShortRepn) / 8) * (4 * ntracks +
 						     5 * volumes->nvolumes);
 
 	return list;
@@ -186,79 +186,79 @@ static VAttrList VolumesEncodeAttrMethod (VPointer value, size_t * lengthp)
  *  \param  list
  *  \param  length
  *  \param  free_itp
- *  \return VPointer
+ *  \return VistaIOPointer
  */
 
-static VPointer
-VolumesEncodeDataMethod (VPointer value, VAttrList list, size_t length,
-			 VBoolean * free_itp)
+static VistaIOPointer
+VolumesEncodeDataMethod (VistaIOPointer value, VistaIOAttrList list, size_t length,
+			 VistaIOBoolean * free_itp)
 {
 	Volumes volumes = value;
 	Volume v;
 	size_t len;
-	VPointer ptr, p;
-	VShort idata[4], hashlen, nbands, ntracks, label;
+	VistaIOPointer ptr, p;
+	VistaIOShort idata[4], hashlen, nbands, ntracks, label;
 	long nt1, nt2;
 	int i;
-	VTrack t;
+	VistaIOTrack t;
 
 	/* Allocate a buffer for the encoded data: */
-	p = ptr = VMalloc (length);
+	p = ptr = VistaIOMalloc (length);
 
 	/* Pack each edge: */
 	for (v = volumes->first; v != NULL; v = v->next) {
 
 		/* Pack the number of tracks in volume: */
 		nt2 = 0;
-		nt1 = v->ntracks + (long)VRepnMinValue (VShortRepn);
-		if (nt1 > (long)VRepnMaxValue (VShortRepn)) {
-			nt1 = (long)VRepnMaxValue (VShortRepn) - 1;
+		nt1 = v->ntracks + (long)VistaIORepnMinValue (VistaIOShortRepn);
+		if (nt1 > (long)VistaIORepnMaxValue (VistaIOShortRepn)) {
+			nt1 = (long)VistaIORepnMaxValue (VistaIOShortRepn) - 1;
 			nt2 = v->ntracks - nt1 +
-				(long)VRepnMinValue (VShortRepn);
+				(long)VistaIORepnMinValue (VistaIOShortRepn);
 		}
-		if (nt2 > (VLong) VRepnMaxValue (VShortRepn)) {
-			VError ("too many tracks in volume: ntracks:%d  %d %d", nt1, nt2, v->ntracks);
+		if (nt2 > (VistaIOLong) VistaIORepnMaxValue (VistaIOShortRepn)) {
+			VistaIOError ("too many tracks in volume: ntracks:%d  %d %d", nt1, nt2, v->ntracks);
 		}
 
-		ntracks = (VShort) nt1;
-		len = VRepnPrecision (VShortRepn) / 8;
-		if (!VPackData
-		    (VShortRepn, 1, &ntracks, VMsbFirst, &len, &p, NULL))
+		ntracks = (VistaIOShort) nt1;
+		len = VistaIORepnPrecision (VistaIOShortRepn) / 8;
+		if (!VistaIOPackData
+		    (VistaIOShortRepn, 1, &ntracks, VistaIOMsbFirst, &len, &p, NULL))
 			return NULL;
 		p = (char *)p + len;
 		length -= len;
 
-		ntracks = (VShort) nt2;
-		len = VRepnPrecision (VShortRepn) / 8;
-		if (!VPackData
-		    (VShortRepn, 1, &ntracks, VMsbFirst, &len, &p, NULL))
+		ntracks = (VistaIOShort) nt2;
+		len = VistaIORepnPrecision (VistaIOShortRepn) / 8;
+		if (!VistaIOPackData
+		    (VistaIOShortRepn, 1, &ntracks, VistaIOMsbFirst, &len, &p, NULL))
 			return NULL;
 		p = (char *)p + len;
 		length -= len;
 
 		/* Pack the hashtable length: */
-		hashlen = (VShort) v->nbuckets;
-		len = VRepnPrecision (VShortRepn) / 8;
-		if (!VPackData
-		    (VShortRepn, 1, &hashlen, VMsbFirst, &len, &p, NULL))
+		hashlen = (VistaIOShort) v->nbuckets;
+		len = VistaIORepnPrecision (VistaIOShortRepn) / 8;
+		if (!VistaIOPackData
+		    (VistaIOShortRepn, 1, &hashlen, VistaIOMsbFirst, &len, &p, NULL))
 			return NULL;
 		p = (char *)p + len;
 		length -= len;
 
 		/* Pack the number of bands (used in hash function): */
-		nbands = (VShort) v->nbands;
-		len = VRepnPrecision (VShortRepn) / 8;
-		if (!VPackData
-		    (VShortRepn, 1, &nbands, VMsbFirst, &len, &p, NULL))
+		nbands = (VistaIOShort) v->nbands;
+		len = VistaIORepnPrecision (VistaIOShortRepn) / 8;
+		if (!VistaIOPackData
+		    (VistaIOShortRepn, 1, &nbands, VistaIOMsbFirst, &len, &p, NULL))
 			return NULL;
 		p = (char *)p + len;
 		length -= len;
 
 		/* Pack label id */
-		label = (VShort) v->label;
-		len = VRepnPrecision (VShortRepn) / 8;
-		if (!VPackData
-		    (VShortRepn, 1, &label, VMsbFirst, &len, &p, NULL))
+		label = (VistaIOShort) v->label;
+		len = VistaIORepnPrecision (VistaIOShortRepn) / 8;
+		if (!VistaIOPackData
+		    (VistaIOShortRepn, 1, &label, VistaIOMsbFirst, &len, &p, NULL))
 			return NULL;
 		p = (char *)p + len;
 		length -= len;
@@ -269,9 +269,9 @@ VolumesEncodeDataMethod (VPointer value, VAttrList list, size_t length,
 				idata[1] = t->row;
 				idata[2] = t->col;
 				idata[3] = t->length;
-				len = 4 * VRepnPrecision (VShortRepn) / 8;
-				if (!VPackData
-				    (VShortRepn, 4, &idata[0], VMsbFirst,
+				len = 4 * VistaIORepnPrecision (VistaIOShortRepn) / 8;
+				if (!VistaIOPackData
+				    (VistaIOShortRepn, 4, &idata[0], VistaIOMsbFirst,
 				     &len, &p, NULL))
 					return NULL;
 				p = (char *)p + len;

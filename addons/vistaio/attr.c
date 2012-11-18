@@ -20,18 +20,18 @@
 #include "vista.h"
 
 /* Later in this file: */
-static VStringConst Encode (VDictEntry * dict, VRepnKind repn, va_list * args);
-static VAttrRec *NewAttr (VStringConst, VDictEntry *, VRepnKind, va_list *);
-static void SetAttr (VAttrListPosn *, VDictEntry *, VRepnKind, va_list *);
-static void FreeAttrValue (VStringConst, VAttrRec *);
+static VistaIOStringConst Encode (VistaIODictEntry * dict, VistaIORepnKind repn, va_list * args);
+static VistaIOAttrRec *NewAttr (VistaIOStringConst, VistaIODictEntry *, VistaIORepnKind, va_list *);
+static void SetAttr (VistaIOAttrListPosn *, VistaIODictEntry *, VistaIORepnKind, va_list *);
+static void FreeAttrValue (VistaIOStringConst, VistaIOAttrRec *);
 
 
 /*! \brief Append a new attribute to a list.
  *
  *  The calling sequence is:
  *
- *	VAppendAttr (VAttrList list, VStringConst name,
- *		     VDictEntry *dict, VRepnKind repn, xxx value)
+ *	VistaIOAppendAttr (VistaIOAttrList list, VistaIOStringConst name,
+ *		     VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
  *
  *  where xxx depends on the kind of representation, repn. An optional
  *  dictionary, dict, can specify value -> string translations.
@@ -42,11 +42,11 @@ static void FreeAttrValue (VStringConst, VAttrRec *);
  *  \param  repn
  */
 
-EXPORT_VISTA void VAppendAttr (VAttrList list, VStringConst name, VDictEntry * dict,
-		  VRepnKind repn, ...)
+EXPORT_VISTA void VistaIOAppendAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry * dict,
+		  VistaIORepnKind repn, ...)
 {
 	va_list args;
-	VAttrRec *a;
+	VistaIOAttrRec *a;
 
 	/* Create the new attribute node: */
 	va_start (args, repn);
@@ -66,62 +66,62 @@ EXPORT_VISTA void VAppendAttr (VAttrList list, VStringConst name, VDictEntry * d
 /*! \brief Make a copy of an attribute list.
  * 
  *  \param  list 
- *  \return VAttrList
+ *  \return VistaIOAttrList
  */
 
-EXPORT_VISTA VAttrList VCopyAttrList (VAttrList list)
+EXPORT_VISTA VistaIOAttrList VistaIOCopyAttrList (VistaIOAttrList list)
 {
-	VAttrList new_list = VCreateAttrList ();
+	VistaIOAttrList new_list = VistaIOCreateAttrList ();
 	size_t name_size, value_size;
-	VAttrRec *old_a, *new_a;
-	VBundle old_b, new_b;
-	VTypeMethods *methods;
+	VistaIOAttrRec *old_a, *new_a;
+	VistaIOBundle old_b, new_b;
+	VistaIOTypeMethods *methods;
 
 	/* For each node of the old list: */
 	for (old_a = list->next; old_a; old_a = old_a->next) {
 
 		/* Compute the amount of storage needed for a copy of the node: */
 		name_size = strlen (old_a->name);
-		value_size = (old_a->repn == VStringRepn) ?
-			strlen ((VStringConst) old_a->value) + 1 : 0;
+		value_size = (old_a->repn == VistaIOStringRepn) ?
+			strlen ((VistaIOStringConst) old_a->value) + 1 : 0;
 
 		/* Allocate that size and fill in the node's value: */
-		new_a = VMalloc (sizeof (VAttrRec) + name_size + value_size);
+		new_a = VistaIOMalloc (sizeof (VistaIOAttrRec) + name_size + value_size);
 		strcpy (new_a->name, old_a->name);
 		switch (new_a->repn = old_a->repn) {
 
-		case VAttrListRepn:
-			new_a->value = VCopyAttrList (old_a->value);
+		case VistaIOAttrListRepn:
+			new_a->value = VistaIOCopyAttrList (old_a->value);
 			break;
 
-		case VBundleRepn:
+		case VistaIOBundleRepn:
 			old_b = old_a->value;
-			new_b = VCreateBundle (old_b->type_name,
-					       VCopyAttrList (old_b->list),
+			new_b = VistaIOCreateBundle (old_b->type_name,
+					       VistaIOCopyAttrList (old_b->list),
 					       old_b->length, NULL);
 			if (old_b->length > 0) {
-				new_b->data = VMalloc (old_b->length);
+				new_b->data = VistaIOMalloc (old_b->length);
 				memcpy (new_b->data, old_b->data,
 					old_b->length);
 			}
 			new_a->value = new_b;
 			break;
 
-		case VPointerRepn:
+		case VistaIOPointerRepn:
 			new_a->value = old_a->value;
 			break;
 
-		case VStringRepn:
+		case VistaIOStringRepn:
 			new_a->value =
-				(VPointer) (new_a->name + name_size + 1);
+				(VistaIOPointer) (new_a->name + name_size + 1);
 			strcpy (new_a->value, old_a->value);
 			break;
 
 		default:
-		  if ((methods = VRepnMethods (new_a->repn)))
+		  if ((methods = VistaIORepnMethods (new_a->repn)))
 				new_a->value = (methods->copy) (old_a->value);
 			else
-				VError ("VCopyAttrList: %s attribute has invalid repn %d", old_a->name, old_a->repn);
+				VistaIOError ("VistaIOCopyAttrList: %s attribute has invalid repn %d", old_a->name, old_a->repn);
 		}
 
 		/* Append it to the new list: */
@@ -139,13 +139,13 @@ EXPORT_VISTA VAttrList VCopyAttrList (VAttrList list)
 /*! \brief Create an attribute list.
  */
 
-EXPORT_VISTA VAttrList VCreateAttrList (void)
+EXPORT_VISTA VistaIOAttrList VistaIOCreateAttrList (void)
 {
-	VAttrList list;
+	VistaIOAttrList list;
 
-	list = VNew (VAttrRec);
+	list = VistaIONew (VistaIOAttrRec);
 	list->next = list->prev = list->value = NULL;
-	list->repn = VUnknownRepn;	/* not mistakable for an attribute */
+	list->repn = VistaIOUnknownRepn;	/* not mistakable for an attribute */
 	list->name[0] = 0;
 	return list;
 }
@@ -157,15 +157,15 @@ EXPORT_VISTA VAttrList VCreateAttrList (void)
  *  \param  list
  *  \param  length
  *  \param  data
- *  \return VBundle
+ *  \return VistaIOBundle
  */
 
-EXPORT_VISTA VBundle VCreateBundle (VStringConst type_name, VAttrList list, size_t length,
-		       VPointer data)
+EXPORT_VISTA VistaIOBundle VistaIOCreateBundle (VistaIOStringConst type_name, VistaIOAttrList list, size_t length,
+		       VistaIOPointer data)
 {
-	VBundle b;
+	VistaIOBundle b;
 
-	b = VMalloc (sizeof (VBundleRec) + strlen (type_name));
+	b = VistaIOMalloc (sizeof (VistaIOBundleRec) + strlen (type_name));
 	strcpy (b->type_name, type_name);
 	b->list = list;
 	b->length = length;
@@ -179,27 +179,27 @@ EXPORT_VISTA VBundle VCreateBundle (VStringConst type_name, VAttrList list, size
  *  \param  dict
  *  \param  repn
  *  \param  value
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VDecodeAttrValue (VStringConst str, VDictEntry * dict,
-			   VRepnKind repn, VPointer value)
+EXPORT_VISTA VistaIOBoolean VistaIODecodeAttrValue (VistaIOStringConst str, VistaIODictEntry * dict,
+			   VistaIORepnKind repn, VistaIOPointer value)
 {
-	VLong i_value = 0;
-	VDouble f_value = 0.0;
+	VistaIOLong i_value = 0;
+	VistaIODouble f_value = 0.0;
 	char *cp = NULL, buf[20];
 
 	/* If a dict is provided, see if str maps to any dict entry keyword,
 	   substituting the associated value if found: */
 	if (dict) {
-		dict = VLookupDictKeyword (dict, str);
+		dict = VistaIOLookupDictKeyword (dict, str);
 
 		/* If there's a dictionary entry, complete it: */
 		if (dict && !dict->svalue) {
 			str = NULL;
 			dict->icached = dict->fcached = TRUE;
 			sprintf (buf, "%ld", (long)dict->ivalue);
-			dict->svalue = VNewString (buf);
+			dict->svalue = VistaIONewString (buf);
 			dict->fvalue = dict->ivalue;
 		}
 	}
@@ -207,12 +207,12 @@ EXPORT_VISTA VBoolean VDecodeAttrValue (VStringConst str, VDictEntry * dict,
 	/* Convert to the internal representation: */
 	switch (repn) {
 
-	case VBitRepn:
+	case VistaIOBitRepn:
 	case VUByteRepn:
 	case VSByteRepn:
-	case VShortRepn:
-	case VLongRepn:
-	case VBooleanRepn:
+	case VistaIOShortRepn:
+	case VistaIOLongRepn:
+	case VistaIOBooleanRepn:
 		if (dict) {
 			if (dict->icached)
 				i_value = dict->ivalue;
@@ -225,8 +225,8 @@ EXPORT_VISTA VBoolean VDecodeAttrValue (VStringConst str, VDictEntry * dict,
 			i_value = strtol (str, &cp, 0);
 		break;
 
-	case VFloatRepn:
-	case VDoubleRepn:
+	case VistaIOFloatRepn:
+	case VistaIODoubleRepn:
 		if (dict) {
 			if (dict->fcached)
 				f_value = dict->fvalue;
@@ -239,22 +239,22 @@ EXPORT_VISTA VBoolean VDecodeAttrValue (VStringConst str, VDictEntry * dict,
 			f_value = strtod (str, &cp);
 		break;
 
-	case VStringRepn:
+	case VistaIOStringRepn:
 		if (dict)
 			str = dict->svalue;
 		break;
 
 	default:
-		VError ("VDecodeAttrValue: Can't decode to %s",
-			VRepnName (repn));
+		VistaIOError ("VistaIODecodeAttrValue: Can't decode to %s",
+			VistaIORepnName (repn));
 	}
 	if (cp && *cp)
 		return FALSE;
 
 	/* Store at *value: */
 	switch (repn) {
-	case VBitRepn:
-		*(VBit *) value = i_value;
+	case VistaIOBitRepn:
+		*(VistaIOBit *) value = i_value;
 		break;
 	case VUByteRepn:
 		*(VUByte *) value = i_value;
@@ -262,23 +262,23 @@ EXPORT_VISTA VBoolean VDecodeAttrValue (VStringConst str, VDictEntry * dict,
 	case VSByteRepn:
 		*(VSByte *) value = i_value;
 		break;
-	case VShortRepn:
-		*(VShort *) value = i_value;
+	case VistaIOShortRepn:
+		*(VistaIOShort *) value = i_value;
 		break;
-	case VLongRepn:
-		*(VLong *) value = i_value;
+	case VistaIOLongRepn:
+		*(VistaIOLong *) value = i_value;
 		break;
-	case VFloatRepn:
-		*(VFloat *) value = (VFloat)f_value;
+	case VistaIOFloatRepn:
+		*(VistaIOFloat *) value = (VistaIOFloat)f_value;
 		break;
-	case VDoubleRepn:
-		*(VDouble *) value = f_value;
+	case VistaIODoubleRepn:
+		*(VistaIODouble *) value = f_value;
 		break;
-	case VBooleanRepn:
-		*(VBoolean *) value = i_value;
+	case VistaIOBooleanRepn:
+		*(VistaIOBoolean *) value = i_value;
 		break;
-	case VStringRepn:
-		*(VStringConst *) value = str;
+	case VistaIOStringRepn:
+		*(VistaIOStringConst *) value = str;
 		break;
 
 	default:
@@ -296,9 +296,9 @@ EXPORT_VISTA VBoolean VDecodeAttrValue (VStringConst str, VDictEntry * dict,
  *  \param posn
  */
 
-EXPORT_VISTA void VDeleteAttr (VAttrListPosn * posn)
+EXPORT_VISTA void VistaIODeleteAttr (VistaIOAttrListPosn * posn)
 {
-	VAttrRec *a = posn->ptr;
+	VistaIOAttrRec *a = posn->ptr;
 
 	/* Remove it from the list: */
 	if (a->next)
@@ -313,7 +313,7 @@ EXPORT_VISTA void VDeleteAttr (VAttrListPosn * posn)
 	/* Make posn point to the next attribute, or nothing: */
 	posn->ptr = a->next;
 
-	VFree (a);
+	VistaIOFree (a);
 }
 
 
@@ -322,12 +322,12 @@ EXPORT_VISTA void VDeleteAttr (VAttrListPosn * posn)
  *  \param  list
  */
 
-EXPORT_VISTA void VDestroyAttrList (VAttrList list)
+EXPORT_VISTA void VistaIODestroyAttrList (VistaIOAttrList list)
 {
-	VAttrRec *a, *a_next;
+	VistaIOAttrRec *a, *a_next;
 
 	if (!list) {
-		VWarning ("VDestroyAttrList: Called with NULL list");
+		VistaIOWarning ("VistaIODestroyAttrList: Called with NULL list");
 		return;
 	}
 
@@ -336,12 +336,12 @@ EXPORT_VISTA void VDestroyAttrList (VAttrList list)
 		a_next = a->next;
 
 		/* Free any storage used for the attribute's value: */
-		FreeAttrValue ("VDestroyAttrList", a);
+		FreeAttrValue ("VistaIODestroyAttrList", a);
 
 		/* Free the attribute record itself: */
-		VFree (a);
+		VistaIOFree (a);
 	}
-	VFree (list);
+	VistaIOFree (list);
 }
 
 
@@ -350,36 +350,36 @@ EXPORT_VISTA void VDestroyAttrList (VAttrList list)
  *  \param b
  */
 
-EXPORT_VISTA void VDestroyBundle (VBundle b)
+EXPORT_VISTA void VistaIODestroyBundle (VistaIOBundle b)
 {
-	VDestroyAttrList (b->list);
+	VistaIODestroyAttrList (b->list);
 	if (b->length > 0)
-		VFree (b->data);
-	VFree (b);
+		VistaIOFree (b->data);
+	VistaIOFree (b);
 }
 
 
 /*! \brief Encode an attribute's value from internal representaiton to a string.
  *  
- *  This is just a stub for Encode, which is shared by VSetAttr.
+ *  This is just a stub for Encode, which is shared by VistaIOSetAttr.
  *  The calling sequence is:
  *
- *	VEncodeAttrValue (VDictEntry *dict, VRepnKind repn, xxx value)
+ *	VistaIOEncodeAttrValue (VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
  *
  *  where xxx depends on the kind of representation, repn. An optional
  *  dictionary, dict, can specify value -> string translations. It returns
- *  a pointer to an encoded string, valid until the next VEncodeAttrValue
+ *  a pointer to an encoded string, valid until the next VistaIOEncodeAttrValue
  *  call.
  *
  *  \param  dict
  *  \param  repn
- *  \return  VStringConst
+ *  \return  VistaIOStringConst
  */
 
-EXPORT_VISTA VStringConst VEncodeAttrValue (VDictEntry * dict, VRepnKind repn, ...)
+EXPORT_VISTA VistaIOStringConst VistaIOEncodeAttrValue (VistaIODictEntry * dict, VistaIORepnKind repn, ...)
 {
 	va_list args;
-	VStringConst str;
+	VistaIOStringConst str;
 
 	va_start (args, repn);
 	str = Encode (dict, repn, &args);
@@ -392,20 +392,20 @@ EXPORT_VISTA VStringConst VEncodeAttrValue (VDictEntry * dict, VRepnKind repn, .
  *  Encode
  *
  *  Encode an attribute's value from internal representation to a string.
- *  Does the actual work of encoding (cf VEncodeAttrValue).
+ *  Does the actual work of encoding (cf VistaIOEncodeAttrValue).
  */
 
-static VStringConst Encode (VDictEntry * dict, VRepnKind repn, va_list * args)
+static VistaIOStringConst Encode (VistaIODictEntry * dict, VistaIORepnKind repn, va_list * args)
 {
-	VLong i_value = 0;
-	VDouble f_value = 0.0;
-	VString s_value = NULL;
+	VistaIOLong i_value = 0;
+	VistaIODouble f_value = 0.0;
+	VistaIOString s_value = NULL;
 	static char buf[40];
 
 	/* Fetch the attribute value: */
 	switch (repn) {
-	case VBitRepn:
-		i_value = va_arg (*args, VBitPromoted);
+	case VistaIOBitRepn:
+		i_value = va_arg (*args, VistaIOBitPromoted);
 		break;
 	case VUByteRepn:
 		i_value = va_arg (*args, VUBytePromoted);
@@ -413,44 +413,44 @@ static VStringConst Encode (VDictEntry * dict, VRepnKind repn, va_list * args)
 	case VSByteRepn:
 		i_value = va_arg (*args, VSBytePromoted);
 		break;
-	case VShortRepn:
-		i_value = va_arg (*args, VShortPromoted);
+	case VistaIOShortRepn:
+		i_value = va_arg (*args, VistaIOShortPromoted);
 		break;
-	case VLongRepn:
-		i_value = va_arg (*args, VLongPromoted);
+	case VistaIOLongRepn:
+		i_value = va_arg (*args, VistaIOLongPromoted);
 		break;
-	case VFloatRepn:
-		f_value = va_arg (*args, VFloatPromoted);
+	case VistaIOFloatRepn:
+		f_value = va_arg (*args, VistaIOFloatPromoted);
 		break;
-	case VDoubleRepn:
-		f_value = va_arg (*args, VDoublePromoted);
+	case VistaIODoubleRepn:
+		f_value = va_arg (*args, VistaIODoublePromoted);
 		break;
-	case VBooleanRepn:
-		i_value = va_arg (*args, VBooleanPromoted);
+	case VistaIOBooleanRepn:
+		i_value = va_arg (*args, VistaIOBooleanPromoted);
 		break;
-	case VStringRepn:
-		s_value = va_arg (*args, VString);
+	case VistaIOStringRepn:
+		s_value = va_arg (*args, VistaIOString);
 		break;
 
 	default:
-		VError ("VEncodeAttrValue: Can't encode from %s",
-			VRepnName (repn));
+		VistaIOError ("VistaIOEncodeAttrValue: Can't encode from %s",
+			VistaIORepnName (repn));
 	}
 
 	/* If its numeric, convert it to a string: */
 	switch (repn) {
 
-	case VBitRepn:
+	case VistaIOBitRepn:
 	case VUByteRepn:
 	case VSByteRepn:
-	case VShortRepn:
-	case VLongRepn:
-	case VBooleanRepn:
+	case VistaIOShortRepn:
+	case VistaIOLongRepn:
+	case VistaIOBooleanRepn:
 		sprintf (s_value = buf, "%ld", (long)i_value);
 		break;
 
-	case VFloatRepn:
-	case VDoubleRepn:
+	case VistaIOFloatRepn:
+	case VistaIODoubleRepn:
 		sprintf (s_value = buf, "%.20g", (double)f_value);
 		break;
 
@@ -463,22 +463,22 @@ static VStringConst Encode (VDictEntry * dict, VRepnKind repn, va_list * args)
 	if (dict)
 		switch (repn) {
 
-		case VBitRepn:
+		case VistaIOBitRepn:
 		case VUByteRepn:
 		case VSByteRepn:
-		case VShortRepn:
-		case VLongRepn:
-		case VBooleanRepn:
-			dict = VLookupDictValue (dict, VLongRepn, i_value);
+		case VistaIOShortRepn:
+		case VistaIOLongRepn:
+		case VistaIOBooleanRepn:
+			dict = VistaIOLookupDictValue (dict, VistaIOLongRepn, i_value);
 			break;
 
-		case VFloatRepn:
-		case VDoubleRepn:
-			dict = VLookupDictValue (dict, VDoubleRepn, f_value);
+		case VistaIOFloatRepn:
+		case VistaIODoubleRepn:
+			dict = VistaIOLookupDictValue (dict, VistaIODoubleRepn, f_value);
 			break;
 
-		case VStringRepn:
-			dict = VLookupDictValue (dict, VStringRepn, s_value);
+		case VistaIOStringRepn:
+			dict = VistaIOLookupDictValue (dict, VistaIOStringRepn, s_value);
 			break;
 
 		default:
@@ -496,40 +496,40 @@ static VStringConst Encode (VDictEntry * dict, VRepnKind repn, va_list * args)
  *  \param  repn 
  *  \param  value
  *  \param  required
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VExtractAttr (VAttrList list, VStringConst name,
-		       VDictEntry * dict, VRepnKind repn, VPointer value,
-		       VBooleanPromoted required)
+EXPORT_VISTA VistaIOBoolean VistaIOExtractAttr (VistaIOAttrList list, VistaIOStringConst name,
+		       VistaIODictEntry * dict, VistaIORepnKind repn, VistaIOPointer value,
+		       VistaIOBooleanPromoted required)
 {
-	VAttrListPosn posn;
+	VistaIOAttrListPosn posn;
 
 	/* If the attribute is in the list... */
-	if (VLookupAttr (list, name, &posn)) {
+	if (VistaIOLookupAttr (list, name, &posn)) {
 
 		if (value) {
 
 			/* Get its value: */
-			if (!VGetAttrValue (&posn, dict, repn, value)) {
-				VWarning ("VExtractAttr: %s attribute has bad value", name);
+			if (!VistaIOGetAttrValue (&posn, dict, repn, value)) {
+				VistaIOWarning ("VistaIOExtractAttr: %s attribute has bad value", name);
 				return FALSE;
 			}
 
 			/* Clone or hide the value if we're about to delete it: */
-			if (repn == VStringRepn)
-				*(VString *) value =
-					VNewString (*(VString *) value);
+			if (repn == VistaIOStringRepn)
+				*(VistaIOString *) value =
+					VistaIONewString (*(VistaIOString *) value);
 		}
 
 		/* Remove it from the list: */
-		VDeleteAttr (&posn);
+		VistaIODeleteAttr (&posn);
 		return TRUE;
 	}
 
 	/* Otherwise complain if the attribute was a required one: */
 	if (required)
-		VWarning ("VExtractAttr: %s attribute missing", name);
+		VistaIOWarning ("VistaIOExtractAttr: %s attribute missing", name);
 	return !required;
 }
 
@@ -545,21 +545,21 @@ EXPORT_VISTA VBoolean VExtractAttr (VAttrList list, VStringConst name,
  *  \param  dict
  *  \param  repn
  *  \param  value
- *  \return VGetAttrResult
+ *  \return VistaIOGetAttrResult
  */
 
-EXPORT_VISTA VGetAttrResult VGetAttr (VAttrList list, VStringConst name,
-			 VDictEntry * dict, VRepnKind repn, VPointer value)
+EXPORT_VISTA VistaIOGetAttrResult VistaIOGetAttr (VistaIOAttrList list, VistaIOStringConst name,
+			 VistaIODictEntry * dict, VistaIORepnKind repn, VistaIOPointer value)
 {
-	VAttrListPosn posn;
+	VistaIOAttrListPosn posn;
 
 	/* Look up the attribute name in the list: */
-	if (!VLookupAttr (list, name, &posn))
-		return VAttrMissing;
+	if (!VistaIOLookupAttr (list, name, &posn))
+		return VistaIOAttrMissing;
 
 	/* Get its value in the specified representation: */
-	return VGetAttrValue (&posn, dict, repn,
-			      value) ? VAttrFound : VAttrBadValue;
+	return VistaIOGetAttrValue (&posn, dict, repn,
+			      value) ? VistaIOAttrFound : VistaIOAttrBadValue;
 }
 
 
@@ -577,29 +577,29 @@ EXPORT_VISTA VGetAttrResult VGetAttr (VAttrList list, VStringConst name,
  *          if the requested representation cannot be provided.
  */
 
-EXPORT_VISTA VBoolean VGetAttrValue (VAttrListPosn * posn, VDictEntry * dict,
-			VRepnKind repn, VPointer value)
+EXPORT_VISTA VistaIOBoolean VistaIOGetAttrValue (VistaIOAttrListPosn * posn, VistaIODictEntry * dict,
+			VistaIORepnKind repn, VistaIOPointer value)
 {
 	/* Convert it to the requested representation: */
 	switch (repn) {
 
-	case VBitRepn:
+	case VistaIOBitRepn:
 	case VUByteRepn:
 	case VSByteRepn:
-	case VShortRepn:
-	case VLongRepn:
-	case VFloatRepn:
-	case VDoubleRepn:
-	case VBooleanRepn:
-	case VStringRepn:
-		return (VGetAttrRepn (posn) == VStringRepn &&
-			VDecodeAttrValue (posn->ptr->value, dict, repn,
+	case VistaIOShortRepn:
+	case VistaIOLongRepn:
+	case VistaIOFloatRepn:
+	case VistaIODoubleRepn:
+	case VistaIOBooleanRepn:
+	case VistaIOStringRepn:
+		return (VistaIOGetAttrRepn (posn) == VistaIOStringRepn &&
+			VistaIODecodeAttrValue (posn->ptr->value, dict, repn,
 					  value));
 
 	default:
-		if (VGetAttrRepn (posn) != repn)
+		if (VistaIOGetAttrRepn (posn) != repn)
 			return FALSE;
-		*(VPointer *) value = posn->ptr->value;
+		*(VistaIOPointer *) value = posn->ptr->value;
 		return TRUE;
 	}
 }
@@ -609,8 +609,8 @@ EXPORT_VISTA VBoolean VGetAttrValue (VAttrListPosn * posn, VDictEntry * dict,
  *
  *  The calling sequence is:
  *
- *	VInsertAttr (VAttrListPosn *posn, VBoolean after, VStringConst name,
- *		     VDictEntry *dict, VRepnKind repn, xxx value)
+ *	VistaIOInsertAttr (VistaIOAttrListPosn *posn, VistaIOBoolean after, VistaIOStringConst name,
+ *		     VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
  *
  *  where xxx depends on the kind of representation, repn. An optional
  *  dictionary, dict, can specify value -> string translations. If after is
@@ -623,11 +623,11 @@ EXPORT_VISTA VBoolean VGetAttrValue (VAttrListPosn * posn, VDictEntry * dict,
  *  \param repn
  */
 
-EXPORT_VISTA void VInsertAttr (VAttrListPosn * posn, VBooleanPromoted after,
-		  VStringConst name, VDictEntry * dict, VRepnKind repn, ...)
+EXPORT_VISTA void VistaIOInsertAttr (VistaIOAttrListPosn * posn, VistaIOBooleanPromoted after,
+		  VistaIOStringConst name, VistaIODictEntry * dict, VistaIORepnKind repn, ...)
 {
 	va_list args;
-	VAttrRec *a;
+	VistaIOAttrRec *a;
 
 	/* Create the new attribute node: */
 	va_start (args, repn);
@@ -669,13 +669,13 @@ EXPORT_VISTA void VInsertAttr (VAttrListPosn * posn, VBooleanPromoted after,
  *  \param  list
  *  \param  name
  *  \param  posn
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VLookupAttr (VAttrList list, VStringConst name, VAttrListPosn * posn)
+EXPORT_VISTA VistaIOBoolean VistaIOLookupAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIOAttrListPosn * posn)
 {
-	for (VFirstAttr (list, posn); VAttrExists (posn); VNextAttr (posn))
-		if (strcmp (VGetAttrName (posn), name) == 0)
+	for (VistaIOFirstAttr (list, posn); VistaIOAttrExists (posn); VistaIONextAttr (posn))
+		if (strcmp (VistaIOGetAttrName (posn), name) == 0)
 			return TRUE;
 	return FALSE;
 }
@@ -685,8 +685,8 @@ EXPORT_VISTA VBoolean VLookupAttr (VAttrList list, VStringConst name, VAttrListP
  *
  *  The calling sequence is:
  *
- *	VPrependAttr (VAttrList list, VStringConst name,
- *		      VDictEntry *dict, VRepnKind repn, xxx value)
+ *	VistaIOPrependAttr (VistaIOAttrList list, VistaIOStringConst name,
+ *		      VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
  *
  *  where xxx depends on the kind of representation, repn. An optional
  *  dictionary, dict, can specify value -> string translations.
@@ -697,11 +697,11 @@ EXPORT_VISTA VBoolean VLookupAttr (VAttrList list, VStringConst name, VAttrListP
  *  \param repn
  */
 
-EXPORT_VISTA void VPrependAttr (VAttrList list, VStringConst name, VDictEntry * dict,
-		   VRepnKind repn, ...)
+EXPORT_VISTA void VistaIOPrependAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry * dict,
+		   VistaIORepnKind repn, ...)
 {
 	va_list args;
-	VAttrRec *a;
+	VistaIOAttrRec *a;
 
 	/* Create the new attribute node: */
 	va_start (args, repn);
@@ -722,8 +722,8 @@ EXPORT_VISTA void VPrependAttr (VAttrList list, VStringConst name, VDictEntry * 
  *
  *  The calling sequence is:
  *
- *	VSetAttr (VAttrList list, VStringConst name, VDictEntry *dict,
- *		  VRepnKind repn, xxx value)
+ *	VistaIOSetAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry *dict,
+ *		  VistaIORepnKind repn, xxx value)
  *
  *  where xxx depends on the kind of representation, repn. An optional
  *  dictionary, dict, can specify value -> string translations.
@@ -734,16 +734,16 @@ EXPORT_VISTA void VPrependAttr (VAttrList list, VStringConst name, VDictEntry * 
  *  \param repn 
  */
 
-EXPORT_VISTA void VSetAttr (VAttrList list, VStringConst name, VDictEntry * dict,
-	       VRepnKind repn, ...)
+EXPORT_VISTA void VistaIOSetAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry * dict,
+	       VistaIORepnKind repn, ...)
 {
 	va_list args;
-	VAttrListPosn posn;
-	VAttrRec *a;
+	VistaIOAttrListPosn posn;
+	VistaIOAttrRec *a;
 
 	/* Locate any existing attribute of the specified name: */
 	va_start (args, repn);
-	if (VLookupAttr (list, name, &posn))
+	if (VistaIOLookupAttr (list, name, &posn))
 		SetAttr (&posn, dict, repn, &args);
 	else {
 
@@ -765,8 +765,8 @@ EXPORT_VISTA void VSetAttr (VAttrList list, VStringConst name, VDictEntry * dict
  *
  *  The calling sequence is:
  *
- *	VSetAttrValue (VAttrListPosn *posn, VDictEntry *dict,
- *		       VRepnKind repn, xxx value)
+ *	VistaIOSetAttrValue (VistaIOAttrListPosn *posn, VistaIODictEntry *dict,
+ *		       VistaIORepnKind repn, xxx value)
  *
  *  where xxx depends on the kind of representation, repn. An optional
  *  dictionary, dict, can specify value -> string translations.
@@ -776,7 +776,7 @@ EXPORT_VISTA void VSetAttr (VAttrList list, VStringConst name, VDictEntry * dict
  *  \param repn
  */
 
-EXPORT_VISTA void VSetAttrValue (VAttrListPosn * posn, VDictEntry * dict, VRepnKind repn,
+EXPORT_VISTA void VistaIOSetAttrValue (VistaIOAttrListPosn * posn, VistaIODictEntry * dict, VistaIORepnKind repn,
 		    ...)
 {
 	va_list args;
@@ -791,50 +791,50 @@ EXPORT_VISTA void VSetAttrValue (VAttrListPosn * posn, VDictEntry * dict, VRepnK
 /*
  *  NewAttr
  *
- *  Local routine performing common functions for VSetAttr, VInsertAttr,
- *  VAppendAttr, VPrependAttr.
+ *  Local routine performing common functions for VistaIOSetAttr, VistaIOInsertAttr,
+ *  VistaIOAppendAttr, VistaIOPrependAttr.
  */
 
-static VAttrRec *NewAttr (VStringConst name, VDictEntry * dict,
-			  VRepnKind repn, va_list * args)
+static VistaIOAttrRec *NewAttr (VistaIOStringConst name, VistaIODictEntry * dict,
+			  VistaIORepnKind repn, va_list * args)
 {
 	size_t new_value_size, name_size;
-	VPointer value;
-	VAttrRec *a;
+	VistaIOPointer value;
+	VistaIOAttrRec *a;
 
 	name_size = strlen (name);
 	switch (repn) {
 
-	case VBitRepn:
+	case VistaIOBitRepn:
 	case VUByteRepn:
 	case VSByteRepn:
-	case VShortRepn:
-	case VLongRepn:
-	case VFloatRepn:
-	case VDoubleRepn:
-	case VBooleanRepn:
-	case VStringRepn:
+	case VistaIOShortRepn:
+	case VistaIOLongRepn:
+	case VistaIOFloatRepn:
+	case VistaIODoubleRepn:
+	case VistaIOBooleanRepn:
+	case VistaIOStringRepn:
 
 		/* Determine the amount of storage needed to record the new value.
 		   In some cases, this requires first encoding the new value as a
 		   string. */
-		if (repn == VStringRepn && !dict)
-			value = (VPointer) va_arg (*args, VStringConst);
+		if (repn == VistaIOStringRepn && !dict)
+			value = (VistaIOPointer) va_arg (*args, VistaIOStringConst);
 		else
-			value = (VPointer) Encode (dict, repn, args);
+			value = (VistaIOPointer) Encode (dict, repn, args);
 		new_value_size = strlen (value) + 1;
 
 		/* Allocate storage for the new attribute and copy in its value: */
-		a = VMalloc (sizeof (VAttrRec) + name_size + new_value_size);
-		a->repn = VStringRepn;
+		a = VistaIOMalloc (sizeof (VistaIOAttrRec) + name_size + new_value_size);
+		a->repn = VistaIOStringRepn;
 		a->value = (a->name + name_size + 1);
 		strcpy (a->value, value);
 		break;
 
 	default:
-		a = VMalloc (sizeof (VAttrRec) + name_size);
+		a = VistaIOMalloc (sizeof (VistaIOAttrRec) + name_size);
 		a->repn = repn;
-		a->value = va_arg (*args, VPointer);
+		a->value = va_arg (*args, VistaIOPointer);
 	}
 	strcpy (a->name, name);
 	return a;
@@ -844,47 +844,47 @@ static VAttrRec *NewAttr (VStringConst name, VDictEntry * dict,
 /*
  *  SetAttr
  *
- *  Local routine performing common functions for VSetAttr and VSetAttrValue.
- *  VInsertAttr, VAppendAttr, VPrependAttr.
+ *  Local routine performing common functions for VistaIOSetAttr and VistaIOSetAttrValue.
+ *  VistaIOInsertAttr, VistaIOAppendAttr, VistaIOPrependAttr.
  */
 
-static void SetAttr (VAttrListPosn * posn, VDictEntry * dict, VRepnKind repn,
+static void SetAttr (VistaIOAttrListPosn * posn, VistaIODictEntry * dict, VistaIORepnKind repn,
 		     va_list * args)
 {
 	size_t old_value_size, new_value_size, name_size;
-	VPointer value;
-	VAttrRec *a = posn->ptr;
+	VistaIOPointer value;
+	VistaIOAttrRec *a = posn->ptr;
 
 	/* Determine the amount of storage needed to record the new value. In some
 	   cases, this requires first encoding the new value as a string. */
 	name_size = strlen (a->name);
 	switch (repn) {
 
-	case VBitRepn:
+	case VistaIOBitRepn:
 	case VUByteRepn:
 	case VSByteRepn:
-	case VShortRepn:
-	case VLongRepn:
-	case VFloatRepn:
-	case VDoubleRepn:
-	case VBooleanRepn:
-	case VStringRepn:
-		if (repn == VStringRepn && !dict)
-			value = (VPointer) va_arg (*args, VStringConst);
+	case VistaIOShortRepn:
+	case VistaIOLongRepn:
+	case VistaIOFloatRepn:
+	case VistaIODoubleRepn:
+	case VistaIOBooleanRepn:
+	case VistaIOStringRepn:
+		if (repn == VistaIOStringRepn && !dict)
+			value = (VistaIOPointer) va_arg (*args, VistaIOStringConst);
 		else
-			value = (VPointer) Encode (dict, repn, args);
+			value = (VistaIOPointer) Encode (dict, repn, args);
 		new_value_size = strlen (value) + 1;
 		break;
 
 	default:
-		value = va_arg (*args, VPointer);
+		value = va_arg (*args, VistaIOPointer);
 		new_value_size = 0;
 	}
 
 	/* Is enough storage allocated for it in the existing attribute node? */
 	switch (a->repn) {
 
-	case VStringRepn:
+	case VistaIOStringRepn:
 		old_value_size = strlen (a->value) + 1;
 		break;
 
@@ -894,7 +894,7 @@ static void SetAttr (VAttrListPosn * posn, VDictEntry * dict, VRepnKind repn,
 	if (old_value_size < new_value_size) {
 
 		/* It exists, but it's too small: */
-		a = VMalloc (sizeof (VAttrRec) + name_size + new_value_size);
+		a = VistaIOMalloc (sizeof (VistaIOAttrRec) + name_size + new_value_size);
 		a->next = posn->ptr->next;
 		a->prev = posn->ptr->prev;
 		if (a->next)
@@ -906,23 +906,23 @@ static void SetAttr (VAttrListPosn * posn, VDictEntry * dict, VRepnKind repn,
 		else
 			posn->list->next = a;
 		strcpy (a->name, posn->ptr->name);
-		VFree (posn->ptr);
+		VistaIOFree (posn->ptr);
 		posn->ptr = a;
 	}
 
 	/* Copy in the attribute's new value: */
 	switch (repn) {
 
-	case VBitRepn:
+	case VistaIOBitRepn:
 	case VUByteRepn:
 	case VSByteRepn:
-	case VShortRepn:
-	case VLongRepn:
-	case VFloatRepn:
-	case VDoubleRepn:
-	case VBooleanRepn:
-	case VStringRepn:
-		a->repn = VStringRepn;
+	case VistaIOShortRepn:
+	case VistaIOLongRepn:
+	case VistaIOFloatRepn:
+	case VistaIODoubleRepn:
+	case VistaIOBooleanRepn:
+	case VistaIOStringRepn:
+		a->repn = VistaIOStringRepn;
 		a->value = a->name + name_size + 1;
 		strcpy (a->value, value);
 		break;
@@ -940,27 +940,27 @@ static void SetAttr (VAttrListPosn * posn, VDictEntry * dict, VRepnKind repn,
  *  Free storage occupied by an attribute's value.
  */
 
-static void FreeAttrValue (VStringConst routine, VAttrRec * a)
+static void FreeAttrValue (VistaIOStringConst routine, VistaIOAttrRec * a)
 {
-	VTypeMethods *methods;
+	VistaIOTypeMethods *methods;
 
 	switch (a->repn) {
 
-	case VAttrListRepn:
-		VDestroyAttrList (a->value);
+	case VistaIOAttrListRepn:
+		VistaIODestroyAttrList (a->value);
 		break;
 
-	case VBundleRepn:
-		VDestroyBundle (a->value);
+	case VistaIOBundleRepn:
+		VistaIODestroyBundle (a->value);
 		break;
 
-	case VPointerRepn:
-	case VStringRepn:
+	case VistaIOPointerRepn:
+	case VistaIOStringRepn:
 		break;
 
 	default:
-		if (!(methods = VRepnMethods (a->repn)))
-			VError ("%s: %s attribute has invalid repn %d",
+		if (!(methods = VistaIORepnMethods (a->repn)))
+			VistaIOError ("%s: %s attribute has invalid repn %d",
 				routine, a->name, a->repn);
 		(methods->destroy) (a->value);
 	}

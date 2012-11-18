@@ -31,49 +31,49 @@
 extern "C" {
 #endif
 
-	typedef struct VField3DRec {
-		VLong x_dim;
-		VLong y_dim;
-		VLong z_dim; 
-		VRepnKind repn;
-		VLong nsize_element;
-		VAttrList attr; 
+	typedef struct VistaIOField3DRec {
+		VistaIOLong x_dim;
+		VistaIOLong y_dim;
+		VistaIOLong z_dim; 
+		VistaIORepnKind repn;
+		VistaIOLong nsize_element;
+		VistaIOAttrList attr; 
                 union {
-                        VPointer data;
-                        VPointerConst cdata;
+                        VistaIOPointer data;
+                        VistaIOPointerConst cdata;
                 } p; 
-		VBoolean owns_data; 
-		VLong nsize; 
-	} VField3DRec, *VField3D;
+		VistaIOBoolean owns_data; 
+		VistaIOLong nsize; 
+	} VistaIOField3DRec, *VistaIOField3D;
 	
-	EXPORT_VISTA VField3D VCreateField3DFrom(VLong _x_dim, 
-				VLong _y_dim, 
-				VLong _z_dim, 
-				VLong nsize_elemet,
-				VRepnKind repn,
-				VPointerConst data);
+	EXPORT_VISTA VistaIOField3D VistaIOCreateField3DFrom(VistaIOLong _x_dim, 
+				VistaIOLong _y_dim, 
+				VistaIOLong _z_dim, 
+				VistaIOLong nsize_elemet,
+				VistaIORepnKind repn,
+				VistaIOPointerConst data);
 	
-	EXPORT_VISTA VField3D VCreateField3D(VLong _x_dim, 
-				VLong _y_dim, 
-				VLong _z_dim, 
-				VLong nsize_elemet,
-				VRepnKind repn);
+	EXPORT_VISTA VistaIOField3D VistaIOCreateField3D(VistaIOLong _x_dim, 
+				VistaIOLong _y_dim, 
+				VistaIOLong _z_dim, 
+				VistaIOLong nsize_elemet,
+				VistaIORepnKind repn);
 	
 	/* destroy the field and release all data (if owned) */
-	EXPORT_VISTA void VDestroyField3D (VField3D field);
+	EXPORT_VISTA void VistaIODestroyField3D (VistaIOField3D field);
 	
 	/* copy the data field with all data */ 
-	EXPORT_VISTA VField3D VCopyField3D (VField3D src);
+	EXPORT_VISTA VistaIOField3D VistaIOCopyField3D (VistaIOField3D src);
 	
 	/* mirrors the datafield without copying the real data*/
-	EXPORT_VISTA VField3D VMirrorField3D(VField3D src);
+	EXPORT_VISTA VistaIOField3D VistaIOMirrorField3D(VistaIOField3D src);
 	
 	
-#define VField3DElement(FIELD, X, Y, Z, type) &((type*)FIELD->data)[field->nsize_element * (x + nx * ( Y + ny * Z))]
+#define VistaIOField3DElement(FIELD, X, Y, Z, type) &((type*)FIELD->data)[field->nsize_element * (x + nx * ( Y + ny * Z))]
 	
-	EXPORT_VISTA char *VGetField3DListName(VField3D field);	
+	EXPORT_VISTA char *VistaIOGetField3DListName(VistaIOField3D field);	
 
-extern VTypeMethods VField3DMethods; 
+extern VistaIOTypeMethods VistaIOField3DMethods; 
 	
 #ifdef __cplusplus
 }

@@ -62,102 +62,102 @@
 #define MIN_VERBOSE_LVL		0
 #define MAX_VERBOSE_LVL		2
 
-#define VMax(a,b)		((a) > (b) ? (a) : (b))
-#define VMin(a,b)		((a) < (b) ? (a) : (b))
-#define VOffset(type, field) 	((size_t) (((char *) & ((type) 0)->field) - (char *) 0))
-#define VOffsetOf(type, field)	VOffset(type *, field)
-#define VNumber(array)		((size_t) (sizeof (array) / sizeof ((array)[0])))
-#define VZero(array, nels) 	((void) memset ((void *) array, 0, (size_t) (nels) * sizeof ((array)[0])))
-#define VCopy(from, to, nels) 	((void) memcpy ((void *) (to), (void *) (from), \
+#define VistaIOMax(a,b)		((a) > (b) ? (a) : (b))
+#define VistaIOMin(a,b)		((a) < (b) ? (a) : (b))
+#define VistaIOOffset(type, field) 	((size_t) (((char *) & ((type) 0)->field) - (char *) 0))
+#define VistaIOOffsetOf(type, field)	VistaIOOffset(type *, field)
+#define VistaIONumber(array)		((size_t) (sizeof (array) / sizeof ((array)[0])))
+#define VistaIOZero(array, nels) 	((void) memset ((void *) array, 0, (size_t) (nels) * sizeof ((array)[0])))
+#define VistaIOCopy(from, to, nels) 	((void) memcpy ((void *) (to), (void *) (from), \
 		    			(size_t) (nels) * sizeof ((from)[0])))
-#define VNew(type)		((type *) VMalloc (sizeof (type)))
-#define VNewString(str) 	((VString) ((str) ? strcpy ((char *) VMalloc (strlen (str) + 1), str) : 0))
-#define VFileHeader		"V-data"
-#define VFileVersion		2
-#define VFileDelimiter		"\f\n"
-#define VMaxAttrNameLength	256
-#define VRequiredOpt		(& V_RequiredOpt)
-#define VOptionalOpt		(& V_OptionalOpt)
-#define VAllBands		-1	/* all bands */
-#define VAttrListEmpty(l)	((l) == NULL || (l)->next == NULL)
-#define VFirstAttr(l,p)		((void) ((p)->list = (l), (p)->ptr = (l)->next))
-#define VLastAttr(l,p)		((void) ((p)->list = (l), (p)->ptr = (l)->prev))
-#define VAttrExists(p)		((p)->ptr != NULL)
-#define VNextAttr(p)		((void) ((p)->ptr = (p)->ptr ? (p)->ptr->next : NULL))
-#define VPrevAttr(p)		((void) ((p)->ptr = (p)->ptr ? (p)->ptr->prev : NULL))
-#define VGetAttrName(p)		((p)->ptr->name)
-#define VGetAttrRepn(p)		((p)->ptr->repn)
-#define VListCount(vlist)	((vlist)->count)
-#define VListCurr(vlist)	((vlist)->current->item)
-#define VListGetCurr(vlist)	((vlist)->current)
-#define VListSetCurr(vlist,cur) ((void)((vlist)->current = (cur)))
-#define VImageNBands(image)	((image)->nbands)
-#define VImageNRows(image)	((image)->nrows)
-#define VImageNColumns(image)	((image)->ncolumns)
-#define VImageNFrames(image)	((image)->nframes)
-#define VImageNViewpoints(image) ((image)->nviewpoints)
-#define VImageNColors(image)	((image)->ncolors)
-#define VImageNComponents(image) ((image)->ncomponents)
-#define VPixelRepn(image)	((image)->pixel_repn)
-#define VImageData(image)	((image)->data)
-#define VImageAttrList(image)	((image)->attributes)
-#define VImageNPixels(image) 	((image)->nbands * (image)->nrows * (image)->ncolumns)
-#define VPixelSize(image)	(VRepnSize ((image)->pixel_repn))
-#define VPixelPrecision(image)  (VRepnPrecision ((image)->pixel_repn))
-#define VPixelRepnName(image)	(VRepnName ((image)->pixel_repn))
-#define VPixelMinValue(image)	(VRepnMinValue ((image)->pixel_repn))
-#define VPixelMaxValue(image)	(VRepnMaxValue ((image)->pixel_repn))
-#define VImageSize(image)	(VImageNPixels(image) * VPixelSize(image))
-#define VPixelPtr(image, band, row, column) \
-				((VPointer) ((char *) ((image)->band_index[band][row])+(column) * VPixelSize (image)))
-#define VPixel(image, band, row, column, type) \
+#define VistaIONew(type)		((type *) VistaIOMalloc (sizeof (type)))
+#define VistaIONewString(str) 	((VistaIOString) ((str) ? strcpy ((char *) VistaIOMalloc (strlen (str) + 1), str) : 0))
+#define VistaIOFileHeader		"V-data"
+#define VistaIOFileVersion		2
+#define VistaIOFileDelimiter		"\f\n"
+#define VistaIOMaxAttrNameLength	256
+#define VistaIORequiredOpt		(& VistaIO_RequiredOpt)
+#define VistaIOOptionalOpt		(& VistaIO_OptionalOpt)
+#define VistaIOAllBands		-1	/* all bands */
+#define VistaIOAttrListEmpty(l)	((l) == NULL || (l)->next == NULL)
+#define VistaIOFirstAttr(l,p)		((void) ((p)->list = (l), (p)->ptr = (l)->next))
+#define VistaIOLastAttr(l,p)		((void) ((p)->list = (l), (p)->ptr = (l)->prev))
+#define VistaIOAttrExists(p)		((p)->ptr != NULL)
+#define VistaIONextAttr(p)		((void) ((p)->ptr = (p)->ptr ? (p)->ptr->next : NULL))
+#define VistaIOPrevAttr(p)		((void) ((p)->ptr = (p)->ptr ? (p)->ptr->prev : NULL))
+#define VistaIOGetAttrName(p)		((p)->ptr->name)
+#define VistaIOGetAttrRepn(p)		((p)->ptr->repn)
+#define VistaIOListCount(vlist)	((vlist)->count)
+#define VistaIOListCurr(vlist)	((vlist)->current->item)
+#define VistaIOListGetCurr(vlist)	((vlist)->current)
+#define VistaIOListSetCurr(vlist,cur) ((void)((vlist)->current = (cur)))
+#define VistaIOImageNBands(image)	((image)->nbands)
+#define VistaIOImageNRows(image)	((image)->nrows)
+#define VistaIOImageNColumns(image)	((image)->ncolumns)
+#define VistaIOImageNFrames(image)	((image)->nframes)
+#define VistaIOImageNViewpoints(image) ((image)->nviewpoints)
+#define VistaIOImageNColors(image)	((image)->ncolors)
+#define VistaIOImageNComponents(image) ((image)->ncomponents)
+#define VistaIOPixelRepn(image)	((image)->pixel_repn)
+#define VistaIOImageData(image)	((image)->data)
+#define VistaIOImageAttrList(image)	((image)->attributes)
+#define VistaIOImageNPixels(image) 	((image)->nbands * (image)->nrows * (image)->ncolumns)
+#define VistaIOPixelSize(image)	(VistaIORepnSize ((image)->pixel_repn))
+#define VistaIOPixelPrecision(image)  (VistaIORepnPrecision ((image)->pixel_repn))
+#define VistaIOPixelRepnName(image)	(VistaIORepnName ((image)->pixel_repn))
+#define VistaIOPixelMinValue(image)	(VistaIORepnMinValue ((image)->pixel_repn))
+#define VistaIOPixelMaxValue(image)	(VistaIORepnMaxValue ((image)->pixel_repn))
+#define VistaIOImageSize(image)	(VistaIOImageNPixels(image) * VistaIOPixelSize(image))
+#define VistaIOPixelPtr(image, band, row, column) \
+				((VistaIOPointer) ((char *) ((image)->band_index[band][row])+(column) * VistaIOPixelSize (image)))
+#define VistaIOPixel(image, band, row, column, type) \
 				(* ((type *) (image)->band_index[band][row] + (column)))
-#define VPixelArray(image, type) ((type ***) (image)->band_index)
-#define VBandIndex(image, frame, viewpoint, color, component) \
+#define VistaIOPixelArray(image, type) ((type ***) (image)->band_index)
+#define VistaIOBandIndex(image, frame, viewpoint, color, component) \
 				(((((frame) * (image)->nviewpoints + (viewpoint)) * (image)->ncolors + \
 					(color)) * (image)->ncomponents) + (component))
-#define VSameImageRange(image1, image2)	\
+#define VistaIOSameImageRange(image1, image2)	\
 				((image1)->nbands == (image2)->nbands && (image1)->nrows == (image2)->nrows && \
 				(image1)->ncolumns == (image2)->ncolumns && (image1)->pixel_repn == (image2)->pixel_repn)
-#define VSameImageSize(image1, image2) \
+#define VistaIOSameImageSize(image1, image2) \
 				((image1)->nbands == (image2)->nbands && (image1)->nrows == (image2)->nrows && \
 				(image1)->ncolumns == (image2)->ncolumns)
-#define VGraphNNodes(graph)	(graph->nnodes)
-#define VGraphNFields(graph)	(graph->nfields)
-#define VGraphNSize(graph)	(graph->size)
-#define VGraphAttrList(graph)	(graph->attributes)
-#define VGraphGetNode(graph, nid)	(graph->table[nid-1])
-#define VGraphNodeIsFree(graph, nid)	(graph->table[nid-1] == 0)
-#define VNodeRepn(graph)	(graph->node_repn)
-#define VNodeSize(graph) 	(sizeof(VNodeBaseRec) + (graph->nfields * VRepnPrecision(graph->node_repn)) / 8)
-#define VNodeTestVisit(node)	(((VNodeBase)node)->visited == TRUE)
-#define VNodeSetVisit(node)	(((VNodeBase)node)->visited = TRUE)
-#define VNodeClearVisit(node)	(((VNodeBase)node)->visited = FALSE)
+#define VistaIOGraphNNodes(graph)	(graph->nnodes)
+#define VistaIOGraphNFields(graph)	(graph->nfields)
+#define VistaIOGraphNSize(graph)	(graph->size)
+#define VistaIOGraphAttrList(graph)	(graph->attributes)
+#define VistaIOGraphGetNode(graph, nid)	(graph->table[nid-1])
+#define VistaIOGraphNodeIsFree(graph, nid)	(graph->table[nid-1] == 0)
+#define VistaIONodeRepn(graph)	(graph->node_repn)
+#define VistaIONodeSize(graph) 	(sizeof(VistaIONodeBaseRec) + (graph->nfields * VistaIORepnPrecision(graph->node_repn)) / 8)
+#define VistaIONodeTestVisit(node)	(((VistaIONodeBase)node)->visited == TRUE)
+#define VistaIONodeSetVisit(node)	(((VistaIONodeBase)node)->visited = TRUE)
+#define VistaIONodeClearVisit(node)	(((VistaIONodeBase)node)->visited = FALSE)
 
-#define VEdgesNRows(edges)	((edges)->nrows)
-#define VEdgesNColumns(edges)	((edges)->ncolumns)
-#define VEdgesAttrList(edges)	((edges)->attributes)
+#define VistaIOEdgesNRows(edges)	((edges)->nrows)
+#define VistaIOEdgesNColumns(edges)	((edges)->ncolumns)
+#define VistaIOEdgesAttrList(edges)	((edges)->attributes)
 #define VNEdgeFields(edges)	((edges)->edge_fields)
 #define VNPointFields(edges)	((edges)->npoints)
 #define VNEdges(edges)		((edges)->nedges)
-#define VFirstEdge(edges)	((edges)->first)
-#define VNextEdge(edge)		((edge)->next)
-#define VEdgeExists(edge)	((edge) != NULL)
-#define VEdgeFields(edge)	((edge)->edge_fields)
-#define VEdgeNPoints(edge)	((edge)->npoints)
-#define VEdgeClosed(edge)	((edge)->closed)
-#define VEdgePointArray(edge)	((edge)->point_index)
+#define VistaIOFirstEdge(edges)	((edges)->first)
+#define VistaIONextEdge(edge)		((edge)->next)
+#define VistaIOEdgeExists(edge)	((edge) != NULL)
+#define VistaIOEdgeFields(edge)	((edge)->edge_fields)
+#define VistaIOEdgeNPoints(edge)	((edge)->npoints)
+#define VistaIOEdgeClosed(edge)	((edge)->closed)
+#define VistaIOEdgePointArray(edge)	((edge)->point_index)
 
 /* Following are old macro names which should no longer be used.
    They can be removed in a future version once all of the documentation
    is in place and has been announced. */
-#define VEdgesCount(edges)	((edges)->nedges)
-#define VEdgePoints(edge)	((edge)->point_index)
-#define VEdgesEdgeFields(edges) ((edges)->nedge_fields)
-#define VEdgesPointFields(edges) ((edges)->npoint_fields)
-#define VEdgesRows(edges)	((edges)->nrows)
-#define VEdgesColumns(edges)	((edges)->ncolumns)
-#define VEdgePointCount(edge)	((edge)->npoints)
+#define VistaIOEdgesCount(edges)	((edges)->nedges)
+#define VistaIOEdgePoints(edge)	((edge)->point_index)
+#define VistaIOEdgesEdgeFields(edges) ((edges)->nedge_fields)
+#define VistaIOEdgesPointFields(edges) ((edges)->npoint_fields)
+#define VistaIOEdgesRows(edges)	((edges)->nrows)
+#define VistaIOEdgesColumns(edges)	((edges)->ncolumns)
+#define VistaIOEdgePointCount(edge)	((edge)->npoints)
 
 #define VolumesAttrList(volumes) ((volumes)->attributes)
 #define VolumesNum(volumes) ((volumes)->nvolumes)
@@ -172,47 +172,47 @@
 #define VolumeNBuckets(volume) ((volume)->nbuckets)
 #define VolumeNTracks(volume) ((volume)->ntracks)
 #define VolumeLabel(volume) ((volume)->label)
-#define VFirstVolume(volumes) ((volumes)->first)
-#define VNextVolume(volume) ((volume)->next)
+#define VistaIOFirstVolume(volumes) ((volumes)->first)
+#define VistaIONextVolume(volume) ((volume)->next)
 #define VolumeExists(volume) ((volume) != NULL)
 
-#define VTrackLength(track) ((track)->length)
-#define VTrackExists(track) ((track) != NULL)
-#define VFirstTrack(volume,i) ((volume)->bucket[(i)].first)
-#define VNextTrack(track) ((track)->next)
-#define VPreviousTrack(track) ((track)->previous)
+#define VistaIOTrackLength(track) ((track)->length)
+#define VistaIOTrackExists(track) ((track) != NULL)
+#define VistaIOFirstTrack(volume,i) ((volume)->bucket[(i)].first)
+#define VistaIONextTrack(track) ((track)->next)
+#define VistaIOPreviousTrack(track) ((track)->previous)
 
 /* Names of generic attributes: */
-#define VCommentAttr		"comment"
-#define VDataAttr		"data"
-#define VHistoryAttr		"history"
-#define VLengthAttr		"length"
-#define VNameAttr		"name"
+#define VistaIOCommentAttr		"comment"
+#define VistaIODataAttr		"data"
+#define VistaIOHistoryAttr		"history"
+#define VistaIOLengthAttr		"length"
+#define VistaIONameAttr		"name"
 #define VNColumnsAttr		"ncolumns"
 #define VNRowsAttr		"nrows"
-#define VRepnAttr               "repn"
+#define VistaIORepnAttr               "repn"
 
 /* Image attribute type names: */
-#define VColorInterpAttr	"color_interp"
-#define VComponentInterpAttr	"component_interp"
-#define VFrameInterpAttr	"frame_interp"
+#define VistaIOColorInterpAttr	"color_interp"
+#define VistaIOComponentInterpAttr	"component_interp"
+#define VistaIOFrameInterpAttr	"frame_interp"
 #define VNBandsAttr		"nbands"
 #define VNColorsAttr		"ncolors"
 #define VNComponentsAttr	"ncomponents"
 #define VNFramesAttr		"nframes"
 #define VNViewpointsAttr	"nviewpoints"
-#define VPixelAspectRatioAttr	"pixel_aspect_ratio"
-#define VViewpointInterpAttr	"viewpoint_interp"
+#define VistaIOPixelAspectRatioAttr	"pixel_aspect_ratio"
+#define VistaIOViewpointInterpAttr	"viewpoint_interp"
 
 /* Graph attribute type names: */
-#define VGraphAttr		"Graph"
+#define VistaIOGraphAttr		"Graph"
 #define VNGraphNodesAttr	"nnodes"
 #define VNGraphSizeAttr		"size"
 #define VNNodeFieldsAttr	"nfields"
 #define VNNodeWeightsAttr	"useWeights"
 
 /* Edge type names: */
-#define VEdgesAttr		"edges"
+#define VistaIOEdgesAttr		"edges"
 #define VNEdgeFieldsAttr	"nedge_fields"
 #define VNPointFieldsAttr	"npoint_fields"
 #define VNEdgesAttr		"nedges"
@@ -230,210 +230,210 @@
 
 /* Macros for generating constants of particular numeric types: */
 /* (These definitions may be platform-specific.) */
-#define VBitConst(c)			(c)
+#define VistaIOBitConst(c)			(c)
 #define VUByteConst(c)		(c)
 #define VSByteConst(c)		(c)
-#define VShortConst(c)		(c)
-#define VLongConst(c)		(c ## l)
-#define VFloatConst(c)		(c ## f)
-#define VDoubleConst(c) 	(c)
+#define VistaIOShortConst(c)		(c)
+#define VistaIOLongConst(c)		(c ## l)
+#define VistaIOFloatConst(c)		(c ## f)
+#define VistaIODoubleConst(c) 	(c)
 
 /* (These definitions may be platform-specific.) */
-typedef char VBit;		/*!< 0 or 1 */
-typedef double VDouble;		/*!< >= 64-bit IEEE floating point */
-typedef float VFloat;		/*!< >= 32-bit IEEE floating point */
-typedef int VLong;		/*!< !! changed, G.L. 19.9.95 !! */
+typedef char VistaIOBit;		/*!< 0 or 1 */
+typedef double VistaIODouble;		/*!< >= 64-bit IEEE floating point */
+typedef float VistaIOFloat;		/*!< >= 32-bit IEEE floating point */
+typedef int VistaIOLong;		/*!< !! changed, G.L. 19.9.95 !! */
 typedef signed char VSByte;	/*!< integer in [-128,127] */
-typedef short VShort;		/*!< >= 16-bit signed integer */
+typedef short VistaIOShort;		/*!< >= 16-bit signed integer */
 typedef unsigned char VUByte;	/*!< integer in [0,255] */
-typedef char VBoolean;		/*!< TRUE or FALSE */
-typedef void *VPointer;		/*!< generic pointer */
-typedef const void *VPointerConst;		/*!< generic pointer */
-typedef const char *VStringConst;	/* null-terminated string constant */
-typedef char *VString;		/*!< null-terminated string */
-typedef int VBitPromoted;
-typedef int VBooleanPromoted;
-typedef double VDoublePromoted;
-typedef double VFloatPromoted;
-typedef long VLongPromoted;
+typedef char VistaIOBoolean;		/*!< TRUE or FALSE */
+typedef void *VistaIOPointer;		/*!< generic pointer */
+typedef const void *VistaIOPointerConst;		/*!< generic pointer */
+typedef const char *VistaIOStringConst;	/* null-terminated string constant */
+typedef char *VistaIOString;		/*!< null-terminated string */
+typedef int VistaIOBitPromoted;
+typedef int VistaIOBooleanPromoted;
+typedef double VistaIODoublePromoted;
+typedef double VistaIOFloatPromoted;
+typedef long VistaIOLongPromoted;
 typedef int VSBytePromoted;
-typedef int VShortPromoted;
+typedef int VistaIOShortPromoted;
 typedef unsigned int VUBytePromoted;
-typedef struct V_ImageRec *VImage;
-typedef int VBand;
-typedef void VErrorHandler (VStringConst);
-typedef void VWarningHandler (VStringConst);
-typedef VPointer VCopyMethod (VPointer);
-typedef void VDestroyMethod (VPointer);
+typedef struct VistaIO_ImageRec *VistaIOImage;
+typedef int VistaIOBand;
+typedef void VistaIOErrorHandler (VistaIOStringConst);
+typedef void VistaIOWarningHandler (VistaIOStringConst);
+typedef VistaIOPointer VistaIOCopyMethod (VistaIOPointer);
+typedef void VistaIODestroyMethod (VistaIOPointer);
 
-extern VBoolean V_RequiredOpt, V_OptionalOpt;
+extern VistaIOBoolean VistaIO_RequiredOpt, VistaIO_OptionalOpt;
 
 /*! \brief Codes for referring to representations: */
 typedef enum {
-	VUnknownRepn,
-	VBitRepn,		/*!< 1-bit integer, [0, 1] */
+	VistaIOUnknownRepn,
+	VistaIOBitRepn,		/*!< 1-bit integer, [0, 1] */
 	VUByteRepn,		/*!< 8-bit integer, [0, 255] */
 	VSByteRepn,		/*!< 8-bit integer, [-128, 127] */
-	VShortRepn,		/*!< 16-bit integer, [-32768, 32767] */
-	VLongRepn,		/*!< 32-bit integer, [-2**31, 2**31-1] */
-	VFloatRepn,		/*!< 32-bit IEEE floating point */
-	VDoubleRepn,		/*!< 64-bit IEEE floating point */
-	VAttrListRepn,		/*!< attribute list */
-	VBooleanRepn,		/*!< TRUE or FALSE */
-	VBundleRepn,		/*!< object of named type */
-	VListRepn,		/*!< list of opaque objects */
-	VPointerRepn,		/*!< pointer to opaque object */
-	VStringRepn,		/*!< null-terminated string */
-	VEdgesRepn,		/*!< edge set */
-	VImageRepn,		/*!< image */
-	VGraphRepn,		/*!< graph */
+	VistaIOShortRepn,		/*!< 16-bit integer, [-32768, 32767] */
+	VistaIOLongRepn,		/*!< 32-bit integer, [-2**31, 2**31-1] */
+	VistaIOFloatRepn,		/*!< 32-bit IEEE floating point */
+	VistaIODoubleRepn,		/*!< 64-bit IEEE floating point */
+	VistaIOAttrListRepn,		/*!< attribute list */
+	VistaIOBooleanRepn,		/*!< TRUE or FALSE */
+	VistaIOBundleRepn,		/*!< object of named type */
+	VistaIOListRepn,		/*!< list of opaque objects */
+	VistaIOPointerRepn,		/*!< pointer to opaque object */
+	VistaIOStringRepn,		/*!< null-terminated string */
+	VistaIOEdgesRepn,		/*!< edge set */
+	VistaIOImageRepn,		/*!< image */
+	VistaIOGraphRepn,		/*!< graph */
 	VolumesRepn,		/*!< volumes */
 	VCPEListRepn,           /*!< list of critical points */ 
-	VField3DRepn,           /*!< A 3D field of 3D Vectors */
-	VField2DRepn,           /*!< A 3D field of 3D Vectors */
+	VistaIOField3DRepn,           /*!< A 3D field of 3D Vectors */
+	VistaIOField2DRepn,           /*!< A 3D field of 3D Vectors */
 	VNRepnKinds		/*!< number of predefined types */
-} VRepnKind;
+} VistaIORepnKind;
 
 /*! \brief  Values of band interpretation attributes: 
  *  
  *  Returns information about how an image's bands are to be interpreted
  */
 typedef enum {
-	VBandInterpNone,	/*!< no interpretation specified */
-	VBandInterpOther,	/*!< unknown interpretation specified */
-	VBandInterpStereoPair,
-	VBandInterpRGB,
-	VBandInterpComplex,
-	VBandInterpGradient,
-	VBandInterpIntensity,
-	VBandInterpOrientation
-} VBandInterp;
+	VistaIOBandInterpNone,	/*!< no interpretation specified */
+	VistaIOBandInterpOther,	/*!< unknown interpretation specified */
+	VistaIOBandInterpStereoPair,
+	VistaIOBandInterpRGB,
+	VistaIOBandInterpComplex,
+	VistaIOBandInterpGradient,
+	VistaIOBandInterpIntensity,
+	VistaIOBandInterpOrientation
+} VistaIOBandInterp;
 
 /*! \brief Dictionary entry: */
 typedef struct {
 	/* The following are initialized by the dictionary provider: */
 	
-	VStringConst keyword;	/*!< keyword string */
-	VLong ivalue;		/*!< value, if an integer */
-	VStringConst svalue;	/*!< value, if a string */
+	VistaIOStringConst keyword;	/*!< keyword string */
+	VistaIOLong ivalue;		/*!< value, if an integer */
+	VistaIOStringConst svalue;	/*!< value, if a string */
 
-	/* The following are used only by code in VLookupDictValue: */
-	VBoolean icached;	/*!< whether integer value cached */
-	VBoolean fcached;	/*!< whether float value cached */
-	VDouble fvalue;		/*!< cached floating-point value */
-} VDictEntry;
+	/* The following are used only by code in VistaIOLookupDictValue: */
+	VistaIOBoolean icached;	/*!< whether integer value cached */
+	VistaIOBoolean fcached;	/*!< whether float value cached */
+	VistaIODouble fvalue;		/*!< cached floating-point value */
+} VistaIODictEntry;
 
 /*! \brief Accepted command options are described by a table of these entries */
 typedef struct {
-	VStringConst keyword;	/*!< keyword signalling option */
-	VRepnKind repn; 	/*!< type of value supplied */
+	VistaIOStringConst keyword;	/*!< keyword signalling option */
+	VistaIORepnKind repn; 	/*!< type of value supplied */
 	int number; 		/*!< number of values supplied*/
-	VPointer value; 	/*!< location for storing value(s) */
-	VBoolean *found; 	/*!< whether optionl arguments */
-	VDictEntry *dict;	/*!< optional dictionary of value */
-	VStringConst blurb;	/*!< online help blurb */
-} VOptionDescRec;
+	VistaIOPointer value; 	/*!< location for storing value(s) */
+	VistaIOBoolean *found; 	/*!< whether optionl arguments */
+	VistaIODictEntry *dict;	/*!< optional dictionary of value */
+	VistaIOStringConst blurb;	/*!< online help blurb */
+} VistaIOOptionDescRec;
 
 /*! \brief If an option takes multiple values, they are represented by 
- *         a VArgVector: 
+ *         a VistaIOArgVector: 
  */
 typedef struct {
 	int number;		/*!< number of arguments */
-	VPointer vector;	/*!< vector of arguments */
-} VArgVector;
+	VistaIOPointer vector;	/*!< vector of arguments */
+} VistaIOArgVector;
 
 /*! \brief Each attribute name/value pair is represented by: */
-typedef struct V_AttrRec {
-	struct V_AttrRec *next;	/*!< next in list */
-	struct V_AttrRec *prev;	/*!< previous in list */
-	VRepnKind repn;		/*!< rep'n of attribute value */
-	VPointer value;		/*!< pointer to attribute value */
+typedef struct VistaIO_AttrRec {
+	struct VistaIO_AttrRec *next;	/*!< next in list */
+	struct VistaIO_AttrRec *prev;	/*!< previous in list */
+	VistaIORepnKind repn;		/*!< rep'n of attribute value */
+	VistaIOPointer value;		/*!< pointer to attribute value */
 	char name[1];		/*!< beginning of name string */
-} VAttrRec;
+} VistaIOAttrRec;
 
-typedef VAttrRec *VAttrList;
+typedef VistaIOAttrRec *VistaIOAttrList;
 
 /*! \brief Position within a list of attributes: */
 typedef struct {
-	VAttrList list;		/*!< the list */
-	struct V_AttrRec *ptr;	/*!< position within the list */
-} VAttrListPosn;
+	VistaIOAttrList list;		/*!< the list */
+	struct VistaIO_AttrRec *ptr;	/*!< position within the list */
+} VistaIOAttrListPosn;
 
 /*! \brief Result of trying to retrieve an attribute's value: */
 typedef enum {
-	VAttrFound,		/*!< successfully retrieved value */
-	VAttrMissing,		/*!< didn't find attribute */
-	VAttrBadValue		/*!< incompatible value */
-} VGetAttrResult;
+	VistaIOAttrFound,		/*!< successfully retrieved value */
+	VistaIOAttrMissing,		/*!< didn't find attribute */
+	VistaIOAttrBadValue		/*!< incompatible value */
+} VistaIOGetAttrResult;
 
 /*! \brief An object whose type is named but not registered: */
 typedef struct {
-	VAttrList list;		/*!< object's attribute list value */
+	VistaIOAttrList list;		/*!< object's attribute list value */
 	size_t length;		/*!< length of binary data */
-	VPointer data;		/*!< pointer to binary data */
+	VistaIOPointer data;		/*!< pointer to binary data */
 	char type_name[1];	/*!< beginning of object's type's name */
-} VBundleRec, *VBundle;
+} VistaIOBundleRec, *VistaIOBundle;
 
-typedef VPointer VDecodeMethod (VStringConst, VBundle);
-typedef VAttrList VEncodeAttrMethod (VPointer, size_t *);
-typedef VPointer VEncodeDataMethod (VPointer, VAttrList, size_t, VBoolean *);
+typedef VistaIOPointer VistaIODecodeMethod (VistaIOStringConst, VistaIOBundle);
+typedef VistaIOAttrList VistaIOEncodeAttrMethod (VistaIOPointer, size_t *);
+typedef VistaIOPointer VistaIOEncodeDataMethod (VistaIOPointer, VistaIOAttrList, size_t, VistaIOBoolean *);
 
 /*! \brief Set of methods supporting an object type: */
 typedef struct {
-	VCopyMethod *copy;
-	VDestroyMethod *destroy;
-	VDecodeMethod *decode;
-	VEncodeAttrMethod *encode_attr;
-	VEncodeDataMethod *encode_data;
-} VTypeMethods;
+	VistaIOCopyMethod *copy;
+	VistaIODestroyMethod *destroy;
+	VistaIODecodeMethod *decode;
+	VistaIOEncodeAttrMethod *encode_attr;
+	VistaIOEncodeDataMethod *encode_data;
+} VistaIOTypeMethods;
 
 /*! \brief Information about a representation: */
 typedef struct {
-	VStringConst name;	/*!< name string */
+	VistaIOStringConst name;	/*!< name string */
 	size_t size;		/*!< size, in bytes */
 	int precision;		/*!< precision, in bits */
-	VDouble min_value;	/*!< min and max representable values */
-	VDouble max_value;
-	VTypeMethods *methods;	/*!< associated methods */
-} VRepnInfoRec;
+	VistaIODouble min_value;	/*!< min and max representable values */
+	VistaIODouble max_value;
+	VistaIOTypeMethods *methods;	/*!< associated methods */
+} VistaIORepnInfoRec;
 
 /*! \brief List element: */
-typedef struct V_Node *VNodePtrType;
+typedef struct VistaIO_Node *VistaIONodePtrType;
 /*! \brief List element: */
-struct V_Node {
-	VPointer item;		/*!< pointer to data item */
-	VNodePtrType prev;	/*!< pointer to previous node */
-	VNodePtrType next;	/*!< pointer to next node */
+struct VistaIO_Node {
+	VistaIOPointer item;		/*!< pointer to data item */
+	VistaIONodePtrType prev;	/*!< pointer to previous node */
+	VistaIONodePtrType next;	/*!< pointer to next node */
 };
 
 /*! \brief List head: */
-typedef struct V_List {
-	VNodePtrType current;	/*!< pointer to current node */
-	VNodePtrType head;	/*!< pointer to head node */
-	VNodePtrType tail;	/*!< pointer to tail node */
-	int count;		/*!< number of nodes in VList */
-} *VList;
+typedef struct VistaIO_List {
+	VistaIONodePtrType current;	/*!< pointer to current node */
+	VistaIONodePtrType head;	/*!< pointer to head node */
+	VistaIONodePtrType tail;	/*!< pointer to tail node */
+	int count;		/*!< number of nodes in VistaIOList */
+} *VistaIOList;
 
 /*! \brief Description of an image: */
-typedef struct V_ImageRec {
+typedef struct VistaIO_ImageRec {
 	int nbands;		/*!< number of bands */
 	int nrows;		/*!< number of rows */
 	int ncolumns;		/*!< number of columns */
-	VRepnKind pixel_repn;	/*!< representation of pixel values */
+	VistaIORepnKind pixel_repn;	/*!< representation of pixel values */
 	unsigned long flags;	/*!< various flags */
-	VAttrList attributes;	/*!< list of other image attributes */
-	VPointer data;		/*!< array of image pixel values */
-	VPointer *row_index;	/*!< ptr to first pixel of each row */
-	VPointer **band_index;	/*!< ptr to first row of each band */
+	VistaIOAttrList attributes;	/*!< list of other image attributes */
+	VistaIOPointer data;		/*!< array of image pixel values */
+	VistaIOPointer *row_index;	/*!< ptr to first pixel of each row */
+	VistaIOPointer **band_index;	/*!< ptr to first row of each band */
 	int nframes;		/*!< number of motion frames */
 	int nviewpoints;	/*!< number of camera viewpoints */
 	int ncolors;		/*!< number of color channels */
 	int ncomponents;	/*!< number of vector components */
-} VImageRec;
+} VistaIOImageRec;
 
 /*! \brief Codes for flags: */
 enum {
-	VImageSingleAlloc = 0x01	/*!< one free() releases everything */
+	VistaIOImageSingleAlloc = 0x01	/*!< one free() releases everything */
 };
 
 /*! \brief Description of a Graph 
@@ -441,52 +441,52 @@ enum {
  *  Vista  represents  a  graph as a list of connected nodes. Nodes and
  *  connections may have weights, connections may be uni-  or  bidirec-
  *  tional in a graph.  The actual representation of a node is achieved
- *  by subclassing from a VNodeBase structure, which implements the i/o
- *  and  bookkeeping part.  Subclasses of VNodeBase may implement f.ex.
+ *  by subclassing from a VistaIONodeBase structure, which implements the i/o
+ *  and  bookkeeping part.  Subclasses of VistaIONodeBase may implement f.ex.
  *  a vertex by adding x, y, and z coordinates or polygons by recording
  *  a  list  of vertex references.  Besides node data, a graph may also
  *  has an arbitrary list of attributes associated with it.
  *
- *  A graph in memory is referred to by the C pointer type  VGraph.  In
+ *  A graph in memory is referred to by the C pointer type  VistaIOGraph.  In
  *  data  files it is identified by the type name graph, and in memory,
- *  by the VRepnKind code VGraphRepn. Since it  is  a  standard  object
+ *  by the VistaIORepnKind code VistaIOGraphRepn. Since it  is  a  standard  object
  *  type with built-in support in the Vista library, graphs can be read
  *  from data files, written to data files, and manipulated as part  of
- *  attribute   lists  by  routines  such  as  VReadFile(3Vi),  VWrite-
- *  File(3Vi), and VGetAttr(3Vi). 
+ *  attribute   lists  by  routines  such  as  VistaIOReadFile(3Vi),  VistaIOWrite-
+ *  File(3Vi), and VistaIOGetAttr(3Vi). 
  */
-typedef struct V_GraphRec {
+typedef struct VistaIO_GraphRec {
 	int nnodes;		/*!< number of nodes */
 	int nfields;		/*!< size of fields in a node´s private area */
-	VRepnKind node_repn;	/*!< data representation in a node */
-	VAttrList attributes;	/*!< list of other attributes */
-	struct VNodestruct **table;	/*!< node table of Graph */
+	VistaIORepnKind node_repn;	/*!< data representation in a node */
+	VistaIOAttrList attributes;	/*!< list of other attributes */
+	struct VistaIONodestruct **table;	/*!< node table of Graph */
 	int size;		/*!< number of places in table */
 	int lastUsed;		/*!< last entry used in table */
 	int iter;		/*!< iteration counter in sequential access */
 	int useWeights;		/*!< TRUE iff weights are used */
-} VGraphRec, *VGraph;
+} VistaIOGraphRec, *VistaIOGraph;
 
 /*! \brief Description of the base of a node */
-typedef struct VNodebaseStruct {
+typedef struct VistaIONodebaseStruct {
 	unsigned int hops:31;	/*!< number of hops in this node */
 	unsigned int visited:1;	/*!< true if seen before */
-	VFloat weight;		/*!< weight of this node */
-	struct VAdjstruct *head;
-} VNodeBaseRec, *VNodeBase;
+	VistaIOFloat weight;		/*!< weight of this node */
+	struct VistaIOAdjstruct *head;
+} VistaIONodeBaseRec, *VistaIONodeBase;
 
 /*! \brief Description of a node */
-typedef struct VNodestruct {
-	VNodeBaseRec base;
+typedef struct VistaIONodestruct {
+	VistaIONodeBaseRec base;
 	char data[1];		/*!< private data area of node starts here */
-} VNodeRec, *VNode;
+} VistaIONodeRec, *VistaIONode;
 
 /*! \brief Information about adjacency of nodes */
-typedef struct VAdjstruct {
+typedef struct VistaIOAdjstruct {
 	unsigned int id;	/*!< node reference */
-	VFloat weight;		/*!< weight of this node */
-	struct VAdjstruct *next;	/* list of adjacent nodes */
-} VAdjRec, *VAdjacency;
+	VistaIOFloat weight;		/*!< weight of this node */
+	struct VistaIOAdjstruct *next;	/* list of adjacent nodes */
+} VistaIOAdjRec, *VistaIOAdjacency;
 
 /*! \brief General information about an edge set
  *
@@ -495,56 +495,56 @@ typedef struct VAdjstruct {
  *  ages,  but  it can also be used to represent any sets of vectors of
  *  floating point values.
  *
- *  An edge set in memory is referred to by the C pointer type  VEdges.
+ *  An edge set in memory is referred to by the C pointer type  VistaIOEdges.
  *  In  data files it's identified by the type name edges, and in memo-
- *  ry, by the VRepnKind code VEdgesRepn. Since it is a standard object
+ *  ry, by the VistaIORepnKind code VistaIOEdgesRepn. Since it is a standard object
  *  type  with  built-in support in the Vista library, edge sets can be
  *  read from data files, written to data  files,  and  manipulated  as
- *  part of attribute lists by routines such as VReadFile(3Vi), VWrite-
- *  File(3Vi), and VGetAttr(3Vi).
+ *  part of attribute lists by routines such as VistaIOReadFile(3Vi), VistaIOWrite-
+ *  File(3Vi), and VistaIOGetAttr(3Vi).
  *								     
  *  A single edge, a member of an edge set, is referred  to  by  the  C
- *  pointer type VEdge.
+ *  pointer type VistaIOEdge.
  */
-typedef struct V_EdgesRec {
+typedef struct VistaIO_EdgesRec {
 	int nrows;		/*!< number of rows */
 	int ncolumns;		/*!< number of columns */
-	VAttrList attributes;	/*!< list of other attributes */
+	VistaIOAttrList attributes;	/*!< list of other attributes */
 	int nedge_fields;	/*!< number of fields in each edge record */
 	int npoint_fields;	/*!< number of fields in each point record */
 	int nedges;		/*!< number of edges */
 	int npoints;		/*!< total number of points */
-	struct VEdgeStruct *first;	/*!< first edge in linked list of edges */
-	struct VEdgeStruct *last;	/*!< last edge in linked list of edges */
-	VPointer free;		/*!< free this storage when destroying edges */
-} VEdgesRec, *VEdges;
+	struct VistaIOEdgeStruct *first;	/*!< first edge in linked list of edges */
+	struct VistaIOEdgeStruct *last;	/*!< last edge in linked list of edges */
+	VistaIOPointer free;		/*!< free this storage when destroying edges */
+} VistaIOEdgesRec, *VistaIOEdges;
 
 /*! \brief Topological information about an edge set. */
-typedef struct VEdgeStruct {
-	struct VEdgeStruct *next;	/*!< next edge in linked list of edges */
-	VFloat *edge_fields;	/*!< vector of field entries for this edge */
-	VBoolean closed;	/*!< indicates closed edge (a loop) */
+typedef struct VistaIOEdgeStruct {
+	struct VistaIOEdgeStruct *next;	/*!< next edge in linked list of edges */
+	VistaIOFloat *edge_fields;	/*!< vector of field entries for this edge */
+	VistaIOBoolean closed;	/*!< indicates closed edge (a loop) */
 	int npoints;		/*!< number of points in this edge */
-	VFloat **point_index;	/*!< pointers to start of each point */
-	VPointer free;		/*!< free this storage when destroying edges */
-} VEdgeRec, *VEdge;
+	VistaIOFloat **point_index;	/*!< pointers to start of each point */
+	VistaIOPointer free;		/*!< free this storage when destroying edges */
+} VistaIOEdgeRec, *VistaIOEdge;
 
 /*! \brief Description of a track */
-typedef struct VTrackStruct {
+typedef struct VistaIOTrackStruct {
 	short band;
 	short row;
 	short col;
 	short length;
-	struct VTrackStruct *next;
-	struct VTrackStruct *previous;
-} *VTrack, VTrackRec;
+	struct VistaIOTrackStruct *next;
+	struct VistaIOTrackStruct *previous;
+} *VistaIOTrack, VistaIOTrackRec;
 
 /*! \brief Information needed to handel tracks */
-typedef struct VBucketStruct {
+typedef struct VistaIOBucketStruct {
 	short ntracks;		/*!< number of tracks in one hashtable bucket */
-	VTrack first;		/*!< ptr to first track in bucket             */
-	VTrack last;		/*!< ptr to last track in bucket              */
-} *VBucket, VBucketRec;
+	VistaIOTrack first;		/*!< ptr to first track in bucket             */
+	VistaIOTrack last;		/*!< ptr to last track in bucket              */
+} *VistaIOBucket, VistaIOBucketRec;
 
 /*! \brief Description of a volume */
 typedef struct VolumeStruct {
@@ -554,13 +554,13 @@ typedef struct VolumeStruct {
 	short ncolumns;
 	short nbuckets;		/*!< length of hash table (number of buckets) */
 	int ntracks;		/*!< total number of tracks in all buckets   */
-	VBucket bucket;		/*!< ptrs to buckets      */
+	VistaIOBucket bucket;		/*!< ptrs to buckets      */
 	struct VolumeStruct *next;
 } VolumeRec, *Volume;
 
 /*! \brief Description of a set of volume */
-typedef struct V_VolumesRec {
-	VAttrList attributes;
+typedef struct VistaIO_VolumesRec {
+	VistaIOAttrList attributes;
 	short nvolumes;		/*!< number of volumes in list       */
 	short nbands;
 	short nrows;
@@ -572,33 +572,33 @@ typedef struct V_VolumesRec {
 
 
 /* A list of attributes is represented by a header node: */
-typedef enum { VLsbFirst, VMsbFirst } VPackOrder;
-typedef VBoolean VReadFileFilterProc (VBundle, VRepnKind);
+typedef enum { VistaIOLsbFirst, VistaIOMsbFirst } VistaIOPackOrder;
+typedef VistaIOBoolean VistaIOReadFileFilterProc (VistaIOBundle, VistaIORepnKind);
 
 /* Macros for accessing information about representations: */
-#define VRepnSize(repn)			(VRepnInfo[repn].size)
-#define VRepnPrecision(repn)	(VRepnInfo[repn].precision)
-#define VRepnName(repn)		(VRepnInfo[repn].name)
-#define VRepnMinValue(repn)	(VRepnInfo[repn].min_value)
-#define VRepnMaxValue(repn)	(VRepnInfo[repn].max_value)
-#define VRepnMethods(repn)	(VRepnInfo[repn].methods)
-#define VIsIntegerRepn(repn)	((repn) >= VBitRepn && (repn) <= VLongRepn)
-#define VIsFloatPtRepn(repn)	((repn) == VFloatRepn || (repn) == VDoubleRepn)
-#define VRandomDouble()		((VDouble) drand48 ())
-#define VRandomSeed(seed)	srand48 ((long) seed)
-#define VRandomLong()			((VLong) mrand48 ())
+#define VistaIORepnSize(repn)			(VistaIORepnInfo[repn].size)
+#define VistaIORepnPrecision(repn)	(VistaIORepnInfo[repn].precision)
+#define VistaIORepnName(repn)		(VistaIORepnInfo[repn].name)
+#define VistaIORepnMinValue(repn)	(VistaIORepnInfo[repn].min_value)
+#define VistaIORepnMaxValue(repn)	(VistaIORepnInfo[repn].max_value)
+#define VistaIORepnMethods(repn)	(VistaIORepnInfo[repn].methods)
+#define VistaIOIsIntegerRepn(repn)	((repn) >= VistaIOBitRepn && (repn) <= VistaIOLongRepn)
+#define VistaIOIsFloatPtRepn(repn)	((repn) == VistaIOFloatRepn || (repn) == VistaIODoubleRepn)
+#define VistaIORandomDouble()		((VistaIODouble) drand48 ())
+#define VistaIORandomSeed(seed)	srand48 ((long) seed)
+#define VistaIORandomLong()			((VistaIOLong) mrand48 ())
 
 /*  Declarations of library routines. */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  EXPORT_VISTA extern VRepnInfoRec *VRepnInfo;
-  extern EXPORT_VISTA VDictEntry VBooleanDict[];	/*!< boolean values */
-  extern EXPORT_VISTA VDictEntry VNumericRepnDict[];	/*!< numeric representation kinds */
-  extern EXPORT_VISTA VDictEntry VBandInterpDict[];
+  EXPORT_VISTA extern VistaIORepnInfoRec *VistaIORepnInfo;
+  extern EXPORT_VISTA VistaIODictEntry VistaIOBooleanDict[];	/*!< boolean values */
+  extern EXPORT_VISTA VistaIODictEntry VistaIONumericRepnDict[];	/*!< numeric representation kinds */
+  extern EXPORT_VISTA VistaIODictEntry VistaIOBandInterpDict[];
 
-	typedef void (*VShowProgressFunc)(int pos, int length, void *data);
+	typedef void (*VistaIOShowProgressFunc)(int pos, int length, void *data);
 	
 	extern int VERBOSE;
 	
@@ -607,12 +607,12 @@ extern "C" {
 	 *  \param   show_write the callback used on write
 	 *  \param   data some data that is passed to the callback 
 	 */
-	EXPORT_VISTA void VSetProgressIndicator(VShowProgressFunc show_read, VShowProgressFunc show_write, void *data);
+	EXPORT_VISTA void VistaIOSetProgressIndicator(VistaIOShowProgressFunc show_read, VistaIOShowProgressFunc show_write, void *data);
 
 	/*! \brief A function to reaset the progress callback to the standart behavior (be quiet) */
-	EXPORT_VISTA void VResetProgressIndicator(void);
+	EXPORT_VISTA void VistaIOResetProgressIndicator(void);
 	
-	/*! \brief The function to create a VGraph. 
+	/*! \brief The function to create a VistaIOGraph. 
 	 *
 	 *  \param size number of nodes in the Graph
 	 *  \param nfields number of fields in a node
@@ -620,23 +620,23 @@ extern "C" {
 	 *  \param use_weight whether the weight is used in the graph nodes
 	 *  \returns a newly created Graph
 	 */
-	EXPORT_VISTA VGraph VCreateGraph (int size, int nfields , VRepnKind repn , int use_weight);
+	EXPORT_VISTA VistaIOGraph VistaIOCreateGraph (int size, int nfields , VistaIORepnKind repn , int use_weight);
 	
-	/*! \brief Copy a VGraph object.
+	/*! \brief Copy a VistaIOGraph object.
 	 *
 	 *  Note that no compaction is performed, since this would require
 	 *  a recalculation of all indices,
 	 *
 	 *  \param  src
-	 *  \return VGraph
+	 *  \return VistaIOGraph
 	 */
-	EXPORT_VISTA VGraph VCopyGraph (VGraph src);
+	EXPORT_VISTA VistaIOGraph VistaIOCopyGraph (VistaIOGraph src);
 
 	/*! \brief Frees memory occupied by a graph.
 	 *
 	 *  \param graph
 	 */
-	EXPORT_VISTA void VDestroyGraph (VGraph graph);
+	EXPORT_VISTA void VistaIODestroyGraph (VistaIOGraph graph);
 
 	/*! \brief Read a Vista data file, extract the graphs from it, and return 
 	 *         a list of them.
@@ -646,7 +646,7 @@ extern "C" {
 	 *  \param  graphs
 	 *  \return int
 	 */
-	EXPORT_VISTA int VReadGraphs (FILE *file, VAttrList *attrs, VGraph **graphs);
+	EXPORT_VISTA int VistaIOReadGraphs (FILE *file, VistaIOAttrList *attrs, VistaIOGraph **graphs);
 
 	/*! \brief Write a list of graphs to a Vista data file.
 	 * 
@@ -654,9 +654,9 @@ extern "C" {
 	 *  \param  attrs
 	 *  \param  n
 	 *  \param  graphs
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VWriteGraphs (FILE *file, VAttrList attrs, int n, VGraph *graphs);
+	EXPORT_VISTA VistaIOBoolean VistaIOWriteGraphs (FILE *file, VistaIOAttrList attrs, int n, VistaIOGraph *graphs);
 
 	/*! \brief Find a node in a Vista graph structure.
 	 *  
@@ -664,7 +664,7 @@ extern "C" {
 	 *  \param  node
 	 *  \return Return reference to this node.
 	 */
-	EXPORT_VISTA int VGraphLookupNode (VGraph graph, VNode node);
+	EXPORT_VISTA int VistaIOGraphLookupNode (VistaIOGraph graph, VistaIONode node);
 
 	/*! \brief Add a node to a Vista graph structure.
 	 *  
@@ -672,7 +672,7 @@ extern "C" {
 	 *  \param  node
 	 *  \return Return reference to this node.
 	 */
-	EXPORT_VISTA int VGraphAddNode (VGraph graph, VNode node);
+	EXPORT_VISTA int VistaIOGraphAddNode (VistaIOGraph graph, VistaIONode node);
 
 	/*! \brief Add a node to a Vista graph structure at a specific position.
 	 *
@@ -684,7 +684,7 @@ extern "C" {
 	 *  \param  position
 	 *  \return int
 	 */
-	EXPORT_VISTA int VGraphAddNodeAt (VGraph graph, VNode node, int position);
+	EXPORT_VISTA int VistaIOGraphAddNodeAt (VistaIOGraph graph, VistaIONode node, int position);
 
 	/*! \brief Make a link between to nodes.
 	 *
@@ -693,7 +693,7 @@ extern "C" {
 	 *  \param  b
 	 *  \return Return TRUE if successful.
 	 */
-	EXPORT_VISTA int VGraphLinkNodes (VGraph graph, int a, int b);
+	EXPORT_VISTA int VistaIOGraphLinkNodes (VistaIOGraph graph, int a, int b);
 
 	/*! \brief unlinks two nodes.
 	 *
@@ -704,27 +704,27 @@ extern "C" {
 	 *  \param  b
 	 *  \return int
 	 */
-	EXPORT_VISTA int VGraphUnlinkNodes (VGraph graph, int a, int b);
+	EXPORT_VISTA int VistaIOGraphUnlinkNodes (VistaIOGraph graph, int a, int b);
 
 	/*! \brief
 	 *
 	 *  \param  graph
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	EXPORT_VISTA VPointer VGraphFirstNode (VGraph graph);
+	EXPORT_VISTA VistaIOPointer VistaIOGraphFirstNode (VistaIOGraph graph);
 
 	/*! \brief
 	 *
 	 *  \param  graph
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	EXPORT_VISTA VPointer VGraphNextNode (VGraph graph);
+	EXPORT_VISTA VistaIOPointer VistaIOGraphNextNode (VistaIOGraph graph);
 
 	/*! \brief
 	 *
 	 *  \param  graph
 	 */	
-	EXPORT_VISTA void VGraphClearVisit (VGraph graph);
+	EXPORT_VISTA void VistaIOGraphClearVisit (VistaIOGraph graph);
 
 	/*! \brief Visits all node in a graph connected to node i
 	 *
@@ -732,7 +732,7 @@ extern "C" {
 	 *  \param  i
 	 *  \return int
 	 */
-	EXPORT_VISTA int VGraphVisitNodesFrom (VGraph graph, int i);
+	EXPORT_VISTA int VistaIOGraphVisitNodesFrom (VistaIOGraph graph, int i);
 
 	/*! \brief Grow private data area of each node to newfields.
 	 *  
@@ -740,14 +740,14 @@ extern "C" {
 	 *  \param  newfields
 	 *  \return Return TRUE if successful.
 	 */
-	EXPORT_VISTA int VGraphResizeFields (VGraph graph, int newfields);
+	EXPORT_VISTA int VistaIOGraphResizeFields (VistaIOGraph graph, int newfields);
 
 	/*! \brief
 	 *
 	 *  \param  graph
 	 *  \return Returns number of cycles in a graph
 	 */
-	EXPORT_VISTA int VGraphNCycles (VGraph graph);
+	EXPORT_VISTA int VistaIOGraphNCycles (VistaIOGraph graph);
 
 	/*! \brief Visits all node in a graph connected to node i and toggles the hops
 	 *  field note that the visit field must have been cleared before
@@ -755,7 +755,7 @@ extern "C" {
 	 *  \param  graph
 	 *  \param  i
 	 */
-	EXPORT_VISTA void VGraphToggleNodesFrom (VGraph graph, int i);
+	EXPORT_VISTA void VistaIOGraphToggleNodesFrom (VistaIOGraph graph, int i);
 
 	/*! \brief make bidrectional link between nodes a and b
 	 *
@@ -763,7 +763,7 @@ extern "C" {
 	 *  \param  a
 	 *  \param  b
 	 */
-	EXPORT_VISTA void VGraphLinkNodesBi (VGraph graph, VLong a, VLong b);
+	EXPORT_VISTA void VistaIOGraphLinkNodesBi (VistaIOGraph graph, VistaIOLong a, VistaIOLong b);
 
 	/*! \brief remove bidrectional link between nodes a and b
 	 * 
@@ -771,36 +771,36 @@ extern "C" {
 	 *  \param  a
 	 *  \param  b
 	 */
-	EXPORT_VISTA void VGraphUnlinkNodesBi (VGraph graph, VLong a, VLong b);
+	EXPORT_VISTA void VistaIOGraphUnlinkNodesBi (VistaIOGraph graph, VistaIOLong a, VistaIOLong b);
 
 	/*! \brief
 	 *
 	 *  \param  graph
 	 *  \param  a
 	 *  \param  b
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VGraphHasLink (VGraph graph, int a, int b);
+	EXPORT_VISTA VistaIOBoolean VistaIOGraphHasLink (VistaIOGraph graph, int a, int b);
 
 	/*! \brief complex deletion: look at all connected structures of this node
 	 *
 	 *  \param  graph
 	 *  \param  i
 	 */
-	EXPORT_VISTA void VDestroyNode (VGraph graph, int i);
+	EXPORT_VISTA void VistaIODestroyNode (VistaIOGraph graph, int i);
 
 	/*! \brief Destroys nodes from a graph in which the hops field is set
 	 *
 	 *  \param graph
 	 *  \param i
 	 */
-	EXPORT_VISTA void VGraphDestroyNodesFrom (VGraph graph, int i);
+	EXPORT_VISTA void VistaIOGraphDestroyNodesFrom (VistaIOGraph graph, int i);
 
 	/*! \brief Clears the hops field in a graph
 	 *  
 	 *  \param  graph
 	 */
-	EXPORT_VISTA void VGraphClearHops (VGraph graph);
+	EXPORT_VISTA void VistaIOGraphClearHops (VistaIOGraph graph);
 
 	/*! \brief Identify the files specified by command line arguments.
 	 *
@@ -810,8 +810,8 @@ extern "C" {
 	 *       any switch (e.g., vview file1 file2)
 	 *   (3) by piping to/from stdin or stdout (e.g., vview < file1).
 	 *
-	 *  VIdentifyFiles collects file names from these three sources once
-	 *  VParseCommand has been called to parse the command's switches.
+	 *  VistaIOIdentifyFiles collects file names from these three sources once
+	 *  VistaIOParseCommand has been called to parse the command's switches.
 	 *  It looks first for the keyword, then for unclaimed command line
 	 *  arguments, and finally for a file or pipe attached to stdin or stdout.
 	 *
@@ -821,18 +821,18 @@ extern "C" {
 	 *  \param  argc
 	 *  \param  argv
 	 *  \param  fd
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	VBoolean VIdentifyFiles (int noptions, VOptionDescRec options[], 
-		VStringConst keyword, int *argc, char **argv, int fd);
+	VistaIOBoolean VistaIOIdentifyFiles (int noptions, VistaIOOptionDescRec options[], 
+		VistaIOStringConst keyword, int *argc, char **argv, int fd);
 
 	/*! \brief Parse command line arguments according to a table of option descriptors.
 	 *  Unrecognized options are left in argv, and argc is adjusted to reflect
 	 *  their number.
 	 *  If an erroneous (as opposed to simply unrecognized) argument is
-	 *  encountered, VParseCommand returns FALSE; otherwise, TRUE.
+	 *  encountered, VistaIOParseCommand returns FALSE; otherwise, TRUE.
 	 *
-	 *  The -help option is recognized explicitly. If it is present, VParseCommand
+	 *  The -help option is recognized explicitly. If it is present, VistaIOParseCommand
 	 *  returns indicating that all arguments were recognized, but that an error
 	 *  occurred. This should force the caller to simply print usage information.
 	 *
@@ -840,9 +840,9 @@ extern "C" {
 	 *  \param  options
 	 *  \param  argc
 	 *  \param  argv
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	VBoolean VParseCommand (int noptions, VOptionDescRec options[], int *argc, char **argv);
+	VistaIOBoolean VistaIOParseCommand (int noptions, VistaIOOptionDescRec options[], int *argc, char **argv);
 
 	/*! \brief Does all of the standard command line parsing and file location needed
 	 *  by Vista modules with a maximum of one input and output file.
@@ -864,7 +864,7 @@ extern "C" {
 	 *  \param  inp
 	 *  \param  outp
 	 */
-	void VParseFilterCmd (int noptions, VOptionDescRec opts[], int argc, 
+	void VistaIOParseFilterCmd (int noptions, VistaIOOptionDescRec opts[], int argc, 
 		char **argv,  FILE **inp, FILE **outp);
 
 	/*! \brief Print the settings of a set of command line options.
@@ -873,14 +873,14 @@ extern "C" {
 	 *  \param noptions
 	 *  \param options
 	 */
-	void VPrintOptions (FILE *f, int noptions, VOptionDescRec options[]);
+	void VistaIOPrintOptions (FILE *f, int noptions, VistaIOOptionDescRec options[]);
 
 	/*! \brief Print the value of a specified option.
 	 *
 	 *  \param f
 	 *  \param option
 	 */
-	int VPrintOptionValue (FILE *f, VOptionDescRec *option);
+	int VistaIOPrintOptionValue (FILE *f, VistaIOOptionDescRec *option);
 
 	/*! \brief Report the remaining command line arguments in argv as ones that could
 	 *  not be recognized.
@@ -888,7 +888,7 @@ extern "C" {
 	 *  \param argc
 	 *  \param argv
 	 */
-	void VReportBadArgs (int argc, char **argv);
+	void VistaIOReportBadArgs (int argc, char **argv);
 
 	/*! \brief Print, to stderr, information about how to use a program based on
 	 *  the contents of its command argument parsing table.
@@ -898,8 +898,8 @@ extern "C" {
 	 *  \param options
 	 *  \param other_args
 	 */
-	void VReportUsage (VStringConst program, int noptions, 
-		VOptionDescRec options[], VStringConst other_args);
+	void VistaIOReportUsage (VistaIOStringConst program, int noptions, 
+		VistaIOOptionDescRec options[], VistaIOStringConst other_args);
 
 	/*! \brief Print, to stderr, a summary of program options based on the contents of
 	 *  a command argument parsing table
@@ -907,7 +907,7 @@ extern "C" {
 	 *  \param noptions
 	 *  \param options
 	 */
-	void VReportValidOptions (int noptions, VOptionDescRec options[]);
+	void VistaIOReportValidOptions (int noptions, VistaIOOptionDescRec options[]);
 
 	/*! \brief Allocates memory for a new image with specified properties.
 	 *  
@@ -917,23 +917,23 @@ extern "C" {
 	 *  \param  nrows
 	 *  \param  ncolumns
 	 *  \param  pixel_repn
-	 *  \return VImage
+	 *  \return VistaIOImage
 	 */
-	EXPORT_VISTA VImage VCreateImage (int nbands, int nrows, int ncolumns, VRepnKind pixel_repn);
+	EXPORT_VISTA VistaIOImage VistaIOCreateImage (int nbands, int nrows, int ncolumns, VistaIORepnKind pixel_repn);
 
 	/*! \brief Create an image with the same properties as an existing one.
 	 *
 	 *  \param  src
-	 *  \return VImage 
+	 *  \return VistaIOImage 
 	 */
-	EXPORT_VISTA VImage VCreateImageLike (VImage src);
+	EXPORT_VISTA VistaIOImage VistaIOCreateImageLike (VistaIOImage src);
 
 	/*! \brief Frees memory occupied by an image.
 	 *
 	 *  \param image
-	 *  \return VImage
+	 *  \return VistaIOImage
 	 */
-	EXPORT_VISTA void VDestroyImage (VImage image);
+	EXPORT_VISTA void VistaIODestroyImage (VistaIOImage image);
 
 	/*! \brief Fetch a pixel value, regardless of type, and return it as a Double.
 	 *
@@ -941,9 +941,9 @@ extern "C" {
 	 *  \param  band
 	 *  \param  row
 	 *  \param  column
-	 *  \return VDouble
+	 *  \return VistaIODouble
 	 */
-	EXPORT_VISTA VDouble VGetPixel (VImage image, int band, int row, int column);
+	EXPORT_VISTA VistaIODouble VistaIOGetPixel (VistaIOImage image, int band, int row, int column);
 
 	/*! \brief Set a pixel, regardless of type, and to a value passed as a Double.
 	 *
@@ -953,13 +953,13 @@ extern "C" {
 	 *  \param column
 	 *  \param value
 	 */
-	EXPORT_VISTA void VSetPixel (VImage image, int band, int row, int column, 
-		VDoublePromoted value);
+	EXPORT_VISTA void VistaIOSetPixel (VistaIOImage image, int band, int row, int column, 
+		VistaIODoublePromoted value);
 
 	/*! \brief Copy the pixels and attributes of one image to another.
 	 *
 	 *  Returns a pointer to the destination image if successful, zero otherwise.
-	 *  The band parameter may be VAllBands, in which case all bands of pixel
+	 *  The band parameter may be VistaIOAllBands, in which case all bands of pixel
 	 *  values are copied, or a particular band number, in which case only a
 	 *  single band is copied to a 1-band destination image.
 	 *
@@ -969,7 +969,7 @@ extern "C" {
 	 *  \return Returns a pointer to the destination image if successful, zero 
 	 *          otherwise
 	 */
-	EXPORT_VISTA VImage VCopyImage (VImage src, VImage dest, VBand band);
+	EXPORT_VISTA VistaIOImage VistaIOCopyImage (VistaIOImage src, VistaIOImage dest, VistaIOBand band);
 
 	/*! \brief Give a destination image the same attributes as a source image.
 	 *  
@@ -978,14 +978,14 @@ extern "C" {
 	 *
 	 *  \param  src
 	 *  \param  dest
-	 *  \return VImage
+	 *  \return VistaIOImage
 	 */
-	EXPORT_VISTA VImage VCopyImageAttrs (VImage src, VImage dest);
+	EXPORT_VISTA VistaIOImage VistaIOCopyImageAttrs (VistaIOImage src, VistaIOImage dest);
 
 	/*! \brief Copy the pixels of one image to another.
 	 *
 	 *  Returns a pointer to the destination image if successful, zero otherwise.
-	 *  The band parameter may be VAllBands, in which case all bands of pixel
+	 *  The band parameter may be VistaIOAllBands, in which case all bands of pixel
 	 *  values are copied, or a particular band number, in which case only a
 	 *  single band is copied to a 1-band destination image.
 	 *
@@ -995,22 +995,22 @@ extern "C" {
 	 *  \return Returns a pointer to the destination image if successful, 
 	 *          zero otherwise.
 	 */
-	EXPORT_VISTA VImage VCopyImagePixels (VImage src, VImage dest, VBand band);
+	EXPORT_VISTA VistaIOImage VistaIOCopyImagePixels (VistaIOImage src, VistaIOImage dest, VistaIOBand band);
 
 	/*! \brief Copy a band of pixel data from one image to another.
 	 *
 	 *  Band src_band of image src is copied to band dest_band of image dest.
 	 *  The destination image must exist, having the same pixel representation
 	 *  and size as the source image. Either src_band or dst_band may be
-	 *  VAllBands, provided they both describe the same number of bands.
+	 *  VistaIOAllBands, provided they both describe the same number of bands.
 	 *
 	 *  \param  src
 	 *  \param  src_band
 	 *  \param  dest
 	 *  \param  dest_band
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VCopyBand (VImage src, VBand src_band, VImage dest, VBand dest_band);
+	EXPORT_VISTA VistaIOBoolean VistaIOCopyBand (VistaIOImage src, VistaIOBand src_band, VistaIOImage dest, VistaIOBand dest_band);
 
 	/*! \brief Copy a series of bands from various images into a destination image.
 	 *  
@@ -1023,21 +1023,21 @@ extern "C" {
 	 *  \param  src_images
 	 *  \param  src_bands
 	 *  \param  dest
-	 *  \return VImage
+	 *  \return VistaIOImage
 	 */
-	EXPORT_VISTA VImage VCombineBands (int nels, VImage src_images[], VBand src_bands[], 
-		VImage dest);
+	EXPORT_VISTA VistaIOImage VistaIOCombineBands (int nels, VistaIOImage src_images[], VistaIOBand src_bands[], 
+		VistaIOImage dest);
 
-	/*! \brief A varargs version of VCombineBands. 
+	/*! \brief A varargs version of VistaIOCombineBands. 
 	 *
 	 *  It is called by:
 	 *
-	 *	dest = VCombineBandsVa (dest, src_image1, src_band1, ...,
-	 *				(VImage) NULL);
+	 *	dest = VistaIOCombineBandsVa (dest, src_image1, src_band1, ...,
+	 *				(VistaIOImage) NULL);
 	 *  \param  dest
-	 *  \return VImage
+	 *  \return VistaIOImage
 	 */
-	EXPORT_VISTA VImage VCombineBandsVa (VImage dest, ...);
+	EXPORT_VISTA VistaIOImage VistaIOCombineBandsVa (VistaIOImage dest, ...);
 
 	/*! \brief Check that a destination image provided for an operation has the
 	 *  appropriate number of rows, columns and bands, and a pixel representation.
@@ -1049,10 +1049,10 @@ extern "C" {
 	 *  \param  nrows
 	 *  \param  ncolumns
 	 *  \param  pixel_repn
-	 *  \return VImage
+	 *  \return VistaIOImage
 	 */
-	EXPORT_VISTA VImage VSelectDestImage (VStringConst routine, VImage dest, int nbands, 
-		int nrows, int ncolumns,	VRepnKind pixel_repn);
+	EXPORT_VISTA VistaIOImage VistaIOSelectDestImage (VistaIOStringConst routine, VistaIOImage dest, int nbands, 
+		int nrows, int ncolumns,	VistaIORepnKind pixel_repn);
 
 	/*! \brief Check a band specification and use it to determine the number and
 	 *         address of a block of pixels.
@@ -1062,38 +1062,38 @@ extern "C" {
 	 *  \param  band
 	 *  \param  npixels
 	 *  \param  first_pixel
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VSelectBand (VStringConst routine, VImage image, VBand band, 
-		int *npixels, VPointer *first_pixel);
+	EXPORT_VISTA VistaIOBoolean VistaIOSelectBand (VistaIOStringConst routine, VistaIOImage image, VistaIOBand band, 
+		int *npixels, VistaIOPointer *first_pixel);
 
 	/*! \brief Routine for accessing an image's band interpretation information.
 	 * 
 	 *  \param  image
-	 *  \return VBandInterp
+	 *  \return VistaIOBandInterp
 	 */
-	EXPORT_VISTA VBandInterp VImageFrameInterp (VImage image);
+	EXPORT_VISTA VistaIOBandInterp VistaIOImageFrameInterp (VistaIOImage image);
 
 	/*! \brief Routine for accessing an image's band interpretation information.
 	 * 
 	 *  \param  image
-	 *  \return VBandInterp
+	 *  \return VistaIOBandInterp
 	 */ 
-	EXPORT_VISTA VBandInterp VImageViewpointInterp (VImage image);
+	EXPORT_VISTA VistaIOBandInterp VistaIOImageViewpointInterp (VistaIOImage image);
 
 	/*! \brief Routine for accessing an image's band interpretation information.
 	 * 
 	 *  \param  image
-	 *  \return VBandInterp
+	 *  \return VistaIOBandInterp
 	 */
-	EXPORT_VISTA VBandInterp VImageColorInterp (VImage image);
+	EXPORT_VISTA VistaIOBandInterp VistaIOImageColorInterp (VistaIOImage image);
 
 	/*! \brief Routine for accessing an image's band interpretation information.
 	 * 
 	 *  \param  image
-	 *  \return VBandInterp
+	 *  \return VistaIOBandInterp
 	 */
-	EXPORT_VISTA VBandInterp VImageComponentInterp (VImage image);
+	EXPORT_VISTA VistaIOBandInterp VistaIOImageComponentInterp (VistaIOImage image);
 
 	/*! \brief Set all of an image's standard band interpretation attributes.
 	 *
@@ -1106,11 +1106,11 @@ extern "C" {
 	 *  \param  ncolors
 	 *  \param  component_interp
 	 *  \param  ncomponents
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VSetBandInterp (VImage image, VBandInterp frame_interp, 
-		int nframes, VBandInterp viewpoint_interp, int nviewpoints, 
-		VBandInterp color_interp, int ncolors, VBandInterp component_interp, 
+	EXPORT_VISTA VistaIOBoolean VistaIOSetBandInterp (VistaIOImage image, VistaIOBandInterp frame_interp, 
+		int nframes, VistaIOBandInterp viewpoint_interp, int nviewpoints, 
+		VistaIOBandInterp color_interp, int ncolors, VistaIOBandInterp component_interp, 
 		int ncomponents);
 
 	/*! \brief Read a Vista data file, extract the images from it, and return a 
@@ -1121,7 +1121,7 @@ extern "C" {
 	 *  \param  images
 	 *  \return int
 	 */
-	EXPORT_VISTA int VReadImages (FILE *file, VAttrList *attributes, VImage **images);
+	EXPORT_VISTA int VistaIOReadImages (FILE *file, VistaIOAttrList *attributes, VistaIOImage **images);
 
 	/*! \brief Write a list of images to a Vista data file.
 	 *
@@ -1129,10 +1129,10 @@ extern "C" {
 	 *  \param  attributes
 	 *  \param  nimages
 	 *  \param  images
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VWriteImages (FILE *file, VAttrList attributes, int nimages, 
-		VImage images[]);
+	EXPORT_VISTA VistaIOBoolean VistaIOWriteImages (FILE *file, VistaIOAttrList attributes, int nimages, 
+		VistaIOImage images[]);
 
 	/*! \brief Open an input or output file, with "-" representing stdin or stdout.
 	 *  
@@ -1140,7 +1140,7 @@ extern "C" {
 	 *  \param  nofail
 	 *  \return If nofail is TRUE, any failure is a fatal error.
 	 */
-	FILE *VOpenInputFile (VStringConst filename, VBoolean nofail);
+	FILE *VistaIOOpenInputFile (VistaIOStringConst filename, VistaIOBoolean nofail);
 
 	/*! \brief
 	 *  
@@ -1148,7 +1148,7 @@ extern "C" {
 	 *  \param  nofail
 	 *  \return FILE
 	 */	
-	FILE *VOpenOutputFile (VStringConst filename, VBoolean nofail);
+	FILE *VistaIOOpenOutputFile (VistaIOStringConst filename, VistaIOBoolean nofail);
 
 	/*! \brief Read a Vista data file, extract object of a specified type, and 
 	 *  return a vector of them plus a list of anything else found in the file.
@@ -1159,15 +1159,15 @@ extern "C" {
 	 *  \param  objects
 	 *  \return int
 	 */
-	int VReadObjects (FILE *file, VRepnKind repn, VAttrList *attributes, VPointer **objects);
+	int VistaIOReadObjects (FILE *file, VistaIORepnKind repn, VistaIOAttrList *attributes, VistaIOPointer **objects);
 
 	/*! \brief Read a Vista data file, returning an attribute list of its contents.
 	 *
 	 *  \param  f
 	 *  \param  filter
-	 *  \return VAttrList
+	 *  \return VistaIOAttrList
 	 */
-	EXPORT_VISTA VAttrList VReadFile (FILE * f, VReadFileFilterProc *filter);
+	EXPORT_VISTA VistaIOAttrList VistaIOReadFile (FILE * f, VistaIOReadFileFilterProc *filter);
 
 	/*! \brief Write a list of objects, plus some other attributes, to a Vista data file.
 	 *
@@ -1176,58 +1176,58 @@ extern "C" {
 	 *  \param  attributes
 	 *  \param  nobjects
 	 *  \param  objects
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	VBoolean VWriteObjects (FILE *file, VRepnKind repn, VAttrList attributes, 
-		int nobjects, VPointer objects[]);
+	VistaIOBoolean VistaIOWriteObjects (FILE *file, VistaIORepnKind repn, VistaIOAttrList attributes, 
+		int nobjects, VistaIOPointer objects[]);
 
-	/*! \brief VWriteFile
+	/*! \brief VistaIOWriteFile
 	 *  
 	 *  \param  f
 	 *  \param  list
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VWriteFile (FILE *f, VAttrList list);
+	EXPORT_VISTA VistaIOBoolean VistaIOWriteFile (FILE *f, VistaIOAttrList list);
 
 	/*! \brief Make a new, empty list, and returns its reference.
 	 *
-	 *  \return VList
+	 *  \return VistaIOList
 	 */
-	VList VListCreate ();
+	VistaIOList VistaIOListCreate ();
 
 	/*! \brief Return a pointer to the first item in vlist, 
 	 *         and make the first item the current item.
 	 *
 	 *  \param  vlist
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VListFirst (VList vlist);
+	VistaIOPointer VistaIOListFirst (VistaIOList vlist);
 
 	/*! \brief Return a pointer to the last item in vlist,
 	 *         and make the last item the current item.
 	 *
 	 *  \param  vlist
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VListLast (VList  vlist);
+	VistaIOPointer VistaIOListLast (VistaIOList  vlist);
 
 	/*! \brief Advance vlist's current item by one, return the
 	 *         new current item. Return NULL if the new current
 	 *         item is beyond the end of vlist.
 	 *
 	 *  \param  vlist
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VListNext (VList vlist);
+	VistaIOPointer VistaIOListNext (VistaIOList vlist);
 
 	/*! \brief Back up vlist's current item by one, return the
 	 *         new current item. Return NULL if the new current
 	 *         item is before the beginning of vlist.
 	 *
 	 *  \param  vlist
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VListPrev (VList vlist);
+	VistaIOPointer VistaIOListPrev (VistaIOList vlist);
 
 	/*! \brief Add item to vlist immediately after the current item, 
 	 *
@@ -1240,7 +1240,7 @@ extern "C" {
 	 *  \param  vlist
 	 *  \param  item
 	 */
-	void VListAdd (VList vlist, VPointer item);
+	void VistaIOListAdd (VistaIOList vlist, VistaIOPointer item);
 
 	/*! \brief Add item to vlist immediately before the current item, 
 	 *
@@ -1251,14 +1251,14 @@ extern "C" {
 	 *  \param  vlist
 	 *  \param item
 	 */	
-	void VListInsert (VList vlist, VPointer item);
+	void VistaIOListInsert (VistaIOList vlist, VistaIOPointer item);
 
 	/*! \brief Add item to the end of vlist, and make item the current item.
 	 *
 	 *  \param vlist
 	 *  \param item
 	 */
-	EXPORT_VISTA void VListAppend (VList vlist, VPointer item);
+	EXPORT_VISTA void VistaIOListAppend (VistaIOList vlist, VistaIOPointer item);
 
 	/*! \brief Add item to the beginning of vlist, and make
 	 *         item the current item.
@@ -1266,16 +1266,16 @@ extern "C" {
 	 *  \param vlist
 	 *  \param item 
 	 */
-	void VListPrepend (VList vlist, VPointer item);
+	void VistaIOListPrepend (VistaIOList vlist, VistaIOPointer item);
 
 	/*! \brief Return current item and take it out of vlist.
 	 * 
 	 *  Make the next item the current one.
 	 *
 	 *  \param  vlist
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VListRemove (VList vlist);
+	VistaIOPointer VistaIOListRemove (VistaIOList vlist);
 
 	/*! \brief Add vlist2 to the end of vlist1. 
 	 *
@@ -1285,23 +1285,23 @@ extern "C" {
 	 *  \param  vlist1
 	 *  \param  vlist2
 	 */
-	void VListConcat (VList vlist1, VList vlist2);
+	void VistaIOListConcat (VistaIOList vlist1, VistaIOList vlist2);
 
 	/*! \brief Delete vlist. 
 	 *
 	 *  \param vlist
 	 *  \param item_free A pointer to a routine that frees an item.
 	 */
-	void VListDestroy (VList vlist, void (*item_free)(VPointer));
+	void VistaIOListDestroy (VistaIOList vlist, void (*item_free)(VistaIOPointer));
 
 	/*! \brief Return last item and take it out of vlist. 
 	 *
 	 *  Make the new last item the current one.
 	 *  
 	 *  \param  vlist
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VListTrim (VList vlist);
+	VistaIOPointer VistaIOListTrim (VistaIOList vlist);
 
 	/*! \brief Searche vlist starting at the current item until the end is 
 	 *         reached or a match is found.
@@ -1309,45 +1309,45 @@ extern "C" {
 	 *  \param  vlist
 	 *  \param  comp
 	 *  \param  comp_arg
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VListSearch (VList vlist, int (*comp)(), VPointer comp_arg);
+	VistaIOPointer VistaIOListSearch (VistaIOList vlist, int (*comp)(), VistaIOPointer comp_arg);
 
 	/*! \brief Perform error checking on calloc() call.
 	 *
 	 *  \param  n
 	 *  \param  size
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VCalloc (size_t n, size_t size);
+	VistaIOPointer VistaIOCalloc (size_t n, size_t size);
 
 	/*! \brief Perform error checking on free() call.
 	 *
 	 *  \param p
 	 */
-	EXPORT_VISTA void VFree (VPointer p);
+	EXPORT_VISTA void VistaIOFree (VistaIOPointer p);
 
 	/*! \brief Perform error checking on malloc() call.
 	 *
 	 *  \param  size
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VMalloc (size_t size);
+	VistaIOPointer VistaIOMalloc (size_t size);
 
 	/*! \brief Perform error checking on realloc() call.
 	 *
 	 *  \param  p
 	 *  \param  size
-	 *  \return VPointer
+	 *  \return VistaIOPointer
 	 */
-	VPointer VRealloc (VPointer p, size_t size);
+	VistaIOPointer VistaIORealloc (VistaIOPointer p, size_t size);
 
 	/*! \brief Append a new attribute to a list.
 	 *
 	 *  The calling sequence is:
 	 *
-	 *	VAppendAttr (VAttrList list, VStringConst name,
-	 *		     VDictEntry *dict, VRepnKind repn, xxx value)
+	 *	VistaIOAppendAttr (VistaIOAttrList list, VistaIOStringConst name,
+	 *		     VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
 	 *
 	 *  where xxx depends on the kind of representation, repn. An optional
 	 *  dictionary, dict, can specify value -> string translations.
@@ -1357,18 +1357,18 @@ extern "C" {
 	 *  \param  dict
 	 *  \param  repn
 	 */
-	EXPORT_VISTA void VAppendAttr (VAttrList list, VStringConst name, VDictEntry *dict, 
-		VRepnKind repn , ...);
+	EXPORT_VISTA void VistaIOAppendAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry *dict, 
+		VistaIORepnKind repn , ...);
 
 	/*! \brief Make a copy of an attribute list.
 	 * 
 	 *  \param  list 
-	 *  \return VAttrList
+	 *  \return VistaIOAttrList
 	 */
-	EXPORT_VISTA VAttrList VCopyAttrList (VAttrList list);
+	EXPORT_VISTA VistaIOAttrList VistaIOCopyAttrList (VistaIOAttrList list);
 
 	/*! \brief Create an attribute list. */
-	EXPORT_VISTA VAttrList VCreateAttrList ();
+	EXPORT_VISTA VistaIOAttrList VistaIOCreateAttrList ();
 
 	/*! \brief Create a bundle object.
 	 *
@@ -1376,10 +1376,10 @@ extern "C" {
 	 *  \param  list
 	 *  \param  length
 	 *  \param  data
-	 *  \return VBundle
+	 *  \return VistaIOBundle
 	 */
-	EXPORT_VISTA VBundle VCreateBundle (VStringConst type_name, VAttrList list, size_t  length, 
-		VPointer data);
+	EXPORT_VISTA VistaIOBundle VistaIOCreateBundle (VistaIOStringConst type_name, VistaIOAttrList list, size_t  length, 
+		VistaIOPointer data);
 
 	/*! \brief Decode an attribute's value from a string to internal representation.
 	 *
@@ -1387,10 +1387,10 @@ extern "C" {
 	 *  \param  dict
 	 *  \param  repn
 	 *  \param  value
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VDecodeAttrValue (VStringConst str, VDictEntry *dict,
-					  VRepnKind repn, VPointer value);
+	EXPORT_VISTA VistaIOBoolean VistaIODecodeAttrValue (VistaIOStringConst str, VistaIODictEntry *dict,
+					  VistaIORepnKind repn, VistaIOPointer value);
 
 	/*! \brief Delete an attribute identified by its position in an attribute list.
 	 *  
@@ -1398,37 +1398,37 @@ extern "C" {
 	 * 
 	 *  \param posn
 	 */
-	EXPORT_VISTA void VDeleteAttr (VAttrListPosn *posn);
+	EXPORT_VISTA void VistaIODeleteAttr (VistaIOAttrListPosn *posn);
 
 	/*! \brief Discard a list of attributes.
 	 *
 	 *  \param  list
 	 */
-	EXPORT_VISTA void VDestroyAttrList (VAttrList list);
+	EXPORT_VISTA void VistaIODestroyAttrList (VistaIOAttrList list);
 
 	/*! \brief Discard a bundle.
 	 *
 	 *  \param b
 	 */	
-	EXPORT_VISTA void VDestroyBundle (VBundle b);
+	EXPORT_VISTA void VistaIODestroyBundle (VistaIOBundle b);
 
 	/*! \brief Encode an attribute's value from internal representaiton to a string.
 	 *  
-	 *  This is just a stub for Encode, which is shared by VSetAttr.
+	 *  This is just a stub for Encode, which is shared by VistaIOSetAttr.
 	 *  The calling sequence is:
 	 *
-	 *	VEncodeAttrValue (VDictEntry *dict, VRepnKind repn, xxx value)
+	 *	VistaIOEncodeAttrValue (VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
 	 *
 	 *  where xxx depends on the kind of representation, repn. An optional
 	 *  dictionary, dict, can specify value -> string translations. It returns
-	 *  a pointer to an encoded string, valid until the next VEncodeAttrValue
+	 *  a pointer to an encoded string, valid until the next VistaIOEncodeAttrValue
 	 *  call.
 	 *
 	 *  \param  dict
 	 *  \param  repn
-	 *  \return  VStringConst
+	 *  \return  VistaIOStringConst
 	 */
-	EXPORT_VISTA VStringConst VEncodeAttrValue (VDictEntry *dict, VRepnKind repn, ...);
+	EXPORT_VISTA VistaIOStringConst VistaIOEncodeAttrValue (VistaIODictEntry *dict, VistaIORepnKind repn, ...);
 
 	/*! \brief Fetch an attribute value, removing it from its attribute list if found.
 	 *
@@ -1438,10 +1438,10 @@ extern "C" {
 	 *  \param  repn 
 	 *  \param  value
 	 *  \param  required
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VExtractAttr (VAttrList list, VStringConst name, VDictEntry *dict,
-		VRepnKind repn, VPointer value, VBooleanPromoted required);
+	EXPORT_VISTA VistaIOBoolean VistaIOExtractAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry *dict,
+		VistaIORepnKind repn, VistaIOPointer value, VistaIOBooleanPromoted required);
 
 	/*! \brief Fetch an attribute value, given its name.
 	 *
@@ -1454,10 +1454,10 @@ extern "C" {
 	 *  \param  dict
 	 *  \param  repn
 	 *  \param  value
-	 *  \return VGetAttrResult
+	 *  \return VistaIOGetAttrResult
 	 */
-	EXPORT_VISTA VGetAttrResult VGetAttr (VAttrList list, VStringConst name, 
-		VDictEntry *dict, VRepnKind repn, VPointer value);
+	EXPORT_VISTA VistaIOGetAttrResult VistaIOGetAttr (VistaIOAttrList list, VistaIOStringConst name, 
+		VistaIODictEntry *dict, VistaIORepnKind repn, VistaIOPointer value);
 
 	/*! \brief Fetch an attribute value given its position within an attribute list.
 	 *
@@ -1472,15 +1472,15 @@ extern "C" {
 	 *  \return Returns TRUE if successful, FALSE
 	 *          if the requested representation cannot be provided.
 	 */
-	EXPORT_VISTA VBoolean VGetAttrValue (VAttrListPosn *posn, VDictEntry *dict,
-		VRepnKind repn, VPointer value);
+	EXPORT_VISTA VistaIOBoolean VistaIOGetAttrValue (VistaIOAttrListPosn *posn, VistaIODictEntry *dict,
+		VistaIORepnKind repn, VistaIOPointer value);
 
 	/*! \brief Insert a new attribute into a list, before or after a specified position.
 	 *
 	 *  The calling sequence is:
 	 *
-	 *	VInsertAttr (VAttrListPosn *posn, VBoolean after, VStringConst name,
-	 *		     VDictEntry *dict, VRepnKind repn, xxx value)
+	 *	VistaIOInsertAttr (VistaIOAttrListPosn *posn, VistaIOBoolean after, VistaIOStringConst name,
+	 *		     VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
 	 *
 	 *  where xxx depends on the kind of representation, repn. An optional
 	 *  dictionary, dict, can specify value -> string translations. If after is
@@ -1492,25 +1492,25 @@ extern "C" {
 	 *  \param dict
 	 *  \param repn
 	 */
-	EXPORT_VISTA void VInsertAttr (VAttrListPosn *posn, VBooleanPromoted after,
-		VStringConst name, VDictEntry *dict, VRepnKind repn, ...);
+	EXPORT_VISTA void VistaIOInsertAttr (VistaIOAttrListPosn *posn, VistaIOBooleanPromoted after,
+		VistaIOStringConst name, VistaIODictEntry *dict, VistaIORepnKind repn, ...);
 
 	/*! \brief Lookup an attribute, by name, in a list of attributes.
 	 *
 	 *  \param  list
 	 *  \param  name
 	 *  \param  posn
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	EXPORT_VISTA VBoolean VLookupAttr (VAttrList list, VStringConst name,
-		VAttrListPosn *posn );
+	EXPORT_VISTA VistaIOBoolean VistaIOLookupAttr (VistaIOAttrList list, VistaIOStringConst name,
+		VistaIOAttrListPosn *posn );
 
 	/*! \brief Prepend a new attribute to a list.
 	 *
 	 *  The calling sequence is:
 	 *
-	 *	VPrependAttr (VAttrList list, VStringConst name,
-	 *		      VDictEntry *dict, VRepnKind repn, xxx value)
+	 *	VistaIOPrependAttr (VistaIOAttrList list, VistaIOStringConst name,
+	 *		      VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
 	 *
 	 *  where xxx depends on the kind of representation, repn. An optional
 	 *  dictionary, dict, can specify value -> string translations.
@@ -1520,15 +1520,15 @@ extern "C" {
 	 *  \param dict
 	 *  \param repn
 	 */
-	EXPORT_VISTA void VPrependAttr (VAttrList list, VStringConst name, VDictEntry *dict,
-		VRepnKind repn, ...);
+	EXPORT_VISTA void VistaIOPrependAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry *dict,
+		VistaIORepnKind repn, ...);
 
 	/*! \brief Set an attribute value, where the attribute is specified by name.
 	 *
 	 *  The calling sequence is:
 	 *
-	 *	VSetAttr (VAttrList list, VStringConst name, VDictEntry *dict,
-	 *		  VRepnKind repn, xxx value)
+	 *	VistaIOSetAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry *dict,
+	 *		  VistaIORepnKind repn, xxx value)
 	 *
 	 *  where xxx depends on the kind of representation, repn. An optional
 	 *  dictionary, dict, can specify value -> string translations.
@@ -1538,16 +1538,16 @@ extern "C" {
 	 *  \param dict
 	 *  \param repn 
 	 */
-	EXPORT_VISTA void VSetAttr (VAttrList list, VStringConst name, VDictEntry *dict, 
-		VRepnKind repn, ...);
+	EXPORT_VISTA void VistaIOSetAttr (VistaIOAttrList list, VistaIOStringConst name, VistaIODictEntry *dict, 
+		VistaIORepnKind repn, ...);
 
 	/*! \brief Set an attribute value, where the attribute is specified by its
 	 *  position in an attribute list.
 	 *
 	 *  The calling sequence is:
 	 *
-	 *	VSetAttrValue (VAttrListPosn *posn, VDictEntry *dict,
-	 *		       VRepnKind repn, xxx value)
+	 *	VistaIOSetAttrValue (VistaIOAttrListPosn *posn, VistaIODictEntry *dict,
+	 *		       VistaIORepnKind repn, xxx value)
 	 *
 	 *  where xxx depends on the kind of representation, repn. An optional
 	 *  dictionary, dict, can specify value -> string translations.
@@ -1556,7 +1556,7 @@ extern "C" {
 	 *  \param dict
 	 *  \param repn
 	 */
-	EXPORT_VISTA void VSetAttrValue (VAttrListPosn *posn, VDictEntry *dict, VRepnKind repn,  ...);
+	EXPORT_VISTA void VistaIOSetAttrValue (VistaIOAttrListPosn *posn, VistaIODictEntry *dict, VistaIORepnKind repn,  ...);
 
 	/*! \brief Look up an entry in an attribute value dictionary, by keyword.
 	 *  
@@ -1565,65 +1565,65 @@ extern "C" {
 	 *
 	 *  \param  dict
 	 *  \param  keyword
-	 *  \return VDictEntry
+	 *  \return VistaIODictEntry
 	 */
-	EXPORT_VISTA VDictEntry *VLookupDictKeyword (VDictEntry *dict, VStringConst keyword);
+	EXPORT_VISTA VistaIODictEntry *VistaIOLookupDictKeyword (VistaIODictEntry *dict, VistaIOStringConst keyword);
 
 	/*! \brief Look up an entry in an attribute dictionary, by value.
 	 *
 	 *  Calling sequence:
 	 *
-	 *	VLookupDictValue (VDictEntry *dict, VRepnKind repn, xxx value)
+	 *	VistaIOLookupDictValue (VistaIODictEntry *dict, VistaIORepnKind repn, xxx value)
 	 *
 	 *  where xxx is a type that corresponds to repn.
 	 *
 	 *  \param  dict
 	 *  \param  repn
-	 *  \return VDictEntry
+	 *  \return VistaIODictEntry
 	 */
-	EXPORT_VISTA VDictEntry *VLookupDictValue (VDictEntry *dict, VRepnKind repn, ...);
+	EXPORT_VISTA VistaIODictEntry *VistaIOLookupDictValue (VistaIODictEntry *dict, VistaIORepnKind repn, ...);
 
 	/*! \brief Report a fatal program error.
 	 *
 	 *  \param format
 	 */
-	EXPORT_VISTA void VError (VStringConst format, ...);
+	EXPORT_VISTA void VistaIOError (VistaIOStringConst format, ...);
 
 	/*! \brief Report a non-fatal program error.
 	 *
 	 *  \param  format
 	 */
-	EXPORT_VISTA void VWarning (VStringConst format , ...);
+	EXPORT_VISTA void VistaIOWarning (VistaIOStringConst format , ...);
 
 	/*! \brief Report a application specific messages, but only if verbose equal 
 	 *         or greater verbose level 1.
 	 * 
 	 *  \param format
 	 */
-	EXPORT_VISTA void VMessage (VStringConst format, ...);
+	EXPORT_VISTA void VistaIOMessage (VistaIOStringConst format, ...);
 
 	
 
-	EXPORT_VISTA void VSetErrorHandler (VErrorHandler * fnc);
+	EXPORT_VISTA void VistaIOSetErrorHandler (VistaIOErrorHandler * fnc);
 	/*! \brief Establish a caller-supplied routine as the handler for warning messages.
 	 *
 	 *  \param  fnc
 	 */
 
-	EXPORT_VISTA void VSetWarningHandler (VWarningHandler * fnc);
+	EXPORT_VISTA void VistaIOSetWarningHandler (VistaIOWarningHandler * fnc);
 
 	
 	/*! \brief Report a fatal error incurred by a system call.
 	 *
 	 *  \param format
 	 */
-	EXPORT_VISTA void VSystemError (VStringConst format, ...);
+	EXPORT_VISTA void VistaIOSystemError (VistaIOStringConst format, ...);
 
 	/*! \brief Report non-fatal error incurred by a system call.
 	 *
 	 *  \param format
 	 */
-	EXPORT_VISTA void VSystemWarning (VStringConst format, ...);
+	EXPORT_VISTA void VistaIOSystemWarning (VistaIOStringConst format, ...);
 
 	/*! \brief Convert an array of data elements from unpacked to packed form.
 	 *
@@ -1637,13 +1637,13 @@ extern "C" {
 	 *
 	 *	length = length of buffer;
 	 *	packed = address of buffer;
-	 *	VPackData ( ..., & length, & packed, NULL);
+	 *	VistaIOPackData ( ..., & length, & packed, NULL);
 	 *
 	 *  and on return length will be set to the length of the packed data.
 	 *
-	 *  To pack into a buffer supplied by VPackData:
+	 *  To pack into a buffer supplied by VistaIOPackData:
 	 *
-	 *	VPackData ( ..., & length, & packed, & alloced);
+	 *	VistaIOPackData ( ..., & length, & packed, & alloced);
 	 *
 	 *  and on return length will be set to the length of the packed data,
 	 *  packed will be set to point to it, and alloced will be TRUE if
@@ -1654,7 +1654,7 @@ extern "C" {
 	 *
 	 *  These assumptions are made:
 	 *    - packed_elsize is either 1 or a multiple of 8
-	 *    - if packed_elsize is 1, then the unpacked data elements are VBits
+	 *    - if packed_elsize is 1, then the unpacked data elements are VistaIOBits
 	 *    - unpacked_elsize >= packed_elsize
 	 *
 	 *  \param  repn
@@ -1664,11 +1664,11 @@ extern "C" {
 	 *  \param  length
 	 *  \param  packed
 	 *  \param  alloced
-	 *  \return  VBoolean
+	 *  \return  VistaIOBoolean
 	 */
-	VBoolean VPackData (VRepnKind repn, size_t nels, VPointer unpacked, 
-		VPackOrder packed_order, size_t *length, VPointer *packed, 
-		VBoolean *alloced);
+	VistaIOBoolean VistaIOPackData (VistaIORepnKind repn, size_t nels, VistaIOPointer unpacked, 
+		VistaIOPackOrder packed_order, size_t *length, VistaIOPointer *packed, 
+		VistaIOBoolean *alloced);
 
 	/*! \brief Convert an array of data elements from packed to unpacked form.
 	 *
@@ -1676,19 +1676,19 @@ extern "C" {
 	 *  specified by repn. Each element's unpacked size is unpacked_elsize
 	 *  bits, and its packed size is packed_elsize bits. There are nels of
 	 *  them, beginning at packed. Packed_order specifies whether they are
-	 *  to be unpacked from MSB to LSB (VBigEndian), or vice versa (VLittleEndian).
+	 *  to be unpacked from MSB to LSB (VistaIOBigEndian), or vice versa (VistaIOLittleEndian).
 	 *
 	 *  To unpack into a buffer already allocated:
 	 *
 	 *	length = length of buffer;
 	 *	unpacked = address of buffer;
-	 *	VUnpackData ( ..., & length, & unpacked, NULL);
+	 *	VistaIOUnpackData ( ..., & length, & unpacked, NULL);
 	 *
 	 *  and on return length will be set to the length of the packed data.
 	 *
-	 *  To unpack into a buffer supplied by VUnpackData:
+	 *  To unpack into a buffer supplied by VistaIOUnpackData:
 	 *
-	 *	VUnpackData ( ..., & length, & unpacked, & alloced);
+	 *	VistaIOUnpackData ( ..., & length, & unpacked, & alloced);
 	 *
 	 *  and on return length will be set to the length of the unpacked data,
 	 *  unpacked will be set to point to it, and alloced will be TRUE if
@@ -1699,7 +1699,7 @@ extern "C" {
 	 *
 	 *  These assumptions are made:
 	 *    - packed_elsize is either 1 or a multiple of 8
-	 *    - if packed_elsize is 1, then the unpacked data elements are VBits
+	 *    - if packed_elsize is 1, then the unpacked data elements are VistaIOBits
 	 *    - unpacked_elsize >= packed_elsize
 	 *
 	 *  \param  repn
@@ -1709,13 +1709,13 @@ extern "C" {
 	 *  \param  length
 	 *  \param  unpacked
 	 *  \param  alloced
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	VBoolean VUnpackData (VRepnKind repn, size_t nels, VPointer packed, 
-		VPackOrder packed_order, size_t *length, VPointer *unpacked, 
-		VBoolean *alloced);
+	VistaIOBoolean VistaIOUnpackData (VistaIORepnKind repn, size_t nels, VistaIOPointer packed, 
+		VistaIOPackOrder packed_order, size_t *length, VistaIOPointer *unpacked, 
+		VistaIOBoolean *alloced);
 
-	/*! \brief Pack the low order bits of consecutive VBit data elements.
+	/*! \brief Pack the low order bits of consecutive VistaIOBit data elements.
 	 *  
 	 *  unpacked and packed can point to the same place.
 	 *
@@ -1724,10 +1724,10 @@ extern "C" {
 	 *  \param  unpacked
 	 *  \param  packed
 	 */
-	void VPackBits (size_t nels, VPackOrder packed_order, VBit *unpacked, 
+	void VistaIOPackBits (size_t nels, VistaIOPackOrder packed_order, VistaIOBit *unpacked, 
 		char *packed);
 
-	/*! \brief Unpack into the low order bits of consecutive VBit data elements.
+	/*! \brief Unpack into the low order bits of consecutive VistaIOBit data elements.
 	 *  
 	 *  packed and unpacked can point to the same place.
 	 *
@@ -1736,25 +1736,25 @@ extern "C" {
 	 *  \param  packed
 	 *  \param  unpacked
 	 */
-	void VUnpackBits (size_t nels, VPackOrder packed_order, char *packed, 
-		VBit *unpacked);
+	void VistaIOUnpackBits (size_t nels, VistaIOPackOrder packed_order, char *packed, 
+		VistaIOBit *unpacked);
 
 	/*! \brief Register some handlers for dealing with objects of a particular type.
 	 *  
 	 *  \param  name
 	 *  \param  methods
-	 *  \return Returns the VRepnKind code assigned the new type.
+	 *  \return Returns the VistaIORepnKind code assigned the new type.
 	 */
-	VRepnKind VRegisterType (VStringConst name, VTypeMethods *methods);
+	VistaIORepnKind VistaIORegisterType (VistaIOStringConst name, VistaIOTypeMethods *methods);
 
 	/*! \brief Locate information about a named type.
 	 *
 	 *  \param  name
-	 *  \return VRepnKind
+	 *  \return VistaIORepnKind
 	 */
-	VRepnKind VLookupType (VStringConst name);
+	VistaIORepnKind VistaIOLookupType (VistaIOStringConst name);
 
-	/*! \brief Allocates memory for a VEdges structure and initializes its fields.
+	/*! \brief Allocates memory for a VistaIOEdges structure and initializes its fields.
 	 *    
 	 *  Initially, this contains zero edges, so each edge must still
 	 *  be created and added to this record.
@@ -1765,7 +1765,7 @@ extern "C" {
 	 *  \param  npoint_fields
 	 *  \return Returns a pointer to the edges if successful, NULL otherwise.
 	 */
-	VEdges VCreateEdges (int nrows, int ncolumns, int nedge_fields, int npoint_fields);
+	VistaIOEdges VistaIOCreateEdges (int nrows, int ncolumns, int nedge_fields, int npoint_fields);
 
 	/*! \brief Add an edge to the given Edges record.  If the "copy" argument is
 	 *    TRUE, then new space is allocated to copy the points and the fields
@@ -1778,23 +1778,23 @@ extern "C" {
 	 *  \param  points
 	 *  \param  closed indicates if this is a closed edge.
 	 *  \param  copy
-	 *  \return VEdge
+	 *  \return VistaIOEdge
 	 */
-	VEdge VAddEdge (VEdges edges, VFloat *edge_fields, int npoints, 
-		VFloat *points, VBooleanPromoted closed, VBooleanPromoted copy);
+	VistaIOEdge VistaIOAddEdge (VistaIOEdges edges, VistaIOFloat *edge_fields, int npoints, 
+		VistaIOFloat *points, VistaIOBooleanPromoted closed, VistaIOBooleanPromoted copy);
 
-	/*! \brief Copy a VEdges object.
+	/*! \brief Copy a VistaIOEdges object.
 	 *
 	 *  \param  src
-	 *  \return VEdges
+	 *  \return VistaIOEdges
 	 */
-	VEdges VCopyEdges (VEdges src);
+	VistaIOEdges VistaIOCopyEdges (VistaIOEdges src);
 
 	/*! \brief Frees memory occupied by set of edges.
 	 *
 	 *  \param edges
 	 */
-	void VDestroyEdges (VEdges edges);
+	void VistaIODestroyEdges (VistaIOEdges edges);
 
 	/*! \brief Read a Vista data file, extract the edge sets from it, 
 	 *         and return a list of them.
@@ -1803,7 +1803,7 @@ extern "C" {
 	 *  \param  attributes
 	 *  \param  edge_sets
 	 */
-	int VReadEdges (FILE *file, VAttrList *attributes, VEdges **edge_sets);
+	int VistaIOReadEdges (FILE *file, VistaIOAttrList *attributes, VistaIOEdges **edge_sets);
 
 	/*! \brief Write a list of edge sets to a Vista data file.
 	 *
@@ -1811,22 +1811,22 @@ extern "C" {
 	 *  \param  attributes
 	 *  \param  nedge_sets
 	 *  \param  edge_sets
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	VBoolean VWriteEdges (FILE *file, VAttrList attributes, int nedge_sets, 
-		VEdges *edge_sets);
+	VistaIOBoolean VistaIOWriteEdges (FILE *file, VistaIOAttrList attributes, int nedge_sets, 
+		VistaIOEdges *edge_sets);
 
 	/*! \brief Default error handler.
 	 *  
 	 *  \param msg
 	 */
-	EXPORT_VISTA void VDefaultError (VStringConst msg);
+	EXPORT_VISTA void VistaIODefaultError (VistaIOStringConst msg);
 
 	/*! \brief Default warning handler.
 	 *
 	 *  \param msg
 	 */
-	EXPORT_VISTA void VDefaultWarning (VStringConst msg);
+	EXPORT_VISTA void VistaIODefaultWarning (VistaIOStringConst msg);
 
 	/*! \brief create a new volume list and return a ptr to it.
 	 *  
@@ -1835,20 +1835,20 @@ extern "C" {
 	 *  \param  ncols
 	 *  \return Volumes
 	 */
-	Volumes VCreateVolumes (short nbands, short nrows, short ncols);
+	Volumes VistaIOCreateVolumes (short nbands, short nrows, short ncols);
 
 	/*! \brief copy a list a volumes
 	 *  
 	 *  \param  src
 	 *  \return Volumes
 	 */
-	Volumes VCopyVolumes (Volumes src);
+	Volumes VistaIOCopyVolumes (Volumes src);
 
 	/*! \brief destroy a set of volumes
 	 *
 	 *  \param volumes
 	 */
-	void VDestroyVolumes (Volumes volumes);
+	void VistaIODestroyVolumes (Volumes volumes);
 
 	/*! \brief
 	 *
@@ -1856,9 +1856,9 @@ extern "C" {
 	 *  \param  attributes
 	 *  \param  nvolumes
 	 *  \param  volumes
-	 *  \return VBoolean
+	 *  \return VistaIOBoolean
 	 */
-	VBoolean VWriteVolumes (FILE *file, VAttrList attributes, int nvolumes, 
+	VistaIOBoolean VistaIOWriteVolumes (FILE *file, VistaIOAttrList attributes, int nvolumes, 
 		Volumes *volumes);
 
 	/*! \brief
@@ -1868,7 +1868,7 @@ extern "C" {
 	 *  \param  volumes
 	 *  \return int
 	 */
-	int VReadVolumes (FILE *file, VAttrList *attributes, Volumes **volumes);
+	int VistaIOReadVolumes (FILE *file, VistaIOAttrList *attributes, Volumes **volumes);
 
 	/*! \brief create a single volume and initialize it, i,e. allocate space for 
 	 *         its hashtable.
@@ -1880,7 +1880,7 @@ extern "C" {
 	 *  \param  nbuckets
 	 *  \return Volume
 	 */
-	Volume VCreateVolume (short label, short nbands, short nrows, short ncolumns, 
+	Volume VistaIOCreateVolume (short label, short nbands, short nrows, short ncolumns, 
 		short nbuckets);
 
 	/*! \brief copy src volume to dest volume
@@ -1888,14 +1888,14 @@ extern "C" {
 	 *  \param  src
 	 *  \return Volume
 	 */
-	Volume VCopyVolume (Volume src);
+	Volume VistaIOCopyVolume (Volume src);
 
 	/*! \brief append a volume to the end of a volume list
 	 *
 	 *  \param  volumes
 	 *  \param  vol
 	 */
-	void VAddVolume (Volumes volumes, Volume vol);
+	void VistaIOAddVolume (Volumes volumes, Volume vol);
 
 	/*! \brief Add a new track to a hashtable while keeping the bucket sorted,
 	 *  
@@ -1904,13 +1904,13 @@ extern "C" {
 	 *  \param  v
 	 *  \param  t
 	 */
-	void AddTrack (Volume v, VTrack t);
+	void AddTrack (Volume v, VistaIOTrack t);
 
 	/*! \brief Note the program name for use in error messages.
 	 *
 	 *  \param name
 	 */
-	EXPORT_VISTA void VSetProgramName (VStringConst name);
+	EXPORT_VISTA void VistaIOSetProgramName (VistaIOStringConst name);
 	
 #ifdef __cplusplus
 }

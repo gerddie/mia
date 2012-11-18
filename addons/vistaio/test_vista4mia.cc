@@ -73,19 +73,19 @@ void check_value(const CAttributedData& attr_map, const string& key,  T value)
 }
 
 template <typename T>
-void check_vattr_value(VAttrList list, const string& key,  T value)
+void check_vattr_value(VistaIOAttrList list, const string& key,  T value)
 {
 	T lvalue;
-	BOOST_REQUIRE(VGetAttr (list, key.c_str(), NULL, (VRepnKind)vista_repnkind<T>::value, &lvalue) == VAttrFound);
+	BOOST_REQUIRE(VistaIOGetAttr (list, key.c_str(), NULL, (VistaIORepnKind)vista_repnkind<T>::value, &lvalue) == VistaIOAttrFound);
 	cvdebug() << "check_vattr_value: " << value << " vs. " << lvalue <<"\n";
 	BOOST_CHECK(lvalue == value);
 }
 
 template <>
-void check_vattr_value(VAttrList list, const string& key,  bool value)
+void check_vattr_value(VistaIOAttrList list, const string& key,  bool value)
 {
-	VBit lvalue;
-	BOOST_REQUIRE(VGetAttr (list, key.c_str(), NULL, VBitRepn, &lvalue) == VAttrFound);
+	VistaIOBit lvalue;
+	BOOST_REQUIRE(VistaIOGetAttr (list, key.c_str(), NULL, VistaIOBitRepn, &lvalue) == VistaIOAttrFound);
 	cvdebug() << "check_vattr_value: " << value << " vs. " << lvalue <<"\n";
 	bool llvalue = lvalue;
 	BOOST_CHECK(llvalue == value);
@@ -93,16 +93,16 @@ void check_vattr_value(VAttrList list, const string& key,  bool value)
 
 
 template <>
-void check_vattr_value(VAttrList list, const string& key,  const string value)
+void check_vattr_value(VistaIOAttrList list, const string& key,  const string value)
 {
-	VString lvalue;
-	BOOST_REQUIRE(VGetAttr (list, key.c_str(), NULL, (VRepnKind)vista_repnkind<string>::value, &lvalue) == VAttrFound);
+	VistaIOString lvalue;
+	BOOST_REQUIRE(VistaIOGetAttr (list, key.c_str(), NULL, (VistaIORepnKind)vista_repnkind<string>::value, &lvalue) == VistaIOAttrFound);
 	BOOST_CHECK(string(lvalue) == value);
 }
 
 void check_translation()
 {
-	VAttrList vista_list1 = VCreateAttrList();
+	VistaIOAttrList vista_list1 = VistaIOCreateAttrList();
 
 	bool bit_value = 1;
 	unsigned char ubyte_value = 124;
@@ -122,14 +122,14 @@ void check_translation()
 	CBitTranslator::register_for("bit");
 
 
-	VSetAttr(vista_list1, "bit", NULL, VBitRepn, bit_value);
-	VSetAttr(vista_list1, "ubyte", NULL, VUByteRepn, ubyte_value);
-	VSetAttr(vista_list1, "sbyte", NULL, VSByteRepn, sbyte_value);
-        VSetAttr(vista_list1, "short", NULL, VShortRepn, short_value);
-        VSetAttr(vista_list1, "int", NULL, VLongRepn,  int_value);
-        VSetAttr(vista_list1, "float", NULL, VFloatRepn, float_value);
-        VSetAttr(vista_list1, "double", NULL, VDoubleRepn, double_value);
-        VSetAttr(vista_list1, "string", NULL, VStringRepn, string_value.c_str());
+	VistaIOSetAttr(vista_list1, "bit", NULL, VistaIOBitRepn, bit_value);
+	VistaIOSetAttr(vista_list1, "ubyte", NULL, VUByteRepn, ubyte_value);
+	VistaIOSetAttr(vista_list1, "sbyte", NULL, VSByteRepn, sbyte_value);
+        VistaIOSetAttr(vista_list1, "short", NULL, VistaIOShortRepn, short_value);
+        VistaIOSetAttr(vista_list1, "int", NULL, VistaIOLongRepn,  int_value);
+        VistaIOSetAttr(vista_list1, "float", NULL, VistaIOFloatRepn, float_value);
+        VistaIOSetAttr(vista_list1, "double", NULL, VistaIODoubleRepn, double_value);
+        VistaIOSetAttr(vista_list1, "string", NULL, VistaIOStringRepn, string_value.c_str());
 
 	CAttributedData attr_map;
 
@@ -145,7 +145,7 @@ void check_translation()
 	check_value(attr_map, "sbyte",  sbyte_value);
 
 
-	VAttrList vista_list2 = VCreateAttrList();
+	VistaIOAttrList vista_list2 = VistaIOCreateAttrList();
 	copy_attr_list(vista_list2, attr_map);
 
 
@@ -158,8 +158,8 @@ void check_translation()
 	check_vattr_value(vista_list2,  "sbyte",  sbyte_value);
         check_vattr_value(vista_list2,  "double", double_value);
 
-	VDestroyAttrList(vista_list1);
-	VDestroyAttrList(vista_list2);
+	VistaIODestroyAttrList(vista_list1);
+	VistaIODestroyAttrList(vista_list2);
 }
 
 static void handler_setup()

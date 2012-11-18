@@ -31,51 +31,51 @@ int nx = 10;
 int ny = 11; 
 
 #define VTYPE double
-#define TYPEREPN VDoubleRepn
+#define TYPEREPN VistaIODoubleRepn
 
-VBoolean RepnFilter(VBundle bundle, VRepnKind repn) 
+VistaIOBoolean RepnFilter(VistaIOBundle bundle, VistaIORepnKind repn) 
 {
-	return repn == VField2DRepn; 
+	return repn == VistaIOField2DRepn; 
 }
 
-VField2D VRead2DVectorfield(FILE *file) 
+VistaIOField2D VistaIORead2DVectorfield(FILE *file) 
 {
-	VField2D result; 
-	VAttrList list; 
+	VistaIOField2D result; 
+	VistaIOAttrList list; 
 	
 	result = NULL; 
 	
-	list = (VAttrList)VReadFile(file,RepnFilter);
+	list = (VistaIOAttrList)VistaIOReadFile(file,RepnFilter);
 	
 	if (!list) 
 		return NULL; 
 	
-	if (!VExtractAttr(list, "2DVector",NULL, VField2DRepn, &result,TRUE)) {
-		VWarning("2DVector element of type 2dfield found");
+	if (!VistaIOExtractAttr(list, "2DVector",NULL, VistaIOField2DRepn, &result,TRUE)) {
+		VistaIOWarning("2DVector element of type 2dfield found");
 	}
 	
-	VDestroyAttrList(list);
+	VistaIODestroyAttrList(list);
 	return result;	
 }
 
-int VWrite2DVectorfield(FILE *file, VField2D field)
+int VistaIOWrite2DVectorfield(FILE *file, VistaIOField2D field)
 {
 	int retval; 
-	VField2D help; 
-	VAttrList list;
+	VistaIOField2D help; 
+	VistaIOAttrList list;
 	
 	retval = FALSE; 
 	
-	list = VCreateAttrList();
+	list = VistaIOCreateAttrList();
 	if (list) {
 		
-		help = VMirrorField2D(field);
+		help = VistaIOMirrorField2D(field);
 		
-		VSetAttr(list,"2DVector",NULL,VField2DRepn,help);
+		VistaIOSetAttr(list,"2DVector",NULL,VistaIOField2DRepn,help);
 		
-		retval = VWriteFile(file,list);
+		retval = VistaIOWriteFile(file,list);
 		
-		VDestroyAttrList(list);
+		VistaIODestroyAttrList(list);
 	}
 	return retval; 
 }
@@ -84,9 +84,9 @@ int VWrite2DVectorfield(FILE *file, VField2D field)
 int main(int argc, const char *args[])
 {
 	FILE *file; 
-	VField2D field; 
-	VField2D field2;
-	VAttrListPosn pos; 
+	VistaIOField2D field; 
+	VistaIOField2D field2;
+	VistaIOAttrListPosn pos; 
 	int x,y,z; 
 	VTYPE *h; 
 	VTYPE *k; 
@@ -97,7 +97,7 @@ int main(int argc, const char *args[])
 	test_float = 1.2; 
 	
 	/* Create the field */ 
-	field = VCreateField2D(nx,ny,2,TYPEREPN);
+	field = VistaIOCreateField2D(nx,ny,2,TYPEREPN);
 	
 	/* put in some data */
 	h = field->p.data;
@@ -109,14 +109,14 @@ int main(int argc, const char *args[])
 		}
 	
 	/* add some attribute the the field */
-	VSetAttr(field->attr,"test_attribute", NULL, VFloatRepn,test_float);
+	VistaIOSetAttr(field->attr,"test_attribute", NULL, VistaIOFloatRepn,test_float);
 	
 	/* open file for saving */
 	if ((file = fopen("test.v","w"))==0)
-		VError("unable to open file");
+		VistaIOError("unable to open file");
 	
 	/* Write out the data */
-	VWrite2DVectorfield(file,field);
+	VistaIOWrite2DVectorfield(file,field);
 	
 	/* close the file */ 
 	fclose(file);
@@ -124,10 +124,10 @@ int main(int argc, const char *args[])
 	
 	/* open file for reading */
 	if ((file = fopen("test.v","r")) == NULL)
-	    VError("unable to open file for reading");
+	    VistaIOError("unable to open file for reading");
 	
 	/* Read field from file */     
-	field2 = VRead2DVectorfield(file);
+	field2 = VistaIORead2DVectorfield(file);
 	
 	/* close the file */ 
 	fclose(file);
@@ -139,31 +139,31 @@ int main(int argc, const char *args[])
 	k = field2->p.data;
 	z = field->nsize; 
 	if (z != field2->nsize) {
-		VError("Error rereading test file");
+		VistaIOError("Error rereading test file");
 	}
 	
 	z /= sizeof(VTYPE); 
 	
 	while (z--) {
 		if (*h != *k) {
-			VWarning("field en/decoding error: delta = %e",*h - *k);
+			VistaIOWarning("field en/decoding error: delta = %e",*h - *k);
 		}
 		h++; 
 		k++; 
 			
 	}
 	
-	if (!VLookupAttr(field2->attr,"test_attribute",&pos)) 
-		VError("not found");	
+	if (!VistaIOLookupAttr(field2->attr,"test_attribute",&pos)) 
+		VistaIOError("not found");	
 	
 	
-	VGetAttrValue(&pos, NULL, VFloatRepn, &number);
+	VistaIOGetAttrValue(&pos, NULL, VistaIOFloatRepn, &number);
 
 	if (number != test_float) {
-		VError("numbers differ by %e",number - test_float);
+		VistaIOError("numbers differ by %e",number - test_float);
 	}
-	VDestroyField2D(field);
-	VDestroyField2D(field2);
+	VistaIODestroyField2D(field);
+	VistaIODestroyField2D(field2);
 
 	unlink( "test.v" ); 
 	return 0;

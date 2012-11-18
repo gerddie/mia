@@ -20,22 +20,22 @@
 #include "vistaio/vistaio.h"
 
 /*
- *  Dictionaries for VImage attributes and their values.
+ *  Dictionaries for VistaIOImage attributes and their values.
  */
 
 /* Keywords for representing band interpretation values: */
-VDictEntry VBandInterpDict[] = {
-	{"complex", VBandInterpComplex}
+VistaIODictEntry VistaIOBandInterpDict[] = {
+	{"complex", VistaIOBandInterpComplex}
 	,
-	{"gradient", VBandInterpGradient}
+	{"gradient", VistaIOBandInterpGradient}
 	,
-	{"intensity", VBandInterpIntensity}
+	{"intensity", VistaIOBandInterpIntensity}
 	,
-	{"orientation", VBandInterpOrientation}
+	{"orientation", VistaIOBandInterpOrientation}
 	,
-	{"rgb", VBandInterpRGB}
+	{"rgb", VistaIOBandInterpRGB}
 	,
-	{"stereo_pair", VBandInterpStereoPair}
+	{"stereo_pair", VistaIOBandInterpStereoPair}
 	,
 	{NULL}
 };
@@ -49,66 +49,66 @@ VDictEntry VBandInterpDict[] = {
  *  \param  nrows
  *  \param  ncolumns
  *  \param  pixel_repn
- *  \return VImage
+ *  \return VistaIOImage
  */
 
-EXPORT_VISTA VImage VCreateImage (int nbands, int nrows, int ncolumns,
-		     VRepnKind pixel_repn)
+EXPORT_VISTA VistaIOImage VistaIOCreateImage (int nbands, int nrows, int ncolumns,
+		     VistaIORepnKind pixel_repn)
 {
-	size_t row_size = ncolumns * VRepnSize (pixel_repn);
+	size_t row_size = ncolumns * VistaIORepnSize (pixel_repn);
 	size_t data_size = nbands * nrows * row_size;
 	size_t row_index_size = nbands * nrows * sizeof (char *);
 	size_t band_index_size = nbands * sizeof (char **);
 	size_t pixel_size;
 	char *p;
-	VImage image;
+	VistaIOImage image;
 	int band, row;
 
 #define AlignUp(v, b) ((((v) + (b) - 1) / (b)) * (b))
 
 	/* Check parameters: */
 	if (nbands < 1) {
-		VWarning ("VCreateImage: Invalid number of bands: %d",
+		VistaIOWarning ("VistaIOCreateImage: Invalid number of bands: %d",
 			  (int)nbands);
 		return NULL;
 	}
 	if (nrows < 1) {
-		VWarning ("VCreateImage: Invalid number of rows: %d",
+		VistaIOWarning ("VistaIOCreateImage: Invalid number of rows: %d",
 			  (int)nrows);
 		return NULL;
 	}
 	if (ncolumns < 1) {
-		VWarning ("VCreateImage: Invalid number of columns: %d",
+		VistaIOWarning ("VistaIOCreateImage: Invalid number of columns: %d",
 			  (int)ncolumns);
 		return NULL;
 	}
-	if (pixel_repn != VBitRepn && pixel_repn != VUByteRepn &&
-	    pixel_repn != VSByteRepn && pixel_repn != VShortRepn &&
-	    pixel_repn != VLongRepn && pixel_repn != VFloatRepn
-	    && pixel_repn != VDoubleRepn) {
-		VWarning ("VCreateImage: Invalid pixel representation: %d",
+	if (pixel_repn != VistaIOBitRepn && pixel_repn != VUByteRepn &&
+	    pixel_repn != VSByteRepn && pixel_repn != VistaIOShortRepn &&
+	    pixel_repn != VistaIOLongRepn && pixel_repn != VistaIOFloatRepn
+	    && pixel_repn != VistaIODoubleRepn) {
+		VistaIOWarning ("VistaIOCreateImage: Invalid pixel representation: %d",
 			  (int)pixel_repn);
 		return NULL;
 	}
 
-	/* Allocate memory for the VImage, its indices, and pixel values, while
+	/* Allocate memory for the VistaIOImage, its indices, and pixel values, while
 	   padding enough to ensure pixel values are appropriately aligned: */
-	pixel_size = VRepnSize (pixel_repn);
-	p = VMalloc (AlignUp (sizeof (VImageRec) + row_index_size +
+	pixel_size = VistaIORepnSize (pixel_repn);
+	p = VistaIOMalloc (AlignUp (sizeof (VistaIOImageRec) + row_index_size +
 			      band_index_size, pixel_size) + data_size);
 
-	/* Initialize the VImage: */
-	image = (VImage) p;
+	/* Initialize the VistaIOImage: */
+	image = (VistaIOImage) p;
 	image->nbands = nbands;
 	image->nrows = nrows;
 	image->ncolumns = ncolumns;
-	image->flags = VImageSingleAlloc;
+	image->flags = VistaIOImageSingleAlloc;
 	image->pixel_repn = pixel_repn;
-	image->attributes = VCreateAttrList ();
-	image->band_index = (VPointer **) (p += sizeof (VImageRec));
-	image->row_index = (VPointer *) (p += band_index_size);
+	image->attributes = VistaIOCreateAttrList ();
+	image->band_index = (VistaIOPointer **) (p += sizeof (VistaIOImageRec));
+	image->row_index = (VistaIOPointer *) (p += band_index_size);
 	image->data =
-		(VPointer) AlignUp ((long)p + row_index_size, pixel_size);
+		(VistaIOPointer) AlignUp ((long)p + row_index_size, pixel_size);
 	image->nframes = nbands;
 	image->nviewpoints = image->ncolors = image->ncomponents = 1;
 
@@ -128,32 +128,32 @@ EXPORT_VISTA VImage VCreateImage (int nbands, int nrows, int ncolumns,
 /*! \brief Create an image with the same properties as an existing one.
  *
  *  \param  src
- *  \return VImage 
+ *  \return VistaIOImage 
  */
 
-EXPORT_VISTA VImage VCreateImageLike (VImage src)
+EXPORT_VISTA VistaIOImage VistaIOCreateImageLike (VistaIOImage src)
 {
-	return VCopyImageAttrs (src, NULL);
+	return VistaIOCopyImageAttrs (src, NULL);
 }
 
 
 /*! \brief Frees memory occupied by an image.
  *
  *  \param image
- *  \return VImage
+ *  \return VistaIOImage
  */
 
-EXPORT_VISTA void VDestroyImage (VImage image)
+EXPORT_VISTA void VistaIODestroyImage (VistaIOImage image)
 {
 	if (!image)
 		return;
-	if (!(image->flags & VImageSingleAlloc)) {
-		VFree (image->data);
-		VFree ((VPointer) image->row_index);
-		VFree ((VPointer) image->band_index);
+	if (!(image->flags & VistaIOImageSingleAlloc)) {
+		VistaIOFree (image->data);
+		VistaIOFree ((VistaIOPointer) image->row_index);
+		VistaIOFree ((VistaIOPointer) image->band_index);
 	}
-	VDestroyAttrList (VImageAttrList (image));
-	VFree ((VPointer) image);
+	VistaIODestroyAttrList (VistaIOImageAttrList (image));
+	VistaIOFree ((VistaIOPointer) image);
 }
 
 
@@ -163,39 +163,39 @@ EXPORT_VISTA void VDestroyImage (VImage image)
  *  \param  band
  *  \param  row
  *  \param  column
- *  \return VDouble
+ *  \return VistaIODouble
  */
 
-VDouble VGetPixel (VImage image, int band, int row, int column)
+VistaIODouble VistaIOGetPixel (VistaIOImage image, int band, int row, int column)
 {
-	VPointer p = VPixelPtr (image, band, row, column);
+	VistaIOPointer p = VistaIOPixelPtr (image, band, row, column);
 
-	switch (VPixelRepn (image)) {
+	switch (VistaIOPixelRepn (image)) {
 
-	case VBitRepn:
-		return (VDouble) * (VBit *) p;
+	case VistaIOBitRepn:
+		return (VistaIODouble) * (VistaIOBit *) p;
 
 	case VUByteRepn:
-		return (VDouble) * (VUByte *) p;
+		return (VistaIODouble) * (VUByte *) p;
 
 	case VSByteRepn:
-		return (VDouble) * (VSByte *) p;
+		return (VistaIODouble) * (VSByte *) p;
 
-	case VShortRepn:
-		return (VDouble) * (VShort *) p;
+	case VistaIOShortRepn:
+		return (VistaIODouble) * (VistaIOShort *) p;
 
-	case VLongRepn:
-		return (VDouble) * (VLong *) p;
+	case VistaIOLongRepn:
+		return (VistaIODouble) * (VistaIOLong *) p;
 
-	case VFloatRepn:
-		return (VDouble) * (VFloat *) p;
+	case VistaIOFloatRepn:
+		return (VistaIODouble) * (VistaIOFloat *) p;
 
-	case VDoubleRepn:
-		return (VDouble) * (VDouble *) p;
+	case VistaIODoubleRepn:
+		return (VistaIODouble) * (VistaIODouble *) p;
 
 	default:
-		VError ("VGetPixel: %s images not supported",
-			VPixelRepnName (image));
+		VistaIOError ("VistaIOGetPixel: %s images not supported",
+			VistaIOPixelRepnName (image));
 	}
 	return 0.0;		/* to make lint happy */
 }
@@ -210,15 +210,15 @@ VDouble VGetPixel (VImage image, int band, int row, int column)
  *  \param value
  */
 
-void VSetPixel (VImage image, int band, int row, int column,
-		VDoublePromoted value)
+void VistaIOSetPixel (VistaIOImage image, int band, int row, int column,
+		VistaIODoublePromoted value)
 {
-	VPointer p = VPixelPtr (image, band, row, column);
+	VistaIOPointer p = VistaIOPixelPtr (image, band, row, column);
 
-	switch (VPixelRepn (image)) {
+	switch (VistaIOPixelRepn (image)) {
 
-	case VBitRepn:
-		*(VBit *) p = (VBit )value;
+	case VistaIOBitRepn:
+		*(VistaIOBit *) p = (VistaIOBit )value;
 		break;
 
 	case VUByteRepn:
@@ -229,25 +229,25 @@ void VSetPixel (VImage image, int band, int row, int column,
 		*(VSByte *) p = (VSByte )value;
 		break;
 
-	case VShortRepn:
-		*(VShort *) p = (VShort)value;
+	case VistaIOShortRepn:
+		*(VistaIOShort *) p = (VistaIOShort)value;
 		break;
 
-	case VLongRepn:
-		*(VLong *) p = (VLong)value;
+	case VistaIOLongRepn:
+		*(VistaIOLong *) p = (VistaIOLong)value;
 		break;
 
-	case VFloatRepn:
-		*(VFloat *) p = (VFloat)value;
+	case VistaIOFloatRepn:
+		*(VistaIOFloat *) p = (VistaIOFloat)value;
 		break;
 
-	case VDoubleRepn:
-		*(VDouble *) p = value;
+	case VistaIODoubleRepn:
+		*(VistaIODouble *) p = value;
 		break;
 
 	default:
-		VError ("VSetPixel: %s images not supported",
-			VPixelRepnName (image));
+		VistaIOError ("VistaIOSetPixel: %s images not supported",
+			VistaIOPixelRepnName (image));
 	}
 }
 
@@ -255,7 +255,7 @@ void VSetPixel (VImage image, int band, int row, int column,
 /*! \brief Copy the pixels and attributes of one image to another.
  *
  *  Returns a pointer to the destination image if successful, zero otherwise.
- *  The band parameter may be VAllBands, in which case all bands of pixel
+ *  The band parameter may be VistaIOAllBands, in which case all bands of pixel
  *  values are copied, or a particular band number, in which case only a
  *  single band is copied to a 1-band destination image.
  *
@@ -266,16 +266,16 @@ void VSetPixel (VImage image, int band, int row, int column,
  *          otherwise
  */
 
-EXPORT_VISTA VImage VCopyImage (VImage src, VImage dest, VBand band)
+EXPORT_VISTA VistaIOImage VistaIOCopyImage (VistaIOImage src, VistaIOImage dest, VistaIOBand band)
 {
-	VImage result;
+	VistaIOImage result;
 
 	if (src == dest
-	    && (band == VAllBands || (band == 0 && VImageNBands (src) == 1)))
+	    && (band == VistaIOAllBands || (band == 0 && VistaIOImageNBands (src) == 1)))
 		return src;
 
-	if ((result = VCopyImagePixels (src, dest, band)) != 0)
-		VCopyImageAttrs (src, result);
+	if ((result = VistaIOCopyImagePixels (src, dest, band)) != 0)
+		VistaIOCopyImageAttrs (src, result);
 	return result;
 }
 
@@ -287,54 +287,54 @@ EXPORT_VISTA VImage VCopyImage (VImage src, VImage dest, VBand band)
  *
  *  \param  src
  *  \param  dest
- *  \return VImage
+ *  \return VistaIOImage
  */
 
-EXPORT_VISTA VImage VCopyImageAttrs (VImage src, VImage dest)
+EXPORT_VISTA VistaIOImage VistaIOCopyImageAttrs (VistaIOImage src, VistaIOImage dest)
 {
-	VAttrList list;
+	VistaIOAttrList list;
 
 	if (src == dest)
 		return dest;
 	if (!dest) {
-		dest = VCreateImage (VImageNBands (src), VImageNRows (src),
-				     VImageNColumns (src), VPixelRepn (src));
+		dest = VistaIOCreateImage (VistaIOImageNBands (src), VistaIOImageNRows (src),
+				     VistaIOImageNColumns (src), VistaIOPixelRepn (src));
 		if (!dest)
 			return NULL;
 	}
 
 	/* Clone the source image's attribute list if it isn't empty: */
-	if (!VAttrListEmpty (VImageAttrList (src))) {
-		list = VImageAttrList (dest);
-		VImageAttrList (dest) = VCopyAttrList (VImageAttrList (src));
-	} else if (!VAttrListEmpty (VImageAttrList (dest))) {
-		list = VImageAttrList (dest);
-		VImageAttrList (dest) = VCreateAttrList ();
+	if (!VistaIOAttrListEmpty (VistaIOImageAttrList (src))) {
+		list = VistaIOImageAttrList (dest);
+		VistaIOImageAttrList (dest) = VistaIOCopyAttrList (VistaIOImageAttrList (src));
+	} else if (!VistaIOAttrListEmpty (VistaIOImageAttrList (dest))) {
+		list = VistaIOImageAttrList (dest);
+		VistaIOImageAttrList (dest) = VistaIOCreateAttrList ();
 	} else
 		list = NULL;
 	if (list)
-		VDestroyAttrList (list);
+		VistaIODestroyAttrList (list);
 
 	/* Preserve band interpretation attributes only if the source and
 	   destination images have the same number of bands: */
-	if (VImageNBands (src) > 1
-	    && VImageNBands (dest) == VImageNBands (src)) {
-		VImageNFrames (dest) = VImageNFrames (src);
-		VImageNViewpoints (dest) = VImageNViewpoints (src);
-		VImageNColors (dest) = VImageNColors (src);
-		VImageNComponents (dest) = VImageNComponents (src);
+	if (VistaIOImageNBands (src) > 1
+	    && VistaIOImageNBands (dest) == VistaIOImageNBands (src)) {
+		VistaIOImageNFrames (dest) = VistaIOImageNFrames (src);
+		VistaIOImageNViewpoints (dest) = VistaIOImageNViewpoints (src);
+		VistaIOImageNColors (dest) = VistaIOImageNColors (src);
+		VistaIOImageNComponents (dest) = VistaIOImageNComponents (src);
 	} else {
-		VExtractAttr (VImageAttrList (dest), VFrameInterpAttr, NULL,
-			      VBitRepn, NULL, FALSE);
-		VExtractAttr (VImageAttrList (dest), VViewpointInterpAttr,
-			      NULL, VBitRepn, NULL, FALSE);
-		VExtractAttr (VImageAttrList (dest), VColorInterpAttr, NULL,
-			      VBitRepn, NULL, FALSE);
-		VExtractAttr (VImageAttrList (dest), VComponentInterpAttr,
-			      NULL, VBitRepn, NULL, FALSE);
-		VImageNComponents (dest) = VImageNColors (dest) =
-			VImageNViewpoints (dest) = 1;
-		VImageNFrames (dest) = VImageNBands (dest);
+		VistaIOExtractAttr (VistaIOImageAttrList (dest), VistaIOFrameInterpAttr, NULL,
+			      VistaIOBitRepn, NULL, FALSE);
+		VistaIOExtractAttr (VistaIOImageAttrList (dest), VistaIOViewpointInterpAttr,
+			      NULL, VistaIOBitRepn, NULL, FALSE);
+		VistaIOExtractAttr (VistaIOImageAttrList (dest), VistaIOColorInterpAttr, NULL,
+			      VistaIOBitRepn, NULL, FALSE);
+		VistaIOExtractAttr (VistaIOImageAttrList (dest), VistaIOComponentInterpAttr,
+			      NULL, VistaIOBitRepn, NULL, FALSE);
+		VistaIOImageNComponents (dest) = VistaIOImageNColors (dest) =
+			VistaIOImageNViewpoints (dest) = 1;
+		VistaIOImageNFrames (dest) = VistaIOImageNBands (dest);
 	}
 	return dest;
 }
@@ -343,7 +343,7 @@ EXPORT_VISTA VImage VCopyImageAttrs (VImage src, VImage dest)
 /*! \brief Copy the pixels of one image to another.
  *
  *  Returns a pointer to the destination image if successful, zero otherwise.
- *  The band parameter may be VAllBands, in which case all bands of pixel
+ *  The band parameter may be VistaIOAllBands, in which case all bands of pixel
  *  values are copied, or a particular band number, in which case only a
  *  single band is copied to a 1-band destination image.
  *
@@ -354,25 +354,25 @@ EXPORT_VISTA VImage VCopyImageAttrs (VImage src, VImage dest)
  *          zero otherwise.
  */
 
-EXPORT_VISTA VImage VCopyImagePixels (VImage src, VImage dest, VBand band)
+EXPORT_VISTA VistaIOImage VistaIOCopyImagePixels (VistaIOImage src, VistaIOImage dest, VistaIOBand band)
 {
 	int npixels;
-	VPointer src_pixels;
-	VImage result;
+	VistaIOPointer src_pixels;
+	VistaIOImage result;
 
 	/* Locate the source and destination of the copy: */
-	if (!VSelectBand
-	    ("VCopyImagePixels", src, band, &npixels, &src_pixels))
+	if (!VistaIOSelectBand
+	    ("VistaIOCopyImagePixels", src, band, &npixels, &src_pixels))
 		return NULL;
-	result = VSelectDestImage ("VCopyImagePixels", dest,
-				   band == VAllBands ? VImageNBands (src) : 1,
-				   VImageNRows (src), VImageNColumns (src),
-				   VPixelRepn (src));
+	result = VistaIOSelectDestImage ("VistaIOCopyImagePixels", dest,
+				   band == VistaIOAllBands ? VistaIOImageNBands (src) : 1,
+				   VistaIOImageNRows (src), VistaIOImageNColumns (src),
+				   VistaIOPixelRepn (src));
 	if (!result)
 		return NULL;
 
 	/* Copy pixel values from src to dest: */
-	memcpy (VImageData (result), src_pixels, npixels * VPixelSize (src));
+	memcpy (VistaIOImageData (result), src_pixels, npixels * VistaIOPixelSize (src));
 
 	return result;
 }
@@ -383,53 +383,53 @@ EXPORT_VISTA VImage VCopyImagePixels (VImage src, VImage dest, VBand band)
  *  Band src_band of image src is copied to band dest_band of image dest.
  *  The destination image must exist, having the same pixel representation
  *  and size as the source image. Either src_band or dst_band may be
- *  VAllBands, provided they both describe the same number of bands.
+ *  VistaIOAllBands, provided they both describe the same number of bands.
  *
  *  \param  src
  *  \param  src_band
  *  \param  dest
  *  \param  dest_band
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VCopyBand (VImage src, VBand src_band, VImage dest, VBand dest_band)
+EXPORT_VISTA VistaIOBoolean VistaIOCopyBand (VistaIOImage src, VistaIOBand src_band, VistaIOImage dest, VistaIOBand dest_band)
 {
 	int nbands, src_npixels, dest_npixels;
-	VPointer src_pixels, dest_pixels;
+	VistaIOPointer src_pixels, dest_pixels;
 
 	/* The destination image must exist: */
 	if (!dest) {
-		VWarning ("VCopyBand: No destination specified");
+		VistaIOWarning ("VistaIOCopyBand: No destination specified");
 		return FALSE;
 	}
 
-	/* VAllBands not accepted for destination band: */
-	if (dest_band < 0 || dest_band >= VImageNBands (dest)) {
-		VWarning ("VCopyBand: Band %d referenced in image of %d bands", (int)dest_band, (int)VImageNBands (dest));
+	/* VistaIOAllBands not accepted for destination band: */
+	if (dest_band < 0 || dest_band >= VistaIOImageNBands (dest)) {
+		VistaIOWarning ("VistaIOCopyBand: Band %d referenced in image of %d bands", (int)dest_band, (int)VistaIOImageNBands (dest));
 		return FALSE;
 	}
 
 	/* Ensure that the destination image has the appropriate dimensions
 	   and pixel representation: */
 	nbands = dest_band;
-	if (src_band == VAllBands)
-		nbands += VImageNBands (src) - 1;
-	if (nbands < VImageNBands (dest))
-		nbands = VImageNBands (dest);
-	if (!VSelectDestImage ("VCopyBand", dest, nbands, VImageNRows (src),
-			       VImageNColumns (src), VPixelRepn (src)))
+	if (src_band == VistaIOAllBands)
+		nbands += VistaIOImageNBands (src) - 1;
+	if (nbands < VistaIOImageNBands (dest))
+		nbands = VistaIOImageNBands (dest);
+	if (!VistaIOSelectDestImage ("VistaIOCopyBand", dest, nbands, VistaIOImageNRows (src),
+			       VistaIOImageNColumns (src), VistaIOPixelRepn (src)))
 		return FALSE;
 
 	/* Locate the specified source and destination bands: */
-	if (!VSelectBand
-	    ("VCopyBand", src, src_band, &src_npixels, &src_pixels))
+	if (!VistaIOSelectBand
+	    ("VistaIOCopyBand", src, src_band, &src_npixels, &src_pixels))
 		return FALSE;
-	if (!VSelectBand
-	    ("VCopyBand", dest, dest_band, &dest_npixels, &dest_pixels))
+	if (!VistaIOSelectBand
+	    ("VistaIOCopyBand", dest, dest_band, &dest_npixels, &dest_pixels))
 		return FALSE;
 
 	/* Copy from the source band to the destination band: */
-	memcpy (dest_pixels, src_pixels, src_npixels * VPixelSize (src));
+	memcpy (dest_pixels, src_pixels, src_npixels * VistaIOPixelSize (src));
 
 	return TRUE;
 }
@@ -446,84 +446,84 @@ EXPORT_VISTA VBoolean VCopyBand (VImage src, VBand src_band, VImage dest, VBand 
  *  \param  src_images
  *  \param  src_bands
  *  \param  dest
- *  \return VImage
+ *  \return VistaIOImage
  */
 
-EXPORT_VISTA VImage VCombineBands (int nels, VImage src_images[], VBand src_bands[],
-		      VImage dest)
+EXPORT_VISTA VistaIOImage VistaIOCombineBands (int nels, VistaIOImage src_images[], VistaIOBand src_bands[],
+		      VistaIOImage dest)
 {
 	int n, i;
-	VImage result, src = src_images[0];
+	VistaIOImage result, src = src_images[0];
 
 	/* Count the number of bands needed in the destination image: */
 	for (i = n = 0; i < nels; i++)
 		n += (src_bands[i] ==
-		      VAllBands) ? VImageNBands (src_images[i]) : 1;
+		      VistaIOAllBands) ? VistaIOImageNBands (src_images[i]) : 1;
 
 	/* Check or allocate the destination image: */
-	result = VSelectDestImage ("VCombineBands", dest, n,
-				   VImageNRows (src), VImageNColumns (src),
-				   VPixelRepn (src));
+	result = VistaIOSelectDestImage ("VistaIOCombineBands", dest, n,
+				   VistaIOImageNRows (src), VistaIOImageNColumns (src),
+				   VistaIOPixelRepn (src));
 	if (!result)
 		return NULL;
 
 	/* Copy each source band into the destination image: */
 	for (i = n = 0; i < nels; i++) {
-		if (!VCopyBand (src_images[i], src_bands[i], result, n)) {
+		if (!VistaIOCopyBand (src_images[i], src_bands[i], result, n)) {
 			if (result != dest)
-				VDestroyImage (result);
+				VistaIODestroyImage (result);
 			return NULL;
 		}
 		n += (src_bands[i] ==
-		      VAllBands) ? VImageNBands (src_images[i]) : 1;
+		      VistaIOAllBands) ? VistaIOImageNBands (src_images[i]) : 1;
 	}
 	return result;
 }
 
 
-/*! \brief A varargs version of VCombineBands. 
+/*! \brief A varargs version of VistaIOCombineBands. 
  *
  *  It is called by:
  *
- *	dest = VCombineBandsVa (dest, src_image1, src_band1, ...,
- *				(VImage) NULL);
+ *	dest = VistaIOCombineBandsVa (dest, src_image1, src_band1, ...,
+ *				(VistaIOImage) NULL);
  *  \param  dest
- *  \return VImage
+ *  \return VistaIOImage
  */
 
-EXPORT_VISTA VImage VCombineBandsVa (VImage dest, ...)
+EXPORT_VISTA VistaIOImage VistaIOCombineBandsVa (VistaIOImage dest, ...)
 {
 	va_list args;
-	VImage src, result;
+	VistaIOImage src, result;
 	int nbands;
-	VBand src_band, dest_band;
+	VistaIOBand src_band, dest_band;
 
 	/* Count the number of bands to be combined: */
 	va_start (args, dest);
-	for (nbands = 0; (src = va_arg (args, VImage)); nbands +=
-	     (va_arg (args, VBand) == VAllBands) ? VImageNBands (src) : 1);
+	for (nbands = 0; (src = va_arg (args, VistaIOImage)); nbands +=
+	     (va_arg (args, VistaIOBand) == VistaIOAllBands) ? VistaIOImageNBands (src) : 1);
 	va_end (args);
 
 	/* Check or allocate the destination image: */
 	va_start (args, dest);
-	src = va_arg (args, VImage);
+	src = va_arg (args, VistaIOImage);
 	va_end (args);
-	result = VSelectDestImage ("VCombineBandsVa", dest, nbands,
-				   VImageNRows (src), VImageNColumns (src),
-				   VPixelRepn (src));
+	result = VistaIOSelectDestImage ("VistaIOCombineBandsVa", dest, nbands,
+				   VistaIOImageNRows (src), VistaIOImageNColumns (src),
+				   VistaIOPixelRepn (src));
 	if (!result)
 		return NULL;
 
 	/* Copy each source band into the destination image: */
 	va_start (args, dest);
-	for (dest_band = 0; (src = va_arg (args, VImage));) {
-		src_band = va_arg (args, VBand);
-		if (!VCopyBand (src, src_band, result, dest_band)) {
+	for (dest_band = 0; (src = va_arg (args, VistaIOImage));) {
+		src_band = va_arg (args, VistaIOBand);
+		if (!VistaIOCopyBand (src, src_band, result, dest_band)) {
 			if (result != dest)
-				VDestroyImage (result);
+				VistaIODestroyImage (result);
 			return NULL;
 		}
-		dest_band += (src_band == VAllBands) ? VImageNBands (src) : 1;
+		dest_band += (src_band == VistaIOAllBands) ? VistaIOImageNBands (src) : 1;
 	}
 	va_end (args);
 	return result;
@@ -540,84 +540,84 @@ EXPORT_VISTA VImage VCombineBandsVa (VImage dest, ...)
  *  \param  nrows
  *  \param  ncolumns
  *  \param  pixel_repn
- *  \return VImage
+ *  \return VistaIOImage
  */
 
 /*  There are two ways to use this routine. If an operation is such that
  *  it can be carried out with a destination image that is the same as
  *  the source image, one follows this procedure:
  *
- *	VImage result;
+ *	VistaIOImage result;
  *
- *	result = VSelectDestImage (...);
+ *	result = VistaIOSelectDestImage (...);
  *	if (! result)
  *	    return NULL;
  *
  *	On successful completion:
- *      VCopyImageAttrs (src, result);
+ *      VistaIOCopyImageAttrs (src, result);
  *	return result;
  *
  *	On failure:
  *	if (result != dest)
- *	    VDestroyImage (result);
+ *	    VistaIODestroyImage (result);
  *	return NULL;
  *
  *  And if an operation *cannot* be carried out with a destination image
  *  that is the same as the source image, one does:
  *
- *	VImage result;
+ *	VistaIOImage result;
  *
- *	result = VSelectDestImage (...);	use or create dest image
+ *	result = VistaIOSelectDestImage (...);	use or create dest image
  *	if (! result)
  *	    return NULL;
  *	if (src == result)
- *	    result = VCreateImage (...);	allocate a work image
+ *	    result = VistaIOCreateImage (...);	allocate a work image
  *
  *	On successful completion:
  *	if (src == dest) {
- *	    VCopyImagePixels (result, dest, VAllBands); move work to dest
- *	    VDestroyImage (result);
+ *	    VistaIOCopyImagePixels (result, dest, VistaIOAllBands); move work to dest
+ *	    VistaIODestroyImage (result);
  *	    return dest;
  *	} else {
- *	    VCopyImageAttrs (src, result);
+ *	    VistaIOCopyImageAttrs (src, result);
  *	    return result;
  *      }
  *
  *	On failure:
  *	if (result != dest)
- *	    VDestroyImage (result);
+ *	    VistaIODestroyImage (result);
  *	return NULL;
  */
 
-EXPORT_VISTA VImage VSelectDestImage (VStringConst routine, VImage dest,
+EXPORT_VISTA VistaIOImage VistaIOSelectDestImage (VistaIOStringConst routine, VistaIOImage dest,
 			 int nbands, int nrows, int ncolumns,
-			 VRepnKind pixel_repn)
+			 VistaIORepnKind pixel_repn)
 {
 	/* If no destination image was specified, allocate one: */
 	if (!dest)
-		return VCreateImage (nbands, nrows, ncolumns, pixel_repn);
+		return VistaIOCreateImage (nbands, nrows, ncolumns, pixel_repn);
 
 	/* Otherwise check that the destination provided has the appropriate
 	   characteristics: */
-	if (VImageNBands (dest) != nbands) {
-		VWarning ("%s: Destination image has %d bands; %d expected",
-			  routine, VImageNBands (dest), nbands);
+	if (VistaIOImageNBands (dest) != nbands) {
+		VistaIOWarning ("%s: Destination image has %d bands; %d expected",
+			  routine, VistaIOImageNBands (dest), nbands);
 		return NULL;
 	}
-	if (VImageNRows (dest) != nrows) {
-		VWarning ("%s: Destination image has %d rows; %d expected",
-			  routine, VImageNRows (dest), nrows);
+	if (VistaIOImageNRows (dest) != nrows) {
+		VistaIOWarning ("%s: Destination image has %d rows; %d expected",
+			  routine, VistaIOImageNRows (dest), nrows);
 		return NULL;
 	}
-	if (VImageNColumns (dest) != ncolumns) {
-		VWarning ("%s: Destination image has %d columns; %d expected",
-			  routine, VImageNColumns (dest), ncolumns);
+	if (VistaIOImageNColumns (dest) != ncolumns) {
+		VistaIOWarning ("%s: Destination image has %d columns; %d expected",
+			  routine, VistaIOImageNColumns (dest), ncolumns);
 		return NULL;
 	}
-	if (VPixelRepn (dest) != pixel_repn) {
-		VWarning ("%s: Destination image has %s pixels; %s expected",
-			  routine, VPixelRepnName (dest),
-			  VRepnName (pixel_repn));
+	if (VistaIOPixelRepn (dest) != pixel_repn) {
+		VistaIOWarning ("%s: Destination image has %s pixels; %s expected",
+			  routine, VistaIOPixelRepnName (dest),
+			  VistaIORepnName (pixel_repn));
 		return NULL;
 	}
 	return dest;
@@ -632,26 +632,26 @@ EXPORT_VISTA VImage VSelectDestImage (VStringConst routine, VImage dest,
  *  \param  band
  *  \param  npixels
  *  \param  first_pixel
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VSelectBand (VStringConst routine, VImage image, VBand band,
-		      int *npixels, VPointer * first_pixel)
+EXPORT_VISTA VistaIOBoolean VistaIOSelectBand (VistaIOStringConst routine, VistaIOImage image, VistaIOBand band,
+		      int *npixels, VistaIOPointer * first_pixel)
 {
-	if (band == VAllBands) {
+	if (band == VistaIOAllBands) {
 		if (npixels)
-			*npixels = VImageNPixels (image);
+			*npixels = VistaIOImageNPixels (image);
 		if (first_pixel)
-			*first_pixel = VImageData (image);
-	} else if (band >= 0 && band < VImageNBands (image)) {
+			*first_pixel = VistaIOImageData (image);
+	} else if (band >= 0 && band < VistaIOImageNBands (image)) {
 		if (npixels)
 			*npixels =
-				VImageNRows (image) * VImageNColumns (image);
+				VistaIOImageNRows (image) * VistaIOImageNColumns (image);
 		if (first_pixel)
 			*first_pixel = image->band_index[band][0];
 	} else {
-		VWarning ("%s: Band %d referenced in image of %d band(s)",
-			  routine, band, VImageNBands (image));
+		VistaIOWarning ("%s: Band %d referenced in image of %d band(s)",
+			  routine, band, VistaIOImageNBands (image));
 		return FALSE;
 	}
 	return TRUE;
@@ -661,193 +661,193 @@ EXPORT_VISTA VBoolean VSelectBand (VStringConst routine, VImage image, VBand ban
 /*! \brief Routine for accessing an image's band interpretation information.
  * 
  *  \param  image
- *  \return VBandInterp
+ *  \return VistaIOBandInterp
  */
 
 /*
- *  VImageFrameInterp, VImageViewpointInterp,
- *  VImageColorInterp, VImageComponentInterp
+ *  VistaIOImageFrameInterp, VistaIOImageViewpointInterp,
+ *  VistaIOImageColorInterp, VistaIOImageComponentInterp
  *
  *  Routines for accessing an image's band interpretation information.
  *
- *  Each routine returns a VBandInterpXxx constant describing how
+ *  Each routine returns a VistaIOBandInterpXxx constant describing how
  *  image bands are to be interpreted at a particular level of the band
  *  hierarchy.
  *
  *  If that level's dimension is 1 and there is no band interpretation
- *  attribute for the level, VBandInterpNone is returned.
+ *  attribute for the level, VistaIOBandInterpNone is returned.
  *
- *  If the dimension is >1 and there is no attribute, VBandInterpOther is
+ *  If the dimension is >1 and there is no attribute, VistaIOBandInterpOther is
  *  returned.
  *
  *  If an image's band interpretation information is inconsistent
  *  (e.g., the color_interp attribute says RGB but ncolors is 2) then
- *  VWarning is called and VBandInterpOther is returned.
+ *  VistaIOWarning is called and VistaIOBandInterpOther is returned.
  */
 
-EXPORT_VISTA VBandInterp VImageFrameInterp (VImage image)
+EXPORT_VISTA VistaIOBandInterp VistaIOImageFrameInterp (VistaIOImage image)
 {
-	VLong interp;
-	VGetAttrResult result;
+	VistaIOLong interp;
+	VistaIOGetAttrResult result;
 
-	if (VImageNBands (image) !=
-	    (VImageNFrames (image) * VImageNViewpoints (image) *
-	     VImageNColors (image) * VImageNComponents (image)))
-		VWarning ("VImageFrameInterp: No. bands (%d) conflicts with no. " "of frames, etc. (%d %d %d %d)", VImageNBands (image), VImageNFrames (image), VImageNViewpoints (image), VImageNColors (image), VImageNComponents (image));
+	if (VistaIOImageNBands (image) !=
+	    (VistaIOImageNFrames (image) * VistaIOImageNViewpoints (image) *
+	     VistaIOImageNColors (image) * VistaIOImageNComponents (image)))
+		VistaIOWarning ("VistaIOImageFrameInterp: No. bands (%d) conflicts with no. " "of frames, etc. (%d %d %d %d)", VistaIOImageNBands (image), VistaIOImageNFrames (image), VistaIOImageNViewpoints (image), VistaIOImageNColors (image), VistaIOImageNComponents (image));
 
-	if (!VImageAttrList (image) ||
+	if (!VistaIOImageAttrList (image) ||
 	    (result =
-	     VGetAttr (VImageAttrList (image), VFrameInterpAttr,
-		       VBandInterpDict, VLongRepn, &interp)) == VAttrMissing)
-		return VImageNFrames (image) >
-			1 ? VBandInterpOther : VBandInterpNone;
+	     VistaIOGetAttr (VistaIOImageAttrList (image), VistaIOFrameInterpAttr,
+		       VistaIOBandInterpDict, VistaIOLongRepn, &interp)) == VistaIOAttrMissing)
+		return VistaIOImageNFrames (image) >
+			1 ? VistaIOBandInterpOther : VistaIOBandInterpNone;
 
-	if (result == VAttrBadValue)
-		return VBandInterpOther;
+	if (result == VistaIOAttrBadValue)
+		return VistaIOBandInterpOther;
 
 	switch (interp) {
 
 	}
-	return VBandInterpOther;
+	return VistaIOBandInterpOther;
 }
 
 /*! \brief Routine for accessing an image's band interpretation information.
  * 
  *  \param  image
- *  \return VBandInterp
+ *  \return VistaIOBandInterp
  */ 
 
-EXPORT_VISTA VBandInterp VImageViewpointInterp (VImage image)
+EXPORT_VISTA VistaIOBandInterp VistaIOImageViewpointInterp (VistaIOImage image)
 {
-	VLong interp;
-	VGetAttrResult result;
+	VistaIOLong interp;
+	VistaIOGetAttrResult result;
 
-	if (VImageNBands (image) !=
-	    (VImageNFrames (image) * VImageNViewpoints (image) *
-	     VImageNColors (image) * VImageNComponents (image)))
-		VWarning ("VImageViewpointInterp: No. bands (%d) conflicts with no. " "of frames, etc. (%d %d %d %d)", VImageNBands (image), VImageNFrames (image), VImageNViewpoints (image), VImageNColors (image), VImageNComponents (image));
+	if (VistaIOImageNBands (image) !=
+	    (VistaIOImageNFrames (image) * VistaIOImageNViewpoints (image) *
+	     VistaIOImageNColors (image) * VistaIOImageNComponents (image)))
+		VistaIOWarning ("VistaIOImageViewpointInterp: No. bands (%d) conflicts with no. " "of frames, etc. (%d %d %d %d)", VistaIOImageNBands (image), VistaIOImageNFrames (image), VistaIOImageNViewpoints (image), VistaIOImageNColors (image), VistaIOImageNComponents (image));
 
-	if (!VImageAttrList (image) ||
+	if (!VistaIOImageAttrList (image) ||
 	    (result =
-	     VGetAttr (VImageAttrList (image), VViewpointInterpAttr,
-		       VBandInterpDict, VLongRepn, &interp)) == VAttrMissing)
-		return VImageNViewpoints (image) >
-			1 ? VBandInterpOther : VBandInterpNone;
+	     VistaIOGetAttr (VistaIOImageAttrList (image), VistaIOViewpointInterpAttr,
+		       VistaIOBandInterpDict, VistaIOLongRepn, &interp)) == VistaIOAttrMissing)
+		return VistaIOImageNViewpoints (image) >
+			1 ? VistaIOBandInterpOther : VistaIOBandInterpNone;
 
-	if (result == VAttrBadValue)
-		return VBandInterpOther;
+	if (result == VistaIOAttrBadValue)
+		return VistaIOBandInterpOther;
 
 	switch (interp) {
 
-	case VBandInterpStereoPair:
-		if (VImageNViewpoints (image) != 2) {
-			VWarning ("VBandViewpointInterp: "
+	case VistaIOBandInterpStereoPair:
+		if (VistaIOImageNViewpoints (image) != 2) {
+			VistaIOWarning ("VistaIOBandViewpointInterp: "
 				  "Stereo-pair image has %d viewpoint dimension(s)",
-				  VImageNViewpoints (image));
-			return VBandInterpOther;
+				  VistaIOImageNViewpoints (image));
+			return VistaIOBandInterpOther;
 		}
-		return VBandInterpStereoPair;
+		return VistaIOBandInterpStereoPair;
 	}
-	return VBandInterpOther;
+	return VistaIOBandInterpOther;
 }
 
 /*! \brief Routine for accessing an image's band interpretation information.
  * 
  *  \param  image
- *  \return VBandInterp
+ *  \return VistaIOBandInterp
  */
 
-EXPORT_VISTA VBandInterp VImageColorInterp (VImage image)
+EXPORT_VISTA VistaIOBandInterp VistaIOImageColorInterp (VistaIOImage image)
 {
-	VLong interp;
-	VGetAttrResult result;
+	VistaIOLong interp;
+	VistaIOGetAttrResult result;
 
-	if (VImageNBands (image) !=
-	    (VImageNFrames (image) * VImageNViewpoints (image) *
-	     VImageNColors (image) * VImageNComponents (image)))
-		VWarning ("VImageColorInterp: No. bands (%d) conflicts with no. " "of frames, etc. (%d %d %d %d)", VImageNBands (image), VImageNFrames (image), VImageNViewpoints (image), VImageNColors (image), VImageNComponents (image));
+	if (VistaIOImageNBands (image) !=
+	    (VistaIOImageNFrames (image) * VistaIOImageNViewpoints (image) *
+	     VistaIOImageNColors (image) * VistaIOImageNComponents (image)))
+		VistaIOWarning ("VistaIOImageColorInterp: No. bands (%d) conflicts with no. " "of frames, etc. (%d %d %d %d)", VistaIOImageNBands (image), VistaIOImageNFrames (image), VistaIOImageNViewpoints (image), VistaIOImageNColors (image), VistaIOImageNComponents (image));
 
-	if (!VImageAttrList (image) ||
+	if (!VistaIOImageAttrList (image) ||
 	    (result =
-	     VGetAttr (VImageAttrList (image), VColorInterpAttr,
-		       VBandInterpDict, VLongRepn, &interp)) == VAttrMissing)
-		return VImageNColors (image) >
-			1 ? VBandInterpOther : VBandInterpNone;
+	     VistaIOGetAttr (VistaIOImageAttrList (image), VistaIOColorInterpAttr,
+		       VistaIOBandInterpDict, VistaIOLongRepn, &interp)) == VistaIOAttrMissing)
+		return VistaIOImageNColors (image) >
+			1 ? VistaIOBandInterpOther : VistaIOBandInterpNone;
 
-	if (result == VAttrBadValue)
-		return VBandInterpOther;
+	if (result == VistaIOAttrBadValue)
+		return VistaIOBandInterpOther;
 
 	switch (interp) {
 
-	case VBandInterpRGB:
-		if (VImageNColors (image) != 3) {
-			VWarning ("VBandColorInterp: RGB image has %d color dimension(s)", VImageNColors (image));
-			return VBandInterpOther;
+	case VistaIOBandInterpRGB:
+		if (VistaIOImageNColors (image) != 3) {
+			VistaIOWarning ("VistaIOBandColorInterp: RGB image has %d color dimension(s)", VistaIOImageNColors (image));
+			return VistaIOBandInterpOther;
 		}
-		return VBandInterpRGB;
+		return VistaIOBandInterpRGB;
 	}
-	return VBandInterpOther;
+	return VistaIOBandInterpOther;
 }
 
 /*! \brief Routine for accessing an image's band interpretation information.
  * 
  *  \param  image
- *  \return VBandInterp
+ *  \return VistaIOBandInterp
  */
 
-EXPORT_VISTA VBandInterp VImageComponentInterp (VImage image)
+EXPORT_VISTA VistaIOBandInterp VistaIOImageComponentInterp (VistaIOImage image)
 {
-	VLong interp;
-	VGetAttrResult result;
+	VistaIOLong interp;
+	VistaIOGetAttrResult result;
 
-	if (VImageNBands (image) !=
-	    (VImageNFrames (image) * VImageNViewpoints (image) *
-	     VImageNColors (image) * VImageNComponents (image)))
-		VWarning ("VImageComponentInterp: No. bands (%d) conflicts with no. " "of frames, etc. (%d %d %d %d)", VImageNBands (image), VImageNFrames (image), VImageNViewpoints (image), VImageNColors (image), VImageNComponents (image));
+	if (VistaIOImageNBands (image) !=
+	    (VistaIOImageNFrames (image) * VistaIOImageNViewpoints (image) *
+	     VistaIOImageNColors (image) * VistaIOImageNComponents (image)))
+		VistaIOWarning ("VistaIOImageComponentInterp: No. bands (%d) conflicts with no. " "of frames, etc. (%d %d %d %d)", VistaIOImageNBands (image), VistaIOImageNFrames (image), VistaIOImageNViewpoints (image), VistaIOImageNColors (image), VistaIOImageNComponents (image));
 
-	if (!VImageAttrList (image) ||
+	if (!VistaIOImageAttrList (image) ||
 	    (result =
-	     VGetAttr (VImageAttrList (image), VComponentInterpAttr,
-		       VBandInterpDict, VLongRepn, &interp)) == VAttrMissing)
-		return VImageNComponents (image) >
-			1 ? VBandInterpOther : VBandInterpNone;
+	     VistaIOGetAttr (VistaIOImageAttrList (image), VistaIOComponentInterpAttr,
+		       VistaIOBandInterpDict, VistaIOLongRepn, &interp)) == VistaIOAttrMissing)
+		return VistaIOImageNComponents (image) >
+			1 ? VistaIOBandInterpOther : VistaIOBandInterpNone;
 
-	if (result == VAttrBadValue)
-		return VBandInterpOther;
+	if (result == VistaIOAttrBadValue)
+		return VistaIOBandInterpOther;
 
 	switch (interp) {
 
-	case VBandInterpComplex:
-		if (VImageNComponents (image) != 2) {
-			VWarning ("VBandColorInterp: Complex image has %d component(s)", VImageNComponents (image));
-			return VBandInterpOther;
+	case VistaIOBandInterpComplex:
+		if (VistaIOImageNComponents (image) != 2) {
+			VistaIOWarning ("VistaIOBandColorInterp: Complex image has %d component(s)", VistaIOImageNComponents (image));
+			return VistaIOBandInterpOther;
 		}
-		return VBandInterpComplex;
+		return VistaIOBandInterpComplex;
 
-	case VBandInterpGradient:
-		if (VImageNComponents (image) > 3) {
-			VWarning ("VBandColorInterp: Gradient image has %d component(s)", VImageNComponents (image));
-			return VBandInterpOther;
+	case VistaIOBandInterpGradient:
+		if (VistaIOImageNComponents (image) > 3) {
+			VistaIOWarning ("VistaIOBandColorInterp: Gradient image has %d component(s)", VistaIOImageNComponents (image));
+			return VistaIOBandInterpOther;
 		}
-		return VBandInterpGradient;
+		return VistaIOBandInterpGradient;
 
-	case VBandInterpIntensity:
-		if (VImageNComponents (image) > 1) {
-			VWarning ("VBandColorInterp: Intensity image has %d component(s)", VImageNComponents (image));
-			return VBandInterpOther;
+	case VistaIOBandInterpIntensity:
+		if (VistaIOImageNComponents (image) > 1) {
+			VistaIOWarning ("VistaIOBandColorInterp: Intensity image has %d component(s)", VistaIOImageNComponents (image));
+			return VistaIOBandInterpOther;
 		}
-		return VBandInterpIntensity;
+		return VistaIOBandInterpIntensity;
 
-	case VBandInterpOrientation:
-		if (VImageNComponents (image) > 1) {
-			VWarning ("VBandColorInterp: "
+	case VistaIOBandInterpOrientation:
+		if (VistaIOImageNComponents (image) > 1) {
+			VistaIOWarning ("VistaIOBandColorInterp: "
 				  "Orientation image has %d component(s)",
-				  VImageNComponents (image));
-			return VBandInterpOther;
+				  VistaIOImageNComponents (image));
+			return VistaIOBandInterpOther;
 		}
-		return VBandInterpOrientation;
+		return VistaIOBandInterpOrientation;
 	}
-	return VBandInterpOther;
+	return VistaIOBandInterpOther;
 }
 
 
@@ -862,68 +862,68 @@ EXPORT_VISTA VBandInterp VImageComponentInterp (VImage image)
  *  \param  ncolors
  *  \param  component_interp
  *  \param  ncomponents
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VSetBandInterp (VImage image,
-			 VBandInterp frame_interp, int nframes,
-			 VBandInterp viewpoint_interp, int nviewpoints,
-			 VBandInterp color_interp, int ncolors,
-			 VBandInterp component_interp, int ncomponents)
+EXPORT_VISTA VistaIOBoolean VistaIOSetBandInterp (VistaIOImage image,
+			 VistaIOBandInterp frame_interp, int nframes,
+			 VistaIOBandInterp viewpoint_interp, int nviewpoints,
+			 VistaIOBandInterp color_interp, int ncolors,
+			 VistaIOBandInterp component_interp, int ncomponents)
 {
-	VBoolean result = TRUE;
-	VString str;
+	VistaIOBoolean result = TRUE;
+	VistaIOString str;
 
-	if (VImageNBands (image) !=
+	if (VistaIOImageNBands (image) !=
 	    nframes * nviewpoints * ncolors * ncomponents) {
-		VWarning ("VSetBandInterp: No. bands (%d) conflicts with no. "
+		VistaIOWarning ("VistaIOSetBandInterp: No. bands (%d) conflicts with no. "
 			  "of frames, etc. (%d %d %d %d)",
-			  VImageNBands (image), nframes, nviewpoints, ncolors,
+			  VistaIOImageNBands (image), nframes, nviewpoints, ncolors,
 			  ncomponents);
 		result = FALSE;
 	}
 
-	if (frame_interp == VBandInterpNone)
+	if (frame_interp == VistaIOBandInterpNone)
 		result &=
-			VExtractAttr (VImageAttrList (image),
-				      VFrameInterpAttr, NULL, VStringRepn,
+			VistaIOExtractAttr (VistaIOImageAttrList (image),
+				      VistaIOFrameInterpAttr, NULL, VistaIOStringRepn,
 				      &str, FALSE);
 	else
-		VSetAttr (VImageAttrList (image), VFrameInterpAttr,
-			  VBandInterpDict, VLongRepn, (VLong) frame_interp);
-	VImageNFrames (image) = nframes;
+		VistaIOSetAttr (VistaIOImageAttrList (image), VistaIOFrameInterpAttr,
+			  VistaIOBandInterpDict, VistaIOLongRepn, (VistaIOLong) frame_interp);
+	VistaIOImageNFrames (image) = nframes;
 
-	if (viewpoint_interp == VBandInterpNone)
+	if (viewpoint_interp == VistaIOBandInterpNone)
 		result &=
-			VExtractAttr (VImageAttrList (image),
-				      VViewpointInterpAttr, NULL, VStringRepn,
+			VistaIOExtractAttr (VistaIOImageAttrList (image),
+				      VistaIOViewpointInterpAttr, NULL, VistaIOStringRepn,
 				      &str, FALSE);
 	else
-		VSetAttr (VImageAttrList (image), VViewpointInterpAttr,
-			  VBandInterpDict, VLongRepn,
-			  (VLong) viewpoint_interp);
-	VImageNViewpoints (image) = nviewpoints;
+		VistaIOSetAttr (VistaIOImageAttrList (image), VistaIOViewpointInterpAttr,
+			  VistaIOBandInterpDict, VistaIOLongRepn,
+			  (VistaIOLong) viewpoint_interp);
+	VistaIOImageNViewpoints (image) = nviewpoints;
 
-	if (color_interp == VBandInterpNone)
+	if (color_interp == VistaIOBandInterpNone)
 		result &=
-			VExtractAttr (VImageAttrList (image),
-				      VColorInterpAttr, NULL, VStringRepn,
+			VistaIOExtractAttr (VistaIOImageAttrList (image),
+				      VistaIOColorInterpAttr, NULL, VistaIOStringRepn,
 				      &str, FALSE);
 	else
-		VSetAttr (VImageAttrList (image), VColorInterpAttr,
-			  VBandInterpDict, VLongRepn, (VLong) color_interp);
-	VImageNColors (image) = ncolors;
+		VistaIOSetAttr (VistaIOImageAttrList (image), VistaIOColorInterpAttr,
+			  VistaIOBandInterpDict, VistaIOLongRepn, (VistaIOLong) color_interp);
+	VistaIOImageNColors (image) = ncolors;
 
-	if (component_interp == VBandInterpNone)
+	if (component_interp == VistaIOBandInterpNone)
 		result &=
-			VExtractAttr (VImageAttrList (image),
-				      VComponentInterpAttr, NULL, VStringRepn,
+			VistaIOExtractAttr (VistaIOImageAttrList (image),
+				      VistaIOComponentInterpAttr, NULL, VistaIOStringRepn,
 				      &str, FALSE);
 	else
-		VSetAttr (VImageAttrList (image), VComponentInterpAttr,
-			  VBandInterpDict, VLongRepn,
-			  (VLong) component_interp);
-	VImageNComponents (image) = ncomponents;
+		VistaIOSetAttr (VistaIOImageAttrList (image), VistaIOComponentInterpAttr,
+			  VistaIOBandInterpDict, VistaIOLongRepn,
+			  (VistaIOLong) component_interp);
+	VistaIOImageNComponents (image) = ncomponents;
 
 	return result;
 }
@@ -938,10 +938,10 @@ EXPORT_VISTA VBoolean VSetBandInterp (VImage image,
  *  \return int
  */
 
-EXPORT_VISTA int VReadImages (FILE * file, VAttrList * attributes, VImage ** images)
+EXPORT_VISTA int VistaIOReadImages (FILE * file, VistaIOAttrList * attributes, VistaIOImage ** images)
 {
-	return VReadObjects (file, VImageRepn, attributes,
-			     (VPointer **) images);
+	return VistaIOReadObjects (file, VistaIOImageRepn, attributes,
+			     (VistaIOPointer **) images);
 }
 
 
@@ -951,12 +951,12 @@ EXPORT_VISTA int VReadImages (FILE * file, VAttrList * attributes, VImage ** ima
  *  \param  attributes
  *  \param  nimages
  *  \param  images
- *  \return VBoolean
+ *  \return VistaIOBoolean
  */
 
-EXPORT_VISTA VBoolean VWriteImages (FILE * file, VAttrList attributes, int nimages,
-		       VImage images[])
+EXPORT_VISTA VistaIOBoolean VistaIOWriteImages (FILE * file, VistaIOAttrList attributes, int nimages,
+		       VistaIOImage images[])
 {
-	return VWriteObjects (file, VImageRepn, attributes, nimages,
-			      (VPointer *) images);
+	return VistaIOWriteObjects (file, VistaIOImageRepn, attributes, nimages,
+			      (VistaIOPointer *) images);
 }

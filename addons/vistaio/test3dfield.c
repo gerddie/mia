@@ -31,51 +31,51 @@ int ny = 11;
 int nz = 12; 
 
 #define VTYPE double
-#define TYPEREPN VDoubleRepn
+#define TYPEREPN VistaIODoubleRepn
 
-VBoolean RepnFilter(VBundle bundle, VRepnKind repn) 
+VistaIOBoolean RepnFilter(VistaIOBundle bundle, VistaIORepnKind repn) 
 {
-	return repn == VField3DRepn; 
+	return repn == VistaIOField3DRepn; 
 }
 
-VField3D VRead3DVectorfield(FILE *file) 
+VistaIOField3D VistaIORead3DVectorfield(FILE *file) 
 {
-	VField3D result; 
-	VAttrList list; 
+	VistaIOField3D result; 
+	VistaIOAttrList list; 
 	
 	result = NULL; 
 	
-	list = (VAttrList)VReadFile(file,RepnFilter);
+	list = (VistaIOAttrList)VistaIOReadFile(file,RepnFilter);
 	
 	if (!list) 
 		return NULL; 
 	
-	if (!VExtractAttr(list, "3DVector",NULL, VField3DRepn, &result,TRUE)) {
-		VWarning("3DVector element of type 3dfield found");
+	if (!VistaIOExtractAttr(list, "3DVector",NULL, VistaIOField3DRepn, &result,TRUE)) {
+		VistaIOWarning("3DVector element of type 3dfield found");
 	}
 	
-	VDestroyAttrList(list);
+	VistaIODestroyAttrList(list);
 	return result;	
 }
 
-int VWrite3DVectorfield(FILE *file, VField3D field)
+int VistaIOWrite3DVectorfield(FILE *file, VistaIOField3D field)
 {
 	int retval; 
-	VField3D help; 
-	VAttrList list;
+	VistaIOField3D help; 
+	VistaIOAttrList list;
 	
 	retval = FALSE; 
 	
-	list = VCreateAttrList();
+	list = VistaIOCreateAttrList();
 	if (list) {
 		
-		help = VMirrorField3D(field);
+		help = VistaIOMirrorField3D(field);
 		
-		VSetAttr(list,"3DVector",NULL,VField3DRepn,help);
+		VistaIOSetAttr(list,"3DVector",NULL,VistaIOField3DRepn,help);
 		
-		retval = VWriteFile(file,list);
+		retval = VistaIOWriteFile(file,list);
 		
-		VDestroyAttrList(list);
+		VistaIODestroyAttrList(list);
 	}
 	return retval; 
 }
@@ -84,9 +84,9 @@ int VWrite3DVectorfield(FILE *file, VField3D field)
 int main(int argc, const char *args[])
 {
 	FILE *file; 
-	VField3D field; 
-	VField3D field2;
-	VAttrListPosn pos; 
+	VistaIOField3D field; 
+	VistaIOField3D field2;
+	VistaIOAttrListPosn pos; 
 	int x,y,z; 
 	VTYPE *h; 
 	VTYPE *k; 
@@ -97,7 +97,7 @@ int main(int argc, const char *args[])
 	test_float = 1.2; 
 	
 	/* Create the field */ 
-	field = VCreateField3D(nx,ny,nz,3,TYPEREPN);
+	field = VistaIOCreateField3D(nx,ny,nz,3,TYPEREPN);
 	
 	/* put in some data */
 	h = field->p.data;
@@ -111,14 +111,14 @@ int main(int argc, const char *args[])
 			}
 	
 	/* add some attribute the the field */
-	VSetAttr(field->attr,"test_attribute", NULL, VFloatRepn,test_float);
+	VistaIOSetAttr(field->attr,"test_attribute", NULL, VistaIOFloatRepn,test_float);
 	
 	/* open file for saving */
 	if ((file = fopen("test.v","w"))==0)
-		VError("unable to open file");
+		VistaIOError("unable to open file");
 	
 	/* Write out the data */
-	VWrite3DVectorfield(file,field);
+	VistaIOWrite3DVectorfield(file,field);
 	
 	/* close the file */ 
 	fclose(file);
@@ -126,10 +126,10 @@ int main(int argc, const char *args[])
 	
 	/* open file for reading */
 	if ((file = fopen("test.v","r")) == NULL)
-	    VError("unable to open file for reading");
+	    VistaIOError("unable to open file for reading");
 	
 	/* Read field from file */     
-	field2 = VRead3DVectorfield(file);
+	field2 = VistaIORead3DVectorfield(file);
 	
 	/* close the file */ 
 	fclose(file);
@@ -141,31 +141,31 @@ int main(int argc, const char *args[])
 	k = field2->p.data;
 	z = field->nsize; 
 	if (z != field2->nsize) {
-		VError("Error rereading test file");
+		VistaIOError("Error rereading test file");
 	}
 	
 	z /= sizeof(VTYPE); 
 	
 	while (z--) {
 		if (*h != *k) {
-			VWarning("field en/decoding error: delta = %e",*h - *k);
+			VistaIOWarning("field en/decoding error: delta = %e",*h - *k);
 		}
 		h++; 
 		k++; 
 			
 	}
 	
-	if (!VLookupAttr(field2->attr,"test_attribute",&pos)) 
-		VError("not found");	
+	if (!VistaIOLookupAttr(field2->attr,"test_attribute",&pos)) 
+		VistaIOError("not found");	
 	
 	
-	VGetAttrValue(&pos, NULL, VFloatRepn, &number);
+	VistaIOGetAttrValue(&pos, NULL, VistaIOFloatRepn, &number);
 
 	if (number != test_float) {
-		VError("numbers differ by %e",number - test_float);
+		VistaIOError("numbers differ by %e",number - test_float);
 	}
-	VDestroyField3D(field);
-	VDestroyField3D(field2);
+	VistaIODestroyField3D(field);
+	VistaIODestroyField3D(field2);
 
 	unlink( "test.v" ); 
 	return 0;

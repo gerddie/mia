@@ -53,36 +53,36 @@ C2DVistaTransformationIO::C2DVistaTransformationIO():
 P2DTransformation C2DVistaTransformationIO::do_load(const std::string& fname) const
 {
 	CInputFile f(fname);
-	VAttrList vlist = VReadFile(f,NULL);
-	VResetProgressIndicator();
+	VistaIOAttrList vlist = VistaIOReadFile(f,NULL);
+	VistaIOResetProgressIndicator();
 	
 	if (!vlist)
 		return P2DTransformation();
 	
-	VLong sx = 0; 
-	VLong sy = 0; 
+	VistaIOLong sx = 0; 
+	VistaIOLong sy = 0; 
 	char *init_string = NULL;  
-	VImage blob =NULL; 
+	VistaIOImage blob =NULL; 
 	stringstream errmsg; 
-	if (VGetAttr (vlist, "size_x", NULL, VLongRepn, &sx) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "size_x", NULL, VistaIOLongRepn, &sx) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute size_x not found"; 
 		goto fail; 
 	}
-	if (VGetAttr (vlist, "size_y", NULL, VLongRepn, &sy) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "size_y", NULL, VistaIOLongRepn, &sy) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute size_y not found"; 
 		goto fail; 
 	}
-	if (VGetAttr (vlist, "init-string", NULL, VStringRepn, &init_string) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "init-string", NULL, VistaIOStringRepn, &init_string) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute init-string not found"; 
 		goto fail; 
 	}
-	if (VGetAttr (vlist, "parameters", NULL, VImageRepn, &blob) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "parameters", NULL, VistaIOImageRepn, &blob) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute parameters not found"; 
 		goto fail; 
 	}
 	
 	// get the data from the image 
-	if (VPixelRepn(blob) != VDoubleRepn) {
+	if (VistaIOPixelRepn(blob) != VistaIODoubleRepn) {
 		errmsg << fname << ":Bogus input, parameters not if type double"; 
 		goto fail; 
 	}
@@ -92,20 +92,20 @@ P2DTransformation C2DVistaTransformationIO::do_load(const std::string& fname) co
 		auto t = creator->create(C2DBounds(sx, sy)); 
 		auto params = t->get_parameters(); 
 		
-		if ((long)params.size() != VImageNPixels(blob)){
+		if ((long)params.size() != VistaIOImageNPixels(blob)){
 			errmsg << fname << ":Bogus input, expected number of parameters differs from provided one"; 
 			goto fail; 
 		}
 		{
-			VDouble *data = (VDouble *)VImageData(blob); 
+			VistaIODouble *data = (VistaIODouble *)VistaIOImageData(blob); 
 			std::copy(data, data + params.size(), params.begin());
 			t->set_parameters(params); 
-			VDestroyAttrList(vlist);
+			VistaIODestroyAttrList(vlist);
 			return t; 
 		}
 	}
  fail: 
-	VDestroyAttrList(vlist);
+	VistaIODestroyAttrList(vlist);
 	throw runtime_error(errmsg.str()); 
 	
 }
@@ -114,20 +114,20 @@ bool C2DVistaTransformationIO::do_save(const std::string& fname, const C2DTransf
 {
 
 	COutputFile f(fname);
-	VAttrList vlist = VCreateAttrList();
+	VistaIOAttrList vlist = VistaIOCreateAttrList();
 	
 	auto params = data.get_parameters(); 
-	VImage out_field = VCreateImage(params.size(), 1, 1, VDoubleRepn);
-	VDouble *output  = (VDouble *)out_field->data;
+	VistaIOImage out_field = VistaIOCreateImage(params.size(), 1, 1, VistaIODoubleRepn);
+	VistaIODouble *output  = (VistaIODouble *)out_field->data;
 	copy(params.begin(), params.end(), output);
 	
-	VSetAttr (vlist, "size_x", NULL, VLongRepn, data.get_size().x); 
-	VSetAttr (vlist, "size_y", NULL, VLongRepn, data.get_size().y); 
-	VSetAttr (vlist, "init-string", NULL, VStringRepn, data.get_creator_string().c_str()); 
-	VSetAttr (vlist, "parameters", NULL, VImageRepn, out_field);
+	VistaIOSetAttr (vlist, "size_x", NULL, VistaIOLongRepn, data.get_size().x); 
+	VistaIOSetAttr (vlist, "size_y", NULL, VistaIOLongRepn, data.get_size().y); 
+	VistaIOSetAttr (vlist, "init-string", NULL, VistaIOStringRepn, data.get_creator_string().c_str()); 
+	VistaIOSetAttr (vlist, "parameters", NULL, VistaIOImageRepn, out_field);
 
-	bool result = VWriteFile(f,vlist);
-	VDestroyAttrList(vlist);
+	bool result = VistaIOWriteFile(f,vlist);
+	VistaIODestroyAttrList(vlist);
 
 	return result;
 }
