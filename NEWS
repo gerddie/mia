@@ -1,0 +1,7 @@
+2.0.4 
+
+* The web site http://mia.sourceforge.net has been reworked. 
+* Added (partial) support for VTK mesh and vector field IO 
+* Added support for RGB image IO
+* Improved cross-referenced user doumentation
+* lots of bug fixes and small changes 

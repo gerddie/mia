@@ -18,20 +18,24 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
-#include <mia/2d/transformfactory.hh>
-#include <mia/template/transformfactory.cxx>
+#ifndef addons_vtkvf_hh
+#define addons_vtkvf_hh
 
-NS_MIA_BEGIN
+#include <mia/3d/vfio.hh>
 
-template class TTransformCreator<C2DTransformation>; 
-template class TTransformCreatorPlugin<C2DTransformation>; 
+namespace vtkvf {
 
+class CVtk3DVFIOPlugin : public mia::C3DVFIOPlugin {
+public:
+	CVtk3DVFIOPlugin();
+private:
 
-template <> const char *  const 
-TPluginHandler<C2DTransformCreatorPlugin>::m_help =  
-   "These plug-ins define creators for 2D transformations.";
+        virtual PData do_load(const std::string&  filename) const;
+	virtual bool do_save(const std::string& fname, const Data& data) const;
+virtual const std::string do_get_descr() const;
+};
 
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
+}
 
-NS_MIA_END
+#endif 
+

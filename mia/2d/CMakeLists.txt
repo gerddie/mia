@@ -167,6 +167,7 @@ SET(MIA2DLIBS mia2d  ${LIBS})
 # symbols, and in Windows, this is not supported# 
 SET(mia2dtestsrc 
   imageiotest.cc 
+  inittesthandlers.cc 
   vfiotest.cc 
   imagetest.cc
   transformmock.cc
@@ -220,7 +221,7 @@ TEST_2DMIA(sparse_image_solver mia2dtest)
 TEST_2DMIA(filter_cast mia2d)
 TEST_2DMIA(splinetransformpenalty mia2d)
 #TEST_2DMIA(fullcost_mi_spline  mia2dtest)
-TEST_2DMIA(trackpoint mia2d)
+TEST_2DMIA(trackpoint mia2dtest)
 
 IF(CMAKE_BUILD_TYPE)
   SET(CONFIG ${CMAKE_BUILD_TYPE})
@@ -263,10 +264,12 @@ IF(ITPP_FOUND)
   TEST_2DMIA(perfusion mia2dmyocardperf)
 ENDIF(ITPP_FOUND)
 
+set(testperflibs mia2dmyocardperf mia2dtest)
+
 TEST_2DMIA(groundtruthproblem mia2dmyocardperf)
 TEST_2DMIA(correlation_weight mia2dmyocardperf)
 TEST_2DMIA(segmentation mia2dmyocardperf)
-TEST_2DMIA(segframe mia2dmyocardperf)
+TEST_2DMIA(segframe "${testperflibs}")
 TEST_2DMIA(segpoint mia2dmyocardperf)
 
 

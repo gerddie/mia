@@ -163,9 +163,6 @@ ADD_EXECUTABLE(test-3d ${MIA3DTEST_SRC})
 SET_TARGET_PROPERTIES(test-3d PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 TARGET_LINK_LIBRARIES(test-3d mia3dtest ${MIA3DLIBS} ${BOOST_UNITTEST})
 
-ADD_EXECUTABLE(test-3d-imageio test_imageio.cc)
-TARGET_LINK_LIBRARIES(test-3d-imageio mia3dtest ${MIA3DLIBS} ${BOOST_UNITTEST})
-
 SET(TEST_3D test-3d)
 
 IF (WIN32)
@@ -175,6 +172,7 @@ ELSE (WIN32)
   ADD_TEST(3d-imageio test-3dimageio)
 ENDIF(WIN32)
 
+TEST_3D(imageio imageio)
 TEST_3D(2dimagefifofilter imagefifofilter)
 TEST_3D(nfg nfg)
 TEST_3D(vectorfield vectorfield)

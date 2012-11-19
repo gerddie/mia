@@ -18,20 +18,24 @@
 #
 #
 
-SET(shape3d 
-	    3d-shapes
-)
+OPTION(WITH_VTKIO "enable support for VTK files" ${SEARCH_LIBS_DEFAULT})
+
+IF(WITH_VTKIO)
+  FIND_PACKAGE(VTK)
+  IF(VTK_FOUND)
+    INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
+    SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
+    SET(vfio_path "${PLUGIN_INSTALL_PATH}/3dvf/io")
+    
+    SET(VTK_LINK_LIBS_MESH ${VTK_LIBRARIES} miamesh)
 
 
-ADD_LIBRARY(3d-shapes MODULE basic_shapes.cc sphere.cc)
-TARGET_LINK_LIBRARIES(3d-shapes ${MIA3DLIBS})
-SET_TARGET_PROPERTIES(3d-shapes PROPERTIES PREFIX "" SUFFIX ${PLUGSUFFIX})
-INSTALL(TARGETS 3d-shapes LIBRARY DESTINATION "${PLUGIN_INSTALL_PATH}/3dimage/shape")
+    
+    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("mesh" vtkmesh "${VTK_LINK_LIBS_MESH}" "${meshio_path}")
+    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-vfio" vtkvf "${VTK_LINK_LIBS_MESH}" "${vfio_path}")
 
-ADD_CUSTOM_TARGET(3d-shapes_testdir mkdir -p ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}/3dimage/shape)
-ADD_CUSTOM_TARGET(3d-shapes_test_link 
-  ln -sf "${CMAKE_CURRENT_BINARY_DIR}/3d-shapes.mia" ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}/3dimage/shape/ 
-  DEPENDS 3d-shapes_testdir 3d-shapes)
 
-ADD_DEPENDENCIES(plugin_test_links 3d-shapes_test_link)
-
+  ELSEIF(VTK_FOUND)
+    MESSAGE(FATAL_ERROR "VTK not found and strict dependencies enabled")
+  ENDIF(VTK_FOUND)
+ENDIF(WITH_VTKIO)

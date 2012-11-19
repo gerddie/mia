@@ -41,11 +41,18 @@ public:
 	T3DVectorfield(const C3DBounds& size):
 		T3DDatafield<T>(size) {};
 
-	T3DVectorfield(const CAttributedData& data, const C3DBounds& size):
+	T3DVectorfield(const CAttributedData& data, const C3DBounds& size) __attribute__((deprecated)):
 		T3DDatafield<T>(size),
 		CAttributedData(data)
 	{
 	}
+
+	T3DVectorfield(const C3DBounds& size, const CAttributedData& data):
+		T3DDatafield<T>(size),
+		CAttributedData(data)
+	{
+	}
+
 };
 /**
    @ingroup basic 

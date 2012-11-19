@@ -23,7 +23,7 @@
 #include <numeric>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/BoundingBox.hh>
-#include <mia/2d/transformfactory.hh>
+#include <mia/2d/inittesthandlers.hh>
 #include <mia/2d/imageio.hh>
 #include <libxml++/libxml++.h>
 
@@ -34,10 +34,8 @@ using namespace ::boost::unit_test;
 using namespace xmlpp;
 namespace bfs=boost::filesystem;
 
-C2DImageIOPluginHandlerTestPath test_imageio_path; 
-C2DTransformCreatorHandlerTestPath test_transform_creator_path; 
-
-
+C2DImageIOPluginHandlerTestPath test_imageio2d_path; 
+C2DTransformCreatorHandlerTestPath test_transform2d_creator_path; 
 
 
 extern const char *testframe_init;

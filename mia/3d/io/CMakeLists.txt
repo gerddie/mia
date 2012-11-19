@@ -31,15 +31,3 @@ PLUGIN_GROUP_PRE(
   "${MIA3DLIBS}" 
   "${PLUGIN_INSTALL_PATH}/3dimage/io"
 )
-
-
-SET(io3vf
-  vtkvf
-)
-
-PLUGIN_GROUP_PRE(
-  "3d-vfio" 
-  "${io3vf}" 
-  "${MIA3DLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/3dvf/io"
-)

@@ -1,3 +1,119 @@
+2.0.4
+  * Intrusive changes
+    - change file nameing scheme of the 2D and 3D files
+    - change program description type and adapt all programs
+    - change the virtual method interface of 2D and 3D transformations
+    - eliminate fatcost related classes and plug-ins, use Fullcost
+    - remove the THROW macro in favour of the variadic template based create_exception function
+    - library SO version bump
+
+  * Added programs and functions:
+    - evaluate 2D and 3D transformation quantities
+    - 2D/3D transformation to strain matrix program
+    - mesh-to-mask distance for out-of core mask processing
+    - distance transform evaluation function
+    - add RGB image output (jpg, bmp, png)
+    - 3D trackpoint class
+    - new segmentation XML format and drawing method
+    - mesh filtering program
+    - program for out-of-core distance evaluation between masks
+    - program to create a norm image of the cost function gradient after translating it by means of a transformation
+    - estimating of percetual range reduction of histogram
+    - filter facility for meshes and a scaling filter
+    - gray scale jpeg support
+    - io handler links to parameter descriptions
+    - missing header to installation
+    - more tests for 3D point tracking
+    - option to spline based mutual infomation to eliminate outliers at the extrems of the histogram
+    - plugin for RGB<unsigned char> image saving
+    - possibility to store a prefered reference index and     - tests accordingly
+    - program to combine three gray scale 8-bit images to one color image
+    - program to extract an iso-surface from a stack of images
+    - program to get a volume from a segmentation series
+    - program to track 2D pixel movement defined by a 2D transform
+    - some parallelization
+    - storing the prefered_reference parameter to the series registration programs
+    - support for plug-in hints in string parameters
+    - support for the attributes in the segmentation set version 2
+    - support for writing information about the supported file types for IO plugins
+    - supported data types and file extensions to IO plugin docu
+    - test case for 3d derivative at abitrary point
+    - test cases for more weights?
+    - test drawing version 2 segmentations and correct for closed/open line sections
+    - test for derivative_at and correct code
+    - test for distance from real function
+    - test for moving the pixels
+    - test for reading
+    - test for reading version 2 segmentation
+    - test for reading/writing version 2 segmentation
+    - test to see if all attributes are reordered
+    - tests for base class of new penalty model
+    - 2D trackpoint implementation
+    - algorithm for evaluating distances without getting the whole distance slice
+    - marching triangles mesh extraction program
+    - mesh filter
+    - C2DTransform: add derivative evaluation at abitrary coordinates, closes #2
+    - for vector based command line parameters: if the input size != 0, then expect exatly the corresponding number of coma separated values
+    - slopestatistics: add test for avarage level change
+
+  * Bug fixes:
+    - correct install filess: meanvar.hh
+    - 3d/image.cc:  evaluating the cost at lower resolutions would actually deform  the high resolution image
+    - Correct bug in normal evaluation on meshes
+    - Make most of the code compile with clang++ 3.1, g++-4.6.3 stdc++ std::atomic still conflicts, now uses tbb::atomic
+    - SegFrame: correct section test to set is_open properly
+    - cost correction to the iso-surface extraction
+    - to correct the number of output slices in FIFO filter
+    - correct bad mapping in label joining
+    - correct build order and tests
+    - correct build with clang and g++ 4.6.3
+    - correct gradient evaluation at the image boundaries
+    - correct mesh colorization to use dot product correctly
+    - correct plugin-path search for new locations
+    - correct preferred suffix for some IO plug-ins
+    - correct spline transform initialization to fix #22
+    - correct test for evaluating gradinet along the boundaries
+    - correct type of C3DTransformMock
+    - correct upper boundary for default unsigned short intensity range for histograms
+    - histogram: correct off-by-one error in histogram tail cutting function
+    - make test-history pass when compiling with -DNDEBUG
+    - mia/2d/iterator.cxx correct postfix increment of range iterator
+    - mia/3d/iterator.cxx correct postfix increment of range iterator
+
+
+  * Other changes:
+    - Change default of histogram tail cutting.
+    - Correct to wavelet slope classifier to account for stronger RV enhancement and handle free-breathing
+     and initial free breathing + later breathhold equally.
+    - Move the estimation of LV and RV peak to the first ICA.
+    - unified class to combine 2D images to 3D volumes
+    - add base class for spline penalty model
+    - 2D/3D transformation: add derivative_at for non-grid points
+    - assert that the generic load_image function is not instanciated
+    - avoid some missing return values warning by turning asserts into exceptions on release build
+    - change the plugin search path type
+    - clean up the load/save functions for transforms
+    - code cleanup: replace THROW by variadic template and review asserts
+    - copy attributes in syntetic reference creation based on ICA
+    - disable gsl error handler in release builds
+    - make studyid not needed when reading DICOM
+    - move from anonymous enummerates to static const for pixel type traits
+    - make the io-plugin know about its own suffixes
+    - make the slice counter short, this should suffice for stack based distances 
+
+  * Documentation
+    - Sort members in Doxygen documentation
+    - myocard intensity curve estimation: Update the reference frame help and allow that the frame
+      is selected as the LV peak from the registered set. As a fallback the last frame may be used.
+    - IO plugin hint to command line parameters
+    - add a xml scheme for the segmentation sets
+    - docu about supported extensions and data types
+    - more internal linking of documentation
+    - correct output for non-parameter taking plugins (i.e. IO plugins)
+    - correct plug-in descriptions
+    - correct the help for IO options that use the plugin-hint
+
+
 2.0.3
   * version bump to reflect API changes in 3D transform
   * add more vector field conversion programs

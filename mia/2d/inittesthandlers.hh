@@ -18,20 +18,37 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
+#include <mia/2d/vfio.hh>
+#include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/template/transformfactory.cxx>
 
 NS_MIA_BEGIN
 
-template class TTransformCreator<C2DTransformation>; 
-template class TTransformCreatorPlugin<C2DTransformation>; 
+class C2DVFIOPluginHandlerTestPath {
+public: 
+	C2DVFIOPluginHandlerTestPath(); 
+}; 
+
+/** 
+    @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
+struct EXPORT_2D C2DTransformCreatorHandlerTestPath {
+	C2DTransformCreatorHandlerTestPath(); 
+private: 
+	CSplineKernelTestPath spktp; 
+}; 
 
 
-template <> const char *  const 
-TPluginHandler<C2DTransformCreatorPlugin>::m_help =  
-   "These plug-ins define creators for 2D transformations.";
+class C2DTransformationIOPluginHandlerTestPath {
+public: 
+        C2DTransformationIOPluginHandlerTestPath(); 
+private: 
+        C2DTransformCreatorHandlerTestPath tch; 
+}; 
 
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
 
+/// @endcond 
 NS_MIA_END
+
