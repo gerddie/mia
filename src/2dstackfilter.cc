@@ -129,7 +129,7 @@ int do_main(int argc, char *argv[])
 			      "by adding the file number based on output order and the extension bysed on the 'type' parameter"
 			      , CCmdOption::required, &imageio));
 	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',
-			      "output file type (if not given deduct from output file name)", CCmdOption::required));
+			      "output file type", CCmdOption::required));
 	options.add(make_help_opt( "help-plugins", 0, 
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 

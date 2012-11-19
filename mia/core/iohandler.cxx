@@ -137,8 +137,12 @@ const std::set<std::string> TIOPluginHandler<I>::get_supported_suffix_set() cons
 {
 	TRACE_FUNCTION; 
 	std::set<std::string> result; 
-	for (auto i = m_suffixmap.begin(); i != m_suffixmap.end(); ++i)
-		result.insert(i->first); 
+	for (auto i = m_suffixmap.begin(); i != m_suffixmap.end(); ++i) {
+		if (i->first[0] == '.') 
+			result.insert(i->first.substr(1, std::string::npos));
+		else 
+			result.insert(i->first); 
+	}
 	return result; 
 }
 
