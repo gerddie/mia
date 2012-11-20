@@ -72,14 +72,14 @@ static VistaIOPointer VistaIOImageDecodeMethod (VistaIOStringConst name, VistaIO
 
 	/* Extract the number of bands, rows, columns, pixel repn, etc.: */
 	nbands = nframes = nviewpoints = ncolors = ncomponents = 1;	/* defaults */
-	if (!Extract (VNBandsAttr, NULL, nbands, FALSE) ||
-	    !Extract (VNRowsAttr, NULL, nrows, TRUE) ||
-	    !Extract (VNColumnsAttr, NULL, ncolumns, TRUE) ||
+	if (!Extract (VistaIONBandsAttr, NULL, nbands, FALSE) ||
+	    !Extract (VistaIONRowsAttr, NULL, nrows, TRUE) ||
+	    !Extract (VistaIONColumnsAttr, NULL, ncolumns, TRUE) ||
 	    !Extract (VistaIORepnAttr, VistaIONumericRepnDict, pixel_repn, TRUE) ||
-	    !Extract (VNFramesAttr, NULL, nframes, FALSE) ||
-	    !Extract (VNViewpointsAttr, NULL, nviewpoints, FALSE) ||
-	    !Extract (VNColorsAttr, NULL, ncolors, FALSE) ||
-	    !Extract (VNComponentsAttr, NULL, ncomponents, FALSE))
+	    !Extract (VistaIONFramesAttr, NULL, nframes, FALSE) ||
+	    !Extract (VistaIONViewpointsAttr, NULL, nviewpoints, FALSE) ||
+	    !Extract (VistaIONColorsAttr, NULL, ncolors, FALSE) ||
+	    !Extract (VistaIONComponentsAttr, NULL, ncomponents, FALSE))
 		return NULL;
 
 	/* Ensure that nbands == nframes * nviewpoints * ncolors * ncomponents.
@@ -155,15 +155,15 @@ static VistaIOAttrList VistaIOImageEncodeAttrMethod (VistaIOPointer value, size_
 		list = VistaIOImageAttrList (image) = VistaIOCreateAttrList ();
 	VistaIOPrependAttr (list, VistaIORepnAttr, VistaIONumericRepnDict, VistaIOLongRepn,
 		      (VistaIOLong) VistaIOPixelRepn (image));
-	VistaIOPrependAttr (list, VNColumnsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONColumnsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) VistaIOImageNColumns (image));
-	VistaIOPrependAttr (list, VNRowsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONRowsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) VistaIOImageNRows (image));
-	OptionallyPrepend (VistaIOImageNComponents (image), VNComponentsAttr);
-	OptionallyPrepend (VistaIOImageNColors (image), VNColorsAttr);
-	OptionallyPrepend (VistaIOImageNViewpoints (image), VNViewpointsAttr);
-	OptionallyPrepend (VistaIOImageNFrames (image), VNFramesAttr);
-	OptionallyPrepend (VistaIOImageNBands (image), VNBandsAttr);
+	OptionallyPrepend (VistaIOImageNComponents (image), VistaIONComponentsAttr);
+	OptionallyPrepend (VistaIOImageNColors (image), VistaIONColorsAttr);
+	OptionallyPrepend (VistaIOImageNViewpoints (image), VistaIONViewpointsAttr);
+	OptionallyPrepend (VistaIOImageNFrames (image), VistaIONFramesAttr);
+	OptionallyPrepend (VistaIOImageNBands (image), VistaIONBandsAttr);
 
 	/* Compute the file space needed for the image's binary data: */
 	length = VistaIOImageNPixels (image);

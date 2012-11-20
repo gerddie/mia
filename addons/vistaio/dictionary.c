@@ -50,11 +50,11 @@ EXPORT_VISTA VistaIODictEntry VistaIONumericRepnDict[] = {
 	,
 	{"long", VistaIOLongRepn}
 	,
-	{"sbyte", VSByteRepn}
+	{"sbyte", VistaIOSByteRepn}
 	,
 	{"short", VistaIOShortRepn}
 	,
-	{"ubyte", VUByteRepn}
+	{"ubyte", VistaIOUByteRepn}
 	,
 	{NULL}
 };
@@ -109,11 +109,11 @@ VistaIODictEntry *VistaIOLookupDictValue (VistaIODictEntry * dict, VistaIORepnKi
 	case VistaIOBitRepn:
 		i_value = va_arg (args, VistaIOBitPromoted);
 		break;
-	case VUByteRepn:
-		i_value = va_arg (args, VUBytePromoted);
+	case VistaIOUByteRepn:
+		i_value = va_arg (args, VistaIOUBytePromoted);
 		break;
-	case VSByteRepn:
-		i_value = va_arg (args, VSBytePromoted);
+	case VistaIOSByteRepn:
+		i_value = va_arg (args, VistaIOSBytePromoted);
 		break;
 	case VistaIOShortRepn:
 		i_value = va_arg (args, VistaIOShortPromoted);
@@ -143,8 +143,8 @@ VistaIODictEntry *VistaIOLookupDictValue (VistaIODictEntry * dict, VistaIORepnKi
 	switch (repn) {
 
 	case VistaIOBitRepn:
-	case VUByteRepn:
-	case VSByteRepn:
+	case VistaIOUByteRepn:
+	case VistaIOSByteRepn:
 	case VistaIOShortRepn:
 	case VistaIOLongRepn:
 	case VistaIOBooleanRepn:

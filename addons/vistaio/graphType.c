@@ -64,12 +64,12 @@ static VistaIOPointer VistaIOGraphDecodeMethod (VistaIOStringConst name, VistaIO
 
 	/* Extract the required attribute values for Graph. */
 	if (!Extract (VistaIORepnAttr, VistaIONumericRepnDict, node_repn, TRUE) ||
-	    !Extract (VNNodeFieldsAttr, NULL, nfields, TRUE) ||
-	    !Extract (VNNodeWeightsAttr, NULL, useWeights, TRUE))
+	    !Extract (VistaIONNodeFieldsAttr, NULL, nfields, TRUE) ||
+	    !Extract (VistaIONNodeWeightsAttr, NULL, useWeights, TRUE))
 		return NULL;
 	/* Look for size attribute, if not present, look for nnodes (for backward compatibility */
-	if (Extract (VNGraphSizeAttr, NULL, size, TRUE) == FALSE &&
-	    Extract (VNGraphNodesAttr, NULL, size, TRUE) == FALSE)
+	if (Extract (VistaIONGraphSizeAttr, NULL, size, TRUE) == FALSE &&
+	    Extract (VistaIONGraphNodesAttr, NULL, size, TRUE) == FALSE)
 		return NULL;
 	if (size <= 0 || nfields <= 0) {
 		VistaIOWarning ("VistaIOGraphReadDataMethod: Bad Graph file attributes");
@@ -193,11 +193,11 @@ static VistaIOAttrList VistaIOGraphEncodeAttrMethod (VistaIOPointer value, size_
 		list = VistaIOGraphAttrList (graph) = VistaIOCreateAttrList ();
 	VistaIOPrependAttr (list, VistaIORepnAttr, VistaIONumericRepnDict, VistaIOLongRepn,
 		      (VistaIOLong) graph->node_repn);
-	VistaIOPrependAttr (list, VNNodeFieldsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONNodeFieldsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) graph->nfields);
-	VistaIOPrependAttr (list, VNGraphSizeAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONGraphSizeAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) graph->size);
-	VistaIOPrependAttr (list, VNNodeWeightsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONNodeWeightsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) graph->useWeights);
 
 	return list;

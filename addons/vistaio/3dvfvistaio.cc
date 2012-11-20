@@ -206,7 +206,7 @@ CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::do_load(const string& fname) con
 		switch (pixel_repn) {
 		case VistaIOShortRepn: result = read_compressed<short>(size, scale, values);
 			break; 
-		case VSByteRepn: result = read_compressed<unsigned char>(size, scale, values);
+		case VistaIOSByteRepn: result = read_compressed<unsigned char>(size, scale, values);
 			break; 
 		default: 
 			throw invalid_argument("CScaled3DVFIOPlugin::do_load: unsupported representation"); 

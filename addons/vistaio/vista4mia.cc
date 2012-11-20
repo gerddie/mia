@@ -76,14 +76,14 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributedData& attributes, const VistaIOA
 			VistaIOGetAttrValue(&pos,NULL,VistaIOLongRepn,&f);
 			vistaio_add_attribute(attributes, name, f);
 		}break;
-		case VUByteRepn:{
+		case VistaIOUByteRepn:{
 			unsigned char f;
-			VistaIOGetAttrValue(&pos,NULL,VUByteRepn,&f);
+			VistaIOGetAttrValue(&pos,NULL,VistaIOUByteRepn,&f);
 			vistaio_add_attribute(attributes, name, f);
 		}break;
-		case VSByteRepn:{
+		case VistaIOSByteRepn:{
 			signed char f;
-			VistaIOGetAttrValue(&pos,NULL,VSByteRepn,&f);
+			VistaIOGetAttrValue(&pos,NULL,VistaIOSByteRepn,&f);
 			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VistaIOBitRepn:{

@@ -90,8 +90,8 @@ P3DImage copy_from_vista(VistaIOImage image)
 	// however, then one would also have to write these as such ...
 	switch (VistaIOPixelRepn(image)) {
 	case VistaIOBitRepn : return read_image<bool>(image);
-	case VUByteRepn : return read_image<unsigned char>(image);
-	case VSByteRepn : return read_image<signed char>(image);
+	case VistaIOUByteRepn : return read_image<unsigned char>(image);
+	case VistaIOSByteRepn : return read_image<signed char>(image);
 	case VistaIOShortRepn : return read_image<signed short>(image);
 	case VistaIOLongRepn : return read_image<signed int>(image);
 	case VistaIOFloatRepn : return read_image<float>(image);

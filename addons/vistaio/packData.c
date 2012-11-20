@@ -56,7 +56,7 @@ static void SwapBytes (size_t, size_t, char *);
  *  specified by repn. Each element's unpacked size is unpacked_elsize
  *  bits, and its packed size is packed_elsize bits. There are nels of
  *  them, beginning at unpacked. Packed_order specifies whether they are
- *  to be packed from MSB to LSB (VMSBFirst), or vice versa (VLSBFirst).
+ *  to be packed from MSB to LSB (VistaIOMSBFirst), or vice versa (VistaIOLSBFirst).
  *
  *  To pack into a buffer already allocated:
  *

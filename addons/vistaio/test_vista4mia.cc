@@ -123,8 +123,8 @@ void check_translation()
 
 
 	VistaIOSetAttr(vista_list1, "bit", NULL, VistaIOBitRepn, bit_value);
-	VistaIOSetAttr(vista_list1, "ubyte", NULL, VUByteRepn, ubyte_value);
-	VistaIOSetAttr(vista_list1, "sbyte", NULL, VSByteRepn, sbyte_value);
+	VistaIOSetAttr(vista_list1, "ubyte", NULL, VistaIOUByteRepn, ubyte_value);
+	VistaIOSetAttr(vista_list1, "sbyte", NULL, VistaIOSByteRepn, sbyte_value);
         VistaIOSetAttr(vista_list1, "short", NULL, VistaIOShortRepn, short_value);
         VistaIOSetAttr(vista_list1, "int", NULL, VistaIOLongRepn,  int_value);
         VistaIOSetAttr(vista_list1, "float", NULL, VistaIOFloatRepn, float_value);

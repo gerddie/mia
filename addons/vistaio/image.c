@@ -82,8 +82,8 @@ EXPORT_VISTA VistaIOImage VistaIOCreateImage (int nbands, int nrows, int ncolumn
 			  (int)ncolumns);
 		return NULL;
 	}
-	if (pixel_repn != VistaIOBitRepn && pixel_repn != VUByteRepn &&
-	    pixel_repn != VSByteRepn && pixel_repn != VistaIOShortRepn &&
+	if (pixel_repn != VistaIOBitRepn && pixel_repn != VistaIOUByteRepn &&
+	    pixel_repn != VistaIOSByteRepn && pixel_repn != VistaIOShortRepn &&
 	    pixel_repn != VistaIOLongRepn && pixel_repn != VistaIOFloatRepn
 	    && pixel_repn != VistaIODoubleRepn) {
 		VistaIOWarning ("VistaIOCreateImage: Invalid pixel representation: %d",
@@ -175,11 +175,11 @@ VistaIODouble VistaIOGetPixel (VistaIOImage image, int band, int row, int column
 	case VistaIOBitRepn:
 		return (VistaIODouble) * (VistaIOBit *) p;
 
-	case VUByteRepn:
-		return (VistaIODouble) * (VUByte *) p;
+	case VistaIOUByteRepn:
+		return (VistaIODouble) * (VistaIOUByte *) p;
 
-	case VSByteRepn:
-		return (VistaIODouble) * (VSByte *) p;
+	case VistaIOSByteRepn:
+		return (VistaIODouble) * (VistaIOSByte *) p;
 
 	case VistaIOShortRepn:
 		return (VistaIODouble) * (VistaIOShort *) p;
@@ -221,12 +221,12 @@ void VistaIOSetPixel (VistaIOImage image, int band, int row, int column,
 		*(VistaIOBit *) p = (VistaIOBit )value;
 		break;
 
-	case VUByteRepn:
-		*(VUByte *) p = (VUByte )value;
+	case VistaIOUByteRepn:
+		*(VistaIOUByte *) p = (VistaIOUByte )value;
 		break;
 
-	case VSByteRepn:
-		*(VSByte *) p = (VSByte )value;
+	case VistaIOSByteRepn:
+		*(VistaIOSByte *) p = (VistaIOSByte )value;
 		break;
 
 	case VistaIOShortRepn:

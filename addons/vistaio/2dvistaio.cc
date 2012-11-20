@@ -97,8 +97,8 @@ void copy_from_vista(VistaIOImage image, CVista2DImageIOPlugin::Data& result, in
 	// however, then one would also have to write these as such ...
 	switch (VistaIOPixelRepn(image)) {
 	case VistaIOBitRepn : return read_image<bool>(image, result, i);
-	case VUByteRepn : return read_image<unsigned char>(image, result, i);
-	case VSByteRepn : return read_image<signed char>(image, result, i);
+	case VistaIOUByteRepn : return read_image<unsigned char>(image, result, i);
+	case VistaIOSByteRepn : return read_image<signed char>(image, result, i);
 	case VistaIOShortRepn : return read_image<signed short>(image, result, i);
 	case VistaIOLongRepn : return read_image<signed int>(image, result, i);
 	case VistaIOFloatRepn : return read_image<float>(image, result, i);

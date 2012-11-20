@@ -27,7 +27,7 @@ extern VistaIOTypeMethods VistaIOEdgesMethods;	/* in EdgesType.c */
 extern VistaIOTypeMethods VistaIOImageMethods;	/* in ImageType.c */
 extern VistaIOTypeMethods VistaIOGraphMethods;	/* in GraphType.c */
 extern VistaIOTypeMethods VolumesMethods;	/* in VolumesType.c */
-extern VistaIOTypeMethods VCPEListMethods;
+extern VistaIOTypeMethods VistaIOCPEListMethods;
 
 static VistaIORepnInfoRec builtin_repn_info[] = {
 	{"unknown"},
@@ -35,9 +35,9 @@ static VistaIORepnInfoRec builtin_repn_info[] = {
 	/* Integer and floating-point numbers: */
 	{"bit", sizeof (VistaIOBit), 1, 0.0, 1.0, NULL}
 	,
-	{"ubyte", sizeof (VUByte), 8, 0.0, 255.0, NULL}
+	{"ubyte", sizeof (VistaIOUByte), 8, 0.0, 255.0, NULL}
 	,
-	{"sbyte", sizeof (VSByte), 8, -128.0, 127.0, NULL}
+	{"sbyte", sizeof (VistaIOSByte), 8, -128.0, 127.0, NULL}
 	,
 	{"short", sizeof (VistaIOShort), 16, -32768.0, 32767.0, NULL}
 	,
@@ -73,7 +73,7 @@ static VistaIORepnInfoRec builtin_repn_info[] = {
 	/* new object types */
 	{"graph", sizeof (VistaIOPointer), 0, 0.0, 0.0, &VistaIOGraphMethods},
 	{"volumes", sizeof (VistaIOPointer), 0, 0.0, 0.0, &VolumesMethods},
-	{"cpelist", sizeof (VistaIOPointer), 0, 0.0, 0.0, &VCPEListMethods}, 
+	{"cpelist", sizeof (VistaIOPointer), 0, 0.0, 0.0, &VistaIOCPEListMethods}, 
 	{"field3d", sizeof (VistaIOPointer), 0, 0.0, 0.0, &VistaIOField3DMethods}, 
 	{"field2d", sizeof (VistaIOPointer), 0, 0.0, 0.0, &VistaIOField2DMethods},
 	{NULL, sizeof (VistaIOPointer), 0, 0.0, 0.0, NULL}
@@ -82,7 +82,7 @@ static VistaIORepnInfoRec builtin_repn_info[] = {
 
 EXPORT_VISTA VistaIORepnInfoRec *VistaIORepnInfo = builtin_repn_info;
 
-static VistaIORepnKind nRepnKinds = VNRepnKinds;
+static VistaIORepnKind nRepnKinds = VistaIONRepnKinds;
 
 
 /*! \brief Register some handlers for dealing with objects of a particular type.
@@ -99,8 +99,8 @@ VistaIORepnKind VistaIORegisterType (VistaIOStringConst name, VistaIOTypeMethods
 	/* Move the existing type information into a bigger table: */
 	if (VistaIORepnInfo == builtin_repn_info) {
 		VistaIORepnInfo =
-			VistaIOMalloc ((VNRepnKinds + 1) * sizeof (VistaIORepnInfoRec));
-		VistaIOCopy (builtin_repn_info, VistaIORepnInfo, VNRepnKinds);
+			VistaIOMalloc ((VistaIONRepnKinds + 1) * sizeof (VistaIORepnInfoRec));
+		VistaIOCopy (builtin_repn_info, VistaIORepnInfo, VistaIONRepnKinds);
 	} else
 		VistaIORepnInfo =
 			VistaIORealloc (VistaIORepnInfo,

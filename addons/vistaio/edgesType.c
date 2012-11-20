@@ -58,12 +58,12 @@ static VistaIOPointer VistaIOEdgesDecodeMethod (VistaIOStringConst name, VistaIO
 	VistaIOExtractAttr (b->list, name, dict, VistaIOLongRepn, & locn, required)
 
 	/* Extract the required attribute values for edges. */
-	if (!Extract (VNRowsAttr, NULL, nrows, TRUE) ||
-	    !Extract (VNColumnsAttr, NULL, ncolumns, TRUE) ||
-	    !Extract (VNEdgeFieldsAttr, NULL, nedge_fields, TRUE) ||
-	    !Extract (VNPointFieldsAttr, NULL, npoint_fields, TRUE) ||
-	    !Extract (VNEdgesAttr, NULL, nedges, TRUE) ||
-	    !Extract (VNPointsAttr, NULL, npoints, TRUE))
+	if (!Extract (VistaIONRowsAttr, NULL, nrows, TRUE) ||
+	    !Extract (VistaIONColumnsAttr, NULL, ncolumns, TRUE) ||
+	    !Extract (VistaIONEdgeFieldsAttr, NULL, nedge_fields, TRUE) ||
+	    !Extract (VistaIONPointFieldsAttr, NULL, npoint_fields, TRUE) ||
+	    !Extract (VistaIONEdgesAttr, NULL, nedges, TRUE) ||
+	    !Extract (VistaIONPointsAttr, NULL, npoints, TRUE))
 		return NULL;
 	if (npoint_fields <= 0) {
 		VistaIOWarning ("VistaIOEdgesReadDataMethod: Bad edges file attributes");
@@ -129,17 +129,17 @@ static VistaIOAttrList VistaIOEdgesEncodeAttrMethod (VistaIOPointer value, size_
 	/* Temporarily prepend several attributes to the edge set's list: */
 	if ((list = VistaIOEdgesAttrList (edges)) == NULL)
 		list = VistaIOEdgesAttrList (edges) = VistaIOCreateAttrList ();
-	VistaIOPrependAttr (list, VNColumnsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONColumnsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) edges->ncolumns);
-	VistaIOPrependAttr (list, VNRowsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONRowsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) edges->nrows);
-	VistaIOPrependAttr (list, VNPointFieldsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONPointFieldsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) edges->npoint_fields);
-	VistaIOPrependAttr (list, VNEdgeFieldsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONEdgeFieldsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) edges->nedge_fields);
-	VistaIOPrependAttr (list, VNPointsAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONPointsAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) edges->npoints);
-	VistaIOPrependAttr (list, VNEdgesAttr, NULL, VistaIOLongRepn,
+	VistaIOPrependAttr (list, VistaIONEdgesAttr, NULL, VistaIOLongRepn,
 		      (VistaIOLong) edges->nedges);
 
 	/* Compute the file space needed for the edges's binary data: */
@@ -170,7 +170,7 @@ static VistaIOPointer VistaIOEdgesEncodeDataMethod (VistaIOPointer value, VistaI
 
 	/* Remove the attributes prepended by the VistaIOEdgesEncodeAttrsMethod: */
 	for (VistaIOFirstAttr (list, &posn);
-	     strcmp (VistaIOGetAttrName (&posn), VNColumnsAttr) != 0;
+	     strcmp (VistaIOGetAttrName (&posn), VistaIONColumnsAttr) != 0;
 	     VistaIODeleteAttr (&posn));
 	VistaIODeleteAttr (&posn);
 

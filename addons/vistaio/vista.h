@@ -137,9 +137,9 @@
 #define VistaIOEdgesNRows(edges)	((edges)->nrows)
 #define VistaIOEdgesNColumns(edges)	((edges)->ncolumns)
 #define VistaIOEdgesAttrList(edges)	((edges)->attributes)
-#define VNEdgeFields(edges)	((edges)->edge_fields)
-#define VNPointFields(edges)	((edges)->npoints)
-#define VNEdges(edges)		((edges)->nedges)
+#define VistaIONEdgeFields(edges)	((edges)->edge_fields)
+#define VistaIONPointFields(edges)	((edges)->npoints)
+#define VistaIONEdges(edges)		((edges)->nedges)
 #define VistaIOFirstEdge(edges)	((edges)->first)
 #define VistaIONextEdge(edge)		((edge)->next)
 #define VistaIOEdgeExists(edge)	((edge) != NULL)
@@ -188,35 +188,35 @@
 #define VistaIOHistoryAttr		"history"
 #define VistaIOLengthAttr		"length"
 #define VistaIONameAttr		"name"
-#define VNColumnsAttr		"ncolumns"
-#define VNRowsAttr		"nrows"
+#define VistaIONColumnsAttr		"ncolumns"
+#define VistaIONRowsAttr		"nrows"
 #define VistaIORepnAttr               "repn"
 
 /* Image attribute type names: */
 #define VistaIOColorInterpAttr	"color_interp"
 #define VistaIOComponentInterpAttr	"component_interp"
 #define VistaIOFrameInterpAttr	"frame_interp"
-#define VNBandsAttr		"nbands"
-#define VNColorsAttr		"ncolors"
-#define VNComponentsAttr	"ncomponents"
-#define VNFramesAttr		"nframes"
-#define VNViewpointsAttr	"nviewpoints"
+#define VistaIONBandsAttr		"nbands"
+#define VistaIONColorsAttr		"ncolors"
+#define VistaIONComponentsAttr	"ncomponents"
+#define VistaIONFramesAttr		"nframes"
+#define VistaIONViewpointsAttr	"nviewpoints"
 #define VistaIOPixelAspectRatioAttr	"pixel_aspect_ratio"
 #define VistaIOViewpointInterpAttr	"viewpoint_interp"
 
 /* Graph attribute type names: */
 #define VistaIOGraphAttr		"Graph"
-#define VNGraphNodesAttr	"nnodes"
-#define VNGraphSizeAttr		"size"
-#define VNNodeFieldsAttr	"nfields"
-#define VNNodeWeightsAttr	"useWeights"
+#define VistaIONGraphNodesAttr	"nnodes"
+#define VistaIONGraphSizeAttr		"size"
+#define VistaIONNodeFieldsAttr	"nfields"
+#define VistaIONNodeWeightsAttr	"useWeights"
 
 /* Edge type names: */
 #define VistaIOEdgesAttr		"edges"
-#define VNEdgeFieldsAttr	"nedge_fields"
-#define VNPointFieldsAttr	"npoint_fields"
-#define VNEdgesAttr		"nedges"
-#define VNPointsAttr		"npoints"
+#define VistaIONEdgeFieldsAttr	"nedge_fields"
+#define VistaIONPointFieldsAttr	"npoint_fields"
+#define VistaIONEdgesAttr		"nedges"
+#define VistaIONPointsAttr		"npoints"
 
 /* Volume type names: */
 #define VolumesAttr     	"volumes"
@@ -231,8 +231,8 @@
 /* Macros for generating constants of particular numeric types: */
 /* (These definitions may be platform-specific.) */
 #define VistaIOBitConst(c)			(c)
-#define VUByteConst(c)		(c)
-#define VSByteConst(c)		(c)
+#define VistaIOUByteConst(c)		(c)
+#define VistaIOSByteConst(c)		(c)
 #define VistaIOShortConst(c)		(c)
 #define VistaIOLongConst(c)		(c ## l)
 #define VistaIOFloatConst(c)		(c ## f)
@@ -243,9 +243,9 @@ typedef char VistaIOBit;		/*!< 0 or 1 */
 typedef double VistaIODouble;		/*!< >= 64-bit IEEE floating point */
 typedef float VistaIOFloat;		/*!< >= 32-bit IEEE floating point */
 typedef int VistaIOLong;		/*!< !! changed, G.L. 19.9.95 !! */
-typedef signed char VSByte;	/*!< integer in [-128,127] */
+typedef signed char VistaIOSByte;	/*!< integer in [-128,127] */
 typedef short VistaIOShort;		/*!< >= 16-bit signed integer */
-typedef unsigned char VUByte;	/*!< integer in [0,255] */
+typedef unsigned char VistaIOUByte;	/*!< integer in [0,255] */
 typedef char VistaIOBoolean;		/*!< TRUE or FALSE */
 typedef void *VistaIOPointer;		/*!< generic pointer */
 typedef const void *VistaIOPointerConst;		/*!< generic pointer */
@@ -256,9 +256,9 @@ typedef int VistaIOBooleanPromoted;
 typedef double VistaIODoublePromoted;
 typedef double VistaIOFloatPromoted;
 typedef long VistaIOLongPromoted;
-typedef int VSBytePromoted;
+typedef int VistaIOSBytePromoted;
 typedef int VistaIOShortPromoted;
-typedef unsigned int VUBytePromoted;
+typedef unsigned int VistaIOUBytePromoted;
 typedef struct VistaIO_ImageRec *VistaIOImage;
 typedef int VistaIOBand;
 typedef void VistaIOErrorHandler (VistaIOStringConst);
@@ -272,8 +272,8 @@ extern VistaIOBoolean VistaIO_RequiredOpt, VistaIO_OptionalOpt;
 typedef enum {
 	VistaIOUnknownRepn,
 	VistaIOBitRepn,		/*!< 1-bit integer, [0, 1] */
-	VUByteRepn,		/*!< 8-bit integer, [0, 255] */
-	VSByteRepn,		/*!< 8-bit integer, [-128, 127] */
+	VistaIOUByteRepn,		/*!< 8-bit integer, [0, 255] */
+	VistaIOSByteRepn,		/*!< 8-bit integer, [-128, 127] */
 	VistaIOShortRepn,		/*!< 16-bit integer, [-32768, 32767] */
 	VistaIOLongRepn,		/*!< 32-bit integer, [-2**31, 2**31-1] */
 	VistaIOFloatRepn,		/*!< 32-bit IEEE floating point */
@@ -288,10 +288,10 @@ typedef enum {
 	VistaIOImageRepn,		/*!< image */
 	VistaIOGraphRepn,		/*!< graph */
 	VolumesRepn,		/*!< volumes */
-	VCPEListRepn,           /*!< list of critical points */ 
+	VistaIOCPEListRepn,           /*!< list of critical points */ 
 	VistaIOField3DRepn,           /*!< A 3D field of 3D Vectors */
 	VistaIOField2DRepn,           /*!< A 3D field of 3D Vectors */
-	VNRepnKinds		/*!< number of predefined types */
+	VistaIONRepnKinds		/*!< number of predefined types */
 } VistaIORepnKind;
 
 /*! \brief  Values of band interpretation attributes: 
@@ -1631,7 +1631,7 @@ extern "C" {
 	 *  specified by repn. Each element's unpacked size is unpacked_elsize
 	 *  bits, and its packed size is packed_elsize bits. There are nels of
 	 *  them, beginning at unpacked. Packed_order specifies whether they are
-	 *  to be packed from MSB to LSB (VMSBFirst), or vice versa (VLSBFirst).
+	 *  to be packed from MSB to LSB (VistaIOMSBFirst), or vice versa (VistaIOLSBFirst).
 	 *
 	 *  To pack into a buffer already allocated:
 	 *

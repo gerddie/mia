@@ -29,33 +29,33 @@
 
 
 /* Later in this file: */
-static VistaIODecodeMethod     VCPEListDecodeMethod;
-static VistaIOEncodeAttrMethod VCPEListEncodeAttrMethod;
-static VistaIOEncodeDataMethod VCPEListEncodeDataMethod;
-static VCPEList VistaIOCopyCPEList(VCPEList src);
-static void VistaIODestroyCPEList(VCPEList field);  
+static VistaIODecodeMethod     VistaIOCPEListDecodeMethod;
+static VistaIOEncodeAttrMethod VistaIOCPEListEncodeAttrMethod;
+static VistaIOEncodeDataMethod VistaIOCPEListEncodeDataMethod;
+static VistaIOCPEList VistaIOCopyCPEList(VistaIOCPEList src);
+static void VistaIODestroyCPEList(VistaIOCPEList field);  
 
 /* Used in Type.c to register this type: */
 
-VistaIOTypeMethods VCPEListMethods = {
+VistaIOTypeMethods VistaIOCPEListMethods = {
 	(VistaIOCopyMethod*)VistaIOCopyCPEList,		  /* copy a VistaIOField3D */
 	(VistaIODestroyMethod*)VistaIODestroyCPEList,	          /* destroy a VistaIOField3D */
-	VCPEListDecodeMethod,	  /* decode a VistaIOField3D's value */
-	VCPEListEncodeAttrMethod,	  /* encode a VistaIOField3D's attr list */
-	VCPEListEncodeDataMethod	  /* encode a VistaIOField3D's binary data */
+	VistaIOCPEListDecodeMethod,	  /* decode a VistaIOField3D's value */
+	VistaIOCPEListEncodeAttrMethod,	  /* encode a VistaIOField3D's attr list */
+	VistaIOCPEListEncodeDataMethod	  /* encode a VistaIOField3D's binary data */
 };
 
 /*! \brief
  *
  *  \param  _n_element
- *  \return VCPEList
+ *  \return VistaIOCPEList
  */
 
-VCPEList VistaIOCreateCPEList(VistaIOLong _n_element)
+VistaIOCPEList VistaIOCreateCPEList(VistaIOLong _n_element)
 {
-	VCPEList result = (VCPEList)malloc(sizeof(VCPEListRec));
+	VistaIOCPEList result = (VistaIOCPEList)malloc(sizeof(VistaIOCPEListRec));
 	result->n_length = _n_element; 
-	result->nsize = result->n_length * sizeof(VCPERec);
+	result->nsize = result->n_length * sizeof(VistaIOCPERec);
 
 	result->data = malloc(result->nsize);
 	if (!result->data) {
@@ -72,7 +72,7 @@ VCPEList VistaIOCreateCPEList(VistaIOLong _n_element)
  *  \param  field
  */
 
-void VistaIODestroyCPEList (VCPEList field)
+void VistaIODestroyCPEList (VistaIOCPEList field)
 {
 	free(field->data);
 	if (field->attr)
@@ -83,12 +83,12 @@ void VistaIODestroyCPEList (VCPEList field)
 /*! \brief
  *
  *  \param  src
- *  \return VCPEList
+ *  \return VistaIOCPEList
  */
 
-VCPEList VistaIOCopyCPEList (VCPEList src)
+VistaIOCPEList VistaIOCopyCPEList (VistaIOCPEList src)
 {
-	VCPEList result;
+	VistaIOCPEList result;
 	
 	result = VistaIOCreateCPEList(src->n_length);
 	if (result) {
@@ -128,9 +128,9 @@ static void convert_list(VCPE r,int n)
 
 #endif
 
-static VistaIOPointer VCPEListDecodeMethod (VistaIOStringConst name, VistaIOBundle b)
+static VistaIOPointer VistaIOCPEListDecodeMethod (VistaIOStringConst name, VistaIOBundle b)
 {
-	VCPEList cplist;
+	VistaIOCPEList cplist;
 	VistaIOLong n_length;
 	VistaIOAttrList list;
 
@@ -161,9 +161,9 @@ static VistaIOPointer VCPEListDecodeMethod (VistaIOStringConst name, VistaIOBund
  *  Encode an attribute list value for a VistaIOGraph object.
  */
 
-static VistaIOAttrList VCPEListEncodeAttrMethod (VistaIOPointer value, size_t *lengthp)
+static VistaIOAttrList VistaIOCPEListEncodeAttrMethod (VistaIOPointer value, size_t *lengthp)
 {
-	VCPEList cplist = value;
+	VistaIOCPEList cplist = value;
 	VistaIOAttrList list;
 
 	/* Temporarily prepend several attributes to the edge set's list: */
@@ -184,14 +184,14 @@ static VistaIOAttrList VCPEListEncodeAttrMethod (VistaIOPointer value, size_t *l
  *  Encode the edge and point lists for a VistaIOGraph object.
  */
 
-static VistaIOPointer VCPEListEncodeDataMethod (VistaIOPointer value, VistaIOAttrList list,
+static VistaIOPointer VistaIOCPEListEncodeDataMethod (VistaIOPointer value, VistaIOAttrList list,
 					size_t length, VistaIOBoolean *free_itp)
 {
-	VCPEList cplist = value;
+	VistaIOCPEList cplist = value;
 	VistaIOAttrListPosn posn;
 	VistaIOPointer p;
 
-	/* Remove the attributes prepended by the VCPEListEncodeAttrsMethod: */
+	/* Remove the attributes prepended by the VistaIOCPEListEncodeAttrsMethod: */
 	for (VistaIOFirstAttr (list, & posn);
 	     strcmp (VistaIOGetAttrName (& posn), CPLIST_LENGTH) != 0; VistaIODeleteAttr (& posn));
 	VistaIODeleteAttr (& posn);

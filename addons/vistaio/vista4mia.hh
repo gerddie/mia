@@ -47,14 +47,14 @@ struct vista_repnkind {
 
 template <>
 struct vista_repnkind<unsigned char> {
-	enum {value = VUByteRepn};
-	typedef VUByte type;
+	enum {value = VistaIOUByteRepn};
+	typedef VistaIOUByte type;
 };
 
 template <>
 struct vista_repnkind<signed char> {
-	enum {value = VSByteRepn};
-	typedef VSByte type;
+	enum {value = VistaIOSByteRepn};
+	typedef VistaIOSByte type;
 };
 
 template <>

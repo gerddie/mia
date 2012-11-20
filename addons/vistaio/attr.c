@@ -208,8 +208,8 @@ EXPORT_VISTA VistaIOBoolean VistaIODecodeAttrValue (VistaIOStringConst str, Vist
 	switch (repn) {
 
 	case VistaIOBitRepn:
-	case VUByteRepn:
-	case VSByteRepn:
+	case VistaIOUByteRepn:
+	case VistaIOSByteRepn:
 	case VistaIOShortRepn:
 	case VistaIOLongRepn:
 	case VistaIOBooleanRepn:
@@ -256,11 +256,11 @@ EXPORT_VISTA VistaIOBoolean VistaIODecodeAttrValue (VistaIOStringConst str, Vist
 	case VistaIOBitRepn:
 		*(VistaIOBit *) value = i_value;
 		break;
-	case VUByteRepn:
-		*(VUByte *) value = i_value;
+	case VistaIOUByteRepn:
+		*(VistaIOUByte *) value = i_value;
 		break;
-	case VSByteRepn:
-		*(VSByte *) value = i_value;
+	case VistaIOSByteRepn:
+		*(VistaIOSByte *) value = i_value;
 		break;
 	case VistaIOShortRepn:
 		*(VistaIOShort *) value = i_value;
@@ -407,11 +407,11 @@ static VistaIOStringConst Encode (VistaIODictEntry * dict, VistaIORepnKind repn,
 	case VistaIOBitRepn:
 		i_value = va_arg (*args, VistaIOBitPromoted);
 		break;
-	case VUByteRepn:
-		i_value = va_arg (*args, VUBytePromoted);
+	case VistaIOUByteRepn:
+		i_value = va_arg (*args, VistaIOUBytePromoted);
 		break;
-	case VSByteRepn:
-		i_value = va_arg (*args, VSBytePromoted);
+	case VistaIOSByteRepn:
+		i_value = va_arg (*args, VistaIOSBytePromoted);
 		break;
 	case VistaIOShortRepn:
 		i_value = va_arg (*args, VistaIOShortPromoted);
@@ -441,8 +441,8 @@ static VistaIOStringConst Encode (VistaIODictEntry * dict, VistaIORepnKind repn,
 	switch (repn) {
 
 	case VistaIOBitRepn:
-	case VUByteRepn:
-	case VSByteRepn:
+	case VistaIOUByteRepn:
+	case VistaIOSByteRepn:
 	case VistaIOShortRepn:
 	case VistaIOLongRepn:
 	case VistaIOBooleanRepn:
@@ -464,8 +464,8 @@ static VistaIOStringConst Encode (VistaIODictEntry * dict, VistaIORepnKind repn,
 		switch (repn) {
 
 		case VistaIOBitRepn:
-		case VUByteRepn:
-		case VSByteRepn:
+		case VistaIOUByteRepn:
+		case VistaIOSByteRepn:
 		case VistaIOShortRepn:
 		case VistaIOLongRepn:
 		case VistaIOBooleanRepn:
@@ -584,8 +584,8 @@ EXPORT_VISTA VistaIOBoolean VistaIOGetAttrValue (VistaIOAttrListPosn * posn, Vis
 	switch (repn) {
 
 	case VistaIOBitRepn:
-	case VUByteRepn:
-	case VSByteRepn:
+	case VistaIOUByteRepn:
+	case VistaIOSByteRepn:
 	case VistaIOShortRepn:
 	case VistaIOLongRepn:
 	case VistaIOFloatRepn:
@@ -806,8 +806,8 @@ static VistaIOAttrRec *NewAttr (VistaIOStringConst name, VistaIODictEntry * dict
 	switch (repn) {
 
 	case VistaIOBitRepn:
-	case VUByteRepn:
-	case VSByteRepn:
+	case VistaIOUByteRepn:
+	case VistaIOSByteRepn:
 	case VistaIOShortRepn:
 	case VistaIOLongRepn:
 	case VistaIOFloatRepn:
@@ -861,8 +861,8 @@ static void SetAttr (VistaIOAttrListPosn * posn, VistaIODictEntry * dict, VistaI
 	switch (repn) {
 
 	case VistaIOBitRepn:
-	case VUByteRepn:
-	case VSByteRepn:
+	case VistaIOUByteRepn:
+	case VistaIOSByteRepn:
 	case VistaIOShortRepn:
 	case VistaIOLongRepn:
 	case VistaIOFloatRepn:
@@ -914,8 +914,8 @@ static void SetAttr (VistaIOAttrListPosn * posn, VistaIODictEntry * dict, VistaI
 	switch (repn) {
 
 	case VistaIOBitRepn:
-	case VUByteRepn:
-	case VSByteRepn:
+	case VistaIOUByteRepn:
+	case VistaIOSByteRepn:
 	case VistaIOShortRepn:
 	case VistaIOLongRepn:
 	case VistaIOFloatRepn:

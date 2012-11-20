@@ -46,8 +46,8 @@ extern "C" {
 	/** two eigenvalues are conjugated complex */
 #define EV_COMPLEX	     4
 	
-	/*! \brief VCPERec is the structute to hold a critical point. */	
-	typedef struct VCPERec {
+	/*! \brief VistaIOCPERec is the structute to hold a critical point. */	
+	typedef struct VistaIOCPERec {
 		float location[3]; /*!< 3D coordiantes of the critical point */
 		float portrait[9]; /*!< Matrix A of the critical point       */
 		float eval1;       /*!< first  eigenvalue of critical point this on is always real  */
@@ -57,10 +57,10 @@ extern "C" {
 		float evec2[3];    /*!< second eigenvector or if two complex eigenvalues then the real part of the eigenvector */ 
 		float evec3[3];    /*!< second eigenvector or if two complex eigenvalues then the imaginary part of the eigenvector */
 		unsigned char typeM; /*!< type of the eigenvalues */
-	}VCPERec;
+	}VistaIOCPERec;
 
 	/*! \brief A pointer to a single critical point. */	
-	typedef  VCPERec *VCPE;
+	typedef  VistaIOCPERec *VCPE;
 	
 	
 	/*! \brief Vista data type to hold the list of critical points */	
@@ -69,22 +69,22 @@ extern "C" {
 		VistaIOAttrList attr;  /*!< vista attribute list */
 		VistaIOPointer data;   /*!< pointer to the actual data */
 		VistaIOLong nsize;     /*!< size of data block in bytes \a data points to */
-	} VCPEListRec;
+	} VistaIOCPEListRec;
 	
 	/*! \brief  Definition of the pointer how it is used in the vista library.*/ 
-	typedef VCPEListRec *VCPEList;
+	typedef VistaIOCPEListRec *VistaIOCPEList;
 	
 	/** This function creates a critical point list. 
 	    \param _n_element number of elements in the list
-	    \retval An empty VCPEList with space for \a _n_element critical points
+	    \retval An empty VistaIOCPEList with space for \a _n_element critical points
 	*/
-	VCPEList VistaIOCreateCPEList(VistaIOLong _n_element);
+	VistaIOCPEList VistaIOCreateCPEList(VistaIOLong _n_element);
 	
 	/** name of the length attribute in the vista file */
 #define CPLIST_LENGTH  "n_length"
-	/** This function has to be called before using VCPEList objects with original vista functions, 
+	/** This function has to be called before using VistaIOCPEList objects with original vista functions, 
 	    to make the data type available.
-	    \remark as a side effect VCPEListRepn is set. 
+	    \remark as a side effect VistaIOCPEListRepn is set. 
 	*/
 	void VistaIORegisterCPEList();
 

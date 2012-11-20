@@ -64,12 +64,12 @@ VistaIOGetOptionValue (VistaIOOptionDescRec *option)
       ivalue = * (VistaIOBit *) vp;
       goto PrintLong;
 
-    case VUByteRepn:
-      ivalue = * (VUByte *) vp;
+    case VistaIOUByteRepn:
+      ivalue = * (VistaIOUByte *) vp;
       goto PrintLong;
 
-    case VSByteRepn:
-      ivalue = * (VSByte *) vp;
+    case VistaIOSByteRepn:
+      ivalue = * (VistaIOSByte *) vp;
       goto PrintLong;
 
     case VistaIOShortRepn:
