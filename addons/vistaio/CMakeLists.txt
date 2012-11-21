@@ -22,7 +22,7 @@ OPTION(VISTAIO_SYSTEM "use system version of libvistaio" TRUE)
 
 IF(VISTAIO_SYSTEM)
   if (STRICT_DEPENDECIES)
-    pkg_check_modules(VISTAIO REQUIRED libvistaio >= 1.2.12)
+    pkg_check_modules(VISTAIO REQUIRED libvistaio >= 1.2.14)
   else (STRICT_DEPENDECIES)
     pkg_check_modules(VISTAIO libvistaio)
   endif (STRICT_DEPENDECIES)

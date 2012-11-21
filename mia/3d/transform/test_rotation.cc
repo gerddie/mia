@@ -126,6 +126,7 @@ BOOST_FIXTURE_TEST_CASE( test_translate_gradient, ipfFixture)
 	C3DRotationTransformation t1(size, ipf);
 
 	
+	
 
 }
 
