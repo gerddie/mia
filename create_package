@@ -3,7 +3,8 @@ name=$1
 version=$2 
 pushd $3
 if [ -d .git ]; then 
-    if [ grep "$version" ] $(git tag) > /dev/null 2>&1 ] ; then 
+    git tag | grep "$version" > /dev/null 2>&1 
+    if [ "x$?" = "x0" ] ; then 
 	git archive --format=tar  --prefix=${name}-${version}/ ${version} | xz -9 >$4/${name}-${version}.tar.xz
     else
 	git archive --format=tar  --prefix=${name}-${version}/ HEAD | xz -9 >$4/${name}-${version}.tar.xz

@@ -1,3 +1,9 @@
+2.0.6
+  * move to new vistaio interface, minimum required external vistaio is now
+	 version 2.1.14
+  * add a new 3D rotation only transformation
+  * fix regressions introduced with 2.0.4
+
 2.0.4
   * Intrusive changes
     - change file nameing scheme of the 2D and 3D files
