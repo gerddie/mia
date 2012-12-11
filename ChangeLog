@@ -1,3 +1,8 @@
+2.0.7
+  * change build dependencies to cmake 2.8.5 because of GNUInstallDirs
+  * change installation directories to support multiarch
+  * add test for STRICT_DEPENDENCIES to nlopt and xsltproc 
+
 2.0.6
   * move to new vistaio interface, minimum required external vistaio is now
 	 version 2.1.14

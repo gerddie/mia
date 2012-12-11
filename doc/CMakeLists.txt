@@ -42,6 +42,10 @@ IF(CREATE_USERDOC)
       /usr/share/xml/docbook/stylesheet/docbook-xsl/html/
       DOC "style sheet for the creation of the user reference"
       )
+  ELSE (XSLTPROC)
+    IF(STRICT_DEPENDECIES)
+      MESSAGE(ERROR ": xsltproc not found and STRICT_DEPENDECIES set")
+    ENDIF(STRICT_DEPENDECIES)
   ENDIF(XSLTPROC)
   
   IF(HTML_CHUNK_FILEPATH) 
