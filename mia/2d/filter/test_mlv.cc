@@ -92,7 +92,8 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 							best_sigma = sigma(ix, iy);
 							best_mu = mu_val;
 						}else if (best_sigma == sigma(ix, iy) && best_mu != mu_val ) {
-							if (::fabs(mu_val - best_mu) < ::fabs((*src)(x,y) - best_mu))
+							const auto ref = (*src)(x,y); 
+							if (::fabs(mu_val - ref) < ::fabs(best_mu - ref))
 								best_mu = mu_val;
 						}
 					}

@@ -89,9 +89,8 @@ T C2DMLV::get(int x, int y, float ref)const
 				best_mu = m_mu(ix,iy);
 			}else if (best_sigma == s) {
 				const float mu = m_mu(ix,iy);
-				if (::fabs(mu - best_mu) < ::fabs(best_mu - ref)) {
+				if (::fabs(mu - ref) < ::fabs(best_mu - ref))
 					best_mu = mu;
-				}
 			}
 		}
 	return  static_cast<T>(best_mu);
