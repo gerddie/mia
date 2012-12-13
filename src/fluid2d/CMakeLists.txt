@@ -21,7 +21,7 @@
 SET(fluid2d_SOURCES main.cc vfluid.cc elast.cc helpers.cc)
 
 ADD_EXECUTABLE(mia-2dfluid ${fluid2d_SOURCES})
-CREATE_EXE_DOCU(2dfluid)
 TARGET_LINK_LIBRARIES(mia-2dfluid mia2d)
+CREATE_EXE_DOCU(2dfluid)
 INSTALL(TARGETS mia-2dfluid RUNTIME DESTINATION "bin")
 

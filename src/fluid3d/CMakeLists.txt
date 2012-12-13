@@ -26,8 +26,8 @@ SET(fluid3d_SOURCES
   )
 
 ADD_EXECUTABLE(mia-3dfluid ${fluid3d_SOURCES})
-CREATE_EXE_DOCU(3dfluid)
 TARGET_LINK_LIBRARIES(mia-3dfluid mia3d)
+CREATE_EXE_DOCU(3dfluid)
 INSTALL(TARGETS mia-3dfluid RUNTIME DESTINATION "bin")
 
 

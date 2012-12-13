@@ -143,9 +143,9 @@ MACRO(CREATE_EXE_DOCU name)
     ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     COMMAND rm -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
     DEPENDS mia-${name} plugin_test_links )
-  list(APPEND XMLDOC "${CMAKE_BINARY_DIR}/doc/mia-${name}.xml")
-  
+    
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
+  ADD_DEPENDENCIES(XMLDOC mia-${name}-xml)
   
   SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
   
