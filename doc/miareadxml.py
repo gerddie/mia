@@ -263,7 +263,7 @@ class CParam:
         if self.required:
             print "= (required, %s) " % (self.type)
         else:
-            print "= %s (%s) " % (self.default, self.type)
+            print "= %s (%s) " % (escape_dash(self.default), self.type)
         print ".RS 2"
         print "%s." % (self.text)
         self.do_print_man()
@@ -300,7 +300,7 @@ class CRangeParam(CParam):
         self.max = node.get("max")
 
     def do_print_man(self):
-        print "in [%s, %s]" % (self.min, self.max)
+        print "in [%s, %s]" % (escape_dash(self.min), escape_dash(self.max))
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
@@ -359,7 +359,7 @@ class CSetParam(CParam):
     def do_print_man(self):
         print "Supported values are:(", 
         for k in self.set:
-            print "%s, " % (k), 
+            print "%s, " % (escape_dash(k)), 
         print ")"
         CParam.do_print_man(self)
 
