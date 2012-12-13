@@ -119,7 +119,7 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundary
 	CSplineKernel::VWeight orig(f); 
 
 	auto m_A = gsl::Matrix(f.size(), f.size(),  true);
-	auto m_tau = gsl::DoubleVector(f.size() ); 
+	auto m_tau = gsl::DoubleVector(f.size(), false ); 
 
 	for(size_t i = 0; i < f.size(); ++i) {
 		(*kernel)(i, weights, indices);
@@ -134,9 +134,9 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundary
 	gsl_linalg_QR_decomp(m_A, m_tau); 
 	
 
-	gsl::DoubleVector coefs(f.size()); 
-	gsl::DoubleVector residual(f.size()); 
-	gsl::DoubleVector input(f.size()); 
+	gsl::DoubleVector coefs(f.size(), false); 
+	gsl::DoubleVector residual(f.size(), false); 
+	gsl::DoubleVector input(f.size(), false); 
 	copy(f.begin(), f.end(), input.begin()); 
 
 	gsl_linalg_QR_lssolve (m_A, m_tau, input, coefs, residual); 

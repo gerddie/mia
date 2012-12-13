@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test_cfdf_multmin )
 {
 	CFDFMinimizer minimizer(CFDFMinimizer::PProblem(new TestCFDFProblem), gsl_multimin_fdfminimizer_conjugate_fr );
 	
-	DoubleVector x(2); 
+	DoubleVector x(2, false); 
 	x[0] = 5.0; 
 	x[1] = 7.0; 
 	
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(test_cf_multmin )
 {
 	CFMinimizer minimizer(CFMinimizer::PProblem(new TestCFProblem), gsl_multimin_fminimizer_nmsimplex );
 	
-	DoubleVector x(2); 
+	DoubleVector x(2, false); 
 	x[0] = 5.0; 
 	x[1] = 7.0; 
 	

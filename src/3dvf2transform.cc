@@ -75,7 +75,7 @@ int do_main(int argc, char **argv)
 	auto vftranscreator  = C3DTransformCreatorHandler::instance().produce(transform_decr.str());
 	
 	auto transform = vftranscreator->create(vf->get_size()); 
-	CDoubleVector buffer(transform->degrees_of_freedom()); 
+	CDoubleVector buffer(transform->degrees_of_freedom(), false);
 	
 	auto ib = buffer.begin(); 
 	for (auto ivf = vf->begin(); ivf != vf->end(); ++ivf) {

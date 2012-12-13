@@ -154,7 +154,7 @@ public:
 	   \param size 
 	   \param clear if set to \a true set all values to zero at allocation 
 	 */
-	TVector(size_type size, bool clear=true);
+	TVector(size_type size, bool clear);
 
 	/**
 	   Wrap a pre-constructed GSL vector. The passed GSL-vector will not be destroyed 

@@ -110,7 +110,7 @@ double Scaler1DFixture::f(double x) const
 }
 
 Scaler1DFixture::Scaler1DFixture():
-	data(256)
+	data(256, false)
 {
 
 	CPathNameArray  sksearchpath({bfs::path("splinekernel")});
@@ -122,7 +122,7 @@ Scaler1DFixture::Scaler1DFixture():
 
 void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 {
-	gsl::DoubleVector result(target_size); 
+	gsl::DoubleVector result(target_size, false); 
 	
 	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type, bc_mirror_on_bounds));	
 	C1DScalarFixed scaler(*ipf->get_kernel(), data.size(), target_size); 

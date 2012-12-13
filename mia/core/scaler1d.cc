@@ -36,8 +36,8 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 	m_poles(kernel.get_poles()),
 	m_strategy(scs_unknown), 
 	m_bc(produce_spline_boundary_condition("mirror")), 
-	m_input_buffer(in_size), 
-	m_output_buffer(out_size)
+	m_input_buffer(in_size, false), 
+	m_output_buffer(out_size, false)
 {
 	assert(in_size); 
 	assert(out_size); 
@@ -73,7 +73,7 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 		CSplineKernel::VIndex index(m_support); 
 
 		m_A = gsl::Matrix(in_size, out_size,  true);
-		m_tau = gsl::DoubleVector(out_size); 
+		m_tau = gsl::DoubleVector(out_size, false); 
 		for (size_t k = 0; k < out_size; ++k) {
 			double x = 0; 
 			for (size_t j = 0; j < in_size; ++j, x+=dx) {
@@ -177,8 +177,8 @@ void C1DScalarFixed::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& 
 
 void C1DScalarFixed::downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const
 {
-	gsl::DoubleVector coefs(output.size()); 
-	gsl::DoubleVector residual(input.size()); 
+	gsl::DoubleVector coefs(output.size(), false); 
+	gsl::DoubleVector residual(input.size(), false); 
 	gsl_linalg_QR_lssolve (m_A, m_tau, input, coefs, residual); 
 	
 	for (size_t i = 0; i < output.size(); ++i) {

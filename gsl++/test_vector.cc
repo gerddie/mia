@@ -137,8 +137,8 @@ BOOST_AUTO_TEST_CASE( test_vector_non_owning )
 
 BOOST_AUTO_TEST_CASE( test_vector_copy ) 
 {
-	DoubleVector wx(10); 
-	DoubleVector wy(5); 
+	DoubleVector wx(10, false); 
+	DoubleVector wy(5, false); 
 	
 	wx[2] = 3.0; 
 	BOOST_CHECK_EQUAL(wx[2], 3.0); 
