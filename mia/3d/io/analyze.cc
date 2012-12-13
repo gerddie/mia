@@ -139,7 +139,7 @@ typedef struct
 } COMPLEX;
 
 const TDictMap<EPixelType>::Table analyze_type_table[] = {
-	{"UNKNOWN",  it_unknown, "unkown pixel type"},
+	{"UNKNOWN",  it_unknown, "unknown pixel type"},
 	{"BINARY",   it_bit,     "binary pixel type"},
 	{"CHAR",     it_ubyte,   "unsigned 8 bit"},
 	{"SHORT",    it_sshort,  "signed 16 bit"},

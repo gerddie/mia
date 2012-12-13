@@ -218,7 +218,7 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 template <typename T>
 void  TIOPluginHandler<T>::do_print_help(std::ostream& os) const
 {
-	os << ". Supported file types based on prefered extension are:\n"; 
+	os << ". Supported file types based on preferred extension are:\n"; 
 	for (auto i = this->begin(); i != this->end(); ++i) {
 		os << "  '." << i->second->get_preferred_suffix() << "': " << i->second->get_descr() << "\n"; 
 	}

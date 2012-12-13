@@ -135,21 +135,21 @@ public:
 	   for time-intensity analysis after motion compensation - if the used motion compensation 
 	   algorithm provides some (like quasiperiodic, one2many, or serial do). Returns -1 if no values is given. 
 	*/
-	int get_prefered_reference() const; 
+	int get_preferred_reference() const; 
 
 
 	/**
-	   Set the prefered reference frame for this segmentation set. 
+	   Set the preferred reference frame for this segmentation set. 
 	   \param value 
 	 */
-	void  set_prefered_reference(int value); 
+	void  set_preferred_reference(int value); 
 
 private:
 	void read(const xmlpp::Document& node);
 	Frames m_frames;
 	int m_RV_peak; 
 	int m_LV_peak; 
-	int m_prefered_reference; 
+	int m_preferred_reference; 
 	int m_version; 
 };
 

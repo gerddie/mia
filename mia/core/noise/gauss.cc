@@ -91,7 +91,7 @@ CGaussNoiseGeneratorFactory::CGaussNoiseGeneratorFactory():
 
 	add_parameter("sigma", new CFloatParameter(m_param_sigma, 0.0f,
 								       numeric_limits<float>::max(),
-								       false, "standart derivation of distribution"));
+								       false, "standard derivation of distribution"));
 
 	add_parameter("seed", new CUIntParameter(m_param_seed, 0,   numeric_limits<unsigned int>::max(),
 						  false, "set random seed (0=init based on system time)"));

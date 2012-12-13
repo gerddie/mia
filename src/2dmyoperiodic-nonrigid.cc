@@ -49,8 +49,8 @@ const SProgramDescription g_general_help = {
 	{pdi_short, "Run a registration of a series of 2D images."}, 
 	
 	{pdi_description, "This program runs the non-rigid registration of an perfusion image series "
-	 "preferable aquired letting the patient breath freely. " 
-	 "The registration algoritm implementes "
+	 "preferable acquired letting the patient breath freely. " 
+	 "The registration algorithm implementes "
 	 "G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
 	 "Quasiperiodicity in Motion Correction of Free-Breathing,\" "
 	 "IEEE Transactions on Medical Imaging, 29(8), 2010\n"}, 
@@ -416,7 +416,7 @@ int do_main( int argc, char *argv[] )
 			frames[i + skip].inv_transform(*transforms[i]);
 	}
 	
-	input_set.set_prefered_reference(mpr.get_ref_idx() + skip); 
+	input_set.set_preferred_reference(mpr.get_ref_idx() + skip); 
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())

@@ -158,7 +158,7 @@ int do_main( int argc, char *argv[] )
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	
-	input_set.set_prefered_reference(reference); 
+	input_set.set_preferred_reference(reference); 
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );

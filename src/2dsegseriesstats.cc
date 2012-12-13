@@ -116,7 +116,7 @@ int do_main( int argc, char *argv[] )
 			      "The output files each comprises a table in plain-text format that contains three columns "
 			      "for each section of the LV myocardium: The first column contains the values obtained by "
 			      "using the original segmentation of the reference on all images of the original series, "
-			      "the second column containes the values obtained by the registered segmentation of the "
+			      "the second column contains the values obtained by the registered segmentation of the "
 			      "reference on all images of the registered series, and the third column contains the "
 			      "values obtained by using the segmentations of each slice on the original images."));
 	options.add(make_opt( varcurves_filename, "varcurves", 'v', "region variation values, same formt as described above. "));
@@ -145,7 +145,7 @@ int do_main( int argc, char *argv[] )
 	
 
 	if (reference == -1) {
-		reference = registered.get_prefered_reference(); 
+		reference = registered.get_preferred_reference(); 
 		if (reference == -1) {
 			reference = registered.get_LV_peak(); 
 			if (reference == -1)

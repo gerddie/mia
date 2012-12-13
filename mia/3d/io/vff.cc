@@ -231,7 +231,7 @@ void handle_endian(Iterator b, Iterator e)
 {
 
 	typedef typename iterator_traits<Iterator>::value_type Pixel;
-	cvdebug() << "fix endianess\n";
+	cvdebug() << "fix endianness\n";
 
 
 	typedef union  {
@@ -391,7 +391,7 @@ struct save_dispatch {
 			return false;
 		}
 
-		// endianess handling
+		// endianness handling
 		if (low_endian() && sizeof(T) > 1 ) {
 			vector<T> v(image.size());
 			copy(image.begin(), image.end(), v.begin());

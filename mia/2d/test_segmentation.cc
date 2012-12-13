@@ -450,7 +450,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read_write, SegSetReadFixture )
 	
 	BOOST_CHECK_EQUAL(segset.get_LV_peak(), 2);
 	BOOST_CHECK_EQUAL(segset.get_RV_peak(), 1);
-	BOOST_CHECK_EQUAL(segset.get_prefered_reference(), 0);
+	BOOST_CHECK_EQUAL(segset.get_preferred_reference(), 0);
 	
 	const auto& frame = frames[0]; 
 	BOOST_CHECK_EQUAL(frame.get_imagename(), "moved0000.png");

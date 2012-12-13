@@ -79,7 +79,7 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( shift_filename, "image-file", 'g', "output image filename base"));
 
 	options.add(make_opt(shift, "shift", 'S', "shift of segmentation"));
-	options.add(make_opt(skip, "skip", 'k', "skip frames at the begining"));
+	options.add(make_opt(skip, "skip", 'k', "skip frames at the beginning"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

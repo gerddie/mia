@@ -33,7 +33,7 @@ const SProgramDescription g_general_help = {
 	
 	{pdi_description, "This progranm is used to evaluate some statistics of an image. " 
 	 "Output is Mean, Variation, Median, and Median Average Distance of the intensity values. "
-	 "The program allows to set a lower threshold and to cut off a percentage of the high intensity pixels"}, 
+	 "The program allows one to set a lower threshold and to cut off a percentage of the high intensity pixels"}, 
 	
 	{pdi_example_descr, "Evaluate the statistics of image input.png. Don't include the upper 1% "
 	 "of intensities in the statistics. The result is written to stdout"},

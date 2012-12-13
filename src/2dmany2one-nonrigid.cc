@@ -70,7 +70,7 @@ C2DFullCostList create_costs(const std::vector<string>& costs, int idx)
 		if (cc.find("image") == 0) {
 			if (cc.find("src") != string::npos  || cc.find("ref") != string::npos) {
 				throw create_exception<invalid_argument>( "image cost functions '", cc, 
-								"' must not set the 'src' or 'ref' parameter explicitely");
+								"' must not set the 'src' or 'ref' parameter explicitly");
 			}
 			cc.append(cost_descr.str()); 
 		}

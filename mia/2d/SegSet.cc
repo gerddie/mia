@@ -34,7 +34,7 @@ using namespace xmlpp;
 CSegSet::CSegSet():
 	m_RV_peak(-1),
 	m_LV_peak(-1), 
-	m_prefered_reference(-1), 
+	m_preferred_reference(-1), 
 	m_version(1)
 {
 }
@@ -42,7 +42,7 @@ CSegSet::CSegSet():
 CSegSet::CSegSet(const std::string& src_filename):
 	m_RV_peak(-1),
 	m_LV_peak(-1),
-	m_prefered_reference(-1), 
+	m_preferred_reference(-1), 
 	m_version(1)
 {
 	DomParser parser;
@@ -59,7 +59,7 @@ CSegSet::CSegSet(const std::string& src_filename):
 CSegSet::CSegSet(const xmlpp::Document& doc):
 	m_RV_peak(-1),
 	m_LV_peak(-1), 
-	m_prefered_reference(-1), 
+	m_preferred_reference(-1), 
 	m_version(1)
 {
 	TRACE("CSegSet::CSegSet");
@@ -112,7 +112,7 @@ xmlpp::Document *CSegSet::write() const
 	Element* LVPeak = description->add_child("LVpeak"); 
 	LVPeak->set_attribute("value", to_string<int>(m_LV_peak));
 	Element* PreferedRef = description->add_child("PreferedRef"); 
-	PreferedRef->set_attribute("value", to_string<int>(m_prefered_reference));
+	PreferedRef->set_attribute("value", to_string<int>(m_preferred_reference));
 
 
 	for(Frames::const_iterator i = m_frames.begin(); i != m_frames.end(); ++i) {
@@ -181,10 +181,10 @@ void CSegSet::read(const xmlpp::Document& node)
 			if (!attr)
 				cvwarn() << "CSegFrame: PreferedRef without attribute"; 
 			else 	
-				if (!from_string(attr->get_value(), m_prefered_reference)) {
+				if (!from_string(attr->get_value(), m_preferred_reference)) {
 					cvwarn() << "Could't convert PreferedRef attribute '" << attr->get_value() 
 						 <<"' to an integer; ignoring\n"; 
-					m_prefered_reference = -1; 
+					m_preferred_reference = -1; 
 				}
 		}
 		else {
@@ -241,14 +241,14 @@ int CSegSet::get_LV_peak() const
 	return m_LV_peak; 
 }
 
-int CSegSet::get_prefered_reference() const
+int CSegSet::get_preferred_reference() const
 {
-	return m_prefered_reference; 
+	return m_preferred_reference; 
 }
 
-void  CSegSet::set_prefered_reference(int value)
+void  CSegSet::set_preferred_reference(int value)
 {
-	m_prefered_reference = value; 
+	m_preferred_reference = value; 
 }
 
 NS_MIA_END

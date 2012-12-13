@@ -307,7 +307,7 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 		cvinfo() << "Stats["<< stats[i].second << "]"
 			  << " range: " << stats[i].first->get_range()
 			  << " perfpeakidx: " << stats[i].first->get_perfusion_high_peak().first
-			  << " lenght: " << stats[i].first->get_curve_length()
+			  << " length: " << stats[i].first->get_curve_length()
 			  << " l*r: " << stats[i].first->get_curve_length() * stats[i].first->get_range()
 			  << " l/r: " << stats[i].first->get_curve_length() / stats[i].first->get_range()
 			  << " f: " << stats[i].first->get_mean_frequency()

@@ -50,7 +50,7 @@ const SProgramDescription g_description = {
 	 "data set as decribed in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
 	 "MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing and Computer-Assisted "
 	 "Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear motion correction "
-	 "a preceeding linear registration step is usually required."},
+	 "a preceding linear registration step is usually required."},
 	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by using Pseudo Ground "
 	 "Truth estimation. Skip two images at the beginning and otherwiese use the default parameters. "
 	 "Store the result in 'registered.set'."}, 
