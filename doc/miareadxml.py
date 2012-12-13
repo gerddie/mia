@@ -107,7 +107,7 @@ class COption(CTextNode):
                 print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
             else:
                 print ".IP \"%s \-\-%s\""% (short, self.long)
-        print self.text, 
+        print escape_dash(self.text), 
         self.do_print_man()
 
 
