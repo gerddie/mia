@@ -265,7 +265,7 @@ class CParam:
         else:
             print "= %s (%s) " % (escape_dash(self.default), self.type)
         print ".RS 2"
-        print "%s." % (self.text)
+        print "%s." % (escape_dash(self.text))
         self.do_print_man()
         print ".RE"
 
