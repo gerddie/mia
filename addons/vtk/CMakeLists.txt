@@ -1,5 +1,5 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,14 +26,18 @@ IF(WITH_VTKIO)
     INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
     SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
     SET(vfio_path "${PLUGIN_INSTALL_PATH}/3dvf/io")
+    SET(imageio_path "${PLUGIN_INSTALL_PATH}/3dimage/io")
     
     SET(VTK_LINK_LIBS_MESH ${VTK_LIBRARIES} miamesh)
+    SET(VTK_LINK_LIBS_3D ${VTK_LIBRARIES} mia3d)
 
-
-    
     SINGLEPLUGIN_WITH_TEST_AND_PREFIX("mesh" vtkmesh "${VTK_LINK_LIBS_MESH}" "${meshio_path}")
-    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-vfio" vtkvf "${VTK_LINK_LIBS_MESH}" "${vfio_path}")
+    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-vfio" vtkvf "${VTK_LINK_LIBS_3D}" "${vfio_path}")
 
+    # the explicit vtk part is added because the build system needs to create unique targets 
+    # and the plug-in test directory target is created based on the prefix
+    #
+    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-imageio-vtk" vtkimage "${VTK_LINK_LIBS_3D}" "${imageio_path}")
 
   ELSEIF(VTK_FOUND)
     MESSAGE(FATAL_ERROR "VTK not found and strict dependencies enabled")
