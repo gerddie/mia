@@ -21,18 +21,43 @@
 #define VSTREAM_DOMAIN "vtkImageIOtest"
 
 #include <mia/internal/autotest.hh>
+
+#include <boost/mpl/vector.hpp>
+#include <boost/test/test_case_template.hpp>
+
+
 #include <vtk/vtkimage.hh>
 #include <unistd.h>
 
 using namespace mia; 
 using namespace std; 
 using namespace vtkimage; 
+namespace bmpl=boost::mpl;
+
+// LONG_64BIT seems to be buggy in vtkDataReader
+#ifdef LONG_64BIT
+#undef LONG_64BIT
+#endif 
 
 
-BOOST_AUTO_TEST_CASE( test_simple_write_read ) 
+typedef bmpl::vector<
+	unsigned char,
+	signed short,
+	unsigned short,
+	signed int,
+	unsigned int,
+	float,
+	double
+#ifdef LONG_64BIT
+	,long, unsigned long
+#endif
+		     > type;
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type ) 
 {
         C3DBounds size(2,3,4);
-	C3DFImage *image = new C3DFImage(size); 
+	T3DImage<T> *image = new T3DImage<T>(size); 
         P3DImage pimage(image); 
 
         auto iv = image->begin(); 
@@ -47,13 +72,18 @@ BOOST_AUTO_TEST_CASE( test_simple_write_read )
         CVtk3DImageIOPlugin::Data images;
         images.push_back(pimage); 
 
-	BOOST_REQUIRE(io.save("testimage.vtk", images)); 
+	stringstream filename; 
+	filename << "testimage-" << __type_descr<T>::value << ".vtk"; 
+
+	cvdebug() << "test with " << filename.str() << "\n"; 
+
+	BOOST_REQUIRE(io.save(filename.str(), images)); 
 	
-	auto loaded = io.load("testimage.vtk"); 
+	auto loaded = io.load(filename.str()); 
 	BOOST_REQUIRE(loaded); 
 	
 	BOOST_REQUIRE(loaded->size() == 1u); 
-        const auto& ploaded = dynamic_cast<const C3DFImage&>(*(*loaded)[0]); 	
+        const auto& ploaded = dynamic_cast<const T3DImage<T>&>(*(*loaded)[0]); 	
 	iv = image->begin(); 
 
 
@@ -64,5 +94,7 @@ BOOST_AUTO_TEST_CASE( test_simple_write_read )
 		++iv; 
 		++il; 
 	}
-        unlink("testimage.vtk"); 
+        unlink(filename.str().c_str()); 
 }
+
+

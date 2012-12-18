@@ -53,7 +53,7 @@ CVtk3DVFIOPlugin::PData CVtk3DVFIOPlugin::do_load(const string&  filename) const
 	
 	int dim = iovf->GetDataDimension();
 	if (dim != 3) {
-		cvinfo() << "Expect 3 dimensions bug got " << dim << "\n"; 
+		cvinfo() << "Expect 3 dimensions but got " << dim << "\n"; 
 		return PData(); 
 	}
 
