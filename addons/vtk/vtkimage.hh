@@ -35,6 +35,17 @@ private:
 	virtual const std::string do_get_descr() const;
 };
 
+
+class CVtkXML3DImageIOPlugin : public mia::C3DImageIOPlugin {
+public:
+	CVtkXML3DImageIOPlugin();
+private:
+
+        virtual PData do_load(const std::string&  filename) const;
+	virtual bool do_save(const std::string& fname, const Data& data) const;
+	virtual const std::string do_get_descr() const;
+};
+
 }
 
 #endif 

@@ -38,6 +38,8 @@
 #include <vtkFloatArray.h>
 #include <vtkDoubleArray.h> 
 
+#include <vtkXMLImageDataReader.h>
+#include <vtkXMLImageDataWriter.h>
 
 #include <vtkDataSetWriter.h>
 #include <vtkDataSetReader.h>
@@ -284,10 +286,86 @@ bool CVtk3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 
 const string CVtk3DImageIOPlugin::do_get_descr() const
 {
-	return "3D image field in- and output. No attributes besides the voxel size is stored or read.";
+	return "3D image legacy  in- and output. No attributes besides the voxel size is stored or read.";
 }
+
+
+CVtkXML3DImageIOPlugin::CVtkXML3DImageIOPlugin():
+	C3DImageIOPlugin("vtk")
+{
+	// indicate support for all pixel types available (only scalar types are possible)
+	add_supported_type(it_bit);
+	add_supported_type(it_sbyte);
+	add_supported_type(it_ubyte);
+	add_supported_type(it_sshort);
+	add_supported_type(it_ushort);
+	add_supported_type(it_sint);
+	add_supported_type(it_uint);
+
+#ifdef LONG_64BIT
+	add_supported_type(it_slong);
+	add_supported_type(it_ulong);
+#endif 
+
+	add_supported_type(it_float);
+	add_supported_type(it_double);
+
+       
+	add_suffix(".vti");
+	add_suffix(".VTI");
+
+}
+
+CVtkXML3DImageIOPlugin::PData CVtkXML3DImageIOPlugin::do_load(const string&  fname) const
+{
+	
+	auto reader = vtkSmartPointer<vtkXMLImageDataReader>::New(); 
+	reader->SetFileName(fname.c_str()); 
+	reader->Update(); 
+	
+	auto vtk_image = reader->GetOutput();
+
+	if (!vtk_image)
+		return PData(); 
+	
+
+	CVtkXML3DImageIOPlugin::PData result(new Data); 	
+	result->push_back(P3DImage(image_vtk_to_mia(vtk_image, fname))); 
+	return result; 
+}
+
+
+
+
+
+bool CVtkXML3DImageIOPlugin::do_save(const string& fname, const Data& data) const
+{
+	if (data.size() != 1)
+		throw create_exception<invalid_argument>("CVtkXML3DImageIOPlugin::save only supports writing one image, "
+							 "but you passed in ", data.size(), " images"); 
+
+	const auto& image = *data[0];
+	
+	auto outimage = image_mia_to_vtk(image); 
+	
+	// add writing of the image
+	auto writer = vtkSmartPointer<vtkXMLImageDataWriter>::New(); 
+	writer->SetInput(outimage); 
+	writer->SetFileName(fname.c_str()); 
+	writer->Write();
+
+	return true; 
+}
+
+const string CVtkXML3DImageIOPlugin::do_get_descr() const
+{
+	return "3D image XML in- and output. No attributes besides the voxel size is stored or read.";
+}
+
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new CVtk3DImageIOPlugin();
+	auto plugin =  new CVtk3DImageIOPlugin();
+	plugin->append_interface(new CVtkXML3DImageIOPlugin); 
+	return plugin; 
 }

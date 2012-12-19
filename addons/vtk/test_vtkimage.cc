@@ -97,4 +97,49 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
         unlink(filename.str().c_str()); 
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_xml_write_read, T, type ) 
+{
+        C3DBounds size(2,3,4);
+	T3DImage<T> *image = new T3DImage<T>(size); 
+        P3DImage pimage(image); 
+
+        auto iv = image->begin(); 
+	auto ev = image->end();
+        int i = 0; 
+
+	while (iv != ev)
+		*iv++ = i++;
+       
+
+	CVtkXML3DImageIOPlugin io; 
+        CVtkXML3DImageIOPlugin::Data images;
+        images.push_back(pimage); 
+
+	stringstream filename; 
+	filename << "testimage-xml-" << __type_descr<T>::value << ".vtk"; 
+
+	cvdebug() << "test with " << filename.str() << "\n"; 
+
+	BOOST_REQUIRE(io.save(filename.str(), images)); 
+	
+	auto loaded = io.load(filename.str()); 
+	BOOST_REQUIRE(loaded); 
+	
+	BOOST_REQUIRE(loaded->size() == 1u); 
+        const auto& ploaded = dynamic_cast<const T3DImage<T>&>(*(*loaded)[0]); 	
+	iv = image->begin(); 
+
+
+	auto il = ploaded.begin(); 
+	
+	while (iv != ev) {
+		BOOST_CHECK_EQUAL(*il, *iv); 
+		++iv; 
+		++il; 
+	}
+        unlink(filename.str().c_str()); 
+}
+
+
+
 
