@@ -61,8 +61,8 @@ BOOST_AUTO_TEST_CASE(test_3dimageio_plugin_avail)
 {
 	const C3DImageIOPluginHandler::Instance&  handler = C3DImageIOPluginHandler::instance();
 
-	BOOST_CHECK(handler.size() == 5);
-	BOOST_CHECK(handler.get_plugin_names() == "analyze datapool inria vff vtk ");
+	BOOST_CHECK(handler.size() == 4);
+	BOOST_CHECK(handler.get_plugin_names() == "analyze datapool inria vff ");
 
 }
 

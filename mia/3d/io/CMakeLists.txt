@@ -22,7 +22,6 @@ SET(io3dimage
   analyze 
   inria
   vff
-  vtk
 )
 
 PLUGIN_GROUP_PRE(
