@@ -97,7 +97,21 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
         unlink(filename.str().c_str()); 
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_xml_write_read, T, type ) 
+
+typedef bmpl::vector<
+	unsigned char,
+	signed short,
+	unsigned short,
+	signed int,
+	unsigned int,
+	float,
+	double
+#ifdef LONG_64BIT
+	,long, unsigned long
+#endif
+		     > type_xml;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_xml_write_read, T, type_xml ) 
 {
         C3DBounds size(2,3,4);
 	T3DImage<T> *image = new T3DImage<T>(size); 

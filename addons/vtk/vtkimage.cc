@@ -72,6 +72,7 @@ struct __vtk_data_array {
 
 
 VTK_ARRAY_TRANSLATE(bool, vtkBitArray); 
+VTK_ARRAY_TRANSLATE(signed char, vtkSignedCharArray); 
 VTK_ARRAY_TRANSLATE(unsigned char, vtkUnsignedCharArray); 
 VTK_ARRAY_TRANSLATE(signed short, vtkShortArray); 
 VTK_ARRAY_TRANSLATE(unsigned short, vtkUnsignedShortArray); 
@@ -140,6 +141,7 @@ static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname)
 	C3DImage *result_image = nullptr; 
 	switch 	 (array->GetDataType()) {
 	case VTK_BIT:            result_image=read_image<bool>(size, array); break; 
+	case VTK_SIGNED_CHAR:    result_image=read_image<signed char>(size, array); break; 
 	case VTK_UNSIGNED_CHAR:  result_image=read_image<unsigned char>(size, array); break; 
 	case VTK_SHORT:          result_image=read_image<signed short>(size, array); break; 
 	case VTK_UNSIGNED_SHORT: result_image=read_image<unsigned short>(size, array); break; 
@@ -153,7 +155,8 @@ static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname)
 	case VTK_DOUBLE:         result_image=read_image<double>(size, array); break;  
 	default:
 		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,"): "
-							 "data type ", vtk_image->GetScalarTypeAsString(), " not supported"); 
+							 "data type ", vtk_image->GetScalarTypeAsString(), 
+							 "(", array->GetDataType(), ") not supported"); 
 	}
 	return result_image; 
 }
@@ -217,6 +220,7 @@ CVtk3DImageIOPlugin::CVtk3DImageIOPlugin():
 {
 	// indicate support for all pixel types available (only scalar types are possible)
 	add_supported_type(it_bit);
+	add_supported_type(it_sbyte);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_sshort);
 	add_supported_type(it_ushort);
@@ -291,7 +295,7 @@ const string CVtk3DImageIOPlugin::do_get_descr() const
 
 
 CVtkXML3DImageIOPlugin::CVtkXML3DImageIOPlugin():
-	C3DImageIOPlugin("vtk")
+	C3DImageIOPlugin("vti")
 {
 	// indicate support for all pixel types available (only scalar types are possible)
 	add_supported_type(it_bit);
