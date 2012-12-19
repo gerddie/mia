@@ -54,33 +54,6 @@ using namespace vtkimage;
 #undef LONG_64BIT
 #endif 
 
-CVtk3DImageIOPlugin::CVtk3DImageIOPlugin():
-	C3DImageIOPlugin("vtk")
-{
-	// indicate support for all pixel types available (only scalar types are possible)
-	add_supported_type(it_bit);
-	add_supported_type(it_ubyte);
-	add_supported_type(it_sshort);
-	add_supported_type(it_ushort);
-	add_supported_type(it_sint);
-	add_supported_type(it_uint);
-
-#ifdef LONG_64BIT
-	add_supported_type(it_slong);
-	add_supported_type(it_ulong);
-#endif 
-
-	add_supported_type(it_float);
-	add_supported_type(it_double);
-
-       
-	add_suffix(".vtk");
-	add_suffix(".VTK");
-	add_suffix(".vtkimage");
-	add_suffix(".VTKimage");
-
-}
-
 template <typename T> 
 struct __vtk_data_array {
 	typedef void type;
@@ -130,69 +103,57 @@ C3DImage *read_image(const C3DBounds& size, vtkDataArray *scalars)
 	return result; 
 }
 
-CVtk3DImageIOPlugin::PData CVtk3DImageIOPlugin::do_load(const string&  fname) const
+static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname) 
 {
-	
-	auto reader = vtkSmartPointer<vtkDataSetReader>::New(); 
-	reader->SetFileName(fname.c_str()); 
-	if (!reader->OpenVTKFile()) 
-		return CVtk3DImageIOPlugin::PData(); 
-	
-	reader->Update(); 
-	
-	auto image = dynamic_cast<vtkImageData*>(reader->GetOutput());
-
-	if (!image)
-		return PData(); 
-	
-	int dim = image->GetDataDimension();
+	int dim = vtk_image->GetDataDimension();
 	if (dim != 3)
-		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,"): Expect 3 dimensions but got ", dim); 
+		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,
+							 "): Expect 3 dimensions but got ", dim); 
 
-	int components = image->GetNumberOfScalarComponents(); 
+	int components = vtk_image->GetNumberOfScalarComponents(); 
 	if (components != 1) 
-		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,"): only scalar pixel values are allowed, "
+		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,
+							 "): only scalar pixel values are allowed, "
 							 "but got ", components, " components"); 
 	
-	auto dims = image->GetDimensions();
+	auto dims = vtk_image->GetDimensions();
 	C3DBounds size(dims[0], dims[1], dims[2]); 
 	
-	if (image->GetNumberOfPoints() != size.product()) 
-		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,"):Got ", image->GetNumberOfPoints(), 
+	if (vtk_image->GetNumberOfPoints() != size.product()) 
+		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,
+							 "):Got ", vtk_image->GetNumberOfPoints(), 
 							 " values but require ", size.product());
 
-	auto points = image->GetPointData(); 
+	auto points = vtk_image->GetPointData(); 
 	if (!points) 
-		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,"): No point data available");
+		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,
+							 "): No point data available");
 
 	int index; 
 	auto array = points->GetArray("image", index); 
 	if (!array) 
-		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,"): no image found");
-		
-	P3DImage result_image; 
+		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,
+							 "): no image found");
+	
+	C3DImage *result_image = nullptr; 
 	switch 	 (array->GetDataType()) {
-	case VTK_BIT:            result_image.reset(read_image<bool>(size, array)); break; 
-	case VTK_UNSIGNED_CHAR:  result_image.reset(read_image<unsigned char>(size, array)); break; 
-	case VTK_SHORT:          result_image.reset(read_image<signed short>(size, array)); break; 
-	case VTK_UNSIGNED_SHORT: result_image.reset(read_image<unsigned short>(size, array)); break; 
-	case VTK_INT:            result_image.reset(read_image<signed int>(size, array)); break;  
-	case VTK_UNSIGNED_INT:   result_image.reset(read_image<unsigned int>(size, array)); break; 
-		
+	case VTK_BIT:            result_image=read_image<bool>(size, array); break; 
+	case VTK_UNSIGNED_CHAR:  result_image=read_image<unsigned char>(size, array); break; 
+	case VTK_SHORT:          result_image=read_image<signed short>(size, array); break; 
+	case VTK_UNSIGNED_SHORT: result_image=read_image<unsigned short>(size, array); break; 
+	case VTK_INT:            result_image=read_image<signed int>(size, array); break;  
+	case VTK_UNSIGNED_INT:   result_image=read_image<unsigned int>(size, array); break; 
 #ifdef LONG_64BIT
-	case VTK_LONG:           result_image.reset(read_image<signed long>(size, array)); break; 
-	case VTK_UNSIGNED_LONG:  result_image.reset(read_image<unsigned long>(size, array)); break; 
+	case VTK_LONG:           result_image=read_image<signed long>(size, array); break; 
+	case VTK_UNSIGNED_LONG:  result_image=read_image<unsigned long>(size, array); break; 
 #endif 
-	case VTK_FLOAT:          result_image.reset(read_image<float>(size, array)); break; 
-	case VTK_DOUBLE:         result_image.reset(read_image<double>(size, array)); break;  
+	case VTK_FLOAT:          result_image=read_image<float>(size, array); break; 
+	case VTK_DOUBLE:         result_image=read_image<double>(size, array); break;  
 	default:
 		throw create_exception<invalid_argument>("CVtk3DImageIOPlugin::load (", fname ,"): "
-							 "data type ", image->GetScalarTypeAsString(), " not supported"); 
+							 "data type ", vtk_image->GetScalarTypeAsString(), " not supported"); 
 	}
-	
-	CVtk3DImageIOPlugin::PData result(new Data); 
-	result->push_back(result_image); 
-	return result; 
+	return result_image; 
 }
 
 
@@ -232,6 +193,74 @@ public:
 }; 
 
 
+static vtkSmartPointer<vtkImageData> image_mia_to_vtk(const C3DImage& mia_image) 
+{
+	auto outimage = vtkSmartPointer<vtkImageData>::New();
+	outimage->SetOrigin(0,0,0); 
+	auto dx = mia_image.get_voxel_size(); 
+	outimage->SetSpacing(dx.x, dx.y, dx.z); 
+	outimage->SetDimensions(mia_image.get_size().x, mia_image.get_size().y, mia_image.get_size().z); 
+
+        FSetArray set_array; 
+	auto array = mia::filter(set_array, mia_image);
+	array->SetName("image"); 
+	
+	outimage->GetPointData()->AddArray(array); 
+	return outimage; 
+	
+}
+
+CVtk3DImageIOPlugin::CVtk3DImageIOPlugin():
+	C3DImageIOPlugin("vtk")
+{
+	// indicate support for all pixel types available (only scalar types are possible)
+	add_supported_type(it_bit);
+	add_supported_type(it_ubyte);
+	add_supported_type(it_sshort);
+	add_supported_type(it_ushort);
+	add_supported_type(it_sint);
+	add_supported_type(it_uint);
+
+#ifdef LONG_64BIT
+	add_supported_type(it_slong);
+	add_supported_type(it_ulong);
+#endif 
+
+	add_supported_type(it_float);
+	add_supported_type(it_double);
+
+       
+	add_suffix(".vtk");
+	add_suffix(".VTK");
+	add_suffix(".vtkimage");
+	add_suffix(".VTKimage");
+
+}
+
+CVtk3DImageIOPlugin::PData CVtk3DImageIOPlugin::do_load(const string&  fname) const
+{
+	
+	auto reader = vtkSmartPointer<vtkDataSetReader>::New(); 
+	reader->SetFileName(fname.c_str()); 
+	if (!reader->OpenVTKFile()) 
+		return CVtk3DImageIOPlugin::PData(); 
+	
+	reader->Update(); 
+	
+	auto vtk_image = dynamic_cast<vtkImageData*>(reader->GetOutput());
+
+	if (!vtk_image)
+		return PData(); 
+	
+
+	CVtk3DImageIOPlugin::PData result(new Data); 	
+	result->push_back(P3DImage(image_vtk_to_mia(vtk_image, fname))); 
+	return result; 
+}
+
+
+
+
 
 bool CVtk3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
@@ -240,21 +269,10 @@ bool CVtk3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 							 "but you passed in ", data.size(), " images"); 
 
 	const auto& image = *data[0];
-
-	auto outimage = vtkSmartPointer<vtkImageData>::New();
-	outimage->SetOrigin(0,0,0); 
-	auto dx = image.get_voxel_size(); 
-	outimage->SetSpacing(dx.x, dx.y, dx.z); 
-	outimage->SetDimensions(image.get_size().x, image.get_size().y, image.get_size().z); 
-
-        FSetArray set_array; 
-	auto array = mia::filter(set_array, image);
-	array->SetName("image"); 
 	
-	outimage->GetPointData()->AddArray(array); 
-
+	auto outimage = image_mia_to_vtk(image); 
+	
 	// add writing of the image
-	
 	auto writer = vtkSmartPointer<vtkDataSetWriter>::New(); 
 	writer->SetInput(outimage); 
 	writer->SetFileTypeToBinary();
