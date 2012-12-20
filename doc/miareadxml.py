@@ -296,16 +296,22 @@ class CParam:
 class CRangeParam(CParam):
     def __init__(self, node):
         CParam.__init__(self,node)
-        self.min = node.get("min")
-        self.max = node.get("max")
+        self.min = None
+        self.max = None
+        
+        for r in node:
+            if r.tag == "range":
+                self.min = r.get("min")
+                self.max = r.get("max")
 
     def do_print_man(self):
-        print "in [%s, %s]" % (escape_dash(self.min), escape_dash(self.max))
+        if (self.min is not None) and (self.max is not None):
+            print "in [%s, %s]" % (escape_dash(self.min), escape_dash(self.max))
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
         e = etree.SubElement(row, "entry", align="left", valign="top")
-        e.text = p.test + " in [%s, %s]" % (self.min, self.max)
+        e.text = self.text + " in [%s, %s]" % (self.min, self.max)
 
 
 class CDictParam(CParam):
@@ -437,12 +443,15 @@ class CPlugin:
         for child in node:
             if child.tag == "param": 
                 p = {
-                   "range":   lambda n: CRangeParam(n), 
-                   "factory": lambda n: CFactoryParam(n),
-                   "io":      lambda n: CIOParam(n), 
-                   "set":     lambda n: CSetParam(n),
-                   "dict":    lambda n: CDictParam(n),
-                   }.get(child.get("type"), lambda n: CParam(n))(child)
+                    "int":   lambda n: CRangeParam(n),
+                    "uint":   lambda n: CRangeParam(n),
+                    "float":   lambda n: CRangeParam(n),
+                    "double":   lambda n: CRangeParam(n), 
+                    "factory": lambda n: CFactoryParam(n),
+                    "io":      lambda n: CIOParam(n), 
+                    "set":     lambda n: CSetParam(n),
+                    "dict":    lambda n: CDictParam(n),
+                    }.get(child.get("type"), lambda n: CParam(n))(child)
 
                 self.params.append(p)
             elif child.tag == "noparam": 
