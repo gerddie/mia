@@ -74,7 +74,7 @@ P3DImage  EXPORT_3D run_filter_chain(P3DImage image, const std::vector<const cha
 	for (auto fd = filters.begin(); fd != filters.end(); ++fd) {
 		auto f = fh.produce(*fd);
 		if (!f)
-			throw create_exception<invalid_argument>( "unable to create filter from '", *fd , "'");
+			throw create_exception<std::invalid_argument>( "unable to create filter from '", *fd , "'");
 		image = f->filter(*image);
 	}
 	return image; 

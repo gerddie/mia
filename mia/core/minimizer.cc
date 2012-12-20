@@ -30,6 +30,9 @@
 
 NS_MIA_BEGIN
 
+using std::stringstream; 
+using std::invalid_argument; 
+
 const char *const CMinimizer::type_descr = "singlecost"; 
 const char *const CMinimizer::data_descr = "minimizer"; 
 

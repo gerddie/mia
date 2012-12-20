@@ -25,6 +25,8 @@
 
 NS_MIA_BEGIN
 
+using std::runtime_error; 
+
 const char* fft2d_kernel_data::data_descr = "fft2d";
 
 CFFT2DKernel::CFFT2DKernel():

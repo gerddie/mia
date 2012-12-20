@@ -32,6 +32,7 @@
 
 NS_MIA_BEGIN
 using std::vector; 
+using std::stringstream; 
 using std::invalid_argument; 
 using std::numeric_limits; 
 

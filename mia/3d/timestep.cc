@@ -96,9 +96,9 @@ C3DRegTimeStepPlugin::C3DRegTimeStepPlugin(const char *name):
 	m_max(2.0)
 {
 	typedef CParamList::PParameter PParameter;
-	add_parameter("min", new CFloatParameter(m_min, 0.001, numeric_limits<float>::max(),
+	add_parameter("min", new CFloatParameter(m_min, 0.001, std::numeric_limits<float>::max(),
 							   false, "minimum time step allowed"));
-	add_parameter("max", new CFloatParameter(m_max, 0.002, numeric_limits<float>::max(),
+	add_parameter("max", new CFloatParameter(m_max, 0.002, std::numeric_limits<float>::max(),
 							       false, "maximum time step allowed"));
 }
 

@@ -27,6 +27,7 @@
 #include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
+using std::numeric_limits; 
 
 C2DRegTimeStep::C2DRegTimeStep(float min, float max):
 	m_min(min),

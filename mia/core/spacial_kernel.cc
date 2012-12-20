@@ -28,6 +28,7 @@
 
 NS_MIA_BEGIN
 using namespace boost;
+using namespace std;
 
 const char *spacial_kernel_data::data_descr = "1d";
 const char *kernel_plugin_type::type_descr = "spacialkernel";

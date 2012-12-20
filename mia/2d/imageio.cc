@@ -28,6 +28,9 @@
 
 NS_MIA_BEGIN
 
+using namespace std; 
+
+
 const char *io_2dimage_type::data_descr = "2dimage";
 
 C2DImageVector *C2DImageVector::clone() const

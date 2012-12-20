@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- 
-     This is the scheme describing the storing of 
-     manual segmentations of the myocardial perfusion series. 
+     This is the scheme describing the XML output of the help-xml
+     option. 
      
      Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
      
@@ -28,8 +28,8 @@
   <xs:attribute name="default" type="xs:string"/>
   <xs:attribute name="name" type="xs:string"/>
   <xs:attribute name="type" type="xs:string"/>
-  <xs:attribute name="min" type="xs:string"/>
-  <xs:attribute name="max" type="xs:string"/>
+  <xs:attribute name="min" type="xs:float"/>
+  <xs:attribute name="max" type="xs:float"/>
   
   <!-- complex elements -->
   <xs:element name="name" type="xs:string" />
@@ -86,13 +86,13 @@
   
   <xs:element name="option">
     <xs:complexType mixed="true" >
-      <xs:sequence>
-	<xs:element ref="dict" minOccurs="0" maxOccurs="1"/>
-	<xs:element ref="range" minOccurs="0" maxOccurs="1"/>
-	<xs:element ref="set" minOccurs="0" maxOccurs="1"/>
-	<xs:element ref="io" minOccurs="0" maxOccurs="1"/>
-	<xs:element ref="factory" minOccurs="0" maxOccurs="1"/>
-      </xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="1">
+	<xs:element ref="dict" />
+	<xs:element ref="range" />
+	<xs:element ref="set" />
+	<xs:element ref="io" />
+	<xs:element ref="factory" />
+      </xs:choice>
       <xs:attribute ref="short"/>
       <xs:attribute ref="long" use="required"/>
       <xs:attribute ref="required" use="required"/>
@@ -104,20 +104,20 @@
 
   <xs:element name="param">
     <xs:complexType mixed="true">
-      <xs:sequence>
-	<xs:element ref="dict" minOccurs="0" maxOccurs="1"/>
-	<xs:element ref="range" minOccurs="0" maxOccurs="1"/>
-	<xs:element ref="set" minOccurs="0" maxOccurs="1"/>
-	<xs:element ref="io" minOccurs="0" maxOccurs="1"/>
-	<xs:element ref="factory" minOccurs="0" maxOccurs="1"/>
-      </xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="1">
+	<xs:element ref="dict"/>
+	<xs:element ref="range"/>
+	<xs:element ref="set"/>
+	<xs:element ref="io"/>
+	<xs:element ref="factory"/>
+      </xs:choice>
       <xs:attribute ref="name" use="required"/>
       <xs:attribute ref="required" use="required"/>
       <xs:attribute ref="default" use="required"/>
       <xs:attribute ref="type" use="required"/>
     </xs:complexType>
   </xs:element>
-
+  
   <xs:element name="group">
     <xs:complexType mixed="true">
       <xs:sequence>

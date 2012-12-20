@@ -126,6 +126,40 @@ const std::string  to_string(typename boost::call_traits<T>::param_type v)
 	return result.str(); 
 }
 
+
+/*
+  The special handling of floating point values is needed, 
+  because c++ writes out inf/-inf for infinity, but XML 
+  expects uppercase INF/-INF. 
+*/
+template <typename T> 
+const std::string  to_string_fp(T v)
+{
+	std::stringstream result;
+	int inf = isinf(v); 
+	if (!inf) {
+		result << v; 
+	} else {
+		if (inf < 0) 
+			result << "-"; 
+		result << "INF"; 
+	}
+	return result.str(); 
+}
+
+template <> 
+inline const std::string  to_string<float>(float v)
+{
+	return to_string_fp(v); 
+}
+
+template <> 
+inline const std::string  to_string<double>(double v)
+{
+	return to_string_fp(v); 
+}
+
+
 NS_MIA_END
 
 #endif

@@ -25,6 +25,8 @@
 
 NS_MIA_BEGIN
 
+using std::invalid_argument; 
+
 C2DMorphShape::C2DMorphShape():
 	m_foreground_mask(new C2DShape()), 
 	m_background_mask(new C2DShape())

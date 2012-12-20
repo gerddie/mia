@@ -27,7 +27,7 @@
 
 NS_MIA_BEGIN
 using namespace boost;
-
+using std::invalid_argument; 
 
 C2DImageCombiner::~C2DImageCombiner()
 {

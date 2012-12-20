@@ -56,7 +56,7 @@ P3DImage  EXPORT_3D load_image3d(const std::string& filename)
 	if (in_image_list.get() && !in_image_list->empty())
 		return (*in_image_list)[0];
 	else
-		throw create_exception<runtime_error>( "load_image3d: unable to load 3D image from '", filename, "'");
+		throw create_exception<std::runtime_error>( "load_image3d: unable to load 3D image from '", filename, "'");
 
 }
 

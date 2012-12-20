@@ -66,7 +66,7 @@ TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 		fsuffix = fname; 
 	
 	if (fsuffix[0] != '.') 
-		fsuffix = string(".") + fsuffix; 
+		fsuffix = std::string(".") + fsuffix; 
 	
 	cvdebug() << "looking up plugin for '" << fsuffix << "'\n"; 
 
@@ -243,12 +243,12 @@ bool TIOPluginHandler<I>::save(const std::string& fname, const Data& data) const
 	
 	// bail out with an error
 	if (!p) {
-		stringstream errmsg; 
+		std::stringstream errmsg; 
 		errmsg << "Unable to find an appropriate plugin to save to file "
 		       << " '" << fname << "' (based on its extension) "; 
  		if (!data.get_source_format().empty())
 			errmsg << " or to format = '" << data.get_source_format() << "'";
-		throw invalid_argument(errmsg.str()); 
+		throw std::invalid_argument(errmsg.str()); 
 	}
 	return p->save(fname, data); 
 }

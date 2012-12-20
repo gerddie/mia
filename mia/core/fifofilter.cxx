@@ -25,7 +25,6 @@
 #include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
-using namespace std; 
 
 
 // implementation 

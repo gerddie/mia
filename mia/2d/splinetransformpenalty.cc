@@ -25,7 +25,7 @@
 
 
 NS_MIA_BEGIN
-
+using namespace std; 
 
 const char *C2DSplineTransformPenalty::data_descr = "transform";
 const char *C2DSplineTransformPenalty::type_descr = "2dsplinepenalty"; 
