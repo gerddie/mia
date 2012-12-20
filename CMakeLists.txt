@@ -264,37 +264,10 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 # 
 # search for some cblas
 # 
-# Note, on Gentoo on can use 'eselect blas set X' to select the actual BLAS provider
-# 
-# 
-FIND_LIBRARY(BLAS_LIBRARY NAMES "blas" PATHS
-  /usr/lib
-  /usr/local/lib
-  )
 
-IF(NOT BLAS_LIBRARY)
-  #try mkl 
-  FIND_LIBRARY(MKLIF_LIBRARY NAMES "mkl_intel_lp64" PATHS
-    /opt/intel/mkl/lib/intel64 
-    )
-  FIND_LIBRARY(MKL_sequential_LIBRARY NAMES "mkl_sequential" PATHS
-    /opt/intel/mkl/lib/intel64 
-    )
-  FIND_LIBRARY(MKL_core_LIBRARY NAMES "mkl_core" PATHS
-    /opt/intel/mkl/lib/intel64 
-    )
-  IF (MKL_core_LIBRARY AND MKL_sequential_LIBRARY AND MKLIF_LIBRARY)
-    set(BLAS_LIBRARY ${MKLIF_LIBRARY} ${MKL_sequential_LIBRARY}
-      ${MKL_core_LIBRARY} 
-      )
-  ENDIF(MKL_core_LIBRARY AND MKL_sequential_LIBRARY AND MKLIF_LIBRARY)
-ENDIF(NOT BLAS_LIBRARY)
+pkg_check_modules(BLAS blas REQUIRED)
 
-IF (BLAS_LIBRARY) 
-  ADD_DEFINITIONS(-DHAVE_BLAS)
-ELSE(BLAS_LIBRARY) 
-  MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required")
-ENDIF(BLAS_LIBRARY)
+ADD_DEFINITIONS(-DHAVE_BLAS)
 #
 # End BLAS 
 # 
@@ -393,7 +366,7 @@ IF(WITH_ITPP)
     #if ITPP was found check if it supports the return value in separate 
     INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkITPPBoolseparate.cmake)
     IF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-      MESSAGE(WARNING "You are using  an unpatched version of IT++"
+      MESSAGE(WARNING "You are using  an unpatched version of IT++. "
 	"In this version using APPROACH_DEFL may run forever, and FastICA::separate " 
 	"doesn't return a value indicating success, "
 	"therefore, APPROACH_DEFL will not be used. See also: "
