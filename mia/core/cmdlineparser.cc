@@ -258,6 +258,10 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	usage_text << " " << name_help << " "; 
 
 	for (auto g = options.begin(); g != options.end(); ++g) {
+		// no need to store empty groups 
+		if (g->second.empty()) 
+			continue; 
+		
 		Element* group = nodeRoot->add_child("group"); 
 		group->set_attribute("name", g->first); 
 		
