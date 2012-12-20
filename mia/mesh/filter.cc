@@ -26,6 +26,7 @@
 
 NS_MIA_BEGIN
 using namespace boost;
+using namespace std;
 
 
 PTriangleMesh  EXPORT_MESH run_filter_chain(PTriangleMesh mesh, const std::vector<const char *>& filters)
