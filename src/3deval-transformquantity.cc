@@ -204,7 +204,7 @@ int do_main( int argc, char *argv[] )
 	fprintf(output, "MIA\n"); 
 	fprintf(output, "tensorfield {\n"); 
 	fprintf(output, "  dim=3\n"); 
-        fprintf(output, "  interpretation=%s", tqmap.get_name(quantity)); 
+        fprintf(output, "  interpretation=%s\n", tqmap.get_name(quantity)); 
 	fprintf(output, "  repn=float32\n");
 	const auto size = t->get_size(); 
 	fprintf(output, "  size=%d %d %d\n", size.x, size.y, size.z); 
@@ -237,11 +237,10 @@ int do_main( int argc, char *argv[] )
 		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  component_description=%s\n", components.c_str()); 
 		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
-		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  style=%s\n", style.c_str()); 
 		fprintf(output, "}\n" );
 		
-		if (fwrite(&tensorfield[0], element_size,  tensorfield.size(), output) != tensorfield.size())
+		if (fwrite(&tensorfield[0], sizeof(C3DFMatrix),  tensorfield.size(), output) != tensorfield.size())
 			throw create_exception<runtime_error>("Unable to write data to '", out_filename, "':", 
 							      strerror(errno));
 
@@ -261,11 +260,10 @@ int do_main( int argc, char *argv[] )
 		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  component_description=%s\n", components.c_str()); 
 		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
-		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  style=%s\n", style.c_str()); 
 		fprintf(output, "}\n" );
 		
-		if (fwrite(&tensorfield[0], element_size,  tensorfield.size(), output) != tensorfield.size())
+		if (fwrite(&tensorfield[0], sizeof(SSparseStracPoint),  tensorfield.size(), output) != tensorfield.size())
 			throw create_exception<runtime_error>("Unable to write data to '", out_filename, "':", 
 							      strerror(errno));
 						      
