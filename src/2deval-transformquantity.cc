@@ -204,7 +204,7 @@ int do_main( int argc, char *argv[] )
 	fprintf(output, "MIA\n"); 
 	fprintf(output, "tensorfield {\n"); 
 	fprintf(output, "  dim=2\n"); 
-        fprintf(output, "  interpretation=%s", tqmap.get_name(quantity)); 
+        fprintf(output, "  interpretation=%s\n", tqmap.get_name(quantity)); 
 	fprintf(output, "  repn=float32\n");
 	const auto size = t->get_size(); 
 	fprintf(output, "  size=%d %d\n", size.x, size.y); 
@@ -260,7 +260,6 @@ int do_main( int argc, char *argv[] )
 		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  component_description=%s\n", components.c_str()); 
 		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
-		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  style=%s\n", style.c_str()); 
 		fprintf(output, "}\n" );
 		
