@@ -262,10 +262,19 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 
 ################################################################################
 # 
-# search for some cblas
+# search for some blas
 # 
 
-pkg_check_modules(BLAS blas REQUIRED)
+pkg_check_modules(BLAS blas) 
+IF(NOT BLAS_FOUND) 
+  FIND_LIBRARY(BLAS_LIBRARIES NAMES "blas" PATHS
+    /usr/lib
+    /usr/local/lib
+    )
+  IF (NOT BLAS_LIBRARIES) 
+    MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
+  ENDIF(NOT BLAS_LIBRARIES) 
+ENDIF(NOT BLAS_FOUND) 
 
 ADD_DEFINITIONS(-DHAVE_BLAS)
 #
