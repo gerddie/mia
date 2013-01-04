@@ -26,6 +26,7 @@
 #include <string>
 #include <boost/call_traits.hpp>
 #include <memory>
+#include <cmath>
 #include <mia/core/defines.hh>
 #include <mia/core/errormacro.hh>
 

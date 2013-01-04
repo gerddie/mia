@@ -89,7 +89,7 @@ private:
    \returns the loaded transformation or an empty shared:ptr
 */
 template <typename T>
-T load_transform(const std::string& file) {
+T load_transform(const std::string& MIA_PARAM_UNUSED(file)) {
 	static_assert(sizeof(T) == 0, "this needs to specialized for the handled type"); 
 }
 

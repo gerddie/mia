@@ -156,7 +156,7 @@ const T3DMatrix<T> T3DMatrix<T>::_1(T3DVector< T >(1,0,0),
 				 T3DVector< T >(0,0,1));
 
 template <typename T> 
-const T3DMatrix<T> T3DMatrix<T>::_0;
+const T3DMatrix<T> T3DMatrix<T>::_0 = T3DMatrix<T>();
 
 
 template <typename T> 
