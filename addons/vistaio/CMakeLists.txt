@@ -91,8 +91,9 @@ SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/2dvf/io)
 
 SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
 
-PLUGIN_PRE(2d-imageio 2dvistaio "${DEPS2D}" "${image2dio_path}")
-PLUGIN_PRE(3d-imageio 3dvistaio "${DEPS3D}" "${image3dio_path}")
+SINGLEPLUGIN_WITH_TEST_AND_PREFIX("2d-imageio-vista" 2dvistaio "${DEPS2D}" "${image2dio_path}")
+SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-imageio-vista" 3dvistaio  "${DEPS3D}" "${image3dio_path}")
+
 PLUGIN_PRE(2d-vfio 2dvfvistaio "${DEPS2D}" "${vf2dio_path}")
 PLUGIN_PRE(3d-vfio 3dvfvistaio "${DEPS3D}" "${vf3dio_path}")
 PLUGIN_PRE(3d-mesh vistamesh "${DEPSMESH}" "${meshio_path}")

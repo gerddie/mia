@@ -41,55 +41,78 @@
 
 template <typename T>
 struct vista_repnkind {
-	enum {value = VistaIOUnknownRepn};
+	static const VistaIORepnKind value = VistaIOUnknownRepn;
+	static const bool is_unsigned = false; 
 	typedef void type;
 };
 
 template <>
 struct vista_repnkind<unsigned char> {
-	enum {value = VistaIOUByteRepn};
+	static const VistaIORepnKind value = VistaIOUByteRepn;
+	static const bool is_unsigned = true; 
 	typedef VistaIOUByte type;
 };
 
 template <>
 struct vista_repnkind<signed char> {
-	enum {value = VistaIOSByteRepn};
+	static const VistaIORepnKind value = VistaIOSByteRepn;
+	static const bool is_unsigned = false; 
 	typedef VistaIOSByte type;
 };
 
 template <>
 struct vista_repnkind<short> {
-	enum {value = VistaIOShortRepn};
+	static const VistaIORepnKind value = VistaIOShortRepn;
+	static const bool is_unsigned = false; 
 	typedef VistaIOShort type;
 };
 
 template <>
 struct vista_repnkind<int> {
-	enum {value = VistaIOLongRepn};
+	static const VistaIORepnKind value = VistaIOLongRepn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOLong type;
+};
+
+template <>
+struct vista_repnkind<unsigned short> {
+	static const VistaIORepnKind value = VistaIOShortRepn;
+	static const bool is_unsigned = true; 
+	typedef VistaIOShort type;
+};
+
+template <>
+struct vista_repnkind<unsigned int> {
+	static const VistaIORepnKind value = VistaIOLongRepn;
+	static const bool is_unsigned = true; 
 	typedef VistaIOLong type;
 };
 
 template <>
 struct vista_repnkind<float> {
-	enum {value = VistaIOFloatRepn};
+	static const VistaIORepnKind value = VistaIOFloatRepn;
+	static const bool is_unsigned = false; 
 	typedef VistaIOFloat type;
 };
 
 template <>
 struct vista_repnkind<double> {
-	enum {value = VistaIODoubleRepn};
+	static const VistaIORepnKind value = VistaIODoubleRepn;
+	static const bool is_unsigned = false; 
 	typedef VistaIODouble type;
 };
 
 template <>
 struct vista_repnkind<bool> {
-	enum {value = VistaIOBitRepn};
+	static const VistaIORepnKind value = VistaIOBitRepn;
+	static const bool is_unsigned = false; 
 	typedef VistaIOBit type;
 };
 
 template <>
 struct vista_repnkind<std::string> {
-	enum {value = VistaIOStringRepn};
+	static const VistaIORepnKind value = VistaIOStringRepn;
+	static const bool is_unsigned = false; 
 	typedef VistaIOString type;
 };
 
@@ -97,7 +120,12 @@ struct vista_repnkind<std::string> {
 template <typename I, typename O>
 struct dispatch_creat_vimage {
 	static VistaIOImage apply(I begin, I end, size_t x, size_t y, size_t z) {
-		VistaIOImage result = VistaIOCreateImage(z, y, x, (VistaIORepnKind)vista_repnkind<typename std::iterator_traits<I>::value_type>::value);
+		typedef typename std::iterator_traits<I>::value_type pixel_type; 
+		VistaIOImage result = VistaIOCreateImage(z, y, x, vista_repnkind<pixel_type>::value);
+		
+		VistaIOSetAttr(VistaIOImageAttrList(result), "repn-unsigned", NULL, VistaIOBitRepn, 
+			       vista_repnkind<pixel_type>::is_unsigned);
+
 		std::copy(begin, end, (O *)VistaIOPixelPtr(result,0,0,0));
 		return result;
 	}
