@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 static const char info[] =
 	"%s is Copyright\n"
-	"    (c) 1999-2012 Leipzig, Germany and Madrid, Spain \n"
+	"    (c) 1999-2013 Leipzig, Germany and Madrid, Spain \n"
 	""
 	"and it comes with  ABSOLUTELY NO WARRANTY. You may redistribute .\n"
 	"it under the terms of the GNU GENERAL PUBLIC LICENSE (see below).\n"

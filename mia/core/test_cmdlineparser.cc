@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -439,7 +439,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "Example usage:\n  Example text\n"
 			  "    \n    test-program Example command\n\n"
 			  "Copyright:\n"
-			  "  This software is Copyright (c) 1999-2012 Leipzig, Germany and \n"
+			  "  This software is Copyright (c) 1999-2013 Leipzig, Germany and \n"
 			  "  Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and you may \n"
 			  "  redistribute it under the terms of the GNU GENERAL PUBLIC LICENSE \n"
 			  "  Version 3 (or later). For more information run the program with the\n"
