@@ -53,7 +53,7 @@ const string CCmdStringOption::do_get_value_as_string() const
 void CCmdStringOption::do_write_value(std::ostream& os) const
 {
 	if (m_value.empty()) 
-		if (required)
+		if (is_required())
 			os << "[required] "; 
 		else
 			os << "=NULL ";
