@@ -52,7 +52,7 @@ const SProgramDescription g_description = {
 	{pdi_example_descr, "Register the perfusion series given in segment.set by optimizing a "
 	 "spline based transformation with a coefficient rate of 16 pixel using Mutual Information "
 	 "and penalize the transformation by using divcurl with aweight of 2.0."}, 
-	{pdi_example_code, "-i segment.set -o registered.set -F spline:rate=16 "
+	{pdi_example_code, "-i segment.set -o registered.set -f spline:rate=16 "
 	 "image:cost=mi,weight=2.0 divcurl:weight=2.0"}
 }; 
 

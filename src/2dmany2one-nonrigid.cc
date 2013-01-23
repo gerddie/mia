@@ -55,7 +55,7 @@ const SProgramDescription g_general_help = {
 	 "Skip two images at the beginning and using mutual information as cost function, "
 	 "and penalize the transformation by divcurl with weight 5. "
 	 "Store the result in 'registeredXXXX.png'."}, 
-	{pdi_example_code, "  -i input0000.png -o registered%04d.png -k 2 -r 30 mi divcurl:weight=5"}
+	{pdi_example_code, "  -i input0000.png -o registered%04d.png -k 2 -r 30 image:cost=mi divcurl:weight=5"}
 }; 
 
 C2DFullCostList create_costs(const std::vector<string>& costs, int idx)

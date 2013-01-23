@@ -58,7 +58,7 @@ const SProgramDescription g_general_help = {
 	 "Store the result in 'registered.set'.\n"}, 
 	
 	
-	{pdi_example_code, "  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5"}
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2  -r 30 image:cost=mi divcurl:weight=5"}
 }; 
 
 int do_main( int argc, char *argv[] )
