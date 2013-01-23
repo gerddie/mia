@@ -67,6 +67,7 @@ IF(CREATE_USERDOC)
       ${XSLTPROC} ARGS 
       --param chunk.section.depth 3 
       --param chunk.first.sections 1 
+      --param use.id.as.filename 1 
       --stringparam html.stylesheet  progref.css 
       --output "userref/" 
       ${HTML_CHUNK_FILEPATH}/chunk.xsl progref.xml
