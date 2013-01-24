@@ -43,12 +43,14 @@ const SProgramDescription g_description = {
 	 "use case will be to sort labels of connected components in out-of-core image processing."}, 
 }; 
 
-typedef pair<double, size_t> CEntry; 
+typedef pair<unsigned short, size_t> CEntry; 
 
-bool operator < (const CEntry& a, const CEntry& b) 
-{
-	return a.second < b.second; 
-}
+struct FEntryCompare {
+	bool operator () (const CEntry& a, const CEntry& b) const {
+		return a.second < b.second; 
+		
+	}
+}; 
 
 
 int do_main(int argc, char *argv[]) 
@@ -65,15 +67,17 @@ int do_main(int argc, char *argv[])
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
-	priority_queue<CEntry> hist; 
+	priority_queue<CEntry, vector<CEntry>, FEntryCompare> hist; 
 	
 	ifstream ifs( in_filename); 
 	
 	CEntry entry; 
 	while (ifs.good()) {
 		ifs >> entry.first >> entry.second; 
-		hist.push(entry); 
-	}
+		if (ifs.good())
+			hist.push(entry); 
+	} ; 
+	
 	ifs.close(); 
 		
 
@@ -81,11 +85,13 @@ int do_main(int argc, char *argv[])
 		
 	CLabelMap result; 
 
-	size_t pos = 0; 		
+	unsigned short pos = 0; 		
 	while (!hist.empty()) {
 		CEntry e = hist.top(); 
 		hist.pop(); 
-		result[e.second] = pos++;
+		if (e.second > 0) {
+			result[e.first] = pos++;
+		}
 	}
 
 	
