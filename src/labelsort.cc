@@ -80,11 +80,12 @@ int do_main(int argc, char *argv[])
 	cvmsg() << "got a (label) histogram with " << hist.size() << " values\n";
 		
 	CLabelMap result; 
-		
+
+	size_t pos = 0; 		
 	while (!hist.empty()) {
 		CEntry e = hist.top(); 
 		hist.pop(); 
-		result[e.second] = e.first;
+		result[e.second] = pos++;
 	}
 
 	
