@@ -50,8 +50,8 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 {
 	set<string> test_data = {
 		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", "erode", "gauss", "gradnorm", 
-		"growmask", "invert", "kmeans",  "label", "mask", "median", "mlv", "open",  "reorient", "resize",
-		"sandp", "scale", "selectbig", "sepconv", "sws", "ws" 
+		"growmask", "invert", "isovoxel", "kmeans",  "label", "mask", "median", "mlv", "open",  "reorient", "resize",
+		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "ws" 
 	}; 
 	test(C3DFilterPluginHandler::instance().get_set(), test_data); 
 }
@@ -70,6 +70,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageIOPluginHandler,PluginTestFixture)
 		"analyze",  
 		"inria", 
 		"vff", 
+		"vti", 
 		"vtk", 
 		"dicom", 
 		"vista", 
@@ -97,7 +98,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageCreatorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DTransformCreatorHandler,PluginTestFixture) 
 {
 	set<string> test_data = { 
-		"affine", "rigid", "spline", "translate"
+		"affine", "rigid", "spline", "translate", "rotation", "vf"
 	}; 
 	test(C3DTransformCreatorHandler::instance().get_set(), test_data); 
 }
@@ -162,7 +163,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DRegModelPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_CMeshIOPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = { 
-		"datapool", "off", "vista", "ply", "stl"
+		"datapool", "off", "vista", "ply", "stl", "vtk"
 	}; 
 
 	test(CMeshIOPluginHandler::instance().get_set(), test_data); 
@@ -228,7 +229,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DImageCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DImageIOPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data =  {
-		"bmp", "exr", "datapool", "dicom", "png", "raw", "tif", "vista"
+		"bmp", "exr", "datapool", "dicom", "jpg", "png", "raw", "tif", "vista"
 	}; 
 	test(C2DImageIOPluginHandler::instance().get_set(), test_data); 
 }
