@@ -27,6 +27,7 @@
 #include <mia/3d/filter/scale.hh>
 
 
+
 NS_BEGIN(scale_3dimage_filter)
 
 NS_MIA_USE;
@@ -38,17 +39,18 @@ C3DScale::C3DScale(const C3DBounds& size, const string& filter):
 	m_size(size),
 	m_ipf(new C3DInterpolatorFactory(produce_spline_kernel(filter), "mirror"))
 {
-
+	TRACE_FUNCTION; 
 }
 
 template <class T>
 C3DScale::result_type C3DScale::operator () (const T3DImage<T>& src) const
 {
+	TRACE_FUNCTION; 
 	if (src.get_size() == m_size)
 		return C3DScale::result_type(new T3DImage<T>(src));
 
 	C3DBounds target_size( m_size.x ? m_size.x : src.get_size().x, 
-			       m_size.y ? m_size.y : src.get_size().y, 
+ 			       m_size.y ? m_size.y : src.get_size().y, 
 			       m_size.z ? m_size.z : src.get_size().z ); 
 	
 	T3DImage<T> *result = new T3DImage<T>(target_size, src);
@@ -78,7 +80,6 @@ C3DScale::result_type C3DScale::operator () (const T3DImage<T>& src) const
 	for (size_t z = 0; z < src.get_size().z; ++z) {
 		for (size_t x = 0; x < target_size.x; ++x) {
 			tmp.get_data_line_y(x, z, in_buffer);
-			cvdebug() << x << ", " << z << ":" << in_buffer << "\n"; 
 			copy(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin()); 
 			scaler_y.run(); 
 			copy(scaler_y.output_begin(), scaler_y.output_end(), out_buffer.begin());
@@ -106,6 +107,7 @@ C3DScale::result_type C3DScale::operator () (const T3DImage<T>& src) const
 
 C3DScale::result_type C3DScale::do_filter(const C3DImage& image) const
 {
+	TRACE_FUNCTION; 
 	return mia::filter(*this, image);
 }
 
@@ -152,11 +154,13 @@ CIsoVoxel::CIsoVoxel(float voxelsize, const std::string& interpolator):
 	
 CIsoVoxel::result_type CIsoVoxel::do_filter(const mia::C3DImage& image) const
 {
+	TRACE_FUNCTION; 
 	C3DFVector vs = image.get_voxel_size();
 	
-	C3DBounds target_size(static_cast<unsigned short>(image.get_size().x * vs.x/m_voxelsize), 
-			      static_cast<unsigned short>(image.get_size().y * vs.y/m_voxelsize), 
-			      static_cast<unsigned short>(image.get_size().z * vs.z/m_voxelsize)); 
+	C3DBounds target_size(static_cast<unsigned short>(image.get_size().x * fabs(vs.x)/m_voxelsize), 
+			      static_cast<unsigned short>(image.get_size().y * fabs(vs.y)/m_voxelsize), 
+			      static_cast<unsigned short>(image.get_size().z * fabs(vs.z)/m_voxelsize)); 
+	cvdebug() << "scale image to " <<target_size <<  "\n"; 
 		   
 	// todo: with this approach, the voxel size may not become exactly what is requested. 
 	// this would require more handywork. 
@@ -166,6 +170,7 @@ CIsoVoxel::result_type CIsoVoxel::do_filter(const mia::C3DImage& image) const
 
 CIsoVoxel::result_type CIsoVoxel::do_filter(P3DImage image) const
 {
+	TRACE_FUNCTION; 
 	C3DFVector vs = image->get_voxel_size();
 	if (vs.x != m_voxelsize || vs.y != m_voxelsize || vs.z != m_voxelsize) 
 		return do_filter(*image); 
