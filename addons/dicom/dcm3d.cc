@@ -117,14 +117,15 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 		m_slice_pos = new_slice_pos;
 	}
 	assert(m_z < m_nz);
-	target->put_data_plane_xy(m_z, image);
+	target->put_data_plane_xy(m_delta_z < 0 ? m_nz - 1 - m_z: m_z, image);
 	++m_z;
 	return true;
 }
 
 P3DImage C3DImageCreator::get_image() const
 {
-	m_result->set_voxel_size(C3DFVector(m_pixel_size.x, m_pixel_size.y, m_delta_z));
+	m_result->set_voxel_size(C3DFVector(m_pixel_size.x, m_pixel_size.y, 
+					    m_delta_z > 0 ? m_delta_z : - m_delta_z));
 	m_result->delete_attribute(IDSliceLocation);
 	m_result->delete_attribute(IDInstanceNumber);
 
