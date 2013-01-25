@@ -34,22 +34,18 @@ using namespace std;
 using namespace boost;
 namespace bfs= ::boost::filesystem;
 
-CScale::CScale(const C3DBounds& size, const string& filter):
+C3DScale::C3DScale(const C3DBounds& size, const string& filter):
 	m_size(size),
 	m_ipf(new C3DInterpolatorFactory(produce_spline_kernel(filter), "mirror"))
 {
 
 }
 
-CScale::~CScale()
-{
-}
-
 template <class T>
-CScale::result_type CScale::operator () (const T3DImage<T>& src) const
+C3DScale::result_type C3DScale::operator () (const T3DImage<T>& src) const
 {
 	if (src.get_size() == m_size)
-		return CScale::result_type(new T3DImage<T>(src));
+		return C3DScale::result_type(new T3DImage<T>(src));
 
 	C3DBounds target_size( m_size.x ? m_size.x : src.get_size().x, 
 			       m_size.y ? m_size.y : src.get_size().y, 
@@ -61,9 +57,9 @@ CScale::result_type CScale::operator () (const T3DImage<T>& src) const
 	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, target_size.y);
 	C1DScalarFixed scaler_z(*m_ipf->get_kernel(), src.get_size().z, target_size.z);
 
-	C3DFVector factor(float(target_size.x) / float(src.get_size().x), 
-			  float(target_size.y) / float(src.get_size().y), 
-			  float(target_size.z) / float(src.get_size().z)); 
+	C3DFVector factor(float(src.get_size().x / float(target_size.x)), 
+			  float(src.get_size().y / float(target_size.y)), 
+			  float(src.get_size().z / float(target_size.z))); 
 
 	// run x-scaling 
 	T3DImage<double> tmp(C3DBounds(target_size.x, src.get_size().y, src.get_size().z)); 
@@ -105,10 +101,10 @@ CScale::result_type CScale::operator () (const T3DImage<T>& src) const
 	}
 
 	result->set_voxel_size(src.get_voxel_size() * factor);
-	return CScale::result_type(result);
+	return C3DScale::result_type(result);
 }
 
-CScale::result_type CScale::do_filter(const C3DImage& image) const
+C3DScale::result_type C3DScale::do_filter(const C3DImage& image) const
 {
 	return mia::filter(*this, image);
 }
@@ -139,7 +135,7 @@ C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 
 C3DFilter *C3DScaleFilterPlugin::do_create()const
 {
-	return new CScale(m_s, m_interp);
+	return new C3DScale(m_s, m_interp);
 }
 
 const string C3DScaleFilterPlugin::do_get_descr()const
@@ -147,9 +143,63 @@ const string C3DScaleFilterPlugin::do_get_descr()const
 	return "3D image scale filter";
 }
 
+
+CIsoVoxel::CIsoVoxel(float voxelsize, const std::string& interpolator):
+	m_voxelsize(voxelsize), 
+	m_interp(interpolator)
+{
+}
+	
+CIsoVoxel::result_type CIsoVoxel::do_filter(const mia::C3DImage& image) const
+{
+	C3DFVector vs = image.get_voxel_size();
+	
+	C3DBounds target_size(static_cast<unsigned short>(image.get_size().x * vs.x/m_voxelsize), 
+			      static_cast<unsigned short>(image.get_size().y * vs.y/m_voxelsize), 
+			      static_cast<unsigned short>(image.get_size().z * vs.z/m_voxelsize)); 
+		   
+	// todo: with this approach, the voxel size may not become exactly what is requested. 
+	// this would require more handywork. 
+	C3DScale scaler(target_size, m_interp);
+	return  scaler.filter(image); 
+}
+
+CIsoVoxel::result_type CIsoVoxel::do_filter(P3DImage image) const
+{
+	C3DFVector vs = image->get_voxel_size();
+	if (vs.x != m_voxelsize || vs.y != m_voxelsize || vs.z != m_voxelsize) 
+		return do_filter(*image); 
+	return image;
+}
+
+
+
+CIsoVoxelFilterPlugin::CIsoVoxelFilterPlugin():
+	C3DFilterPlugin("isovoxel"),
+	m_voxelsize(1.0),
+	m_interp("bspline:d=3")
+{
+	add_parameter("size", new CFloatParameter(m_voxelsize, 0.001, 1e+6, false,"isometric target voxel size"));
+	add_parameter("interp", new CStringParameter(m_interp, false, "interpolation method to be used"));
+	
+}
+
+mia::C3DFilter *CIsoVoxelFilterPlugin::do_create()const
+{
+	return new CIsoVoxel(m_voxelsize, m_interp); 
+}
+
+const std::string CIsoVoxelFilterPlugin::do_get_descr()const
+{
+	return "This filter scales an image to make the voxel size isometric "
+		"and its size to correspond to the given value"; 
+}
+
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C3DScaleFilterPlugin();
+	auto retval = new C3DScaleFilterPlugin();
+	retval->append_interface(new CIsoVoxelFilterPlugin()); 
+	return retval; 
 }
 
 NS_END

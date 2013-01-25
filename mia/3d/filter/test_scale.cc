@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/3d/filter/scale.hh>
 
 NS_MIA_USE
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	CScale scaler(C3DBounds(4,4,4), "bspline:d=3");
+	C3DScale scaler(C3DBounds(4,4,4), "bspline:d=3");
 
 	P3DImage scaled = scaler.filter(fimage);
 
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 
 	const C3DSSImage& fscaled = dynamic_cast<const C3DSSImage& >(*scaled);
 
-	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(1.0f, 1.5f, 2.0f));
+	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(4.0f, 6.0f, 8.0f));
 
 	for (size_t i = 0; i < 64; ++i) {
 		cvdebug() << i << ":" << fscaled[i] << " - " << test[i] << '\n'; 
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	CScale scaler(C3DBounds(4, 4, 4), "bspline:d=3");
+	C3DScale scaler(C3DBounds(4, 4, 4), "bspline:d=3");
 
 	P3DImage scaled = scaler.filter(fimage);
 
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 
 	const auto fscaled = dynamic_cast<const C3DFImage& >(*scaled);
 
-	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(1.0f, 1.5f, 2.0f));
+	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(4.0f, 6.0f, 8.0f));
 
 	for (size_t i = 0; i < 64; ++i) {
 		cvdebug() << i << ":" << fscaled[i] << " - " << test_float[i] << '\n'; 
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE( test_noscale_float )
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	CScale scaler(C3DBounds(0, 0, 0), "bspline:d=3");
+	C3DScale scaler(C3DBounds(0, 0, 0), "bspline:d=3");
 
 	P3DImage scaled = scaler.filter(fimage);
 
@@ -271,8 +271,8 @@ const float init_float[8*64] = {
 	
 };
 
-	// this data is the actual outcome of the downscaling 
-	// so it's no real test 
+// this data is the actual outcome of the downscaling 
+// so it's no real test 
 const float test_float[64] = {
 	0.38376388,   0.284638166, 1.37324274, 1.27411711,
 	0.185512438,  0.0863867104,1.17499137, 1.07586563,
@@ -291,3 +291,29 @@ const float test_float[64] = {
 	5.92413425,   5.82500887,  6.91361332, 6.81448746,
 	5.72588301,   5.62675714,  6.71536207, 6.61623621
 };
+
+
+BOOST_AUTO_TEST_CASE( test_isoscale_float )
+{
+	C3DFImage fimage(C3DBounds(8, 8, 8), init_float );
+	fimage.set_voxel_size(C3DFVector(.5, .5, .5));
+
+
+	auto isofy = BOOST_TEST_create_from_plugin<CIsoVoxelFilterPlugin>("isovoxel:size=1"); 
+
+	P3DImage scaled = isofy->filter(fimage);
+	
+	BOOST_CHECK_EQUAL(scaled->get_size(),C3DBounds(4, 4, 4));
+
+	const auto fscaled = dynamic_cast<const C3DFImage& >(*scaled);
+
+	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(1.f, 1.f, 1.f));
+
+	for (size_t i = 0; i < 64; ++i) {
+		cvdebug() << i << ":" << fscaled[i] << " - " << test_float[i] << '\n'; 
+		BOOST_CHECK_CLOSE(fscaled[i], test_float[i], 0.1); 
+	}
+		
+
+	
+}

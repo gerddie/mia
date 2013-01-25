@@ -26,23 +26,19 @@
 NS_BEGIN(scale_3dimage_filter)
 
 
-class CScale: public mia::C3DFilter {
+class C3DScale: public mia::C3DFilter {
 public:
-	CScale(const mia::C3DBounds& size, const std::string& interpolator);
-
-	~CScale();
+	C3DScale(const mia::C3DBounds& size, const std::string& interpolator);
 
 	template <typename  T>
 	mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& data) const;
 
 private:
-	CScale::result_type do_filter(const mia::C3DImage& image) const;
+	C3DScale::result_type do_filter(const mia::C3DImage& image) const;
 
 	const mia::C3DBounds m_size;
-	std::auto_ptr<mia::C3DInterpolatorFactory> m_ipf;
+	std::unique_ptr<mia::C3DInterpolatorFactory> m_ipf;
 };
-
-
 
 class C3DScaleFilterPlugin: public mia::C3DFilterPlugin {
 public:
@@ -51,6 +47,30 @@ public:
 	virtual const std::string do_get_descr()const;
 private:
 	mia::C3DBounds m_s; 
+	std::string m_interp;
+};
+
+
+class CIsoVoxel: public mia::C3DFilter {
+public:
+	CIsoVoxel(float voxelsize, const std::string& interpolator);
+
+private:
+	CIsoVoxel::result_type do_filter(const mia::C3DImage& image) const;
+	CIsoVoxel::result_type do_filter(mia::P3DImage image) const;
+
+	float m_voxelsize;
+	std::string m_interp;
+};
+
+
+class CIsoVoxelFilterPlugin: public mia::C3DFilterPlugin {
+public:
+	CIsoVoxelFilterPlugin();
+	virtual mia::C3DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+private:
+	float m_voxelsize;
 	std::string m_interp;
 };
 
