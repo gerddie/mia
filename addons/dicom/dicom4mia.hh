@@ -67,7 +67,6 @@ public:
 	P2DImage get_image() const;
 private:
 	template <typename T> P2DImage load_image()const;
-	void add_attribute(C2DImage& image, const char *key, bool required) const;
 
 	struct CDicomReaderData *impl;
 	std::string m_filename;

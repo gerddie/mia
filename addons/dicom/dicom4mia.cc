@@ -42,33 +42,40 @@ NS_MIA_BEGIN
 
 using namespace std;
 
+enum ETagRequirement {
+	tr_no, 
+	tr_yes, 
+	tr_yes_defaulted
+}; 
+
 typedef struct {
 	const char *const skey;
 	DcmTagKey key;
 	bool ismetadata;
-	bool required;
+	ETagRequirement required;
+	const char *const default_value;
 } SLookupInit;
 
 const SLookupInit lookup_init[] = {
-	{IDStudyDescription, DCM_StudyDescription, false, false},
-	{IDSeriesDescription, DCM_SeriesDescription, false, false},
-	{IDModality, DCM_Modality, false, true},
-	{IDSeriesNumber, DCM_SeriesNumber, false, true},
-	{IDPatientPosition, DCM_PatientPosition, false, false},
-	{IDAcquisitionDate, DCM_AcquisitionDate, false, true},
-	{IDAcquisitionNumber, DCM_AcquisitionNumber, false, true},
-	{IDSmallestImagePixelValue, DCM_SmallestImagePixelValue, false, false},
-	{IDLargestImagePixelValue, DCM_LargestImagePixelValue, false, false},
-	{IDInstanceNumber, DCM_InstanceNumber, false, true},
-	{IDStudyID, DCM_StudyID, false, false},
-	{IDImageType, DCM_ImageType, false, true},
-	{IDSliceLocation, DCM_SliceLocation, false, true},
-	{IDPatientOrientation, DCM_PatientOrientation, false, false},
-	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, true},
-	{IDSOPClassUID, DCM_SOPClassUID, false, false},
-	{IDProtocolName, DCM_ProtocolName, false, false},
-	{IDTestValue, DcmTagKey(), false, false},
-	{NULL, DcmTagKey(), false, false}
+	{IDStudyDescription, DCM_StudyDescription, false, tr_no, NULL},
+	{IDSeriesDescription, DCM_SeriesDescription, false, tr_no, NULL},
+	{IDModality, DCM_Modality, false, tr_yes, NULL},
+	{IDSeriesNumber, DCM_SeriesNumber, false, tr_yes_defaulted, "-1"},
+	{IDPatientPosition, DCM_PatientPosition, false, tr_no, NULL},
+	{IDAcquisitionDate, DCM_AcquisitionDate, false, tr_yes, NULL},
+	{IDAcquisitionNumber, DCM_AcquisitionNumber, false, tr_yes_defaulted, "-1"},
+	{IDSmallestImagePixelValue, DCM_SmallestImagePixelValue, false, tr_no, NULL},
+	{IDLargestImagePixelValue, DCM_LargestImagePixelValue, false, tr_no, NULL},
+	{IDInstanceNumber, DCM_InstanceNumber, false, tr_yes_defaulted, "-1"},
+	{IDStudyID, DCM_StudyID, false, tr_no, NULL},
+	{IDImageType, DCM_ImageType, false, tr_yes, NULL},
+	{IDSliceLocation, DCM_SliceLocation, false, tr_yes, NULL},
+	{IDPatientOrientation, DCM_PatientOrientation, false, tr_no, NULL},
+	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, tr_yes, NULL},
+	{IDSOPClassUID, DCM_SOPClassUID, false, tr_no, NULL},
+	{IDProtocolName, DCM_ProtocolName, false, tr_no, NULL},
+	{IDTestValue, DcmTagKey(), false, tr_no, NULL},
+	{NULL, DcmTagKey(), false, tr_no, NULL}
 };
 
 class LookupMap {
@@ -98,6 +105,8 @@ struct CDicomReaderData {
 	Uint16 getUint16(const DcmTagKey &tagKey, bool required);
 
 	string getAttribute(const string& key, bool required);
+
+	void add_attribute(C2DImage& image, const char *key, ETagRequirement required, const char *default_value); 
 
 	template <typename T>
 	void getPixelData(T2DImage<T>& image);
@@ -170,12 +179,6 @@ string CDicomReader::get_attribute(const std::string& name, bool required)const
 }
 
 
-void CDicomReader::add_attribute(C2DImage& image, const char *key, bool required) const
-{
-	string value = get_attribute(key, required);
-	if (!value.empty())
-		image.set_attribute(key, value);
-}
 
 template <typename T>
 P2DImage CDicomReader::load_image()const
@@ -194,9 +197,10 @@ P2DImage CDicomReader::load_image()const
 	const SLookupInit *attr_table = lookup_init;
 	while (attr_table->skey) {
 		// copy some attributes
-		this->add_attribute(*result, attr_table->skey, attr_table->required);
+		impl->add_attribute(*result, attr_table->skey, attr_table->required, attr_table->default_value);
 		++attr_table;
 	}
+	
 
 	return presult;
 }
@@ -268,6 +272,16 @@ string CDicomReaderData::getAttribute(const string& key, bool required)
 	}
 	return string(); 
 }
+
+void CDicomReaderData::add_attribute(C2DImage& image, const char *key, ETagRequirement  required, const char *default_value)
+{
+	string value = getAttribute(key, required == tr_yes);
+	if (!value.empty())
+		image.set_attribute(key, value);
+	else if (required == tr_yes_defaulted) 
+		image.set_attribute(key, string(default_value));
+}
+
 
 template <typename T>
 void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& image)
