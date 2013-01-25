@@ -85,22 +85,24 @@ int do_main( int argc, char *argv[] )
 
 	// read image
 	auto  in_image_list = imageio.load(in_filename);
+	if (!in_image_list) 
+		throw create_exception<runtime_error>("Unable to read 3D image from '", in_filename, "'");
 
+	if (in_image_list->empty()) 
+		throw create_exception<runtime_error>("Got empty image list from '", in_filename, "'");
 
-	if (in_image_list.get() && in_image_list->size()) {
-		auto filter_name = filter_chain.begin();
-		for (auto f = filters.begin();  f != filters.end(); ++f, ++filter_name) {
-			cvmsg() << "Run filter: " << *filter_name << "\n";
-			for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
-				*i = (*f)->filter(**i);
-		}
-
-		if ( !imageio.save(out_filename, *in_image_list) ){
-			string not_save = ("unable to save result to ") + out_filename;
-			throw runtime_error(not_save);
-		};
-
+	auto filter_name = filter_chain.begin();
+	for (auto f = filters.begin();  f != filters.end(); ++f, ++filter_name) {
+		cvmsg() << "Run filter: " << *filter_name << "\n";
+		for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
+			*i = (*f)->filter(**i);
 	}
+	cvdebug() << "Save image to '" << out_filename << "\n"; 
+	
+	if ( !imageio.save(out_filename, *in_image_list) ){
+		throw create_exception<runtime_error>("Unable to save result to '", out_filename, "'");
+	}
+	
 	return EXIT_SUCCESS;
 
 }

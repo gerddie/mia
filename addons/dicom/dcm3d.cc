@@ -162,18 +162,24 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::get_images(const vector<P2DImage>
 	CAquisitions acc;
 
 	// read all the images into a map
-	for(vector<P2DImage>::const_iterator i =  candidates.begin();
-	    i != candidates.end(); ++i) {
+	for(auto i =  candidates.begin();   i != candidates.end(); ++i) {
 		if ( (*i)->has_attribute(IDAcquisitionNumber) &&
 		     (*i)->has_attribute(IDInstanceNumber) &&
 		     (*i)->has_attribute(IDSeriesNumber)) {
 			acc[(*i)->get_attribute(IDAcquisitionNumber)]
 				[(*i)->get_attribute(IDSeriesNumber)].push(*i);
+		}else{
+			cvwarn() << "Discard image because of no "
+				 << ((*i)->has_attribute(IDAcquisitionNumber) ? "" : "aquisition") 
+				 << ((*i)->has_attribute(IDInstanceNumber) ? "" : "instance") 
+				 << ((*i)->has_attribute(IDSeriesNumber) ? "" : "series")
+				 << " number\n"; 
+				
 		}
 	}
 
-	for (CAquisitions::iterator a = acc.begin(); a != acc.end(); ++a) {
-		for (CImageSeries::iterator s = a->second.begin(); s != a->second.end(); ++s) {
+	for (auto a = acc.begin(); a != acc.end(); ++a) {
+		for (auto s = a->second.begin(); s != a->second.end(); ++s) {
 			P3DImage image = get_3dimage(s->second);
 			if (image)
 				result->push_back(image);
