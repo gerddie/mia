@@ -39,7 +39,7 @@ public:
 
 	void set_coefficients(const C2DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C2DFVectorfield& field);
-	void reinit()const;
+	void reinit();
 	C2DFVector apply( const C2DFVector& x) const;
 	C2DFVector scale( const C2DFVector& x) const;
 
@@ -99,7 +99,7 @@ private:
 
 	C2DSplineTransformation& operator = (const C2DSplineTransformation& org); 
 
-	void init_grid()const; 
+	void init_grid(); 
 	C2DFVector interpolate(const C2DFVector& x) const; 
 
 	void run_downscaler(C1DScalarFixed& scaler, std::vector<double>& out_buffer)const; 
@@ -109,19 +109,18 @@ private:
 	C2DFVectorfield m_coefficients;
 	PSplineKernel m_kernel; 
 	int m_shift; 
-	int m_enlarge; 
-	mutable C2DFVector m_scale;
-	mutable C2DFVector m_inv_scale;
-	mutable bool m_interpolator_valid;
+	C2DBounds m_enlarge; 
+	C2DFVector m_scale;
+	C2DFVector m_inv_scale;
+	bool m_interpolator_valid;
 	//mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  m_interpolator;
 	mutable std::shared_ptr<C2DPPDivcurlMatrix > m_divcurl_matrix; 
-	mutable std::vector<std::vector<double> > m_x_weights; 
-	mutable std::vector<int> m_x_indices; 
-	mutable std::vector<std::vector<double> > m_y_weights; 
-	mutable std::vector<int> m_y_indices; 
-	mutable CSplineDerivativeRow  m_mx; 
-	mutable CSplineDerivativeRow  m_my; 
-	mutable bool m_grid_valid; 
+	std::vector<std::vector<double> > m_x_weights; 
+	std::vector<int> m_x_indices; 
+	std::vector<std::vector<double> > m_y_weights; 
+	std::vector<int> m_y_indices; 
+	CSplineDerivativeRow  m_mx; 
+	CSplineDerivativeRow  m_my; 
 
 	PSplineBoundaryCondition m_xbc; 
 	PSplineBoundaryCondition m_ybc; 
