@@ -332,8 +332,6 @@ void C2DSplineTransformation::add(const C2DTransformation& a)
 	}
 	
 	m_coefficients = new_coef; 
-
-	m_interpolator_valid = false;
 }
 
 size_t C2DSplineTransformation::degrees_of_freedom() const
@@ -352,7 +350,6 @@ void C2DSplineTransformation::update(float step, const C2DFVectorfield& a)
 	while( ci != ce ) {
 		*ci++ += step * *ai++;
 	}
-	m_interpolator_valid = false;
 }
 
 C2DFMatrix C2DSplineTransformation::derivative_at(const C2DFVector& x) const
