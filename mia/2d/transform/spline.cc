@@ -133,7 +133,7 @@ void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfie
 void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 {
 	TRACE_FUNCTION;
-	m_interpolator_valid &= (m_coefficients.get_size() != field.get_size());
+	m_interpolator_valid &= (m_coefficients.get_size() == field.get_size());
 	m_coefficients = field;
 
 	m_xbc->set_width(field.get_size().x); 
