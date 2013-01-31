@@ -146,8 +146,7 @@ DEFEXE(3deval-transformquantity mia3d)
 DEFEXE(3dcost-translatedgrad mia3d)
 
 DEFEXE(plugin-help miamesh )
-DEFEXE(distance-mesh2mask miamesh )
-DEFEXE(distance-mesh-to-mask miamesh )
+DEFEXE(meshdistance-to-stackmask miamesh )
 DEFEXE(meshfilter miamesh )
 
 ADD_EXECUTABLE(mia-test-plugins-as-installed test_plugins_as_installed.cc)  
