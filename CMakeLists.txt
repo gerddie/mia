@@ -225,10 +225,6 @@ IF (MSYS OR MINGW)
   SET(BASELIBS ${BOOST_DEPS})
 ENDIF (MSYS OR MINGW)
 
-IF(UNIX)
-  GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
-  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} -lpthread -ldl")
-ENDIF(UNIX)
 #
 # end BOOST 
 #
@@ -249,6 +245,7 @@ ENDIF(TBB_FOUND)
 # End Intel Threading Building Blocks 
 #
 ################################################################################
+
 
 ################################################################################
 # 
@@ -275,6 +272,12 @@ IF(NOT BLAS_FOUND)
     MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
   ENDIF(NOT BLAS_LIBRARIES) 
 ENDIF(NOT BLAS_FOUND) 
+
+IF(UNIX)
+  GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
+  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${BLAS_LIBRARIES} ${TBB_LIBRARIES} -lpthread -ldl")
+ENDIF(UNIX)
+
 
 ADD_DEFINITIONS(-DHAVE_BLAS)
 #
