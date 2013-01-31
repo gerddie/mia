@@ -83,6 +83,7 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 	ADD(CNoiseGeneratorPluginHandler::instance);
 	ADD(CSplineBoundaryConditionPluginHandler::instance);
 	ADD(CSplineKernelPluginHandler::instance);
+	ADD(CMeshFilterPluginHandler::instance);
 
 #undef ADD
 	

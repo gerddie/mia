@@ -32,7 +32,7 @@ const SProgramDescription g_general_help = {
 	{pdi_description, "This program runs a series filters on a given input mesh. The filters "
 	 "are given as extra parameters on the command line and are run in the order in which they "
 	 "are given. To obtain a list of available filters you may run\n"
-	 "   'mia-plugin-help filter/mesh'\n"
+	 "   'mia-plugin-help mesh/filter'\n"
 	 "from the command line"}, 
 	{pdi_example_descr, "Run an isotropic scaling on input.vmesh to fit it into the box defined "
 	 "by the corners <0,0,0> - <128,128,128> and save the result to output.vmesh"}, 

@@ -23,5 +23,6 @@
 
 #include <mia/mesh/triangulate.hh>
 #include <mia/mesh/triangularMesh.hh>
+#include <mia/mesh/filter.hh>
 
 #endif
