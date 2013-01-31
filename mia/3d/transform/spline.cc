@@ -199,6 +199,7 @@ C3DBounds C3DSplineTransformation::get_enlarge() const
 	return m_enlarge; 
 }
 
+
 void C3DSplineTransformation::reinit() const
 {
 	if (m_scales_valid) 

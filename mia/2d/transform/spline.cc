@@ -37,20 +37,19 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_target_c_rate(1,1),
 	m_kernel(kernel),
 	m_shift(0), 
-	m_enlarge(0), 
+	m_enlarge(0, 0), 
 	m_scale(1.0, 1.0),
 	m_interpolator_valid(false),
 	m_x_weights(m_range.x), 
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y), 
-	m_grid_valid(false), 
 	m_xbc(produce_spline_boundary_condition("zero")), 
 	m_ybc(produce_spline_boundary_condition("zero"))
 {
 	
 	m_shift = m_kernel->get_active_halfrange() - 1; 
-	m_enlarge = 2*m_shift; 
+	m_enlarge.x = m_enlarge.y  = 2*m_shift; 
 	
 	TRACE_FUNCTION;
 	assert(m_range.x > 0);
@@ -70,10 +69,10 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
-	m_grid_valid(false), 
 	m_xbc(produce_spline_boundary_condition("zero")), 
 	m_ybc(produce_spline_boundary_condition("zero"))
 {
+	reinit(); 
 }
 
 C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, 
@@ -87,7 +86,6 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
-	m_grid_valid(false), 
 	m_xbc(produce_spline_boundary_condition("zero")), 
 	m_ybc(produce_spline_boundary_condition("zero"))
 {
@@ -100,15 +98,15 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 
 	
 	m_shift = m_kernel->get_active_halfrange() - 1; 
-	m_enlarge = 2*m_shift; 
+	m_enlarge.x = m_enlarge.y = 2*m_shift; 
 
-	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + m_enlarge,
-			size_t((range.y + c_rate.y - 1) / c_rate.y) + m_enlarge);
+	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + m_enlarge.x,
+			size_t((range.y + c_rate.y - 1) / c_rate.y) + m_enlarge.y);
 	m_coefficients = C2DFVectorfield(csize);
 	m_xbc->set_width(m_coefficients.get_size().x); 
 	m_ybc->set_width(m_coefficients.get_size().y); 
 
-	init_grid(); 
+	reinit(); 
 }
 
 void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfield& field)
@@ -135,28 +133,46 @@ void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfie
 void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 {
 	TRACE_FUNCTION;
-	m_interpolator_valid &= (m_coefficients.get_size() != field.get_size());
+	cvdebug() << "set_coefficients from " << m_coefficients.get_size() << " to " << field.get_size() << "\n"; 
+	m_interpolator_valid &= (m_coefficients.get_size() == field.get_size());
 	m_coefficients = field;
 
+	cvdebug() << "m_interpolator_valid=" << m_interpolator_valid << "\n"; 
 	m_xbc->set_width(field.get_size().x); 
 	m_ybc->set_width(field.get_size().y); 
 
-	init_grid(); 
+	reinit(); 
 }
 
-void C2DSplineTransformation::reinit() const
+void C2DSplineTransformation::reinit()
 {
 	TRACE_FUNCTION;
 	if (!m_interpolator_valid) {
 
 		cvdebug() << "C2DSplineTransformation::reinit applies\n";
-		m_scale.x = float(m_coefficients.get_size().x - 1 - m_enlarge) / (m_range.x - 1);
-		m_scale.y = float(m_coefficients.get_size().y - 1 - m_enlarge) / (m_range.y - 1);
-		m_inv_scale.x = float(m_range.x - 1) / (m_coefficients.get_size().x - 1 - m_enlarge);
-		m_inv_scale.y = float(m_range.y - 1) / (m_coefficients.get_size().y - 1 - m_enlarge);
+		m_scale = C2DFVector(m_coefficients.get_size() - C2DBounds::_1 - m_enlarge) / 
+			C2DFVector(m_range - C2DBounds::_1);
+		
+		m_inv_scale = C2DFVector::_1 / m_scale; 
 
 		m_mx = get_derivative_row(m_range.x, m_coefficients.get_size().x, m_scale.x); 
 		m_my = get_derivative_row(m_range.y, m_coefficients.get_size().y, m_scale.y); 
+
+		size_t n_elms = m_kernel->size(); 
+		for (size_t i = 0; i < m_range.x; ++i) {
+			m_x_weights[i].resize(n_elms); 
+			m_x_indices[i] = m_kernel->get_start_idx_and_value_weights(i * m_scale.x + m_shift, 
+										     m_x_weights[i]); 
+		}
+		m_x_weights[m_range.x-1].resize(n_elms - 1); 
+
+		for (size_t i = 0; i < m_range.y; ++i){
+			m_y_weights[i].resize(n_elms); 
+			m_y_indices[i] = m_kernel->get_start_idx_and_value_weights(i * m_scale.y + m_shift, 
+										     m_y_weights[i]); 
+		}
+		m_y_weights[m_range.y-1].resize(n_elms - 1); 
+		
 		m_interpolator_valid = true;
 	}
 }
@@ -240,15 +256,13 @@ void C2DSplineTransformation::set_parameters(const CDoubleVector& params)
 		f->x = *r++;
 		f->y = *r++;
 	}
-	m_interpolator_valid = false; 
-	reinit(); 
 }
 
 bool C2DSplineTransformation::refine()
 {
 	TRACE_FUNCTION;
-	C2DBounds csize(size_t((m_range.x + m_target_c_rate.x - 1) / m_target_c_rate.x) + m_enlarge,
-			size_t((m_range.y + m_target_c_rate.y - 1) / m_target_c_rate.y) + m_enlarge);
+	C2DBounds csize(size_t((m_range.x + m_target_c_rate.x - 1) / m_target_c_rate.x) + m_enlarge.x,
+			size_t((m_range.y + m_target_c_rate.y - 1) / m_target_c_rate.y) + m_enlarge.y);
 	
 	// no refinement necessary? 
 	if (csize.x <= m_coefficients.get_size().x && 
@@ -261,8 +275,8 @@ bool C2DSplineTransformation::refine()
 	T2DConvoluteInterpolator<C2DFVector> interp(m_coefficients, m_kernel);
 
 	C2DFVectorfield coeffs(csize);
-	C2DFVector dx((float)(m_coefficients.get_size().x - 1 - m_enlarge) / (float)(csize.x - 1 - m_enlarge),
-		      (float)(m_coefficients.get_size().y - 1 - m_enlarge) / (float)(csize.y - 1 - m_enlarge));
+	C2DFVector dx((float)(m_coefficients.get_size().x - 1 - m_enlarge.x) / (float)(csize.x - 1 - m_enlarge.x),
+		      (float)(m_coefficients.get_size().y - 1 - m_enlarge.y) / (float)(csize.y - 1 - m_enlarge.y));
 
 	C2DFVectorfield::iterator ic = coeffs.begin();
 
@@ -280,9 +294,6 @@ bool C2DSplineTransformation::refine()
 		}
 
 	set_coefficients(coeffs);
-	reinit();
-	m_grid_valid = false; 
-	init_grid(); 
 	return true; 
 }
 
@@ -323,8 +334,6 @@ void C2DSplineTransformation::add(const C2DTransformation& a)
 	}
 	
 	m_coefficients = new_coef; 
-
-	m_interpolator_valid = false;
 }
 
 size_t C2DSplineTransformation::degrees_of_freedom() const
@@ -343,7 +352,6 @@ void C2DSplineTransformation::update(float step, const C2DFVectorfield& a)
 	while( ci != ce ) {
 		*ci++ += step * *ai++;
 	}
-	m_interpolator_valid = false;
 }
 
 C2DFMatrix C2DSplineTransformation::derivative_at(const C2DFVector& x) const
@@ -406,6 +414,7 @@ void C2DSplineTransformation::set_identity()
 	TRACE_FUNCTION;
 	fill(m_coefficients.begin(), m_coefficients.end(), C2DFVector(0,0));
 	m_interpolator_valid = false;
+	reinit();
 }
 
 float C2DSplineTransformation::get_max_transform() const
@@ -430,37 +439,14 @@ float C2DSplineTransformation::get_max_transform() const
 
 }
 
-void C2DSplineTransformation::init_grid()const
+void C2DSplineTransformation::init_grid()
 {
 	TRACE_FUNCTION; 
 	reinit(); 
-	if (!m_grid_valid) {
-		cvdebug() << "really run C2DSplineTransformation::init_grid\n"; 
-		cvdebug() << "Range = " << m_range << "\n"; 
-		cvdebug() << "Coefs = " << m_coefficients.get_size() << "\n"; 			
-		cvdebug() << "scale = " << m_scale << "\n"; 			
-		// pre-evaluateof fixed-grid coefficients
-		// note: here, boundary conditions are of no consequence 
-		size_t n_elms = m_kernel->size(); 
-		std::vector<double> weights(n_elms); 
-		for (size_t i = 0; i < m_range.x; ++i) {
-			m_x_indices[i] = m_kernel->get_start_idx_and_value_weights(i * m_scale.x + m_shift, weights);
-			m_x_weights[i] = weights;
-			cvdebug() << "xrow("<< i << ") start=" << m_x_indices[i] << ", weights=" << weights<< "\n"; 
-
-		}
-		for (size_t i = 0; i < m_range.y; ++i) {
-			m_y_indices[i] = m_kernel->get_start_idx_and_value_weights(i * m_scale.y + m_shift, weights);
-			m_y_weights[i] = weights; 
-		}
-		m_grid_valid = true; 
-	}
 }
 
 C2DTransformation::const_iterator C2DSplineTransformation::begin() const
 {
-	reinit();
-	init_grid(); 
 	return C2DTransformation::const_iterator(new iterator_impl(C2DBounds(0,0), get_size(), *this));
 }
 
@@ -536,8 +522,6 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, CDouble
 	assert(params.size() == m_coefficients.size() * 2);
 	assert(gradient.get_size() == m_range); 
 
-	reinit(); 
-	
 	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, m_coefficients.get_size().y));
 	vector<C2DFVector> in_buffer(gradient.get_size().y); 
 	vector<C2DFVector> out_buffer(m_coefficients.get_size().y); 
@@ -574,7 +558,6 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, CDouble
 float  C2DSplineTransformation::pertuberate(C2DFVectorfield& v) const
 {
 	TRACE_FUNCTION;
-	reinit();
 	C2DFVectorfield::iterator iv = v.begin();
 	float max_gamma = 0.0f;
 	C2DFVector lx_max(0,0);
@@ -636,7 +619,6 @@ C2DFVector C2DSplineTransformation::on_grid(const C2DBounds& x) const
 {
 	assert(x.x < m_range.x); 
 	assert(x.y < m_range.y); 
-	assert(m_grid_valid); 
 	assert(m_interpolator_valid);
 
 	C2DFVector result; 
@@ -699,8 +681,6 @@ void C2DSplineTransformation::iterator_impl::do_y_increment()
 
 double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
-	reinit(); 
-	
 	// create PP matrices or adapt size 
 	if (!m_divcurl_matrix) 
 		m_divcurl_matrix.reset(new C2DPPDivcurlMatrix(m_coefficients.get_size(), m_range, 
@@ -715,8 +695,6 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVe
 
 double C2DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 {
-	reinit(); 
-	
 	// create PP matrices or adapt size 
 	if (!m_divcurl_matrix) 
 		m_divcurl_matrix.reset(new C2DPPDivcurlMatrix(m_coefficients.get_size(), m_range, 
