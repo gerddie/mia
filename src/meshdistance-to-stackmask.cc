@@ -76,6 +76,14 @@ private:
 }; 
 
 
+C2DFImage create_distance_image(const C3DDistance& distance, int slice) 
+{
+	C2DFImage result = distance.get_distance_slice(slice); 
+	transform(result.begin(), result.end(), result.begin(), [](float x){return sqrt(x);}); 
+	return result; 
+}
+
+
 int do_main( int argc, char *argv[] )
 {
 	string src_filename;
@@ -125,14 +133,19 @@ int do_main( int argc, char *argv[] )
 
 	C2DInterpolatorFactory  ipf("bspline:d=1", "zero"); 
 
-	C2DFImage z_low = distance.get_distance_slice(old_z_start); 
-	C2DFImage z_high =  distance.get_distance_slice(old_z_end); 
+	C2DFImage z_low = create_distance_image(distance, old_z_start); 
+	C2DFImage z_high =  create_distance_image(distance, old_z_end); 
 
 	shared_ptr<T2DInterpolator<float> > ipzlow(ipf.create(z_low.data())); 
 	shared_ptr<T2DInterpolator<float> > ipzhigh(ipf.create(z_high.data())); 
 	
 	int n = in_mesh->vertices_size();
 	int k = 0; 
+
+	float max_distance=0.0f; 
+	float min_distance=numeric_limits<float>::max(); 
+
+
 
 	while (iv != ev) {
 
@@ -143,16 +156,24 @@ int do_main( int argc, char *argv[] )
 		if (iv->z > old_z_end || iv->z < old_z_start ) {
 			int z_start = static_cast<int>(floor(iv->z)); 
 			int z_end   = z_start + 1;
+
+			cvinfo() << "Slice extrems:[" << setw(5) << old_z_start << ", " << setw(5)<< old_z_end << "]: " 
+				 << setw(10)<< min_distance << ", " 
+				 << setw(10)<< max_distance << "\n"; 
+
+
+			max_distance=0.0f;
+			min_distance=numeric_limits<float>::max(); 
 			
 			if (z_start == old_z_end) {
 				ipzlow = ipzhigh; 
-				ipzhigh.reset(ipf.create(distance.get_distance_slice(z_end).data())); 
+				ipzhigh.reset(ipf.create(create_distance_image(distance, z_end).data())); 
 			} else if (z_end == old_z_start) {
 				ipzhigh = ipzlow; 
-				ipzlow.reset(ipf.create(distance.get_distance_slice(z_start).data())); 
+				ipzlow.reset(ipf.create(create_distance_image(distance, z_start).data())); 
 			} else {
-				ipzhigh.reset(ipf.create(distance.get_distance_slice(z_end).data())); 
-				ipzlow.reset(ipf.create(distance.get_distance_slice(z_start).data())); 
+				ipzhigh.reset(ipf.create(create_distance_image(distance, z_end).data())); 
+				ipzlow.reset(ipf.create(create_distance_image(distance, z_start).data())); 
 			}
 			old_z_start = z_start; 
 			old_z_end = z_end; 
@@ -165,7 +186,16 @@ int do_main( int argc, char *argv[] )
 		float f_low = (*ipzlow)(point); 
 		float f_high = (*ipzhigh)(point);
 
-		*is = sqrt(f_low * fz + f_high * dz); 
+
+		*is = f_low * fz + f_high * dz; 
+
+		if (max_distance < *is) {
+			max_distance = *is; 
+		}
+
+		if (min_distance > *is) {
+			min_distance = *is; 
+		}
 		
 		++is; 
 		++iv; 
