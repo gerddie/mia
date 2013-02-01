@@ -450,6 +450,13 @@ struct less_then<T2DVector<T> > {
 	}
 }; 
 
+template <typename T>
+struct greater_then<T2DVector<T> > {
+	bool operator() (const T2DVector<T>& a, const T2DVector<T>& b) const {
+		return a.y > b.y || (a.y == b.y && a.x > b.x);
+	}
+}; 
+
 
 /// float valued 2D vector
 typedef T2DVector<float>    C2DFVector;
