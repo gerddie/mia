@@ -36,6 +36,18 @@
 NS_BEGIN(label_2dstack_filter)
 
 
+class CLabelRemapper {
+public: 
+	void clear(); 
+	
+	void add_pair(unsigned short a, unsigned short b); 
+	
+	mia::CLabelMap get_map() const; 
+private: 
+	std::set<mia::T2DVector<unsigned short>, 
+		 mia::less_then<mia::T2DVector<unsigned short>>> m_raw_map;
+}; 
+
 class C2DLabelStackFilter: public mia::C2DImageFifoFilter {
 public: 
 	typedef mia::C2DImage *result_type; 
@@ -61,8 +73,7 @@ private:
 
 	mia::P2DShape m_neigbourhood; 
 	mutable int   m_last_label;
-	std::set<mia::T2DVector<unsigned short>, 
-		 mia::less_then<mia::T2DVector<unsigned short> > > m_joints; 
+	CLabelRemapper m_joints; 
 	std::string   m_map_file;
 	bool m_first_pass; 
 

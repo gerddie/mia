@@ -114,16 +114,6 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_label , fifof_Fixture )
 	C2DLabelStackFilter filter("", shape ); 
 	call_test(filter);
 
-	auto jmap = filter.get_joints(); 
-	BOOST_CHECK_EQUAL(jmap.size(), 2u); 
-
-	auto val_pair = jmap.begin(); 
-	BOOST_CHECK_EQUAL(val_pair->first, 2); 
-	BOOST_CHECK_EQUAL(val_pair->second, 5); 
-	++val_pair; 
-	BOOST_CHECK_EQUAL(val_pair->first, 3); 
-	BOOST_CHECK_EQUAL(val_pair->second, 5); 
-
 }
 
 class C1n2DShape: public C2DShape {
@@ -133,6 +123,24 @@ public:
 	}
 };
 
+
+BOOST_AUTO_TEST_CASE( test_labelremap ) 
+{
+	CLabelRemapper remap; 
+
+	remap.add_pair(1,2); 
+	remap.add_pair(2,3); 
+	
+	
+	CLabelMap result = remap.get_map(); 
+	
+	BOOST_CHECK_EQUAL(result.size(), 2u); 
+	BOOST_REQUIRE(result.find(3) != result.end()); 
+	BOOST_CHECK_EQUAL(result[3], 1); 
+	BOOST_REQUIRE(result.find(2) != result.end()); 
+	BOOST_CHECK_EQUAL(result[2], 1); 
+
+}
 
 BOOST_AUTO_TEST_CASE( test_overflow ) 
 {
