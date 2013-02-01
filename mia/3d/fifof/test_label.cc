@@ -130,17 +130,27 @@ BOOST_AUTO_TEST_CASE( test_labelremap )
 
 	remap.add_pair(1,2); 
 	remap.add_pair(2,3); 
+	remap.add_pair(3,4); 
+	remap.add_pair(13,7); 
+	remap.add_pair(13,1); 
 	
 	
 	CLabelMap result = remap.get_map(); 
 	
-	BOOST_CHECK_EQUAL(result.size(), 2u); 
+	BOOST_CHECK_EQUAL(result.size(), 5u); 
 	BOOST_REQUIRE(result.find(3) != result.end()); 
-	BOOST_CHECK_EQUAL(result[3], 1); 
 	BOOST_REQUIRE(result.find(2) != result.end()); 
+	BOOST_REQUIRE(result.find(4) != result.end()); 
+	BOOST_REQUIRE(result.find(7) != result.end()); 
+	BOOST_REQUIRE(result.find(13) != result.end()); 
 	BOOST_CHECK_EQUAL(result[2], 1); 
+	BOOST_CHECK_EQUAL(result[3], 1); 
+	BOOST_CHECK_EQUAL(result[4], 1); 
+	BOOST_CHECK_EQUAL(result[7], 1); 
+	BOOST_CHECK_EQUAL(result[13], 1); 
 
-}
+}	
+
 
 BOOST_AUTO_TEST_CASE( test_overflow ) 
 {

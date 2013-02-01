@@ -205,18 +205,27 @@ CLabelMap CLabelRemapper::get_map() const
 		sorted.push(*i); 
 	
 	
+	
 
 	while (!sorted.empty()) {
-
 		auto v = sorted.top(); 
 		cvdebug() << "Top = " << v << "\n"; 
 		sorted.pop();
 		
+		// first check, if the value we map to is already mapped to a lower number
+		// if yes, take this mapping for the new value
 		auto m = result.find(v.y);
-		if (m != result.end()) 
+		if (m != result.end()) {
 			result[v.x] = m->second; 
-		else {
-			result[v.x] = v.y; 
+		} else {
+			// now test of the value to be mapped is already available 
+			// and if not add the new mapping, if yes, add a mapping for the target 
+			m = result.find(v.x);
+			if (m == result.end()) {
+				result[v.x] = v.y; 
+			} else {
+				result[v.y] = m->second; 
+			}
 		}
 	}
 	return result; 
