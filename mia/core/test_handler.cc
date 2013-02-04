@@ -24,24 +24,53 @@
 #include <iostream>
 #include <climits>
 
-#include <boost/any.hpp>
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-
+#include <mia/internal/autotest.hh>
 
 #include <mia/core/handler.hh>
+#include <mia/core/threadedmsg.hh>
 #include <mia/core/testplugin.hh>
+
+#include <tbb/task_scheduler_init.h>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
 
 NS_MIA_USE
 using namespace std;
 namespace bfs = ::boost::filesystem;
 
-BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler )
+
+BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 {
+	tbb::task_scheduler_init init(4);
 	CTestPluginHandler::set_search_path({bfs::path("testplug")});
 
-	const CTestPluginHandler::Instance& handler = CTestPluginHandler::instance();
+	auto callback = [](const tbb::blocked_range<int>& range){
+		
+		CThreadMsgStream thread_stream;
+		TRACE_FUNCTION; 
+		
+		for (auto i = range.begin(); i != range.end();++i) {
+			const CTestPluginHandler::Instance& handler = CTestPluginHandler::instance();
+			
+			
+			BOOST_CHECK(handler.size() == 3);
+			
+			BOOST_CHECK(handler.get_plugin_names() == "dummy1 dummy2 dummy3 ");
+			
+			BOOST_CHECK(handler.get_plugin("dummy3")->has_property(test_property));
+			BOOST_CHECK(!handler.get_plugin("dummy1")->has_property(test_property));
+		}
+		
+	}; 
+	
+	tbb::parallel_for(tbb::blocked_range<int>(0, 4, 1), callback);
+}
 
+
+BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler )
+{
+	const CTestPluginHandler::Instance& handler = CTestPluginHandler::instance();
 
 	BOOST_CHECK(handler.size() == 3);
 
@@ -51,6 +80,7 @@ BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler )
 	BOOST_CHECK(!handler.get_plugin("dummy1")->has_property(test_property));
 
 }
+
 
 BOOST_AUTO_TEST_CASE( test_windows_interface )
 {

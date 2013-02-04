@@ -158,8 +158,16 @@ public:
 	/// the name,plug-in pair \remark why do I need this 
 	typedef typename T::CPluginMap::value_type value_type;
 	
-	/// \returns a reference to the only instance of the plugin handler 
+	/**
+	   \returns a reference to the only instance of the plugin handler 
+	*/
 	static const T& instance(); 
+
+	/**
+	   \returns a pointer to the only instance of the plugin handler, it is possible that 
+	   this instance is not yet initialized.   
+	*/
+	static const T* pointer(); 
 protected:
 	/** initialize the handler singleton with a specific plugin search path 
 	    (used for running tests) 
@@ -173,6 +181,8 @@ protected:
 	static CMutex m_creation_mutex; 
 
 private: 
+	static const T& do_instance(bool require_initialization); 
+
 	static CPathNameArray m_searchpath; 
 	static bool m_is_created; 
 	static CMutex m_initialization_mutex;

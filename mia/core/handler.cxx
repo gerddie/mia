@@ -316,22 +316,35 @@ THandlerSingleton<T>::THandlerSingleton()
 	m_is_created = true; 
 }
 
-	
 template <typename T> 
 const T& THandlerSingleton<T>::instance()
 {
-	CScopedLock lock(m_creation_mutex); 
+	return do_instance(true);
+}
+
+template <typename T> 
+const T* THandlerSingleton<T>::pointer()
+{
+	return &do_instance(false);
+}
+
+template <typename T> 
+const T& THandlerSingleton<T>::do_instance(bool require_initialization)
+{
 	TRACE_FUNCTION; 
+	CScopedLock lock(m_creation_mutex); 
 	static THandlerSingleton me; 
 	cvdebug() << "m_is_initialized = " << m_is_initialized << "\n"; 
-	if (!m_is_initialized) {
-		cvdebug() << "not yet initialized: first check passed\n"; 
-		CScopedLock lock(m_initialization_mutex);
-		m_creation_mutex.unlock();
+
+	if (!m_is_initialized && require_initialization) {
+		TRACE("Unitialized state"); 
+		CScopedLock lock_init(m_initialization_mutex);
 		if (!m_is_initialized) {
-			m_is_initialized = true; 
+			TRACE("Enter locked unitialized state"); 
+			lock.release(); 
 			cvdebug() << "not yet initialized: second check passed\n"; 
 			me.initialise(m_searchpath);
+			m_is_initialized = true; 
 
 		}
 	}
