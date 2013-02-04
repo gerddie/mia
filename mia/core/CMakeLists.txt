@@ -177,7 +177,6 @@ SET(MIACORETEST_SRC
   test_core.cc
   test_cost.cc
   test_filter.cc
-  test_handler.cc
   test_kernels.cc
   test_optparam.cc
   test_optionparser.cc
@@ -292,6 +291,7 @@ NEW_TEST(filetools miacore)
 NEW_TEST(fixedwidthoutput miacore)
 NEW_TEST(flagstring  miacore)
 NEW_TEST(fullstats miacore)
+NEW_TEST(handler miacore)
 NEW_TEST(histogram miacore)
 NEW_TEST(index miacore)
 NEW_TEST(interpolator1d miacore)
