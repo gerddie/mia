@@ -109,7 +109,8 @@ CLabel::result_type CLabel::do_filter(const C2DImage& image) const
 C2DLabelFilterPlugin::C2DLabelFilterPlugin():
 	C2DFilterPlugin("label")
 {
-	add_parameter("n", make_param(m_mask, "4n", false, "Neighborhood mask to describe connectivity.")) ;
+	add_parameter("n", make_param(m_mask, "4n", false, 
+				      "Neighborhood mask to describe connectivity.")) ;
 }
 
 C2DFilter *C2DLabelFilterPlugin::do_create()const

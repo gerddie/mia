@@ -119,7 +119,8 @@ C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 
 	add_parameter("kernel", new CStringParameter(m_filter, false,
 						     "smoothing filter kernel to be applied "
-						     "(filter width is determined based on the scaling factor)"));
+						     "(filter width is determined based on the scaling factor)", 
+						     &C1DSpacialKernelPluginHandler::instance()));
 }
 
 C3DFilter *C3DDownscaleFilterPlugin::do_create()const
