@@ -320,13 +320,14 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	for (size_t z = 0; z < m_size.z; ++z)
 		for (size_t y = 0; y < m_size.y; ++y)
 			for (size_t x = 0; x < m_size.x; ++x, ++g) {
-				r[0] += g->x;
-				r[1] += g->y;
-				r[2] += g->z;
-				r[3] += -float(z) * g->y + float(y) * g->z; 
-				r[4] += -float(z) * g->x + float(x) * g->z; 
-				r[5] += -float(y) * g->x + float(x) * g->y; 
+				r[0] += -g->x;
+				r[1] += -g->y;
+				r[2] += -g->z;
+				r[3] += float(z) * g->y + float(y) * g->z; 
+				r[4] += float(z) * g->x + float(x) * g->z; 
+				r[5] += float(y) * g->x + float(x) * g->y; 
 			}
+	cvinfo()<< "\rTranslated gradient:" << r << "\n"; 
 	copy(r.begin(), r.end(), params.begin()); 
 }
 

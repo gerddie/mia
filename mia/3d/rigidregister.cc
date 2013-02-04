@@ -218,7 +218,7 @@ double  C3DRegGradientProblem::do_f(const CDoubleVector& x)
 	++m_feval; 
 	P3DImage temp = apply(x);
 	const double value = m_cost.value(*temp);
-	cvmsg() << "Cost(f="<<m_feval<<",g="<< m_geval <<") = " << value << "\r";
+	cvmsg() << "Cost(f="<<m_feval<<",g="<< m_geval <<") = " << value << "\n";
 	return value;
 }
 
@@ -228,7 +228,7 @@ void    C3DRegGradientProblem::do_df(const CDoubleVector& x, CDoubleVector&  g)
 
 	P3DImage temp = apply(x);
 
-	C3DFVectorfield gradient(m_model.get_size());
+	C3DFVectorfield gradient(m_transf.get_size());
 	m_cost.evaluate_force(*temp, 1.0, gradient);
 	m_transf.translate(gradient, g);
 }
@@ -238,11 +238,11 @@ double  C3DRegGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 	++m_geval; 
 	++m_feval;
 	P3DImage temp = apply(x);
-	C3DFVectorfield gradient(m_model.get_size());
+	C3DFVectorfield gradient(m_transf.get_size());
 	const double value = m_cost.evaluate_force(*temp, 1.0, gradient);
 	m_transf.translate(gradient, g);
 
-	cvmsg() << "Cost(f="<<m_feval<<",g="<< m_geval <<") = " << value << "\r";
+	cvmsg() << "Cost(f="<<m_feval<<",g="<< m_geval <<") = " << value << "\n";
 	return value;
 }
 
