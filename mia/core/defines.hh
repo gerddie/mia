@@ -95,7 +95,7 @@ NS_MIA_END
 #ifndef __GNUC__
 // remove the __attribute__ syntax if the compiler is not GCC compatible 
 #  define __attribute__(x) 
-#  define UNUSED 
+#  define MIA_PARAM_UNUSED(x) x  
 #endif
 
 #ifndef MIA_PARAM_UNUSED
