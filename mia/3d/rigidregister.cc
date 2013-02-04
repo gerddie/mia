@@ -155,7 +155,7 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 		auto ref_scaled = x_shift && y_shift ? downscaler->filter(*ref) : ref;
 
 		if (transform)
-			transform = transform->upscale(src_scaled->get_size());
+			transform = transform->upscale(ref_scaled->get_size());
 		else {
 			transform = m_transform_creator->create(ref_scaled->get_size());
 			// set initial scale 
