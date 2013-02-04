@@ -84,11 +84,6 @@ int do_main( int argc, char *argv[] )
 	P3DImage Model = load_image<P3DImage>(src_filename);
 	P3DImage Reference = load_image<P3DImage>(ref_filename);
 
-	C3DBounds GlobalSize = Model->get_size();
-	if (GlobalSize != Reference->get_size()){
-		throw std::invalid_argument("Images have different size");
-	}
-
 	C3DRigidRegister rr(cost_function, minimizer,  transform_creator, mg_levels);
 
 	P3DTransformation transform = rr.run(Model, Reference);

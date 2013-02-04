@@ -124,7 +124,6 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 {
 	assert(src);
 	assert(ref);
-	assert(src->get_size() == ref->get_size());
 
 	P3DTransformation transform;
 
