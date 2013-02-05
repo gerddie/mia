@@ -58,6 +58,8 @@ int do_main(int argc, char **argv)
 		assert(c); 
 		cost_list.push(c);
 	}
+	cost_list.reinit(); 
+
 	cout << cost_list.cost_value() << "\n";
 	return EXIT_SUCCESS;
 }
