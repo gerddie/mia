@@ -40,6 +40,8 @@ struct SOpt {
 	double rel_ftol; 
 	double abs_ftol; 
 	double step; 
+	double min_boundary; 
+	double max_boundary;
 	int maxiter; 
 }; 
 
