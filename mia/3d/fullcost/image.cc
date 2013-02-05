@@ -47,7 +47,7 @@ bool C3DImageFullCost::do_has(const char *property) const
 double C3DImageFullCost::do_value(const C3DTransformation& t) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src_scaled); 
+	assert(m_src_scaled  && "Hint: call 'reinit()' before calling value(transform)"); 
 	P3DImage temp  = t(*m_src_scaled);
 	const double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
@@ -57,7 +57,7 @@ double C3DImageFullCost::do_value(const C3DTransformation& t) const
 double C3DImageFullCost::do_value() const
 {
 	TRACE_FUNCTION; 
-	assert(m_src_scaled); 
+	assert(m_src_scaled  && "Hint: call 'reinit()' before calling value()"); 
 	const double result = m_cost_kernel->value(*m_src_scaled); 
 	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
 	return result; 
@@ -67,7 +67,7 @@ double C3DImageFullCost::do_value() const
 double C3DImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src_scaled); 
+	assert(m_src_scaled  && "Hint: call 'reinit()' before calling evaluate()"); 
 	
 	P3DImage temp  = t(*m_src_scaled);
 	C3DFVectorfield force(get_current_size()); 
@@ -85,22 +85,17 @@ void C3DImageFullCost::do_set_size()
 	assert(m_src); 
 	assert(m_ref); 
 
-	if (!m_src_scaled || m_src_scaled->get_size() != get_current_size() ||
-	    !m_ref_scaled || m_ref_scaled->get_size() != get_current_size())
+	if (m_src_scaled->get_size() != get_current_size() ||
+	    m_ref_scaled->get_size() != get_current_size())
 	{
-		if (m_src->get_size() == get_current_size()) {
-			m_src_scaled = m_src;
-			m_ref_scaled = m_ref;
-		}else{
-			stringstream filter_descr; 
-			filter_descr << "scale:s=[" << get_current_size()<<"]"; 
-			auto scaler = C3DFilterPluginHandler::instance().produce(filter_descr.str()); 
-			assert(scaler); 
-			cvdebug() << "C3DImageFullCost:scale images to " << get_current_size() << 
-				" using '" << filter_descr.str() << "'\n"; 
-			m_src_scaled = scaler->filter(*m_src); 
-			m_ref_scaled = scaler->filter(*m_ref);
-		}
+		stringstream filter_descr; 
+		filter_descr << "scale:s=[" << get_current_size()<<"]"; 
+		auto scaler = C3DFilterPluginHandler::instance().produce(filter_descr.str()); 
+		assert(scaler); 
+		cvdebug() << "C3DImageFullCost:scale images to " << get_current_size() << 
+			" using '" << filter_descr.str() << "'\n"; 
+		m_src_scaled = scaler->filter(*m_src); 
+		m_ref_scaled = scaler->filter(*m_ref);
 		m_cost_kernel->set_reference(*m_ref_scaled); 
 	}
 }
@@ -108,7 +103,7 @@ void C3DImageFullCost::do_set_size()
 bool C3DImageFullCost::do_get_full_size(C3DBounds& size) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src); 
+	assert(m_src && "Hint: call 'reinit()' before calling get_full_size()"); 
 	if (size == C3DBounds::_0) {
 		size = m_src->get_size(); 
 		return true; 
@@ -120,10 +115,8 @@ void C3DImageFullCost::do_reinit()
 {
 	TRACE_FUNCTION; 
 	//cvmsg() << "C3DImageFullCost: read " << m_src_key << " and " << m_ref_key << "\n"; 
-	m_src = get_from_pool(m_src_key);
-	m_ref = get_from_pool(m_ref_key);
-	m_src_scaled.reset(); 
-	m_ref_scaled.reset(); 
+	m_src_scaled = m_src = get_from_pool(m_src_key);
+	m_ref_scaled = m_ref = get_from_pool(m_ref_key);
 
 	if (m_src->get_size() != m_ref->get_size()) 
 		throw runtime_error("C3DImageFullCost only works with images of equal size"); 
@@ -132,6 +125,7 @@ void C3DImageFullCost::do_reinit()
 		cverr() << "C3DImageFullCost: src and reference image are of differnet pixel dimensions."
 			<< "This code doesn't honour this and a proper scaling should be applied first."; 
 	}
+	m_cost_kernel->set_reference(*m_ref_scaled); 
 }
 
 P3DImage C3DImageFullCost::get_from_pool(const C3DImageDataKey& key)
