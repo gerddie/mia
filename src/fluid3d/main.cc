@@ -29,7 +29,8 @@
 #include <string>
 #include <mia/core.hh>
 #include <mia/3d/imageio.hh>
-#include <mia/3d/vfio.hh>
+#include <mia/3d/transformio.hh>
+#include <mia/3d/transformfactory.hh>
 #include <mia/internal/main.hh>
 
 #include "vfluid.hh"
@@ -82,72 +83,6 @@ struct delta : public binary_function<T, T, T> {
 };
 
 
-#if 0
-void WriteStats(FILE *f,double wholetime,const TFluidRegParams& params,int method,const C3DFVectorfield& Shift)
-{
-
-
-	fprintf(f,"# Size           my     lambda                 ==========\n");
-	fprintf(f,"(%3d,%3d,%3d) %8.5f %8.5f \n",
-		Shift.get_size().x,
-		Shift.get_size().y,
-		Shift.get_size().z,
-		params.My,
-		params.Lambda
-		);
-
-	char help[100];
-	switch (method) {
-	case meth_cg:  fprintf(f,"cg %hd %e\n",params.maxiter,params.factor);break;
-	case meth_filter:fprintf(f,"co %d\n",2*params.HalfFilterDim+1);break;
-	case meth_sorex:fprintf(f,"ex %f %hd %e\n",
-			       params.Overrelaxation,params.maxiter,params.factor);break;
-	case meth_sor: fprintf(f,"so %f %hd %e\n",
-			       params.Overrelaxation,params.maxiter,params.factor);break;
-	default:strcpy(help,"unknown");
-	}
-
-
-	fprintf(f,"#    Size      PDE time  PDE Eval  PDE Time/Eval Regrids niter/Eval timeFromStart\n");
-
-	for (TMeasureList::const_iterator i = g_MeasureList.begin();
-	     i != g_MeasureList.end();i++) {
-		fprintf(f,"(%3d,%3d,%3d)  %8.5f  %8d  %12.5f %7d %7d %12.5f\n",
-			(*i).Size.x,
-			(*i).Size.y,
-			(*i).Size.z,
-			(*i).PDETime,
-			(*i).PDEEval,
-			(*i).PDETime/(*i).PDEEval,
-			(*i).Regrids,(*i).niter/(*i).PDEEval,
-			(*i).allovertime
-			);
-	}
-
-
-
-	FDeformer3D deformer(*current_shift, ipf);
-	P3DImage ModelDeformed = ::mia::filter(deformer, *ModelScale);
-
-
-	C3DFImage Help = transform3d<C3DFImage>( params.source->get_size(),
-						T3DTriLinInterpolator<C3DFImage>(*params.source),
-								       Shift);
-
-	double mismatch = inner_product(Help.begin(), Help.end(),
-					params.reference->begin(),
-					0.0f , plus<float>(), delta<float>());
-
-
-	fprintf(f,"%f %f %f\n",wholetime,
-		inner_product(params.source->begin(), params.source->end(),
-			      params.reference->begin(),
-			      0.0f, plus<float>(), delta<float>()),
-		mismatch);
-}
-
-#endif
-
 int do_main(int argc, char *argv[])
 {
 	//	FILE *srcf,*reff,*outf;
@@ -175,6 +110,7 @@ int do_main(int argc, char *argv[])
 	string in_filename;
 	string out_filename;
 	string ref_filename;
+	string deformed_filename;
 	string statlog_filename;
 
 	bool disable_multigrid = false;
@@ -188,7 +124,11 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required, &imageio ));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required, &imageio ));
 	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", 
-			      CCmdOption::required, &C3DVFIOPluginHandler::instance()));
+			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance()));
+
+	options.add(make_opt(deformed_filename, "deformed-image", 'd', "save deformed image", 
+			     CCmdOption::not_required, &imageio)); 
+
 
 	options.set_group("Registration parameters"); 
 	options.add(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing"));
@@ -232,14 +172,30 @@ int do_main(int argc, char *argv[])
 						 !disable_fullres,&g_MeasureList, ipf);
 
 
-	C3DIOVectorfield outfield(result->get_size());
-	copy(result->begin(), result->end(), outfield.begin());
-
-	if (!C3DVFIOPluginHandler::instance().save(out_filename, outfield)){
-		cerr << "Unable to save result vector field to " << out_filename << "\n";
-		return EXIT_FAILURE;
+	auto vftranscreator  = produce_3dtransform_factory("vf:imgkernel=[bspline:d=1],imgboundary=zero");
+	
+	auto transform = vftranscreator->create(result->get_size()); 
+	CDoubleVector buffer(transform->degrees_of_freedom(), false);
+	
+	auto ib = buffer.begin(); 
+	for (auto ivf = result->begin(); ivf != result->end(); ++ivf) {
+		cvdebug() << *ivf << "\n"; 
+		*ib++ = ivf->x; 
+		*ib++ = ivf->y; 
+		*ib++ = ivf->z; 
 	}
-
+	
+	transform->set_parameters(buffer); 
+	
+	if (!C3DTransformationIOPluginHandler::instance().save(out_filename, *transform)) 
+		throw create_exception<runtime_error>( "Unable to save transformation to '", out_filename, "'"); 
+	
+	if (!deformed_filename.empty()) {
+		auto deformed_image = (*transform)(*params.source);
+		if (!save_image(deformed_filename, deformed_image)) 
+			throw create_exception<runtime_error>("Unable to save deformed image to '", deformed_image, "'");
+	}
+		    
 	return EXIT_SUCCESS;
 }
 
