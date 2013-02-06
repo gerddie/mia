@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	BOOST_CHECK_EQUAL(scaled->get_size(), C3DBounds(2, 2, 2));
 
 	const C3DSSImage& fscaled = dynamic_cast<const C3DSSImage&>(*scaled);
-	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(1.0f, 1.5f, 0.5f));
+	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(4.0f, 6.0f, 2.0f));
 	const short *t = test;
 	for( C3DSSImage::const_iterator k = fscaled.begin(); k != fscaled.end(); ++k, ++t ) {
 		BOOST_CHECK_EQUAL(*k, *t);

@@ -83,9 +83,9 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 
 
 	C3DFVector pixel_size = src.get_voxel_size();
-	pixel_size.x /= m_block_size.x;
-	pixel_size.y /= m_block_size.y;
-	pixel_size.z /= m_block_size.z;
+	pixel_size.x *= m_block_size.x;
+	pixel_size.y *= m_block_size.y;
+	pixel_size.z *= m_block_size.z;
 	fresult->set_voxel_size(pixel_size);
 	cvdebug() << "CDownscale::operator () end\n";
 	return Result;
