@@ -1,7 +1,49 @@
+2.0.8-alpha 
+
+  Fixes of tracked bugs:
+
+ * fix #68: Add obtion to revert the triangle winding at surface creation.
+ * fix #65, #66, #67: Store the transformation vector field as transformation.
+ * fix #54: Call cost.reinit() before evaluating the value.
+ * fix #53: make handler initialization thread save,
+ * fix #50, correct test for changed coefficient field size
+ * fix #41: correct tensor file header.
+
+  Additional fixes and changes:
+
+ * fix error in voxel size scaling when (down)scaling 3D
+ * fix the transform upscaling to be based on the reference image size
+ * Fix the preferred suffix specification for vector field storing
+ * fix dependecies in miacore.pc to include TBB and BLAS
+ * fix comparison of entries and reading of the histogram.
+ * fix test for required option to use the method 'is_required()' instead of the enum 'required'.
+ * fix compilation errors with clang 3.2 that enforce more standard conformance
+ * fix stackfilter label join map evaluation,  distance evaluation, label remap evaluation
+
+ * add xml scheme for xml-help output
+ * add test to make sure the scaling is to a positive size, even if the voxel size carries negative values.
+ * add vtk XML image IO and legacy vtk image io support, partially fixes #39
+ * add initial implementation of voxel-to-isometric scaling
+ * add support for unsigned short and unsigned int to vistaio
+
+ * DICOM change the dicom loading interface, to allow default values for entries that should be
+   in the DICOM file and are needed for slice sorting in 3D data
+ * DICOM reading: When the locations show a negative Z-scale, then flip the output image to have a positive scale.
+ * DICOM  also read the instance number for slice sorting
+ * update copyright year
+ * update BLAS handling
+ * update filter help for meshes
+
+ * enable section name based file names for userref
+ * remove empty option groups from --help-xml output
+ * remove obsolete VTK imageio implementation
+ * remove the requirement of equal-sized images in rigid registration, because it is not needed
+ * rename mesh distance program for consitency
+
 2.0.7
   * change build dependencies to cmake 2.8.5 because of GNUInstallDirs
   * change installation directories to support multiarch
-  * add test for STRICT_DEPENDENCIES to nlopt and xsltproc 
+  * add test for STRICT_DEPENDENCIES to nlopt and xsltproc
 
 2.0.6
   * move to new vistaio interface, minimum required external vistaio is now
