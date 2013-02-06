@@ -193,7 +193,7 @@ int do_main(int argc, char *argv[])
 	if (!deformed_filename.empty()) {
 		auto deformed_image = (*transform)(*params.source);
 		if (!save_image(deformed_filename, deformed_image)) 
-			throw create_exception<runtime_error>("Unable to save deformed image to '", deformed_image, "'");
+			throw create_exception<runtime_error>("Unable to save deformed image to '", deformed_filename, "'");
 	}
 		    
 	return EXIT_SUCCESS;
