@@ -24,6 +24,7 @@ SET(fluid3d_SOURCES
   sor_solver.cc
   vfluid.cc
   )
+ADD_DEFINITIONS(-DVSTREAM_DOMAIN=\"fluid3d\")
 
 ADD_EXECUTABLE(mia-3dfluid ${fluid3d_SOURCES})
 TARGET_LINK_LIBRARIES(mia-3dfluid mia3d)

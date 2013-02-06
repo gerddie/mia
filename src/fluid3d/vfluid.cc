@@ -215,13 +215,12 @@ float TFluidReg::work(P3DImage NewSource, C3DFVectorfield& uIn )
 	if (max_iter > 100)
 		max_iter = 100;
 
-	cvmsg() << "    ";
 
 	dmin = calculateForces();
 
 	for (int i = 0; (i < max_iter) && (trys < 5); i++)  {
 
-		cvmsg() << "\r" << "<" << i << ">: " << dmin;
+		cvmsg() << setw(3) << i << ": " << dmin << "\r";
                 // Algorithm 2, step 2+3:
 
 		// Algorithm 2, step 4:
@@ -289,6 +288,7 @@ step5:
 	//	*u = Backup; // restore better fit
 	DeleteTemps();
 
+	cvmsg() << "\n";
 	return dmin;
 }
 
@@ -411,150 +411,6 @@ void TFluidReg::solvePDE()
 }
 
 double g_start;
-
-//#define __ALWAYS_UPSCALE
-#ifdef __ALWAYS_UPSCALE
-
-static C3DFVectorfield *do_transform(const TFluidRegParams& params, C3DFVectorfield *Shift,TLinEqnSolver *solver,TMeasureList *measure_list)
-{
-	assert(Shift);
-
-	TMeasurement Measure;
-	memset(&Measure,0,sizeof(Measure));
-	Measure.Size = Shift->get_size();
-
-	C3DFVectorfield *s = Shift;
-
-	C3DFVectorfield *u = new C3DFVectorfield(Shift->get_size());
-
-	double mismatch = HUGE;
-	bool do_continue = true;
-
-	TFluidReg *Register;
-
-	assert (solver);
-	Register = new TFluidReg(params,solver);
-
-
-	for (int i= 0; i < 30 && do_continue; i++){
-
-		T3DTriLinInterpolator<C3DFImage> interp(*params.source);
-		C3DFImage ModelDeformed = transform3d<C3DFImage>(params.source->get_size(), interp, *s);
-		// Here is the place to add the interface to the PVM-Slave-threads
-		// instead of the following
-
-		cvmsg() << "[" << i << "]:" << ModelDeformed.get_size();
-		if (params.useMutual) {
-			gauss_3d(&ModelDeformed,1,1,1);
-		}
-
-		double new_mismatch = Register->work(&ModelDeformed, u);
-
-		if (new_mismatch < 0) { // returned because no better fit
-			new_mismatch = -new_mismatch;
-			do_continue = false;
-		}
-
-		Measure.PDEEval += Register->Measurement.PDEEval;
-		Measure.PDETime += Register->Measurement.PDETime;
-		Measure.niter   += Register->Measurement.niter;
-		Measure.Regrids++;
-
-		if (new_mismatch < mismatch) {
-			if (new_mismatch > mismatch * 0.95) {
-				do_continue = false;
-			}
-			*u += *s;
-			C3DFVectorfield *help = u;
-			u = s;
-			s = help;
-
-			u->clear();
-			mismatch = new_mismatch;
-		}else{
-			break;
-		}
-		cvmsg() << endl;
-	}
-	delete Register;
-	delete u;
-	Measure.allovertime = Clock.get_seconds() - g_start;
-	cvmsg() << "time: " << Measure.allovertime << endl;
-	measure_list->insert(measure_list->end(),Measure);
-	return s;
-}
-
-C3DFVectorfield *fluid_transform(const TFluidRegParams& params,TLinEqnSolver *solver,
-				 bool use_multigrid, bool use_fullres,TMeasureList *measure_list)
-{
-	C3DFVectorfield *GlobalShift = NULL;
-
-	bool change_res = false;
-	if (use_multigrid){
-
-		int x_shift = log2(params.source->get_size().x / STARTSIZE);
-		int y_shift = log2(params.source->get_size().y / STARTSIZE);
-		int z_shift = log2(params.source->get_size().z / STARTSIZE);
-
-		while (x_shift || y_shift || z_shift){
-			C3DBounds BlockSize(1 << x_shift, 1 << y_shift, 1 << z_shift);
-
-			C3DFImage *deformed_helper = params.source->get_deformed(*GlobalShift);
-			C3DFImage *ModelScale = down_scale_gauss_filtered(*deformed_helper, BlockSize);
-			delete deformed_helper;
-
-			C3DFImage *RefScale =  down_scale_gauss_filtered(*params.reference, BlockSize);
-
-			C3DFVectorfield *Shift = new C3DFVectorfield(ModelScale->get_size());
-
-			TFluidRegParams newparams = params;
-			newparams.source = ModelScale;
-			newparams.reference = RefScale;
-
-			Shift = do_transform(newparams,Shift,solver,measure_list);
-
-			delete ModelScale;
-			delete RefScale;
-
-			C3DFVectorfield *GShift = Shift->upscale(params.source->get_size());
-			delete Shift;
-			if (GlobalShift) {
-				*GShift += *GlobalShift;
-				delete GlobalShift;
-			}
-			GlobalShift = GShift;
-
-			if (change_res) {
-
-				if (x_shift){x_shift--;}
-				if (y_shift){y_shift--;}
-				if (z_shift){z_shift--;}
-
-				change_res = false;
-			}else{
-				change_res = true;
-			}
-		}
-	}
-
-	// Since the upscaling will lead to a larger Vectorfield, then the real image is
-	// cut away all unneccessary data
-
-	if (use_fullres) {
-		// Now for the final registration at pixel-level
-		// Without multigrid the only step
-		if (params.useMutual) {
-			gauss_3d(params.reference,1,1,1);
-		}
-
-		GlobalShift = do_transform(params,GlobalShift,solver,measure_list);
-	}
-
-	cvmsg() << "Registration complete\n" << endl;
-	return GlobalShift;
-}
-
-#else
 static P3DFVectorfield do_transform(const TFluidRegParams& params,
 				    P3DFVectorfield in_shift,
 				    TLinEqnSolver *solver,TMeasureList *measure_list,
@@ -575,10 +431,9 @@ static P3DFVectorfield do_transform(const TFluidRegParams& params,
 
 	unique_ptr< TFluidReg> Register(new TFluidReg(params,solver, ipf));
 
-	cvmsg() << "size:" << params.source->get_size() << endl;
 
 	for (int i= 0; i < 30 && do_continue; i++){
-
+		cvmsg() << "[" << setw(2) << i << "] @ size:" << params.source->get_size() << endl;
 
 		FDeformer3D deformer(*s, ipf);
 		P3DImage ModelDeformed = ::mia::filter(deformer, *params.source);
@@ -606,7 +461,6 @@ static P3DFVectorfield do_transform(const TFluidRegParams& params,
 		}else{
 			break;
 		}
-		cvmsg() << "[" << setw(3) << i << "]" << endl;
 	}
 	Measure.allovertime = Clock.get_seconds() - g_start;
 	cvmsg() << "time: " <<  Measure.allovertime << endl;
@@ -655,9 +509,6 @@ P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *sol
 				const C3DInterpolatorFactory& ipf
 				)
 {
-	//C3DFVectorfield *GlobalShift = new C3DFVectorfield (params.source->get_size());
-
-	// Adjust my and lambda to reflect image min max
 
 	P3DFVectorfield current_shift;
 	bool change_res = false;
@@ -751,6 +602,4 @@ P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *sol
 	cvmsg() << "Registration complete" << endl;
 	return current_shift;
 }
-
-#endif
 
