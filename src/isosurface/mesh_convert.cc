@@ -70,7 +70,7 @@ static void copy_triangles(GtsTriangle *tri, CTriangleMesh::triangle_iterator *t
 }
 
 
-CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface)
+CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface, bool reverse)
 {
 	
 	int n_vertices = gts_surface_vertex_number(surface);
@@ -107,15 +107,26 @@ CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface)
 	
 	auto triangles = CTriangleMesh::PTrianglefield(new  CTriangleMesh::CTrianglefield);
 	triangles->reserve(n_faces); 
-	
+
 	for_each(initriangles.begin(), initriangles.end(), 
 		 [&remap, &triangles](CTriangleMesh::triangle_type& t) -> void {
-			  t.x = remap[t.x]; 
-			  t.y = remap[t.y]; 
-			  t.z = remap[t.z]; 
-			  if (t.x != t.y && t.x != t.z && t.y != t.z) 
-				  triangles->push_back(t); 
-		  }); 
+			 t.x = remap[t.x]; 
+			 t.y = remap[t.y]; 
+			 t.z = remap[t.z]; 
+			 if (t.x != t.y && t.x != t.z && t.y != t.z) 
+				 triangles->push_back(t); 
+		 }); 
+	
+	if (reverse) {
+		cvmsg() << "revert triangles\n"; 
+		transform(triangles->begin(), triangles->end(), triangles->begin(), 
+			 [](const CTriangleMesh::triangle_type& t) {
+				  return CTriangleMesh::triangle_type(t.x, t.z, t.y); 
+				  
+			 }); 
+	}
+	
+
 	
 	return new CTriangleMesh(triangles, vertices, NULL, NULL, NULL);
 }
