@@ -32,8 +32,8 @@
 #include <memory>
 #include <mia/core.hh>
 #include <mia/2d.hh>
+#include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/deformer.hh>
 #include <mia/internal/main.hh>
 
 
@@ -156,7 +156,7 @@ int do_main(int argc, char *argv[])
 		y_shift++;
 	}
 
-	C2DFVectorfield transform(C2DBounds(GlobalSize.x >> x_shift,GlobalSize.y >> y_shift));
+	C2DFVectorfield result(C2DBounds(GlobalSize.x >> x_shift,GlobalSize.y >> y_shift));
 
 	bool alter = true;
 	while (x_shift && y_shift) {
@@ -171,10 +171,10 @@ int do_main(int argc, char *argv[])
 		P2DImage ModelScale = downscaler->filter(*Model);
 		P2DImage RefScale   = downscaler->filter(*Reference);
 
-		if (transform.get_size() != ModelScale->get_size())
-			transform = upscale(transform, ModelScale->get_size());
+		if (result.get_size() != ModelScale->get_size())
+			result = upscale(result, ModelScale->get_size());
 
-		register_level(*ModelScale,*RefScale,transform,regrid_thresh,epsilon,
+		register_level(*ModelScale,*RefScale,result,regrid_thresh,epsilon,
 			       (x_shift >y_shift ? x_shift : y_shift)+1,elastic,mu, lambda, *ipfactory);
 
 		if (alter)
@@ -191,26 +191,36 @@ int do_main(int argc, char *argv[])
 
 
 	//final Registration at pixel-level
-	cvmsg() << "Finales Level" << transform.get_size() << "\n";
+	cvmsg() << "Finales Level" << result.get_size() << "\n";
 
-	transform = upscale(transform, Model->get_size());
-	register_level(*Model,*Reference,transform,regrid_thresh,epsilon,1,elastic,mu, lambda, *ipfactory);
+	result = upscale(result, Model->get_size());
+	register_level(*Model,*Reference,result,regrid_thresh,epsilon,1,elastic,mu, lambda, *ipfactory);
 
 	cvmsg() << "Gesamtzeit: " << time(NULL)-start_time << "\n";
 
+	auto vftranscreator  = produce_2dtransform_factory("vf:imgkernel=[bspline:d=1],imgboundary=zero");
+	auto trans = vftranscreator->create(result.get_size()); 
+	CDoubleVector buffer(trans->degrees_of_freedom(), false);
+	
+	auto ib = buffer.begin(); 
+	for (auto ivf = result.begin(); ivf != result.end(); ++ivf) {
+		cvdebug() << *ivf << "\n"; 
+		*ib++ = ivf->x; 
+		*ib++ = ivf->y; 
+	}
+	
+	trans->set_parameters(buffer); 
+	
 	// write result deformation field
 	if (!out_filename.empty()) {
-		C2DIOVectorfield outfield(transform);
-		if (!C2DVFIOPluginHandler::instance().save(out_filename, outfield)){
-			throw create_exception<runtime_error>("Unable to save result field to '", out_filename, "'");
-		}
+		if (!C2DTransformationIOPluginHandler::instance().save(out_filename, *trans)) 
+			throw create_exception<runtime_error>( "Unable to save transformation to '", out_filename, "'"); 
 	}
 
 	if (!def_filename.empty()) {
-		FDeformer2D deformer(transform, *ipfactory);
-		P2DImage result = ::mia::filter(deformer, *Model);
-		if (!save_image(def_filename, result))
-			throw create_exception<runtime_error>("Unable to save result to '", def_filename, "'");
+		P2DImage deformed_image = (*trans)(*Model);
+		if (!save_image(def_filename, deformed_image)) 
+			throw create_exception<runtime_error>("Unable to save deformed image to '", def_filename, "'");
 	}
 
 	return EXIT_SUCCESS;
