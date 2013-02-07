@@ -32,16 +32,6 @@ NS_MIA_BEGIN
 class C3DRigidTransformation;
 class EXPORT_3D C3DRigidTransformation : public C3DTransformation {
 public:
-	enum EParamPosition {
-		pp_translate_x = 0,
-		pp_translate_y,
-		pp_translate_z,
-		pp_rotate_xy,
-		pp_rotate_xz,
-		pp_rotate_yz,
-	};
-
-
 	C3DRigidTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
 	C3DRigidTransformation(const C3DBounds& size,const C3DFVector& translation,
 			       const C3DFVector&  rotation, const C3DInterpolatorFactory& ipf);

@@ -32,12 +32,6 @@ NS_MIA_BEGIN
 class C3DRotationTransformation;
 class EXPORT_3D C3DRotationTransformation : public C3DTransformation {
 public:
-	enum EParamPosition {
-		pp_rotate_xy = 0,
-		pp_rotate_xz,
-		pp_rotate_yz,
-	};
-
 
 	C3DRotationTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
 	C3DRotationTransformation(const C3DBounds& size, const C3DFVector&  rotation, const C3DInterpolatorFactory& ipf);

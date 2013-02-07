@@ -32,24 +32,8 @@ NS_MIA_BEGIN
 class C3DAffineTransformation;
 class EXPORT_3D C3DAffineTransformation : public C3DTransformation {
 public:
-	enum EParamPosition {
-		pp_translate_x = 0,
-		pp_translate_y,
-		pp_rotate,
-		pp_scale_x,
-		pp_scale_y,
-		pp_shear
-	};
-
-
 	C3DAffineTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
 	C3DAffineTransformation(const C3DBounds& size,std::vector<double> transform, const C3DInterpolatorFactory& ipf);
-
-	// these functions should be removed 
-	void scale(float x, float y, float z);
-	void translate(float x, float y, float z);
-	void rotate(float angle);
-	void shear(float v);
 
 	C3DFVector apply(const C3DFVector& x) const;
 

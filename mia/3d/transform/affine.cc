@@ -125,62 +125,6 @@ void C3DAffineTransformation::update(float /*step*/, const C3DFVectorfield& /*a*
 	assert(!"not implemented");
 }
 
-void C3DAffineTransformation::scale(float x, float y, float z)
-{
-	const double expx = exp(x);
-	const double expy = exp(y);
-	const double expz = exp(z);
-	m_t[0] *= expx;
-	m_t[1] *= expx;
-	m_t[2] *= expx;
-	m_t[3] *= expx;
-	m_t[4] *= expy;
-	m_t[5] *= expy;
-	m_t[6] *= expy;
-	m_t[7] *= expy;
-	m_t[8] *= expz;
-	m_t[9] *= expz;
-	m_t[10] *= expz;
-	m_t[11] *= expz;
-
-
-}
-
-void C3DAffineTransformation::translate(float x, float y, float z)
-{
-	m_t[ 3] +=  x;
-	m_t[ 7] +=  y;
-	m_t[11] +=  z;
-}
-
-void C3DAffineTransformation::rotate(float angle)
-{
-	assert(0 && "Eliminate function"); 
-	const double sina = sin(angle);
-	const double cosa = cos(angle);
-
-	const double tx      = cosa * m_t[2] - sina * m_t[5];
-	m_t[5] = sina * m_t[2] + cosa * m_t[5];
-	m_t[2] = tx;
-
-	const double a = m_t[0] * cosa - sina * m_t[3];
-	const double b = m_t[1] * cosa - sina * m_t[4];
-	const double c = m_t[0] * sina + cosa * m_t[3];
-	const double d = m_t[1] * sina + cosa * m_t[4];
-
-	m_t[0] = a;
-	m_t[1] = b;
-	m_t[3] = c;
-	m_t[4] = d;
-
-}
-
-
-void C3DAffineTransformation::shear(float /*v*/)
-{
-	assert(0 && "not implemented");
-}
-
 CDoubleVector C3DAffineTransformation::get_parameters() const
 {
 	CDoubleVector result(degrees_of_freedom());
