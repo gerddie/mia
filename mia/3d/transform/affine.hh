@@ -33,7 +33,7 @@ class C3DAffineTransformation;
 class EXPORT_3D C3DAffineTransformation : public C3DTransformation {
 public:
 	C3DAffineTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
-	C3DAffineTransformation(const C3DBounds& size,std::vector<double> transform, const C3DInterpolatorFactory& ipf);
+	C3DAffineTransformation(const C3DBounds& size,  std::vector<double> transform, const C3DInterpolatorFactory& ipf);
 
 	C3DFVector apply(const C3DFVector& x) const;
 
@@ -81,6 +81,8 @@ public:
 	virtual C3DFVector operator () (const C3DFVector& x) const;
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
 	C3DFVector transform(const C3DFVector& x)const;
+
+	// these should go away 
 	virtual float divergence() const;
 	virtual float curl() const;
 	float grad_divergence() const;
@@ -89,7 +91,6 @@ public:
 	double get_divcurl_cost(double wd, double wr) const; 
 private:
 	virtual C3DTransformation *do_clone() const;
-	void evaluate_t() const;
 	C3DAffineTransformation(const C3DAffineTransformation& other);
 	C3DAffineTransformation& operator =(const C3DAffineTransformation& other);
 	std::vector<double> m_t;
