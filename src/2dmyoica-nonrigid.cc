@@ -175,9 +175,9 @@ int do_main( int argc, char *argv[] )
 	PMinimizer refinement_minimizer;
 	P2DFullCost imagecost;
 	double c_rate = 32; 
-	double c_rate_divider = 4; 
-	double divcurlweight = 20.0; 
-	double divcurlweight_divider = 4.0; 
+	double c_rate_divider = 2; 
+	double divcurlweight = 100000.0; 
+	double divcurlweight_divider = 2.0; 
 
 	size_t mg_levels = 3; 
 
@@ -192,7 +192,7 @@ int do_main( int argc, char *argv[] )
 		segmethod=C2DPerfusionAnalysis::bs_features; 
 
 	size_t current_pass = 0; 
-	size_t pass = 3; 
+	size_t pass = 5; 
 
 	CCmdOptionList options(description);
 	
