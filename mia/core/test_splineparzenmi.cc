@@ -25,6 +25,7 @@
 
 
 #include <mia/internal/autotest.hh>
+#include <mia/core/noisegen.hh>
 #include <mia/core/mitestimages.hh>
 #include <mia/core/splineparzenmi.hh>
 #include <boost/filesystem.hpp>
@@ -33,6 +34,8 @@ NS_MIA_USE;
 using namespace std; 
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem; 
+
+CNoiseGeneratorPluginHandlerTestPath noise_kernel_init_path; 
 
 struct SplineMutualInformationFixture  {
 	SplineMutualInformationFixture();
@@ -126,9 +129,84 @@ SplineMutualInformationFixture::SplineMutualInformationFixture():
 
         rkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=0");  
         mkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=3"); 
+}
 
+
+
+static double entr(const vector <long>& x, long n) 
+{
+	vector<double> h(x.size()); 
+	transform(x.begin(), x.end(), h.begin(), [&n](long x) { return double(x)/n;}); 
+	
+	double result = 0.0; 
+	for (auto i = h.begin(); i != h.end(); ++i) {
+		if (*i > 0) 
+			result += *i * std::log(*i); 
+	}
+	cvinfo() << "entropy = " << result << "\n"; 
+	return result; 
+}
+
+static double evaluate_mi_direct_256_256(const vector<float>& a, const vector<float>& b) 
+{
+
+
+	vector <long> hist_a(256, 0); 
+	vector <long> hist_b(256, 0); 
+	vector <long> hist_x(256 * 256, 0);
+
+	// fill histogram 
+	for (auto ia = a.begin(), ib= b.begin(); ia != a.end(); ++ia, ++ib) {
+		int va = *ia < 0 ? 0 : (*ia > 255 ? 255 : static_cast<int>(*ia)); 
+		int vb = *ib < 0 ? 0 : (*ib > 255 ? 255 : static_cast<int>(*ib)); 
+		
+		++hist_a[va]; 
+		++hist_b[vb]; 
+		++hist_x[va + 256 * vb]; 
+	}
+
+	return entr(hist_b, a.size()) + entr(hist_a, a.size()) - entr(hist_x, a.size()); 
 
 }
+
+
+BOOST_AUTO_TEST_CASE( test_MI_random )
+{
+
+	vector<float> reference(60000); 
+	vector<float> moving(60000);
+
+	auto uniform = CNoiseGeneratorPluginHandler::instance().produce("uniform:a=0,b=255,seed=1"); 
+	auto gauss = CNoiseGeneratorPluginHandler::instance().produce("gauss:mu=10,sigma=10,seed=1");
+
+	// fill the image with random data 
+	for (auto ir = reference.begin(), im = moving.begin(); ir != reference.end(); ++ir, ++im) {
+		*ir = (*uniform)(); 
+		*im  = (*gauss)() + *ir;
+		if (*im < 0) 
+			*im = 0; 
+		if (*im > 255) 
+			*im = 255; 
+	}
+
+        CSplineParzenMI smi(256, produce_spline_kernel("bspline:d=0"), 
+			    256, produce_spline_kernel("bspline:d=2"), 0);
+
+	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
+	BOOST_CHECK_CLOSE(smi.value(), evaluate_mi_direct_256_256(moving, reference), 3); 
+
+	for (double m = 0; m < 256; m += 1)
+                for (double r = 0; r < 256; r += 1) {
+                        double grad = smi.get_gradient(m, r);
+			
+			
+
+                }
+
+	
+
+}
+
 
 
 

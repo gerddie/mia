@@ -8,6 +8,7 @@
  * fix #53: make handler initialization thread save,
  * fix #50, correct test for changed coefficient field size
  * fix #41: correct tensor file header.
+ * fix #39: vtk-IO (exterimental):  images (XML and legacy), mesh, and vector field
 
   Additional fixes and changes:
 
@@ -22,7 +23,7 @@
 
  * add xml scheme for xml-help output
  * add test to make sure the scaling is to a positive size, even if the voxel size carries negative values.
- * add vtk XML image IO and legacy vtk image io support, partially fixes #39
+
  * add initial implementation of voxel-to-isometric scaling
  * add support for unsigned short and unsigned int to vistaio
 
