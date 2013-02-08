@@ -35,7 +35,7 @@ static const size_t center = 1024;
 CUniformNoiseGenerator::CUniformNoiseGenerator(unsigned int seed, double a, double b):
 	CNoiseGenerator(seed),
 	m_a(a),
-	m_step(1.0 / (b-a))
+	m_step(b-a)
 {
 }
 

@@ -60,3 +60,35 @@ BOOST_AUTO_TEST_CASE( test_uniform )
 	BOOST_CHECK_CLOSE(sigma, sum2, 1.0);
 
 }
+
+BOOST_AUTO_TEST_CASE( test_uniform_2 )
+{
+	const double a = 0.0;
+	const double b = 10.0;
+
+	CUniformNoiseGenerator ng(1, a, b);
+
+	double sum1 = 0.0;
+	double sum2 = 0.0;
+	const size_t n = 10000000;
+
+	size_t k = n;
+	while (k--) {
+		double val = ng();
+		sum1 += val;
+		sum2 += val * val;
+	}
+
+	cvdebug() << sum1 << " (" << sum2 << ")\n";
+
+	sum1 /= n;
+	sum2 = sqrt(( sum2 - n * sum1 * sum1) / (n-1));
+
+	cvdebug() << sum1 << " (" << sum2 << ")\n";
+	double mu = (b+a) * 0.5;
+	double sigma = sqrt((b-a) * (b-a) / 12.0);
+
+	BOOST_CHECK_CLOSE(sum1, mu, 1.0);
+	BOOST_CHECK_CLOSE(sum2, sigma,  1.0);
+
+}
