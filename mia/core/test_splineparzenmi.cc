@@ -170,14 +170,30 @@ static double evaluate_mi_direct_256_256(const vector<float>& a, const vector<fl
 }
 
 
-BOOST_AUTO_TEST_CASE( test_MI_random )
+class CSplineParzenMIFixture: public CSplineParzenMI {
+public: 
+	CSplineParzenMIFixture(); 
+}; 
+
+CSplineParzenMIFixture::CSplineParzenMIFixture():
+	CSplineParzenMI(256, produce_spline_kernel("bspline:d=0"), 
+			256, produce_spline_kernel("bspline:d=2"), 0)
+{
+	int real_bins = get_real_bins(); 
+
+	vector<double> values(get_real_joint_bins); 
+	
+	fill_histograms(0, 256, 0, 256, values); 
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_MI_random, CSplineParzenMIFixture )
 {
 
-	vector<float> reference(60000); 
-	vector<float> moving(60000);
+	
 
-	auto uniform = CNoiseGeneratorPluginHandler::instance().produce("uniform:a=0,b=255,seed=1"); 
-	auto gauss = CNoiseGeneratorPluginHandler::instance().produce("gauss:mu=10,sigma=10,seed=1");
+
+       
 
 	// fill the image with random data 
 	for (auto ir = reference.begin(), im = moving.begin(); ir != reference.end(); ++ir, ++im) {
@@ -189,8 +205,7 @@ BOOST_AUTO_TEST_CASE( test_MI_random )
 			*im = 255; 
 	}
 
-        CSplineParzenMI smi(256, produce_spline_kernel("bspline:d=0"), 
-			    256, produce_spline_kernel("bspline:d=2"), 0);
+        CSplineParzenMI smi();
 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
 	BOOST_CHECK_CLOSE(smi.value(), evaluate_mi_direct_256_256(moving, reference), 3); 

@@ -177,4 +177,25 @@ double CSplineParzenMI::get_gradient(double moving, double reference) const
 	return result * m_nscale; 
 }
 
+int CSplineParzenMI::
+
+void CSplineParzenMI::fill_histograms(double xmin, double xmax, double ymin, double ymax, 
+				      const std::vector<double>& values)
+{
+
+	m_mov_min = xmin; 
+	m_mov_max = xmax; 
+	m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
+	
+	m_ref_min = ymin; 
+	m_ref_max = ymax; 
+	m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
+
+	copy(values.begin(), values.end(), m_joined_histogram.begin()); 
+	evaluate_histograms();  
+	evaluate_log_cache(); 
+
+}
+
+
 NS_MIA_END
