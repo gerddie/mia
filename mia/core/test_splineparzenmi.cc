@@ -122,7 +122,7 @@ SplineMutualInformationFixture::SplineMutualInformationFixture():
         size(mi_test_size.width * mi_test_size.height), 
         reference(reference_init_data, reference_init_data + size),
         moving(moving_init_data, moving_init_data + size), 
-        bins(64)
+        bins(128)
 {        
 	CPathNameArray sksearchpath({bfs::path("splinekernel")});
 	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
@@ -132,93 +132,143 @@ SplineMutualInformationFixture::SplineMutualInformationFixture():
 }
 
 
-
-static double entr(const vector <long>& x, long n) 
-{
-	vector<double> h(x.size()); 
-	transform(x.begin(), x.end(), h.begin(), [&n](long x) { return double(x)/n;}); 
-	
-	double result = 0.0; 
-	for (auto i = h.begin(); i != h.end(); ++i) {
-		if (*i > 0) 
-			result += *i * std::log(*i); 
-	}
-	cvinfo() << "entropy = " << result << "\n"; 
-	return result; 
-}
-
-static double evaluate_mi_direct_256_256(const vector<float>& a, const vector<float>& b) 
-{
-
-
-	vector <long> hist_a(256, 0); 
-	vector <long> hist_b(256, 0); 
-	vector <long> hist_x(256 * 256, 0);
-
-	// fill histogram 
-	for (auto ia = a.begin(), ib= b.begin(); ia != a.end(); ++ia, ++ib) {
-		int va = *ia < 0 ? 0 : (*ia > 255 ? 255 : static_cast<int>(*ia)); 
-		int vb = *ib < 0 ? 0 : (*ib > 255 ? 255 : static_cast<int>(*ib)); 
-		
-		++hist_a[va]; 
-		++hist_b[vb]; 
-		++hist_x[va + 256 * vb]; 
-	}
-
-	return entr(hist_b, a.size()) + entr(hist_a, a.size()) - entr(hist_x, a.size()); 
-
-}
-
-
 class CSplineParzenMIFixture: public CSplineParzenMI {
 public: 
 	CSplineParzenMIFixture(); 
+protected: 
+	double p(double r, double m) const;
+	double px(double x) const; 
+	double py(double x) const; 
+	double dm(double r, double m) const; 
+	double mi_direct()const; 
+	double entropy_direct(const vector <double>& p)const; 
+	static const int bins = 128; 
+	vector<double> m_hm; 
+	vector<double> m_hr; 
+	vector<double> m_values; 
 }; 
 
+
 CSplineParzenMIFixture::CSplineParzenMIFixture():
-	CSplineParzenMI(256, produce_spline_kernel("bspline:d=0"), 
-			256, produce_spline_kernel("bspline:d=2"), 0)
+	CSplineParzenMI(bins, produce_spline_kernel("bspline:d=0"), 
+			bins, produce_spline_kernel("bspline:d=2"), 0), 
+	m_hm(bins), 
+	m_hr(bins), 
+	m_values(bins * bins)
 {
-	int real_bins = get_real_bins(); 
 
-	vector<double> values(get_real_joint_bins); 
-	
-	fill_histograms(0, 256, 0, 256, values); 
-
+	auto iv = m_values.begin(); 
+	for (int r = 0; r < bins; ++r) {
+		for (int m = 0; m < bins; ++m, ++iv) {
+			
+			*iv = p(r, m);
+			m_hm[m] += *iv; 
+			m_hr[r] += *iv; 
+				
+		}
+	}
+		
+	fill_histograms(m_values, 0, 1, 0, 1); 
 }
+
+double CSplineParzenMIFixture::mi_direct() const
+{
+	return entropy_direct(m_hm) + entropy_direct(m_hr) - entropy_direct(m_values); 
+}
+
+double CSplineParzenMIFixture::entropy_direct(const vector <double>& p)const
+{
+	double sum = 0.0; 
+	for(auto i = p.begin(); i != p.end(); ++i) 
+		if (*i>0.0) 
+			sum += *i * std::log(*i); 
+	return sum; 
+}
+
+double CSplineParzenMIFixture::p(double y, double x) const
+{
+	const double scale = M_PI * M_PI * M_PI * M_PI/(M_PI-4) /4294967296.0; 
+	return  scale * cos(M_PI / 256.0 * (x-y))*(y - 128)*y;
+}
+
+double CSplineParzenMIFixture::px(double x) const 
+{
+	const double pxh = M_PI * x /256.0; 
+	return M_PI / 512.0 * (sin(pxh) + cos(pxh)); 
+}
+
+
+const double HX = -4.847144258909647; 
+const double HY = -4.699286674800261; 
+const double HXY =-9.528771470298688; 
+
+const double MI =  HX + HY - HXY ; 
+
+
+
+double CSplineParzenMIFixture::py(double y) const 
+{
+	const double scale =pow(M_PI,3)/(16777216 * (M_PI- 4.0)); 
+	const double pyh = M_PI * y /256.0; 
+	const double pymh = M_PI * (y -128)  / 256.0; 
+	return scale * (y- 128 ) * y * ( sin(pyh) - sin(pymh) ); 
+}
+
+double CSplineParzenMIFixture::dm(double y, double x) const
+{
+	const double pi4 = pow(M_PI,4.0);
+	const double scale_p = M_PI * pi4 / (1099511627776.0 * (M_PI - 4));
+	const double scale_px = M_PI * M_PI / 131072.0; 
+	const double pyxh = M_PI * (y-x)  / 256.0; 
+	const double pxh = M_PI * x  / 256.0; 
+	
+	const double dplogp_dx =  scale_p * y * (y-128) * sin(pyxh) * 
+		(std::log( pi4 * (y-128)*y * cos(pyxh) / 
+			   (4294967296*(M_PI-4))) + 1); 
+	
+	const double dpxlogopx_dx = - scale_px * (std::log(px(x)) + 1) * ( sin(pxh) - cos(pxh)); 
+	
+	return -dplogp_dx +dpxlogopx_dx; 
+}
+
+inline double f_log(double x) 
+{
+	return x * std::log(x); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_self, CSplineParzenMIFixture )
+{
+	for (double m = 1; m < (bins - 1); m += 1)
+                for (double r = 1; r < (bins - 1); r += 1) {
+			double self_grad = dm(r , m ); 
+			double dmp = 5 * (f_log(p(r,m + 0.1)) - f_log(p(r,m - 0.1)));  
+			double dmpx = 5 * (f_log(px(m + 0.1)) - f_log(px(m - 0.1))); 
+			double test_grad = dmpx - dmp; 
+			
+			cvdebug() << self_grad << " vs " << test_grad << ":" << self_grad / test_grad<<"\n"; 
+
+
+			if (test_grad != 0) 
+				BOOST_CHECK_CLOSE(self_grad, test_grad, 0.1); 
+                }
+	
+}
+
+
 
 BOOST_FIXTURE_TEST_CASE( test_MI_random, CSplineParzenMIFixture )
 {
-
 	
+	BOOST_CHECK_CLOSE(value(), mi_direct(), 0.3);
+	BOOST_CHECK_CLOSE(value(), MI, 0.3);
 
-
-       
-
-	// fill the image with random data 
-	for (auto ir = reference.begin(), im = moving.begin(); ir != reference.end(); ++ir, ++im) {
-		*ir = (*uniform)(); 
-		*im  = (*gauss)() + *ir;
-		if (*im < 0) 
-			*im = 0; 
-		if (*im > 255) 
-			*im = 255; 
-	}
-
-        CSplineParzenMI smi();
-
-	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
-	BOOST_CHECK_CLOSE(smi.value(), evaluate_mi_direct_256_256(moving, reference), 3); 
-
-	for (double m = 0; m < 256; m += 1)
-                for (double r = 0; r < 256; r += 1) {
-                        double grad = smi.get_gradient(m, r);
-			
-			
-
+	for (double m = 10; m < (bins - 1); m += 1)
+                for (double r = 10; r < (bins - 1); r += 1) {
+                        double grad = get_gradient(m/ (bins - 1.0), r/ (bins - 1.0));
+			double test_grad = dm(r , m ); 
+			BOOST_CHECK_CLOSE(grad, test_grad, 0.1); 
+			cvdebug() << "Q="<< test_grad/ grad << "\n"; 
                 }
-
-	
 
 }
 

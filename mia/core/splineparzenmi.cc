@@ -39,11 +39,11 @@ CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
 
 	m_ref_bins(rbins), 
 	m_ref_kernel(rkernel), 
-	m_ref_border((rkernel->size() + 1) >> 1), 
+	m_ref_border((rkernel->size() - 1) >> 1), 
 	m_ref_real_bins(m_ref_bins + 2 * m_ref_border), 
 	m_mov_bins(mbins), 
 	m_mov_kernel(mkernel), 
-	m_mov_border((mkernel->size() + 1) >> 1), 
+	m_mov_border((mkernel->size() - 1) >> 1), 
 	m_mov_real_bins(m_mov_bins + 2 * m_mov_border), 
 	m_joined_histogram(m_ref_real_bins * m_mov_real_bins, 0.0), 
 	m_ref_histogram(m_ref_real_bins, 0.0),
@@ -84,6 +84,8 @@ void CSplineParzenMI::evaluate_histograms()
 			*mhi += *jhi; 
 		}
 	}
+	cvdebug() << "ref histogram:(" << m_ref_histogram.size() << ")=" << m_ref_histogram << "\n"; 
+	cvdebug() << "mov histogram:(" << m_mov_histogram.size() << ")=" << m_mov_histogram << "\n"; 
 }
 
 void CSplineParzenMI::evaluate_log_cache()
@@ -101,6 +103,11 @@ void CSplineParzenMI::evaluate_log_cache()
                         // if p(m,r) != 0, but p(m) = 0? 
                         if ( *imh > 1e-32 &&  *jhi > 1e-32)
                                 *o = std::log(*jhi / *imh); 
+			else {
+				cvdebug() << "zero log-cache @ " << r << "x" << m 
+					  << " with " << *jhi << ", " << *imh << "\n"; 
+				*o = 0.0; 
+			}
 		}
         }
 }   
@@ -167,31 +174,65 @@ double CSplineParzenMI::get_gradient(double moving, double reference) const
 		+ m_ref_border; 
 	
 	double result = 0.0;
+	const unsigned int msize =  m_mov_kernel->size(); 
+	cvdebug() << "mov= " << mov << ", start_mov_idx= " << start_mov_idx << "\n"; 
+	cvdebug() << "ref= " << ref << ", start_ref_idx= " << start_ref_idx << "\n"; 
+
 	for ( size_t r= 0; r < m_ref_kernel->size(); ++r ) {
 		const double rv_by_et = reference_parzen_values[ r ] * inv_et;
-                for ( size_t m = 0; m < m_mov_kernel->size(); ++m ){
-                        result -= m_pdfLogCache[ r + start_ref_idx][ m + start_mov_idx ]
-				* rv_by_et * moving_parzen_derivatives[ m ];
+		cvdebug() << "r=" << r << ":" << reference_parzen_values[ r ] << "\n"; 
+		cvdebug() << "rv_by_et= " << rv_by_et << "\n"; 
+                for ( unsigned int m = 0; m < msize; ++m ){
+
+			const double lc = m_pdfLogCache[ r + start_ref_idx][ m + start_mov_idx ]; 
+			cvdebug() << "lc=" << lc  << "\n"; 
+                        result -= lc * rv_by_et * moving_parzen_derivatives[ m ];
 		}
 	}
 	return result * m_nscale; 
 }
 
-int CSplineParzenMI::
-
-void CSplineParzenMI::fill_histograms(double xmin, double xmax, double ymin, double ymax, 
-				      const std::vector<double>& values)
+void CSplineParzenMI::fill_histograms(const std::vector<double>& values, 
+				      double rmin, double rmax,
+				      double mmin, double mmax)
 {
+	assert(values.size() == m_ref_bins * m_mov_bins); 
+	m_nscale = 1.0; 
 
-	m_mov_min = xmin; 
-	m_mov_max = xmax; 
+	m_mov_min = mmin; 
+	m_mov_max = mmax;
 	m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
-	
-	m_ref_min = ymin; 
-	m_ref_max = ymax; 
+
+	m_ref_min = rmin; 
+	m_ref_max = rmax;
 	m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
 
-	copy(values.begin(), values.end(), m_joined_histogram.begin()); 
+
+	std::fill(m_joined_histogram.begin(), m_joined_histogram.end(), 0.0); 
+	
+	/**
+	   Now fill the joined histogram assuming that the input is normalized, but 
+	   needs to be distributed properly over the bins. 
+	*/
+	std::vector<double> mweights(m_mov_kernel->size()); 
+        std::vector<double> rweights(m_ref_kernel->size()); 
+	const int mov_start = m_mov_kernel->get_start_idx_and_value_weights(0, mweights) + m_mov_border; 
+	const int ref_start = m_ref_kernel->get_start_idx_and_value_weights(0, rweights) + m_ref_border;  
+
+	auto iv = values.begin(); 
+	auto ijh = m_joined_histogram.begin(); 
+	for(unsigned int f = ref_start; f < m_ref_bins + ref_start; ++f, ijh += 2 * m_mov_border) {
+		for(unsigned int m = mov_start; m < m_mov_bins + mov_start; ++m, ++iv, ++ijh) {
+			for (unsigned int kf = 0; kf <  m_ref_kernel->size(); ++kf) {
+				auto rw = rweights[kf]; 
+				auto ijh_f = ijh + kf * m_mov_real_bins; 
+				const auto v = *iv; 
+				transform(mweights.begin(), mweights.end(), ijh_f, ijh_f, 
+					  [&rw, &v](double mw, double h){return h + mw * rw * v;}); 
+			}
+		}
+	}
+
 	evaluate_histograms();  
 	evaluate_log_cache(); 
 

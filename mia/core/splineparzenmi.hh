@@ -94,9 +94,10 @@ public:
 	*/
 	void reset(); 
 protected: 
-	/** this function is for test purpouses only */ 
-	void fill_joint_histogram(double xmin, double xmax, double ymin, double ymax, 
-				  const std::vector<double>& values); 
+	/** these function is for test purpouses only */ 
+	void fill_histograms(const std::vector<double>& values, 
+				      double rmin, double rmax,
+				      double mmin, double mmax); 
 private: 
        
 	double scale_moving(double x) const; 
