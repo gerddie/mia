@@ -143,10 +143,21 @@ protected:
 	double mi_direct()const; 
 	double entropy_direct(const vector <double>& p)const; 
 	static const int bins = 128; 
+        // values obtained by using (wx)maxima 
+	static constexpr double HX = -4.847144258909647; 
+	static constexpr double HY = -4.699286674800261; 
+	static constexpr double HXY =-9.528771470298688; 
+	static constexpr double MI =  HX + HY - HXY;
+
 	vector<double> m_hm; 
 	vector<double> m_hr; 
 	vector<double> m_values; 
 }; 
+
+constexpr double CSplineParzenMIFixture::HX; 
+constexpr double CSplineParzenMIFixture::HY; 
+constexpr double CSplineParzenMIFixture::HXY; 
+constexpr double CSplineParzenMIFixture::MI;
 
 
 CSplineParzenMIFixture::CSplineParzenMIFixture():
@@ -187,7 +198,7 @@ double CSplineParzenMIFixture::entropy_direct(const vector <double>& p)const
 
 double CSplineParzenMIFixture::p(double y, double x) const
 {
-	const double scale = M_PI * M_PI * M_PI * M_PI/(M_PI-4) /4294967296.0; 
+	constexpr double scale = M_PI * M_PI * M_PI * M_PI/(M_PI-4) /4294967296.0; 
 	return  scale * cos(M_PI / 256.0 * (x-y))*(y - 128)*y;
 }
 
@@ -198,17 +209,11 @@ double CSplineParzenMIFixture::px(double x) const
 }
 
 
-const double HX = -4.847144258909647; 
-const double HY = -4.699286674800261; 
-const double HXY =-9.528771470298688; 
-
-const double MI =  HX + HY - HXY ; 
-
 
 
 double CSplineParzenMIFixture::py(double y) const 
 {
-	const double scale =pow(M_PI,3)/(16777216 * (M_PI- 4.0)); 
+	constexpr double scale =M_PI * M_PI * M_PI/(16777216 * (M_PI- 4.0)); 
 	const double pyh = M_PI * y /256.0; 
 	const double pymh = M_PI * (y -128)  / 256.0; 
 	return scale * (y- 128 ) * y * ( sin(pyh) - sin(pymh) ); 
@@ -216,9 +221,9 @@ double CSplineParzenMIFixture::py(double y) const
 
 double CSplineParzenMIFixture::dm(double y, double x) const
 {
-	const double pi4 = pow(M_PI,4.0);
-	const double scale_p = M_PI * pi4 / (1099511627776.0 * (M_PI - 4));
-	const double scale_px = M_PI * M_PI / 131072.0; 
+	constexpr double pi4 = pow(M_PI,4.0);
+	constexpr double scale_p = M_PI * pi4 / (1099511627776.0 * (M_PI - 4));
+	constexpr double scale_px = M_PI * M_PI / 131072.0; 
 	const double pyxh = M_PI * (y-x)  / 256.0; 
 	const double pxh = M_PI * x  / 256.0; 
 	
