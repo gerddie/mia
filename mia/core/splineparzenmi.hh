@@ -82,13 +82,22 @@ public:
 	double value() const; 
 
 	/**
-	   Evaluate the gradient of the MI with respect to a given intensity pair 
+	   Evaluate the gradient of the MI with respect to a given intensity pair using 
+	   an approximation  
 	   @param moving intensity in the moving image 
 	   @param reference intensity in the moving image 
 	   @returns gradient 
 	 */
 	double get_gradient(double moving, double reference) const; 
 
+	/**
+	   Evaluate the gradient of the MI with respect to a given intensity pair 
+	   @param moving intensity in the moving image 
+	   @param reference intensity in the moving image 
+	   @returns gradient 
+	 */
+
+	double get_gradient_slow(double moving, double reference) const; 
 	/**
 	   reset the ranges to force a new evaluation
 	*/
@@ -130,8 +139,6 @@ private:
 
 	std::vector<std::vector<double> > m_pdfLogCache; 
 	double  m_cut_histogram; 
-	double m_nscale; 
-
 	
 	template <typename Iterator>
 	std::pair<double,double> get_reduced_range(Iterator begin, Iterator end)const; 
@@ -154,7 +161,7 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 			throw std::invalid_argument("relevant moving image intensity range is zero"); 
 		m_mov_min = mov_range.first; 
 		m_mov_max = mov_range.second;
-		m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
+		m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min + 0.00001); 
 		cvdebug() << "Mov Range = [" << m_mov_min << ", " << m_mov_max << "]\n"; 
 	}
 
@@ -166,7 +173,7 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 		
 		m_ref_min = ref_range.first; 
 		m_ref_max = ref_range.second; 
-		m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
+		m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min + 0.00001); 
 		cvdebug() << "Ref Range = [" << m_ref_min << ", " << m_ref_max << "]\n"; 
 	}
 
@@ -198,9 +205,9 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 
 	cvdebug() << "CSplineParzenMI::fill: counted " << N << " pixels\n"; 
 	// normalize joined histogram 
-	m_nscale = 1.0/N; 
+	const double nscale = 1.0/N; 
 	transform(m_joined_histogram.begin(), m_joined_histogram.end(), m_joined_histogram.begin(), 
-		  [this](double jhvalue){return jhvalue * this->m_nscale;}); 
+		  [&nscale](double jhvalue){return jhvalue * nscale;}); 
 	
 	evaluate_histograms();  
 	evaluate_log_cache(); 

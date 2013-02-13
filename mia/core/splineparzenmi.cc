@@ -104,8 +104,6 @@ void CSplineParzenMI::evaluate_log_cache()
                         if ( *imh > 1e-32 &&  *jhi > 1e-32)
                                 *o = std::log(*jhi / *imh); 
 			else {
-				cvdebug() << "zero log-cache @ " << r << "x" << m 
-					  << " with " << *jhi << ", " << *imh << "\n"; 
 				*o = 0.0; 
 			}
 		}
@@ -189,23 +187,79 @@ double CSplineParzenMI::get_gradient(double moving, double reference) const
                         result -= lc * rv_by_et * moving_parzen_derivatives[ m ];
 		}
 	}
-	return result * m_nscale; 
+	return result; 
 }
+
+double CSplineParzenMI::get_gradient_slow(double moving, double reference) const
+{
+	TRACE_FUNCTION; 
+	double mov = scale_moving(moving); 
+	double ref = scale_reference(reference); 
+
+	vector<double> moving_parzen_derivatives(m_mov_kernel->size());
+	vector<double> moving_parzen_weights(m_mov_kernel->size());
+        vector<double> reference_parzen_values(m_ref_kernel->size()); 
+        
+        // inverse bin size needed in [1] eqn 24 
+        const double inv_et = 1.0 / m_mov_scale;  
+
+	const int start_mov_idx = m_mov_kernel->get_start_idx_and_derivative_weights(mov, moving_parzen_derivatives) 
+		+ m_mov_border; 
+
+	m_mov_kernel->get_start_idx_and_value_weights(mov, moving_parzen_weights); 
+	cvdebug() << "moving_parzen_weights(" << mov << ")="<< moving_parzen_weights << "\n"; 
+	const int start_ref_idx = m_ref_kernel->get_start_idx_and_value_weights(ref, reference_parzen_values)
+		+ m_ref_border; 
+	
+	const unsigned int msize =  m_mov_kernel->size(); 
+
+	double sum_pxy = 0.0; 
+	double sum_px = 0.0; 
+	double sum_dpxy = 0.0; 
+	double sum_dpx = 0.0; 
+	
+	for ( size_t r= 0; r < m_ref_kernel->size(); ++r ) {
+		const double wr = reference_parzen_values[ r ]; 
+		const auto hjx = m_joined_histogram.begin() + (r + start_ref_idx) * m_mov_real_bins; 
+		const double rv_by_et =  wr * inv_et;
+
+                for ( unsigned int mi = 0; mi < msize; ++mi ){
+			unsigned int m = start_mov_idx + mi; 
+			sum_pxy += wr * moving_parzen_weights[mi] * hjx[m];
+			sum_px += wr * moving_parzen_weights[mi] * m_mov_histogram[m]; 
+			sum_dpxy += rv_by_et * moving_parzen_derivatives[mi] * hjx[m];
+			sum_dpx += rv_by_et * moving_parzen_derivatives[mi] * m_mov_histogram[m]; 
+		}
+	}
+	cvdebug() << "(" << moving <<"," <<  reference << ")="
+		  << sum_dpx << " * (std::log(" << sum_px  << ") + 1 ) - "
+		  << sum_dpxy << "* (std::log(" << sum_pxy << ") + 1 )" 
+		  << "\n"; 
+
+	cvdebug() << "(" << moving <<"," <<  reference << ")=" 
+		  << sum_dpx * (std::log(sum_px) + 1) << " - " 
+		  << sum_dpxy * (std::log(sum_pxy) + 1) 
+		  <<"\n"; 
+	
+	const double dpxlpx = sum_px > 0.0 ? sum_dpx * (std::log(sum_px)+1) : 0.0; 
+	const double dpxylpxy = sum_pxy > 0.0 ? sum_dpxy * (std::log(sum_pxy)+1) : 0.0; 
+	return dpxlpx  - dpxylpxy;
+}
+
 
 void CSplineParzenMI::fill_histograms(const std::vector<double>& values, 
 				      double rmin, double rmax,
 				      double mmin, double mmax)
 {
 	assert(values.size() == m_ref_bins * m_mov_bins); 
-	m_nscale = 1.0; 
 
 	m_mov_min = mmin; 
 	m_mov_max = mmax;
-	m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
+	m_mov_scale = (m_mov_bins -1) / (m_mov_max - m_mov_min); 
 
 	m_ref_min = rmin; 
 	m_ref_max = rmax;
-	m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
+	m_ref_scale = (m_ref_bins -1) / (m_ref_max - m_ref_min); 
 
 
 	std::fill(m_joined_histogram.begin(), m_joined_histogram.end(), 0.0); 

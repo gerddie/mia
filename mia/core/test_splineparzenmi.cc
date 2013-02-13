@@ -71,25 +71,26 @@ BOOST_FIXTURE_TEST_CASE( test_different_image_entropy, SplineMutualInformationFi
 }
 
 
-#ifdef THIS_TEST_FAILS
-// either we interpre the paper wrongly, or this test can not pass
+/** When filling the histogram by using splie coefficients, the numeric gradient will not be zero 
+    unless the image intensities are uniformly distributed. 
 BOOST_FIXTURE_TEST_CASE( test_same_image_gradient_is_zero, SplineMutualInformationFixture ) 
 {
-        CSplineParzenMI smi(128, mkernel, 256, mkernel); 
+        CSplineParzenMI smi(253, rkernel, 253, mkernel, 0); 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
-	for (double m = 0; m < 256; m += 1)
+	for (double m = 2; m < 254; m += 1)
 		for (double r = 0; r < 256; r += 1)
-			BOOST_CHECK_EQUAL(smi.get_gradient(m,r), 0.0); 
+			BOOST_CHECK_EQUAL(smi.get_gradient_slow(m,r), 0.0); 
 
 }
-#endif
+*/
+
 
 BOOST_FIXTURE_TEST_CASE( test_differnt_image_gradient_is_not_zero, SplineMutualInformationFixture ) 
 {
         CSplineParzenMI smi(bins, rkernel, bins, mkernel,0); 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
         int cnt = 0; 
-        for (double m = 0; m < 256; m += 1)
+        for (double m = 2; m < 254; m += 1)
                 for (double r = 0; r < 256; r += 1) {
                         if (smi.get_gradient(m,r) != 0.0)
                                 ++cnt;
@@ -162,7 +163,7 @@ constexpr double CSplineParzenMIFixture::MI;
 
 CSplineParzenMIFixture::CSplineParzenMIFixture():
 	CSplineParzenMI(bins, produce_spline_kernel("bspline:d=0"), 
-			bins, produce_spline_kernel("bspline:d=2"), 0), 
+			bins, produce_spline_kernel("bspline:d=3"), 0), 
 	m_hm(bins), 
 	m_hr(bins), 
 	m_values(bins * bins)
@@ -179,7 +180,7 @@ CSplineParzenMIFixture::CSplineParzenMIFixture():
 		}
 	}
 		
-	fill_histograms(m_values, 0, 1, 0, 1); 
+	fill_histograms(m_values, 0, bins-1, 0, bins-1); 
 }
 
 double CSplineParzenMIFixture::mi_direct() const
@@ -267,14 +268,29 @@ BOOST_FIXTURE_TEST_CASE( test_MI_random, CSplineParzenMIFixture )
 	BOOST_CHECK_CLOSE(value(), mi_direct(), 0.3);
 	BOOST_CHECK_CLOSE(value(), MI, 0.3);
 
-	for (double m = 10; m < (bins - 1); m += 1)
-                for (double r = 10; r < (bins - 1); r += 1) {
-                        double grad = get_gradient(m/ (bins - 1.0), r/ (bins - 1.0));
+	// at the boundary of the "moving" gradient we are more forgiving, since here 
+	// the analytic function is not well modeled by the parzen spline histogram 
+	// hence, do not test the first and last two indices. 
+	// otoh for the reference values, the gradient at the boundary is NAN
+	for (double m = 2; m < (bins - 2); m += 1)
+                for (double r = 1; r < bins - 1; r += 1) {
+                        double grad = get_gradient_slow(m, r);
 			double test_grad = dm(r , m ); 
-			BOOST_CHECK_CLOSE(grad, test_grad, 0.1); 
+
+			// at 64,64 the gradient is very close to zero 
+			if ((fabs(grad) > 1e-10) || (fabs(test_grad) > 1e-10))
+				BOOST_CHECK_CLOSE(grad, test_grad, 0.1); 
+			
 			cvdebug() << "Q="<< test_grad/ grad << "\n"; 
                 }
 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_MI_76_13, CSplineParzenMIFixture )
+{
+	double grad = get_gradient_slow(76, 13);
+	double test_grad = dm(13, 76 ); 
+	BOOST_CHECK_CLOSE(grad, test_grad, 0.1); 
 }
 
 
