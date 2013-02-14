@@ -111,7 +111,7 @@ bool CVtk3DVFIOPlugin::do_save(const string& fname, const C3DIOVectorfield& data
 
 const string CVtk3DVFIOPlugin::do_get_descr() const
 {
-	return "3D Vector field in- and output. No attributes are stored or read."; 
+	return "3D Vector field in- and output (experimental). No attributes are stored or read."; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
