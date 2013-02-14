@@ -58,7 +58,6 @@ struct FEvalMI : public mia::TFilter<double> {
 		m_parzen_mi.fill(a.begin(), a.end(), b.begin(), b.end()); 
 		return  m_parzen_mi.value(); 
 	}
-	bool m_normalize; 
 	mia::CSplineParzenMI& m_parzen_mi; 
 }; 
 
@@ -95,7 +94,7 @@ struct FEvalForce: public mia::TFilter<float> {
 		typename R::const_iterator bi = b.begin();
 	
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
-			float delta = m_parzen_mi.get_gradient(*ai, *bi); 
+			float delta = m_parzen_mi.get_gradient_slow(*ai, *bi); 
 			m_force[i] = gradient[i] * delta * m_scale;
 		}
 		return m_parzen_mi.value() * m_scale; 

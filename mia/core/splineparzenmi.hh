@@ -161,7 +161,7 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 			throw std::invalid_argument("relevant moving image intensity range is zero"); 
 		m_mov_min = mov_range.first; 
 		m_mov_max = mov_range.second;
-		m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min + 0.00001); 
+		m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
 		cvdebug() << "Mov Range = [" << m_mov_min << ", " << m_mov_max << "]\n"; 
 	}
 
@@ -173,7 +173,7 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 		
 		m_ref_min = ref_range.first; 
 		m_ref_max = ref_range.second; 
-		m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min + 0.00001); 
+		m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
 		cvdebug() << "Ref Range = [" << m_ref_min << ", " << m_ref_max << "]\n"; 
 	}
 
@@ -223,7 +223,7 @@ std::pair<double,double> CSplineParzenMI::get_reduced_range(Iterator begin, Iter
 	auto reduced_range = h.get_reduced_range(m_cut_histogram); 
 	cvinfo() << "CSplineParzenMI: reduce range by "<< m_cut_histogram
 		<<"% from [" << *range.first << ", " << *range.second 
-		<< "] to [" << reduced_range.first << ", " << reduced_range.second << "\n"; 
+		<< "] to [" << reduced_range.first << ", " << reduced_range.second << "]\n"; 
 	return std::pair<double,double>(reduced_range.first, reduced_range.second); 
        
 }

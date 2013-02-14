@@ -84,8 +84,6 @@ void CSplineParzenMI::evaluate_histograms()
 			*mhi += *jhi; 
 		}
 	}
-	cvdebug() << "ref histogram:(" << m_ref_histogram.size() << ")=" << m_ref_histogram << "\n"; 
-	cvdebug() << "mov histogram:(" << m_mov_histogram.size() << ")=" << m_mov_histogram << "\n"; 
 }
 
 void CSplineParzenMI::evaluate_log_cache()
@@ -147,8 +145,12 @@ double CSplineParzenMI::value() const
 	const double ref_entropy =  entropy(m_ref_histogram.begin(), m_ref_histogram.end()); 
 	const double mov_entropy =  entropy(m_mov_histogram.begin(), m_mov_histogram.end()); 
 	const double joined_entropy =  entropy(m_joined_histogram.begin(), m_joined_histogram.end()); 
-        cvdebug() << "Entropy:" << joined_entropy  << " - " 
-                  << mov_entropy << " - " << ref_entropy << "\n"; 
+
+	cvdebug() << "Xhisto: " << m_joined_histogram << "\n"; 
+	cvdebug() << "Mhisto: " << m_mov_histogram << "\n"; 
+	cvdebug() << "Rhisto: " << m_ref_histogram << "\n"; 
+	cvdebug() << "entropies: X:" << joined_entropy  << ", M:" << mov_entropy << "R:" << ref_entropy << "\n"; 
+
         return joined_entropy - mov_entropy - ref_entropy; 
 }
 
@@ -173,17 +175,12 @@ double CSplineParzenMI::get_gradient(double moving, double reference) const
 	
 	double result = 0.0;
 	const unsigned int msize =  m_mov_kernel->size(); 
-	cvdebug() << "mov= " << mov << ", start_mov_idx= " << start_mov_idx << "\n"; 
-	cvdebug() << "ref= " << ref << ", start_ref_idx= " << start_ref_idx << "\n"; 
 
 	for ( size_t r= 0; r < m_ref_kernel->size(); ++r ) {
 		const double rv_by_et = reference_parzen_values[ r ] * inv_et;
-		cvdebug() << "r=" << r << ":" << reference_parzen_values[ r ] << "\n"; 
-		cvdebug() << "rv_by_et= " << rv_by_et << "\n"; 
                 for ( unsigned int m = 0; m < msize; ++m ){
 
 			const double lc = m_pdfLogCache[ r + start_ref_idx][ m + start_mov_idx ]; 
-			cvdebug() << "lc=" << lc  << "\n"; 
                         result -= lc * rv_by_et * moving_parzen_derivatives[ m ];
 		}
 	}
@@ -207,7 +204,6 @@ double CSplineParzenMI::get_gradient_slow(double moving, double reference) const
 		+ m_mov_border; 
 
 	m_mov_kernel->get_start_idx_and_value_weights(mov, moving_parzen_weights); 
-	cvdebug() << "moving_parzen_weights(" << mov << ")="<< moving_parzen_weights << "\n"; 
 	const int start_ref_idx = m_ref_kernel->get_start_idx_and_value_weights(ref, reference_parzen_values)
 		+ m_ref_border; 
 	
@@ -231,16 +227,6 @@ double CSplineParzenMI::get_gradient_slow(double moving, double reference) const
 			sum_dpx += rv_by_et * moving_parzen_derivatives[mi] * m_mov_histogram[m]; 
 		}
 	}
-	cvdebug() << "(" << moving <<"," <<  reference << ")="
-		  << sum_dpx << " * (std::log(" << sum_px  << ") + 1 ) - "
-		  << sum_dpxy << "* (std::log(" << sum_pxy << ") + 1 )" 
-		  << "\n"; 
-
-	cvdebug() << "(" << moving <<"," <<  reference << ")=" 
-		  << sum_dpx * (std::log(sum_px) + 1) << " - " 
-		  << sum_dpxy * (std::log(sum_pxy) + 1) 
-		  <<"\n"; 
-	
 	const double dpxlpx = sum_px > 0.0 ? sum_dpx * (std::log(sum_px)+1) : 0.0; 
 	const double dpxylpxy = sum_pxy > 0.0 ? sum_dpxy * (std::log(sum_pxy)+1) : 0.0; 
 	return dpxlpx  - dpxylpxy;
