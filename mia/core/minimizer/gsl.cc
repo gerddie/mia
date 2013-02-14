@@ -215,7 +215,7 @@ int CGSLFMinimizer::do_run(CDoubleVector& x)
 		if (status) 
 			break; 
 		const double size = gsl_multimin_fminimizer_size (m_s);
-		status = gsl_multimin_test_size (size, 1e-3);
+		status = gsl_multimin_test_size (size, m_stop_eps);
 		
 	} while (status == GSL_CONTINUE && iter < m_maxiter); 
 	
@@ -255,7 +255,8 @@ CGSLMinimizerPlugin::CGSLMinimizerPlugin():
 						"some tolerance parameter"));
 	
 	add_parameter("eps", new CDoubleParameter(m_stop_eps, 1e-10, 10.0, false, 
-						"gradient norm stopping criterion (stop when |g| < eps)"));
+						  "gradient based optimizers: stop when |grad| < eps, "
+						  "simplex: stop when simplex size < eps."));
 	
 	add_parameter("iter", new CIntParameter(m_maxiter, 1, numeric_limits<int>::max(), 
 						false, "maximum number of iterations"));
