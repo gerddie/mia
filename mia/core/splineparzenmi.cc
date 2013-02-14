@@ -145,10 +145,10 @@ double CSplineParzenMI::value() const
 	const double ref_entropy =  entropy(m_ref_histogram.begin(), m_ref_histogram.end()); 
 	const double mov_entropy =  entropy(m_mov_histogram.begin(), m_mov_histogram.end()); 
 	const double joined_entropy =  entropy(m_joined_histogram.begin(), m_joined_histogram.end()); 
-
 	cvdebug() << "Xhisto: " << m_joined_histogram << "\n"; 
 	cvdebug() << "Mhisto: " << m_mov_histogram << "\n"; 
 	cvdebug() << "Rhisto: " << m_ref_histogram << "\n"; 
+
 	cvdebug() << "entropies: X:" << joined_entropy  << ", M:" << mov_entropy << "R:" << ref_entropy << "\n"; 
 
         return joined_entropy - mov_entropy - ref_entropy; 
