@@ -170,7 +170,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_simplex, RigidRegisterFixture )
 	params[5] =  2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, "gsl:opt=simplex,step=1.0", 1.0); 
+	run(*transformation, "gsl:opt=simplex,step=1.0,eps=0.0001", 1.0); 
 }
 
 #ifdef THIS_TEST_USES_THE_TRANSLATE_CODE_THAT_IS_NOT_WORKING

@@ -110,7 +110,7 @@ private:
 BOOST_AUTO_TEST_CASE(test_cf_multmin ) 
 {
 	CGSLFMinimizer minimizer(gsl_multimin_fminimizer_nmsimplex,
-				 0.1,100,1.0);
+				 0.001, 100, 1);
 	
 	CMinimizer::PProblem problem(new TestCFProblem); 
 	minimizer.set_problem(problem); 
