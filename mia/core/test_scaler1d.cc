@@ -59,10 +59,28 @@ BOOST_FIXTURE_TEST_CASE( test_bspline2_upscale, Scaler1DFixture)
 	test_size(ip_bspline2, 500);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_bspline2_downscale, Scaler1DFixture)
+BOOST_FIXTURE_TEST_CASE( test_bspline2_upscale_scale, Scaler1DFixture)
 {
-	test_size(ip_bspline2, 130);
+	test_scale_by_factor("bspline:d=2", 2.5, 640);
 }
+
+BOOST_FIXTURE_TEST_CASE( test_bspline2_downscale_scale, Scaler1DFixture)
+{
+	test_scale_by_factor("bspline:d=2", 0.5, 128);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_bspline3_upscale_scale, Scaler1DFixture)
+{
+	test_scale_by_factor("bspline:d=3", 1.452, 372);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_bspline3_downscale_scale, Scaler1DFixture)
+{
+	test_scale_by_factor("bspline:d=3", 0.4671, 120);
+}
+
+
+
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_upscale, Scaler1DFixture)
 {
@@ -129,6 +147,7 @@ void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 	
 	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type, bc_mirror_on_bounds));	
 	C1DScalarFixed scaler(*ipf->get_kernel(), data.size(), target_size); 
+
 	copy(data.begin(), data.end(), scaler.input_begin()); 
 	
 	scaler.run(); 
@@ -162,8 +181,10 @@ void Scaler1DFixture::test_scale_by_factor(const string& kernel_descr, double sc
 	scaler.run(); 
 	copy(scaler.output_begin(), scaler.output_end(), result.begin()); 
 
+        double test_scale = 2 * M_PI * 1.0 / scale / 255.0; 
+
 	for(size_t i = 0; i < expected_size; ++i) {
-		double x = (2 * M_PI * i) * scale;
+		double x = test_scale * i;
 		double fx = 200*f(x); 
 		cvdebug()  << " sin("<< x << ") = " << fx 
 			   << ", interp= " << result[i] 
