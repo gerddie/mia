@@ -61,12 +61,12 @@ BOOST_FIXTURE_TEST_CASE( test_bspline2_upscale, Scaler1DFixture)
 
 BOOST_FIXTURE_TEST_CASE( test_bspline2_upscale_scale, Scaler1DFixture)
 {
-	test_scale_by_factor("bspline:d=2", 2.5, 640);
+	test_scale_by_factor("bspline:d=2", 2.5, 639);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline2_downscale_scale, Scaler1DFixture)
 {
-	test_scale_by_factor("bspline:d=2", 0.5, 128);
+	test_scale_by_factor("bspline:d=2", 0.5, 129);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_upscale_scale, Scaler1DFixture)
@@ -76,11 +76,8 @@ BOOST_FIXTURE_TEST_CASE( test_bspline3_upscale_scale, Scaler1DFixture)
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_downscale_scale, Scaler1DFixture)
 {
-	test_scale_by_factor("bspline:d=3", 0.4671, 120);
+	test_scale_by_factor("bspline:d=3", 0.4671, 121);
 }
-
-
-
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_upscale, Scaler1DFixture)
 {
@@ -136,9 +133,11 @@ Scaler1DFixture::Scaler1DFixture():
 
 	CPathNameArray  sksearchpath({bfs::path("splinekernel")});
 	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+	
+	const double intervall = 2 * M_PI / 255.0; 
 
 	for(size_t x = 0; x < 256; ++x)
-		data[x] = 200*f(2 * M_PI * x / 255.0);
+		data[x] = 200*f(intervall * x);
 }
 
 void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
@@ -153,9 +152,11 @@ void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 	scaler.run(); 
 	
 	copy(scaler.output_begin(), scaler.output_end(), result.begin()); 
+	
+	const double intervall = 2 * M_PI / (target_size - 1); 
 
 	for(size_t i = 0; i < target_size; ++i) {
-		double x = (2 * M_PI * i) / (target_size - 1); 
+		double x = intervall * i; 
 		double fx = 200*f(x); 
 		cvdebug()  << " sin("<< x << ") = " << fx 
 			   << ", interp= " << result[i] 
