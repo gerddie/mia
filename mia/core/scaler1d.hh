@@ -48,13 +48,23 @@ NS_MIA_BEGIN
 class EXPORT_CORE C1DScalarFixed {
 public:
 	/**
-	    Create the scaler prividing the given interpolator factory.
+	    Create the scaler prividing the given interpolator kernel.
 	    \param kernel interpolation kernel 
 	    \param in_size
-	    \param out_size
+	    \param out_size the input will be scaled to the given size, the scale is set accordingly 
 	 */
 
 	C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size_t out_size);
+
+	/**
+	    Create the scaler providing the given interpolator kernel.
+	    \param kernel interpolation kernel 
+	    \param in_size
+	    \param scale factor by which tho scale the input size, the interpolation will be 
+	    exact with respect to the scale 
+	 */
+
+	C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, double scale);
 
 	/**
 	   Scaling operator.
@@ -82,8 +92,10 @@ public:
 	/// \returns end iterator of the output buffer 
 	gsl::DoubleVector::iterator output_end();  
 
+	/// \returns the size of the output vector
+	size_t get_output_size() const; 
 private:
-
+	void initialize(const CSplineKernel& kernel); 
 	void upscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
 	void downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
 
@@ -96,11 +108,12 @@ private:
 	}; 
 
 	size_t m_in_size; 
-	size_t m_out_size; 
 	size_t m_support; 
+	double m_scale; 
 	std::vector<double> m_poles; 
 	EStrategy m_strategy; 
 	PSplineBoundaryCondition m_bc; 
+	size_t m_out_size; 
 
 	gsl::DoubleVector m_input_buffer; 
 	gsl::DoubleVector m_output_buffer; 

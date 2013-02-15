@@ -31,28 +31,35 @@ NS_MIA_BEGIN
 using namespace std; 
 C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size_t out_size):
 	m_in_size(in_size), 
-	m_out_size(out_size), 
 	m_support(kernel.size()), 
 	m_poles(kernel.get_poles()),
 	m_strategy(scs_unknown), 
 	m_bc(produce_spline_boundary_condition("mirror")), 
+	m_out_size(out_size), 
 	m_input_buffer(in_size, false), 
 	m_output_buffer(out_size, false)
 {
 	assert(in_size); 
 	assert(out_size); 
+	m_scale = static_cast<double>(out_size - 1) / static_cast<double>(in_size - 1); 
+	initialize(kernel); 
+}
 
-	if (in_size < out_size) {
+void C1DScalarFixed::initialize(const CSplineKernel& kernel)
+{
+	assert(m_scale > 0.0); 
+	
+	if (m_scale > 1.0) {
 		// prepare for upscaling 
-		m_bc->set_width(in_size); 
+		m_bc->set_width(m_in_size); 
 		
-		if (in_size == 1) {
+		if (m_in_size == 1) {
 			m_strategy = scs_fill_output; 
 		} else {
 			m_strategy = scs_upscale; 
-			const double dx = double(in_size - 1) / (out_size-1); 
+			const double dx = 1.0/m_scale; 
 			double x = 0; 
-			for(size_t i = 0; i < out_size; ++i, x+= dx) {
+			for(size_t i = 0; i < m_out_size; ++i, x+= dx) {
 				CSplineKernel::VWeight weight(m_support); 
 				CSplineKernel::VIndex index(m_support); 
 				kernel(x, weight, index); 
@@ -61,22 +68,22 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 				m_indices.push_back(index); 
 			}
 		}
-	} else if (in_size == out_size){
+	} else if (m_scale == 1.0){
 		m_strategy = scs_copy; 
-		m_bc->set_width(in_size); 
+		m_bc->set_width(m_in_size); 
 	} else {
-		m_bc->set_width(out_size), 
+		m_bc->set_width(m_out_size), 
 		m_strategy = scs_downscale; 
 		// prepare for downscaling 
-		const double dx = double(out_size-1) / (in_size-1); 
+		const double dx = m_scale; 
 		CSplineKernel::VWeight weight(m_support); 
 		CSplineKernel::VIndex index(m_support); 
 
-		m_A = gsl::Matrix(in_size, out_size,  true);
-		m_tau = gsl::DoubleVector(out_size, false); 
-		for (size_t k = 0; k < out_size; ++k) {
+		m_A = gsl::Matrix(m_in_size, m_out_size,  true);
+		m_tau = gsl::DoubleVector(m_out_size, false); 
+		for (size_t k = 0; k < m_out_size; ++k) {
 			double x = 0; 
-			for (size_t j = 0; j < in_size; ++j, x+=dx) {
+			for (size_t j = 0; j < m_in_size; ++j, x+=dx) {
 				kernel(x, weight, index);
 				m_bc->apply(index, weight); 
 				for (size_t i = 0; i < m_support; ++i) {
@@ -85,7 +92,7 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 				}
 			}
 		}
-		for(size_t i = 0; i < out_size; ++i) {
+		for(size_t i = 0; i < m_out_size; ++i) {
 			CSplineKernel::VWeight weight(m_support); 
 			CSplineKernel::VIndex index(m_support); 
 			kernel(i, weight, index); 
@@ -96,6 +103,27 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 
 		gsl_linalg_QR_decomp(m_A, m_tau); 
 	}
+}
+
+
+C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, double scale):
+	m_in_size(in_size), 
+	m_support(kernel.size()), 
+	m_scale(scale), 
+	m_poles(kernel.get_poles()),
+	m_strategy(scs_unknown), 
+	m_bc(produce_spline_boundary_condition("mirror")), 
+	m_input_buffer(in_size, false)
+{
+	m_out_size = (in_size - 1) * m_scale + 1; 
+	m_output_buffer = gsl::DoubleVector(m_out_size, false); 
+	initialize(kernel); 
+}
+	
+
+size_t C1DScalarFixed::get_output_size() const 
+{
+	return m_out_size; 
 }
  
 void C1DScalarFixed::operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const

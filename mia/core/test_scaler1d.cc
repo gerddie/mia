@@ -47,6 +47,9 @@ struct Scaler1DFixture  {
 
 	double f(double x) const;
 	void test_size(EInterpolation type, size_t target_size);
+	void test_scale_by_factor(const string& kernel_descr, double scale, size_t expected_size);
+
+
 	gsl::DoubleVector data; 
 };
 
@@ -146,3 +149,30 @@ void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 	}
 }
 
+void Scaler1DFixture::test_scale_by_factor(const string& kernel_descr, double scale, size_t expected_size)
+{
+	auto kernel = produce_spline_kernel(kernel_descr); 
+	
+	C1DScalarFixed scaler(*kernel, data.size(), scale); 
+
+	BOOST_CHECK_EQUAL(scaler.get_output_size(), expected_size); 
+	gsl::DoubleVector result(expected_size, false); 
+	
+	copy(data.begin(), data.end(), scaler.input_begin()); 
+	scaler.run(); 
+	copy(scaler.output_begin(), scaler.output_end(), result.begin()); 
+
+	for(size_t i = 0; i < expected_size; ++i) {
+		double x = (2 * M_PI * i) * scale;
+		double fx = 200*f(x); 
+		cvdebug()  << " sin("<< x << ") = " << fx 
+			   << ", interp= " << result[i] 
+			   << ", Q= " << fx/ result[i] 
+			   << "\n"; 
+
+		
+		if (abs(fx) > 0.0001 || abs(result[i]) > 0.0001) 
+			BOOST_CHECK_CLOSE( fx, result[i], 0.1);
+	}
+
+}
