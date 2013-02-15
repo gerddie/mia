@@ -20,15 +20,15 @@
 
 #include <memory>
 #include <mia/core/filter.hh>
+#include <mia/core/splinekernel.hh>
 #include <mia/3d/filter.hh>
 #include <mia/3d/interpolator.hh>
 
 NS_BEGIN(scale_3dimage_filter)
 
-
 class C3DScale: public mia::C3DFilter {
 public:
-	C3DScale(const mia::C3DBounds& size, const std::string& interpolator);
+	C3DScale(const mia::C3DBounds& size, mia::PSplineKernel kernel);
 
 	template <typename  T>
 	mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& data) const;
@@ -37,7 +37,21 @@ private:
 	C3DScale::result_type do_filter(const mia::C3DImage& image) const;
 
 	const mia::C3DBounds m_size;
-	std::unique_ptr<mia::C3DInterpolatorFactory> m_ipf;
+	mia::PSplineKernel m_kernel; 
+};
+
+class C3DScaleFactor: public mia::C3DFilter {
+public:
+	C3DScaleFactor(const mia::C3DFVector& size, mia::PSplineKernel kernel);
+
+	template <typename  T>
+	mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& data) const;
+
+private:
+	C3DScale::result_type do_filter(const mia::C3DImage& image) const;
+
+	const mia::C3DFVector m_factor;
+	mia::PSplineKernel m_kernel; 
 };
 
 class C3DScaleFilterPlugin: public mia::C3DFilterPlugin {
@@ -47,21 +61,33 @@ public:
 	virtual const std::string do_get_descr()const;
 private:
 	mia::C3DBounds m_s; 
-	std::string m_interp;
+	mia::PSplineKernel m_kernel; 
+};
+
+
+class C3DScaleFactorFilterPlugin: public mia::C3DFilterPlugin {
+public:
+	C3DScaleFactorFilterPlugin();
+	virtual mia::C3DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+private:
+	mia::C3DFVector m_factor; 
+	mia::PSplineKernel m_kernel; 
 };
 
 
 class CIsoVoxel: public mia::C3DFilter {
 public:
-	CIsoVoxel(float voxelsize, const std::string& interpolator);
+	CIsoVoxel(float voxelsize, mia::PSplineKernel kernel);
 
 private:
 	CIsoVoxel::result_type do_filter(const mia::C3DImage& image) const;
 	CIsoVoxel::result_type do_filter(mia::P3DImage image) const;
 
 	float m_voxelsize;
-	std::string m_interp;
+	mia::PSplineKernel m_kernel; 
 };
+
 
 
 class CIsoVoxelFilterPlugin: public mia::C3DFilterPlugin {
@@ -71,7 +97,7 @@ public:
 	virtual const std::string do_get_descr()const;
 private:
 	float m_voxelsize;
-	std::string m_interp;
+	mia::PSplineKernel m_kernel; 
 };
 
 NS_END

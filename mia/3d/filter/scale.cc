@@ -21,7 +21,6 @@
 #include <limits>
 #include <sstream>
 #include <mia/core/msgstream.hh>
-#include <mia/core/spacial_kernel.hh>
 #include <mia/core/scaler1d.hh>
 #include <mia/core/utils.hh>
 #include <mia/3d/filter/scale.hh>
@@ -35,35 +34,18 @@ using namespace std;
 using namespace boost;
 namespace bfs= ::boost::filesystem;
 
-C3DScale::C3DScale(const C3DBounds& size, const string& filter):
-	m_size(size),
-	m_ipf(new C3DInterpolatorFactory(produce_spline_kernel(filter), "mirror"))
-{
-	TRACE_FUNCTION; 
-}
-
 template <class T>
-C3DScale::result_type C3DScale::operator () (const T3DImage<T>& src) const
+C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_size, 
+			       C1DScalarFixed& scaler_x, 
+			       C1DScalarFixed& scaler_y, 
+			       C1DScalarFixed& scaler_z) 
 {
-	TRACE_FUNCTION; 
-	if (src.get_size() == m_size)
-		return C3DScale::result_type(new T3DImage<T>(src));
-
-	C3DBounds target_size( m_size.x ? m_size.x : src.get_size().x, 
- 			       m_size.y ? m_size.y : src.get_size().y, 
-			       m_size.z ? m_size.z : src.get_size().z ); 
-	
 	T3DImage<T> *result = new T3DImage<T>(target_size, src);
 	
-	C1DScalarFixed scaler_x(*m_ipf->get_kernel(), src.get_size().x, target_size.x);
-	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, target_size.y);
-	C1DScalarFixed scaler_z(*m_ipf->get_kernel(), src.get_size().z, target_size.z);
+	cvdebug() << "do_scale: " << src.get_size() << " -> " << target_size << "\n"; 
 
-	C3DFVector factor(float(src.get_size().x / float(target_size.x)), 
-			  float(src.get_size().y / float(target_size.y)), 
-			  float(src.get_size().z / float(target_size.z))); 
 
-	// run x-scaling 
+// run x-scaling 
 	T3DImage<double> tmp(C3DBounds(target_size.x, src.get_size().y, src.get_size().z)); 
 	for (size_t z = 0; z < src.get_size().z; ++z) {
 		for (size_t y = 0; y < src.get_size().y; ++y) {
@@ -100,9 +82,48 @@ C3DScale::result_type C3DScale::operator () (const T3DImage<T>& src) const
 			result->put_data_line_z(x, y, out_buffer_t);
 		}
 	}
+	return C3DScale::result_type(result);	
+}
+			       
 
+template <class T>
+C3DScale::result_type C3DScale::operator () (const T3DImage<T>& src) const
+{
+	TRACE_FUNCTION; 
+
+	C3DBounds target_size( m_size.x ? m_size.x : src.get_size().x, 
+ 			       m_size.y ? m_size.y : src.get_size().y, 
+			       m_size.z ? m_size.z : src.get_size().z ); 
+
+	cvdebug() << "sizes: " << src.get_size() << " -> " << target_size << "\n"; 
+
+	if (target_size == src.get_size())
+		return C3DScale::result_type(new T3DImage<T>(src));
+	
+	
+	
+	C1DScalarFixed scaler_x(*m_kernel, src.get_size().x, static_cast<size_t>(target_size.x));
+	C1DScalarFixed scaler_y(*m_kernel, src.get_size().y, static_cast<size_t>(target_size.y));
+	C1DScalarFixed scaler_z(*m_kernel, src.get_size().z, static_cast<size_t>(target_size.z));
+
+	C3DFVector factor(float(src.get_size().x / float(target_size.x)), 
+			  float(src.get_size().y / float(target_size.y)), 
+			  float(src.get_size().z / float(target_size.z))); 
+
+	cvdebug() << "factor: " << factor << "\n"; 	
+
+	C3DScale::result_type result = do_scale(src, target_size, 
+						scaler_x, scaler_y, scaler_z); 
 	result->set_voxel_size(src.get_voxel_size() * factor);
 	return C3DScale::result_type(result);
+}
+
+
+C3DScale::C3DScale(const C3DBounds& size, PSplineKernel kernel):
+	m_size(size),
+	m_kernel(kernel)
+{
+	TRACE_FUNCTION; 
 }
 
 C3DScale::result_type C3DScale::do_filter(const C3DImage& image) const
@@ -114,8 +135,7 @@ C3DScale::result_type C3DScale::do_filter(const C3DImage& image) const
 
 C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 	C3DFilterPlugin("scale"),
-	m_s(0,0,0), 
-	m_interp("bspline:d=3")
+	m_s(0,0,0)
 {
 	add_parameter("sx", new CUIntParameter(m_s.x, 0,
 					      numeric_limits<unsigned int>::max(), false,
@@ -129,26 +149,91 @@ C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 					      numeric_limits<unsigned int>::max(), false,
 					      "target size in y direction (0:use input image size)"));
 
-	add_parameter("s", new C3DBoundsParameter(m_s, 0,"target size (component 0:use input image size)"));
-
-	add_parameter("interp", new CStringParameter(m_interp, false, "interpolation method to be used "));
+	add_parameter("interp", make_param(m_kernel, "bspline:d=3",  false, "interpolation kernel to be used "));
 }
 
 
 C3DFilter *C3DScaleFilterPlugin::do_create()const
 {
-	return new C3DScale(m_s, m_interp);
+	return new C3DScale(m_s, m_kernel);
 }
 
 const string C3DScaleFilterPlugin::do_get_descr()const
 {
-	return "3D image scale filter";
+	return "3D image filter that scales to a given target size ";
+}
+
+C3DScaleFactor::C3DScaleFactor(const C3DFVector& factor, PSplineKernel kernel):
+	m_factor(factor), 
+	m_kernel(kernel)
+{
+	TRACE_FUNCTION; 
+}
+
+	
+
+template <typename  T>
+mia::C3DFilter::result_type C3DScaleFactor::operator () (const mia::T3DImage<T>& src) const
+{
+	TRACE_FUNCTION; 
+	C1DScalarFixed scaler_x(*m_kernel, src.get_size().x, m_factor.x);
+	C1DScalarFixed scaler_y(*m_kernel, src.get_size().y, m_factor.y);
+	C1DScalarFixed scaler_z(*m_kernel, src.get_size().z, m_factor.z);
+
+	C3DBounds target_size( scaler_x.get_output_size(), 
+			       scaler_y.get_output_size(), 
+			       scaler_z.get_output_size()); 
+	
+	if (target_size == src.get_size())
+		return C3DScale::result_type(new T3DImage<T>(src));
+	
+	C3DScale::result_type result = do_scale(src, target_size, 
+						scaler_x, scaler_y, scaler_z); 
+	result->set_voxel_size(src.get_voxel_size() / m_factor);
+	return C3DScale::result_type(result);
 }
 
 
-CIsoVoxel::CIsoVoxel(float voxelsize, const std::string& interpolator):
+C3DScale::result_type C3DScaleFactor::do_filter(const mia::C3DImage& image) const
+{
+	return mia::filter(*this, image); 
+}
+
+C3DScaleFactorFilterPlugin::C3DScaleFactorFilterPlugin():
+	C3DFilterPlugin("fscale"),
+	m_factor(1,1,1)
+{
+	add_parameter("fx", new CFloatParameter(m_factor.x, 0.0001,
+						numeric_limits<unsigned int>::max(), false,
+						"scaling factor in x direction"));
+
+	add_parameter("fy", new CFloatParameter(m_factor.y, 0.0001, 10000, false,
+					       "scaling factor in y direction"));
+
+	add_parameter("fz", new CFloatParameter(m_factor.z, 0.0001,
+						numeric_limits<unsigned int>::max(), false,
+						"scaling factor in z direction"));
+
+	add_parameter("interp", make_param(m_kernel, "bspline:d=3",  false, "interpolation kernel to be used "));
+	
+}
+	
+mia::C3DFilter *C3DScaleFactorFilterPlugin::do_create()const
+{
+	return new C3DScaleFactor(m_factor, m_kernel); 
+}
+
+const std::string C3DScaleFactorFilterPlugin::do_get_descr()const
+{
+	return "3D image filter that scales based on the given scale factor";
+}
+
+
+
+
+CIsoVoxel::CIsoVoxel(float voxelsize, PSplineKernel kernel):
 	m_voxelsize(voxelsize), 
-	m_interp(interpolator)
+	m_kernel(kernel)
 {
 }
 	
@@ -156,15 +241,7 @@ CIsoVoxel::result_type CIsoVoxel::do_filter(const mia::C3DImage& image) const
 {
 	TRACE_FUNCTION; 
 	C3DFVector vs = image.get_voxel_size();
-	
-	C3DBounds target_size(static_cast<unsigned short>(image.get_size().x * fabs(vs.x)/m_voxelsize), 
-			      static_cast<unsigned short>(image.get_size().y * fabs(vs.y)/m_voxelsize), 
-			      static_cast<unsigned short>(image.get_size().z * fabs(vs.z)/m_voxelsize)); 
-	cvdebug() << "scale image to " <<target_size <<  "\n"; 
-		   
-	// todo: with this approach, the voxel size may not become exactly what is requested. 
-	// this would require more handywork. 
-	C3DScale scaler(target_size, m_interp);
+	C3DScaleFactor scaler(vs, m_kernel);
 	return  scaler.filter(image); 
 }
 
@@ -181,17 +258,15 @@ CIsoVoxel::result_type CIsoVoxel::do_filter(P3DImage image) const
 
 CIsoVoxelFilterPlugin::CIsoVoxelFilterPlugin():
 	C3DFilterPlugin("isovoxel"),
-	m_voxelsize(1.0),
-	m_interp("bspline:d=3")
+	m_voxelsize(1.0)
 {
 	add_parameter("size", new CFloatParameter(m_voxelsize, 0.001, 1e+6, false,"isometric target voxel size"));
-	add_parameter("interp", new CStringParameter(m_interp, false, "interpolation method to be used"));
-	
+	add_parameter("interp", make_param(m_kernel, "bspline:d=3",  false, "interpolation kernel to be used "));
 }
 
 mia::C3DFilter *CIsoVoxelFilterPlugin::do_create()const
 {
-	return new CIsoVoxel(m_voxelsize, m_interp); 
+	return new CIsoVoxel(m_voxelsize, m_kernel); 
 }
 
 const std::string CIsoVoxelFilterPlugin::do_get_descr()const

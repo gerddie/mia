@@ -115,7 +115,7 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, doub
 	m_bc(produce_spline_boundary_condition("mirror")), 
 	m_input_buffer(in_size, false)
 {
-	m_out_size = ceil((in_size-1)  * m_scale) + 1;
+	m_out_size = ceil((in_size-1)  * m_scale  + 1);
 	m_output_buffer = gsl::DoubleVector(m_out_size, false); 
 	initialize(kernel); 
 }

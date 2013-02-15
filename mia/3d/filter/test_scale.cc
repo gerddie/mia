@@ -124,9 +124,9 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	C3DScale scaler(C3DBounds(4,4,4), "bspline:d=3");
+	auto scaler = BOOST_TEST_create_from_plugin<C3DScaleFilterPlugin>("scale:sx=4,sy=4,sz=4,interp=[bspline:d=3]"); 
 
-	P3DImage scaled = scaler.filter(fimage);
+	P3DImage scaled = scaler->filter(fimage);
 
 	BOOST_CHECK_EQUAL(scaled->get_size(),C3DBounds(4, 4, 4));
 
@@ -142,20 +142,19 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 
 }
 
-extern const float init_float[]; 
+extern const short init_short[]; 
 extern const float test_float[]; 
 
 BOOST_AUTO_TEST_CASE( test_downscale_float )
 {
 
 
-	C3DFImage fimage(C3DBounds(8, 8, 8), init_float );
+	C3DFImage fimage(C3DBounds(8, 8, 8));
+	copy(init_short, init_short + 8*8*8, fimage.begin()); 
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
-
-	C3DScale scaler(C3DBounds(4, 4, 4), "bspline:d=3");
-
-	P3DImage scaled = scaler.filter(fimage);
+	auto scaler = BOOST_TEST_create_from_plugin<C3DScaleFilterPlugin>("scale:sx=4,sy=4,sz=4,interp=[bspline:d=3]"); 
+	P3DImage scaled = scaler->filter(fimage);
 
 	BOOST_CHECK_EQUAL(scaled->get_size(),C3DBounds(4, 4, 4));
 
@@ -174,13 +173,13 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 BOOST_AUTO_TEST_CASE( test_noscale_float )
 {
 
-	C3DFImage fimage(C3DBounds(8, 8, 8), init_float );
+	C3DFImage fimage(C3DBounds(8, 8, 8) );
+	copy(init_short, init_short + 8*8*8, fimage.begin()); 
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	C3DScale scaler(C3DBounds(0, 0, 0), "bspline:d=3");
-
-	P3DImage scaled = scaler.filter(fimage);
+	auto scaler = BOOST_TEST_create_from_plugin<C3DScaleFilterPlugin>("scale:sx=0,sy=0,sz=0,interp=[bspline:d=3]"); 
+	P3DImage scaled = scaler->filter(fimage);
 
 	BOOST_CHECK_EQUAL(scaled->get_size(),C3DBounds(8, 8, 8));
 
@@ -189,13 +188,13 @@ BOOST_AUTO_TEST_CASE( test_noscale_float )
 	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(2.0f, 3.0f, 4.0f));
 
 	for (size_t i = 0; i < 512; ++i) {
-		cvdebug() << i << ":" << fscaled[i] << " - " << init_float[i] << '\n'; 
-		BOOST_CHECK_CLOSE(fscaled[i], init_float[i], 0.1); 
+		cvdebug() << i << ":" << fscaled[i] << " - " << init_short[i] << '\n'; 
+		BOOST_CHECK_CLOSE(fscaled[i], init_short[i], 0.1); 
 	}
 }
 
 
-const float init_float[8*64] = {
+const short init_short[8*64] = {
 	0, 0, 0, 0, 1, 1, 1, 1,/**/ 
 	0, 0, 0, 0, 1, 1, 1, 1,/**/ 
 	0, 0, 0, 0, 1, 1, 1, 1,/**/ 
@@ -293,27 +292,56 @@ const float test_float[64] = {
 };
 
 
+static vector<double> fill_sin(int len)
+{
+	vector<double> result(len); 
+	for (int i = 0; i < len; ++i) 
+		result[i] = sin(2 * M_PI * i / (len -1)); 
+	return result; 
+}
+
 BOOST_AUTO_TEST_CASE( test_isoscale_float )
 {
-	C3DFImage fimage(C3DBounds(8, 8, 8), init_float );
-	fimage.set_voxel_size(C3DFVector(.5, .5, .5));
+	C3DBounds in_size(129, 177, 257); 
+	C3DFImage fimage( in_size);
 
+	{
+		vector<double> fz = fill_sin(in_size.z); 
+		vector<double> fy = fill_sin(in_size.y); 
+		vector<double> fx = fill_sin(in_size.x); 
+		
+		auto i = fimage.begin(); 
+		for (unsigned z = 0; z < in_size.z; ++z)
+			for (unsigned y = 0; y < in_size.y; ++y)
+				for (unsigned x = 0; x < in_size.x; ++x, ++i)
+					*i = 200 * fx[x] * fy[y] *fz[z]; 
+	}
+
+	fimage.set_voxel_size(C3DFVector(.5, .25, .125));
 
 	auto isofy = BOOST_TEST_create_from_plugin<CIsoVoxelFilterPlugin>("isovoxel:size=1"); 
 
 	P3DImage scaled = isofy->filter(fimage);
 	
-	BOOST_CHECK_EQUAL(scaled->get_size(),C3DBounds(4, 4, 4));
+	C3DBounds test_size(65, 45, 33);
+
+	BOOST_CHECK_EQUAL(scaled->get_size(), test_size);
 
 	const auto fscaled = dynamic_cast<const C3DFImage& >(*scaled);
 
 	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(1.f, 1.f, 1.f));
 
-	for (size_t i = 0; i < 64; ++i) {
-		cvdebug() << i << ":" << fscaled[i] << " - " << test_float[i] << '\n'; 
-		BOOST_CHECK_CLOSE(fscaled[i], test_float[i], 0.1); 
-	}
-		
+	{
+		vector<double> fz = fill_sin(test_size.z); 
+		vector<double> fy = fill_sin(test_size.y); 
+		vector<double> fx = fill_sin(test_size.x); 
 
-	
+		auto k = fscaled.begin(); 
+		for (unsigned z = 0; z < test_size.z; ++z)
+			for (unsigned y = 0; y < test_size.y; ++y)
+				for (unsigned x = 0; x < test_size.x; ++x, ++k) {
+					const double v = 200 * fx[x] * fy[y] *fz[z]; 
+					BOOST_CHECK_CLOSE(v, *k, 0.1); 
+				}
+	}
 }
