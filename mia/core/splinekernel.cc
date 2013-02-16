@@ -29,6 +29,7 @@
 #include <cassert>
 #include <iomanip>
 #include <limits>
+#include <miaconfig.h>
 #include <mia/core/export_handler.hh>
 #include <mia/core/splinekernel.hh>
 #include <mia/core/errormacro.hh>
@@ -45,8 +46,8 @@
 #include <emmintrin.h>
 #endif
 
-
 #define USE_FASTFLOOR
+
 NS_MIA_BEGIN
 using namespace std;
 
@@ -150,7 +151,7 @@ void CSplineKernel::get_uncached(double x, SCache& cache)const
 const double _double2fixmagic = 68719476736.0*1.5;     //2^36 * 1.5,  (52-_shiftamt=36) uses limited precisicion to floor
 const int    _shiftamt        = 16;                    //16.16 fixed point representation,
 
-#if BIGENDIAN_
+#if WORDS_BIGENDIAN
 	#define iexp_				0
 	#define iman_				1
 #else
