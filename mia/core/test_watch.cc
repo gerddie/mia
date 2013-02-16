@@ -41,8 +41,9 @@ void don_t_optimize_x_away(double /*x*/)
   In other words, if the program gets stalled because of some other process 
   the real time passed may be a lot larger than the time the test program 
   runs. Unfortunaly, the only available method to measure the program active 
-  run time is used by CWatch, so theer is no real source to get a true 
+  run time is used by CWatch, so there is no real source to get a true 
   test value. 
+  For that reason, the test is currently not included in the build and test suite. 
 */
 BOOST_AUTO_TEST_CASE( test_watch ) 
 {
