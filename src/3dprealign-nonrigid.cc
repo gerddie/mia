@@ -58,7 +58,7 @@ const SProgramDescription g_description = {
 	 "and SSD as final measure. Penalize the transformation by using divcurl with aweight of 2.0. "
 	 "As optimizer an nlopt based newton method is used."}, 
 	{pdi_example_code, "mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2"
-	 "-F spline:rate=16 -d 2.0 -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd "
+	 "-F spline:rate=16,penalty=[divcurl:weight=2] -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd "
 	 "-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"}
 }; 
 
@@ -114,7 +114,6 @@ public:
 	public: 
 		RegistrationParams(); 
 		PMinimizer minimizer;
-		double divcurlweight; 
 		P3DFullCost pass1_cost;  
 		P3DFullCost pass2_cost;
 		P3DFullCost series_select_cost;  
@@ -210,11 +209,7 @@ void C3DMyocardPeriodicRegistration::run_initial_pass(C3DImageSeries& images,
 {
 	cvmsg() << "run initial registration pass on "<< subset << "\n"; 
 	C3DFullCostList costs; 
-	// create costs
 	costs.push(m_params.pass1_cost); 
-	stringstream divcurl_descr;  
-	divcurl_descr << "divcurl:weight=" << m_params.divcurlweight; 
-	costs.push(C3DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 
 	C3DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
@@ -241,10 +236,7 @@ void C3DMyocardPeriodicRegistration::run_final_pass(C3DImageSeries& images,
 	C3DFullCostList costs; 
 	// create costs
 	costs.push(m_params.pass2_cost); 
-	stringstream divcurl_descr;  
-	divcurl_descr << "divcurl:weight=" << m_params.divcurlweight; 
-	costs.push(C3DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
-
+	
 	C3DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
@@ -311,7 +303,6 @@ size_t C3DMyocardPeriodicRegistration::get_ref_idx()const
 
 C3DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
 	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1")), 
-	divcurlweight(5),
 	pass1_cost(C3DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")), 
 	pass2_cost(C3DFullCostPluginHandler::instance().produce("image:cost=ssd")), 
 	series_select_cost(C3DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")),
@@ -361,9 +352,6 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt( params.minimizer, "gsl:opt=gd,step=0.01", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
-
-	options.add(make_opt( params.divcurlweight, "divcurl", 'd', 
-				    "divcurl regularization weight"));
 
 	options.add(make_opt( params.transform_creator, "spline", "transForm", 'f', 
 				    "transformation type"));

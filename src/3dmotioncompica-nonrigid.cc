@@ -79,7 +79,7 @@ public:
 }; 
 
 
-C3DFullCostList create_costs(double divcurlweight, const string& imagecostbase, int idx)
+C3DFullCostList create_costs(const string& imagecostbase, int idx)
 {
 	stringstream cost_descr; 
 	cost_descr << imagecostbase << "src=src" << idx << ".@,ref=ref" << idx << ".@"; 
@@ -88,16 +88,13 @@ C3DFullCostList create_costs(double divcurlweight, const string& imagecostbase, 
 	C3DFullCostList result; 
 	result.push(imagecost); 
 
-	stringstream divcurl_descr; 
-	divcurl_descr << "divcurl:weight=" << divcurlweight; 
-	result.push(C3DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 	return result; 
 }
 
-P3DTransformationFactory create_transform_creator(size_t c_rate)
+P3DTransformationFactory create_transform_creator(size_t c_rate, double divcurlweight)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate; 
+	transf << "spline:rate=" << c_rate << "penalty=[divcurl:weight=" << divcurlweight << "]";
 	return C3DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 
@@ -107,7 +104,6 @@ struct SeriesRegistration {
 	const C3DImageSeries& references; 
 	string minimizer; 
 	size_t mg_levels; 
-	double divcurlweight; 
 	P3DTransformationFactory transform_creator; 
 	string imagecostbase; 
 	int skip_images; 
@@ -116,7 +112,6 @@ struct SeriesRegistration {
 			   const C3DImageSeries& _references, 
 			   const string& _minimizer, 
 			   size_t _mg_levels, 
-			   double _divcurlweight, 
 			   P3DTransformationFactory _transform_creator, 
 			   string _imagecostbase, 
 			   int _skip_images):
@@ -124,7 +119,6 @@ struct SeriesRegistration {
 		references(_references), 
 		minimizer(_minimizer), 
 		mg_levels(_mg_levels), 
-		divcurlweight(_divcurlweight), 
 		transform_creator(_transform_creator), 
 		imagecostbase(_imagecostbase), 
 		skip_images(_skip_images)
@@ -135,7 +129,7 @@ struct SeriesRegistration {
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
 		for( int i=range.begin(); i!=range.end(); ++i ) {
-			auto costs  = create_costs(divcurlweight, imagecostbase, i); 
+			auto costs  = create_costs(imagecostbase, i); 
 			C3DNonrigidRegister nrr(costs, m,  transform_creator, mg_levels, i);
 			P3DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
 			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
@@ -150,7 +144,7 @@ void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& r
 {
 
 	SeriesRegistration sreg(input_images,references, minimizer, 
-				mg_levels, divcurlweight, create_transform_creator(c_rate), 
+				mg_levels, create_transform_creator(c_rate, divcurlweight), 
 				imagecost, skip_images); 
 	parallel_for(blocked_range<int>( 0, references.size()), sreg);
 }
