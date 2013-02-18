@@ -72,10 +72,10 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 
 	// it is not confirmed that this data is correct
 	const float test[4] = {
-		-0.304008901,
-		 0.8986637,
-		 2.10133624,
-		 3.30400896
+		 0.375,
+		 1.125,
+		 1.875,
+		 2.625
 	};
 
 	C2DFImage fimage(C2DBounds(4, 4), init );

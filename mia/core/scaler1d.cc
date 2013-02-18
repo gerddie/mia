@@ -18,13 +18,14 @@
  *
  */
 
-
+#include <iomanip>
 #include <cassert>
 #include <cmath>
 
 #include <gsl/gsl_linalg.h>
 #include <mia/core/scaler1d.hh>
 #include <mia/core/msgstream.hh>
+
 
 NS_MIA_BEGIN
 
@@ -35,9 +36,9 @@ C1DScalar::C1DScalar(const CSplineKernel& kernel, size_t in_size, size_t out_siz
 	m_poles(kernel.get_poles()),
 	m_strategy(scs_unknown), 
 	m_bc(produce_spline_boundary_condition("mirror")), 
+	m_input_buffer(in_size), 
 	m_out_size(out_size), 
-	m_input_buffer(in_size, false), 
-	m_output_buffer(out_size, false)
+	m_output_buffer(out_size)
 {
 	assert(in_size); 
 	assert(out_size); 
@@ -72,36 +73,28 @@ void C1DScalar::initialize(const CSplineKernel& kernel)
 		m_strategy = scs_copy; 
 		m_bc->set_width(m_in_size); 
 	} else {
-		m_bc->set_width(m_out_size), 
+		m_bc->set_width(m_in_size), 
 		m_strategy = scs_downscale; 
-		// prepare for downscaling 
-		const double dx = m_scale; 
+		const double dx = 1.0/m_scale; 
 		CSplineKernel::VWeight weight(m_support); 
 		CSplineKernel::VIndex index(m_support); 
+		
+		stringstream gdescr; 
+		gdescr << "gauss:w=" << static_cast<int>(floor(1.0 / m_scale + 0.5)); 
+		m_gauss = produce_spacial_kernel(gdescr.str()); 
 
-		m_A = gsl::Matrix(m_in_size, m_out_size,  true);
-		m_tau = gsl::DoubleVector(m_out_size, false); 
-		for (size_t k = 0; k < m_out_size; ++k) {
-			double x = 0; 
-			for (size_t j = 0; j < m_in_size; ++j, x+=dx) {
-				kernel(x, weight, index);
-				m_bc->apply(index, weight); 
-				for (size_t i = 0; i < m_support; ++i) {
-					double v = m_A(j, index[i]); 
-					m_A.set(j, index[i], v + weight[i]);
-				}
-			}
-		}
+		cvdebug() << "downscale: prefilter='" << gdescr.str() << "'\n"; 
 		for(size_t i = 0; i < m_out_size; ++i) {
 			CSplineKernel::VWeight weight(m_support); 
 			CSplineKernel::VIndex index(m_support); 
-			kernel(i, weight, index); 
+			kernel(i * dx, weight, index); 
 			m_bc->apply(index, weight); 
 			m_weights.push_back(weight); 
 			m_indices.push_back(index); 
-		}
+			cvdebug() << "["<< setw(2) << i << "]" << setw(10) << i*dx << ", "
+				  << index << "\n"; 
 
-		gsl_linalg_QR_decomp(m_A, m_tau); 
+		}
 	}
 }
 
@@ -113,10 +106,10 @@ C1DScalar::C1DScalar(const CSplineKernel& kernel, size_t in_size, double scale):
 	m_poles(kernel.get_poles()),
 	m_strategy(scs_unknown), 
 	m_bc(produce_spline_boundary_condition("mirror")), 
-	m_input_buffer(in_size, false)
+	m_input_buffer(in_size), 
+	m_out_size(ceil((in_size-1)  * m_scale  + 1)), 
+	m_output_buffer(m_out_size)
 {
-	m_out_size = ceil((in_size-1)  * m_scale  + 1);
-	m_output_buffer = gsl::DoubleVector(m_out_size, false); 
 	initialize(kernel); 
 }
 	
@@ -126,7 +119,7 @@ size_t C1DScalar::get_output_size() const
 	return m_out_size; 
 }
  
-void C1DScalar::operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const
+void C1DScalar::operator () (const std_double_vector& input, std_double_vector& output) const
 {
 	switch (m_strategy) {
 	case scs_fill_output: fill(output.begin(), output.end(), input[0]); 
@@ -143,22 +136,22 @@ void C1DScalar::operator () (const gsl::DoubleVector& input, gsl::DoubleVector& 
 	};
 }
 
-gsl::DoubleVector::iterator C1DScalar::input_begin()
+C1DScalar::std_double_vector::iterator C1DScalar::input_begin()
 {
 	return m_input_buffer.begin(); 
 }
 
-gsl::DoubleVector::iterator C1DScalar::input_end() 
+C1DScalar::std_double_vector::iterator C1DScalar::input_end() 
 {
 	return m_input_buffer.end(); 
 }
 
-gsl::DoubleVector::iterator C1DScalar::output_begin()
+C1DScalar::std_double_vector::iterator C1DScalar::output_begin()
 {
 	return m_output_buffer.begin(); 
 }
 
-gsl::DoubleVector::iterator C1DScalar::output_end() 
+C1DScalar::std_double_vector::iterator C1DScalar::output_end() 
 {
 	return m_output_buffer.end();
 }
@@ -166,6 +159,7 @@ gsl::DoubleVector::iterator C1DScalar::output_end()
 
 
 void C1DScalar::run()
+
 {
 	switch (m_strategy) {
 	case scs_fill_output: fill(output_begin(), output_end(), m_input_buffer[0]); 
@@ -184,7 +178,7 @@ void C1DScalar::run()
 	
 }
 
-void C1DScalar::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const
+void C1DScalar::upscale(const std_double_vector& input, std_double_vector& output) const
 {
 	TRACE_FUNCTION; 
 	auto io = output.begin(); 
@@ -203,19 +197,17 @@ void C1DScalar::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& outpu
 	}
 }
 
-void C1DScalar::downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const
+void C1DScalar::downscale(const std_double_vector& input, std_double_vector& output) const
 {
-	gsl::DoubleVector coefs(output.size(), false); 
-	gsl::DoubleVector residual(input.size(), false); 
-	gsl_linalg_QR_lssolve (m_A, m_tau, input, coefs, residual); 
-	
+	std_double_vector coeffs = m_gauss->apply(input);
+	m_bc->filter_line(coeffs, m_poles); 
 	for (size_t i = 0; i < output.size(); ++i) {
 		const auto& weight = m_weights[i]; 
 		const auto& index = m_indices[i]; 
 		double v = 0.0;
 		for (size_t k = 0; k < m_support; ++k)
-			v += weight[k] * coefs[index[k]]; 
-		output[i] = output.size()  * v; 
+			v += weight[k] * coeffs[index[k]]; 
+		output[i] = v; 
 	}
 }
 

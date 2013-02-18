@@ -26,10 +26,10 @@
 #include <vector>
 #include <memory>
 
-#include <gsl++/vector.hh>
-#include <gsl++/matrix.hh>
+#include <mia/core/vector.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/interpolator1d.hh>
+#include <mia/core/spacial_kernel.hh>
 
 NS_MIA_BEGIN
 
@@ -47,6 +47,8 @@ NS_MIA_BEGIN
 
 class EXPORT_CORE C1DScalar {
 public:
+	typedef std::vector<double> std_double_vector; 
+
 	/**
 	    Create the scaler prividing the given interpolator kernel.
 	    \param kernel interpolation kernel 
@@ -72,7 +74,7 @@ public:
 	   \param[out] output when calling the function, the size of this vector must be set to the requested
 	   size. The path for down or upscaling is automatically selected.
 	 */
-	void operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const;
+	void operator () (const std_double_vector& input, std_double_vector& output) const;
 
 	/**
 	   Alternate interface for scaling. Here the input data has to be copied into 
@@ -82,22 +84,22 @@ public:
 	void run();
 
 	/// \returns begin iterator of the input buffer 
-	gsl::DoubleVector::iterator input_begin();  
+	std_double_vector::iterator input_begin();  
 	/// \returns end iterator of the input buffer 
-	gsl::DoubleVector::iterator input_end();  
+	std_double_vector::iterator input_end();  
 
 	/// \returns begin iterator of the output buffer 
-	gsl::DoubleVector::iterator output_begin();  
+	std_double_vector::iterator output_begin();  
 	
 	/// \returns end iterator of the output buffer 
-	gsl::DoubleVector::iterator output_end();  
+	std_double_vector::iterator output_end();  
 
 	/// \returns the size of the output vector
 	size_t get_output_size() const; 
 private:
 	void initialize(const CSplineKernel& kernel); 
-	void upscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
-	void downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
+	void upscale(const std_double_vector& input, std_double_vector& output) const; 
+	void downscale(const std_double_vector& input, std_double_vector& output) const; 
 
 	enum EStrategy {
 		scs_fill_output, 
@@ -113,14 +115,15 @@ private:
 	std::vector<double> m_poles; 
 	EStrategy m_strategy; 
 	PSplineBoundaryCondition m_bc; 
-	size_t m_out_size; 
 
-	gsl::DoubleVector m_input_buffer; 
-	gsl::DoubleVector m_output_buffer; 
+	std_double_vector m_input_buffer; 
+	
+	size_t m_out_size; 
+	std_double_vector m_output_buffer; 
 	std::vector<CSplineKernel::VWeight> m_weights; 
 	std::vector<CSplineKernel::VIndex> m_indices; 
-	gsl::Matrix m_A; 	
-	gsl::DoubleVector m_tau; 
+
+	P1DSpacialKernel m_gauss; 
 };
 
 

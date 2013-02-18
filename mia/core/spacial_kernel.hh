@@ -167,6 +167,12 @@ typedef std::shared_ptr<C1DFoldingKernel> P1DSpacialKernel;
 /// plugin handler for spaciel filter kernels 
 typedef THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> > C1DSpacialKernelPluginHandler;
 
+
+inline P1DSpacialKernel produce_spacial_kernel(const std::string& descr) 
+{
+	return C1DSpacialKernelPluginHandler::instance().produce(descr); 
+}
+
 /** 
     @cond INTERNAL  
     \ingroup test 

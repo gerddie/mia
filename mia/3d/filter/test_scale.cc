@@ -109,22 +109,32 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	};
 
 	const short test[64] = {
-		0, 0, 1, 1, 0, 0, 1, 1, 
-		2, 2, 3, 3, 2, 2, 3, 3, 
-		0, 0, 1, 1, 0, 0, 1, 1, 
-		2, 2, 3, 3, 2, 2, 3, 3, 
+		0, 0, 1, 1, 
+		0, 0, 1, 1, 
+		2, 2, 3, 3, 
+		2, 2, 3, 3, 
+		
+		0, 0, 1, 1, 
+		0, 0, 1, 1, 
+		2, 2, 3, 3, 
+		2, 2, 3, 3, 
 
-		4, 4, 5, 5, 4, 4, 5, 5, 
-		6, 6, 7, 7, 6, 6, 7, 7, 
-		4, 4, 5, 5, 4, 4, 5, 5, 
-		6, 6, 7, 7, 6, 6, 7, 7
+		4, 4, 5, 5, 
+		4, 4, 5, 5, 
+		6, 6, 7, 7, 
+		6, 6, 7, 7, 
+
+		4, 4, 5, 5, 
+		4, 4, 5, 5, 
+		6, 6, 7, 7, 
+		6, 6, 7, 7
 	};
 
 	C3DSSImage fimage(C3DBounds(8, 8, 8), init );
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	auto scaler = BOOST_TEST_create_from_plugin<C3DScaleFilterPlugin>("scale:sx=4,sy=4,sz=4,interp=[bspline:d=3]"); 
+	auto scaler = BOOST_TEST_create_from_plugin<C3DScaleFilterPlugin>("scale:sx=4,sy=4,sz=4,interp=[bspline:d=0]"); 
 
 	P3DImage scaled = scaler->filter(fimage);
 
@@ -143,11 +153,39 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 }
 
 extern const short init_short[]; 
-extern const float test_float[]; 
 
-BOOST_AUTO_TEST_CASE( test_downscale_float )
+
+/**
+   This test only checks that the scaling didn't change.  
+   The values are not really tested as they should be, they are 
+   taken from a output that is believed to be working correct 
+   because the 1D scaler works correctly.
+*/
+BOOST_AUTO_TEST_CASE( test_downscale_float_persists )
 {
+	
+	const float test_float[64] = {
+		1.21431e-17, 0.123207, 0.876793, 1, 
+		0.246414,    0.369621, 1.12321,  1.24641, 
+		1.75359,     1.87679,  2.63038,  2.75359, 
+		2,           2.12321,  2.87679,  3, 
 
+		0.492827,    0.616034, 1.36962,  1.49283, 
+		0.739241,    0.862448, 1.61603,  1.73924, 
+		2.24641,     2.36962,  3.12321,  3.24641, 
+		2.49283,     2.61603,  3.36962,  3.49283, 
+
+		3.50717,     3.63038,  4.38397,  4.50717, 
+		3.75359,     3.87679,  4.63038,  4.75359, 
+		5.26076,     5.38397,  6.13755,  6.26076, 
+		5.50717,     5.63038,  6.38397,  6.50717, 
+
+		4,           4.12321,  4.87679,  5, 
+		4.24641,     4.36962,  5.12321,  5.24641, 
+		5.75359,     5.87679,  6.63038,  6.75359, 
+		6,           6.12321,  6.87679,  7
+	};
+	
 
 	C3DFImage fimage(C3DBounds(8, 8, 8));
 	copy(init_short, init_short + 8*8*8, fimage.begin()); 
@@ -163,6 +201,7 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(4.0f, 6.0f, 8.0f));
 
 	for (size_t i = 0; i < 64; ++i) {
+
 		cvdebug() << i << ":" << fscaled[i] << " - " << test_float[i] << '\n'; 
 		BOOST_CHECK_CLOSE(fscaled[i], test_float[i], 0.1); 
 	}
@@ -270,45 +309,29 @@ const short init_short[8*64] = {
 	
 };
 
-// this data is the actual outcome of the downscaling 
-// so it's no real test 
-const float test_float[64] = {
-	0.38376388,   0.284638166, 1.37324274, 1.27411711,
-	0.185512438,  0.0863867104,1.17499137, 1.07586563,
-	2.36272168,   2.26359606,  3.35220051, 3.25307488,
-	2.1644702,    2.06534457,  3.15394902, 3.0548234,
-	-0.0127390167,-0.111864746, 0.976739883,0.877614141,
-	-0.210990474, -0.310116202, 0.778488457,0.679362714,
-	1.96621883,   1.86709309,  2.95569777, 2.85657191,
-	1.76796734,   1.6688416,   2.75744629, 2.65832043,
-	4.34167957,   4.24255371,  5.33115816, 5.23203278,
-	4.14342785,   4.04430246,  5.13290691, 5.03378105,
-	6.32063723,   6.22151136,  7.31011629, 7.21099043,
-	6.12238598,   6.02326012,  7.11186457, 7.01273918,
-	3.9451766,    3.84605098,  4.93465567, 4.8355298,
-	3.74692512,   3.64779949,  4.73640394, 4.63727808,
-	5.92413425,   5.82500887,  6.91361332, 6.81448746,
-	5.72588301,   5.62675714,  6.71536207, 6.61623621
-};
 
 
-static vector<double> fill_sin(int len)
+static vector<double> fill_sin(double start, double end, int len)
 {
+	double delta = (end - start) / (len - 1); 
 	vector<double> result(len); 
 	for (int i = 0; i < len; ++i) 
-		result[i] = sin(2 * M_PI * i / (len -1)); 
+		result[i] = sin(delta * i + start); 
 	return result; 
 }
 
 BOOST_AUTO_TEST_CASE( test_isoscale_float )
 {
+	const double start = M_PI/10.0; 
+	const double end = 9.0 * M_PI/10.0; 
+
 	C3DBounds in_size(129, 177, 257); 
 	C3DFImage fimage( in_size);
 
 	{
-		vector<double> fz = fill_sin(in_size.z); 
-		vector<double> fy = fill_sin(in_size.y); 
-		vector<double> fx = fill_sin(in_size.x); 
+		vector<double> fz = fill_sin(start, end, in_size.z); 
+		vector<double> fy = fill_sin(start, end, in_size.y); 
+		vector<double> fx = fill_sin(start, end, in_size.x); 
 		
 		auto i = fimage.begin(); 
 		for (unsigned z = 0; z < in_size.z; ++z)
@@ -319,7 +342,7 @@ BOOST_AUTO_TEST_CASE( test_isoscale_float )
 
 	fimage.set_voxel_size(C3DFVector(.5, .25, .125));
 
-	auto isofy = BOOST_TEST_create_from_plugin<CIsoVoxelFilterPlugin>("isovoxel:size=1"); 
+	auto isofy = BOOST_TEST_create_from_plugin<CIsoVoxelFilterPlugin>("isovoxel:size=1,interp=[bspline:d=3]"); 
 
 	P3DImage scaled = isofy->filter(fimage);
 	
@@ -332,16 +355,21 @@ BOOST_AUTO_TEST_CASE( test_isoscale_float )
 	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(1.f, 1.f, 1.f));
 
 	{
-		vector<double> fz = fill_sin(test_size.z); 
-		vector<double> fy = fill_sin(test_size.y); 
-		vector<double> fx = fill_sin(test_size.x); 
+		vector<double> fz = fill_sin(start, end, test_size.z); 
+		vector<double> fy = fill_sin(start, end, test_size.y); 
+		vector<double> fx = fill_sin(start, end, test_size.x); 
 
-		auto k = fscaled.begin(); 
-		for (unsigned z = 0; z < test_size.z; ++z)
-			for (unsigned y = 0; y < test_size.y; ++y)
-				for (unsigned x = 0; x < test_size.x; ++x, ++k) {
+		// the outer boundra is not tested because its interpolation is 
+		// dependend on the boundary conditions and as a general rule 
+		// the approximation does  not correspond to what is expected analytically 
+		// 
+		for (unsigned z = 1; z < test_size.z - 1; ++z)
+			for (unsigned y = 1; y < test_size.y- 1; ++y) {
+				auto k = fscaled.begin_at(1,y,z); 
+				for (unsigned x = 1; x < test_size.x- 1; ++x, ++k) {
 					const double v = 200 * fx[x] * fy[y] *fz[z]; 
-					BOOST_CHECK_CLOSE(v, *k, 0.1); 
+					BOOST_CHECK_CLOSE(*k, v, 0.1); 
 				}
+			}
 	}
 }

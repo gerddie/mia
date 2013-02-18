@@ -50,7 +50,7 @@ struct Scaler1DFixture  {
 	void test_scale_by_factor(const string& kernel_descr, double scale, size_t expected_size);
 
 
-	gsl::DoubleVector data; 
+	C1DScalar::std_double_vector data; 
 };
 
 
@@ -142,7 +142,7 @@ Scaler1DFixture::Scaler1DFixture():
 
 void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 {
-	gsl::DoubleVector result(target_size, false); 
+	C1DScalar::std_double_vector result(target_size); 
 	
 	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type, bc_mirror_on_bounds));	
 	C1DScalar scaler(*ipf->get_kernel(), data.size(), target_size); 
@@ -176,7 +176,7 @@ void Scaler1DFixture::test_scale_by_factor(const string& kernel_descr, double sc
 	C1DScalar scaler(*kernel, data.size(), scale); 
 
 	BOOST_CHECK_EQUAL(scaler.get_output_size(), expected_size); 
-	gsl::DoubleVector result(expected_size, false); 
+	C1DScalar::std_double_vector result(expected_size); 
 	
 	copy(data.begin(), data.end(), scaler.input_begin()); 
 	scaler.run(); 
