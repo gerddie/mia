@@ -41,7 +41,7 @@ CProbabilityVector::CProbabilityVector()
 }
 
 CProbabilityVector::CProbabilityVector(size_t nClass, size_t nElm):
-	std::vector<CDoubleVector>(nClass, CDoubleVector(nElm))
+	std::vector<double_vector>(nClass, double_vector(nElm))
 {
 }
 
@@ -97,7 +97,7 @@ void CProbabilityVector::do_load(istream& is)
 
 	resize(nclasses);
 	for (size_t k = 0; k < size(); ++k) {
-		(*this)[k] = CDoubleVector(hsize);
+		(*this)[k] = double_vector(hsize);
 	}
 
 
@@ -116,9 +116,9 @@ EXPORT_CORE bool operator == (const CProbabilityVector& a, const CProbabilityVec
 	if ( a.size() != b.size() )
 		return false;
 
-	CProbabilityVector::const_iterator ai = a.begin();
-	CProbabilityVector::const_iterator ae = a.end();
-	CProbabilityVector::const_iterator bi = b.begin();
+	auto ai = a.begin();
+	auto ae = a.end();
+	auto bi = b.begin();
 
 	while (ai != ae)  {
 		if (*ai++ != *bi++)
@@ -158,7 +158,7 @@ bool CLabelMap::do_save(ostream& os) const
 	os << label_map_signature << "\n";
 	os << size()<<'\n';
 
-	for (CLabelMap::const_iterator im = begin(), em = end();
+	for (auto im = begin(), em = end();
 	     im != em; ++im) {
 		os << im->first << ' ' << im->second << '\n';
 	}
@@ -196,9 +196,9 @@ EXPORT_CORE bool operator == (const CLabelMap& a, const CLabelMap& b)
 	if (a.size() != b.size())
 		return false;
 
-	CLabelMap::const_iterator ai = a.begin();
-	CLabelMap::const_iterator bi = b.begin();
-	CLabelMap::const_iterator ae = a.end();
+	auto ai = a.begin();
+	auto bi = b.begin();
+	auto ae = a.end();
 
 	while (ai != ae) {
 		if (ai->first != bi->first ||

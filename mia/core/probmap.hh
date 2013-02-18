@@ -28,13 +28,10 @@
 
 #include <mia/core/defines.hh>
 
-NS_MIA_BEGIN
 
-/**
-   \ingroup misc
-   A simple typedef for convenience 
- */
-typedef std::vector<double> CDoubleVector;
+typedef std::vector<double> double_vector; 
+
+NS_MIA_BEGIN
 
 /**
    \ingroup misc 
@@ -43,7 +40,7 @@ typedef std::vector<double> CDoubleVector;
    A vector of probablility values that supports loading and storing 
    the data. 
  */
-class EXPORT_CORE CProbabilityVector: public std::vector<CDoubleVector> {
+class EXPORT_CORE CProbabilityVector: public std::vector<double_vector> {
 public:
 
 	/**
