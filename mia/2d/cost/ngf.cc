@@ -235,7 +235,6 @@ double C2DNFGImageCost::do_value(const mia::C2DImage& a, const mia::C2DImage& /*
 
 double C2DNFGImageCost::do_evaluate_force(const mia::C2DImage& a, 
 					  const mia::C2DImage& /*b*/, 
-					  float /*scale*/,
 					  mia::C2DFVectorfield& force) const
 {
 	TRACE("CNFG2DImageCost::do_evaluate_force");

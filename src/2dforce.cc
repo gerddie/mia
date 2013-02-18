@@ -96,7 +96,7 @@ int do_main(int argc, char **argv)
 
 	C2DFVectorfield forcefield((*source->begin())->get_size());
 	cost->set_reference(**ref->begin()); 
-	cvmsg() << "Cost = " << cost->evaluate_force(**source->begin(), 1.0, forcefield) << "\n"; 
+	cvmsg() << "Cost = " << cost->evaluate_force(**source->begin(), forcefield) << "\n"; 
 
 	C2DFImage *presult = new C2DFImage(forcefield.get_size());
 	P2DImage result(presult);

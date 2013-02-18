@@ -162,7 +162,6 @@ double C3DNFGImageCost::do_value(const mia::C3DImage& a, const mia::C3DImage& /*
 
 double C3DNFGImageCost::do_evaluate_force(const mia::C3DImage& a, 
 					  const mia::C3DImage& /*b*/, 
-					  float /*scale*/,
 					  mia::C3DFVectorfield& force) const
 {
 	const C3DFVectorfield ng_a = get_nfg(a);

@@ -50,9 +50,9 @@ BOOST_AUTO_TEST_CASE( test_SSD_3D_norm )
 
 	C3DFVectorfield force(C3DBounds(3,3,3));
 
-	cost.evaluate_force(*src, 0.5, force);
+	cost.evaluate_force(*src, force);
 
-	BOOST_CHECK_EQUAL(force(1,1,1), C3DFVector(-6/ 27.0, -2/ 27.0, -4/ 27.0) );
+	BOOST_CHECK_EQUAL(force(1,1,1), C3DFVector(-12/ 27.0, -4/ 27.0, -8/ 27.0) );
 }
 
 BOOST_AUTO_TEST_CASE( test_SSD_3D )
@@ -76,9 +76,9 @@ BOOST_AUTO_TEST_CASE( test_SSD_3D )
 
 	C3DFVectorfield force(C3DBounds(3,3,3));
 
-	cost.evaluate_force(*src, 0.5, force);
+	cost.evaluate_force(*src, force);
 
-	BOOST_CHECK_EQUAL(force(1,1,1), C3DFVector(-6, -2, -4) );
+	BOOST_CHECK_EQUAL(force(1,1,1), C3DFVector(-12, -4, -8) );
 }
 
 

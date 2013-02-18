@@ -264,10 +264,13 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 
 	do {
 		++iter;
-	
+		const float force_scale = m_model.get_force_scale(); 
 
 		force.clear();
-		m_cost.evaluate_force(*temp, m_model.get_force_scale(), force);
+		m_cost.evaluate_force(*temp, force);
+		transform(force.begin(), force.end(), force.begin(), 
+			  [&force_scale](const C3DFVector& x){return force_scale * x;}); 
+
 		C3DBounds l(0,0,0);
 
 		// solve for the force to get a velocity or deformation field
@@ -433,9 +436,14 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 	do {
 		++iter;
 
+		const float force_scale = m_model.get_force_scale(); 
+		
 		float cost_value = new_cost_value;
 		force.clear();
-		m_cost.evaluate_force(*temp,  m_model.get_force_scale(), force);
+		m_cost.evaluate_force(*temp,  force);
+		transform(force.begin(), force.end(), force.begin(), 
+			  [&force_scale](const C3DFVector& x){return force_scale * x;}); 
+
 		C3DBounds l(0,0,0);
 
 #if 0
@@ -590,8 +598,12 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 		++iter;
 		cost_value = new_cost_value;
 
+		float help_scale = delta * force_scale; 
 		force.clear();
-		m_cost.evaluate_force(*temp, delta * force_scale, force);
+		m_cost.evaluate_force(*temp,  force);
+		transform(force.begin(), force.end(), force.begin(), 
+			  [&help_scale](const C3DFVector& x){return help_scale * x;}); 
+
 
 		m_model.solve(force, result);
 

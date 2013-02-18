@@ -71,7 +71,7 @@ double C3DImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 	
 	P3DImage temp  = t(*m_src_scaled);
 	C3DFVectorfield force(get_current_size()); 
- 	m_cost_kernel->evaluate_force(*temp, 1.0, force); 
+ 	m_cost_kernel->evaluate_force(*temp, force); 
 	t.translate(force, gradient); 
 	double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "Image cost =" << result << "\n"; 

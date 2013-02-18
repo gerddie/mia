@@ -85,30 +85,6 @@ public:
 	/// ensure virtual destruction, since we have virtual functions
 	virtual ~TCost();
 
-	/** \deprecated The cost value evaluation function, call TCost::value(const T& a) instead 
-	    after setting the reference image
-	    \param src
-	    \param ref
-	    \returns the cost value describing the distance between the entities \a a and \a b.
-	 */
-	double value(const T& src, const T& ref) const __attribute__((deprecated));
-
-	/** \deprecated The force evaluation function, 
-   	      TCost::use evaluate_force(const T& a, float scale, V& force) instead 
-	    \param src input entity
-	    \param ref input entity
-	    \param scale a force scaling parameter
-	    \param[out] force The external force of \a a with respect to \a b that lead to cost minimisation
-	 */
-	double evaluate_force(const T& src, const T&ref, float scale, V& force) const  __attribute__((deprecated));
-
-	/**
-	   \deprecated use TCost::set_reference instead 
-	   prepare the reference for this cost function 
-	   \param ref 
-	 */
-	virtual void prepare_reference(const T& ref)  __attribute__((deprecated)); 
-
 	/**
 	   Evaluate the value of the cost function petreen the given src image and 
 	   the reference that was set by calling set_reference(const T& ref). 
@@ -117,16 +93,16 @@ public:
 	 */
 	double value(const T& src) const;
 
+
 	/**
 	   Evaluate the value of the cost function and its gradient with respect 
 	   to the given src image and  the reference that was set by 
            calling set_reference(const T& ref). 
 	   \param src 
-	   \param scale scaling of the force vectors 
 	   \param[out] force gradient force 
 	   \returns the cost function value 
 	 */
-	double evaluate_force(const T& src, float scale, V& force) const;
+	double evaluate_force(const T& src, V& force) const;
 	
 	/**
 	   Set the new reference of the cost function. The virtual private function  
@@ -136,7 +112,7 @@ public:
 	void set_reference(const T& ref);
 private:
 	virtual double do_value(const T& a, const T& b) const = 0;
-	virtual double do_evaluate_force(const T& a, const T& b, float scale, V& force) const = 0;
+	virtual double do_evaluate_force(const T& a, const T& b, V& force) const = 0;
 	virtual void post_set_reference(const T& ref); 
 	
 	PData m_reference; 

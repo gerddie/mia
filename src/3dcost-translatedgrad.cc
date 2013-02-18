@@ -85,7 +85,7 @@ int do_main(int argc, char **argv)
 
 	C3DFVectorfield forcefield(source->get_size());
 	cost->set_reference(*ref);  
-	cost->evaluate_force(*source, 1.0, forcefield);
+	cost->evaluate_force(*source, forcefield);
 
 	auto t = transform_creator->create(forcefield.get_size()); 
 	auto grad = t->get_parameters(); 

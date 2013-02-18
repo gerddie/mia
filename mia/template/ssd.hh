@@ -44,7 +44,7 @@ public:
 	TSSDCost(bool normalize); 
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
 	bool m_normalize; 
 };
 
@@ -93,9 +93,8 @@ double TSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 
 template <typename Force>
 struct FEvalForce: public mia::TFilter<float> {
-	FEvalForce(Force& force, float scale, bool normalize):
+	FEvalForce(Force& force, bool normalize):
 		m_force(force), 
-		m_scale(scale),
 		m_normalize(normalize)
 		{
 		}
@@ -108,14 +107,14 @@ struct FEvalForce: public mia::TFilter<float> {
 		auto fi = m_force.begin(); 
 		auto gi = gradient.begin(); 
 
-		float scale = m_normalize ? m_scale / a.size() : m_scale; 
+		float scale = m_normalize ? 1.0 / a.size() : 1.0; 
 		
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi, ++fi, ++gi) {
 			float delta = float(*ai) - float(*bi); 
-			*fi = *gi * delta * scale;
-			cost += delta * delta; 
+			*fi = *gi * delta  * scale;
+			cost += delta * delta * scale; 
 		}
-		return 0.5 * cost * scale; 
+		return 0.5 * cost; 
 	}
 private: 
 	Force& m_force; 
@@ -128,11 +127,11 @@ private:
    This is the force evaluation routine of the cost function   
 */
 template <typename TCost> 
-double TSSDCost<TCost>::do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const
+double TSSDCost<TCost>::do_evaluate_force(const Data& a, const Data& b, Force& force) const
 {
 	assert(a.get_size() == b.get_size()); 
 	assert(a.get_size() == force.get_size()); 
-	FEvalForce<Force> ef(force, scale, m_normalize); 
+	FEvalForce<Force> ef(force, m_normalize); 
 	return filter(ef, a, b); 
 }
 

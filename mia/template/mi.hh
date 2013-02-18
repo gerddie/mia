@@ -40,7 +40,7 @@ public:
 	TMIImageCost(size_t fbins, mia::PSplineKernel fkernel, size_t rbins, mia::PSplineKernel rkernel, double cut); 
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
 	virtual void post_set_reference(const Data& ref); 
 	mutable mia::CSplineParzenMI m_parzen_mi; 
 
@@ -80,9 +80,8 @@ double TMIImageCost<T>::do_value(const Data& a, const Data& b) const
 
 template <typename Force>
 struct FEvalForce: public mia::TFilter<float> {
-	FEvalForce(Force& force, float scale, mia::CSplineParzenMI& parzen_mi):
+	FEvalForce(Force& force, mia::CSplineParzenMI& parzen_mi):
 		m_force(force), 
-		m_scale(scale),
 		m_parzen_mi(parzen_mi)
 		{
 		}
@@ -95,9 +94,9 @@ struct FEvalForce: public mia::TFilter<float> {
 	
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
 			float delta = m_parzen_mi.get_gradient_slow(*ai, *bi); 
-			m_force[i] = gradient[i] * delta * m_scale;
+			m_force[i] = gradient[i] * delta;
 		}
-		return m_parzen_mi.value() * m_scale; 
+		return m_parzen_mi.value(); 
 	}
 private: 
 	Force& m_force; 
@@ -110,11 +109,11 @@ private:
    This is the force evaluation routine of the cost function   
 */
 template <typename T> 
-double TMIImageCost<T>::do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const
+double TMIImageCost<T>::do_evaluate_force(const Data& a, const Data& b, Force& force) const
 {
 	assert(a.get_size() == b.get_size()); 
 	assert(a.get_size() == force.get_size()); 
-	FEvalForce<Force> ef(force, scale, m_parzen_mi); 
+	FEvalForce<Force> ef(force, m_parzen_mi); 
 	return filter(ef, a, b); 
 }
 
