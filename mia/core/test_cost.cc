@@ -67,9 +67,9 @@ BOOST_FIXTURE_TEST_CASE( test_cost_basic, TestCost )
 	BOOST_CHECK_CLOSE(value(a), 2.0, 0.1);
 
 	double force = 1.0;
-	BOOST_CHECK_CLOSE(evaluate_force(a, force), 2.0 / 3.0, 0.1); 
+	BOOST_CHECK_CLOSE(evaluate_force(a, force), 2.0, 0.1); 
 
-	BOOST_CHECK_CLOSE(force, -12.0, 0.1);
+	BOOST_CHECK_CLOSE(force, -4.0, 0.1);
 }
 
 #include <mia/core/cost.cxx>

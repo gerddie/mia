@@ -110,9 +110,9 @@ struct FEvalForce: public mia::TFilter<float> {
 		float scale = m_normalize ? 1.0 / a.size() : 1.0; 
 		
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi, ++fi, ++gi) {
-			float delta = (float(*ai) - float(*bi)) * scale; 
-			*fi = *gi * delta;
-			cost += delta * delta; 
+			float delta = float(*ai) - float(*bi); 
+			*fi = *gi * delta  * scale;
+			cost += delta * delta * scale; 
 		}
 		return 0.5 * cost; 
 	}
