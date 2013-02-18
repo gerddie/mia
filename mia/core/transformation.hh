@@ -23,6 +23,8 @@
 #define mia_core_transformation_hh
 
 #include <mia/core/iodata.hh>
+#include <mia/core/attributes.hh>
+#include <mia/core/vector.hh>
 
 NS_MIA_BEGIN
 
@@ -39,7 +41,7 @@ NS_MIA_BEGIN
  */
 
 template <typename D, typename I>
-class Transformation :public CIOData {
+class Transformation :public CIOData, public CAttributedData {
 public: 
 
 	/// interface type for plugin implementation and search 
@@ -70,12 +72,27 @@ public:
 	   \param ipf the new interpolator factory 
 	 */
 	void set_interpolator_factory(const I& ipf); 
+
+
+	/**
+	   Evaluate the transformation penalty and it's gradient
+	   \param[in,out] gradient at input an allocated vector of the size equal to the 
+	   size of the degrees of freedom of the transformation, at output the 
+	   enegy penalty  gradient with respect to the transformation parameters
+	   \returns the value of the transformation energy penalty 
+	 */
+	double get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
+
+        ///  \returns the value of the transformation energy penalty 
+	double get_penalty() const;
 protected: 
 
 	/// \returns the interpolator factory 
 	const I& get_interpolator_factory() const; 
 private: 
         virtual std::shared_ptr<D> do_transform(const D& input, const I& ipf) const = 0;
+	virtual double do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
+	virtual double do_get_penalty() const;
 
 	I m_ipf;
 
@@ -123,6 +140,34 @@ std::shared_ptr<D > Transformation<D,I>::operator() (const D& input) const
 {
 	return do_transform(input, m_ipf); 
 }
+
+template <typename D, typename I>
+double Transformation<D,I>::get_energy_penalty_and_gradient(CDoubleVector& gradient) const
+{
+        return do_get_energy_penalty_and_gradient(gradient); 
+}
+
+
+template <typename D, typename I>
+double Transformation<D,I>::get_penalty() const
+{
+        return do_get_penalty(); 
+}
+
+template <typename D, typename I>
+double Transformation<D,I>::do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const
+{
+         std::fill(gradient.begin(), gradient.end(), 0.0); 
+         return 0.0; 
+}
+
+
+template <typename D, typename I>
+double Transformation<D,I>::do_get_penalty() const
+{
+         return 0.0; 
+}
+
 
 template <typename D, typename I>
 const char *Transformation<D, I>::type_descr = "transform";

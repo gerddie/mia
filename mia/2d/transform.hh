@@ -25,7 +25,6 @@
 #include <memory>
 #include <ostream>
 
-#include <mia/core/vector.hh>
 #include <mia/core/transformation.hh>
 #include <mia/core/filter.hh>
 #include <mia/2d/matrix.hh>
