@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE( test_fatngf_2d )
 
 	C2DFVectorfield force(size);
 
-	double c = cost.evaluate_force(*src, 1.0, force);
+	double c = cost.evaluate_force(*src, force);
 	BOOST_CHECK_CLOSE(c, test_cost, 0.1);
 
 	const C2DFVector boundelm(0,0);

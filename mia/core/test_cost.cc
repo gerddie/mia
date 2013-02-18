@@ -37,7 +37,7 @@ using namespace boost::unit_test;
 
 class TestCost: public TCost<double, double> {
 	double do_value(const double& a, const double& b) const;
-	double do_evaluate_force(const double& a, const double& b, float scale, double& force) const;
+	double do_evaluate_force(const double& a, const double& b, double& force) const;
 };
 
 
@@ -49,10 +49,10 @@ double TestCost::do_value(const double& a, const double& b) const
 }
 
 
-double TestCost::do_evaluate_force(const double& a, const double& b, float scale, double& force) const
+double TestCost::do_evaluate_force(const double& a, const double& b, double& force) const
 {
 	double delta = a - b;
-	force  = scale * a * delta;
+	force  = a * delta;
 	return do_value(a, b); 
 }
 
@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE( test_cost_basic, TestCost )
 	BOOST_CHECK_CLOSE(value(a), 2.0, 0.1);
 
 	double force = 1.0;
-	BOOST_CHECK_CLOSE(evaluate_force(a, 3.0, force), 2.0, 0.1); 
+	BOOST_CHECK_CLOSE(evaluate_force(a, force), 2.0 / 3.0, 0.1); 
 
 	BOOST_CHECK_CLOSE(force, -12.0, 0.1);
 }

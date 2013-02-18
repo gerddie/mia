@@ -95,7 +95,7 @@ int do_main(int argc, char **argv)
 
 	C3DFVectorfield forcefield((*source->begin())->get_size());
 	cost->set_reference(**ref->begin());  
-	cvmsg() << "Cost = " << cost->evaluate_force(**source->begin(),1.0, forcefield) << "\n"; 
+	cvmsg() << "Cost = " << cost->evaluate_force(**source->begin(),forcefield) << "\n"; 
 
 	C3DFImage *presult = new C3DFImage(forcefield.get_size());
 	P3DImage result(presult);

@@ -71,7 +71,7 @@ public:
 	C3DNFGImageCost(PEvaluator evaluator);
 private:
 	virtual double do_value(const mia::C3DImage& a, const mia::C3DImage& b) const ;
-	virtual double do_evaluate_force(const mia::C3DImage& a, const mia::C3DImage& b, float scale, mia::C3DFVectorfield& force) const;
+	virtual double do_evaluate_force(const mia::C3DImage& a, const mia::C3DImage& b, mia::C3DFVectorfield& force) const;
 
 	virtual void post_set_reference(const mia::C3DImage& ref); 
 

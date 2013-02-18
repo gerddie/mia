@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE( test_ngf_field )
 	// the boundary should be ignored 
 	BOOST_CHECK_EQUAL(cost.value(test), 30); 
 
-	double value = cost.evaluate_force(test, 10, field);
+	double value = cost.evaluate_force(test, field);
 	BOOST_CHECK_EQUAL(value, 30);
 	
 	C3DFVector testv; 

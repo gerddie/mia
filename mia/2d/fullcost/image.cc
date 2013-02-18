@@ -100,7 +100,7 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& 
 	
 	C2DFVectorfield force(get_current_size()); 
 
- 	double result = m_cost_kernel->evaluate_force(*temp, 1.0, force); 
+ 	double result = m_cost_kernel->evaluate_force(*temp, force); 
 
 	t.translate(force, gradient); 
 	idx++;

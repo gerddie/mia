@@ -95,7 +95,7 @@ public:
 	virtual void prepare_reference(const mia::C2DImage& ref)__attribute__((deprecated)); 
 private:
 	virtual double do_value(const mia::C2DImage& a, const mia::C2DImage& b) const ;
-	virtual double do_evaluate_force(const mia::C2DImage& a, const mia::C2DImage& b, float scale, mia::C2DFVectorfield& force) const;
+	virtual double do_evaluate_force(const mia::C2DImage& a, const mia::C2DImage& b, mia::C2DFVectorfield& force) const;
 
 	virtual void post_set_reference(const mia::C2DImage& ref); 
 

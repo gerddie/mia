@@ -30,33 +30,15 @@ TCost<T,V>::~TCost()
 }
 
 template <typename T, typename V>
-double TCost<T,V>::value(const T& a, const T& b) const
-{
-	return do_value(a,b); 
-}
-
-template <typename T, typename V>
-double TCost<T,V>::evaluate_force(const T& a, const T& b, float scale, V& force) const
-{
-	return do_evaluate_force(a, b, scale, force); 
-}
-
-template <typename T, typename V>
-void TCost<T,V>::prepare_reference(const T& )
-{
-	
-}
-
-template <typename T, typename V>
 double TCost<T,V>::value(const T& a) const
 {
 	return do_value(a, *m_reference); 
 }
 
 template <typename T, typename V>
-double TCost<T,V>::evaluate_force(const T& a, float scale, V& force) const
+double TCost<T,V>::evaluate_force(const T& a, V& force) const
 {
-	return do_evaluate_force(a, *m_reference, scale, force); 
+	return do_evaluate_force(a, *m_reference, force); 
 }
 
 template <typename T, typename V>

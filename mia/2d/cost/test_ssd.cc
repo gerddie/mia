@@ -53,10 +53,10 @@ BOOST_AUTO_TEST_CASE( test_SSD_2D )
 
 	C2DFVectorfield force(C2DBounds(4,4));
 
-	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, 0.5, force), 0.25 * 55.0 / 16.0, 0.1);
+	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, force), 0.25 * 55.0 / 8.0, 0.1);
 
-	BOOST_CHECK_CLOSE(force(1,1).x, 0.25f / 16.0f, 0.1);
-	BOOST_CHECK_CLOSE(force(1,1).y, 1.50f / 16.0f, 0.1);
+	BOOST_CHECK_CLOSE(force(1,1).x, 0.25f / 8.0f, 0.1);
+	BOOST_CHECK_CLOSE(force(1,1).y, 1.50f / 8.0f, 0.1);
 }
 
 
