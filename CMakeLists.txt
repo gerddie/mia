@@ -180,25 +180,6 @@ FIND_PACKAGE( Boost 1.42.0 COMPONENTS
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
-
-#
-# currently we completely disable boost based portable binary archives 
-# VITSA provides what is needed in big binary archieves 
-#
-IF(FALSE) 
-  find_path(HAVE_BOOST_PORTABLE_BINARY_ARCHIVE  
-    portable_binary_archive.hpp 
-    ${Boost_INCLUDE_DIR}/boost/archive)
-  IF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-    ADD_SUBDIRECTORY(backport)
-    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/backport")
-  ELSE(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-    #if the portable binary archive has become part of the BOOST distribution 
-    #just link the serialization library 
-    SET(portable_binary_archive ${Boost_SERIALIZATION})
-  ENDIF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-ENDIF(FALSE)
-
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
 ADD_DEFINITIONS(-DBOOST_FILESYSTEM_VERSION=3)
 

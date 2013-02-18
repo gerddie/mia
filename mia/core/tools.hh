@@ -149,13 +149,13 @@ const std::string  to_string_fp(T v)
 }
 
 template <> 
-inline const std::string  to_string<float>(float v)
+inline const std::string  to_string<float>(boost::call_traits<float>::param_type v)
 {
 	return to_string_fp(v); 
 }
 
 template <> 
-inline const std::string  to_string<double>(double v)
+inline const std::string  to_string<double>(boost::call_traits<double>::param_type v)
 {
 	return to_string_fp(v); 
 }

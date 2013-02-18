@@ -315,7 +315,7 @@ NEW_TEST(statistics miacore)
 NEW_TEST(threadedmsg miacore)
 NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
-NEW_TEST(watch miacore)
+#NEW_TEST(watch miacore)
 NEW_TEST(waveletslopeclassifier miacore)
 
 IF(ITPP_FOUND)
