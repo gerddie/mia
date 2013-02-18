@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 
 using namespace std; 
-C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size_t out_size):
+C1DScalar::C1DScalar(const CSplineKernel& kernel, size_t in_size, size_t out_size):
 	m_in_size(in_size), 
 	m_support(kernel.size()), 
 	m_poles(kernel.get_poles()),
@@ -45,7 +45,7 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 	initialize(kernel); 
 }
 
-void C1DScalarFixed::initialize(const CSplineKernel& kernel)
+void C1DScalar::initialize(const CSplineKernel& kernel)
 {
 	assert(m_scale > 0.0); 
 	
@@ -106,7 +106,7 @@ void C1DScalarFixed::initialize(const CSplineKernel& kernel)
 }
 
 
-C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, double scale):
+C1DScalar::C1DScalar(const CSplineKernel& kernel, size_t in_size, double scale):
 	m_in_size(in_size), 
 	m_support(kernel.size()), 
 	m_scale(scale), 
@@ -121,12 +121,12 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, doub
 }
 	
 
-size_t C1DScalarFixed::get_output_size() const 
+size_t C1DScalar::get_output_size() const 
 {
 	return m_out_size; 
 }
  
-void C1DScalarFixed::operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const
+void C1DScalar::operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const
 {
 	switch (m_strategy) {
 	case scs_fill_output: fill(output.begin(), output.end(), input[0]); 
@@ -143,29 +143,29 @@ void C1DScalarFixed::operator () (const gsl::DoubleVector& input, gsl::DoubleVec
 	};
 }
 
-gsl::DoubleVector::iterator C1DScalarFixed::input_begin()
+gsl::DoubleVector::iterator C1DScalar::input_begin()
 {
 	return m_input_buffer.begin(); 
 }
 
-gsl::DoubleVector::iterator C1DScalarFixed::input_end() 
+gsl::DoubleVector::iterator C1DScalar::input_end() 
 {
 	return m_input_buffer.end(); 
 }
 
-gsl::DoubleVector::iterator C1DScalarFixed::output_begin()
+gsl::DoubleVector::iterator C1DScalar::output_begin()
 {
 	return m_output_buffer.begin(); 
 }
 
-gsl::DoubleVector::iterator C1DScalarFixed::output_end() 
+gsl::DoubleVector::iterator C1DScalar::output_end() 
 {
 	return m_output_buffer.end();
 }
 
 
 
-void C1DScalarFixed::run()
+void C1DScalar::run()
 {
 	switch (m_strategy) {
 	case scs_fill_output: fill(output_begin(), output_end(), m_input_buffer[0]); 
@@ -184,7 +184,7 @@ void C1DScalarFixed::run()
 	
 }
 
-void C1DScalarFixed::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const
+void C1DScalar::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const
 {
 	TRACE_FUNCTION; 
 	auto io = output.begin(); 
@@ -203,7 +203,7 @@ void C1DScalarFixed::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& 
 	}
 }
 
-void C1DScalarFixed::downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const
+void C1DScalar::downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const
 {
 	gsl::DoubleVector coefs(output.size(), false); 
 	gsl::DoubleVector residual(input.size(), false); 

@@ -24,7 +24,6 @@
 #include <mia/2d/interpolator.hh>
 #include <mia/2d/transform.hh>
 #include <mia/2d/ppmatrix.hh>
-#include <mia/core/scaler1d.hh>
 
 NS_MIA_BEGIN
 
@@ -102,7 +101,6 @@ private:
 	void init_grid(); 
 	C2DFVector interpolate(const C2DFVector& x) const; 
 
-	void run_downscaler(C1DScalarFixed& scaler, std::vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds m_range;
 	C2DFVector m_target_c_rate;

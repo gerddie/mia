@@ -145,7 +145,7 @@ void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 	gsl::DoubleVector result(target_size, false); 
 	
 	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type, bc_mirror_on_bounds));	
-	C1DScalarFixed scaler(*ipf->get_kernel(), data.size(), target_size); 
+	C1DScalar scaler(*ipf->get_kernel(), data.size(), target_size); 
 
 	copy(data.begin(), data.end(), scaler.input_begin()); 
 	
@@ -173,7 +173,7 @@ void Scaler1DFixture::test_scale_by_factor(const string& kernel_descr, double sc
 {
 	auto kernel = produce_spline_kernel(kernel_descr); 
 	
-	C1DScalarFixed scaler(*kernel, data.size(), scale); 
+	C1DScalar scaler(*kernel, data.size(), scale); 
 
 	BOOST_CHECK_EQUAL(scaler.get_output_size(), expected_size); 
 	gsl::DoubleVector result(expected_size, false); 

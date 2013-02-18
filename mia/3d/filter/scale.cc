@@ -36,9 +36,9 @@ namespace bfs= ::boost::filesystem;
 
 template <class T>
 C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_size, 
-			       C1DScalarFixed& scaler_x, 
-			       C1DScalarFixed& scaler_y, 
-			       C1DScalarFixed& scaler_z) 
+			       C1DScalar& scaler_x, 
+			       C1DScalar& scaler_y, 
+			       C1DScalar& scaler_z) 
 {
 	T3DImage<T> *result = new T3DImage<T>(target_size, src);
 	
@@ -102,9 +102,9 @@ C3DScale::result_type C3DScale::operator () (const T3DImage<T>& src) const
 	
 	
 	
-	C1DScalarFixed scaler_x(*m_kernel, src.get_size().x, static_cast<size_t>(target_size.x));
-	C1DScalarFixed scaler_y(*m_kernel, src.get_size().y, static_cast<size_t>(target_size.y));
-	C1DScalarFixed scaler_z(*m_kernel, src.get_size().z, static_cast<size_t>(target_size.z));
+	C1DScalar scaler_x(*m_kernel, src.get_size().x, static_cast<size_t>(target_size.x));
+	C1DScalar scaler_y(*m_kernel, src.get_size().y, static_cast<size_t>(target_size.y));
+	C1DScalar scaler_z(*m_kernel, src.get_size().z, static_cast<size_t>(target_size.z));
 
 	C3DFVector factor(float(src.get_size().x / float(target_size.x)), 
 			  float(src.get_size().y / float(target_size.y)), 
@@ -176,9 +176,9 @@ template <typename  T>
 mia::C3DFilter::result_type C3DScaleFactor::operator () (const mia::T3DImage<T>& src) const
 {
 	TRACE_FUNCTION; 
-	C1DScalarFixed scaler_x(*m_kernel, src.get_size().x, m_factor.x);
-	C1DScalarFixed scaler_y(*m_kernel, src.get_size().y, m_factor.y);
-	C1DScalarFixed scaler_z(*m_kernel, src.get_size().z, m_factor.z);
+	C1DScalar scaler_x(*m_kernel, src.get_size().x, m_factor.x);
+	C1DScalar scaler_y(*m_kernel, src.get_size().y, m_factor.y);
+	C1DScalar scaler_z(*m_kernel, src.get_size().z, m_factor.z);
 
 	C3DBounds target_size( scaler_x.get_output_size(), 
 			       scaler_y.get_output_size(), 

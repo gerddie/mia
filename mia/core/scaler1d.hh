@@ -45,7 +45,7 @@ NS_MIA_BEGIN
    \todo seems like downscaling isn't done properly 
 */
 
-class EXPORT_CORE C1DScalarFixed {
+class EXPORT_CORE C1DScalar {
 public:
 	/**
 	    Create the scaler prividing the given interpolator kernel.
@@ -54,7 +54,7 @@ public:
 	    \param out_size the input will be scaled to the given size, the scale is set accordingly 
 	 */
 
-	C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size_t out_size);
+	C1DScalar(const CSplineKernel& kernel, size_t in_size, size_t out_size);
 
 	/**
 	    Create the scaler providing the given interpolator kernel.
@@ -64,7 +64,7 @@ public:
 	    exact with respect to the scale 
 	 */
 
-	C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, double scale);
+	C1DScalar(const CSplineKernel& kernel, size_t in_size, double scale);
 
 	/**
 	   Scaling operator.

@@ -467,31 +467,6 @@ struct FCopyY {
 	}
 }; 
 
-// quadratic extrapolation 
-static double extrapolate(double x, double ym, double y0, double yp) 
-{
-	const double c = y0; 
-	const double b = 0.5 * (yp - ym); 
-	const double a = ym + b - c; 
-	return a * x * x + b * x + c; 
-}
-
-void C2DSplineTransformation::run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer) const 
-{
-	const int size = out_buffer.size() - m_shift; 
-	scaler.run(); 
-	copy(scaler.output_begin(), scaler.output_end(), out_buffer.begin() + m_shift); 
-	
-	// continue the gradient a both sides with quatratic extrapolation 
-	for(int j = 0; j < m_shift; ++j) {
-		out_buffer[m_shift - j - 1] = extrapolate(-2, out_buffer[m_shift - j], 
-							   out_buffer[m_shift - j + 1], 
-							   out_buffer[m_shift - j + 2]); 
-		out_buffer[size + j] = extrapolate(2, out_buffer[size + j - 3], 
-						   out_buffer[size + j - 2], out_buffer[size + j - 1]); 
-	}
-}
-
 C2DSplineTransformation::CSplineDerivativeRow 
 C2DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scale) const 
 {

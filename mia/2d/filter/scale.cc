@@ -36,9 +36,7 @@ namespace bfs= ::boost::filesystem;
 
 CScale::CScale(const C2DBounds& size, PSplineKernel kernel):
 	m_size(size),
-	m_ipf(new C2DInterpolatorFactory(kernel, 
-					 *produce_spline_boundary_condition("mirror"), 
-					 *produce_spline_boundary_condition("mirror")))
+	m_kernel(kernel)
 {
 
 }
@@ -64,8 +62,8 @@ CScale::result_type CScale::operator () (const T2DImage<T>& src) const
 	C2DFVector factor(float(src.get_size().x / float(target_size.x) ),
 			  float(src.get_size().y / float(target_size.y) ));
 	
-	C1DScalarFixed scaler_x(*m_ipf->get_kernel(), src.get_size().x, target_size.x);
-	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, target_size.y);
+	C1DScalar scaler_x(*m_kernel, static_cast<size_t>(src.get_size().x), static_cast<size_t>(target_size.x));
+	C1DScalar scaler_y(*m_kernel, static_cast<size_t>(src.get_size().y), static_cast<size_t>(target_size.y));
 
 	// run x-scaling 
 	T2DImage<double> tmp(C2DBounds(target_size.x, src.get_size().y)); 

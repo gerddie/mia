@@ -39,7 +39,7 @@ private:
 	CScale::result_type do_filter(const mia::C2DImage& image) const;
 
 	const mia::C2DBounds m_size;
-	std::auto_ptr<mia::C2DInterpolatorFactory> m_ipf;
+	mia::PSplineKernel m_kernel;
 };
 
 
