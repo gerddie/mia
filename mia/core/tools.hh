@@ -137,7 +137,7 @@ template <typename T>
 const std::string  to_string_fp(T v)
 {
 	std::stringstream result;
-	int inf = isinf(v); 
+	int inf = std::isinf(v); 
 	if (!inf) {
 		result << v; 
 	} else {
