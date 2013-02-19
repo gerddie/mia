@@ -140,6 +140,12 @@ FACTORY_TRAIT(C2DSplineTransformPenaltyPluginHandler);
 
 EXPORT_2D  C2DSplineTransformPenaltyPluginHandler::ProductPtr produce_2d_spline_transform_penalty(const std::string& descr); 
 
+
+class C2DSplineTransformPenaltyPluginHandlerTest {
+public: 
+	C2DSplineTransformPenaltyPluginHandlerTest(); 
+}; 
+
 NS_MIA_END
 
 #endif 

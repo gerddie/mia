@@ -21,5 +21,5 @@
 SET(splinepenalties2d divcurl) 
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-splinepenalty "${splinepenalties2d}" 
-  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/2dsplinepenalty/transform"
+  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/2dtransform/splinepenalty"
   )

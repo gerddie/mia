@@ -64,7 +64,9 @@ C2DSplineTransformPenalty *C2DDivcurlSplinePenalty::do_clone() const
 }
   
 C2DDivcurlSplinePenaltyPlugin::C2DDivcurlSplinePenaltyPlugin():
-	C2DSplineTransformPenaltyPlugin("divcurl")
+	C2DSplineTransformPenaltyPlugin("divcurl"), 
+	m_div_weight(1.0), 
+	m_curl_weight(1.0)
 {
 	this->add_parameter("div", new CFloatParameter(m_div_weight, 0.0f, std::numeric_limits<float>::max(), 
 						       false, "penalty weight on divergence"));

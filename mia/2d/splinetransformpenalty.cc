@@ -27,8 +27,8 @@
 NS_MIA_BEGIN
 using namespace std; 
 
-const char *C2DSplineTransformPenalty::data_descr = "transform";
-const char *C2DSplineTransformPenalty::type_descr = "2dsplinepenalty"; 
+const char *C2DSplineTransformPenalty::data_descr = "2dtransform";
+const char *C2DSplineTransformPenalty::type_descr = "splinepenalty"; 
 
 C2DSplineTransformPenalty::C2DSplineTransformPenalty(double weight):
 m_weight(weight)
@@ -120,5 +120,12 @@ TPluginHandler<C2DSplineTransformPenaltyPlugin>::m_help =
 
 
 EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DSplineTransformPenalty, C2DSplineTransformPenaltyPlugin); 
+
+C2DSplineTransformPenaltyPluginHandlerTest::C2DSplineTransformPenaltyPluginHandlerTest()
+{
+	CPathNameArray plugpath({bfs::path("splinepenalty")});
+	C2DSplineTransformPenaltyPluginHandler::set_search_path(plugpath);
+
+}
 
 NS_MIA_END

@@ -19,6 +19,7 @@
  */
 
 #include <mia/internal/autotest.hh>
+#include <mia/internal/pluginsettest.hh>
 #include <mia/2d/splinetransformpenalty.hh>
 
 NS_MIA_USE; 
@@ -210,3 +211,12 @@ C2DSplineTransformPenalty *C2DSplinePenaltyMock::do_clone() const
   
 
 CSplineKernelTestPath kernel_test_path; 
+
+
+C2DSplineTransformPenaltyPluginHandlerTest penalty_plug_path; 
+
+BOOST_AUTO_TEST_CASE(test_available_plugins)
+{
+	std::set<std::string> test_data = {"divcurl"}; 
+	test_availabe_plugins(C2DSplineTransformPenaltyPluginHandler::instance(), test_data); 
+}
