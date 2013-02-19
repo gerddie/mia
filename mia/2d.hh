@@ -28,6 +28,7 @@
 #include <mia/2d/fullcost.hh>
 #include <mia/2d/fftkernel.hh>
 #include <mia/2d/cstkernel.hh>
+#include <mia/2d/splinetransformpenalty.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/2d/shape.hh>

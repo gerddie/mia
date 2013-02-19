@@ -61,6 +61,7 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 	ADD(C2DStackDistanceTransformIOPluginHandler::instance);
 	ADD(C2DTransformCreatorHandler::instance);
 	ADD(C2DTransformationIOPluginHandler::instance);
+	ADD(C2DSplineTransformPenaltyPluginHandler::instance);
 	ADD(C2DVFIOPluginHandler::instance);
 	ADD(C3DFilterPluginHandler::instance);
 	ADD(C3DFullCostPluginHandler::instance);

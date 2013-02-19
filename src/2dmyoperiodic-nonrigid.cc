@@ -60,7 +60,7 @@ const SProgramDescription g_general_help = {
 	 "and penalize the transformation by divcurl with weight 5. "
 	 "Store the result in 'registered.set'.\n"}, 
 	
-	{pdi_example_code, "  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"}
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16,penalty=[divcurl:weight=5]"}
 }; 
 
 		
@@ -116,7 +116,6 @@ public:
 		RegistrationParams(); 
 		PMinimizer minimizer;
 		PMinimizer refinement_minimizer;
-		double divcurlweight; 
 		P2DFullCost pass1_cost;  
 		P2DFullCost pass2_cost;
 		P2DFullCost series_select_cost;  
@@ -214,9 +213,6 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images,
 	C2DFullCostList costs; 
 	// create costs
 	costs.push(m_params.pass1_cost); 
-	stringstream divcurl_descr;  
-	divcurl_descr << "divcurl:weight=" << m_params.divcurlweight; 
-	costs.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 
 	C2DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
@@ -245,11 +241,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 	C2DFullCostList costs; 
 	// create costs
 	costs.push(m_params.pass2_cost); 
-	stringstream divcurl_descr;  
-	divcurl_descr << "divcurl:weight=" << m_params.divcurlweight; 
-	costs.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
-
-	C2DNonrigidRegister nr(costs, 
+ 	C2DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
 			       m_params.mg_levels);
@@ -318,7 +310,6 @@ size_t C2DMyocardPeriodicRegistration::get_ref_idx()const
 
 
 C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
-	divcurlweight(5),
 	mg_levels(3),
 	max_candidates(20), 
 	save_ref(false)
@@ -368,9 +359,6 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( params.minimizer, "gsl:opt=gd,step=0.01", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( params.refinement_minimizer, "", "refiner", 'R', "optimizer used for additional minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
-
-	options.add(make_opt( params.divcurlweight, "divcurl", 'd', 
-				    "divcurl regularization weight"));
 
 	options.add(make_opt( params.transform_creator, "spline", "transForm", 'f', 
 				    "transformation type"));

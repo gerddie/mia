@@ -59,23 +59,19 @@ const SProgramDescription g_description = {
 	{pdi_example_code, "  -i segment.set -o registered.set -k 2"}
 }; 
 
-C2DFullCostList create_costs(double divcurlweight, double imageweight)
+C2DFullCostList create_costs(double imageweight)
 {
 	C2DFullCostList result; 
-	stringstream divcurl_descr;  
-	divcurl_descr << "divcurl:weight=" << divcurlweight; 
-	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
-
 	stringstream image_descr; 
 	image_descr << "image:weight=" << imageweight; 
 	result.push(C2DFullCostPluginHandler::instance().produce(image_descr.str())); 
 	return result; 
 }
 
-P2DTransformationFactory create_transform_creator(size_t c_rate)
+P2DTransformationFactory create_transform_creator(size_t c_rate, double divcurlweight)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate; 
+	transf << "spline:rate=" << c_rate << ",penalty=[divcurl:weight=" << divcurlweight << "]"; 
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 	
@@ -120,8 +116,8 @@ run_registration_pass(CSegSetWithImages&  input_set,
 	vector<P2DTransformation> result; 
 	C2DImageSeries input_images = input_set.get_images(); 
 	registered.resize(input_images.size()); 
-	auto costs  = create_costs(divcurlweight, imageweight); 
-	auto transform_creator = create_transform_creator(c_rate); 
+	auto costs  = create_costs(imageweight); 
+	auto transform_creator = create_transform_creator(c_rate, divcurlweight); 
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 
 	// this loop could be parallized 

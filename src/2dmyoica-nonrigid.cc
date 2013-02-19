@@ -64,21 +64,19 @@ const SProgramDescription description = {
 	{pdi_example_code, g_program_example_code}
 }; 
 
-C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
+C2DFullCostList create_costs(P2DFullCost imagecost)
 {
 	C2DFullCostList result; 
 	result.push(imagecost); 
-
-	stringstream divcurl_descr; 
-	divcurl_descr << "divcurl:weight=[" << divcurlweight <<"]"; 
-	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 	return result; 
 }
 
-P2DTransformationFactory create_transform_creator(size_t c_rate)
+P2DTransformationFactory create_transform_creator(size_t c_rate, float penalty)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate << ",imgboundary=mirror,imgkernel=[bspline:d=3]";
+	transf << "spline:rate=" << c_rate 
+	       << ",imgboundary=mirror,imgkernel=[bspline:d=3],penalty=[divcurl:weight="
+	       << penalty << "]"; 
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 	
@@ -124,8 +122,8 @@ void run_registration_pass(CSegSetWithImages&  input_set,
 {
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 	C2DImageSeries input_images = input_set.get_images(); 
-	auto costs  = create_costs(divcurlweight, imagecost); 
-	auto transform_creator = create_transform_creator(c_rate); 
+	auto costs  = create_costs(imagecost); 
+	auto transform_creator = create_transform_creator(c_rate, divcurlweight); 
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 	if (refinement_minimizer)
 		nrr.set_refinement_minimizer(refinement_minimizer); 
