@@ -45,4 +45,16 @@ private:
 }; 
 
 
+class C2DDivcurlSplinePenaltyPlugin : public mia::C2DSplineTransformPenaltyPlugin {
+public: 
+	C2DDivcurlSplinePenaltyPlugin(); 
+	
+private: 
+	virtual const std::string do_get_descr() const;
+	virtual Product *do_create(float weight) const __attribute__((warn_unused_result));
+	float m_div_weight; 
+	float m_curl_weight; 
+
+}; 
+
 NS_END

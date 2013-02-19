@@ -63,6 +63,29 @@ C2DSplineTransformPenalty *C2DDivcurlSplinePenalty::do_clone() const
 	return result; 
 }
   
+C2DDivcurlSplinePenaltyPlugin::C2DDivcurlSplinePenaltyPlugin():
+	C2DSplineTransformPenaltyPlugin("divcurl")
+{
+	this->add_parameter("div", new CFloatParameter(m_div_weight, 0.0f, std::numeric_limits<float>::max(), 
+						       false, "penalty weight on divergence"));
+	this->add_parameter("curl", new CFloatParameter(m_curl_weight, 0.0f, std::numeric_limits<float>::max(), 
+							false, "penalty weight on curl"));
+	
+}
 
+const std::string C2DDivcurlSplinePenaltyPlugin::do_get_descr() const
+{
+	return "divcurl penalty on the transformation"; 
+}
+
+C2DDivcurlSplinePenaltyPlugin::Product *C2DDivcurlSplinePenaltyPlugin::do_create(float weight) const
+{
+	return new C2DDivcurlSplinePenalty(weight, m_div_weight, m_curl_weight); 
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C2DDivcurlSplinePenaltyPlugin();
+}
 
 NS_END

@@ -86,8 +86,6 @@ double C2DSplineTransformPenalty::get_weight() const
 	return m_weight; 
 }
 
-
-
 C2DSplineTransformPenalty *C2DSplineTransformPenalty::clone() const
 {
 	return do_clone(); 
@@ -99,11 +97,28 @@ C2DSplineTransformPenaltyPluginHandler::ProductPtr produce_2d_spline_transform_p
 }
 
 
+C2DSplineTransformPenaltyPlugin::C2DSplineTransformPenaltyPlugin(char const * const  name):
+	TFactory<C2DSplineTransformPenalty>(name), 
+	m_weight(1.0)
+{
+	add_parameter("weight", new CFloatParameter(m_weight, 0.0f, std::numeric_limits<float>::max(), 
+						    false, "weight of penalty energy"));
+}
+
+C2DSplineTransformPenaltyPlugin::Product *C2DSplineTransformPenaltyPlugin::do_create() const
+{
+	return do_create(m_weight); 
+}
+
+
 template<> const  char * const 
-TPluginHandler<TFactory<C2DSplineTransformPenalty>>::m_help = 
-    "These plug-ins provides penalty terms to enforce smoothness of spline based 2D transformation.";
+TPluginHandler<C2DSplineTransformPenaltyPlugin>::m_help = 
+	"This class provides the penalty put on spline based transformations  "
+	"when considering image registration. This penalty term ensures "
+	"the smoothness of a transformation or the evaluation of a similarity measure "
+	"between a transformed study data set and a refernce data set.";
 
-EXPLICIT_INSTANCE_HANDLER(C2DSplineTransformPenalty);
 
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DSplineTransformPenalty, C2DSplineTransformPenaltyPlugin); 
 
 NS_MIA_END

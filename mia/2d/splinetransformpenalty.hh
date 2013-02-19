@@ -116,12 +116,24 @@ private:
 	PSplineKernel m_kernel;
 }; 
 
+typedef std::shared_ptr<C2DSplineTransformPenalty> P2DSplineTransformPenalty; 
 
-typedef TFactory<C2DSplineTransformPenalty> C2DSplineTransformPenaltyPlugin;
+
+class C2DSplineTransformPenaltyPlugin: public TFactory<C2DSplineTransformPenalty> {
+public: 
+	C2DSplineTransformPenaltyPlugin(char const * const  name); 
+private: 
+	virtual Product *do_create() const __attribute__((warn_unused_result));
+	virtual Product *do_create(float weight) const __attribute__((warn_unused_result)) = 0 ;
+
+	float m_weight; 
+}; 
+
 
 /// Plugin handler for image combiner plugins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DSplineTransformPenaltyPlugin> > 
          C2DSplineTransformPenaltyPluginHandler;
+
 
 FACTORY_TRAIT(C2DSplineTransformPenaltyPluginHandler); 
 

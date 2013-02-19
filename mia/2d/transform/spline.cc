@@ -70,13 +70,15 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
 	m_xbc(produce_spline_boundary_condition("zero")), 
-	m_ybc(produce_spline_boundary_condition("zero"))
+	m_ybc(produce_spline_boundary_condition("zero")), 
+	m_penalty(org.m_penalty)
 {
 	reinit(); 
 }
 
 C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, 
-						 const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf):
+						 const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf, 
+						 P2DSplineTransformPenalty penalty):
 	C2DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(c_rate),
@@ -87,7 +89,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
 	m_xbc(produce_spline_boundary_condition("zero")), 
-	m_ybc(produce_spline_boundary_condition("zero"))
+	m_ybc(produce_spline_boundary_condition("zero")), 
+	m_penalty(penalty)
 {
 	TRACE_FUNCTION;
 	assert(m_range.x > 0);
@@ -682,20 +685,38 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 	return *m_divcurl_matrix * m_coefficients; 
 }
 
+double C2DSplineTransformation::do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const
+{
+	if (m_penalty) 
+		return m_penalty->value_and_gradient(m_coefficients, gradient);
+	else 
+		return 0.0; 
+}
+
+double C2DSplineTransformation::do_get_penalty() const
+{
+	if (m_penalty)
+		return m_penalty->value(m_coefficients); 
+	return 0.0; 
+}
 
 class C2DSplineTransformCreator: public C2DTransformCreator {
 public:
-	C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates, const C2DInterpolatorFactory& ipf); 
+	C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates, 
+				  const C2DInterpolatorFactory& ipf, P2DSplineTransformPenalty penalty); 
 	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
 private:
 	PSplineKernel m_kernel;
 	C2DFVector m_rates;
+	P2DSplineTransformPenalty m_penalty; 
 };
 
-C2DSplineTransformCreator::C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates, const C2DInterpolatorFactory& ipf):
+C2DSplineTransformCreator::C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates, 
+						     const C2DInterpolatorFactory& ipf, P2DSplineTransformPenalty penalty):
 	C2DTransformCreator(ipf), 
 	m_kernel(kernel),
-	m_rates(rates)
+	m_rates(rates), 
+	m_penalty(penalty)
 {
 }
 
@@ -703,8 +724,10 @@ C2DSplineTransformCreator::C2DSplineTransformCreator(PSplineKernel kernel, const
 P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
 {
 	assert(m_kernel); 
-	return P2DTransformation(new C2DSplineTransformation(size, m_kernel, m_rates, ipf));
+	return P2DTransformation(new C2DSplineTransformation(size, m_kernel, m_rates, ipf, m_penalty));
 }
+
+
 
 
 class C2DSplineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
@@ -716,6 +739,7 @@ private:
 	PSplineKernel m_interpolator;
 	float m_rate; 
 	C2DFVector m_rate2d;
+	P2DSplineTransformPenalty m_penalty; 
 };
 
 C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
@@ -726,9 +750,9 @@ C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	add_parameter("kernel", make_param(m_interpolator, "bspline:d=3", false, "transformation spline kernel."));
 	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 						    "isotropic coefficient rate in pixels"));
-	add_parameter("anisorate",   new C2DFVectorParameter(m_rate2d, false, "anisotropic coefficient rate in pixels, nonpositive values "
-							 "will be overwritten by the 'rate' value."));
-
+	add_parameter("anisorate",   new C2DFVectorParameter(m_rate2d, false, "anisotropic coefficient rate in pixels, "
+							     "nonpositive values will be overwritten by the 'rate' value."));
+	add_parameter("penalty", make_param(m_penalty, "", false, "Transformation penalty term")); 
 }
 
 C2DTransformCreator *C2DSplineTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
@@ -738,7 +762,7 @@ C2DTransformCreator *C2DSplineTransformCreatorPlugin::do_create(const C2DInterpo
 		rate2d.x = m_rate; 
 	if (rate2d.y <= 0) 
 		rate2d.y = m_rate; 
-	return new C2DSplineTransformCreator(m_interpolator, rate2d, ipf);
+	return new C2DSplineTransformCreator(m_interpolator, rate2d, ipf, m_penalty);
 }
 
 const std::string C2DSplineTransformCreatorPlugin::do_get_descr() const

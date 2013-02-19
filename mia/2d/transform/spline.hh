@@ -23,7 +23,9 @@
 
 #include <mia/2d/interpolator.hh>
 #include <mia/2d/transform.hh>
+#include <mia/2d/splinetransformpenalty.hh>
 #include <mia/2d/ppmatrix.hh>
+
 
 NS_MIA_BEGIN
 
@@ -34,7 +36,9 @@ public:
 
 	C2DSplineTransformation(const C2DSplineTransformation& org);
 	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf);
-	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf);
+	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, 
+				const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf, 
+				P2DSplineTransformPenalty penalty);
 
 	void set_coefficients(const C2DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C2DFVectorfield& field);
@@ -98,6 +102,10 @@ private:
 
 	C2DSplineTransformation& operator = (const C2DSplineTransformation& org); 
 
+	double do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
+	double do_get_penalty() const;
+
+
 	void init_grid(); 
 	C2DFVector interpolate(const C2DFVector& x) const; 
 
@@ -122,6 +130,8 @@ private:
 
 	PSplineBoundaryCondition m_xbc; 
 	PSplineBoundaryCondition m_ybc; 
+
+	P2DSplineTransformPenalty m_penalty; 
 
 };
 
