@@ -623,7 +623,7 @@ BOOST_FIXTURE_TEST_CASE( test_spline_c_rate_create, ipfFixture )
 	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 	C3DBounds size(20, 32, 25);
 	C3DFVector c_rate(2.5, 3.2, 5.0);
-	C3DSplineTransformation  stransf(size, kernel, c_rate, ipf);
+	C3DSplineTransformation  stransf(size, kernel, c_rate, ipf, P3DSplineTransformPenalty());
 
 	C3DBounds gridsize = stransf.get_coeff_size();
 	BOOST_CHECK_EQUAL(gridsize.x, 10u);
@@ -853,7 +853,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_set_parameter, ipfFixture)
 {
 	C3DBounds size(20,30,25); 
 	PSplineKernel kernel(produce_spline_kernel("bspline:d=3")); 
-	C3DSplineTransformation t(size, kernel, C3DFVector(5.0,5.0,5.0), ipf);
+	C3DSplineTransformation t(size, kernel, C3DFVector(5.0,5.0,5.0), ipf, P3DSplineTransformPenalty());
 	auto params = t.get_parameters();
 	
 	params[0] = 1.0; 

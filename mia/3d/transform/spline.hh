@@ -24,7 +24,8 @@
 #include <mia/3d/interpolator.hh>
 #include <mia/3d/transform.hh>
 #include <mia/3d/ppmatrix.hh>
-#include <mia/core/scaler1d.hh>
+#include <mia/3d/splinetransformpenalty.hh>
+
 
 NS_MIA_BEGIN
 
@@ -35,7 +36,8 @@ public:
 
 	C3DSplineTransformation(const C3DSplineTransformation& org);
 	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf);
-	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf);
+	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DFVector& c_rate, 
+				const C3DInterpolatorFactory& ipf, P3DSplineTransformPenalty penalty);
 	~C3DSplineTransformation(); 
 
 	void set_coefficients(const C3DFVectorfield& field);
@@ -99,6 +101,9 @@ public:
 
 	C3DBounds get_enlarge() const; 
 private:
+
+	double do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
+	double do_get_penalty() const;
 	
 	C3DFVector sum(const C3DBounds& start, 
 		       const std::vector<double>& xweights, 
@@ -141,6 +146,8 @@ private:
 	PSplineBoundaryCondition m_z_boundary; 
 	
 	mutable CMutex m_mutex; 
+
+	P3DSplineTransformPenalty m_penalty; 
 };
 
 NS_MIA_END

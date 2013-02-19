@@ -90,13 +90,15 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& 
 	m_grid_valid(false), 
 	m_x_boundary(produce_spline_boundary_condition("mirror")),  
 	m_y_boundary(produce_spline_boundary_condition("mirror")),
-	m_z_boundary(produce_spline_boundary_condition("mirror"))
+	m_z_boundary(produce_spline_boundary_condition("mirror")), 
+	m_penalty(org.m_penalty)
 {
 	TRACE_FUNCTION;
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, 
-						 const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf):
+						 const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf, 
+						 P3DSplineTransformPenalty penalty):
 	C3DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(c_rate),
@@ -111,7 +113,8 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	m_grid_valid(false), 
 	m_x_boundary(produce_spline_boundary_condition("mirror")),  
 	m_y_boundary(produce_spline_boundary_condition("mirror")),
-	m_z_boundary(produce_spline_boundary_condition("mirror"))
+	m_z_boundary(produce_spline_boundary_condition("mirror")), 
+	m_penalty(penalty)
 {
 	TRACE_FUNCTION;
 
@@ -208,6 +211,9 @@ void C3DSplineTransformation::reinit() const
 	TRACE_FUNCTION;
 	CScopedLock lock(m_mutex); 
 	if (!m_scales_valid) {
+		if (m_penalty) 
+			m_penalty->initialize(m_coefficients.get_size(), C3DFVector(m_range), m_kernel); 
+
 		TRACE("C3DSplineTransformation::reinit applies");
 		m_scale = C3DFVector(m_coefficients.get_size() - C3DBounds::_1 - m_enlarge) / 
 			C3DFVector(m_range - C3DBounds::_1);
@@ -1013,6 +1019,21 @@ void C3DSplineTransformation::iterator_impl::do_z_increment()
 	m_value_it += m_delta.z; 
 }
 
+double C3DSplineTransformation::do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const
+{
+	if (m_penalty) 
+		return m_penalty->value_and_gradient(m_coefficients, gradient); 
+	return 0.0; 
+}
+
+double C3DSplineTransformation::do_get_penalty() const
+{
+	if (m_penalty) 
+		return m_penalty->value(m_coefficients); 
+	return 0.0; 
+}
+
+
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION;
@@ -1052,18 +1073,25 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C3DSplinebigTransformCreator: public C3DTransformCreator {
 public:
-	C3DSplinebigTransformCreator(PSplineKernel ip, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, bool debug);
+	C3DSplinebigTransformCreator(PSplineKernel ip, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, 
+				     P3DSplineTransformPenalty penalty, 
+				     bool debug);
 private:
 	virtual P3DTransformation do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const;
 	PSplineKernel m_kernel;
 	C3DFVector m_rates;
+	P3DSplineTransformPenalty m_penalty;
 	bool m_debug; 
 };
 
-C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, bool debug):
+C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel, const C3DFVector& rates, 
+							   const C3DInterpolatorFactory& ipf, 
+							   P3DSplineTransformPenalty penalty, 
+							   bool debug):
 	C3DTransformCreator(ipf), 
 	m_kernel(kernel),
 	m_rates(rates), 
+	m_penalty(penalty),
 	m_debug(debug)
 {
 	TRACE_FUNCTION;
@@ -1075,7 +1103,7 @@ P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size,
 	TRACE_FUNCTION;
 
 	assert(m_kernel); 
-	P3DTransformation result(new C3DSplineTransformation(size, m_kernel, m_rates, ipf));
+	P3DTransformation result(new C3DSplineTransformation(size, m_kernel, m_rates, ipf, m_penalty));
 	if (m_debug) 
 		result->set_debug(); 
 	return result;
@@ -1091,6 +1119,7 @@ private:
 	PSplineKernel m_kernel;
 	float m_rate;
 	C3DFVector m_rate3d;
+	P3DSplineTransformPenalty m_penalty;
 	bool m_debug; 
 };
 
@@ -1110,6 +1139,7 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 
 	add_parameter("debug",
 		      new CBoolParameter(m_debug, false, "enable additional debuging output"));
+	add_parameter("penalty", make_param(m_penalty, "", false, "transformation penalty energy term")); 
 
 }
 
@@ -1126,7 +1156,7 @@ C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create(const C3DInterpo
 	if (rate3d.z <= 0) 
 		rate3d.z = m_rate; 
 
-	return new C3DSplinebigTransformCreator(m_kernel, rate3d, ipf, m_debug);
+	return new C3DSplinebigTransformCreator(m_kernel, rate3d, ipf, m_penalty, m_debug);
 }
 
 const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const

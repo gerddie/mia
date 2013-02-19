@@ -51,6 +51,7 @@ SET(MIA3D_SRC
   rigidregister.cc
   timestep.cc
   similarity_profile.cc
+  splinetransformpenalty.cc
   trackpoint.cc
   transform.cc
   transformfactory.cc
@@ -102,6 +103,7 @@ SET(MIA3D_HEADERS
   shape.hh 
   similarity_profile.hh
   stackdisttrans.hh
+  splinetransformpenalty.hh
   timestep.hh
   trackpoint.hh
   trait.hh
@@ -196,6 +198,7 @@ TEST_3D(similarity_profile similarity_profile)
 TEST_3D(trackpoint similarity_profile)
 TEST_3D(distance distance)
 TEST_3D(imagecollect imagecollect)
+TEST_3D(splinetransformpenalty splinetransformpenalty)
 #
 # installation 
 #
@@ -213,8 +216,9 @@ ADD_SUBDIRECTORY(filter   )
 ADD_SUBDIRECTORY(fifof    )
 ADD_SUBDIRECTORY(fullcost )
 ADD_SUBDIRECTORY(io       )
-ADD_SUBDIRECTORY(shapes   )
 ADD_SUBDIRECTORY(reg3d    )
+ADD_SUBDIRECTORY(shapes   )
+ADD_SUBDIRECTORY(splinepenalty  )
 ADD_SUBDIRECTORY(transform)
 ADD_SUBDIRECTORY(transio)
 ADD_SUBDIRECTORY(lmio)
