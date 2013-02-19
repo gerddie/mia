@@ -374,7 +374,10 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
        
 
 	m_transf.set_parameters(x);
-	double result = m_costs.cost_value(m_transf);
+	double result = m_costs.cost_value(m_transf); 
+	if (m_transf.has_energy_penalty())
+		result += m_transf.get_energy_penalty();
+	
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 
 	
@@ -409,7 +412,15 @@ double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDo
 {
 	m_transf.set_parameters(x);
 	std::fill(g.begin(), g.end(), 0.0); 
+
 	double result = m_costs.evaluate(m_transf, g);
+
+	if (m_transf.has_energy_penalty()) {
+		CDoubleVector help(g.size()); 
+		result +=  + m_transf.get_energy_penalty_and_gradient(help); 
+		std::transform(help.begin(), help.end(), g.begin(), g.begin(), 
+			  [](double x, double y){return x+y;}); 
+	}
 
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 

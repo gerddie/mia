@@ -84,7 +84,10 @@ public:
 	double get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
 
         ///  \returns the value of the transformation energy penalty 
-	double get_penalty() const;
+	double get_energy_penalty() const;
+
+	/// \returns true if the transformation provides a penalty term
+	bool has_energy_penalty() const; 
 protected: 
 
 	/// \returns the interpolator factory 
@@ -92,7 +95,8 @@ protected:
 private: 
         virtual std::shared_ptr<D> do_transform(const D& input, const I& ipf) const = 0;
 	virtual double do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
-	virtual double do_get_penalty() const;
+	virtual double do_get_energy_penalty() const;
+	virtual bool do_has_energy_penalty() const; 
 
 	I m_ipf;
 
@@ -149,9 +153,9 @@ double Transformation<D,I>::get_energy_penalty_and_gradient(CDoubleVector& gradi
 
 
 template <typename D, typename I>
-double Transformation<D,I>::get_penalty() const
+double Transformation<D,I>::get_energy_penalty() const
 {
-        return do_get_penalty(); 
+        return do_get_energy_penalty(); 
 }
 
 template <typename D, typename I>
@@ -163,11 +167,23 @@ double Transformation<D,I>::do_get_energy_penalty_and_gradient(CDoubleVector& gr
 
 
 template <typename D, typename I>
-double Transformation<D,I>::do_get_penalty() const
+double Transformation<D,I>::do_get_energy_penalty() const
 {
          return 0.0; 
 }
 
+template <typename D, typename I>
+bool Transformation<D,I>::has_energy_penalty() const
+{
+	return do_has_energy_penalty(); 
+}
+
+
+template <typename D, typename I>
+bool Transformation<D,I>::do_has_energy_penalty() const
+{
+	return false; 
+}
 
 template <typename D, typename I>
 const char *Transformation<D, I>::type_descr = "transform";

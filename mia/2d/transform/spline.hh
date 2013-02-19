@@ -103,7 +103,8 @@ private:
 	C2DSplineTransformation& operator = (const C2DSplineTransformation& org); 
 
 	double do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
-	double do_get_penalty() const;
+	double do_get_energy_penalty() const;
+	bool   do_has_energy_penalty() const;
 
 
 	void init_grid(); 

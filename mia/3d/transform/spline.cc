@@ -1021,18 +1021,21 @@ void C3DSplineTransformation::iterator_impl::do_z_increment()
 
 double C3DSplineTransformation::do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const
 {
-	if (m_penalty) 
-		return m_penalty->value_and_gradient(m_coefficients, gradient); 
-	return 0.0; 
+	assert(m_penalty); 
+	return m_penalty->value_and_gradient(m_coefficients, gradient); 
 }
 
-double C3DSplineTransformation::do_get_penalty() const
+double C3DSplineTransformation::do_get_energy_penalty() const
 {
-	if (m_penalty) 
-		return m_penalty->value(m_coefficients); 
-	return 0.0; 
+	assert(m_penalty); 
+	return m_penalty->value(m_coefficients); 
+
 }
 
+bool C3DSplineTransformation::do_has_energy_penalty() const
+{
+	return m_penalty.operator bool(); 
+}
 
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {

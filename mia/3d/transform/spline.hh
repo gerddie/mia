@@ -103,7 +103,8 @@ public:
 private:
 
 	double do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
-	double do_get_penalty() const;
+	double do_get_energy_penalty() const;
+	bool do_has_energy_penalty() const; 
 	
 	C3DFVector sum(const C3DBounds& start, 
 		       const std::vector<double>& xweights, 

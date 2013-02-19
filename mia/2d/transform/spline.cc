@@ -151,6 +151,8 @@ void C2DSplineTransformation::reinit()
 {
 	TRACE_FUNCTION;
 	if (!m_interpolator_valid) {
+		if (m_penalty) 
+			m_penalty->initialize(m_coefficients.get_size(), m_range, m_kernel); 
 
 		cvdebug() << "C2DSplineTransformation::reinit applies\n";
 		m_scale = C2DFVector(m_coefficients.get_size() - C2DBounds::_1 - m_enlarge) / 
@@ -687,17 +689,20 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 double C2DSplineTransformation::do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const
 {
-	if (m_penalty) 
-		return m_penalty->value_and_gradient(m_coefficients, gradient);
-	else 
-		return 0.0; 
+	assert(m_penalty); 
+	return m_penalty->value_and_gradient(m_coefficients, gradient);
 }
 
-double C2DSplineTransformation::do_get_penalty() const
+double C2DSplineTransformation::do_get_energy_penalty() const
 {
-	if (m_penalty)
-		return m_penalty->value(m_coefficients); 
-	return 0.0; 
+	assert(m_penalty); 
+	return m_penalty->value(m_coefficients); 
+
+}
+
+bool   C2DSplineTransformation::do_has_energy_penalty() const
+{
+	return m_penalty.operator bool(); 
 }
 
 class C2DSplineTransformCreator: public C2DTransformCreator {
