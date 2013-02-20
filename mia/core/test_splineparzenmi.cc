@@ -222,8 +222,9 @@ double CSplineParzenMIFixture::py(double y) const
 
 double CSplineParzenMIFixture::dm(double y, double x) const
 {
-	constexpr double pi4 = pow(M_PI,4.0);
-	constexpr double scale_p = M_PI * pi4 / (1099511627776.0 * (M_PI - 4));
+	// clang 3.2 doesn't like pow(x,y) in a costexpr. 
+	constexpr double pi4 = M_PI * M_PI *M_PI * M_PI;
+	constexpr double scale_p = M_PI * M_PI * M_PI *M_PI * M_PI / (1099511627776.0 * (M_PI - 4));
 	constexpr double scale_px = M_PI * M_PI / 131072.0; 
 	const double pyxh = M_PI * (y-x)  / 256.0; 
 	const double pxh = M_PI * x  / 256.0; 

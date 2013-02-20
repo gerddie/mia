@@ -29,6 +29,7 @@
 
 NS_BEGIN(simple_2dimage_filter)
 NS_MIA_USE; 
+using namespace std; 
 /*
   The constructor takes all the necessary parameters. Usually this means that after construction, the 
   filter does not change anymore. As an exception to this rule, a data key may be provided that makes 

@@ -32,8 +32,9 @@ NS_MIA_BEGIN
 
    This class is only used for testing purpouses. 
  */
-struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
+class  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	/// @cond TESTINTERFACE 
+public:
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *invert() const;

@@ -33,7 +33,7 @@ class C2DDummyTransformation: public C2DTransformMock {
 	virtual C2DTransformation *clone() const {
 		return new C2DDummyTransformation();
 	}
-	virtual bool save(const std::string& /*filename*/, const std::string& /*type*/) const {
+	virtual bool save(const std::string& /*filename*/) const {
 		return false;
 	}
 
@@ -53,8 +53,7 @@ class C2DDummyTransformation: public C2DTransformMock {
 	virtual C2DFMatrix derivative_at(int /*x*/, int /*y*/) const {
 		return C2DFMatrix(C2DFVector(1,0), C2DFVector(0,1));
 	}
-	virtual C2DFVectorfield translate(const C2DFVectorfield& /*gradient*/) const{
-		return C2DFVectorfield(C2DBounds(0,0));
+	virtual void  translate(const C2DFVectorfield& /*gradient*/, CDoubleVector& params) const{
 	}
 
 	virtual float get_max_transform() const {

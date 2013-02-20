@@ -61,7 +61,7 @@ C3DRotationTransformation::C3DRotationTransformation(const C3DRotationTransforma
 	m_t(other.m_t),
 	m_size(other.m_size),
 	m_rotation(other.m_rotation),
-	m_matrix_valid(m_matrix_valid)
+	m_matrix_valid(other.m_matrix_valid)
 {
 }
 

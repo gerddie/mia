@@ -44,7 +44,7 @@ struct bspline {
 template <>
 struct bspline<0,0> {
 	static double apply(double x) {
-		return fabs(x < 0.5) ? 1.0 : 0.0;
+		return fabs(x) < 0.5 ? 1.0 : 0.0;
 	}
 };
 

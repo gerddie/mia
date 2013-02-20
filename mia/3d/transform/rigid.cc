@@ -63,7 +63,7 @@ C3DRigidTransformation::C3DRigidTransformation(const C3DRigidTransformation& oth
 	m_size(other.m_size),
 	m_translation(other.m_translation),
 	m_rotation(other.m_rotation),
-	m_matrix_valid(m_matrix_valid)
+	m_matrix_valid(other.m_matrix_valid)
 {
 }
 

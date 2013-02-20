@@ -42,7 +42,7 @@ public:
 
 	void set_coefficients(const C2DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C2DFVectorfield& field);
-	void reinit();
+	virtual void reinit();
 	C2DFVector apply( const C2DFVector& x) const;
 	C2DFVector scale( const C2DFVector& x) const;
 
