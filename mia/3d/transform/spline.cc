@@ -39,7 +39,9 @@ extern "C" {
 NS_MIA_BEGIN
 using namespace std;
 
-C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf):
+C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, 
+						 const C3DInterpolatorFactory& ipf, 
+						 P3DSplineTransformPenalty penalty):
 	C3DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(1,1,1),
@@ -70,6 +72,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	assert(m_range.x > 0);
 	assert(m_range.y > 0);
 	assert(m_range.z > 0);
+
+	if (penalty) 
+		m_penalty.reset(penalty->clone());
+
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& org):
@@ -90,10 +96,12 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& 
 	m_grid_valid(false), 
 	m_x_boundary(produce_spline_boundary_condition("mirror")),  
 	m_y_boundary(produce_spline_boundary_condition("mirror")),
-	m_z_boundary(produce_spline_boundary_condition("mirror")), 
-	m_penalty(org.m_penalty)
+	m_z_boundary(produce_spline_boundary_condition("mirror"))
 {
 	TRACE_FUNCTION;
+	if (org.m_penalty) 
+		m_penalty.reset(org.m_penalty->clone());
+
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, 
@@ -384,7 +392,7 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 
 	C3DFVector mx(C3DFVector(size) / C3DFVector(m_range));
 
-	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel, get_interpolator_factory());
+	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel, get_interpolator_factory(), m_penalty);
 	C3DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
 	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 

@@ -51,7 +51,7 @@ struct TransformSplineFixture: public ipfFixture {
 		kernel(produce_spline_kernel("bspline:d=3")),
 		range(50, 80, 30),
 		r(range.x - 1, range.y - 1, range.z - 1),
-		stransf(range, kernel, ipf), 
+		stransf(range, kernel, ipf, P3DSplineTransformPenalty()), 
 		center(range.x/2.0, range.y/2.0, range.z/2.0), 
 		fscale(range.x * range.y * range.z)
 
@@ -724,7 +724,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transform, ipfFixture )
 	
 	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 
-	C3DSplineTransformation trans(size, kernel, ipf);
+	C3DSplineTransformation trans(size, kernel, ipf, P3DSplineTransformPenalty());
 
 	C3DFImage *psrc = new C3DFImage(size); 
 	P3DImage src(psrc);
@@ -761,7 +761,7 @@ struct TransformSplineFixtureFieldBase: public ipfFixture {
 		field(size),
 		kernel(produce_spline_kernel("bspline:d=3")), 
 		range(16, 16,16),
-		stransf(range, kernel, ipf),
+		stransf(range, kernel, ipf, P3DSplineTransformPenalty()),
 		scale(1.0 / range.x, 1.0 / range.y, 1.0 / range.z)
 	{
 
@@ -878,7 +878,7 @@ BOOST_FIXTURE_TEST_CASE (test_3d_cost_mock, ipfFixture )
 
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
-	C3DSplineTransformation t(size, kernel, ipf);
+	C3DSplineTransformation t(size, kernel, ipf, P3DSplineTransformPenalty());
 	C3DFVectorfield coefs(C3DBounds(12,12,12)); 
 	t.set_coefficients(coefs); 
 	t.reinit(); 
@@ -1052,7 +1052,7 @@ struct TransformSplineFixtureFieldBase2 : public ipfFixture{
 		field_range.y = 2 * range; 
 		field_range.z = 2 * range; 
 
-		auto t = new C3DSplineTransformation(C3DBounds(field_range), kernel, ipf); 
+		auto t = new C3DSplineTransformation(C3DBounds(field_range), kernel, ipf, P3DSplineTransformPenalty()); 
 		transform.reset(t);
 		
 		graddiv2sum = 0.0; 
