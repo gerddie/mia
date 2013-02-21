@@ -360,7 +360,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( params.refinement_minimizer, "", "refiner", 'R', "optimizer used for additional minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
-	options.add(make_opt( params.transform_creator, "spline:rate=10,penalty=[divcurl:weight=10]", "transForm", 'f', 
+	options.add(make_opt( params.transform_creator, "spline:rate=16,penalty=[divcurl:weight=0.01]", "transForm", 'f', 
 				    "transformation type"));
 
 	options.add(make_opt(params.pass1_cost, "image:cost=[ngf:eval=ds]", "cost-subset", '1', 

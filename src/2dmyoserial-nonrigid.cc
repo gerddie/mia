@@ -94,7 +94,7 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
-	options.add(make_opt( transform_creator, "spline:rate=16,penalty=[divcurl:weight=100]", "transForm", 'f', "transformation type"));
+	options.add(make_opt( transform_creator, "spline:rate=16,penalty=[divcurl:weight=0.01]", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 	options.add(make_opt( skip, "skip", 'k', "skip registration of these images at the beginning of the series")); 
 
