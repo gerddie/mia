@@ -172,7 +172,7 @@ int do_main( int argc, char *argv[] )
 	PMinimizer minimizer;
 	PMinimizer refinement_minimizer;
 	P2DFullCost imagecost;
-	double c_rate = 32; 
+	double c_rate = 16; 
 	double c_rate_divider = 2; 
 	double divcurlweight = 100000.0; 
 	double divcurlweight_divider = 2.0; 

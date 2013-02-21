@@ -417,7 +417,7 @@ double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDo
 
 	if (m_transf.has_energy_penalty()) {
 		CDoubleVector help(g.size()); 
-		result +=  + m_transf.get_energy_penalty_and_gradient(help); 
+		result += m_transf.get_energy_penalty_and_gradient(help); 
 		std::transform(help.begin(), help.end(), g.begin(), g.begin(), 
 			  [](double x, double y){return x+y;}); 
 	}
