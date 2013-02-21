@@ -18,6 +18,8 @@
  *
  */
 
+
+#include <mia/core/export_handler.hh>
 #include <mia/2d/trackpoint.hh>
 #include <mia/template/cvd_io_trait.hh>
 #include <mia/template/trackpoint.cxx>

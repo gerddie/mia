@@ -24,6 +24,8 @@
 #include <istream>
 #include <ostream>
 
+#include <mia/core/import_handler.hh>
+
 NS_MIA_BEGIN
 
 /**
@@ -36,7 +38,7 @@ NS_MIA_BEGIN
 
 
 template <typename Transformation>
-class TTrackPoint {
+class EXPORT_HANDLER TTrackPoint {
 public: 
 	typedef typename Transformation::Vector Vector; 
 	

@@ -22,6 +22,7 @@
 #define mia_2drgbimageio_hh
 
 #include <vector>
+#include <mia/2d/defines2d.hh>
 #include <mia/2d/vector.hh>
 #include <mia/core/iodata.hh>
 #include <mia/core/ioplugin.hh>
@@ -40,7 +41,7 @@ NS_MIA_BEGIN
 */
 
 
-class CRGB2DImage : public mia::CIOData{
+class EXPORT_2D CRGB2DImage : public mia::CIOData{
 public: 
 	/// unifying pointer definition for this class. 
 	typedef std::shared_ptr<CRGB2DImage> Pointer; 
@@ -105,7 +106,7 @@ typedef C2DRGBImageIOPluginPluginHandler::Instance::DataKey C2DRGBImageDataKey;
    \returns true if the image was saved successfully. If the saving failes, 
    the function may also throw some exception providing an error message. 
  */
-bool save_image(const std::string& filename, const CRGB2DImage& image); 
+bool EXPORT_2D save_image(const std::string& filename, const CRGB2DImage& image); 
 
 NS_MIA_END
 

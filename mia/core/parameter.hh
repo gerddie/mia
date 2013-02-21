@@ -394,7 +394,7 @@ private:
 
 
 /// an string parameter
-class CStringParameter: public  CParameter {
+class EXPORT_CORE CStringParameter: public  CParameter {
 public: 
 	CStringParameter(std::string& value, bool required, const char *descr, 
 			 const CPluginHandlerBase *plugin_hint = NULL); 

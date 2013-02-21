@@ -53,9 +53,6 @@ class C2DDummyTransformation: public C2DTransformMock {
 	virtual C2DFMatrix derivative_at(int /*x*/, int /*y*/) const {
 		return C2DFMatrix(C2DFVector(1,0), C2DFVector(0,1));
 	}
-	virtual void  translate(const C2DFVectorfield& /*gradient*/, CDoubleVector& params) const{
-	}
-
 	virtual float get_max_transform() const {
 		return 0.0f;
 	}

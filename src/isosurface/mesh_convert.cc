@@ -69,7 +69,7 @@ static void copy_triangles(GtsTriangle *tri, CTriangleMesh::triangle_iterator *t
 }
 
 
-CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface, bool reverse)
+EXPORT  CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface, bool reverse)
 {
 	
 	int n_vertices = gts_surface_vertex_number(surface);

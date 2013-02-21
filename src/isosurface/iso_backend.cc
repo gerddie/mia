@@ -452,7 +452,7 @@ static GtsSurface *iso_surface_optimize(GtsSurface *mesh, gint max_edges, gint m
     \param verbose give some output
     \returns an GtsSurface
 */
-GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, gint max_faces, 
+EXPORT GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, gint max_faces, 
 			gdouble max_cost, gboolean bordered, 
 			gfloat coarsen_method_factor)
 {
@@ -462,7 +462,7 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 	return iso_surface_optimize(mesh, max_edges, max_faces, max_cost, coarsen_method_factor); 
 }
 
-GtsSurface *iso_surface(const vector<string>& slices, gfloat iso_value, gint max_edges, gint max_faces, 
+EXPORT GtsSurface  *iso_surface(const vector<string>& slices, gfloat iso_value, gint max_edges, gint max_faces, 
 			gdouble max_cost, gboolean bordered, 
 			gfloat coarsen_method_factor)
 {

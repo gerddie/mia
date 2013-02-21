@@ -48,7 +48,7 @@ C3DFImage EXPORT_3D distance_transform(const C3DImage& f);
    the distance at certain points. 
 
 */
-class C3DDistance : public CIOData {
+class EXPORT_3D C3DDistance : public CIOData {
 public: 
 
 	/**

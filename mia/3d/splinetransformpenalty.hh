@@ -119,7 +119,7 @@ private:
 typedef std::shared_ptr<C3DSplineTransformPenalty> P3DSplineTransformPenalty; 
 
 
-class C3DSplineTransformPenaltyPlugin: public TFactory<C3DSplineTransformPenalty> {
+class EXPORT_3D C3DSplineTransformPenaltyPlugin: public TFactory<C3DSplineTransformPenalty> {
 public: 
 	C3DSplineTransformPenaltyPlugin(char const * const  name); 
 private: 
@@ -141,7 +141,7 @@ FACTORY_TRAIT(C3DSplineTransformPenaltyPluginHandler);
 EXPORT_3D  C3DSplineTransformPenaltyPluginHandler::ProductPtr produce_3d_spline_transform_penalty(const std::string& descr); 
 
 
-class C3DSplineTransformPenaltyPluginHandlerTest {
+class EXPORT_3D C3DSplineTransformPenaltyPluginHandlerTest {
 public: 
 	C3DSplineTransformPenaltyPluginHandlerTest(); 
 }; 

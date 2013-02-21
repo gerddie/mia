@@ -27,7 +27,7 @@
 
 NS_MIA_BEGIN
 
-class  C3DImageCollector : public TFilter<void> {
+class  EXPORT_3D C3DImageCollector : public TFilter<void> {
 public: 
 	C3DImageCollector(size_t slices); 
 	
