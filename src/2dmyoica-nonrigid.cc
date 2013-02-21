@@ -77,6 +77,7 @@ P2DTransformationFactory create_transform_creator(size_t c_rate, float penalty)
 	transf << "spline:rate=" << c_rate 
 	       << ",imgboundary=mirror,imgkernel=[bspline:d=3],penalty=[divcurl:weight="
 	       << penalty << "]"; 
+	cvinfo() << "Transform:" <<  transf.str() << "\n"; 
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 	
@@ -174,7 +175,7 @@ int do_main( int argc, char *argv[] )
 	P2DFullCost imagecost;
 	double c_rate = 16; 
 	double c_rate_divider = 2; 
-	double divcurlweight = 100000.0; 
+	double divcurlweight = 10.0; 
 	double divcurlweight_divider = 2.0; 
 
 	size_t mg_levels = 3; 
