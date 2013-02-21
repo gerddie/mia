@@ -30,8 +30,42 @@ namespace bfs=::boost::filesystem;
 
 CSplineKernelTestPath kernel_test_path; 
 
-BOOST_AUTO_TEST_CASE( test_divcurl_cost ) 
+/*
+  The proper evaluation of the penalty and its gradient 
+  is done in test_ppmatrix.cc. Here we only test the proper 
+  initialization and transfer of data. 
+*/
+
+BOOST_AUTO_TEST_CASE( test_divcurl_cost_w2_d1_c1 ) 
 {
+	C3DBounds size(10,10,10); 
+	C3DFVector range(32,32,32); 
+	auto kernel = produce_spline_kernel("bspline:d=3"); 
+	
+	auto plugin = BOOST_TEST_create_from_plugin<C3DDivcurlSplinePenaltyPlugin>("divcurl:weight=2.0"); 
+	
+	plugin->initialize(size, range, kernel);
+
+	C3DPPDivcurlMatrix test_matrix(size, range, *kernel, 1.0, 1.0); 
+	
+	C3DFVectorfield coefficients(size); 
+	
+	BOOST_CHECK_EQUAL(plugin->value(coefficients), 0.0); 
+	
+	coefficients(5,5,5) = C3DFVector(2,3,4); 
+
+	BOOST_CHECK_EQUAL(plugin->value(coefficients), 2 * (test_matrix * coefficients));
+	
+	CDoubleVector plug_gradient(size.product() * 3); 
+	CDoubleVector test_gradient(size.product() * 3); 
+
+	BOOST_CHECK_EQUAL(plugin->value_and_gradient(coefficients, plug_gradient), 
+			  2 * test_matrix.evaluate(coefficients,test_gradient)); 
+
+	for (auto ipg = plug_gradient.begin(), itg = test_gradient.begin(); 
+	     ipg != plug_gradient.end(); ++ipg, ++itg)
+		BOOST_CHECK_CLOSE(*ipg, -2.0 * *itg, 0.1); 
+
 	
 }
 
