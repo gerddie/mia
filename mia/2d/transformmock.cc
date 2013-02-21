@@ -45,19 +45,10 @@ C2DTransformation *C2DTransformMock::invert() const
 }
 
 
-bool C2DTransformMock::save(const std::string& ) const
-{
-	return false;
-
-}
 
 P2DTransformation C2DTransformMock::do_upscale(const C2DBounds&) const
 {
 	return P2DTransformation();
-}
-
-void C2DTransformMock::add(const C2DTransformation&)
-{
 }
 
 void C2DTransformMock::update(float, const C2DFVectorfield&)

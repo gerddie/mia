@@ -252,25 +252,6 @@ float C2DAffineTransformation::get_max_transform() const
 	return sqrt(m);
 }
 
-void C2DAffineTransformation::add(const C2DTransformation& other)
-{
-	// *this  = other * *this
-	const C2DAffineTransformation& a = dynamic_cast<const C2DAffineTransformation&>(other);
-
-	vector<double> h(m_t.size());
-
-	h[0] = a.m_t[0] * m_t[0] + a.m_t[1] * m_t[3];
-	h[1] = a.m_t[0] * m_t[1] + a.m_t[1] * m_t[4];
-	h[2] = a.m_t[0] * m_t[2] + a.m_t[1] * m_t[5] + a.m_t[2];
-
-	h[3] = a.m_t[3] * m_t[0] + a.m_t[4] * m_t[3];
-	h[4] = a.m_t[3] * m_t[1] + a.m_t[4] * m_t[4];
-	h[5] = a.m_t[3] * m_t[2] + a.m_t[4] * m_t[5] + a.m_t[5];
-
-	copy(h.begin(), h.end(), m_t.begin());
-}
-
-
 C2DFVector C2DAffineTransformation::operator () (const C2DFVector& x) const
 {
 	return apply(x); 

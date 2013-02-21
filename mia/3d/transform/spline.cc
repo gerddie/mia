@@ -394,42 +394,6 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 	return P3DTransformation(help);
 }
 
-void C3DSplineTransformation::add(const C3DTransformation& a)
-{
-	// it is very likely that this is not correct, especially if a is not a spline transformation 
-	TRACE_FUNCTION;
-
-	if (degrees_of_freedom() < a.degrees_of_freedom()) {
-		throw create_exception<invalid_argument>("C3DSplineTransformation::add: trying to add a transformation "
-							 "with a more degrees of freedom (", a.degrees_of_freedom(), 
-							 " versus ", degrees_of_freedom(), ")"); 
-	}
-	if (a.get_size() != get_size()) {
-		throw create_exception<invalid_argument>("C3DSplineTransformation::add: trying to add a transformation "
-							 "with domain ", a.get_size(), 
-							 " to a transformation with domain ", get_size());
-	}
-	
-	cvwarn() << "Adding to a spline transformation is probably not very accurate\n"; 
-	
-	reinit();
-	a.reinit();
-	
-	C3DFVectorfield new_coef(m_coefficients.get_size()); 
-	auto i = new_coef.begin();
-
-	for (size_t z = 0; z < m_coefficients.get_size().z; ++z)  {
-		for (size_t y = 0; y < m_coefficients.get_size().y; ++y)  {
-			for (size_t x = 0; x < m_coefficients.get_size().x; ++x, ++i)  {
-				C3DFVector v = (C3DFVector(x, y, z) - C3DFVector(m_shift)) * m_inv_scale;
-				C3DFVector u = a(v);
-				*i = v + apply(u) - u;
-			}
-		}
-	}
-	m_coefficients = new_coef; 
-}
-
 size_t C3DSplineTransformation::degrees_of_freedom() const
 {
 	TRACE_FUNCTION;

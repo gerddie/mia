@@ -147,11 +147,6 @@ P3DTransformation C3DTranslateTransformation::do_upscale(const C3DBounds& size) 
 }
 
 
-void C3DTranslateTransformation::add(const C3DTransformation& MIA_PARAM_UNUSED(a))
-{
-	assert(0 && "C3DTranslateTransformation::add not supported");
-}
-
 void C3DTranslateTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
 	assert(gradient.get_size() == m_size);

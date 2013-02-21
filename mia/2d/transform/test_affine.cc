@@ -255,21 +255,6 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 	BOOST_CHECK_CLOSE(params[5], -2.0, 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
-{
-	C2DFVector test = trans(C2DFVector(2,1));
-	cvinfo() << test << "\n";
-	test = trans(test);
-	cvinfo() << test << "\n";
-	trans.add(trans);
-
-	C2DFVector probe = trans(C2DFVector(2,1));
-
-	cvinfo() << probe << "\n";
-	BOOST_CHECK_CLOSE(probe.x, test.x, 0.1);
-	BOOST_CHECK_CLOSE(probe.y, test.y, 0.1);
-}
-
 BOOST_FIXTURE_TEST_CASE (test_upscale, AffineGrad2ParamFixtureAffine)
 {
 	C2DBounds x(4,4);

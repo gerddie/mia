@@ -121,12 +121,6 @@ P2DTransformation C2DTranslateTransformation::do_upscale(const C2DBounds& size) 
 					 ));
 }
 
-
-void C2DTranslateTransformation::add(const C2DTransformation& MIA_PARAM_UNUSED(a))
-{
-	assert(0 && "C2DTranslateTransformation::add not implemented");
-}
-
 void C2DTranslateTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
 {
 	assert(gradient.get_size() == m_size);

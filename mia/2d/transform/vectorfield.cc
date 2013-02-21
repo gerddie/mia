@@ -73,12 +73,6 @@ const C2DBounds& C2DGridTransformation::get_size() const
 	return m_field.get_size();
 }
 
-void C2DGridTransformation::add(const C2DTransformation& a)
-{
-	const C2DGridTransformation& other = dynamic_cast<const C2DGridTransformation&>(a);
-	m_field += other.m_field;
-}
-
 void C2DGridTransformation::update(float step, const C2DFVectorfield& a)
 {
 	C2DFVectorfield::const_iterator inf = a.begin();

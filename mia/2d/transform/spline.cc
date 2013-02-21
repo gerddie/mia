@@ -319,28 +319,6 @@ P2DTransformation C2DSplineTransformation::do_upscale(const C2DBounds& size) con
 	return P2DTransformation(help);
 }
 
-void C2DSplineTransformation::add(const C2DTransformation& a)
-{
-	TRACE_FUNCTION;
-	assert(a.get_size() == get_size());
-
-	reinit();
-	a.reinit();
-	
-	C2DFVectorfield new_coef(m_coefficients.get_size()); 
-	auto i = new_coef.begin();
-
-	for (size_t y = 0; y < m_coefficients.get_size().y; ++y)  {
-		for (size_t x = 0; x < m_coefficients.get_size().x; ++x, ++i)  {
-			C2DFVector v = C2DFVector(x, y) * m_inv_scale;
-			C2DFVector u = a(v);
-			*i = v + apply(u) - u;
-		}
-	}
-	
-	m_coefficients = new_coef; 
-}
-
 size_t C2DSplineTransformation::degrees_of_freedom() const
 {
 	return m_coefficients.size() * 2;

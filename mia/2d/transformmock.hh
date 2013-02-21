@@ -38,8 +38,6 @@ public:
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *invert() const;
-	virtual bool save(const std::string& filename) const;
-	virtual void add(const C2DTransformation& a);
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual size_t degrees_of_freedom() const;
 	virtual void set_identity();

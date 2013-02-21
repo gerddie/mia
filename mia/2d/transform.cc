@@ -31,10 +31,6 @@ C2DTransformation::C2DTransformation(const C2DInterpolatorFactory& ipf):
 
 }
 
-void C2DTransformation::reinit() const
-{
-}
-
 void C2DTransformation::set_creator_string(const std::string& s)
 {
 	m_creator_string = s; 

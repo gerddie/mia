@@ -160,7 +160,8 @@ struct multiply {
 	   \param[in] A sparse Matrix 
 	   \param[in] x the filed to multiply with the matrix 
 	 */
-	static void apply(F& result, const typename TSparseSolver<F>::A_mult_x& A, const F& x) {
+	static void apply(F& MIA_PARAM_UNUSED(result), 
+			  const typename TSparseSolver<F>::A_mult_x& MIA_PARAM_UNUSED(A), const F& MIA_PARAM_UNUSED(x)) {
 		static_assert(sizeof(F)==0, "This operation needs to be specialized");  
 	}
 }; 

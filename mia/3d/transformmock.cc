@@ -46,19 +46,9 @@ C3DTransformation *C3DTransformMock::invert() const
 	return NULL;
 }
 
-
-bool C3DTransformMock::save(const std::string& , const std::string& ) const
-{
-	return false;
-}
-
 P3DTransformation C3DTransformMock::do_upscale(const C3DBounds&) const
 {
 	return P3DTransformation();
-}
-
-void C3DTransformMock::add(const C3DTransformation&)
-{
 }
 
 void C3DTransformMock::update(float, const C3DFVectorfield&)

@@ -255,11 +255,6 @@ float C3DRotationTransformation::get_max_transform() const
 
 }
 
-void C3DRotationTransformation::add(const C3DTransformation& /*other*/)
-{
-	// *this  = other * *this
-	assert(0 && "not implemented");
-}
 
 C3DFVector C3DRotationTransformation::operator () (const C3DFVector& x) const
 {

@@ -213,20 +213,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 #endif
 
 
-BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
-{
-	C2DFVector testx(20.4, 30.8);
-
-	C2DFVector r1( testx.x - fx(testx.x, testx.y), testx.y - fy(testx.x, testx.y));
-	C2DFVector r2( r1.x - fx(r1.x,r1.y), r1.y -fy(r1.x, r1.y));
-
-	stransf.add(stransf);
-	C2DFVector result = stransf(testx);
-	BOOST_CHECK_CLOSE(result.x, r2.x, 0.2);
-	BOOST_CHECK_CLOSE(result.y, r2.y, 0.2);
-
-}
-
 BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineFixture )
 {
 	

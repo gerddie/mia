@@ -251,11 +251,6 @@ float C2DRigidTransformation::get_max_transform() const
 	return sqrt(m);
 }
 
-void C2DRigidTransformation::add(const C2DTransformation& /*other*/)
-{
-	// *this  = other * *this
-	assert(0 && "not implemented");
-}
 
 C2DFVector C2DRigidTransformation::operator () (const C2DFVector& x) const
 {

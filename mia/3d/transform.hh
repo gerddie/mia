@@ -242,12 +242,6 @@ public:
 	P3DTransformation upscale(const C3DBounds& size) const;
 
 	/**
-	   concat a transformation,
-	   @param a the transformation to be added
-	 */
-	virtual void add(const C3DTransformation& a) = 0;
-
-	/**
 	   update a transformation by using a vector field
 	   \remark this is too specialized and should go away
 	 */

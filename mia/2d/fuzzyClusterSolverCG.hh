@@ -62,10 +62,6 @@ extern bool fborder (long index, long nx, long ny);
 class C2DSolveCG {
 
   private:
-
-	C2DFImage& m_weight;
-	C2DFImage& m_gain;
-
 	double m_lambda1;
 	double m_lambda2;
 
@@ -103,7 +99,7 @@ class C2DSolveCG {
 
 	double m_r1rho1;   // speichert r1 * rho1
 	double m_r2rho2;   // speichert r2 * rho2
-	double m_normr, m_normr0;
+	double m_normr0;
 	double m_q, m_e, m_sprod;
 
 	// minimal residuum

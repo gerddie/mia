@@ -249,27 +249,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(result_operator.z, testx.z - fz(testx), 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
-{
-	stransf.reinit();
-	C3DFVector testx(30.4, 42.8, 12.3); 
-
-	C3DFVector r1( testx.x - fx(testx), 
-		       testx.y - fy(testx), 
-		       testx.z - fz(testx));
-	C3DFVector r2( r1.x - fx(r1), r1.y -fy(r1), r1.z - fz(r1)); 
-
-	stransf.add(stransf);
-	stransf.reinit();
-	C3DFVector result = stransf(testx);
-	// don't like the hight tolerance 
-	// should be checked again 
-	BOOST_CHECK_CLOSE(result.x, r2.x, 0.1);
-	BOOST_CHECK_CLOSE(result.y, r2.y, 0.1);
-	BOOST_CHECK_CLOSE(result.z, r2.z, 0.1);
-
-}
-
 BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineFixture )
 {
 	

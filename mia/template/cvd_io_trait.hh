@@ -33,11 +33,11 @@ NS_MIA_BEGIN
  */
 template <typename T> 
 struct NDVectorIOcvd {
-	static bool read(std::istream& is, T& value) {
+	static bool read(std::istream& MIA_PARAM_UNUSED(is), T& MIA_PARAM_UNUSED(value)) {
 		static_assert(sizeof(T) == 0, "NDVectorIOcvd::read needs specialization"); 
 		return false; 
 	}
-	static void write(std::ostream& os, const T& value){
+	static void write(std::ostream& MIA_PARAM_UNUSED(os), const T& MIA_PARAM_UNUSED(value)){
 		static_assert(sizeof(T) == 0, "NDVectorIOcvd::read needs specialization"); 
 	}
 }; 

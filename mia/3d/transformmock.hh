@@ -40,8 +40,6 @@ public:
 	C3DTransformMock();
 	C3DTransformMock(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
 	virtual C3DTransformation *invert() const;
-	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual void add(const C3DTransformation& a);
 	virtual void update(float step, const C3DFVectorfield& a);
 	virtual size_t degrees_of_freedom() const;
 	virtual void set_identity();

@@ -66,8 +66,6 @@ class solve_sCG {
 
   private:
 
-	C3DFImage& __gain;
-
 	double __lambda1;
 	double __lambda2;
 
@@ -105,7 +103,7 @@ class solve_sCG {
 
 	double __r1rho1;   // speichert r1 * rho1
 	double __r2rho2;   // speichert r2 * rho2
-	double __normr, __normr0;
+	double __normr0;
 	double __q, __e, __sprod;
 
 	// minimal residuum

@@ -46,8 +46,6 @@ bool fborder (long index, long nx, long ny)
 
 
 C2DSolveCG::C2DSolveCG (C2DFImage& w1, C2DFImage& f1, C2DFImage& gain_image, double l1, double l2, double r_res, double m_res):
-	m_weight(w1),
-	m_gain(gain_image),
 	m_lambda1(l1),
 	m_lambda2(l2),
 	m_iter(0),

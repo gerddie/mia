@@ -88,6 +88,4 @@ SegPointSplineTransformFixture::SegPointSplineTransformFixture()
 		}
 	}
 	t->set_parameters(params); 
-	t->reinit(); 
-	
 }

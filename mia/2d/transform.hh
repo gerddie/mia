@@ -256,23 +256,11 @@ public:
 	virtual const_iterator end() const = 0; 
 
 	/**
-	   Placeholder for transformations that might need special initializations
-	   like the B-spline based transformation
-	 */
-	virtual void reinit() const;
-
-	/**
 	   Transforation upscaling to new image size
 	   \param size new size of the transformation
 	   \returns shared pointer to upscaled transformation
 	 */
 	Pointer upscale(const C2DBounds& size) const;
-
-	/**
-	   concat a transformation,
-	   \param a the transformation to be added
-	 */
-	virtual void add(const C2DTransformation& a) = 0;
 
 	/**
 	   update a transformation by using a vector field

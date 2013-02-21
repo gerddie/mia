@@ -238,31 +238,6 @@ float C3DAffineTransformation::get_max_transform() const
 	return sqrt(result);
 }
 
-void C3DAffineTransformation::add(const C3DTransformation& other)
-{
-	// *this  = other * *this
-	const C3DAffineTransformation& a = dynamic_cast<const C3DAffineTransformation&>(other);
-
-	vector<double> h(m_t.size());
-
-	h[0] = a.m_t[0] * m_t[0] + a.m_t[1] * m_t[4] + a.m_t[2] * m_t[8];
-	h[1] = a.m_t[0] * m_t[1] + a.m_t[1] * m_t[5] + a.m_t[2] * m_t[9];
-	h[2] = a.m_t[0] * m_t[2] + a.m_t[1] * m_t[6] + a.m_t[2] * m_t[10];
-	h[3] = a.m_t[0] * m_t[3] + a.m_t[1] * m_t[7] + a.m_t[2] * m_t[11] + a.m_t[3];
-
-	h[4] = a.m_t[4] * m_t[0] + a.m_t[5] * m_t[4] + a.m_t[6] * m_t[8];
-	h[5] = a.m_t[4] * m_t[1] + a.m_t[5] * m_t[5] + a.m_t[6] * m_t[9];
-	h[6] = a.m_t[4] * m_t[2] + a.m_t[5] * m_t[6] + a.m_t[6] * m_t[10];
-	h[7] = a.m_t[4] * m_t[3] + a.m_t[5] * m_t[7] + a.m_t[6] * m_t[11] + a.m_t[7];
-
-	h[8]  = a.m_t[8] * m_t[0] + a.m_t[9] * m_t[4] + a.m_t[10] * m_t[8];
-	h[9]  = a.m_t[8] * m_t[1] + a.m_t[9] * m_t[5] + a.m_t[10] * m_t[9];
-	h[10] = a.m_t[8] * m_t[2] + a.m_t[9] * m_t[6] + a.m_t[10] * m_t[10];
-	h[11] = a.m_t[8] * m_t[3] + a.m_t[9] * m_t[7] + a.m_t[10] * m_t[11] + a.m_t[11];
-
-	copy(h.begin(), h.end(), m_t.begin());
-}
-
 
 C3DFVector C3DAffineTransformation::operator () (const C3DFVector& x) const
 {

@@ -64,7 +64,6 @@ public:
 	virtual const C3DBounds& get_size() const;
 	virtual C3DTransformation *invert() const;
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
-	virtual void add(const C3DTransformation& a);
 	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C3DFVectorfield& a);

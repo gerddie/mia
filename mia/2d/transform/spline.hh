@@ -74,7 +74,6 @@ public:
 
 	virtual C2DTransformation *invert() const;
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
-	virtual void add(const C2DTransformation& a);
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;

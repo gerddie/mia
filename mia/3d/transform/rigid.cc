@@ -290,12 +290,6 @@ float C3DRigidTransformation::get_max_transform() const
 
 }
 
-void C3DRigidTransformation::add(const C3DTransformation& /*other*/)
-{
-	// *this  = other * *this
-	assert(0 && "not implemented");
-}
-
 C3DFVector C3DRigidTransformation::operator () (const C3DFVector& x) const
 {
 	return apply(x); 

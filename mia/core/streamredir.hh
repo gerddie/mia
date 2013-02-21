@@ -71,8 +71,6 @@ private:
 	/// this function needs to be overwritten in order to write to a specific output 
 	virtual void do_put_buffer(const char *begin, const char *end) = 0;
 	char *m_begin;
-	char *m_cur;
-	char *m_end;
 };
 
 NS_MIA_END
