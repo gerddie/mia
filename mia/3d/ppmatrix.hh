@@ -97,7 +97,7 @@ public:
 	void reset(const C3DBounds& size, const C3DFVector& range, const CSplineKernel& kernel, 
 		   double wd, double wr); 
 private: 
-	struct C3DPPDivcurlMatrixImpl *impl; 
+	class C3DPPDivcurlMatrixImpl *impl; 
 
 }; 
 NS_MIA_END

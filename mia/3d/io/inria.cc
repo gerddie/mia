@@ -284,7 +284,7 @@ void handle_endian(Image& image, bool lowendian)
 
 
 	switch (sizeof(typename Image::value_type)) {
-	case 16:
+	case 2:
 		while (b != e) {
 			shuffle s;
 			s.v = *b;
@@ -292,7 +292,7 @@ void handle_endian(Image& image, bool lowendian)
 			*b = s.v;
 		}
 		break;
-	case 32:
+	case 4:
 		while (b != e) {
 			shuffle s;
 			s.v = *b;
@@ -302,7 +302,7 @@ void handle_endian(Image& image, bool lowendian)
 			++b;
 		}
 		break;
-	case 64:
+	case 8:
 		while (b != e) {
 
 			shuffle s;

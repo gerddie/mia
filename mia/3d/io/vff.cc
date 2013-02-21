@@ -253,6 +253,7 @@ void handle_endian(Iterator b, Iterator e)
 		}
 		break;
 	case 4:
+		cvdebug() << "Endian correct 32 bit data\n";
 		while (b != e) {
 			shuffle s;
 			s.v = *b;
@@ -262,6 +263,7 @@ void handle_endian(Iterator b, Iterator e)
 			++b;
 		}
 		break;
+		cvdebug() << "Endian correct 64 bit data\n";
 	case 8:
 		while (b != e) {
 
@@ -278,7 +280,8 @@ void handle_endian(Iterator b, Iterator e)
 			++b;
 		}
 		break;
-		// default:
+	default:
+		cvdebug() << "8 bit data, no correction needed\n";
 	}
 }
 

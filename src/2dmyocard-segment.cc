@@ -379,39 +379,6 @@ P2DImage evaluate_cavity(P2DImage feature, const C2DImageFilterChain& seed_chain
 	return run_filter_chain(feature, {"sws:seed=prep_seed.@", "binarize:min=1,max=1"});
 }
 
-class FMeanVar: public TFilter<pair<double, double> > {
-public: 
-	FMeanVar(double thresh): m_thresh(thresh){}; 
-	
-	template <typename Image> 
-	pair<double, double> operator () (const Image& image) const {
-		pair<double, double> result; 
-		int n = 0; 
-		auto begin = image.begin(); 
-		auto end = image.end(); 
-		while (begin != end)  {
-			const double help = *begin; 
-			if (help != 0.0) {
-				result.first += help; 
-				result.second += help * help; 
-				++n; 
-			}
-			++begin; 
-		}
-
-		if (n > 0)
-			result.first /= n; 
-		
-		if (n > 1) 
-			result.second = sqrt((result.second - n * result.first * result.first) / (n - 1));
-		else 
-			result.second = 0.0; 
-		return result; 
-	}
-private: 
-	double m_thresh; 
-}; 
-
 static void create_and_save_evaluation_shapes(const string& save_feature, P2DImage final_myocard_mask)
 {
 	auto inverse_labeled =  run_filter_chain(final_myocard_mask, {"invert", "label", "sort-label"});
