@@ -35,7 +35,8 @@ public:
 	using C2DTransformation::operator ();
 
 	C2DSplineTransformation(const C2DSplineTransformation& org);
-	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf);
+	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf, 
+				P2DSplineTransformPenalty penalty);
 	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, 
 				const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf, 
 				P2DSplineTransformPenalty penalty);

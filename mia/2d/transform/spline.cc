@@ -31,7 +31,8 @@ NS_MIA_BEGIN
 using namespace std;
 
 
-C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf):
+C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf, 
+						 P2DSplineTransformPenalty penalty):
 	C2DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(1,1),
@@ -45,7 +46,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y), 
 	m_xbc(produce_spline_boundary_condition("zero")), 
-	m_ybc(produce_spline_boundary_condition("zero"))
+	m_ybc(produce_spline_boundary_condition("zero")), 
+	m_penalty(penalty)
 {
 	
 	m_shift = m_kernel->get_active_halfrange() - 1; 
@@ -70,9 +72,10 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
 	m_xbc(produce_spline_boundary_condition("zero")), 
-	m_ybc(produce_spline_boundary_condition("zero")), 
-	m_penalty(org.m_penalty)
+	m_ybc(produce_spline_boundary_condition("zero"))
 {
+	if (org.m_penalty) 
+		m_penalty.reset(org.m_penalty->clone());
 	reinit(); 
 }
 
@@ -89,8 +92,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
 	m_xbc(produce_spline_boundary_condition("zero")), 
-	m_ybc(produce_spline_boundary_condition("zero")), 
-	m_penalty(penalty)
+	m_ybc(produce_spline_boundary_condition("zero"))
 {
 	TRACE_FUNCTION;
 	assert(m_range.x > 0);
@@ -108,6 +110,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_coefficients = C2DFVectorfield(csize);
 	m_xbc->set_width(m_coefficients.get_size().x); 
 	m_ybc->set_width(m_coefficients.get_size().y); 
+
+	if (penalty) 
+		m_penalty.reset(penalty->clone());
 
 	reinit(); 
 }
@@ -309,7 +314,7 @@ P2DTransformation C2DSplineTransformation::do_upscale(const C2DBounds& size) con
 	C2DFVector mx(((float)size.x - 1)/ ((float)m_range.x - 1),
 		      ((float)size.y - 1)/ ((float)m_range.y - 1));
 
-	C2DSplineTransformation *help = new C2DSplineTransformation(size, m_kernel, get_interpolator_factory());
+	C2DSplineTransformation *help = new C2DSplineTransformation(size, m_kernel, get_interpolator_factory(), m_penalty);
 	C2DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
 	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 

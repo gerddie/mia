@@ -42,7 +42,7 @@ struct TransformSplineFixture {
 		kernel(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 		range(33, 65),
 		r(range.x - 1, range.y - 1),
-		stransf(range, kernel, C2DInterpolatorFactory("bspline:d=3", "mirror")),
+		stransf(range, kernel, C2DInterpolatorFactory("bspline:d=3", "mirror"), P2DSplineTransformPenalty()),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y)
 	{
 		coeff_shift = kernel->get_active_halfrange() - 1; 
@@ -578,7 +578,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(kernel, "mirror")); 
 
-	C2DSplineTransformation trans(size, kernel, *ipf);
+	C2DSplineTransformation trans(size, kernel, *ipf, P2DSplineTransformPenalty());
 
 	P2DImage src(new C2DFImage(size, src_image_init));
 	C2DFVectorfield field(C2DBounds(5,4)); 
@@ -669,7 +669,7 @@ struct TransformSplineFixtureFieldBase {
 						*produce_spline_boundary_condition("mirror"), 
 						*produce_spline_boundary_condition("mirror"))), 
 		range(16, 16),
-		stransf(range, kernel, *ipf),
+		stransf(range, kernel, *ipf, P2DSplineTransformPenalty()),
 		scale(1.0 / range.x, 1.0 / range.y)
 	{
 
