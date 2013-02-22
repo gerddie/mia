@@ -2,16 +2,22 @@
 
   Fixes of tracked bugs:
 
+ * fix #69: GSL simplex optimizer now interprets parameter epsilon as simplex size termination parameter 
  * fix #68: Add obtion to revert the triangle winding at surface creation.
- * fix #65, #66, #67: Store the transformation vector field as transformation.
+ * fix #65 #66, #67: Store the transformation vector field as transformation in fluid registration
+ * fix #55: isoscale filter now scales to the exact requested voxel size
  * fix #54: Call cost.reinit() before evaluating the value.
  * fix #53: make handler initialization thread save,
- * fix #50, correct test for changed coefficient field size
+ * fix #51: proper relebaling in stack filters
+ * fix #50: correct test for changed coefficient field size
+ * fix #46: Spline transformation now takes the penalty term as parameter (experimental)
  * fix #41: correct tensor file header.
  * fix #39: vtk-IO (exterimental):  images (XML and legacy), mesh, and vector field
+ * fix #8:  Add the interface to store attributes with transformations
 
   Additional fixes and changes:
 
+ * fix compuling with clang-3.2
  * fix error in voxel size scaling when (down)scaling 3D
  * fix the transform upscaling to be based on the reference image size
  * Fix the preferred suffix specification for vector field storing
@@ -40,6 +46,7 @@
  * remove obsolete VTK imageio implementation
  * remove the requirement of equal-sized images in rigid registration, because it is not needed
  * rename mesh distance program for consitency
+ * remove the vistaio files and always use the system provided version 
 
 2.0.7
   * change build dependencies to cmake 2.8.5 because of GNUInstallDirs
