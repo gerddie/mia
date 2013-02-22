@@ -93,7 +93,7 @@ struct FEvalForce: public mia::TFilter<float> {
 		typename R::const_iterator bi = b.begin();
 	
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
-			float delta = m_parzen_mi.get_gradient_slow(*ai, *bi); 
+			float delta = -m_parzen_mi.get_gradient_slow(*ai, *bi); 
 			m_force[i] = gradient[i] * delta;
 		}
 		return m_parzen_mi.value(); 
