@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
+ * This file is part of MIA - a toolbox for medical image analysis 
  * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,49 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-/*
-  LatexBeginPluginDescription{2D image filters}
-
-  \subsection{Adaptive median filter}
-  \label{filter2d:adaptmed}
-  
-  \begin{description}
-  
-  \item [Plugin:] adaptmed
-  \item [Description:] An adaptive median filter that works like follows: 
-
-  \begin{itemize}
-    \item filter width is w=2*n+1
-    \item start with n=1
-    \begin{itemize}
-      \item  if the resulting filtered value is equal to the min or max of the covered
-             area (max or min) then increase n and repeat filtering
-      \item  repeat above algorithm until n=n\_max or resulting value is not equal to an
-             extreme value
-    \end{itemize}     
-    \item if the original intensity value of the image is equal to one of the extremes,
-          then keep the value, otherwise replace it by the filter result
-  \end{itemize}
-
-  \item [Input:] Abitrary gray scale image 
-  \item [Output:] The filtered image of the same pixel type and dimension 
-  
-  \plugtabstart
-  w &  int & maximum filter width parameter & 2  \\
-  \plugtabend
-  
-  \item [Remark:] for bit valued images this is just the normal median filter applied with the maximum filter width.
-  
-  \end{description}
-
-  LatexEnd
-*/
-
 
 #include <limits>
 #include <mia/2d/filter/adaptmed.hh>

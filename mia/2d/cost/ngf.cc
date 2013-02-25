@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
+ * This file is part of MIA - a toolbox for medical image analysis 
  * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,57 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-
-/* 
-   
-   \subsection{Normalized Gradient Fields}
-   \label{cost2d:ngf}
-   
-   \begin{description}
-   
-   \item [Plugin:] ngf
-   \item [Description:] This function evaluates the image similarity based on normalized gradient 
-                        fields. Given normalized gradient fields $\n_S$ of the study image and $\n_R$
-			of the reference image various evaluators are implemented: 
-   \begin{itemize}
-   \item cross Cross product based formulation: 
-     \begin{equation}
-       F_{\text{ngf}, \times}(\n_S, \n_R) := \frac{1}{2}\int_{\Omega} \left( \n_S(x) \times \n_R(x) \right)^2 \text{d}x
-     \end{equation}
-   \item dot Dot product based formulation: 
-     \begin{equation}
-        F_{\text{ngf}, \cdot}(\n_S, \n_R) := \frac{1}{2}\int_{\Omega} \left( \n_S(x) \cdot \n_R(x) \right)^2 \text{d}x
-      \end{equation}
-   \item sq 
-     \begin{equation}
-   	F_{\text{ngf}, \Delta^2} := \frac{1}{2}  \int_\Omega  
-	\left(<\n_R(x),\n_S(x)>^2   - \| \n_R(x)\|^2 \right)^2  \text{d}x,
-     \end{equation}
-   \item ds 
-     \begin{equation}
-   	F_{\text{ngf}, \cdot\Delta} := \frac{1}{2}  \int_\Omega  
-	\left( \| \n_R(x)\|^2 -
-        \frac{<\n_R(x),\n_S(x)>^2}{\|\n_R(x)\|\|\n_S(x)\|} \right)^2  \text{d}x,
-      \end{equation}
-   \end{itemize}
-
-   \item [Study:] An abitrary gray scale or binary images 
-   \item [Reference:] An abitrary gray scale or binary images 
-   
-   \end{description}
-   
-   \plugtabstart
-   eval &  strimng & Evaluator (cross|dot|ds|sq) & ds  \\
-   \plugtabend
-
-   For further information see \cite{haber05, wollny08a, wollny10b}. 
-
- */
 
 
 #include <mia/2d/cost/ngf.hh>
