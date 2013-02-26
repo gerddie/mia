@@ -254,9 +254,12 @@ BOOST_FIXTURE_TEST_CASE( test_self, CSplineParzenMIFixture )
 			cvdebug() << self_grad << " vs " << test_grad << ":" << self_grad / test_grad<<"\n"; 
 
 
-			if (test_grad != 0) 
+			// if the gradient is very small test against 'close to zero'
+			if (fabs(test_grad) > 1e-16) 
 				BOOST_CHECK_CLOSE(self_grad, test_grad, 0.1); 
-                }
+			else 
+				BOOST_CHECK(fabs(self_grad) < 1e-16);
+                }	
 	
 }
 

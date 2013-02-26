@@ -203,7 +203,10 @@ BOOST_AUTO_TEST_CASE( test_downscale_float_persists )
 	for (size_t i = 0; i < 64; ++i) {
 
 		cvdebug() << i << ":" << fscaled[i] << " - " << test_float[i] << '\n'; 
-		BOOST_CHECK_CLOSE(fscaled[i], test_float[i], 0.1); 
+		if (fabs(test_float[i]) > 1e-16) 
+			BOOST_CHECK_CLOSE(fscaled[i], test_float[i], 0.1); 
+		else 
+			BOOST_CHECK((fabs(fscaled[i]) < 1e-16)); 
 	}
 		
 
