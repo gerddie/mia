@@ -133,7 +133,7 @@ protected:
 	   a compatibility layer to make it possible to use STL algorithms and constructs.
 	*/
 template <typename T> 
-class TVector : public gsl_vector_dispatch<T> {
+class TVector : gsl_vector_dispatch<T> {
 public: 
 	typedef typename gsl_vector_dispatch<T>::iterator iterator; 
 	typedef typename gsl_vector_dispatch<T>::const_iterator const_iterator; 

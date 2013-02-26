@@ -48,12 +48,15 @@ BOOST_AUTO_TEST_CASE(test_cfdf_multmin )
 	CFDFMinimizer minimizer(CFDFMinimizer::PProblem(new TestCFDFProblem), gsl_multimin_fdfminimizer_conjugate_fr );
 	
 	DoubleVector x(2, false); 
-	x[0] = 5.0; 
-	x[1] = 7.0; 
+	const size_t i0 = 0; 
+	const size_t i1 = 1; 
+
+	x[i0] = 5.0; 
+	x[i1] = 7.0; 
 	
 	BOOST_REQUIRE(minimizer.run(x)== GSL_SUCCESS); 
-	BOOST_CHECK_CLOSE(x[0], 1.0, 0.1); 
-	BOOST_CHECK_CLOSE(x[1], 2.0, 0.1); 
+	BOOST_CHECK_CLOSE(x[i0], 1.0, 0.1); 
+	BOOST_CHECK_CLOSE(x[i1], 2.0, 0.1); 
 }
 
 TestCFDFProblem::TestCFDFProblem():
@@ -68,8 +71,11 @@ TestCFDFProblem::TestCFDFProblem():
 double  TestCFDFProblem::do_f(const DoubleVector&  v)
 {
 
-	const double x = v[0];
-	const double y = v[1];
+	const size_t i0 = 0; 
+	const size_t i1 = 1; 
+
+	const double x = v[i0];
+	const double y = v[i1];
 	
 	return m_p[2] * (x - m_p[0]) * (x - m_p[0]) +
 		m_p[3] * (y - m_p[1]) * (y - m_p[1]) + m_p[4]; 
@@ -78,11 +84,14 @@ double  TestCFDFProblem::do_f(const DoubleVector&  v)
 
 void    TestCFDFProblem::do_df(const DoubleVector&  v, DoubleVector&  g)
 {
-	const double x = v[0];
-	const double y = v[1];
+	const size_t i0 = 0; 
+	const size_t i1 = 1; 
+
+	const double x = v[i0];
+	const double y = v[i1];
       
-	g[0] = 2.0 * m_p[2] * (x - m_p[0]);
-	g[1] = 2.0 * m_p[3] * (y - m_p[1]);
+	g[i0] = 2.0 * m_p[2] * (x - m_p[0]);
+	g[i1] = 2.0 * m_p[3] * (y - m_p[1]);
 }
 
 double  TestCFDFProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
@@ -105,13 +114,16 @@ BOOST_AUTO_TEST_CASE(test_cf_multmin )
 {
 	CFMinimizer minimizer(CFMinimizer::PProblem(new TestCFProblem), gsl_multimin_fminimizer_nmsimplex );
 	
+	const size_t i0 = 0; 
+	const size_t i1 = 1; 
+
 	DoubleVector x(2, false); 
-	x[0] = 5.0; 
-	x[1] = 7.0; 
+	x[i0] = 5.0; 
+	x[i1] = 7.0; 
 	
 	BOOST_REQUIRE(minimizer.run(x)== GSL_SUCCESS); 
-	BOOST_CHECK_CLOSE(x[0], 1.0, 1); 
-	BOOST_CHECK_CLOSE(x[1], 2.0, 1); 
+	BOOST_CHECK_CLOSE(x[i0], 1.0, 1); 
+	BOOST_CHECK_CLOSE(x[i1], 2.0, 1); 
 }
 
 
@@ -126,8 +138,11 @@ TestCFProblem::TestCFProblem():
 double  TestCFProblem::do_f(const DoubleVector&  v)
 {
 
-	const double x = v[0];
-	const double y = v[1];
+	const size_t i0 = 0; 
+	const size_t i1 = 1; 
+
+	const double x = v[i0];
+	const double y = v[i1];
 	
 	return m_p[2] * (x - m_p[0]) * (x - m_p[0]) +
 		m_p[3] * (y - m_p[1]) * (y - m_p[1]) + m_p[4]; 

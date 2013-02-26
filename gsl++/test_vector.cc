@@ -126,8 +126,10 @@ BOOST_AUTO_TEST_CASE( test_vector_non_owning )
 {									
 	gsl_vector *x = gsl_vector_calloc(10); 
 	DoubleVector wx(x); 
+	
+	const size_t i2 = 2; 
 
-	wx[2] = 2.0; 
+	wx[i2] = 2.0; 
 	
 	BOOST_CHECK_EQUAL(gsl_vector_get(x,2), 2.0); 
 	
@@ -140,16 +142,17 @@ BOOST_AUTO_TEST_CASE( test_vector_copy )
 	DoubleVector wx(10, false); 
 	DoubleVector wy(5, false); 
 	
-	wx[2] = 3.0; 
-	BOOST_CHECK_EQUAL(wx[2], 3.0); 
+	const size_t i2 = 2; 
+	wx[i2] = 3.0; 
+	BOOST_CHECK_EQUAL(wx[i2], 3.0); 
 
-	wy[2] = 2.0; 
-	BOOST_CHECK_EQUAL(wy[2], 2.0); 
+	wy[i2] = 2.0; 
+	BOOST_CHECK_EQUAL(wy[i2], 2.0); 
 	
 	BOOST_CHECK_EQUAL(wx.size(), 10u); 
 	wx = wy; 
 	BOOST_CHECK_EQUAL(wx.size(), 5u); 
-	BOOST_CHECK_EQUAL(wx[2], 2.0); 
+	BOOST_CHECK_EQUAL(wx[i2], 2.0); 
 
 }
 
