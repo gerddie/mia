@@ -267,7 +267,8 @@ C2DUBImage CSegFrame::get_section_masks(size_t n_sections) const
 		for (size_t y = 0; y < result.get_size().y; ++y)  {
 			for (size_t x = 0; x < result.get_size().x; ++x, ++i)  {
 				if (*i) {
-					const C2DFVector ray_b(x - m_star.m_center.x, y - m_star.m_center.y); 
+					const C2DFVector ray_b(static_cast<float>(x) - m_star.m_center.x, 
+							       static_cast<float>(y) - m_star.m_center.y); 
 					double a = scale * angle(ray_a, ray_b);
 					if (a >= n_sections) 
 						a -= n_sections; 
