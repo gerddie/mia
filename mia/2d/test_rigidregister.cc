@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE( test_rigidreg_affine_cost_gradient ) //, RigidRegisterFixt
 
 BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
 {
-	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid:imgboundary=repeat");
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid:imgboundary=zero");
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] = 1.0;
