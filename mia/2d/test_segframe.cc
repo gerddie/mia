@@ -258,9 +258,9 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask, FrameTestRead)
 BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
 {
 
-	CSegPoint2D center(7.5,7.5); 
+	CSegPoint2D center(7.6,7.6); 
 	float r = 4; 
-	CSegPoint2D d1(1.0,0); 
+	CSegPoint2D d1(1.0, 0.0); 
 	CSegPoint2D d2(0.0,-1.0); 
 	CSegPoint2D d3(-1.0,0.0); 
 	CSegStar star(center, r, d1, d2, d3); 
@@ -310,15 +310,15 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
                 /*                            x                      */   
 		/*8*/   0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
 		
-		/*9*/   0, 4, 4, 4, 4, 4, 0, 0, 2, 1, 1, 1, 1, 0, 0, 0,
+		/*9*/   0, 4, 4, 4, 4, 4, 0, 0, 2, 2, 1, 1, 1, 0, 0, 0,
 		
-		/*10*/  0, 0, 4, 4, 4, 4, 3, 3, 2, 2, 2, 1, 0, 0, 0, 0,
+		/*10*/  0, 0, 4, 4, 4, 4, 3, 3, 2, 2, 2, 1, 1, 0, 0, 0,
 		
 		/*11*/  0, 0, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 0, 0, 0, 0,
 		
 		/*12*/  0, 0, 0, 4, 3, 3, 3, 3, 2, 2, 2, 0, 0, 0, 0, 0,
 		
-		/*13*/  0, 0, 0, 0, 0, 3, 3, 3, 2, 0, 0, 0, 0, 0, 0, 0,
+		/*13*/  0, 0, 0, 0, 0, 3, 3, 3, 2, 2, 0, 0, 0, 0, 0, 0,
 		
 		/*14*/  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		
