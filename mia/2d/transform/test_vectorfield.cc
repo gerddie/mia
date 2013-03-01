@@ -94,17 +94,25 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_derivative, GridTransformFixture)
 			C2DFMatrix dv =  field.derivative_at(x, y);
 			if ( x > 0 && x < size.x- 1) {
 				BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x, y), 1);
-				BOOST_CHECK_CLOSE(dv.x.y, -dfy_x(x, y), 1);
+				float test_value = -dfy_x(x, y); 
+				if (fabs(test_value) < 1e-10) 
+					BOOST_CHECK_SMALL(dv.x.y,1e-10f);
+				else 
+					BOOST_CHECK_CLOSE(dv.x.y, test_value, 0.1);
 			}else {
-				BOOST_CHECK_EQUAL(dv.x.x, 1.0f);
-				BOOST_CHECK_EQUAL(dv.x.y, 0);
+				BOOST_CHECK_CLOSE(dv.x.x, 1.0f, 0.1);
+				BOOST_CHECK_SMALL(dv.x.y, 1e-10f);
 			}
 			if ( y > 0 && y < size.y - 1) {
-				BOOST_CHECK_CLOSE(dv.y.x, -dfx_y(x, y), 1);
+				float test_value = -dfx_y(x, y); 
+				if (fabs(test_value) < 1e-10) 
+					BOOST_CHECK_SMALL(dv.y.x, 1e-10f);
+				else 
+					BOOST_CHECK_CLOSE(dv.y.x, test_value , 1);
 				BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x, y), 1);
 			}else {
-				BOOST_CHECK_EQUAL(dv.y.x, 0);
-				BOOST_CHECK_EQUAL(dv.y.y, 1.0f);
+				BOOST_CHECK_SMALL(dv.y.x, 1e-10f);
+				BOOST_CHECK_CLOSE(dv.y.y, 1.0f, 0.1);
 			}
 		}
 
