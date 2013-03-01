@@ -46,14 +46,14 @@ BOOST_FIXTURE_TEST_CASE( test_LSD_2D_self, LSDFixture )
 	cost.set_reference(*src);
 	
 	double cost_value = cost.value(*src);
-	BOOST_CHECK_CLOSE(cost_value, 0.0, 0.1);
+	BOOST_CHECK_SMALL(cost_value, 1e-10);
 
 	C2DFVectorfield force(C2DBounds(8,8));
 
 	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, force), 0.0, 0.1);
 
-	BOOST_CHECK_EQUAL(force(1,1).x, 0.0f);
-	BOOST_CHECK_EQUAL(force(1,1).y, 0.0f);
+	BOOST_CHECK_SMALL(force(1,1).x, 1e-10f);
+	BOOST_CHECK_SMALL(force(1,1).y, 1e-10f);
 	
 }
 
@@ -71,8 +71,17 @@ BOOST_FIXTURE_TEST_CASE( test_LSD_2D, LSDFixture )
 
 
 	for (auto iforce = force.begin(), ig = grad.begin(); ig != grad.end(); ++ig, ++iforce) {
-		BOOST_CHECK_CLOSE(iforce->x, ig->x, 0.1f);
-		BOOST_CHECK_CLOSE(iforce->y, ig->y, 0.1f);
+		if (ig->x == 0.0) 
+			BOOST_CHECK_SMALL(iforce->x, 1e-10f); 
+		else 
+			BOOST_CHECK_CLOSE(iforce->x, ig->x, 0.1f);
+
+		if (ig->y == 0.0) 
+			BOOST_CHECK_SMALL(iforce->y, 1e-10f); 
+		else 
+			BOOST_CHECK_CLOSE(iforce->y, ig->y, 0.1f);
+		
+
 	}; 
 }
 
