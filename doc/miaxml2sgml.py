@@ -35,6 +35,9 @@ import re
 from os.path import walk
 from fnmatch import fnmatch
 
+
+sys.dont_write_bytecode = True
+
 modules = {'miareadxml' : [0, '', 'none://miareadxml.py' ],
            'miawritprogram' : [0, '', 'none://miawritprogram.py' ]
            }

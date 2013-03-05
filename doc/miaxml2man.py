@@ -27,6 +27,8 @@ import string
 import htmlentitydefs
 import re
 
+sys.dont_write_bytecode = True
+
 modules = {'miareadxml' : [0, '', 'none://miareadxml.py' ]
            }
 
