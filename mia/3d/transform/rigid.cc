@@ -56,9 +56,9 @@ C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size, const C3DF
 	m_relative_rot_center(relative_rot_center), 
 	m_matrix_valid(false)
 {
-	m_rot_center.x = relative_rot_center.x * m_size.x; 
-	m_rot_center.y = relative_rot_center.y * m_size.y; 
-	m_rot_center.z = relative_rot_center.z * m_size.z; 
+	m_rot_center.x = relative_rot_center.x * (m_size.x - 1); 
+	m_rot_center.y = relative_rot_center.y * (m_size.y - 1); 
+	m_rot_center.z = relative_rot_center.z * (m_size.z - 1); 
 }
 
 C3DRigidTransformation::C3DRigidTransformation(const C3DRigidTransformation& other):
@@ -97,9 +97,9 @@ C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size,const C3DFV
 	m_relative_rot_center(relative_rot_center), 
 	m_matrix_valid(false)
 {
-	m_rot_center.x = relative_rot_center.x * m_size.x; 
-	m_rot_center.y = relative_rot_center.y * m_size.y; 
-	m_rot_center.z = relative_rot_center.z * m_size.z; 
+	m_rot_center.x = relative_rot_center.x * (m_size.x - 1); 
+	m_rot_center.y = relative_rot_center.y * (m_size.y - 1); 
+	m_rot_center.z = relative_rot_center.z * (m_size.z - 1); 
 }
 
 size_t C3DRigidTransformation::degrees_of_freedom() const
@@ -289,14 +289,14 @@ float C3DRigidTransformation::get_max_transform() const
 		evaluate_matrix(); 
 
 	C3DFVector corners[8] = {
-		C3DFVector(           0,            0,            0), 
-		C3DFVector(           0, get_size().y,            0), 
-		C3DFVector(           0,            0, get_size().z), 
-		C3DFVector(           0, get_size().y, get_size().z), 
-		C3DFVector(get_size().x,            0,            0), 
-		C3DFVector(get_size().x, get_size().y,            0), 
-		C3DFVector(get_size().x,            0, get_size().z), 
-		C3DFVector(get_size().x, get_size().y, get_size().z), 
+		C3DFVector(             0,              0,              0), 
+		C3DFVector(             0, get_size().y-1,              0), 
+		C3DFVector(             0,              0, get_size().z-1), 
+		C3DFVector(             0, get_size().y-1, get_size().z-1), 
+		C3DFVector(get_size().x-1,              0,              0), 
+		C3DFVector(get_size().x-1, get_size().y-1,              0), 
+		C3DFVector(get_size().x-1,              0, get_size().z-1), 
+		C3DFVector(get_size().x-1, get_size().y-1, get_size().z-1), 
 	};
 
 	float result = apply(C3DFVector()).norm2(); 
@@ -324,7 +324,6 @@ float C3DRigidTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /
 void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
 	//
-
 	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
 
@@ -341,8 +340,9 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 				r[4] += -float(z) * g->x + float(x) * g->z; 
 				r[5] += -float(y) * g->x + float(x) * g->y; 
 			}
+
 	cvinfo()<< "\rTranslated gradient:" << r << "\n"; 
-	copy(r.begin(), r.end(), params.begin()); 
+	copy(r.begin(), r.end(), params.begin());
 }
 
 

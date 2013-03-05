@@ -182,7 +182,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid3d_ranged_iterator, ipfFixture)
 
 
 struct RotXCenteredFixture : public ipfFixture {
-	RotXCenteredFixture():size(60, 80, 40), 
+	RotXCenteredFixture():size(61, 81, 41), 
 			      rcrot(size, C3DFVector::_0, 
 				    C3DFVector(M_PI * 0.5, 0.0, 0.0),
 				    C3DFVector(0.5,0.5,0.5), ipf)
@@ -191,6 +191,8 @@ struct RotXCenteredFixture : public ipfFixture {
 	C3DBounds size;
 	C3DRigidTransformation rcrot;
 };
+
+
 
 
 BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotxcentered_basic, RotXCenteredFixture)
@@ -204,12 +206,31 @@ BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotxcentered_basic, RotXCenteredFixture)
 	BOOST_CHECK_CLOSE(y.x, 20.0f, 0.1); 
 	BOOST_CHECK_CLOSE(y.y, 30.0f, 0.1); 
 	BOOST_CHECK_CLOSE(y.z, 20.0f, 0.1); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotxcentered_translate_field, RotXCenteredFixture)
+{
+	C3DFVectorfield field(size); 
+	auto ifield = field.begin_range(C3DBounds::_0, size); 
+	for (auto ir = rcrot.begin(); ir != rcrot.end(); ++ir, ++ifield)
+		*ifield = 1e-6 * (*ir - C3DFVector(ifield.pos())); 
+
+	CDoubleVector grad(rcrot.degrees_of_freedom());
+
+	rcrot.translate(field, grad); 
 	
-	
+	BOOST_CHECK_SMALL(grad[0], 1e-5); 
+	BOOST_CHECK_SMALL(grad[1], 1e-5); 
+	BOOST_CHECK_SMALL(grad[2], 1e-5); 
+	BOOST_CHECK_CLOSE(grad[3], M_PI * 0.5f, 0.1 ); 
+	BOOST_CHECK_SMALL(grad[4], 1e-4); 
+	BOOST_CHECK_SMALL(grad[5], 1e-4); 
+
+
 }
 
 struct RotYCenteredFixture : public ipfFixture {
-	RotYCenteredFixture():size(60, 80, 40), 
+	RotYCenteredFixture():size(61, 81, 41), 
 			      rcrot(size, C3DFVector::_0, 
 				    C3DFVector(0.0, M_PI * 0.5, 0.0),
 				    C3DFVector(0.5,0.5,0.5), ipf)
@@ -236,7 +257,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotycentered_basic, RotYCenteredFixture)
 }
 
 struct RotZCenteredFixture : public ipfFixture {
-	RotZCenteredFixture():size(60, 80, 40), 
+	RotZCenteredFixture():size(61, 81, 41), 
 			      rcrot(size, C3DFVector::_0, 
 				    C3DFVector(0.0, 0.0, M_PI * 0.5),
 				    C3DFVector(0.5,0.5,0.5), ipf)
