@@ -32,9 +32,10 @@ NS_MIA_BEGIN
 class C3DRigidTransformation;
 class EXPORT_3D C3DRigidTransformation : public C3DTransformation {
 public:
-	C3DRigidTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
-	C3DRigidTransformation(const C3DBounds& size,const C3DFVector& translation,
-			       const C3DFVector&  rotation, const C3DInterpolatorFactory& ipf);
+	C3DRigidTransformation(const C3DBounds& size, const C3DFVector&  relative_rot_center, const C3DInterpolatorFactory& ipf);
+	C3DRigidTransformation(const C3DBounds& size, const C3DFVector& translation,
+			       const C3DFVector&  rotation, const C3DFVector&  relative_rot_center, 
+			       const C3DInterpolatorFactory& ipf);
 
 	C3DRigidTransformation(const C3DRigidTransformation& other);
 	C3DRigidTransformation& operator =(const C3DRigidTransformation& other);
@@ -101,6 +102,8 @@ private:
 	C3DBounds m_size;
 	C3DFVector m_translation;
 	C3DFVector m_rotation;
+	C3DFVector m_relative_rot_center;
+	C3DFVector m_rot_center;
 	mutable bool m_matrix_valid;
 	mutable CMutex m_mutex; 
 };
