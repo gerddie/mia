@@ -180,6 +180,87 @@ BOOST_FIXTURE_TEST_CASE( test_rigid3d_ranged_iterator, ipfFixture)
 }
 
 
+
+struct RotXCenteredFixture : public ipfFixture {
+	RotXCenteredFixture():size(60, 80, 40), 
+			      rcrot(size, C3DFVector::_0, 
+				    C3DFVector(M_PI * 0.5, 0.0, 0.0),
+				    C3DFVector(0.5,0.5,0.5), ipf)
+		{
+		}
+	C3DBounds size;
+	C3DRigidTransformation rcrot;
+};
+
+
+BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotxcentered_basic, RotXCenteredFixture)
+{
+	BOOST_CHECK_CLOSE(rcrot.get_max_transform(), 20.f * sqrtf(10.0f), 0.1);
+
+	C3DFVector x(20,40,30); 
+	
+	auto y = rcrot(x); 
+	
+	BOOST_CHECK_CLOSE(y.x, 20.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.y, 30.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.z, 20.0f, 0.1); 
+	
+	
+}
+
+struct RotYCenteredFixture : public ipfFixture {
+	RotYCenteredFixture():size(60, 80, 40), 
+			      rcrot(size, C3DFVector::_0, 
+				    C3DFVector(0.0, M_PI * 0.5, 0.0),
+				    C3DFVector(0.5,0.5,0.5), ipf)
+		{
+		}
+	C3DBounds size;
+	C3DRigidTransformation rcrot;
+};
+
+
+BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotycentered_basic, RotYCenteredFixture)
+{
+	BOOST_CHECK_CLOSE(rcrot.get_max_transform(), 10.f * sqrtf(26.0f), 0.1);
+
+	C3DFVector x(20,40,30); 
+	
+	auto y = rcrot(x); 
+	
+	BOOST_CHECK_CLOSE(y.x, 20.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.y, 40.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.z, 10.0f, 0.1); 
+	
+	
+}
+
+struct RotZCenteredFixture : public ipfFixture {
+	RotZCenteredFixture():size(60, 80, 40), 
+			      rcrot(size, C3DFVector::_0, 
+				    C3DFVector(0.0, 0.0, M_PI * 0.5),
+				    C3DFVector(0.5,0.5,0.5), ipf)
+		{
+		}
+	C3DBounds size;
+	C3DRigidTransformation rcrot;
+};
+
+
+BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotzcentered_basic, RotZCenteredFixture)
+{
+	BOOST_CHECK_CLOSE(rcrot.get_max_transform(), 10.f * sqrtf(50.0f), 0.1);
+
+	C3DFVector x(20,40,30);
+	
+	auto y = rcrot(x);
+	
+	BOOST_CHECK_CLOSE(y.x, 30.0f, 0.1);
+	BOOST_CHECK_CLOSE(y.y, 30.0f, 0.1);
+	BOOST_CHECK_CLOSE(y.z, 30.0f, 0.1);
+}
+
+
 #if 0 
 struct RotateTransFixture {
 	RotateTransFixture():
