@@ -208,23 +208,28 @@ BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotxcentered_basic, RotXCenteredFixture)
 	BOOST_CHECK_CLOSE(y.z, 20.0f, 0.1); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotxcentered_translate_field, RotXCenteredFixture)
+BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotxcentered_translate_field, ipfFixture)
 {
+	C3DBounds size(31, 21, 21);
+	C3DRigidTransformation rcrot(size, C3DFVector::_0, 
+				     C3DFVector(0.02, 0.0, 0.0),
+				     C3DFVector(0.5,0.5,0.5), ipf);
+
 	C3DFVectorfield field(size); 
 	auto ifield = field.begin_range(C3DBounds::_0, size); 
-	for (auto ir = rcrot.begin(); ir != rcrot.end(); ++ir, ++ifield)
-		*ifield = 1e-6 * (*ir - C3DFVector(ifield.pos())); 
-
+	for (auto ir = rcrot.begin(); ir != rcrot.end(); ++ir, ++ifield) {
+		*ifield = *ir - C3DFVector(ifield.pos()); 
+	}
 	CDoubleVector grad(rcrot.degrees_of_freedom());
 
 	rcrot.translate(field, grad); 
 	
-	BOOST_CHECK_SMALL(grad[0], 1e-5); 
-	BOOST_CHECK_SMALL(grad[1], 1e-5); 
-	BOOST_CHECK_SMALL(grad[2], 1e-5); 
-	BOOST_CHECK_CLOSE(grad[3], M_PI * 0.5f, 0.1 ); 
-	BOOST_CHECK_SMALL(grad[4], 1e-4); 
-	BOOST_CHECK_SMALL(grad[5], 1e-4); 
+	BOOST_CHECK_SMALL(grad[0], 1e-3); 
+	BOOST_CHECK_SMALL(grad[1], 1e-3); 
+	BOOST_CHECK_SMALL(grad[2], 1e-3); 
+	BOOST_CHECK_CLOSE(grad[3], size.product() * 2.0 * sin(0.02), 0.1 ); 
+	BOOST_CHECK_SMALL(grad[4], 1e-2); 
+	BOOST_CHECK_SMALL(grad[5], 1e-2); 
 
 
 }
