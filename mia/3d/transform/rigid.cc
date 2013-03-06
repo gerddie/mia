@@ -19,10 +19,13 @@
  */
 
 #include <fstream>
+
+#include <tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
+
 #include <mia/core/msgstream.hh>
 #include <mia/core/utils.hh>
 #include <mia/3d/transformfactory.hh>
-
 #include <mia/3d/transform/rigid.hh>
 
 NS_MIA_BEGIN
@@ -323,29 +326,40 @@ float C3DRigidTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /
 
 void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
-	//
+	typedef vector<double> dvect; 
 	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
 
-	vector<double> r(params.size(), 0.0);
-
-	auto g = gradient.begin();
-	for (size_t z = 0; z < m_size.z; ++z)
-		for (size_t y = 0; y < m_size.y; ++y)
-			for (size_t x = 0; x < m_size.x; ++x, ++g) {
-				r[0] += g->x;
-				r[1] += g->y;
-				r[2] += g->z;
-				r[3] += -float(z) * g->y + float(y) * g->z; 
-				r[4] += -float(z) * g->x + float(x) * g->z; 
-				r[5] += -float(y) * g->x + float(x) * g->y; 
+	auto sumslice = [&gradient, &m_size] 
+		(const tbb::blocked_range<unsigned int>& range, dvect ls)->dvect{
+		
+		for (unsigned int i = range.begin(); i != range.end();++i) {
+			auto g = gradient.begin_at(0,0,i);
+			for (size_t y = 0; y < m_size.y; ++y) {
+				for (size_t x = 0; x < m_size.x; ++x, ++g) {
+					ls[0] += g->x;
+					ls[1] += g->y;
+					ls[2] += g->z;
+					ls[3] += -float(i) * g->y + float(y) * g->z;
+					ls[4] += -float(i) * g->x + float(x) * g->z;
+					ls[5] += -float(y) * g->x + float(x) * g->y;
+				}
 			}
+		}
+		return ls; 
+	}; 
 
-	cvinfo()<< "\rTranslated gradient:" << r << "\n"; 
-	copy(r.begin(), r.end(), params.begin());
+	auto sum_parts = [] (const dvect& a, const dvect& b) -> dvect {
+		dvect result(a.size()); 
+		std::transform(a.begin(), a.end(), b.begin(), result.begin(), 
+			  [](double x, double y) { return x+y;}); 
+		return result; 
+	}; 
+	
+	dvect init(params.size(), 0.0); 
+	auto sparams = tbb::parallel_reduce( tbb::blocked_range<unsigned int>(0, m_size.z, 1), init, sumslice, sum_parts); 
+	std::copy(sparams.begin(), sparams.end(), params.begin()); 
 }
-
-
 
 C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
 						      const C3DRigidTransformation& trans):
