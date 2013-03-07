@@ -227,8 +227,37 @@ BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotxcentered_translate_field, ipfFixture)
 	BOOST_CHECK_SMALL(grad[0], 1e-3); 
 	BOOST_CHECK_SMALL(grad[1], 1e-3); 
 	BOOST_CHECK_SMALL(grad[2], 1e-3); 
-	BOOST_CHECK_CLOSE(grad[3], size.product() * 2.0 * sin(0.02), 0.1 ); 
+	// 32340  = 2 sum_x,y[-10,10]x[-10,10] ( x^2 + y^2 ) 
+	BOOST_CHECK_CLOSE(grad[3], sin(0.02) * 31 * 32340, 0.1 ); 
 	BOOST_CHECK_SMALL(grad[4], 1e-2); 
+	BOOST_CHECK_SMALL(grad[5], 1e-2); 
+
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rigid3d_rotycentered_translate_field, ipfFixture)
+{
+	C3DBounds size(11, 11, 11);
+	C3DRigidTransformation rcrot(size, C3DFVector::_0, 
+				     C3DFVector(0.0, 0.1,  0.0),
+				     C3DFVector(0.5,0.5,0.5), ipf);
+
+	C3DFVectorfield field(size); 
+	auto ifield = field.begin_range(C3DBounds::_0, size); 
+	for (auto ir = rcrot.begin(); ir != rcrot.end(); ++ir, ++ifield) {
+		*ifield = *ir - C3DFVector(ifield.pos()); 
+		cvdebug() << ifield.pos() << *ifield << "\n"; 
+	}
+	CDoubleVector grad(rcrot.degrees_of_freedom());
+
+	rcrot.translate(field, grad); 
+	
+	BOOST_CHECK_SMALL(grad[0], 1e-3); 
+	BOOST_CHECK_SMALL(grad[1], 1e-3); 
+	BOOST_CHECK_SMALL(grad[2], 1e-3); 
+	BOOST_CHECK_SMALL(grad[3], 1e-2); 
+	// 2420  = 2 sum_x,y[-5,5]x[-5,5] ( x^2 + y^2 ) 
+	BOOST_CHECK_CLOSE(grad[4], sin(0.1) * 2420 * 11, 0.1 ); 
 	BOOST_CHECK_SMALL(grad[5], 1e-2); 
 
 

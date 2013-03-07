@@ -333,15 +333,15 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	auto sumslice = [&gradient, &m_size] 
 		(const tbb::blocked_range<unsigned int>& range, dvect ls)->dvect{
 		
-		for (unsigned int i = range.begin(); i != range.end();++i) {
-			auto g = gradient.begin_at(0,0,i);
+		for (unsigned int z = range.begin(); z != range.end();++z) {
+			auto g = gradient.begin_at(0,0,z);
 			for (size_t y = 0; y < m_size.y; ++y) {
 				for (size_t x = 0; x < m_size.x; ++x, ++g) {
 					ls[0] += g->x;
 					ls[1] += g->y;
 					ls[2] += g->z;
-					ls[3] += -float(i) * g->y + float(y) * g->z;
-					ls[4] += -float(i) * g->x + float(x) * g->z;
+					ls[3] += -float(z) * g->y + float(y) * g->z;
+					ls[4] += -float(z) * g->x + float(x) * g->z;
 					ls[5] += -float(y) * g->x + float(x) * g->y;
 				}
 			}
