@@ -52,6 +52,7 @@ C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFV
 	m_relative_rot_center(relative_rot_center), 
 	m_matrix_valid(false)
 {
+	initialize(); 
 }
 
 C2DRigidTransformation::C2DRigidTransformation(const C2DRigidTransformation& other):
@@ -64,12 +65,13 @@ C2DRigidTransformation::C2DRigidTransformation(const C2DRigidTransformation& oth
 	m_rot_center(other.m_rot_center), 
 	m_matrix_valid(other.m_matrix_valid)
 {
-	initialize(); 
 }
 
 void C2DRigidTransformation::initialize()
 {
 	m_rot_center = C2DFVector(m_size -C2DBounds::_1) * m_relative_rot_center; 
+	cvdebug() << "m_rot_center= " << m_rot_center << "\n"; 
+
 }
 
 C2DFVector C2DRigidTransformation::apply(const C2DFVector& x) const
@@ -253,9 +255,9 @@ void C2DRigidTransformation::evaluate_matrix() const
 float C2DRigidTransformation::get_max_transform() const
 {
 	// check the corners
-	float m =      (C2DFVector(get_size()) -  apply(C2DFVector(get_size()))).norm2();
-	float test0Y = (C2DFVector(0, get_size().y) - apply(C2DFVector(0, get_size().y))).norm2();
-	float testX0 = (C2DFVector(get_size().x, 0) - apply(C2DFVector(get_size().x, 0))).norm2();
+	float m =      (C2DFVector(get_size() - C2DBounds::_1) -  apply(C2DFVector(get_size()  - C2DBounds::_1))).norm2();
+	float test0Y = (C2DFVector(0, get_size().y - 1) - apply(C2DFVector(0, get_size().y - 1))).norm2();
+	float testX0 = (C2DFVector(get_size().x - 1, 0) - apply(C2DFVector(get_size().x - 1, 0))).norm2();
 	float test00 = apply(C2DFVector(0, 0)).norm2();
 
 	if (m < test0Y)

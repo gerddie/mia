@@ -288,3 +288,29 @@ BOOST_FIXTURE_TEST_CASE (test_inverse_rigid, ipfFixture)
 	BOOST_CHECK_EQUAL(b[2],-1.0);
 
 }
+
+struct RigidCenteredFixture : public ipfFixture{
+	RigidCenteredFixture();
+	C2DBounds size;
+	C2DRigidTransformation trans;
+};
+
+BOOST_FIXTURE_TEST_CASE (test_centered_rotation_rigid, RigidCenteredFixture)
+{
+	BOOST_CHECK_CLOSE(trans.get_max_transform(), 10.f * sqrtf(26.0f), 0.1);
+		
+	C2DFVector x(10,40); 
+	
+	auto y = trans(x); 
+	
+	BOOST_CHECK_CLOSE(y.x, 10.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.y, 20.0f, 0.1); 
+
+}
+
+RigidCenteredFixture::RigidCenteredFixture():
+	size(41,61),
+	trans(size, C2DFVector::_0, M_PI / 2.0, C2DFVector(0.5, 0.5), ipf)
+{
+}
+	
