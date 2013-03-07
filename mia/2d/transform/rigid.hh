@@ -23,6 +23,7 @@
 
 #include <iterator>
 #include <mia/2d/transform.hh>
+#include <mia/2d/transformfactory.hh>
 
 
 NS_MIA_BEGIN
@@ -39,9 +40,11 @@ public:
 	};
 
 
-	C2DRigidTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf);
-	C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
-					       float rotation, const C2DInterpolatorFactory& ipf);
+	C2DRigidTransformation(const C2DBounds& size, const C2DFVector& m_reltative_rot_center, 
+			       const C2DInterpolatorFactory& ipf);
+	C2DRigidTransformation(const C2DBounds& size, const C2DFVector& translation,
+			       float rotation, const C2DFVector& m_reltative_rot_center,
+			       const C2DInterpolatorFactory& ipf);
 
 	void translate(float x, float y);
 	void rotate(float angle);
@@ -92,6 +95,7 @@ public:
 	double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 private:
+	void initialize(); 
 	virtual C2DTransformation *do_clone() const;
 	void evaluate_matrix() const;
 	C2DRigidTransformation(const C2DRigidTransformation& other);
@@ -100,9 +104,27 @@ private:
 	C2DBounds m_size;
 	C2DFVector m_translation;
 	float m_rotation;
+	C2DFVector m_relative_rot_center; 
+	C2DFVector m_rot_center; 
 	mutable bool m_matrix_valid;
 };
 
+
+class C2DRigidTransformCreator: public C2DTransformCreator {
+public: 
+	C2DRigidTransformCreator(const C2DFVector& relative_rot_center, const C2DInterpolatorFactory& ipf); 
+private: 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
+	C2DFVector m_relative_rot_center; 
+};
+
+class C2DRigidTransformCreatorPlugin: public C2DTransformCreatorPlugin {
+public:
+	C2DRigidTransformCreatorPlugin();
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
+	const std::string do_get_descr() const;
+	C2DFVector m_relative_rot_center; 
+};
 
 NS_MIA_END
 

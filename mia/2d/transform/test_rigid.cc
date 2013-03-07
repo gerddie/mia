@@ -35,7 +35,7 @@ CSplineKernelTestPath kernel_test_path;
 
 struct TranslateTransFixture {
 	TranslateTransFixture():size(60, 80),
-				rtrans(size, C2DInterpolatorFactory("bspline:d=3", "mirror"))
+				rtrans(size, C2DFVector::_0, C2DInterpolatorFactory("bspline:d=3", "mirror"))
 		{
 			rtrans.translate(1.0, 2.0);
 		}
@@ -88,7 +88,7 @@ struct ipfFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_rigid2d, ipfFixture)
 {
-	C2DRigidTransformation t1(C2DBounds(10,20), ipf);
+	C2DRigidTransformation t1(C2DBounds(10,20), C2DFVector::_0, ipf);
 
 	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 3u);
 
@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_CASE(test_rigid2d, ipfFixture)
 	BOOST_CHECK_CLOSE(yr1.x ,-4.0, 0.1f);
 	BOOST_CHECK_CLOSE(yr1.y , 2.0, 0.1f);
 
-	C2DRigidTransformation t2(C2DBounds(10,20), ipf);
+	C2DRigidTransformation t2(C2DBounds(10,20), C2DFVector::_0, ipf);
 	t2.rotate(M_PI / 2.0);
 	C2DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid2d_iterator, ipfFixture )
 {
 	C2DBounds size(10,20);
 
-	C2DRigidTransformation t1(size, ipf);
+	C2DRigidTransformation t1(size, C2DFVector::_0, ipf);
 	C2DRigidTransformation::const_iterator ti = t1.begin();
 
 	for (size_t y = 0; y < size.y; ++y)
@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid2d_iterator, ipfFixture )
 struct RotateTransFixture : public ipfFixture {
 	RotateTransFixture():
 		size(60, 80),
-		rtrans(size, ipf),
+		rtrans(size, C2DFVector::_0, ipf),
 		rot_cos(cos(M_PI / 3.0)),
 		rot_sin(sin(M_PI / 3.0))
 	{
@@ -256,7 +256,7 @@ BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid)
 
 RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
 	size(80,80),
-	trans(size, ipf)
+	trans(size, C2DFVector::_0, ipf)
 {
 	trans.translate(-1, -3);
 //	trans.rotate(0.0);
@@ -267,7 +267,7 @@ RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
 BOOST_FIXTURE_TEST_CASE (test_inverse_rigid, ipfFixture)
 {
 	C2DBounds size(10,2);
-	C2DRigidTransformation trans(size, ipf);
+	C2DRigidTransformation trans(size, C2DFVector::_0, ipf);
 	auto a = trans.get_parameters();
 	a[0] = -1; 
 	a[1] = -3;
