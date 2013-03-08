@@ -292,16 +292,17 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, CDoubleV
 	vector<double> r(params.size(), 0.0);
 
 	auto g = gradient.begin();
-	for (size_t y = 0; y < m_size.y; ++y) {
-		for (size_t x = 0; x < m_size.x; ++x, ++g) {
+
+	double fy = - m_rot_center.y; 
+	for (size_t y = 0; y < m_size.y; ++y, fy += 1.0) {
+		double fx = - m_rot_center.x; 
+		for (size_t x = 0; x < m_size.x; ++x, fx += 1.0, ++g) {
 			r[0] += g->x;
 			r[1] += g->y;
-			r[2] += -float(y) * g->x + float(x) * g->y; 
+			r[2] += - fy * g->x + fx * g->y; 
 		}
 	}
-	params[0] = r[0];
-	params[1] = r[1];
-	params[2] = r[2];
+	copy(r.begin(), r.end(), params.begin()); 
 }
 
 

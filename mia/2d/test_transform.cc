@@ -105,6 +105,40 @@ BOOST_FIXTURE_TEST_CASE (test_rigid_Gradient, TransformGradientFixture)
 
 }
 
+BOOST_FIXTURE_TEST_CASE (test_rigid_Gradient_center_shifted, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("rigid:rot-center=[<0.5,0.6>]");
+	P2DTransformation transform = creater->create(size);
+
+	run_test(*transform); 
+	
+
+}
+
+
+BOOST_FIXTURE_TEST_CASE (test_rotation_Gradient, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("rotation");
+	P2DTransformation transform = creater->create(size);
+
+	run_test(*transform); 
+}
+
+BOOST_FIXTURE_TEST_CASE (test_rotation_Gradient_center_shifted, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("rotation:rot-center=[<0.5,0.6>]");
+	P2DTransformation transform = creater->create(size);
+
+	run_test(*transform); 
+}
+
+
 BOOST_FIXTURE_TEST_CASE (test_affine_Gradient, TransformGradientFixture) 
 {
 	const C2DTransformCreatorHandler::Instance& handler =

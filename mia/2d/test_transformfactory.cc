@@ -49,9 +49,9 @@ BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 5u);
+	BOOST_CHECK_EQUAL(handler.size(), 6u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
-			  "affine rigid spline translate vf ");
+			  "affine rigid rotation spline translate vf ");
 }
 
 

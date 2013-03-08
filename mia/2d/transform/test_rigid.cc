@@ -157,7 +157,7 @@ BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
 
 BOOST_FIXTURE_TEST_CASE(max_RotateTransFixture, RotateTransFixture)
 {
-	C2DFVector x(60, 80);
+	C2DFVector x(59, 79);
 	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), (x - rtrans(x)).norm(), 0.1);
 }
 
