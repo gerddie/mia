@@ -127,6 +127,27 @@ BOOST_FIXTURE_TEST_CASE (test_rigid_Gradient_center_shifted, TransformGradientFi
 }
 
 
+BOOST_FIXTURE_TEST_CASE (test_rotation_Gradient, TransformGradientFixture) 
+{
+	const C3DTransformCreatorHandler::Instance& handler =
+		C3DTransformCreatorHandler::instance();
+	P3DTransformationFactory creater = handler.produce("rotation");
+	P3DTransformation transform = creater->create(size);
+
+	run_test(*transform); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE (test_rotation_Gradient_center_shifted, TransformGradientFixture) 
+{
+	const C3DTransformCreatorHandler::Instance& handler =
+		C3DTransformCreatorHandler::instance();
+	P3DTransformationFactory creater = handler.produce("rotation:rot-center=[<0.5,0.4,0.6>]");
+	P3DTransformation transform = creater->create(size);
+	run_test(*transform); 
+}
+
+
 
 #if 0 
 BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture) 
