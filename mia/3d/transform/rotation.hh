@@ -33,8 +33,9 @@ class C3DRotationTransformation;
 class EXPORT_3D C3DRotationTransformation : public C3DTransformation {
 public:
 
-	C3DRotationTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
-	C3DRotationTransformation(const C3DBounds& size, const C3DFVector&  rotation, const C3DInterpolatorFactory& ipf);
+	C3DRotationTransformation(const C3DBounds& size, const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf);
+	C3DRotationTransformation(const C3DBounds& size, const C3DFVector& rotation, 
+				  const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf);
 
 	C3DRotationTransformation(const C3DRotationTransformation& other);
 	C3DRotationTransformation& operator =(const C3DRotationTransformation& other);
@@ -94,11 +95,14 @@ public:
 private:
 	virtual C3DTransformation *do_clone() const;
 	void evaluate_matrix() const;
-
-
+	void initialize(); 
+		
 	mutable std::vector<double> m_t;
 	C3DBounds m_size;
 	C3DFVector m_rotation;
+	C3DFVector m_relative_rot_center;
+	C3DFVector m_rot_center;
+	mutable C3DFVector m_shift; 
 	mutable bool m_matrix_valid;
 	mutable CMutex m_mutex; 
 };

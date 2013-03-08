@@ -45,7 +45,7 @@ struct ipfFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_rotation3d, ipfFixture)
 {
-	C3DRotationTransformation t1(C3DBounds(10,20,30), ipf); 
+	C3DRotationTransformation t1(C3DBounds(10,20,30), C3DFVector::_0, ipf); 
 
 	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 3u);
 
@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE(test_rotation3d, ipfFixture)
 	}
 
 
-	C3DRotationTransformation t2(C3DBounds(10,20,30), ipf);
+	C3DRotationTransformation t2(C3DBounds(10,20,30), C3DFVector::_0, ipf);
 	t2.rotate(M_PI / 2.0, 0, 0);
 	C3DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation3d_iterator, ipfFixture)
 {
 	C3DBounds size(10,20,5);
 
-	C3DRotationTransformation t1(size, ipf);
+	C3DRotationTransformation t1(size, C3DFVector::_0, ipf);
 	C3DRotationTransformation::const_iterator ti = t1.begin();
 
 	for (size_t z = 0; z < size.z; ++z)
@@ -123,7 +123,7 @@ BOOST_FIXTURE_TEST_CASE( test_translate_gradient, ipfFixture)
 	field(1,1,1) = C3DFVector(2,6,3);
 	
 	
-	C3DRotationTransformation t1(size, ipf);
+	C3DRotationTransformation t1(size, C3DFVector::_0, ipf);
 
 	
 	
@@ -137,7 +137,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation3d_ranged_iterator, ipfFixture)
 	C3DBounds size(10,20,30);
 	C3DBounds delta(1,2,3); 
 
-	C3DRotationTransformation t1(size, ipf);
+	C3DRotationTransformation t1(size, C3DFVector::_0, ipf);
 	auto ti = t1.begin_range(delta, size - delta);
 
 	for (size_t z = delta.z; z < size.z - delta.z; ++z)

@@ -28,6 +28,44 @@
 NS_MIA_BEGIN
 using namespace std;
 
+C3DRotationTransformation::C3DRotationTransformation(const C3DBounds& size, const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
+	m_t(9),
+	m_size(size),
+	m_rotation(0.0,0.0,0.0),
+	m_relative_rot_center(relative_rot_center), 
+	m_matrix_valid(false)
+{
+	initialize(); 
+}
+
+C3DRotationTransformation::C3DRotationTransformation(const C3DRotationTransformation& other):
+	C3DTransformation(other), 
+	m_t(other.m_t),
+	m_size(other.m_size),
+	m_rotation(other.m_rotation),
+	m_relative_rot_center(other.m_relative_rot_center), 
+	m_rot_center(other.m_rot_center), 
+	m_matrix_valid(other.m_matrix_valid)
+{
+}
+
+C3DRotationTransformation::C3DRotationTransformation(const C3DBounds& size,const C3DFVector& rotation, 
+						     const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
+	m_t(9),
+	m_size(size),
+	m_rotation(rotation),
+	m_relative_rot_center(relative_rot_center), 
+	m_matrix_valid(false)
+{
+	initialize(); 
+}
+
+void C3DRotationTransformation::initialize()
+{
+	m_rot_center = C3DFVector(m_size - C3DBounds::_1) * m_relative_rot_center; 
+}
 
 C3DFVector C3DRotationTransformation::apply(const C3DFVector& x) const
 {
@@ -44,26 +82,9 @@ C3DFVector C3DRotationTransformation::transform(const C3DFVector& x)const
 	return C3DFVector(
 		m_t[0] * x.x + m_t[1] * x.y + m_t[2] * x.z,
 		m_t[3] * x.x + m_t[4] * x.y + m_t[5] * x.z,
-		m_t[6] * x.x + m_t[7] * x.y + m_t[8] * x.z);
+		m_t[6] * x.x + m_t[7] * x.y + m_t[8] * x.z) + m_shift;
 }
 
-C3DRotationTransformation::C3DRotationTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf):
-	C3DTransformation(ipf), 
-	m_t(9),
-	m_size(size),
-	m_rotation(0.0,0.0,0.0),
-	m_matrix_valid(false)
-{
-}
-
-C3DRotationTransformation::C3DRotationTransformation(const C3DRotationTransformation& other):
-	C3DTransformation(other), 
-	m_t(other.m_t),
-	m_size(other.m_size),
-	m_rotation(other.m_rotation),
-	m_matrix_valid(other.m_matrix_valid)
-{
-}
 
 C3DTransformation *C3DRotationTransformation::do_clone()const
 {
@@ -80,15 +101,6 @@ C3DTransformation *C3DRotationTransformation::invert()const
 }
 
 
-C3DRotationTransformation::C3DRotationTransformation(const C3DBounds& size,
-					       const C3DFVector& rotation, const C3DInterpolatorFactory& ipf):
-	C3DTransformation(ipf), 
-	m_t(9),
-	m_size(size),
-	m_rotation(rotation),
-	m_matrix_valid(false)
-{
-}
 
 size_t C3DRotationTransformation::degrees_of_freedom() const
 {
@@ -227,6 +239,11 @@ void C3DRotationTransformation::evaluate_matrix() const
 	m_t[7] = cy*sx;
 	m_t[8]= cx*cy;
 
+
+	m_shift.x = (1.0 - m_t[0]) * m_rot_center.x - m_t[1] * m_rot_center.y - m_t[2] * m_rot_center.z; 
+	m_shift.y = m_t[3] * m_rot_center.x + (1.0 - m_t[4]) * m_rot_center.y - m_t[5] * m_rot_center.z; 
+	m_shift.z = m_t[6] * m_rot_center.x - m_t[7] * m_rot_center.y + (1.0 - m_t[8]) * m_rot_center.z; 
+
 	m_matrix_valid = true;
 }
 
@@ -277,13 +294,18 @@ void C3DRotationTransformation::translate(const C3DFVectorfield& gradient, CDoub
 	vector<double> r(params.size(), 0.0);
 
 	auto g = gradient.begin();
-	for (size_t z = 0; z < m_size.z; ++z)
-		for (size_t y = 0; y < m_size.y; ++y)
-			for (size_t x = 0; x < m_size.x; ++x, ++g) {
-				r[0] += -float(z) * g->y + float(y) * g->z; 
-				r[1] += -float(z) * g->x + float(x) * g->z; 
-				r[2] += -float(y) * g->x + float(x) * g->y; 
+	double fz = - m_rot_center.z; 
+	for (size_t z = 0; z < m_size.z; ++z, fz += 1.0) {
+		double fy = - m_rot_center.y; 
+		for (size_t y = 0; y < m_size.y; ++y, fy += 1.0) {
+			double fx = - m_rot_center.x; 
+			for (size_t x = 0; x < m_size.x; ++x, fx += 1.0, ++g) {
+				r[0] += -fz * g->y + fy * g->z; 
+				r[1] += -fz * g->x + fx * g->z; 
+				r[2] += -fy * g->x + fx * g->y; 
 			}
+		}
+	}
 	copy(r.begin(), r.end(), params.begin()); 
 }
 
@@ -367,36 +389,43 @@ float C3DRotationTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 
 class C3DRotationTransformCreator: public C3DTransformCreator {
 public: 
-	C3DRotationTransformCreator(const C3DInterpolatorFactory& ipf); 
+	C3DRotationTransformCreator(const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf); 
 private: 
 	virtual P3DTransformation do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const;
+	C3DFVector m_relative_rot_center; 
 };
 
-C3DRotationTransformCreator::C3DRotationTransformCreator(const C3DInterpolatorFactory& ipf):
-	C3DTransformCreator(ipf)
+C3DRotationTransformCreator::C3DRotationTransformCreator(const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf):
+	C3DTransformCreator(ipf), 
+	m_relative_rot_center(relative_rot_center)
 {
 }
 
 P3DTransformation C3DRotationTransformCreator::do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const
 {
-	return P3DTransformation(new C3DRotationTransformation(size, ipf));
+	return P3DTransformation(new C3DRotationTransformation(size, m_relative_rot_center, ipf));
 }
 
 class C3DRotationTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DRotationTransformCreatorPlugin();
+private: 
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
 	const std::string do_get_descr() const;
+	C3DFVector m_relative_rot_center; 
 };
 
 C3DRotationTransformCreatorPlugin::C3DRotationTransformCreatorPlugin():
 	C3DTransformCreatorPlugin("rotation")
 {
+	add_parameter("rot-center", make_param(m_relative_rot_center, false, "Relative rotation center, i.e.  <0.5,0.5,0.5> corresponds "
+					       "to the center of the volume"));
+
 }
 
 C3DTransformCreator *C3DRotationTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
-	return new C3DRotationTransformCreator(ipf);
+	return new C3DRotationTransformCreator(m_relative_rot_center, ipf);
 }
 
 const std::string C3DRotationTransformCreatorPlugin::do_get_descr() const
