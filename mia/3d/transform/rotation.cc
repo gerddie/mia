@@ -252,13 +252,13 @@ float C3DRotationTransformation::get_max_transform() const
 	if (!m_matrix_valid) 
 		evaluate_matrix(); 
 	C3DFVector corners[7] = {
-		C3DFVector(get_size().x, 0, 0), 
-		C3DFVector(get_size().x, get_size().y,            0), 
-		C3DFVector(           0, get_size().y,            0), 
-		C3DFVector(           0, get_size().y, get_size().z), 
-		C3DFVector(get_size().x,            0, get_size().z), 
-		C3DFVector(           0,            0, get_size().z), 
-		C3DFVector(get_size())
+		C3DFVector(get_size().x-1, 0, 0), 
+		C3DFVector(get_size().x-1, get_size().y-1,            0), 
+		C3DFVector(           0, get_size().y-1,            0), 
+		C3DFVector(           0, get_size().y-1, get_size().z-1), 
+		C3DFVector(get_size().x-1,            0, get_size().z-1), 
+		C3DFVector(           0,            0, get_size().z-1), 
+		C3DFVector(get_size()) - C3DFVector::_1
 	};
 
 	float result = apply(C3DFVector()).norm2(); 

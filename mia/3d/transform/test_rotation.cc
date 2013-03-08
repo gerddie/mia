@@ -130,8 +130,6 @@ BOOST_FIXTURE_TEST_CASE( test_translate_gradient, ipfFixture)
 
 }
 
-
-
 BOOST_FIXTURE_TEST_CASE( test_rotation3d_ranged_iterator, ipfFixture)
 {
 	C3DBounds size(10,20,30);
@@ -149,3 +147,53 @@ BOOST_FIXTURE_TEST_CASE( test_rotation3d_ranged_iterator, ipfFixture)
 	BOOST_CHECK(ti == t1.end_range(delta, size - delta));
 }
 
+struct RotXCenteredFixture : public ipfFixture {
+	RotXCenteredFixture():size(61, 81, 41), 
+			      rcrot(size, 
+				    C3DFVector(M_PI * 0.5, 0.0, 0.0),
+				    C3DFVector(0.5,0.5,0.5), ipf)
+		{
+		}
+	C3DBounds size;
+	C3DRotationTransformation rcrot;
+};
+
+
+
+
+BOOST_FIXTURE_TEST_CASE( test_rotation3d_rotxcentered_basic, RotXCenteredFixture)
+{
+	BOOST_CHECK_CLOSE(rcrot.get_max_transform(), 20.f * sqrtf(10.0f), 0.1);
+
+	C3DFVector x(20,40,30); 
+	
+	auto y = rcrot(x); 
+	
+	BOOST_CHECK_CLOSE(y.x, 20.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.y, 30.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.z, 20.0f, 0.1); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rotation3d_rotxcentered_translate_field, ipfFixture)
+{
+	C3DBounds size(31, 21, 21);
+	C3DRotationTransformation rcrot(size, 
+				     C3DFVector(0.02, 0.0, 0.0),
+				     C3DFVector(0.5,0.5,0.5), ipf);
+
+	C3DFVectorfield field(size); 
+	auto ifield = field.begin_range(C3DBounds::_0, size); 
+	for (auto ir = rcrot.begin(); ir != rcrot.end(); ++ir, ++ifield) {
+		*ifield = *ir - C3DFVector(ifield.pos()); 
+	}
+	CDoubleVector grad(rcrot.degrees_of_freedom());
+
+	rcrot.translate(field, grad); 
+	
+	// 32340  = 2 sum_x,y[-10,10]x[-10,10] ( x^2 + y^2 ) 
+	BOOST_CHECK_CLOSE(grad[0], sin(0.02) * 31 * 32340, 0.1 ); 
+	BOOST_CHECK_SMALL(grad[1], 1e-2); 
+	BOOST_CHECK_SMALL(grad[2], 1e-2); 
+
+
+}
