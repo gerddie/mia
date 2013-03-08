@@ -330,19 +330,22 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
 
-	auto sumslice = [&gradient, &m_size] 
+	auto sumslice = [&gradient, &m_size, &m_rot_center] 
 		(const tbb::blocked_range<unsigned int>& range, dvect ls)->dvect{
 		
-		for (unsigned int z = range.begin(); z != range.end();++z) {
+		double fz = range.begin() - m_rot_center.z; 
+		for (unsigned int z = range.begin(); z != range.end();++z, fz += 1.0) {
 			auto g = gradient.begin_at(0,0,z);
-			for (size_t y = 0; y < m_size.y; ++y) {
-				for (size_t x = 0; x < m_size.x; ++x, ++g) {
+			double fy =  - m_rot_center.y; 
+			for (size_t y = 0; y < m_size.y; ++y, fy += 1.0) {
+				double fx =  - m_rot_center.x; 
+				for (size_t x = 0; x < m_size.x; ++x, fx += 1.0, ++g) {
 					ls[0] += g->x;
 					ls[1] += g->y;
 					ls[2] += g->z;
-					ls[3] += -float(z) * g->y + float(y) * g->z;
-					ls[4] += -float(z) * g->x + float(x) * g->z;
-					ls[5] += -float(y) * g->x + float(x) * g->y;
+					ls[3] += -fz * g->y + fy * g->z;
+					ls[4] += -fz * g->x + fx * g->z;
+					ls[5] += -fy * g->x + fx * g->y;
 				}
 			}
 		}
