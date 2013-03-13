@@ -34,6 +34,7 @@
 
 #include <mia/core/threadedmsg.hh>
 #include <tbb/parallel_reduce.h>
+#include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
 
@@ -161,25 +162,34 @@ inline C3DFVector TFluidReg::forceAt(int hardcode,float *misma)const
 	return mis * tmp.get_gradient(hardcode);
 }
 
-// to parallize
 float  TFluidReg::calculatePerturbation()
 {
-	float gamma = 0;
-        for (size_t z = Start.z; z < End.z; z++)  {
-                for (size_t y = Start.y; y < End.y; y++)  {
-                        for (size_t x = Start.x; x < End.x; x++)  {
-                                float g = perturbationAt(x, y, z);
-                                if (g > gamma){
-					gamma = g;
+	auto callback = [this](const tbb::blocked_range<size_t>& range, float gamma) -> float{
+		CThreadMsgStream thread_stream;
+		C3DBounds max_p; 
+		for (auto z = range.begin(); z != range.end();++z)
+			for (size_t y = Start.y; y < End.y; y++)  {
+				for (size_t x = Start.x; x < End.x; x++)  {
+					float g = perturbationAt(x, y, z);
+					if (g > gamma){
+						gamma = g;
+						max_p.x = x; 
+						max_p.y = y; 
+						max_p.z = z; 
+					}
 				}
-                        }
-                }
-        }
-	cvdebug() << "pert = " << gamma << endl;
+			}	
+		return gamma; 
+	}; 
+
+	float gamma = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z, End.z, 1), 
+					   0.0f, callback, 
+					   [](float x, float y){return max(x,y);}); 
+
+	cvinfo() << "pert = " << gamma << "\n";
 	return gamma;
 }
 
-// to parallize
 float  TFluidReg::calculateJacobian()const
 {
 	auto callback = [this](const tbb::blocked_range<size_t>& range, float jmin) -> float{
@@ -197,7 +207,7 @@ float  TFluidReg::calculateJacobian()const
 	float jmin = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z + 1, End.z-1, 1), 
 					   numeric_limits<float>::max(), callback, 
 					   [](float x, float y){return min(x,y);}); 
-	cvdebug() << "jacobian = " << jmin << endl;
+	cvinfo() << "jacobian = " << jmin << endl;
         return jmin;
 }
 
@@ -379,16 +389,20 @@ float  TFluidReg::perturbationAt(int x, int y, int z)
 
 void  TFluidReg::ApplyShift()
 {
-	int iz = 0;
-	for (size_t z = Start.z; z < End.z; z++,iz++) {
-		int iy = 0;
-		for (size_t y = Start.y; y < End.y; y++,iy++) {
-			int ix = 0;
-			for (size_t x = Start.x; x < End.x; x++,ix++) {
-				(*u)(x,y,z) += float(delta) * (*B)(ix,iy,iz);
+	auto callback = [this](const tbb::blocked_range<size_t>& range){
+		CThreadMsgStream thread_stream;
+
+		for (auto z = range.begin(); z != range.end();++z) {
+			int iz = z - Start.z; 
+			int iy = 0;
+			for (size_t y = Start.y; y < End.y; y++,iy++) {
+				std::transform(u->begin_at(Start.x,y,z), u->begin_at(End.x,y,z), 
+					       B->begin_at(0, iy, iz), u->begin_at(Start.x,y,z), 
+					       [delta](const C3DFVector& uv, const C3DFVector& ub) {return uv + delta*ub;}); 
 			}
 		}
-	}
+	}; 
+	tbb::parallel_for(tbb::blocked_range<size_t>(Start.z, End.z, 1), callback); 
 
 	tmp = C3DFImage(src.get_size());
 
