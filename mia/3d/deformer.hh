@@ -58,7 +58,7 @@ struct FDeformer3D: public TFilter<P3DImage> {
 	P3DImage operator () (const T3DImage<T>& image, T3DImage<T>& result) const {
 		std::shared_ptr<T3DConvoluteInterpolator<T> > interp(m_ipfac.create(image.data())); 
 
-		auto callback = [this, &interp, &result](const tbb::blocked_range<size_t>& range){
+		auto callback = [&m_vf, &interp, &result](const tbb::blocked_range<size_t>& range){
 			CThreadMsgStream thread_stream;
 			CWeightCache cache = interp->create_cache(); 
 			for (auto z = range.begin(); z != range.end();++z) {

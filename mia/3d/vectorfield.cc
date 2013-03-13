@@ -18,6 +18,10 @@
  *
  */
 
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
+
 #include <mia/3d/vectorfield.hh>
 #include <mia/3d/datafield.cxx>
 #include <mia/2d/datafield.cxx>
@@ -33,17 +37,21 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 
 	C3DFVectorfield help(a.get_size());
 	std::copy(a.begin(), a.end(), help.begin());
-	C3DFVectorfield::iterator i = a.begin();
-	C3DFVectorfield::const_iterator u = b.begin();
 
-	for (size_t z = 0; z < a.get_size().z; ++z)  {
-		for (size_t y = 0; y < a.get_size().y; ++y)  {
-			for (size_t x = 0; x < a.get_size().x; ++x, ++i, ++u)  {
-				C3DFVector xi = C3DFVector(x, y, z) - *u;
-				*i = help.get_interpol_val_at(xi) +  *u;
+	auto callback = [&a, &b, &help](const tbb::blocked_range<size_t>& range) {
+		
+		for (auto z = range.begin(); z != range.end();  ++z)  {
+			C3DFVectorfield::iterator i = a.begin_at(0,0,z);
+			C3DFVectorfield::const_iterator u = b.begin_at(0,0,z);
+			for (size_t y = 0; y < a.get_size().y; ++y)  {
+				for (size_t x = 0; x < a.get_size().x; ++x, ++i, ++u)  {
+					C3DFVector xi = C3DFVector(x, y, z) - *u;
+					*i = help.get_interpol_val_at(xi) +  *u;
+				}
 			}
 		}
-	}
+	}; 
+	tbb::parallel_for( tbb::blocked_range<size_t>(0, a.get_size().z, 1), callback); 
 	return a;
 }
 

@@ -165,7 +165,6 @@ inline C3DFVector TFluidReg::forceAt(int hardcode,float *misma)const
 float  TFluidReg::calculatePerturbation()
 {
 	auto callback = [this](const tbb::blocked_range<size_t>& range, float gamma) -> float{
-		CThreadMsgStream thread_stream;
 		C3DBounds max_p; 
 		for (auto z = range.begin(); z != range.end();++z)
 			for (size_t y = Start.y; y < End.y; y++)  {
@@ -193,7 +192,6 @@ float  TFluidReg::calculatePerturbation()
 float  TFluidReg::calculateJacobian()const
 {
 	auto callback = [this](const tbb::blocked_range<size_t>& range, float jmin) -> float{
-		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end();++z)
 			for (size_t y = Start.y+1; y < End.y-1; y++)
 				for (size_t x = Start.x+1; x < End.x-1; x++) {
