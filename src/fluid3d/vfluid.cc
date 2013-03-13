@@ -322,23 +322,30 @@ void TFluidReg::DeleteTemps()
 
 float	TFluidReg::calculateForces()
 {
-	float res = 0.0f;
-
-
-	int iz = 0;
-	for (size_t z = Start.z; z < End.z - 1; z++,iz++)  {
-		int iy = 0;
-                for (size_t y = Start.y; y < End.y - 1 ; y++,iy++)  {
-			int ix =0;
-                        for (size_t x = Start.x; x < End.x - 1; x++,ix++)  {
-				float mis;
-				(*B)(ix,iy,iz) = forceAt(x,y,z,&mis);
-				res += mis;
+	auto callback = [this](const tbb::blocked_range<size_t>& range, float mismatch) -> float{
+		CThreadMsgStream thread_stream;
+		C3DBounds max_p; 
+		for (auto z = range.begin(); z != range.end();++z) {
+			int iz = z - Start.z;
+			int iy = 0;
+			for (size_t y = Start.y; y < End.y; y++, iy++)  {
+				int ix =0;
+				for (size_t x = Start.x; x < End.x; x++,ix++)  {
+					float mis;
+					(*B)(ix,iy,iz) = forceAt(x,y,z,&mis);
+					mismatch += mis;
+				}
 			}
                 }
-        }
+		return mismatch; 
+        }; 
+	
+	float mismatch = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z, End.z, 1), 
+					       0.0f, callback, 
+					       [](float x, float y){return x + y;}); 
+	
 
-	return res/ref.size();
+	return mismatch/ref.size();
 }
 
 float  TFluidReg::jacobianAt(int x, int y, int z)const
@@ -494,15 +501,21 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 	float iy_mult = 1.0f / y_mult;
 	float iz_mult = 1.0f / z_mult;
 
-	C3DFVectorfield::iterator i = Result->begin();
+	auto callback = [&](const tbb::blocked_range<size_t>& range){
+		CThreadMsgStream thread_stream;
+		
+		for (auto z = range.begin(); z != range.end();++z) { 
+			auto i = Result->begin_at(0,0,z);
+			for (unsigned int y = 0; y < size.y; y++)
+				for (unsigned int x = 0; x < size.x; x++,++i){
+					C3DFVector help(ix_mult * x, iy_mult * y, iz_mult * z);
+					C3DFVector val = vf.get_interpol_val_at(help);
+					*i = C3DFVector(val.x * x_mult,val.y * y_mult, val.z * z_mult);
+				}
+		}
+	}; 
+	tbb::parallel_for(tbb::blocked_range<size_t>(0, size.z, 1), callback);
 
-	for (unsigned int z = 0; z < size.z; z++)
-		for (unsigned int y = 0; y < size.y; y++)
-			for (unsigned int x = 0; x < size.x; x++,++i){
-				C3DFVector help(ix_mult * x, iy_mult * y, iz_mult * z);
-				C3DFVector val = vf.get_interpol_val_at(help);
-				*i = C3DFVector(val.x * x_mult,val.y * y_mult, val.z * z_mult);
-			}
 	return Result;
 }
 
