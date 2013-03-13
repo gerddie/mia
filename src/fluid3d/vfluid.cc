@@ -24,8 +24,6 @@
 */
 
 
-#define THRESH 4
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -33,6 +31,10 @@
 #include <iomanip>
 #include <algorithm>
 #include <mia/3d/deformer.hh>
+
+#include <mia/core/threadedmsg.hh>
+#include <tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
 
 
 //#include "3Dinterpolator.hh"
@@ -180,15 +182,21 @@ float  TFluidReg::calculatePerturbation()
 // to parallize
 float  TFluidReg::calculateJacobian()const
 {
-	float jmin = HUGE;
-        for (size_t z = Start.z+1; z < End.z-1; z++)  {
-                for (size_t y = Start.y+1; y < End.y-1; y++)  {
-                        for (size_t x = Start.x+1; x < End.x-1; x++)  {
-                                float j = jacobianAt(x, y, z);
-                                if (j < jmin) jmin = j;
-                        };
-                };
-        };
+	auto callback = [this](const tbb::blocked_range<size_t>& range, float jmin) -> float{
+		CThreadMsgStream thread_stream;
+		for (auto z = range.begin(); z != range.end();++z)
+			for (size_t y = Start.y+1; y < End.y-1; y++)
+				for (size_t x = Start.x+1; x < End.x-1; x++) {
+					float j = jacobianAt(x, y, z);
+					if (j < jmin) jmin = j;
+				}
+		return jmin; 
+	}; 
+	
+	
+	float jmin = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z + 1, End.z-1, 1), 
+					   numeric_limits<float>::max(), callback, 
+					   [](float x, float y){return min(x,y);}); 
 	cvdebug() << "jacobian = " << jmin << endl;
         return jmin;
 }
@@ -305,26 +313,16 @@ void TFluidReg::DeleteTemps()
 float	TFluidReg::calculateForces()
 {
 	float res = 0.0f;
-	float mis;
-	float  max_mis = 0.0;
-	C3DBounds max_b(0,0,0);
+
+
 	int iz = 0;
 	for (size_t z = Start.z; z < End.z - 1; z++,iz++)  {
 		int iy = 0;
                 for (size_t y = Start.y; y < End.y - 1 ; y++,iy++)  {
 			int ix =0;
-			int hardcode = Start.x + ref.get_size().x * (y + z * ref.get_size().y);
-
-                        for (size_t x = Start.x; x < End.x - 1; x++,ix++,hardcode++)  {
-
-				cvdebug() << ix << ", " << iy << ", " << iz << " = "
-					  << x << ", " << y << ", " << z  << "\n";
+                        for (size_t x = Start.x; x < End.x - 1; x++,ix++)  {
+				float mis;
 				(*B)(ix,iy,iz) = forceAt(x,y,z,&mis);
-				if (max_mis < mis){
-					max_mis = mis;
-					max_b = C3DBounds(x,y,z);
-				}
-
 				res += mis;
 			}
                 }
