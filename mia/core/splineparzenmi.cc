@@ -34,6 +34,12 @@ using std::setw;
 using std::vector; 
 using std::invalid_argument; 
 
+/* comment (1)
+   The problem with spline kernels that have an even support width is that 
+   at the right boundary the last weight is always zero, so that it would not be necessary 
+   to allocate the extra coefficient, but to make the code easier to read, we allocate 
+   an additional space at the end of the array. 
+*/
 CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
 				 size_t mbins, PSplineKernel mkernel, double cut_histogram):
 
@@ -45,10 +51,10 @@ CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
 	m_mov_kernel(mkernel), 
 	m_mov_border((mkernel->size() - 1) >> 1), 
 	m_mov_real_bins(m_mov_bins + 2 * m_mov_border), 
-	m_joined_histogram(m_ref_real_bins * m_mov_real_bins, 0.0), 
+	m_joined_histogram(m_ref_real_bins * m_mov_real_bins + 1/*(1)*/, 0.0), 
 	m_ref_histogram(m_ref_real_bins, 0.0),
-	m_mov_histogram(m_mov_real_bins, 0.0),
-	m_pdfLogCache(m_ref_real_bins,vector<double>(m_mov_real_bins, 0.0)), 
+	m_mov_histogram(m_mov_real_bins + 1/*(1)*/, 0.0),
+	m_pdfLogCache(m_ref_real_bins,vector<double>(m_mov_real_bins + 1 /*(1)*/, 0.0)), 
 	m_cut_histogram(cut_histogram)
 {
 	TRACE_FUNCTION; 
@@ -143,8 +149,8 @@ double CSplineParzenMI::value() const
 {
 	TRACE_FUNCTION; 
 	const double ref_entropy =  entropy(m_ref_histogram.begin(), m_ref_histogram.end()); 
-	const double mov_entropy =  entropy(m_mov_histogram.begin(), m_mov_histogram.end()); 
-	const double joined_entropy =  entropy(m_joined_histogram.begin(), m_joined_histogram.end()); 
+	const double mov_entropy =  entropy(m_mov_histogram.begin(), m_mov_histogram.end() - 1); 
+	const double joined_entropy =  entropy(m_joined_histogram.begin(), m_joined_histogram.end() - 1); 
 	cvdebug() << "Xhisto: " << m_joined_histogram << "\n"; 
 	cvdebug() << "Mhisto: " << m_mov_histogram << "\n"; 
 	cvdebug() << "Rhisto: " << m_ref_histogram << "\n"; 
