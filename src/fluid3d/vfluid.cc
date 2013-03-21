@@ -403,7 +403,7 @@ void  TFluidReg::ApplyShift()
 			for (size_t y = Start.y; y < End.y; y++,iy++) {
 				std::transform(u->begin_at(Start.x,y,z), u->begin_at(End.x,y,z), 
 					       B->begin_at(0, iy, iz), u->begin_at(Start.x,y,z), 
-					       [delta](const C3DFVector& uv, const C3DFVector& ub) {return uv + delta*ub;}); 
+					       [this](const C3DFVector& uv, const C3DFVector& ub) {return uv + delta*ub;}); 
 			}
 		}
 	}; 

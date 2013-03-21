@@ -249,7 +249,7 @@ int TSORSolver::solve(const C3DFVectorfield& b, C3DFVectorfield *xvf)
 	int nIter = 0;
 	float firstres=0;
 
-	auto solve_slice = [this, &b, &xvf, &size, &d_xy](const tbb::blocked_range<size_t>& range, float res) -> float{
+	auto solve_slice = [this, &b, &xvf](const tbb::blocked_range<size_t>& range, float res) -> float{
 		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end();++z) {
 			int hardcode = z * d_xy + size.x + 1;
@@ -320,7 +320,7 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 
 	cvinfo() << "SORA: [" << gSize << "]\n";
 	// first run on full field
-	auto first_run =[this, &b, &xvf, &d_xy, &size, &residua, &update_needed]
+	auto first_run =[this, &b, &xvf, &residua, &update_needed]
 		(const tbb::blocked_range<size_t>& range, float firstres) -> float {
 		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end();++z) {
@@ -351,7 +351,7 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 	lastres = firstres;
 	int nIter = 1;
 
-	auto iterate_run =[this, &b, &xvf, &d_xy, &size, &doorstep, &residua, &update_needed, &need_update](const tbb::blocked_range<size_t>& range, float res) -> float {
+	auto iterate_run =[this, &b, &xvf, &doorstep, &residua, &update_needed, &need_update](const tbb::blocked_range<size_t>& range, float res) -> float {
 		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end();++z) {
 			int hardcode = z * d_xy + size.x + 1;

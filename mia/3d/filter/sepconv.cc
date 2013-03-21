@@ -76,7 +76,7 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 	int cachYSize = data->get_size().y;
 	int cachZSize = data->get_size().z;
 
-	auto filter_x = [cachXSize, cachYSize, &data, m_kx, this](const tbb::blocked_range<size_t>& range) {
+	auto filter_x = [cachXSize, cachYSize, &data, this](const tbb::blocked_range<size_t>& range) {
 		invec_t buffer(cachXSize);
 		for (auto z = range.begin(); z != range.end();++z) {
 			for (int y = 0; y < cachYSize; y++) {
@@ -87,7 +87,7 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 		}
 	}; 
 
-	auto filter_y = [cachXSize, cachYSize, &data, m_ky, this](const tbb::blocked_range<size_t>& range) {
+	auto filter_y = [cachXSize, cachYSize, &data, this](const tbb::blocked_range<size_t>& range) {
 		invec_t buffer(cachYSize);
 		for (auto z = range.begin(); z != range.end();++z) {
 			for (int x = 0; x < cachXSize; x++) {
@@ -98,7 +98,7 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 		}
 	}; 
 
-	auto filter_z = [cachXSize, cachZSize, &data, m_ky, this](const tbb::blocked_range<size_t>& range) {
+	auto filter_z = [cachXSize, cachZSize, &data, this](const tbb::blocked_range<size_t>& range) {
 		invec_t buffer(cachZSize);
 		for (auto y = range.begin(); y != range.end();++y) {
 			for (int x = 0; x < cachXSize; x++) {

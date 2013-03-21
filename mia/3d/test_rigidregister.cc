@@ -141,8 +141,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimize
 		stringstream out_name; 
 		out_name << "reg-" << t.get_creator_string()
 			 << "-" << minimizer->get_init_string() << ".hdr"; 
-		save_image
-(out_name.str(), ref);
+		save_image(out_name.str(), ref);
 	}
 }
 

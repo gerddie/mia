@@ -330,7 +330,7 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
 
-	auto sumslice = [&gradient, &m_size, &m_rot_center] 
+	auto sumslice = [&gradient, this] 
 		(const tbb::blocked_range<unsigned int>& range, dvect ls)->dvect{
 		
 		double fz = range.begin() - m_rot_center.z; 
