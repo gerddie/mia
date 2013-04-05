@@ -462,6 +462,11 @@ CAnalyze3DImageIOPlugin::PData CAnalyze3DImageIOPlugin::do_load(const string&  f
 			unflipped = true;
 			orientation = ior_unknown;
 		}
+		if (hdr.dime.vox_offset > 0) {
+			vector<char> junk(hdr.dime.vox_offset); 
+			if (fread(&junk[0], 1, hdr.dime.vox_offset, data_file) != hdr.dime.vox_offset) 
+				throw runtime_error(string("Analyze: unable to read from:") + data_file_name);  
+		}
 		C3DImage *img = unflipped ?
 			read_image<false>(size, hdr.dime.datatype , data_file)
 			:
