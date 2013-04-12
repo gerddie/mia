@@ -433,5 +433,6 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	auto plugin =  new CVtk3DImageIOPlugin();
 	plugin->append_interface(new CVtkXML3DImageIOPlugin); 
+	plugin->append_interface(new CMhd3DImageIOPlugin); 
 	return plugin; 
 }
