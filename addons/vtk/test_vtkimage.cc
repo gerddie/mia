@@ -154,6 +154,74 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_xml_write_read, T, type_xml )
         unlink(filename.str().c_str()); 
 }
 
+typedef bmpl::vector<
+	signed char,
+	unsigned char,
+	signed short,
+	unsigned short,
+	signed int,
+	unsigned int,
+	float,
+	double
+#ifdef LONG_64BIT
+	,long, unsigned long
+#endif
+		     > type_mhd;
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_mhd_write_read, T, type_mhd ) 
+{
+        C3DBounds size(2,3,4);
+	T3DImage<T> *image = new T3DImage<T>(size); 
+        P3DImage pimage(image); 
+
+        auto iv = image->begin(); 
+	auto ev = image->end();
+        int i = 0; 
+
+	while (iv != ev)
+		*iv++ = i++;
+       
+
+	CMhd3DImageIOPlugin io; 
+        CMhd3DImageIOPlugin::Data images;
+        images.push_back(pimage); 
+
+	stringstream filename; 
+	stringstream rawfilename; 
+	stringstream zrawfilename; 
+
+	filename << "testimage-mhd-" << __type_descr<T>::value << ".mhd"; 
+	rawfilename << "testimage-mhd-" << __type_descr<T>::value << ".raw"; 
+	zrawfilename << "testimage-mhd-" << __type_descr<T>::value << ".zraw"; 
+
+	cvdebug() << "test with " << filename.str() << "\n"; 
+
+	BOOST_REQUIRE(io.save(filename.str(), images)); 
+	
+	auto loaded = io.load(filename.str()); 
+	BOOST_REQUIRE(loaded); 
+	
+	BOOST_REQUIRE(loaded->size() == 1u); 
+	EPixelType expect_type = pixel_type<T>::value; 
+	BOOST_CHECK_EQUAL((*loaded)[0]->get_pixel_type(), expect_type); 
+        const auto& ploaded = dynamic_cast<const T3DImage<T>&>(*(*loaded)[0]); 	
+	iv = image->begin(); 
+
+
+	auto il = ploaded.begin(); 
+	
+	while (iv != ev) {
+		BOOST_CHECK_EQUAL(*il, *iv); 
+		++iv; 
+		++il; 
+	}
+        unlink(filename.str().c_str()); 
+        unlink(rawfilename.str().c_str()); 
+        unlink(zrawfilename.str().c_str()); 
+	
+}
+
 
 
 
