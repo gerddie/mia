@@ -276,7 +276,7 @@ bool CVtk3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 
 const string CVtk3DImageIOPlugin::do_get_descr() const
 {
-	return "3D vtk image legacy in- and output (experimental). No attributes besides the voxel size is stored or read.";
+	return "3D VTK image legacy in- and output (experimental).";
 }
 
 
@@ -348,7 +348,7 @@ bool CVtkXML3DImageIOPlugin::do_save(const string& fname, const Data& data) cons
 
 const string CVtkXML3DImageIOPlugin::do_get_descr() const
 {
-	return "3D image XML in- and output (experimental). No attributes besides the voxel size is stored or read.";
+	return "3D image VTK-XML in- and output (experimental).";
 }
 
 
@@ -382,8 +382,7 @@ CMhd3DImageIOPlugin::CMhd3DImageIOPlugin():
 
 const std::string CMhd3DImageIOPlugin::do_get_descr() const
 {
-	return "MetaIO 3D image IO using the VTK implementation(experimental). "
-		"No attributes besides the voxel size is stored or read.";
+	return "MetaIO 3D image IO using the VTK implementation (experimental).";
 }
 
 CMhd3DImageIOPlugin::PData CMhd3DImageIOPlugin::do_load(const std::string&  filename) const
