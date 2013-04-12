@@ -289,7 +289,7 @@ bool CVtk3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 
 const string CVtk3DImageIOPlugin::do_get_descr() const
 {
-	return "3D image legacy in- and output (experimental). No attributes besides the voxel size is stored or read.";
+	return "3D vtk image legacy in- and output (experimental). No attributes besides the voxel size is stored or read.";
 }
 
 
