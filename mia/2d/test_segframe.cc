@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(segframe_shift, FrameTestRead)
 #endif
 
 
-const char *testframe_init = "<?xml version=\"1.0\"?>\n<test>"
+const char *testframe_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"1\" x=\"0\"/>"
@@ -163,7 +163,7 @@ const char *testframe_init = "<?xml version=\"1.0\"?>\n<test>"
 	"</test>\n";
 
 
-const char *testframe_shifted = "<?xml version=\"1.0\"?>\n<test>"
+const char *testframe_shifted = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"newname\">"
 	"<star y=\"116\" x=\"108\" r=\"21\">"
 	"<point y=\"1\" x=\"0\"/>"
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
 	frame.write(*nodeRoot, 1);
 
-	const string xmldoc = document.write_to_string();
+	const string xmldoc = document.write_to_string("UTF-8");
 	const string testdoc(testframe_shifted);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE(segframe_write)
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
 	frame.write(*nodeRoot, 1);
 
-	const string xmldoc = document.write_to_string();
+	const string xmldoc = document.write_to_string("UTF-8");
 	const string testdoc(testframe_init);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -475,7 +475,7 @@ BOOST_AUTO_TEST_CASE(segframe_write)
 
 }
 
-const char *testframe_init2 = "<?xml version=\"1.0\"?>\n<test>"
+const char *testframe_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
