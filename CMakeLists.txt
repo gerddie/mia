@@ -75,7 +75,6 @@ INCLUDE (CheckTypeSize)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
 
-
 IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
   MESSAGE(FATAL_ERROR 
     "This source code requires the C++0x auto type and lambda features. "
@@ -84,6 +83,9 @@ IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
     "re-running cmake.\n"
     "For g++ >= 4.5 this is '-std=c++0x' ")
 ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
+
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkAltivecEnabled.cmake)
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkSSEEnabled.cmake)
 
 ASSERT_SIZE(char 1)
 ASSERT_SIZE(short 2)
