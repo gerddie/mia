@@ -54,7 +54,7 @@ CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
 	m_joined_histogram(m_ref_real_bins * m_mov_real_bins + 1/*(1)*/, 0.0), 
 	m_ref_histogram(m_ref_real_bins, 0.0),
 	m_mov_histogram(m_mov_real_bins + 1/*(1)*/, 0.0),
-	m_pdfLogCache(m_ref_real_bins,vector<double>(m_mov_real_bins + 1 /*(1)*/, 0.0)), 
+	m_pdfLogCache(m_ref_real_bins + 1,vector<double>(m_mov_real_bins + 1 /*(1)*/, 0.0)), 
 	m_cut_histogram(cut_histogram)
 {
 	TRACE_FUNCTION; 
