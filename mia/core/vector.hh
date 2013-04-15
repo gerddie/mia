@@ -211,7 +211,7 @@ private:
 /** 
     \ingroup misc
     
-    STL like c-array wrapper for double floating point
+    STL vector like c-array wrapper for double floating point arrays
 */
 typedef Vector<double> CDoubleVector; 
 
