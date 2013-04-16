@@ -209,6 +209,11 @@ public:
 		return m_size; 
 	}
 
+	/** 
+	    If the wrapped data is referenced more than once or is 
+	    read-only, make a copy inside this object that is refereneces 
+	    only once and writable. 
+	*/
 	void make_unique()
 	{
 		// if we have writable dataand is it already unique

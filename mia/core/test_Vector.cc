@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE (test_new2)
 	test_equal(v, input); 
 }
 
-void __pass_by_value(CDoubleVector v, const double *expect, size_t length)
+extern void __pass_by_value(CDoubleVector v, const double *expect, size_t length)
 {
 	BOOST_CHECK_EQUAL(v.size(), length); 
 	test_equal(v, expect); 
@@ -119,3 +119,23 @@ BOOST_AUTO_TEST_CASE (test_copies)
 
 }
 
+
+BOOST_AUTO_TEST_CASE (test_assign_and_pass_by_copy)
+{
+	CDoubleVector v(6);
+
+	const double expect[6] = {0,1,2,3,4,5}; 
+	const double expect_2[6] = {2,3,4,5,6,7}; 
+	
+	for (int i = 0; i < 6; ++i) 
+		v[i] = i; 
+	
+	__pass_by_value(v, expect, 6); 
+
+
+	for (int i = 0; i < 6; ++i) 
+		v[i] = i + 2; 
+
+	__pass_by_value(v, expect_2, 6); 
+
+}
