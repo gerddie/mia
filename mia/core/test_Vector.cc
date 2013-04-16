@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE (test_new)
 		BOOST_CHECK_EQUAL(v[i], input[i]); 
 }
 
-void test_cost(const CDoubleVector& v, const double *test_data) 
+void test_equal(const CDoubleVector& v, const double *test_data) 
 {
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], test_data[i]); 
@@ -78,9 +78,44 @@ BOOST_AUTO_TEST_CASE (test_new2)
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v2[i], input[i]); 
 	
-	test_cost(v2, input); 
+	test_equal(v2, input); 
 
 	v = v2; 
-	test_cost(v, input); 
+	test_equal(v, input); 
+}
+
+void __pass_by_value(CDoubleVector v, const double *expect, size_t length)
+{
+	BOOST_CHECK_EQUAL(v.size(), length); 
+	test_equal(v, expect); 
+}
+
+
+
+BOOST_AUTO_TEST_CASE (test_copies)
+{
+	const double input[6] = {1,2,3,4,5,6}; 
+
+	CDoubleVector v(6, input); 
+	test_equal(v, input); 
+
+	CDoubleVector v2(v); 
+	
+	test_equal(v2, input); 
+
+	CDoubleVector v3(2); 
+
+	v3[0] = 8; 
+	v3[1] = 9; 
+	BOOST_CHECK_EQUAL(v3[0], 8); 
+	BOOST_CHECK_EQUAL(v3[1], 9); 
+
+	__pass_by_value(v, input, 6); 
+
+	v3 = v2; 
+	v3.make_unique(); 
+	test_equal(v3, input); 
+	
+
 }
 

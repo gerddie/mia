@@ -22,6 +22,7 @@
 #define mia_core_vector_hh
 
 #include <mia/core/defines.hh>
+#include <mia/core/errormacro.hh>
 #include <memory>
 #include <cstring>
 #include <cassert>
@@ -148,8 +149,10 @@ public:
 	 */
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
-		assert(m_data); 
-		assert(m_data.unique()); 
+		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
+					   "Vector::operator[]: No writeable data availabe or not unique,"
+					   " call Vector::make_unique() first or enforce the use of  "
+					   "'Vector::operator[](...) const'");
 		return m_data.get()[i]; 
 	}
 
@@ -165,8 +168,10 @@ public:
 	   STL compatible iterator, begin of range  
 	 */
 	iterator begin() {
-		assert(m_data); 
-		assert(m_data.unique()); 
+		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
+					   "Vector::begin(): No writeable data availabe or not unique, "
+					   "call Vector::make_unique() first or enforce the use of "
+					   "'Vector::begin() const'");
 		return m_data.get(); 
 	}
 
@@ -174,7 +179,10 @@ public:
 	   STL compatible iterator, end of range  
 	 */
 	iterator end() {
-		assert(m_data); 
+		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
+					   "Vector::begin(): No writeable data availabe or not unique, "
+					   "call Vector::make_unique() first or enforce the use of "
+					   "'Vector::end() const'");
 		return m_data.get() + m_size; 
 	}
 	
@@ -199,6 +207,20 @@ public:
 	size_type size() const 
 	{
 		return m_size; 
+	}
+
+	void make_unique()
+	{
+		// if we have writable dataand is it already unique
+		// then do nothing 
+		if (m_data && m_data.unique()) 
+			return; 
+		
+		// create the new array and copy from the constant origial
+		// in case we didn't have writable data 
+		m_data.reset(new T[m_size], array_destructor<T>()); 
+		std::copy(m_cdata, m_cdata + m_size, m_data.get()); 
+		m_cdata = m_data.get(); 
 	}
 
 private: 
