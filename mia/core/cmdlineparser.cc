@@ -615,7 +615,7 @@ const tbb::task_scheduler_init& TBBTaskScheduler::initialize(int max_threads)
 		cvwarn() << "You use an old version ( interface="
 			 << TBB_INTERFACE_VERSION 
 			 << ") of Intel Threading Building Blocks."
-			 << " This version may hang when running more than one thread."; 
+			 << " This version may hang when running more than one thread.\n"; 
 #endif 
 	static tbb::task_scheduler_init init(max_threads);
 	return init; 
