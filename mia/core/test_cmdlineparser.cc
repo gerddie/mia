@@ -438,11 +438,12 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "     --version          print the version number and exit\n\n"
 			  "Processing               \n"
 #if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
-			  "     --threads=1 (int) \n"
+			  "     --threads=1 (int)  Maxiumum number of threads to use for \n"
 #else
 			  "     --threads=-1 (int) \n"
-#endif
 			  "                        Maxiumum number of threads to use for \n"
+#endif
+
 			  "                        processing,This number should be lower or \n"
 			  "                        equal to the number of logical processor \n"
 			  "                        cores in the machine. (-1: automatic \n"
