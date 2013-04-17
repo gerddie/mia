@@ -182,7 +182,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	set_current_group("Processing"); 
 	add(make_opt(max_threads, "threads", 0, "Maxiumum number of threads to use for processing," 
 			     "This number should be lower or equal to the number of logical processor cores in the machine. "
-			     "(default: automatic estimation)."));  
+			     "(-1: automatic estimation).")); 
 	
 	set_current_group("");
 }
@@ -612,10 +612,10 @@ const tbb::task_scheduler_init& TBBTaskScheduler::initialize(int max_threads)
 {
 #if TBB_PREFERE_ONE_THREAD
 	if (max_threads > 1)
-		cvwarn() << "You use an old version ( interface="
+		cvwarn() << "You use an old version (interface="
 			 << TBB_INTERFACE_VERSION 
 			 << ") of Intel Threading Building Blocks."
-			 << " This version may hang when running more than one thread.\n"; 
+			 << " This version may hang og powerpc when using more than one thread.\n"; 
 #endif 
 	static tbb::task_scheduler_init init(max_threads);
 	return init; 
