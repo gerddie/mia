@@ -34,7 +34,6 @@
 #include <mia/2d/SegSetWithImages.hh>
 
 
-#include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
@@ -136,8 +135,7 @@ int do_main( int argc, char *argv[] )
 	int reference_param = -1; 
 	int skip = 0; 
 	
-	int max_threads = task_scheduler_init::automatic;
-	
+
 	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO"); 
@@ -155,16 +153,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
-	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
-			     "This number should be lower or equal to the number of processing cores in the machine"
-			     " (default: automatic estimation)."));  
-	
-
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
-	task_scheduler_init init(max_threads);
 	
 	CSegSetWithImages  input_set(in_filename, true);
 	C2DImageSeries input_images = input_set.get_images(); 

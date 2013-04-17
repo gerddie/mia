@@ -32,8 +32,6 @@
 #include <mia/3d/transformfactory.hh>
 #include <mia/internal/main.hh>
 
-#include <tbb/task_scheduler_init.h>
-
 #include "vfluid.hh"
 #include "sor_solver.hh"
 
@@ -117,8 +115,6 @@ int do_main(int argc, char *argv[])
 	bool disable_multigrid = false;
 	bool disable_fullres = false;
 
-	int max_threads = tbb::task_scheduler_init::automatic;
-
 	CCmdOptionList options(g_description);
 
 	const auto& imageio = C3DImageIOPluginHandler::instance();
@@ -148,16 +144,9 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( params.factor, "epsilon", 0, "truncation condition"));
 	options.add(make_opt( params.matter_threshold, "matter", 0, "intensity above which real "
 			      "matter is assumed (experimental)"));
-	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
-			     "This number should be lower or equal to the number of processing cores in the machine"
-			     " (default: automatic estimation)."));  
-
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
-	tbb::task_scheduler_init init(max_threads);
 
 	params.source = load_image<P3DImage>(in_filename);
 	params.reference = load_image<P3DImage>(ref_filename);

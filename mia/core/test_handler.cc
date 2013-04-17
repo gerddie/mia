@@ -29,7 +29,6 @@
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/testplugin.hh>
 
-#include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_reduce.h>
 #include <tbb/blocked_range.h>
 
@@ -46,7 +45,6 @@ namespace bfs = ::boost::filesystem;
 */
 BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 {
-	tbb::task_scheduler_init init(-1);
 	CTestPluginHandler::set_search_path({bfs::path("testplug")});
 
 	auto callback = [](const tbb::blocked_range<int>& range, int init){

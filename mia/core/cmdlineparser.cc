@@ -31,6 +31,7 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
+#include <tbb/task_scheduler_init.h>
 
 #include <libxml++/libxml++.h>
 #include <mia/core/tools.hh>
@@ -40,6 +41,9 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/fixedwidthoutput.hh>
 
+#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
+#define TBB_PREFERE_ONE_THREAD 1
+#endif 
 
 extern void print_full_copyright(const char *name);
 
@@ -81,6 +85,7 @@ struct CCmdOptionListData {
 	bool version; 
 	bool copyright;
 	vstream::Level verbose;
+	int max_threads;
 
 	CCmdOptionListData(const SProgramDescription& description); 
 
@@ -148,6 +153,11 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	version(false), 
 	copyright(false),
 	verbose(vstream::ml_warning), 
+#if TBB_PREFERE_ONE_THREAD
+	max_threads(1), 
+#else 
+	max_threads(tbb::task_scheduler_init::automatic), 
+#endif 
 	m_log(&std::cout)
 {
 
@@ -168,6 +178,12 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML"));
 	add(make_opt(usage,  "usage", '?', "print a short help"));
 	add(make_opt(version,  "version", 0, "print the version number and exit"));
+
+	set_current_group("Processing"); 
+	add(make_opt(max_threads, "threads", 0, "Maxiumum number of threads to use for processing," 
+			     "This number should be lower or equal to the number of logical processor cores in the machine. "
+			     "(default: automatic estimation)."));  
+	
 	set_current_group("");
 }
 
@@ -588,6 +604,24 @@ CCmdOptionList::parse(size_t argc, char *args[], const string& additional_type,
 	return do_parse(argc, (const char **)args, true, additional_help);
 }
 
+struct TBBTaskScheduler {
+	static const tbb::task_scheduler_init& initialize(int max_threads);
+}; 
+
+const tbb::task_scheduler_init& TBBTaskScheduler::initialize(int max_threads)
+{
+#if TBB_PREFERE_ONE_THREAD
+	if (max_threads > 1)
+		cvwarn() << "You use an old version ( interface="
+			 << TBB_INTERFACE_VERSION 
+			 << ") of Intel Threading Building Blocks."
+			 << " This version may hang when running more than one thread."; 
+#endif 
+	static tbb::task_scheduler_init init(max_threads);
+	return init; 
+}
+
+
 CCmdOptionList::EHelpRequested
 CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional, 
 			 const CPluginHandlerBase *additional_help)
@@ -691,6 +725,11 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 		msg << g_basic_copyright; 
 		throw invalid_argument(msg.str());
 	}
+	
+	// the return value and info output is mostly used to make sure the compiler 
+	// doesn't optimize anything away. 
+	const auto& ts  = TBBTaskScheduler::initialize(m_impl->max_threads); 
+	cvinfo() << "Task scheduler set to " << (ts.is_active() ? "active":"inactive") << "\n"; 
 	return hr_no; 
 }
 

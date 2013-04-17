@@ -31,7 +31,6 @@
 
 #include <mia/core/datapool.hh>
 
-#include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 #include <tbb/atomic.h>
@@ -128,7 +127,6 @@ void PoolAccessTest::operator() ( const blocked_range<int>& range ) const
 
 BOOST_AUTO_TEST_CASE( test_pool_parallel_access )
 {
-	task_scheduler_init init;
 	tbb::atomic<int> n_errors;
 	n_errors = 0; 
 	PoolAccessTest ptest(&n_errors); 
@@ -173,7 +171,6 @@ void PoolWriteLaterReadTest::operator() ( const blocked_range<int>& range ) cons
 
 BOOST_AUTO_TEST_CASE( test_pool_parallel_access_2 )
 {
-	task_scheduler_init init;
 	tbb::atomic<int> n_errors; 
 	n_errors = 0; 
 	PoolWriteLaterReadTest ptest(&n_errors); 

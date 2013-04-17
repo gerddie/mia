@@ -19,8 +19,6 @@
  */
 
 #include <sstream>
-#include <tbb/task_scheduler_init.h>
-
 #include <mia/core.hh>
 #include <mia/internal/main.hh>
 #include <mia/3d.hh>
@@ -50,7 +48,6 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string trans_filename;
 	PMinimizer minimizer; 
-	int max_threads = tbb::task_scheduler_init::automatic;
 
 	cvdebug() << "auto transform_creator\n"; 
 	P3DTransformationFactory transform_creator; 
@@ -76,16 +73,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "spline:rate=10", "transForm", 'f', "transformation type"));
 
-	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
-			     "This number should be lower or equal to the number of processing cores in the machine"
-			     " (default: automatic estimation)."));  
-
 	if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-
-	tbb::task_scheduler_init init(max_threads);
 	
 	auto cost_descrs = options.get_remaining(); 
 
