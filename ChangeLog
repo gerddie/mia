@@ -1,8 +1,40 @@
-2.0.8-alpha 
+2.0.9
 
   Fixes of tracked bugs:
 
- * fix #69: GSL simplex optimizer now interprets parameter epsilon as simplex size termination parameter 
+
+  * fix 58: mia-fluid3d: Add parallelization
+  * fix 52,59,60,61,62: Add 2D Rotation only transformation and centerparameter to rigid and rotation
+  * fix 74: Tests: Fix failing tests on PowerPC
+  * fix 82: core: Add padding to the arrays in splineparzenmo
+  * fix	83: core: Add more tests to the Array-vector wrapper to ensure its proepr working
+  * fix	84: AnalyzeIO: Discard voxel-offset bytes when reading the image data.
+  * fix	85: IO: Add MetaImage IO support based on VTK.
+  * fix	86: Build: Test for Altivec and SSE and discard modules that require it
+	    if not available, Closes Debian Bug #705384
+  * fix 87: core: Set default numbers of threads to 1 on powerpc is the Intel threading building blocks
+	    version is < 4.1u2 (Interface version 6101), and warn user if she sets it higher
+	    This is a workaround for Debian Bug  #705385
+  * fix 88: core:  add the --threads option to the options that are always provided
+
+  Additional fixes and changes:
+
+  * add a program to binarily combine two 3d images
+  * correct the evalation of the gradient-from vectorfield evaluation
+  * correct the gradient from vector field translation
+  * correct the handling of zero-argument flags to satisfy the address sanitizer of LLVM
+  * Parallelize some more code
+  * Correct the libinclude path in the pkg-config files
+  * Relax some tests that compare floating point evaluation to pass tests on i386 were
+	  the limited amount of available registers results in a lower accuracy. 
+	  Closes Debian Bug #705383
+
+
+2.0.8
+
+  Fixes of tracked bugs:
+
+ * fix #69: GSL simplex optimizer now interprets parameter epsilon as simplex size termination parameter
  * fix #68: Add obtion to revert the triangle winding at surface creation.
  * fix #65 #66, #67: Store the transformation vector field as transformation in fluid registration
  * fix #55: isoscale filter now scales to the exact requested voxel size
@@ -17,7 +49,7 @@
 
   Additional fixes and changes:
 
- * fix compuling with clang-3.2
+ * fix compiling with clang-3.2
  * fix error in voxel size scaling when (down)scaling 3D
  * fix the transform upscaling to be based on the reference image size
  * Fix the preferred suffix specification for vector field storing
