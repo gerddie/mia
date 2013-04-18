@@ -18,6 +18,6 @@
 
 SET(splinepenalties3d divcurl) 
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-splinepenalty "${splinepenalties3d}" 
-  "${MIA3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dtransform/splinepenalty"
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dtransform" "splinepenalty" "${splinepenalties3d}" 
+  "${MIA3DLIBS}"
   )

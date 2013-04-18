@@ -31,12 +31,13 @@ IF (NOT MSVC AND (BUILD_HAS_ALTIVEC_ENABLED OR BUILD_HAS_SSE_ENABLED))
   SET(models3d ${models3d} ${SSE_MODELS})
 ENDIF (NOT MSVC AND (BUILD_HAS_ALTIVEC_ENABLED OR BUILD_HAS_SSE_ENABLED))
 
-PLUGIN_GROUP_PRE("3d-model" "${models3d}" "${REG3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dimage/model")
+PLUGINGROUP_WITH_PREFIX2("3dimage" "model" "${models3d}" "${REG3DLIBS}")
 
 SET(timesteps3d
   fluid
   direct
 )
 
-PLUGIN_GROUP_PRE("3d-timestep" "${timesteps3d}" "${REG3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dimage/timestep")
+PLUGINGROUP_WITH_PREFIX2("3dimage" "timestep" "${timesteps3d}" "${REG3DLIBS}")
+
 

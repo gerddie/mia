@@ -23,19 +23,18 @@ SET(io2dtransform_serialized
 
 SET(SERLIBS mia2d ${Boost_SERIALIZATION_LIBRARY})
 
-PLUGIN_GROUP_PRE(
-  "2d-transformio" 
+PLUGINGROUP_WITH_PREFIX2(
+  "2dtransform" "io" 
   "${io2dtransform_serialized}" 
   "${SERLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/2dtransform/io"
 )
 
 IF(FALSE)
 SET(PORT_SERLIBS mia2d portable_binary_archive ${Boost_SERIALIZATION_LIBRARY} ${Boost_SYSTEM})
-PLUGIN_GROUP_PRE(
+PLUGINGROUP_WITH_TEST_AND_PREFIX2(
+  "2dtransform" "io" 
   "2d" 
   "pbs" 
   "${PORT_SERLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/2dtransform/io"
 )
 ENDIF(FALSE)

@@ -16,16 +16,13 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(MINIMIZER_PLUGIN_PATH "${PLUGIN_INSTALL_PATH}/minimizer/singlecost")
-
-ADD_CUSTOM_TARGET(min_testdir mkdir -p ${PLUGIN_TEST_ROOT}/${MINIMIZER_PLUGIN_PATH})
-
 SET(GSLOPTLIBS ${MIACORE} ${GSL_LIBRARIES})
-PLUGIN_WITH_TEST_AND_PREFIX(min gsl "${GSLOPTLIBS}" ${MINIMIZER_PLUGIN_PATH})
+PLUGIN_WITH_TEST_AND_PREFIX2("minimizer" "singlecost" gsl "${GSLOPTLIBS}")
 
+SET(NEEDED_LIBS miacore "${NEEDED_LIBS}")
+PLUGIN_WITH_TEST_AND_PREFIX2("minimizer" "singlecost" gdsq "${NEEDED_LIBS}")
 
 OPTION(WITH_NLOPT "enable support for nlopt nonlinear optimizers" ${SEARCH_LIBS_DEFAULT})
-
 IF(WITH_NLOPT)
 
   IF(NOT NLOPT_LIBRARIES) 
@@ -34,7 +31,7 @@ IF(WITH_NLOPT)
 
   IF(NLOPT_LIBRARIES) 
     SET(NLOPTLIBS ${MIACORE} ${NLOPT_LIBRARIES})
-    PLUGIN_WITH_TEST_AND_PREFIX(min nlopt "${NLOPTLIBS}" ${MINIMIZER_PLUGIN_PATH})
+    PLUGIN_WITH_TEST_AND_PREFIX2("minimizer" "singlecost" nlopt "${NLOPTLIBS}")
   ELSE (NLOPT_LIBRARIES)
     IF(STRICT_DEPENDECIES)
       MESSAGE(ERROR "Requested library nlopt not found and STRICT_DEPENDECIES given")
@@ -42,8 +39,6 @@ IF(WITH_NLOPT)
   ENDIF(NLOPT_LIBRARIES)
 ENDIF(WITH_NLOPT)
 
-SET(NEEDED_LIBS miacore "${NEEDED_LIBS}")
-PLUGIN_WITH_TEST_AND_PREFIX(min gdsq "${NEEDED_LIBS}" ${MINIMIZER_PLUGIN_PATH})
 
 
 

@@ -73,6 +73,6 @@ SET(filters2dNew_base
 
 SET(filters2dNew ${filters2dNew_base} ${filters2d_fftNew})
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-filter "${filters2dNew}" 
-  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/2dimage/filter" TESTLIBS  mia2dtest)
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("2dimage" "filter" "${filters2dNew}" 
+  "${MIA2DLIBS}" TESTLIBS  mia2dtest)
 

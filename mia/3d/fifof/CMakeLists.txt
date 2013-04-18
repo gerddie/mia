@@ -26,8 +26,8 @@ SET(fifof2dNew
   regiongrow
 )
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(2dfifo "${fifof2dNew}" 
-  "mia3dtest"   "${PLUGIN_INSTALL_PATH}/2dstack/filter"
-  )
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("2dstack" "filter" "${fifof2dNew}" 
+    "mia3d" TESTLIBS "mia3dtest"
+    )
 
 

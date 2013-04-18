@@ -17,6 +17,6 @@
 #
 
 SET(transforms affine rigid rotation spline translate vectorfield) 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-transform "${transforms}" 
-  "${MIA3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dimage/transform"
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dimage" "transform" "${transforms}" 
+  "${MIA3DLIBS}"
   )

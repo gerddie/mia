@@ -41,12 +41,12 @@ IF(WITH_OpenEXR)
     
     INCLUDE_DIRECTORIES(${EXR_INCLUDE_DIRS})
     
-    PLUGIN_PRE(2d-imageio 2dimgexr "${DEPS2D}" "${image2dio_path}")
-    PLUGIN_PRE(2d-vfio    2dvfexr  "${DEPS2D}" "${vf2dio_path}")
+    PLUGIN_WITH_PREFIX2("2dimage" "io" 2dimgexr "${DEPS2D}")
+    PLUGIN_WITH_PREFIX2("2dvf" "io"    2dvfexr "${DEPS2D}")
     
     # test programs 
     ADD_EXECUTABLE(test-openexr test_openexr.cc)
-    ADD_DEPENDENCIES(test-openexr 2dvfexr 2dimgexr)
+    ADD_DEPENDENCIES(test-openexr 2dimage-io-openexr 2dvf-io-openexr)
     
     SET(DEPLIBS mia2dtest mia2d ${BASELIBS})
     TARGET_LINK_LIBRARIES(test-openexr ${DEPLIBS} ${BOOST_UNITTEST})
