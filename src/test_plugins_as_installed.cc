@@ -69,6 +69,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageIOPluginHandler,PluginTestFixture)
 	set<string> test_data = {
 		"analyze",  
 		"inria", 
+		"mhd", 
 		"vff", 
 		"vti", 
 		"vtk", 
