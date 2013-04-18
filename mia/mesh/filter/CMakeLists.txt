@@ -21,7 +21,5 @@ SET(filtersMesh
   vtxsort
   )
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(mesh-filter "${filtersMesh}" 
-  "${MIAMESHLIBS}" "${PLUGIN_INSTALL_PATH}/mesh/filter"
-  )
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("mesh" "filter" "${filtersMesh}" "${MIAMESHLIBS}")
 

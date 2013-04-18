@@ -18,4 +18,5 @@
 
 SET(NAMES gauss) 
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(spacialkernel ${NAMES} "${MIACORE}" "${PLUGIN_INSTALL_PATH}/1d/spacialkernel")
+PLUGINGROUP_WITH_TEST_AND_PREFIX2( "1d" "spacialkernel" ${NAMES} "${MIACORE}")
+

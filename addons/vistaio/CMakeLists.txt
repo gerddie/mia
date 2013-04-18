@@ -37,25 +37,15 @@ IF (USE_VISTAIO)
     SET(DEPS3D mia3d vista4mia)
     SET(DEPSMESH miamesh vista4mia)
     
-    SET(image2dio_path ${PLUGIN_INSTALL_PATH}/2dimage/io)
-    SET(image3dio_path ${PLUGIN_INSTALL_PATH}/3dimage/io)
+
+    PLUGIN_WITH_TEST_AND_PREFIX2("2dimage" "io" 2dvistaio "${DEPS2D}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" 3dvistaio  "${DEPS3D}")
     
-    SET(trans2dio_path ${PLUGIN_INSTALL_PATH}/2dtransform/io)
-    SET(trans3dio_path ${PLUGIN_INSTALL_PATH}/3dtransform/io)
-    
-    SET(vf3dio_path ${PLUGIN_INSTALL_PATH}/3dvf/io)
-    SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/2dvf/io)
-    
-    SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
-    
-    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("2d-imageio-vista" 2dvistaio "${DEPS2D}" "${image2dio_path}")
-    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-imageio-vista" 3dvistaio  "${DEPS3D}" "${image3dio_path}")
-    
-    PLUGIN_PRE(2d-vfio 2dvfvistaio "${DEPS2D}" "${vf2dio_path}")
-    PLUGIN_PRE(3d-vfio 3dvfvistaio "${DEPS3D}" "${vf3dio_path}")
-    PLUGIN_PRE(3d-mesh vistamesh "${DEPSMESH}" "${meshio_path}")
-    PLUGIN_PRE(2d-transformio 2dtrans "${DEPS2D}" "${trans2dio_path}")
-    PLUGIN_PRE(3d-transformio 3dtrans "${DEPS3D}" "${trans3dio_path}")
+    PLUGIN_WITH_PREFIX2("2dvf" "io" 2dvfvistaio "${DEPS2D}")
+    PLUGIN_WITH_PREFIX2("3dvf" "io" 3dvfvistaio "${DEPS3D}")
+    PLUGIN_WITH_PREFIX2("mesh" "io" vistamesh "${DEPSMESH}")
+    PLUGIN_WITH_PREFIX2("2dtransform" "io" 2dtrans "${DEPS2D}")
+    PLUGIN_WITH_PREFIX2("3dtransform" "io" 3dtrans "${DEPS3D}")
     
   
     ADD_EXECUTABLE(test-vista4mia  test_vista4mia.cc)

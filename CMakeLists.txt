@@ -396,15 +396,6 @@ ELSE(ALWAYS_CREATE_DOC)
 ENDIF(ALWAYS_CREATE_DOC)
 
 
-ADD_SUBDIRECTORY(gsl++   )
-ADD_SUBDIRECTORY(mia     )
-ADD_SUBDIRECTORY(addons  )
-ADD_SUBDIRECTORY(testdata)
-
-IF(BUILD_EXAMPLES)
-  ADD_SUBDIRECTORY(examples)
-ENDIF(BUILD_EXAMPLES)
-
 ##############################################
 #
 # python is needed for creating end-user documentation 
@@ -420,12 +411,34 @@ IF(PYTHONINTERP_FOUND)
   ENDIF(LXML_ERR) 
 ENDIF(PYTHONINTERP_FOUND) 
 
-#disabled because moved to other package 
-#ADD_SUBDIRECTORY(python  )
+#############################################
+#
+# define plug-in related values and directories and add the test directory link target 
+# 
 
-#disabled for this release since it doesn't compile 
-#ADD_SUBDIRECTORY(idl     )
-#ADD_SUBDIRECTORY(matlab  )
+DEFINE_PLUGIN_NAMES( 1d  "spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dsplinepenalty  "transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dstack  "filter" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dvf  "io" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dlandmarklist "io"  ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dvf "io"  ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( generator  "noise" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( mesh "filter;io" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( minimizer  "singlecost" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( rgbimage "io" ${PLUGIN_INSTALL_PATH})
+
+ADD_SUBDIRECTORY(gsl++   )
+ADD_SUBDIRECTORY(mia     )
+ADD_SUBDIRECTORY(addons  )
+ADD_SUBDIRECTORY(testdata)
+
+IF(BUILD_EXAMPLES)
+  ADD_SUBDIRECTORY(examples)
+ENDIF(BUILD_EXAMPLES)
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(doc)

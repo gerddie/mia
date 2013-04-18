@@ -17,6 +17,6 @@
 #
 
 SET(fullcost image divcurl taggedssd)
-PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-fullcost "${fullcost}" 
-  mia3dtest "${PLUGIN_INSTALL_PATH}/3dimage/fullcost"
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dimage" "fullcost" "${fullcost}" mia3d TESTLIBS
+  mia3dtest
   )

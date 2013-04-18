@@ -22,9 +22,8 @@ SET(cost3d
 	   mi 
 )
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-cost "${cost3d}" 
-  "${MIA3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dimage/cost"
-  )
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dimage" "cost" "${cost3d}" 
+  "${MIA3DLIBS}" )
 
 
 #SET(fatcost3d fatngf fatssd) 

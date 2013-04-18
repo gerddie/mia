@@ -21,8 +21,7 @@ SET(timesteps2d
   fluid
 )
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-timestep "${timesteps2d}" mia2dtest
-  "${PLUGIN_INSTALL_PATH}/2dimage/timestep")
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("2dimage" "timestep" "${timesteps2d}" mia2dtest)
 
 
 

@@ -23,9 +23,8 @@ SET(io3dtransform_serialized
 
 SET(SERLIBS mia3d ${Boost_SERIALIZATION_LIBRARY})
 
-PLUGIN_GROUP_PRE(
-  "3d-transformio" 
+PLUGINGROUP_WITH_PREFIX2(
+  "3dtransform" "io"
   "${io3dtransform_serialized}" 
   "${SERLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/3dtransform/io"
 )

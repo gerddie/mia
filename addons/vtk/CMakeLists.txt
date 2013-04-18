@@ -33,13 +33,9 @@ IF(WITH_VTKIO)
     SET(VTK_LINK_LIBS_MESH ${VTK_LIBRARIES} miamesh)
     SET(VTK_LINK_LIBS_3D ${VTK_LIBRARIES} mia3d)
 
-    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("mesh" vtkmesh "${VTK_LINK_LIBS_MESH}" "${meshio_path}")
-    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-vfio" vtkvf "${VTK_LINK_LIBS_3D}" "${vfio_path}")
-
-    # the explicit vtk part is added because the build system needs to create unique targets 
-    # and the plug-in test directory target is created based on the prefix
-    #
-    SINGLEPLUGIN_WITH_TEST_AND_PREFIX("3d-imageio-vtk" vtkimage "${VTK_LINK_LIBS_3D}" "${imageio_path}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("mesh" "io" vtkmesh "${VTK_LINK_LIBS_MESH}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dvf" "io" vtkvf "${VTK_LINK_LIBS_3D}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" vtkimage "${VTK_LINK_LIBS_3D}")
 
   ELSEIF(VTK_FOUND)
     MESSAGE(MESSAGE "VTK not found, disabled")

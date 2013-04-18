@@ -32,6 +32,5 @@ SET(modelplugins2d
   naviera
   )
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-model "${modelplugins2d}" 
-  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/2dimage/model"
-  )
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("2dimage" "model" "${modelplugins2d}" 
+  "${MIA2DLIBS}" )

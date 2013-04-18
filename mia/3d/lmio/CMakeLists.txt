@@ -21,11 +21,10 @@ SET(lmio
 )
 SET(SERLIBS mia3d ${Boost_SERIALIZATION_LIBRARY})
 
-PLUGIN_GROUP_PRE(
-  "3d-landmarkio"
+PLUGIN_WITH_PREFIX2(
+  "3dlandmarklist" "io"
   "${lmio}" 
   "${SERLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/3dlandmarklist/io"
 )
 
 

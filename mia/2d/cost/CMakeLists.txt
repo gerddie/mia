@@ -16,14 +16,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(costplugins2dNew ssd mi ngf lsd)
-PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-cost "${costplugins2dNew}" 
-  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/2dimage/cost"
-  )
+SET(costplugins2d ssd mi ngf lsd)
+PLUGINGROUP_WITH_TEST_AND_PREFIX2(2dimage cost  "${costplugins2d}" "${MIA2DLIBS}")
 
-
-#SET(fatcostplugins2dNew fatngf fatssd) 
-#PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-fatcost "${fatcostplugins2dNew}" 
-#  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/2dimage/fatcost"
-#  )
 

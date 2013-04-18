@@ -21,11 +21,10 @@ SET(creator3d
 	    lattic
 )
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX(
-  "3d-creator" 
+PLUGINGROUP_WITH_TEST_AND_PREFIX2(
+  "3dimage" "creator" 
   "${creator3d}" 
   "${MIA3DLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/3dimage/creator"
 )
 
 
