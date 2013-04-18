@@ -131,7 +131,9 @@ MACRO(PLUGIN_WITH_PREFIX2 type data plugname libs)
     ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${type}_${data}_testdir ${name})
   ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
   INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
+  IF(WARN_MISSING_OR_OLD_PLUGINTESTS)
   MESSAGE("WARNING: Plugin ${name} does provide no or only old-style testing")
+  ENDIF(WARN_MISSING_OR_OLD_PLUGINTESTS)
 ENDMACRO(PLUGIN_WITH_PREFIX2 type data plugname libs)
 
 

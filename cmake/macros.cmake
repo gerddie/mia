@@ -98,22 +98,6 @@ MACRO(PLUGIN_GROUP_PRE_NOINST prefix plugins libs)
   ENDFOREACH(p)
 ENDMACRO(PLUGIN_GROUP_PRE_NOINST)
 
-MACRO(PLUGIN_GROUP_PRE prefix plugins libs install_path)
-  PLUGIN_GROUP_PRE_NOINST(${prefix}  "${plugins}" "${libs}")
-  ADD_CUSTOM_TARGET(${prefix}_testdir mkdir -p ${PLUGIN_TEST_ROOT}/${install_path})
-  FOREACH(p ${plugins})
-    SET(name ${prefix}-${p})
-    INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
-    ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
-      ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir ${name})
-    ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
-  ENDFOREACH(p)
-  IF(WARN_OLD_PLUGINSTYLE)
-    MESSAGE("Plugins '${plugins}' with target '${install_path}' use old interface")
-  ENDIF(WARN_OLD_PLUGINSTYLE)
-ENDMACRO(PLUGIN_GROUP_PRE)
-
-
 MACRO(INSTALL_WITH_EXPORT lib)
     INSTALL(TARGETS ${lib} 
       EXPORT Mia
