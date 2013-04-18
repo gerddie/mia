@@ -81,7 +81,7 @@ IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
     "If your compiler is supposed to support this feature, "
     "please enable the appropriate flags and delete the CMakeCache.txt file before "
     "re-running cmake.\n"
-    "For g++ >= 4.5 this is '-std=c++0x' ")
+    "For g++ >= 4.6 this is '-std=c++0x' ")
 ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkAltivecEnabled.cmake)
@@ -173,7 +173,7 @@ IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
 ENDIF(WIN32)
 
-FIND_PACKAGE( Boost 1.42.0 COMPONENTS
+FIND_PACKAGE( Boost 1.46.1 COMPONENTS
   ${BOOST_COMPONENTS}
   REQUIRED)
 
@@ -187,7 +187,7 @@ SET(BOOST_DEPS  ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYST
 SET(BOOST_UNITTEST  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 IF (WIN32 AND NOT UNIX)
-   FOREACH(l ${Boost_THREAD_LIBRARY}
+   FOREACH(l 
        ${Boost_REGEX_LIBRARIES}
        ${Boost_FILESYSTEM_LIBRARY}
        ${Boost_SYSTEM}
@@ -227,6 +227,17 @@ ENDIF(TBB_FOUND)
 #
 ################################################################################
 
+################################################################################
+#
+# Intel Threading Building Blocks 
+# 
+
+SET(CMAKE_THREAD_PREFER_PTHREAD ON) 
+FIND_PACKAGE(Threads)
+
+IF(CMAKE_USE_PTHREADS_INIT)
+  set(PTHREADLIB -lpthread)
+ENDIF(CMAKE_USE_PTHREADS_INIT)
 
 ################################################################################
 # 
@@ -243,20 +254,17 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 # search for some blas
 # 
 
-pkg_check_modules(BLAS blas) 
-IF(NOT BLAS_FOUND) 
-  FIND_LIBRARY(BLAS_LIBRARIES NAMES "blas" PATHS
-    /usr/lib
-    /usr/local/lib
-    )
-  IF (NOT BLAS_LIBRARIES) 
-    MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
-  ENDIF(NOT BLAS_LIBRARIES) 
-ENDIF(NOT BLAS_FOUND) 
+FIND_LIBRARY(BLAS_LIBRARIES NAMES "blas" PATHS
+  /usr/lib
+  /usr/local/lib
+  )
+IF (NOT BLAS_LIBRARIES) 
+  MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
+ENDIF(NOT BLAS_LIBRARIES) 
 
 IF(UNIX)
   GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
-  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${BLAS_LIBRARIES} ${TBB_LIBRARIES} -lpthread -ldl")
+  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${BLAS_LIBRARIES} ${TBB_LIBRARIES} ${PTHREADLIB} -ldl")
 ENDIF(UNIX)
 
 
@@ -280,6 +288,7 @@ ENDIF(NOT GZIP)
 # take care of modules loading infrastructure
 #
 IF(NOT WIN32)
+
   FIND_LIBRARY(DL dl
     PATH
     /lib
@@ -290,12 +299,11 @@ IF(NOT WIN32)
   IF(DL_NOTFOUND)
     MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
   ENDIF(DL_NOTFOUND)
-  SET(BASELIBS  ${BOOST_DEPS} ${DL})
-
+  SET(BASELIBS  ${BOOST_DEPS} ${PTHREADLIB} ${DL})
 ENDIF(NOT WIN32)
 SET(PLUGSUFFIX ".mia")
 
-OPTION(WARN_OLD_PLUGINSTYLE "Warn if plugins use old implementation style" OFF)
+OPTION(WARN_MISSING_OR_OLD_PLUGINTESTS "Warn if plugins don't provided tests or use the old buildsystem to do so" OFF)
 #
 #
 #
