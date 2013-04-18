@@ -216,6 +216,7 @@ int do_main( int argc, char *argv[] )
 #endif
 
 	int element_size = 0; 
+
 	string components; 
 	string style;  
 	
@@ -232,10 +233,11 @@ int do_main( int argc, char *argv[] )
 		element_size = sizeof(C2DFMatrix)/sizeof(float);
 		components.assign("matrix2x2"); 
 		style.assign("grid"); 
+		unsigned int nelements = static_cast<unsigned int>(tensorfield.size()); 
 
 		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  component_description=%s\n", components.c_str()); 
-		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
+		fprintf(output, "  elements=%d\n", nelements); 
 		fprintf(output, "  style=%s\n", style.c_str()); 
 		fprintf(output, "}\n" );
 		
@@ -255,10 +257,10 @@ int do_main( int argc, char *argv[] )
 		components.assign("vector3,scalar,matrix3x3"); 
 		style.assign("sparse"); 
 
-	
+		unsigned int nelements = static_cast<unsigned int>(tensorfield.size()); 
 		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  component_description=%s\n", components.c_str()); 
-		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
+		fprintf(output, "  elements=%d\n", nelements); 
 		fprintf(output, "  style=%s\n", style.c_str()); 
 		fprintf(output, "}\n" );
 		
