@@ -51,7 +51,8 @@ const SProgramDescription g_description = {
 	{pdi_example_descr, "Register the perfusion series given in segment.set by optimizing a "
 	 "spline based transformation with a coefficient rate of 16 pixel using Mutual Information "
 	 "and penalize the transformation by using divcurl with aweight of 2.0."}, 
-	{pdi_example_code, "-i segment.set -o registered.set -f spline:rate=16,penalty=[divcurl:weight=2.0] "
+	{pdi_example_code, "-i segment.set -o registered.set \n"
+	 "-f spline:rate=16,penalty=[divcurl:weight=2.0] "
 	 "image:cost=mi,weight=2.0"}
 }; 
 
@@ -144,7 +145,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( out_filename, "out-file", 'o', 
 				    "output perfusion data set", CCmdOption::required));
 	options.add(make_opt( registered_filebase, "out-filebase", 0, "file name basae for registered files, file "
-			      "Wtype is deducted from the image file type in the input data set.")); 
+			      "type is deducted from the image file type in the input data set.")); 
 
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( skip, "skip", 'k', "Skip images at the beginning of the series"));
