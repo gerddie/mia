@@ -52,7 +52,7 @@ const SProgramDescription g_description = {
 	 "spline based transformation with a coefficient rate of 16 pixel using Mutual Information "
 	 "and penalize the transformation by using divcurl with aweight of 2.0."}, 
 	{pdi_example_code, "-i segment.set -o registered.set \n"
-	 "-f spline:rate=16,penalty=[divcurl:weight=2.0] "
+	                   "    -f spline:rate=16,penalty=[divcurl:weight=2.0] "
 	 "image:cost=mi,weight=2.0"}
 }; 
 
