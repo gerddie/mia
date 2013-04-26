@@ -135,12 +135,15 @@ def write_man_file(descr):
             for c in descr.Example.code:
                 print ".HP"
                 print "%s %s" % (name, clean(c.text))
+
+    print ".SH AUTHOR(s)"
+    print clean(descr.author)
     
     print ".SH COPYRIGHT"
-    print "This software is copyright (c) Gert Wollny et al."
-    print "It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it"
-    print "under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later)."
-
+    print """This software is Copyright (c) 1999-2013 Leipzig, Germany and Madrid, Spain.
+It comes  with  ABSOLUTELY  NO WARRANTY  and  you  may redistribute it under the terms of the GNU 
+GENERAL PUBLIC LICENSE Version 3 (or later). For more 
+information run the program with the option '--copyright'."""
 
 
 X=parse_file(sys.argv[1])

@@ -571,6 +571,8 @@ class CDescription:
                 self.option_groups.append(CGroup(n))
             elif n.tag == 'Example': 
                 self.Example = CExample(n)
+            elif n.tag == 'Author': 
+                self.author = n.text
             elif n.tag == 'freeparams':
                 self.FreeParams = n.get("name")
             else: 

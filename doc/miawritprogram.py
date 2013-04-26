@@ -99,6 +99,9 @@ def get_program(program):
     else:
         print "Warning: %s doesn't provide an example" % (program.name) 
 
+    section.append(get_bridgehead("Author(s):"))
+    section.append(get_text_node_simple("para", program.author))
+    
     return section 
 
 def translate_descr(section, description):

@@ -60,7 +60,8 @@ enum EProgramDescriptionEntry {
 	pdi_short = 1,  /*<! A sgort description of the program, this will be the head line in the unix man page. */
 	pdi_description = 2, /*<! The full description of the program */ 
 	pdi_example_descr = 3, /*<! description of the example that follows */
-	pdi_example_code = 4   /*<! The example command line without the program name */
+	pdi_example_code = 4,   /*<! The example command line without the program name */
+	pdi_author = 5 /*<! Author name (if other than main MIA contributer(s) */
 }; 
 
 extern const std::map<EProgramDescriptionEntry, const char *> g_DescriptionEntryNames; 

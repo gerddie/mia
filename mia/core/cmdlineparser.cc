@@ -45,7 +45,7 @@
 #define TBB_PREFERE_ONE_THREAD 1
 #endif 
 
-extern void print_full_copyright(const char *name);
+extern void print_full_copyright(const char *name, const char *author);
 
 
 NS_MIA_BEGIN
@@ -67,7 +67,8 @@ const std::map<EProgramDescriptionEntry, const char *> g_DescriptionEntryNames =
 	ENTRY(pdi_short), 
 	ENTRY(pdi_description), 
 	ENTRY(pdi_example_descr),
-	ENTRY(pdi_example_code)
+	ENTRY(pdi_example_code),
+	ENTRY(pdi_author)
 }; 
 
 struct CCmdOptionListData {
@@ -108,8 +109,9 @@ struct CCmdOptionListData {
 	vector<const char *> has_unset_required_options() const; 
 	void set_logstream(std::ostream& os); 
 	string set_description_value(EProgramDescriptionEntry entry, 
-				     const SProgramDescription& description); 
+				     const SProgramDescription& description, const char *default_value = ""); 
 
+	const char *get_author() const; 
 	
 	string m_program_group; 
 	string m_short_descr; 
@@ -117,6 +119,7 @@ struct CCmdOptionListData {
 	string m_program_example_descr;
 	string m_program_example_code; 
 	string m_free_parametertype; 
+	string m_author; 
 	ostream *m_log; 
 };
 
@@ -126,7 +129,7 @@ void CCmdOptionListData::set_logstream(ostream& os)
 }
 
 string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry, 
-						 const SProgramDescription& description)
+						 const SProgramDescription& description, const char *default_value)
 {
 	auto id = description.find(entry); 
 	if (id != description.end()) 
@@ -135,16 +138,17 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 		auto ed = g_DescriptionEntryNames.find(entry); 
 		assert(ed != g_DescriptionEntryNames.end()); 
 		cvwarn() << "Description value '" <<  ed->second << "' not set\n"; 
-		return string(""); 
+		return string(default_value); 
 	}
 }
 
 const char *g_help_optiongroup="Help & Info"; 
-const char *g_basic_copyright = 
-	"This software is Copyright (c) 1999-2013 Leipzig, Germany and Madrid, Spain. "
-	"It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
-	"under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
-	"For more information run the program with the option '--copyright'.\n"; 
+const char *g_default_author = "Gert Wollny"; 
+const char *g_basic_copyright1 = "This software is Copyright (c) "; 
+const char *g_basic_copyright2 = ", 1999-2013 Leipzig, Germany and Madrid, Spain. "
+	      "It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
+	      "under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
+	      "For more information run the program with the option '--copyright'.\n"; 
 
 CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	help(false),
@@ -166,6 +170,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	m_general_help = set_description_value(pdi_description, description);  
 	m_program_example_descr = set_description_value(pdi_example_descr, description); 
 	m_program_example_code = set_description_value(pdi_example_code, description); 
+	m_author = set_description_value(pdi_author, description, g_default_author); 
 	
 	options[""] = vector<PCmdOption>();
 
@@ -185,6 +190,11 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 			     "(-1: automatic estimation).")); 
 	
 	set_current_group("");
+}
+
+const char *CCmdOptionListData::get_author() const
+{
+	return m_author.c_str(); 
 }
 
 void CCmdOptionListData::add(PCmdOption opt)
@@ -321,6 +331,8 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	Element* example_code = example->add_child("Code"); 
 	example_code->set_child_text(m_program_example_code); 
 	
+	Element* cr = nodeRoot->add_child("Author");
+	cr->set_child_text(m_author); 
 
 	*m_log << doc->write_to_string_formatted();
 	*m_log << "\n"; 
@@ -460,7 +472,9 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	console.write("\n"); 
 	console.push_offset(2);
 	console.write("Copyright:\n");
-	console.write(g_basic_copyright);
+	console.write(g_basic_copyright1);
+	console.write(get_author());
+	console.write(g_basic_copyright2);
 	console.pop_offset(); 
 	console.write("\n");
 	*m_log << setiosflags(std::ios_base::right);
@@ -489,7 +503,9 @@ void CCmdOptionListData::print_usage(const char *name) const
 void CCmdOptionListData::print_version(const char *name_help) const
 {
 	*m_log << name_help << " revision:" << get_revision() << "\n\n"; 
-	*m_log << g_basic_copyright << "\n"; 
+	*m_log << g_basic_copyright1; 
+	*m_log << get_author(); 
+	*m_log << g_basic_copyright2 << "\n"; 
 }
 
 CCmdOptionList::CCmdOptionList(const SProgramDescription& description):
@@ -698,7 +714,7 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 		m_impl->print_version(name_help);
 		return hr_version;
 	} else if (m_impl->copyright) {
-		::print_full_copyright(name_help);
+		::print_full_copyright(name_help, m_impl->get_author());
 		return hr_copyright;
 	}
 
@@ -722,7 +738,9 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 			msg << " '--" << *i << "' "; 
 		msg << "\n"; 
 		msg << "run '" << args[0] << " --help' for more information\n"; 
-		msg << g_basic_copyright; 
+		msg << g_basic_copyright1; 
+		msg << m_impl->get_author(); 
+		msg << g_basic_copyright2; 
 		throw invalid_argument(msg.str());
 	}
 	

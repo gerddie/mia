@@ -21,8 +21,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-static const char info[] =
-	"%s is Copyright\n"
+static const char info[] = "%s is Copyright %s\n"
 	"    (c) 1999-2013 Leipzig, Germany and Madrid, Spain \n"
 	""
 	"and it comes with  ABSOLUTELY NO WARRANTY. You may redistribute .\n"
@@ -656,9 +655,9 @@ static const char info[] =
 "\n"; 
 
 
-void print_full_copyright(const char *name)
+void print_full_copyright(const char *name, const char *author)
 {
-	printf(info, name);
+	printf(info, name, author);
 	exit(0);
 }
 
