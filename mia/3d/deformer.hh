@@ -48,7 +48,7 @@ struct FDeformer3D: public TFilter<P3DImage> {
 		}
 	template <typename T> 
 	P3DImage operator () (const T3DImage<T>& image) const {
-		T3DImage<T> *timage = new T3DImage<T>(image.get_size(), image); 
+		T3DImage<T> *timage = new T3DImage<T>(m_vf.get_size(), image); 
 		P3DImage result(timage); 
 		this->operator()(image, *timage); 
 		return result; 
@@ -56,6 +56,7 @@ struct FDeformer3D: public TFilter<P3DImage> {
 
 	template <typename T> 
 	P3DImage operator () (const T3DImage<T>& image, T3DImage<T>& result) const {
+		assert(result.get_size() == m_vf.get_size()); 
 		std::shared_ptr<T3DConvoluteInterpolator<T> > interp(m_ipfac.create(image.data())); 
 
 		auto callback = [this, &interp, &result](const tbb::blocked_range<size_t>& range){
