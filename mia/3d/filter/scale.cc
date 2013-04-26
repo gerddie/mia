@@ -137,6 +137,8 @@ C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 	C3DFilterPlugin("scale"),
 	m_s(0,0,0)
 {
+	add_parameter("s", new C3DBoundsParameter(m_s, 0,"target size to set all components at once (component 0:use input image size)"));
+
 	add_parameter("sx", new CUIntParameter(m_s.x, 0,
 					      numeric_limits<unsigned int>::max(), false,
 					      "target size in x direction (0:use input image size)"));
