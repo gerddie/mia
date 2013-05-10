@@ -71,7 +71,7 @@ const SLookupInit lookup_init[] = {
 	{IDImageType, DCM_ImageType, false, tr_yes, NULL},
 	{IDSliceLocation, DCM_SliceLocation, false, tr_yes, NULL},
 	{IDPatientOrientation, DCM_PatientOrientation, false, tr_no, NULL},
-	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, tr_yes, NULL},
+	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, tr_no, NULL},
 	{IDSOPClassUID, DCM_SOPClassUID, false, tr_no, NULL},
 	{IDProtocolName, DCM_ProtocolName, false, tr_no, NULL},
 	{IDTestValue, DcmTagKey(), false, tr_no, NULL},
@@ -308,18 +308,17 @@ void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& im
 template <typename T>
 void CDicomReaderData::getPixelData(T2DImage<T>& image)
 {
-	OFString of_transfer_syntax;
-	OFCondition success = dcm.getMetaInfo()->findAndGetOFString(DCM_TransferSyntaxUID, of_transfer_syntax);
-	if (success.bad()) {
-		throw create_exception<runtime_error>( "Unable to determine transfer syntax");
-	}
 	dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
 	
 	if (!dcm.getDataset()->canWriteXfer(EXS_LittleEndianExplicit)) {
+		OFString of_transfer_syntax;
+		OFCondition success = dcm.getMetaInfo()->findAndGetOFString(DCM_TransferSyntaxUID, of_transfer_syntax);
+		if (success.bad()) {
+			throw create_exception<runtime_error>( "DICOM: Unsupported data encoding: ", success.text());
+		}
 		string transfer_syntax(of_transfer_syntax.data());
 		throw create_exception<runtime_error>( "DICOM: Unsupported data encoding '", transfer_syntax, "'");
 	}
-
 	getPixelData_LittleEndianExplicitTransfer(image);
 }
 
