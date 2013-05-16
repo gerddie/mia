@@ -102,7 +102,7 @@ struct CDicomReaderData {
 	CDicomReaderData(const DcmFileFormat& dcm); 
 	~CDicomReaderData(); 
 
-	Uint16 getUint16(const DcmTagKey &tagKey, bool required);
+	Uint16 getUint16(const DcmTagKey &tagKey, bool required, Uint16 default_value = 0);
 
 	string getAttribute(const string& key, bool required);
 
@@ -218,8 +218,15 @@ P2DImage CDicomReader::get_image() const
 						"' Bogus image - more bits per pixel used then allocated");
 	}
 
-	if (bbpa == 16)
-		return load_image<unsigned short>();
+	auto pixel_signed = impl->getUint16(DCM_PixelRepresentation, false, 0);
+
+
+	if (bbpa == 16) {
+		if (pixel_signed) 
+			return load_image<signed short>();
+		else
+			return load_image<unsigned short>();
+	}
 
 	throw create_exception<invalid_argument>( "CDicomReader: '", m_filename, 
 					"' doesn't support ", bbp,  " bits per pixel.");
@@ -243,9 +250,9 @@ CDicomReaderData::~CDicomReaderData()
 }
 
 
-Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required)
+Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required, Uint16 default_value)
 {
-	Uint16 value;
+	Uint16 value = default_value;
 	OFCondition success = dcm.getDataset()->findAndGetUint16(tagKey, value);
 
 	if (success.bad() && required){
