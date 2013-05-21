@@ -157,6 +157,7 @@ SET(MIACORE_HEADER_BASE
   spacial_kernel.hh
   sparse_solver.hh
   sqmin.hh
+  statistics.hh
   streamredir.hh
   testplugin.hh
   threadedmsg.hh
