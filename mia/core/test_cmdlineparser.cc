@@ -451,11 +451,11 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "Example usage:\n  Example text\n"
 			  "    \n    test-program Example command\n\n"
 			  "Copyright:\n"
-			  "  This software is Copyright (c) 1999-2013 Leipzig, Germany and \n"
-			  "  Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and you may \n"
-			  "  redistribute it under the terms of the GNU GENERAL PUBLIC LICENSE \n"
-			  "  Version 3 (or later). For more information run the program with the\n"
-			  "  option '--copyright'.\n  \n"); 
+			  "  This software is Copyright (c) Gert Wollny 1999-2013 Leipzig, \n"
+			  "  Germany and Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and\n"
+			  "  you may redistribute it under the terms of the GNU GENERAL PUBLIC \n"
+			  "  LICENSE Version 3 (or later). For more information run the program \n"
+			  "  with the option '--copyright'.\n  \n"); 
   
 
 	BOOST_CHECK_EQUAL(output.str().size(), test.size()); 
@@ -467,8 +467,10 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 		while (io != output.str().end() && it != test.end()) {
 			if (*io == *it) 
 				cerr << *io; 
-			else 
+			else {
+				cerr << "\nERROR:'"<< *io << "' versus '" << *it <<"'\n"; 
 				break; 
+			}
 			++io; 
 			++it; 
 		}

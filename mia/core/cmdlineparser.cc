@@ -137,7 +137,11 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 	else {
 		auto ed = g_DescriptionEntryNames.find(entry); 
 		assert(ed != g_DescriptionEntryNames.end()); 
-		cvwarn() << "Description value '" <<  ed->second << "' not set\n"; 
+		if (!default_value) 
+			cvwarn() << "Description value '" <<  ed->second << "' not set\n"; 
+		else 
+			cvdebug() << "Description value '" <<  ed->second 
+				  << "' not set, using default '" << default_value << "'\n"; 
 		return string(default_value); 
 	}
 }
@@ -145,7 +149,7 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_default_author = "Gert Wollny"; 
 const char *g_basic_copyright1 = "This software is Copyright (c) "; 
-const char *g_basic_copyright2 = ", 1999-2013 Leipzig, Germany and Madrid, Spain. "
+const char *g_basic_copyright2 = " 1999-2013 Leipzig, Germany and Madrid, Spain. "
 	      "It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
 	      "under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
 	      "For more information run the program with the option '--copyright'.\n"; 
