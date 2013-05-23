@@ -60,6 +60,18 @@ public:
 	   key is not available in the data pool 
 	 */
 	const T get() const; 
+
+	/**
+	   Check if the key is available in the data bool. 
+	   \returns true if the key is available
+	*/
+	bool pool_has_key() const; 
+
+	/**
+	   Check if this key is actually valid (i.e. not  empty)
+	   \returns true if the key is valid 
+	*/
+	bool key_is_valid() const; 
 private:
 	std::string m_key;
 }; 
@@ -80,6 +92,19 @@ const T TDelayedParameter<T>::get() const
 						    "' is not availabe in the data pool");  
 	}
 	return boost::any_cast<T>(CDatapool::instance().get(m_key)); 
+}
+
+template <typename T>
+bool TDelayedParameter<T>::pool_has_key() const
+{
+	return CDatapool::instance().has_key(m_key); 
+}
+
+
+template <typename T>
+bool TDelayedParameter<T>::key_is_valid() const
+{
+	return !m_key.empty(); 
 }
 
 NS_MIA_END
