@@ -41,7 +41,13 @@ BOOST_AUTO_TEST_CASE( test_pool_inout )
 {
 	TDelayedParameter<int> a("code");
 
+	BOOST_CHECK(a.key_is_valid()); 
+
+	BOOST_CHECK(!a.pool_has_key()); 
+
 	CDatapool::instance().add("code", 10);
+
+	BOOST_CHECK(a.pool_has_key()); 
 
 	try {
 		BOOST_CHECK_EQUAL(10, a.get());
@@ -52,5 +58,19 @@ BOOST_AUTO_TEST_CASE( test_pool_inout )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_is_invalid )
+{
+	TDelayedParameter<int> a;
+	BOOST_CHECK(!a.key_is_valid()); 
+}
+
+
+BOOST_AUTO_TEST_CASE( test_pool_type_mismatch )
+{
+	TDelayedParameter<int> a("code");
+	CDatapool::instance().add("code", 10.1);
+	
+	BOOST_CHECK_THROW(a.get(), std::bad_cast); 
+}
 
 
