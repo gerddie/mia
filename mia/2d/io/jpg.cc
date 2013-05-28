@@ -91,6 +91,12 @@ C2DImageIOPlugin::PData CJpeg2DImageIOPlugin::do_load(const string& fname) const
 					    cdecompress_info.output_components, " color components.");
 	}
 
+	if (cdecompress_info.data_precision != 8) {
+		jpeg_destroy_decompress(&cdecompress_info);
+		throw create_exception<runtime_error>(":MIA only supports 8-bit per pixel images, but got an image with ", 
+						      cdecompress_info.data_precision, " bits data precision.");
+	}
+
 
 	int row_stride = cdecompress_info.output_width * cdecompress_info.output_components;
 	vector<JSAMPLE> buf(row_stride); 
