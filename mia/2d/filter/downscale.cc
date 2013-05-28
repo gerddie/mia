@@ -72,9 +72,10 @@ CDownscale::result_type CDownscale::operator () (const T2DImage<T>& src) const
 	typename T2DImage<T>::iterator i = fresult->begin();
 	C2DBounds Start(m_block_size.x/2,m_block_size.y/2);
 
-	// Put the Blockaverages into the target
-	for (; Start.y < src.get_size().y; Start.y += m_block_size.y){
-		for (Start.x = m_block_size.x/2; Start.x < src.get_size().x; Start.x += m_block_size.x,++i){
+	// Put the filtered block values into the target
+	for (size_t out_y = 0; out_y < fresult->get_size().y; Start.y += m_block_size.y, ++out_y){
+		Start.x = m_block_size.x/2; 
+		for (size_t out_x = 0; out_x < fresult->get_size().x; Start.x += m_block_size.x,++out_x, ++i){
 			*i = src(Start);
 		}
 	}
