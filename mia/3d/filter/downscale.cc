@@ -73,9 +73,11 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 	C3DBounds Start(m_block_size.x/2,m_block_size.y/2,m_block_size.z/2);
 
 	// Put the Blockaverages into the target
-	for (; Start.z < src.get_size().z; Start.z += m_block_size.z){
-		for (Start.y = 0; Start.y < src.get_size().y; Start.y += m_block_size.y){
-			for (Start.x = 0; Start.x < src.get_size().x; Start.x += m_block_size.x,++i){
+	for (size_t z = 0; z < fresult->get_size().z; Start.z += m_block_size.z, ++z){
+		Start.y = m_block_size.y/2; 
+		for (size_t y = 0; y < fresult->get_size().y; Start.y += m_block_size.y, ++y){
+			Start.x = m_block_size.x/2; 
+			for (size_t x = 0; x < fresult->get_size().x; Start.x += m_block_size.x, ++x, ++i){
 				*i = src(Start);
 			}
 		}
