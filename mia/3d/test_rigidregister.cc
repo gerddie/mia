@@ -197,7 +197,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_rigid_gd, RigidRegisterFixture )
+BOOST_FIXTURE_TEST_CASE( test_rigid_ld_lbfgs, RigidRegisterFixture )
 {
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
 	auto transformation = tr_creator->create(size); 
@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_gd, RigidRegisterFixture )
 	
 	transformation->set_parameters(params); 
 
-	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.001,ftolr=0.001", 4.0); 
+	run(*transformation, "nlopt:opt=ld-lbfgs,xtolr=0.001,ftolr=0.001", 4.0); 
 }
 
 #if 0 
