@@ -26,6 +26,7 @@ using namespace mia;
 
 using std::vector; 
 using std::invalid_argument; 
+using std::ostream; 
 
 C3DThinning::C3DThinning()
 {
@@ -38,6 +39,8 @@ public:
 	bool is_candidate(int dir)const; 
 
 	bool is_simple_pixel()const; 
+
+	void print(ostream& os) const; 
 	
 private: 
 	bool is_boundary(int dir) const; 
@@ -62,6 +65,12 @@ private:
 
 	static const signed char eulerLUT_26n[128]; 
 }; 
+
+ostream& operator << (ostream& os, const CNeighborhood& n)
+{
+	n.print(os); 
+	return os; 
+}
 
 const CNeighborhood::FLabelFunction CNeighborhood::label_callback[26]  = {
 	ot_label1, ot_label1, ot_label2, // 2 
@@ -110,8 +119,9 @@ static void thinning_run(C3DBitImage& input)
 					++pixels_changed; 
 				}
 			}
+			cvinfo() << candidate_pixels.size() << "\n"; 
 		}
-		cvinfo() << "Pixels changed:" << pixels_changed << "\n"; 
+		cvdebug() << "Pixels changed:" << pixels_changed << "\n"; 
 		
 	} while (pixels_changed > 0); 
 
@@ -187,7 +197,7 @@ CNeighborhood::CNeighborhood(const C3DBitImage& input, const C3DBounds& pos):
 
 bool CNeighborhood::is_candidate(int dir)const
 {
-	return is_boundary(dir) && is_Euler_invariant() && is_simple_pixel(); 
+	return (m_nneigbors > 1) && is_boundary(dir) && is_Euler_invariant() && is_simple_pixel(); 
 }
 
 bool CNeighborhood::is_boundary(int dir) const
@@ -643,3 +653,14 @@ void CNeighborhood::ot_label8(char label, vector<char>& cube)
 
 }
 
+
+void CNeighborhood::print(ostream& os) const
+{
+	static const char pixel_identifier[27] = "****B*****N*WO*S*****U****";
+
+	for(int i = 0; i < 13; i++ ) 
+		os << (m_pixels[i] ? pixel_identifier[i]  : '.'); 
+	os << "X"; 
+	for(int i = 13; i < 26; i++ ) 
+		os << (m_pixels[i] ? pixel_identifier[i]  : '.'); 
+}
