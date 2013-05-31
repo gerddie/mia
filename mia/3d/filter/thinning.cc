@@ -24,6 +24,9 @@
 using namespace thinning_3dimage_filter; 
 using namespace mia; 
 
+using std::vector; 
+using std::invalid_argument; 
+
 C3DThinning::C3DThinning()
 {
 }
@@ -34,7 +37,7 @@ public:
 	
 	bool is_candidate(int dir)const; 
 
-	bool is_simple_point()const; 
+	bool is_simple_pixel()const; 
 	
 private: 
 	bool is_boundary(int dir) const; 
@@ -50,33 +53,38 @@ private:
 	static void ot_label7(char label, vector<char>& cube); 
 	static void ot_label8(char label, vector<char>& cube); 
 
-	typedef void (FLabelFunction)(char label, vector<char>& cube); 
-	constexpr static FLabelFunction label_callback[26] = {
-		ot_label1, ot_label1, ot_label2, // 2 
-		ot_label1, ot_label1, ot_label2, // 5 
-		ot_label3, ot_label3, ot_label4, // 8 
-
-		ot_label1, ot_label1, ot_label2, // 11 
-		ot_label1,/*center,*/ ot_label2, // 13
-		ot_label3, ot_label3, ot_label4, // 16
-
-		ot_label5, ot_label5, ot_label6, // 19
-		ot_label5, ot_label5, ot_label6, // 22
-		ot_label7, ot_label7, ot_label8  // 25
-	}; 
-		
+	typedef void (*FLabelFunction)(char label, vector<char>& cube); 
+	static const FLabelFunction label_callback[26];
+	
 	vector<char> m_pixels;
 	int m_nneigbors; 
-	constexpr int m_direction_index[6] = {10, 15, 13, 12, 21, 4 }; 
+	static const int m_direction_index[6]; 
+
+	static const signed char eulerLUT_26n[128]; 
 }; 
 
+const CNeighborhood::FLabelFunction CNeighborhood::label_callback[26]  = {
+	ot_label1, ot_label1, ot_label2, // 2 
+	ot_label1, ot_label1, ot_label2, // 5 
+	ot_label3, ot_label3, ot_label4, // 8 
+	
+	ot_label1, ot_label1, ot_label2, // 11 
+	ot_label1,/*center,*/ ot_label2, // 13
+	ot_label3, ot_label3, ot_label4, // 16
+	
+	ot_label5, ot_label5, ot_label6, // 19
+	ot_label5, ot_label5, ot_label6, // 22
+	ot_label7, ot_label7, ot_label8  // 25
+}; 
+
+const int CNeighborhood::m_direction_index[6] = {10, 15, 13, 12, 21, 4 }; 
 
 static void thinning_run(C3DBitImage& input) 
 {
-	int pixels_changed = 0; 
+	int pixels_changed; 
 
 	do {
-		pixel_changed = 0; 
+		pixels_changed = 0; 
 		for (int border = 0; border < 6; ++border) {
 
 			vector<C3DBitImage::range_iterator> candidate_pixels; 
@@ -96,13 +104,14 @@ static void thinning_run(C3DBitImage& input)
 			// this two-step procedure is only needed if the candidate collection is done 
 			// in parallel 
 			for (auto c = candidate_pixels.begin(); c != candidate_pixels.end(); ++c) {
-				CNeighborhood n = get_neighbourhood(input, c); 
+				CNeighborhood n(input, c->pos()); 
 				if (n.is_simple_pixel()) {
-					*c = false;
+					**c = false;
 					++pixels_changed; 
 				}
 			}
 		}
+		cvinfo() << "Pixels changed:" << pixels_changed << "\n"; 
 		
 	} while (pixels_changed > 0); 
 
@@ -120,7 +129,7 @@ mia::C3DFilter::result_type C3DThinning::do_filter(const mia::C3DImage& image) c
 	auto result = image.clone(); 
 	auto bit_image = dynamic_cast<C3DBitImage&>(*result); 
 	thinning_run(bit_image); 
-	return result; 
+	return bit_image.clone(); 
 }
 
 
@@ -172,13 +181,13 @@ CNeighborhood::CNeighborhood(const C3DBitImage& input, const C3DBounds& pos):
 		}
 	}
 
-	copy(help.begin(), help.begin()+13; m_pixel.begin()); 
-	copy(help.begin()+14, help.end(); m_pixel.begin()+13); 
+	copy(help.begin(), help.begin()+13, m_pixels.begin()); 
+	copy(help.begin()+14, help.end(), m_pixels.begin()+13); 
 }
 
 bool CNeighborhood::is_candidate(int dir)const
 {
-	return is_boundary(dir)) && is_Euler_invariant() && is_simple_point(); 
+	return is_boundary(dir) && is_Euler_invariant() && is_simple_pixel(); 
 }
 
 bool CNeighborhood::is_boundary(int dir) const
@@ -234,7 +243,7 @@ bool CNeighborhood::is_Euler_invariant() const
 	return EulerChar == 0; 
 }
 
-static const signed char eulerLUT_26n[128] = {
+const signed char CNeighborhood::eulerLUT_26n[128] = {
 	  1,  -1,  -1,   1, 
 	 -3,  -1,  -1,   1, 
 	 -1,   1,   1,  -1, 
@@ -272,12 +281,12 @@ static const signed char eulerLUT_26n[128] = {
 	  3,   1,   1,  -1
 }; 
 
-bool CNeighborhood::is_simple_point()const
+bool CNeighborhood::is_simple_pixel()const
 {
 	vector<char> cube(m_pixels); 
 	char label = 2;
 	
-	for(i = 0; i < 26; i++ ) {
+	for(int i = 0; i < 26; i++ ) {
 		if (cube[i] != 1)
 			continue; 
 		

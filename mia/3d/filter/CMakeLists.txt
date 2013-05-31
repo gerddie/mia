@@ -38,6 +38,7 @@ SET(filters3dNew
   selectbig
   sepconv 
   tee
+  thinning
   watershed
   )
 
