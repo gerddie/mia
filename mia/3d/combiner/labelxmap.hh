@@ -38,6 +38,7 @@ public:
 	void add(size_t a , size_t b);
 private:
 	virtual void do_save(const std::string& fname) const;
+        virtual boost::any do_get() const;  
 	typedef std::map<XLabel, size_t, LessXLabel> CLabelMap;
 	CLabelMap m_map;
 };
