@@ -195,7 +195,7 @@ public:
 
 	/// print the vector to a stream with special formatting 
 	void print(std::ostream& os) const {
-		os << "<"<< x << "," << y << ">"; 
+		os  << x << "," << y; 
 	}
 	
 	/// read the properly formatted 2D vector from a stream 
@@ -204,6 +204,9 @@ public:
 		
 		T r,s; 
 		is >> c;
+		// if we get the opening delimiter '<' then we also expect the closing '>'
+		// otherwise just read two coma separated values. 
+		// could use the BOOST lexicel cast for better error handling
 		if (c == '<') {
 			is >> r;
 			is >> c; 
@@ -219,8 +222,18 @@ public:
 			}
 			x = r; 
 			y = s; 
-		}else
-			is.putback(c);
+		}else {
+			is >> r;
+			is >> c; 
+			if (c != ',') {
+				is.clear(std::ios::badbit);
+				return; 
+			}
+			is >> s; 
+			x = r; 
+			y = s; 
+		}
+		
 	}
 
 };
