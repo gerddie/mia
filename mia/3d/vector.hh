@@ -217,6 +217,7 @@ public:
 			y = s; 
 			z = t;
 		}else{
+			is.putback(c); 
 			is >> r;
 			is >> c; 
 			if (c != ',') {

@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
 	params[2] = 2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.01,ftolr=0.01", 0.4); 
+	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.01,ftolr=0.01", 0.8); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )

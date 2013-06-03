@@ -223,6 +223,7 @@ public:
 			x = r; 
 			y = s; 
 		}else {
+			is.putback(c); 
 			is >> r;
 			is >> c; 
 			if (c != ',') {
