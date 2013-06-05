@@ -27,6 +27,7 @@ SET(filters3dNew
   invert
   kmeans 
   label
+  load
   mask
   median 
   mlv 

@@ -50,7 +50,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 {
 	set<string> test_data = {
 		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", "erode", "gauss", "gradnorm", 
-		"growmask", "invert", "isovoxel", "kmeans",  "label", "mask", "median", "mlv", "open",  "reorient", "resize",
+		"growmask", "invert", "isovoxel", "kmeans",  "label", "load", "mask", "median", "mlv", "open",  "reorient", "resize",
 		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", "ws" 
 	}; 
 	test(C3DFilterPluginHandler::instance().get_set(), test_data); 
@@ -59,7 +59,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DImageCombinerPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"labelxmap"
+		"labelxmap", "absdiff", "add", "sub", "mul", "div"
 	}; 
 	test(C3DImageCombinerPluginHandler::instance().get_set(), test_data); 
 }
