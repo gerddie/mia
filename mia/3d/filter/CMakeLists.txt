@@ -40,6 +40,7 @@ SET(filters3dNew
   sepconv 
   tee
   thinning
+  transform
   watershed
   )
 
