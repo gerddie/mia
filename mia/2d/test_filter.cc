@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(test_available_filters)
 	set<string> test_data = {
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", "close", "convert", "crop", 
 		"dilate", "distance", "downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
-		"label", "labelmap", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
+		"label", "labelmap", "load", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
 		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sort-label", 
 		"sws", "tee", "thinning", "thresh", "ws"}; 
 

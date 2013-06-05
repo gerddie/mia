@@ -51,6 +51,7 @@ SET(filters2dNew_base
   kmeans
   label 
   labelmap
+  load
   mask
   mean 
   median
