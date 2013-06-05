@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(test_available_filters)
 		"dilate", "distance", "downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "load", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
 		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sort-label", 
-		"sws", "tee", "thinning", "thresh", "ws"}; 
+		"sws", "tee", "thinning", "thresh", "transform", "ws"}; 
 
 	test_availabe_plugins(handler, test_data); 
 }

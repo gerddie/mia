@@ -49,9 +49,11 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", "erode", "gauss", "gradnorm", 
-		"growmask", "invert", "isovoxel", "kmeans",  "label", "load", "mask", "median", "mlv", "open",  "reorient", "resize",
-		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", "transform", "ws" 
+		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", 
+		"erode", "gauss", "gradnorm", "growmask", "invert", "isovoxel", "kmeans",  
+		"label", "load", "mask", "median", "mlv", "open",  "reorient", "resize",
+		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", 
+		"transform", "ws" 
 	}; 
 	test(C3DFilterPluginHandler::instance().get_set(), test_data); 
 }
@@ -257,8 +259,9 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture)
 		"convert", "close", "crop", "dilate", "distance", 
 		"downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "load", "mask", "mean", "median", "mlv", 
-		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", "scale", "selectbig", 
-		"sepconv", "shmean", "sort-label", "sws", "tee", "thinning", "thresh", "ws"
+		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", 
+		"scale", "selectbig", "sepconv", "shmean", "sort-label", "sws", 
+		"tee", "thinning", "thresh", "transform", "ws"
 	}; 
 	test(C2DFilterPluginHandler::instance().get_set(), test_data); 
 }

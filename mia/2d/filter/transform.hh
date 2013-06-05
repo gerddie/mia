@@ -18,19 +18,29 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
-#include <mia/2d/transformfactory.hh>
-#include <mia/template/transformfactory.cxx>
+#include <mia/2d/filter.hh>
 
-NS_MIA_BEGIN
+NS_BEGIN( transform_2dimage_filter)
 
-template class TTransformCreator<C2DTransformation>; 
-template class TTransformCreatorPlugin<C2DTransformation>; 
 
-template <> const char *  const 
-TPluginHandler<C2DTransformCreatorPlugin>::m_help =  
-   "These plug-ins define creators for 2D transformations.";
+class C2DTransform : public mia::C2DFilter {
+public:
+	C2DTransform(const std::string& name);
 
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
+private:
+	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+	std::string m_name; 
+};
 
-NS_MIA_END
+class C2DTransformFilterPluginFactory: public mia::C2DFilterPlugin {
+public:
+	C2DTransformFilterPluginFactory();
+private:
+	virtual mia::C2DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+	std::string m_filename; 
+};
+
+NS_END
+
+
