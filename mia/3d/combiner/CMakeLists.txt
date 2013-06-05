@@ -19,6 +19,7 @@
 
 SET(combiner3d
 	labelxmap
+	ops
 )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX2(

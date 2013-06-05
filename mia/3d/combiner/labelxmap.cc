@@ -83,6 +83,11 @@ PCombinerResult CLabelXMap::do_combine( const C3DImage& a, const C3DImage& b) co
 
 }
 
+boost::any CXLabelResult::do_get() const
+{
+	return boost::any(m_map); 
+}
+
 template <typename U, typename V, bool integral>
 struct xmap {
 	static C3DImageCombiner::result_type apply(U /*ab*/, U /*ae*/, V /*bb*/) {

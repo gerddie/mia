@@ -32,4 +32,9 @@ void CCombinerResult::save(const std::string& fname)const
 	do_save(fname);
 }
 
+boost::any CCombinerResult::get() const
+{
+	return do_get(); 
+}
+
 NS_MIA_END

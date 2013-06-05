@@ -18,28 +18,39 @@
  *
  */
 
-#ifndef mia_core_combiner_hh
-#define mia_core_combiner_hh
-
-#include <memory>
-#include <string>
-#include <boost/any.hpp>
-#include <mia/core/defines.hh>
-
+#ifndef mia_3d_combiner_plugin_hh
+#define mia_3d_combiner_plugin_hh
 
 NS_MIA_BEGIN
 
-class EXPORT_CORE CCombinerResult {
+template <typename Combiner, const char * const name> 
+class T3DImageCombinerPlugin: public C3DImageCombinerPlugin {
 public:
-	virtual ~CCombinerResult();
-	void save(const std::string& fname)const;
-	boost::any get() const; 
+	T3DImageCombinerPlugin(); 
 private:
-	virtual void do_save(const std::string& fname) const = 0;
-        virtual boost::any do_get() const = 0;  
-};
+	virtual Combiner *do_create()const;
+	virtual const std::string do_get_descr() const;
+}; 
 
-typedef std::shared_ptr<CCombinerResult > PCombinerResult;
+
+template <typename Combiner, const char * const name> 
+T3DImageCombinerPlugin<Combiner, name>::T3DImageCombinerPlugin():
+	C3DImageCombinerPlugin(name) 
+{
+}
+	
+template <typename Combiner, const char * const name> 
+Combiner *T3DImageCombinerPlugin<Combiner, name>::do_create()const
+{
+	return new Combiner; 
+}
+
+template <typename Combiner, const char name[]> 
+const std::string T3DImageCombinerPlugin<Combiner, name>::do_get_descr() const
+{
+	return std::string("Image combiner '") +  std::string(name) + std::string("'"); 
+}
+
 
 NS_MIA_END
 
