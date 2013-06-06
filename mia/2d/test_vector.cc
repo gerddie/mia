@@ -44,13 +44,13 @@ BOOST_AUTO_TEST_CASE( test_2dvector )
 	ostringstream so;
 	so << a;
 	cvdebug() << so.str() << "\n";
-	BOOST_CHECK(so.str() == string("<1,2>"));
+	BOOST_CHECK(so.str() == string("1,2"));
 
 	C2DFVector c(3.0f, 4.0f);
-	istringstream si("<1.0,2.0>");
+	istringstream si("1.0,2.0");
 	si >> c;
 
-	BOOST_CHECK (c == a);
+	BOOST_CHECK_EQUAL (c, a);
 
 	c = a + b;
 	BOOST_CHECK(c.x == 2.4f && c.y == 4.3f);
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_float_vector_option)
 	C2DFVector v(1,2);
 
 	PCmdOption popt(make_opt(v,  "2dvector", 'f', "a float 2d vector option"));
-	const char *str_value = "<1.2,3.4>";
+	const char *str_value = "1.2,3.4";
 
 	popt->set_value(str_value);
 	BOOST_CHECK(v.x == 1.2f && v.y == 3.4f);
@@ -101,12 +101,12 @@ BOOST_AUTO_TEST_CASE(test_size_vector_option)
 	C2DBounds v(1,2);
 
 	PCmdOption popt(make_opt(v,  "2dbounds", 'f', "a 2d size option"));
-	const char *str_value = "<12,34>";
+	const char *str_value = "12,34";
 
 	popt->set_value(str_value);
 	BOOST_CHECK(v.x == 12 && v.y == 34 );
 
-	const char *str_value_err = "<1.2,3.4>";
+	const char *str_value_err = "1.2,3.4";
 	BOOST_CHECK_THROW( popt->set_value(str_value_err), std::invalid_argument);
 }
 

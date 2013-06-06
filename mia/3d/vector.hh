@@ -182,7 +182,7 @@ public:
 
 	/// print out the formatted vector to the stream
 	void write(std::ostream& os)const {
-		os << "<" << x << "," << y << "," << z << ">"; 
+		os  << x << "," << y << "," << z; 
 	}
 
 	/// read the vector from a formatted string 
@@ -191,6 +191,9 @@ public:
 		
 		T r,s,t; 
 		is >> c;
+		// if we get the opening delimiter '<' then we also expect the closing '>'
+		// otherwise just read three coma separated values. 
+		// could use the BOOST lexicel cast for better error handling
 		if (c == '<') {
 			is >> r;
 			is >> c; 
@@ -213,8 +216,25 @@ public:
 			x = r; 
 			y = s; 
 			z = t;
-		}else
-			is.putback(c);
+		}else{
+			is.putback(c); 
+			is >> r;
+			is >> c; 
+			if (c != ',') {
+				is.clear(std::ios::badbit);
+				return; 
+			}
+			is >> s; 
+			is >> c; 
+			if (c != ',') {
+				is.clear(std::ios::badbit);
+				return; 
+			}
+			is >> t; 
+			x = r; 
+			y = s; 
+			z = t;
+		}
 	}
 
 	/// swizzle operator 
