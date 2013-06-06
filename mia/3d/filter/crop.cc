@@ -74,7 +74,7 @@ C3DCropImageFilterFactory::C3DCropImageFilterFactory():
 	m_begin(0,0,0),
 	m_end(-1,-1,-1)
 {
-	add_parameter("begin", new TParameter<C3DBounds>(m_begin, false, "begin of cropping range"));
+	add_parameter("start", new TParameter<C3DBounds>(m_begin, false, "begin of cropping range"));
 	add_parameter("end", new TParameter<C3DBounds>(m_end, false, "end of cropping range, maximum = (-1,-1,-1)"));
 }
 
