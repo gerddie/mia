@@ -20,7 +20,7 @@
 
 #include <mia/core/errormacro.hh>
 #include <map>
-#include <boost/algorithm/minmax_element.hpp>
+#include <algorithm>
 
 #include <dicom/dicom4mia.hh>
 
@@ -103,16 +103,17 @@ struct CDicomReaderData {
 	~CDicomReaderData(); 
 
 	Uint16 getUint16(const DcmTagKey &tagKey, bool required, Uint16 default_value = 0);
+	float getFloat32(const DcmTagKey &tagKey, bool required, float default_value = 0);
 
 	string getAttribute(const string& key, bool required);
 
-	void add_attribute(C2DImage& image, const char *key, ETagRequirement required, const char *default_value); 
+	void add_attribute(CAttributedData& image, const char *key, ETagRequirement required, const char *default_value); 
 
-	template <typename T>
-	void getPixelData(T2DImage<T>& image);
+	template <typename I>
+	void getPixelData(I out_begin, size_t size);
 
-	template <typename T>
-	void getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& image);
+	template <typename I>
+	void getPixelData_LittleEndianExplicitTransfer(I out_begin, size_t size);
 
 
 	C2DFVector getPixelSize();
@@ -129,6 +130,11 @@ CDicomReader::CDicomReader(const char *filename):
 CDicomReader::~CDicomReader()
 {
 	delete impl;
+}
+
+bool CDicomReader::has_3dimage() const
+{
+	return get_number_of_frames() > 1; 
 }
 
 bool CDicomReader::good() const
@@ -156,6 +162,13 @@ C2DBounds CDicomReader::image_size()const
 C2DFVector CDicomReader::get_pixel_size() const
 {
 	return impl->getPixelSize();
+}
+
+C3DFVector CDicomReader::get_voxel_size() const
+{
+	auto size2d = impl->getPixelSize();
+	auto thinkness = impl->getFloat32(DCM_SpacingBetweenSlices, true,0); 
+	return C3DFVector(size2d.x, size2d.y, thinkness); 
 }
 
 int CDicomReader::samples_per_pixel() const
@@ -189,9 +202,38 @@ P2DImage CDicomReader::load_image()const
 	P2DImage presult(result);
 
 	// get pixel data
-	impl->getPixelData(*result);
+	impl->getPixelData(result->begin(), result->size());
 
 	result->set_pixel_size(get_pixel_size());
+
+
+	const SLookupInit *attr_table = lookup_init;
+	while (attr_table->skey) {
+		// copy some attributes
+		impl->add_attribute(*result, attr_table->skey, attr_table->required, attr_table->default_value);
+		++attr_table;
+	}
+	
+	return presult;
+}
+
+int CDicomReader::get_number_of_frames() const
+{
+	return impl->getUint16(DCM_NumberOfFrames, false, 1);
+}
+
+template <typename T>
+P3DImage CDicomReader::load_image3d()const
+{
+	C3DBounds size(this->image_size().x, this->image_size().y, this->get_number_of_frames());  
+	cvdebug() << "load slice of size " << size << "\n";
+	T3DImage<T> *result = new T3DImage<T>(size);
+	P3DImage presult(result);
+
+	// get pixel data
+	impl->getPixelData(result->begin(), result->size());
+
+	result->set_voxel_size(this->get_voxel_size());
 
 
 	const SLookupInit *attr_table = lookup_init;
@@ -232,6 +274,33 @@ P2DImage CDicomReader::get_image() const
 					"' doesn't support ", bbp,  " bits per pixel.");
 }
 
+P3DImage CDicomReader::get_3dimage() const
+{
+	if (samples_per_pixel() != 1) {
+		throw create_exception<invalid_argument>( "CDicomReader: '", m_filename, 
+						"' Image has more then one color channel");
+	}
+	int bbpa = bits_allocated();
+	int bbp  = bits_used();
+	if (bbp > bbpa) {
+		throw create_exception<invalid_argument>( "CDicomReader: '", m_filename, 
+						"' Bogus image - more bits per pixel used then allocated");
+	}
+
+	auto pixel_signed = impl->getUint16(DCM_PixelRepresentation, false, 0);
+
+
+	if (bbpa == 16) {
+		if (pixel_signed) 
+			return load_image3d<signed short>();
+		else
+			return load_image3d<unsigned short>();
+	}
+
+	throw create_exception<invalid_argument>( "CDicomReader: '", m_filename, 
+					"' doesn't support ", bbp,  " bits per pixel.");
+}
+
 
 CDicomReaderData::CDicomReaderData()
 {
@@ -262,6 +331,18 @@ Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required, Uint1
 	return value;
 }
 
+float CDicomReaderData::getFloat32(const DcmTagKey &tagKey, bool required, float default_value)
+{
+	Float32 value = default_value;
+	OFCondition success = dcm.getDataset()->findAndGetFloat32(tagKey, value);
+
+	if (success.bad() && required){
+		throw create_exception<runtime_error>( "CDicom2DImageIOPlugin: unable to get value for '", 
+					     tagKey, " ':", status.text());
+	}
+	return value;
+}
+
 string CDicomReaderData::getAttribute(const string& key, bool required)
 {
 	LookupMap::Key k = LookupMap::instance().find(key);
@@ -280,7 +361,7 @@ string CDicomReaderData::getAttribute(const string& key, bool required)
 	return string(); 
 }
 
-void CDicomReaderData::add_attribute(C2DImage& image, const char *key, ETagRequirement  required, const char *default_value)
+void CDicomReaderData::add_attribute(CAttributedData& image, const char *key, ETagRequirement  required, const char *default_value)
 {
 	string value = getAttribute(key, required == tr_yes);
 	if (!value.empty())
@@ -290,8 +371,8 @@ void CDicomReaderData::add_attribute(C2DImage& image, const char *key, ETagRequi
 }
 
 
-template <typename T>
-void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& image)
+template <typename I>
+void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(I out_begin, size_t size)
 {
 	OFCondition status = dcm.loadAllDataIntoMemory();
 	if (status.bad()) {
@@ -302,18 +383,18 @@ void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& im
 	long unsigned int count;
 	OFCondition cnd = dcm.getDataset()->findAndGetUint16Array(DCM_PixelData, values, &count, false);
 	if (cnd.good()) {
-		if (image.size() != count) {
-			throw create_exception<runtime_error>( "bogus file, expect ", image.size(), " pixels, ", 
+		if (size != count) {
+			throw create_exception<runtime_error>( "bogus file, expect ", size, " pixels, ", 
 						     "but got data for ", count, " pixels");
 		}
-		copy(values, values+count, image.begin());
+		copy(values, values+count, out_begin);
 	}else {
 		throw create_exception<runtime_error>( "DICOM: required value PixelData:", status.text());
 	}
 }
 
-template <typename T>
-void CDicomReaderData::getPixelData(T2DImage<T>& image)
+template <typename I>
+void CDicomReaderData::getPixelData(I out_begin, size_t size)
 {
 	dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
 	
@@ -326,7 +407,7 @@ void CDicomReaderData::getPixelData(T2DImage<T>& image)
 		string transfer_syntax(of_transfer_syntax.data());
 		throw create_exception<runtime_error>( "DICOM: Unsupported data encoding '", transfer_syntax, "'");
 	}
-	getPixelData_LittleEndianExplicitTransfer(image);
+	getPixelData_LittleEndianExplicitTransfer(out_begin, size);
 }
 
 C2DFVector CDicomReaderData::getPixelSize()
@@ -410,8 +491,7 @@ CDicomImageSaver::result_type CDicomImageSaver::operator ()(const T2DImage<T>& i
 	parent->setValueUint16(DCM_BitsAllocated, pixel_trait<T>::AllocSize);
 	parent->setValueUint16(DCM_BitsStored, pixel_trait<T>::UseSize);
 
-	pair<typename T2DImage<T>::const_iterator, typename T2DImage<T>::const_iterator> minmax =
-		boost::minmax_element(image.begin(), image.end());
+	auto  minmax = minmax_element(image.begin(), image.end());
 
 
 	parent->setValueUint16(DCM_SmallestImagePixelValue, *minmax.first);

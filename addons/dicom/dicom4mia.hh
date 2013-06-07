@@ -24,6 +24,7 @@
 #include <mia/core/attributes.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/image.hh>
+#include <mia/3d/image.hh>
 
 #ifdef __GNUC__
 #  define EXPORT_DICOM __attribute__((visibility("default")))
@@ -63,10 +64,19 @@ public:
 
 	std::string get_attribute(const std::string& name, bool required)const;
 	C2DFVector get_pixel_size() const;
+	C3DFVector get_voxel_size() const;
 
 	P2DImage get_image() const;
+
+	bool has_3dimage() const; 
+
+	P3DImage get_3dimage() const; 
+
+	int get_number_of_frames() const; 
 private:
+	template <typename T> P3DImage load_image3d()const;
 	template <typename T> P2DImage load_image()const;
+
 
 	struct CDicomReaderData *impl;
 	std::string m_filename;

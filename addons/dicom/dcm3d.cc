@@ -233,20 +233,26 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::do_load(const string& fname) cons
 	if (!reader.good())
 		return result;
 
-	vector<P2DImage> candidates;
-	P2DImage prototype = reader.get_image();
-	candidates.push_back(prototype);
-
-	// this is not very nice 
-	string study_id;
-	if (prototype->has_attribute(IDStudyID))
-		study_id = prototype->get_attribute(IDStudyID)->as_string();
-	// now read all the slices in the folder that have the same study id
-
-	add_images(fname, study_id, candidates);
-
-
-	result = get_images(candidates);
+	if (reader.has_3dimage()) {
+		cvdebug() << "Got a multiframe image\n";
+		result.reset(new Data);
+		result->push_back(reader.get_3dimage()); 
+	}else {
+		
+		vector<P2DImage> candidates;
+		P2DImage prototype = reader.get_image();
+		candidates.push_back(prototype);
+		
+		// this is not very nice 
+		string study_id;
+		if (prototype->has_attribute(IDStudyID))
+			study_id = prototype->get_attribute(IDStudyID)->as_string();
+		// now read all the slices in the folder that have the same study id
+		
+		add_images(fname, study_id, candidates);
+		
+		result = get_images(candidates);
+	}
 	return result;
 }
 
