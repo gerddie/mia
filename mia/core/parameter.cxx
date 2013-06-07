@@ -101,7 +101,13 @@ std::string CTParameter<T>::do_get_value_as_string() const
 {
 	std::ostringstream s; 
 	s << m_value; 
-	return s.str(); 
+	auto str = s.str(); 
+	if (str.find(',') != std::string::npos) {
+		std::ostringstream s2; 
+		s2 << '[' << str << ']'; 
+		str =  s2.str(); 
+	}
+	return str; 
 }
 
 template <typename T> 
@@ -109,7 +115,13 @@ std::string CTParameter<T>::do_get_default_value() const
 {
 	std::ostringstream s; 
 	s << m_default_value; 
-	return s.str(); 
+	auto str = s.str(); 
+	if (str.find(',') != std::string::npos) {
+		std::ostringstream s2; 
+		s2 << '[' << str << ']'; 
+		str =  s2.str(); 
+	}
+	return str; 
 }
 
 template <typename T> 
