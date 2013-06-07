@@ -62,14 +62,14 @@ const SLookupInit lookup_init[] = {
 	{IDModality, DCM_Modality, false, tr_yes, NULL},
 	{IDSeriesNumber, DCM_SeriesNumber, false, tr_yes_defaulted, "-1"},
 	{IDPatientPosition, DCM_PatientPosition, false, tr_no, NULL},
-	{IDAcquisitionDate, DCM_AcquisitionDate, false, tr_yes, NULL},
+	{IDAcquisitionDate, DCM_AcquisitionDate, false, tr_no, NULL},
 	{IDAcquisitionNumber, DCM_AcquisitionNumber, false, tr_yes_defaulted, "-1"},
 	{IDSmallestImagePixelValue, DCM_SmallestImagePixelValue, false, tr_no, NULL},
 	{IDLargestImagePixelValue, DCM_LargestImagePixelValue, false, tr_no, NULL},
 	{IDInstanceNumber, DCM_InstanceNumber, false, tr_yes_defaulted, "-1"},
 	{IDStudyID, DCM_StudyID, false, tr_no, NULL},
-	{IDImageType, DCM_ImageType, false, tr_yes, NULL},
-	{IDSliceLocation, DCM_SliceLocation, false, tr_yes, NULL},
+	{IDImageType, DCM_ImageType, false, tr_no, NULL},
+	{IDSliceLocation, DCM_SliceLocation, false, tr_no, NULL},
 	{IDPatientOrientation, DCM_PatientOrientation, false, tr_no, NULL},
 	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, tr_no, NULL},
 	{IDSOPClassUID, DCM_SOPClassUID, false, tr_no, NULL},
@@ -103,9 +103,12 @@ struct CDicomReaderData {
 	~CDicomReaderData(); 
 
 	Uint16 getUint16(const DcmTagKey &tagKey, bool required, Uint16 default_value = 0);
+	Sint32 getSint32(const DcmTagKey &tagKey, bool required, Sint32 default_value = 0);
 	float getFloat32(const DcmTagKey &tagKey, bool required, float default_value = 0);
+	float getFloat64(const DcmTagKey &tagKey, bool required, double default_value = 0);
 
-	string getAttribute(const string& key, bool required);
+	string getAttribute(const string& key, bool required, const char *default_value = "");
+	string getAttribute(const DcmTagKey &tagKey, bool required, const char *default_value = "");
 
 	void add_attribute(CAttributedData& image, const char *key, ETagRequirement required, const char *default_value); 
 
@@ -134,6 +137,7 @@ CDicomReader::~CDicomReader()
 
 bool CDicomReader::has_3dimage() const
 {
+	TRACE_FUNCTION; 
 	return get_number_of_frames() > 1; 
 }
 
@@ -167,7 +171,7 @@ C2DFVector CDicomReader::get_pixel_size() const
 C3DFVector CDicomReader::get_voxel_size() const
 {
 	auto size2d = impl->getPixelSize();
-	auto thinkness = impl->getFloat32(DCM_SpacingBetweenSlices, true,0); 
+	auto thinkness = impl->getFloat64(DCM_SpacingBetweenSlices, true,0); 
 	return C3DFVector(size2d.x, size2d.y, thinkness); 
 }
 
@@ -219,7 +223,8 @@ P2DImage CDicomReader::load_image()const
 
 int CDicomReader::get_number_of_frames() const
 {
-	return impl->getUint16(DCM_NumberOfFrames, false, 1);
+	TRACE_FUNCTION; 
+	return impl->getSint32(DCM_NumberOfFrames, false, 1);
 }
 
 template <typename T>
@@ -319,6 +324,22 @@ CDicomReaderData::~CDicomReaderData()
 }
 
 
+Sint32 CDicomReaderData::getSint32(const DcmTagKey &tagKey, bool required, Sint32 default_value)
+{
+	Sint32 value = default_value;
+	OFCondition success = dcm.getDataset()->findAndGetSint32(tagKey, value);
+
+	if (success.bad() && required){
+		throw create_exception<runtime_error>( "CDicom2DImageIOPlugin: unable to get value for '", 
+					     tagKey, " ':", status.text());
+	}
+	if (success.bad()) 
+		cvdebug() << "Reading " << tagKey << ": use default " << value << " because '"<< status.text() << "'\n"; 
+	else 
+		cvdebug() << "Reading " << tagKey << ":" << value << "\n"; 
+	return value;
+}
+
 Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required, Uint16 default_value)
 {
 	Uint16 value = default_value;
@@ -328,6 +349,10 @@ Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required, Uint1
 		throw create_exception<runtime_error>( "CDicom2DImageIOPlugin: unable to get value for '", 
 					     tagKey, " ':", status.text());
 	}
+	if (success.bad()) 
+		cvdebug() << "Reading " << tagKey << ": use default " << value << " because '"<< status.text() << "'\n"; 
+	else 
+		cvdebug() << "Reading " << tagKey << ":" << value << "\n"; 
 	return value;
 }
 
@@ -343,7 +368,33 @@ float CDicomReaderData::getFloat32(const DcmTagKey &tagKey, bool required, float
 	return value;
 }
 
-string CDicomReaderData::getAttribute(const string& key, bool required)
+float CDicomReaderData::getFloat64(const DcmTagKey &tagKey, bool required, double default_value)
+{
+	Float64 value = default_value;
+	OFCondition success = dcm.getDataset()->findAndGetFloat64(tagKey, value);
+
+	if (success.bad() && required){
+		throw create_exception<runtime_error>( "CDicom2DImageIOPlugin: unable to get value for '", 
+					     tagKey, " ':", status.text());
+	}
+	return value;
+}
+
+
+string CDicomReaderData::getAttribute(const DcmTagKey &tagKey, bool required, const char *default_value)
+{
+	OFString value;
+	OFCondition success = dcm.getDataset()->findAndGetOFString(tagKey, value);
+	if (success.good()) 
+	    return string(value.data());
+	
+	if (required) {
+		throw create_exception<runtime_error>( "DICOM read: Required value '", tagKey, "' not found");
+	}
+	return string(default_value); 
+}
+
+string CDicomReaderData::getAttribute(const string& key, bool required, const char *default_value)
 {
 	LookupMap::Key k = LookupMap::instance().find(key);
 
@@ -358,7 +409,7 @@ string CDicomReaderData::getAttribute(const string& key, bool required)
 	if (required) {
 		throw create_exception<runtime_error>( "DICOM read: Required value '", key, "' not found");
 	}
-	return string(); 
+	return string(default_value); 
 }
 
 void CDicomReaderData::add_attribute(CAttributedData& image, const char *key, ETagRequirement  required, const char *default_value)

@@ -238,7 +238,7 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::do_load(const string& fname) cons
 		result.reset(new Data);
 		result->push_back(reader.get_3dimage()); 
 	}else {
-		
+		cvdebug() << "Got a single frame image\n";
 		vector<P2DImage> candidates;
 		P2DImage prototype = reader.get_image();
 		candidates.push_back(prototype);
