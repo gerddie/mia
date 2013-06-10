@@ -146,6 +146,7 @@ DEFEXE(3dvfcompare mia3d )
 DEFEXE(3deval-transformquantity mia3d)
 DEFEXE(3dcost-translatedgrad mia3d)
 DEFEXE(3dsegment-ahmed    mia3d)
+DEFEXE(3dcombine-mr-segmentations mia3d)
 
 DEFEXE(plugin-help miamesh )
 DEFEXE(meshdistance-to-stackmask miamesh )
