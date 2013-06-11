@@ -130,7 +130,7 @@ int do_main( int argc, char *argv[] )
 		  [label_offset](bool x){return x ? label_offset : 0; }); 
 		
 	C3DFImage& prob_shadow = *probs[0];
-
+	++label_offset; 
 	auto el = result.end(); 
 	for (int i = 1; i < n_masks; ++i, ++label_offset) {
 		auto ips = prob_shadow.begin(); 
