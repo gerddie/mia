@@ -208,6 +208,10 @@ int do_main( int argc, char *argv[] )
 		
 		input_set.transform(*shift);
 		input_set.set_images(input_images);  
+	} else if (!save_crop_feature.empty()) {
+		stringstream cfile; 
+		cfile << save_crop_feature << "-coeff.txt"; 
+		ica.save_coefs(cfile.str()); 
 	}
 	
 	if (!cropped_filename.empty()) {
