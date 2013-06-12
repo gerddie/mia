@@ -75,6 +75,7 @@ const SLookupInit lookup_init[] = {
 	{IDSOPClassUID, DCM_SOPClassUID, false, tr_no, NULL},
 	{IDProtocolName, DCM_ProtocolName, false, tr_no, NULL},
 	{IDTestValue, DcmTagKey(), false, tr_no, NULL},
+	{IDPatientPosition, DCM_PatientPosition, false, tr_no, NULL}, 
 	{NULL, DcmTagKey(), false, tr_no, NULL}
 };
 

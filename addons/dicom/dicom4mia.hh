@@ -38,7 +38,6 @@ extern EXPORT_DICOM const char * IDMediaStorageSOPClassUID;
 extern EXPORT_DICOM const char * IDStudyDescription;
 extern EXPORT_DICOM const char * IDSeriesDescription;
 extern EXPORT_DICOM const char * IDSamplesPerPixel;
-extern EXPORT_DICOM const char * IDSamplesPerPixel;
 extern EXPORT_DICOM const char * IDTestValue;
 extern EXPORT_DICOM const char * IDSOPClassUID;
 

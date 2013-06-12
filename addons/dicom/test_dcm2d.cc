@@ -97,7 +97,7 @@ BOOST_FIXTURE_TEST_CASE( test_dicom_load, DicomLoaderFixture )
 	check_attribute("SeriesDescription","cine_retro_aortic arch");
 	check_attribute("Modality", "MR");
 	check_attribute("SeriesNumber", 24);
-	check_attribute("PatientPosition", "HFS");
+	check_attribute("PatientPosition", ipp_hfs);
 	check_attribute("AcquisitionDate", "20041116");
 	check_attribute("AcquisitionNumber", 1);
 	check_attribute("InstanceNumber", 6);

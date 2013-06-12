@@ -52,6 +52,7 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 	TTranslator<int>::register_for("SeriesNumber");
 	TTranslator<int>::register_for("AcquisitionNumber");
 	TTranslator<int>::register_for("InstanceNumber");
+	CPatientPositionTranslator::register_for(IDPatientPosition);
 	add_suffix(".dcm");
 	add_suffix(".DCM");
 
