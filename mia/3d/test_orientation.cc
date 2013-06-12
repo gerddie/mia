@@ -18,7 +18,7 @@
  *
  */
 
-#define BOOST_TEST_MODULE 2DIMAGEFIFOFILTER_TEST
+#define BOOST_TEST_MODULE TEST_ORIENTATION 
 #include <sstream>
 #include <mia/internal/autotest.hh>
 #include <mia/core/cmdlineparser.hh>

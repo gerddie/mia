@@ -21,8 +21,10 @@
 #include <mia/3d/orientation.hh>
 
 NS_MIA_BEGIN
+using namespace std; 
 
-EXPORT_3D  std::ostream& operator << (std::ostream& os, E3DImageOrientation orient)
+
+EXPORT_3D  ostream& operator << (ostream& os, E3DImageOrientation orient)
 {
 	switch (orient) {
 	case ior_axial:
@@ -43,9 +45,9 @@ EXPORT_3D  std::ostream& operator << (std::ostream& os, E3DImageOrientation orie
 	return os;
 }
 
-EXPORT_3D std::istream& operator >> (std::istream& is, E3DImageOrientation& orient)
+EXPORT_3D istream& operator >> (istream& is, E3DImageOrientation& orient)
 {
-	std::string temp;
+	string temp;
 	is >> temp;
 
 	if (temp == "axial")
@@ -58,5 +60,44 @@ EXPORT_3D std::istream& operator >> (std::istream& is, E3DImageOrientation& orie
 		orient = ior_unknown;
 	return is;
 }
+
+
+static const TDictMap<E3DPatientPositioning>::Table patient_position_map_table[] = {
+	{"(undefined)", ipp_undefined, "undefined patient position"}, 
+	{"HFS", ipp_hfs, " head first supine "},  
+	{"HFP", ipp_hfp, " head first prone "},  
+	{"HFDR", ipp_hfdr, " head first Decubitus Right "},
+	{"HFDL", ipp_hfdl, " head first Decubitus Left "},
+	{"FFP", ipp_ffp, " feet first prone "},  
+	{"FFS", ipp_ffs, " feet first supine "},  
+	{"FFDR", ipp_ffdr, " feet first Decubitus Right "},
+	{"FFDL", ipp_ffdl, " feet first Decubitus Left "}, 
+	{0, ipp_lastindex, 0}
+}; 
+
+
+const TDictMap<E3DPatientPositioning> g_patient_position_map(patient_position_map_table); 
+
+EXPORT_3D  ostream& operator << (ostream& os, E3DPatientPositioning pp)
+{
+	os << g_patient_position_map.get_name(pp); 
+	return os; 
+}
+
+EXPORT_3D  istream& operator >> (istream& is, E3DPatientPositioning& pp)
+{
+	string s; 
+	is >> s; 
+	try {
+		pp = g_patient_position_map.get_value(s.c_str()); 
+	}catch (const invalid_argument& e) {
+		cvwarn() << "Reading unknown patient position '" << s 
+			 << "', defaulting to '(undefined)'\n"; 
+		pp = ipp_undefined; 
+	}
+	return is; 
+}
+
+EXPORT_3D const char * IDPatientPosition = "PatientPosition"; 
 
 NS_MIA_END
