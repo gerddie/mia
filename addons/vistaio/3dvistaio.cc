@@ -191,13 +191,6 @@ std::string CVista3DImageIOPlugin::do_get_preferred_suffix() const
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	CDoubleTranslator::register_for("double");
-	CFloatTranslator::register_for("float");
-	CUBTranslator::register_for("ubyte");
-	CSBTranslator::register_for("sbyte");
-	CSSTranslator::register_for("short");
-	CSITranslator::register_for("int");
-	CBitTranslator::register_for("bit");
 	CVoxelAttributeTranslator::register_for("voxel");
 	C3DIntAttributeTranslator::register_for("ca");
 	C3DIntAttributeTranslator::register_for("cp");
