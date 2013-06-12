@@ -169,18 +169,17 @@ public:
 	*/
 	static const T* pointer(); 
 protected:
-	/** initialize the handler singleton with a specific plugin search path 
-	    (used for running tests) 
-	    \remark why not private?  
-	*/
-	
-	THandlerSingleton(); 
 
 	/** This mutex ensures that each Singleton is indeed only created once and 
 	    no race condition happens within a multi-threaded environmnet */ 
 	static CMutex m_creation_mutex; 
 
 private: 
+	// the constructor is private because you must not derive the singleton
+	// derive the handler if you need specific funcionality, and then 
+	// template the singleton with the derived handler. 
+	THandlerSingleton(); 
+
 	static const T& do_instance(bool require_initialization); 
 
 	static CPathNameArray m_searchpath; 

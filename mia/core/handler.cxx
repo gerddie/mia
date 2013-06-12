@@ -331,7 +331,7 @@ const T& THandlerSingleton<T>::do_instance(bool require_initialization)
 {
 	TRACE_FUNCTION; 
 	CScopedLock lock(m_creation_mutex); 
-	static THandlerSingleton me; 
+	static THandlerSingleton<T> me; 
 	cvdebug() << "m_is_initialized = " << m_is_initialized << "\n"; 
 
 	if (!m_is_initialized && require_initialization) {
