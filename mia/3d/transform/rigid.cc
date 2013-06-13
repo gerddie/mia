@@ -34,21 +34,17 @@ using namespace std;
 
 C3DFVector C3DRigidTransformation::apply(const C3DFVector& x) const
 {
-	return transform(x);
-}
-
-
-
-C3DFVector C3DRigidTransformation::transform(const C3DFVector& x)const
-{
-	if (!m_matrix_valid)
-		evaluate_matrix();
-
+	CScopedLock lock(m_mutex); 
+	if (!m_matrix_valid) 
+		evaluate_matrix(); 
+	lock.release(); 
 	return C3DFVector(
 		m_t[0] * x.x + m_t[1] * x.y + m_t[2]  * x.z + m_t[3],
 		m_t[4] * x.x + m_t[5] * x.y + m_t[6]  * x.z + m_t[7],
 		m_t[8] * x.x + m_t[9] * x.y + m_t[10] * x.z + m_t[11]);
+
 }
+
 
 C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size, const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf):
 	C3DTransformation(ipf), 
@@ -84,6 +80,7 @@ C3DTransformation *C3DRigidTransformation::do_clone()const
 C3DTransformation *C3DRigidTransformation::invert()const
 {
 	assert(0 && "C3DRigidTransformation::invert is not yet implemented"); 
+
 	C3DRigidTransformation *result = new C3DRigidTransformation(*this); 
 	result->m_matrix_valid = false; 
 	return result;
@@ -117,6 +114,7 @@ void C3DRigidTransformation::update(float /*step*/, const C3DFVectorfield& /*a*/
 
 void C3DRigidTransformation::translate(float x, float y, float z)
 {
+	CScopedLock lock(m_mutex); 
 	m_matrix_valid = false;
 	m_translation.x +=  x;
 	m_translation.y +=  y;
@@ -125,6 +123,7 @@ void C3DRigidTransformation::translate(float x, float y, float z)
 
 void C3DRigidTransformation::rotate(float xy, float xz, float yz)
 {
+	CScopedLock lock(m_mutex); 
 	m_matrix_valid = false;
 	m_rotation.z += xy;
 	m_rotation.y += xz;
@@ -161,6 +160,7 @@ CDoubleVector C3DRigidTransformation::get_parameters() const
 
 void C3DRigidTransformation::set_parameters(const CDoubleVector& params)
 {
+	CScopedLock lock(m_mutex); 
 	assert(degrees_of_freedom() == params.size());
 
 	m_translation.x = params[0];
@@ -223,8 +223,11 @@ P3DTransformation C3DRigidTransformation::do_upscale(const C3DBounds& size) cons
 
 C3DFMatrix C3DRigidTransformation::derivative_at(const C3DFVector& MIA_PARAM_UNUSED(x)) const
 {
+	CScopedLock lock(m_mutex); 
 	if (!m_matrix_valid)
 		evaluate_matrix();
+	lock.release(); 
+
 	return C3DFMatrix(
 		C3DFVector(m_t[0], m_t[4], m_t[8]), 
 		C3DFVector(m_t[1], m_t[5], m_t[9]), 
@@ -234,8 +237,10 @@ C3DFMatrix C3DRigidTransformation::derivative_at(const C3DFVector& MIA_PARAM_UNU
 C3DFMatrix C3DRigidTransformation::derivative_at(int MIA_PARAM_UNUSED(x), int MIA_PARAM_UNUSED(y), 
 						 int MIA_PARAM_UNUSED(z)) const
 {
+	CScopedLock lock(m_mutex); 
 	if (!m_matrix_valid)
 		evaluate_matrix();
+	lock.release(); 
 
 	return C3DFMatrix(
 		C3DFVector(m_t[0], m_t[4], m_t[8]), 
@@ -252,7 +257,6 @@ void C3DRigidTransformation::set_identity()
 
 void C3DRigidTransformation::evaluate_matrix() const
 {
-	CScopedLock lock(m_mutex); 
 	
 	float sx,cx,sy,cy,sz,cz; 
 	sincosf(m_rotation.z, &sz, &cz); 
@@ -288,8 +292,10 @@ void C3DRigidTransformation::evaluate_matrix() const
 
 float C3DRigidTransformation::get_max_transform() const
 {
+	CScopedLock lock(m_mutex); 
 	if (!m_matrix_valid) 
 		evaluate_matrix(); 
+	lock.release(); 
 
 	C3DFVector corners[8] = {
 		C3DFVector(             0,              0,              0), 
@@ -368,9 +374,9 @@ C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const
 						      const C3DRigidTransformation& trans):
 	C3DTransformation::iterator_impl(pos, size),
 	m_trans(trans), 
-	m_value(trans.transform(C3DFVector(pos)))
+	m_value(trans.apply(C3DFVector(pos)))
 {
-	m_dx = m_trans.transform(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
@@ -380,7 +386,7 @@ C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const
 	m_trans(trans), 
 	m_value(trans.apply(C3DFVector(pos)))
 {
-	m_dx = m_trans.transform(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 		
 C3DTransformation::iterator_impl * C3DRigidTransformation::iterator_impl::clone() const
@@ -400,20 +406,22 @@ void C3DRigidTransformation::iterator_impl::do_x_increment()
 
 void C3DRigidTransformation::iterator_impl::do_y_increment()
 {
-	m_value = m_trans.transform(C3DFVector(get_pos())); 
-	m_dx = m_trans.transform(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.apply(C3DFVector(get_pos())); 
+	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 void C3DRigidTransformation::iterator_impl::do_z_increment()
 {
-	m_value = m_trans.transform(C3DFVector(get_pos())); 
-	m_dx = m_trans.transform(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.apply(C3DFVector(get_pos())); 
+	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 C3DTransformation::const_iterator C3DRigidTransformation::begin() const
 {
+	CScopedLock lock(m_mutex); 
 	if (!m_matrix_valid) 
 		evaluate_matrix(); 
+	lock.release(); 
 	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), get_size(), *this)); 
 }
 
@@ -424,8 +432,10 @@ C3DTransformation::const_iterator C3DRigidTransformation::end() const
 
 C3DTransformation::const_iterator C3DRigidTransformation::begin_range(const C3DBounds& begin, const C3DBounds& end) const
 {
+	CScopedLock lock(m_mutex); 
 	if (!m_matrix_valid) 
 		evaluate_matrix(); 
+	lock.release(); 
 	return C3DTransformation::const_iterator(new iterator_impl(begin, begin, end, get_size(), *this)); 
 }
 

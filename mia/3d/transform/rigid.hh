@@ -86,7 +86,6 @@ public:
 	virtual float pertuberate(C3DFVectorfield& v) const;
 	virtual C3DFVector operator () (const C3DFVector& x) const;
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
-	C3DFVector transform(const C3DFVector& x)const;
 	virtual float divergence() const;
 	virtual float curl() const;
 	float grad_divergence() const;
