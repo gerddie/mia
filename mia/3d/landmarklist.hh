@@ -76,7 +76,7 @@ public:
 
 	/**
 	   \returns the landmark with the giben name. If this landmark 
-	   doesn't exist the function throws an invalid_argument exception.  
+	   doesn't exist the function returns a (shared) null pointer.
 	 */
 	P3DLandmark get(const std::string& name) const; 
 
