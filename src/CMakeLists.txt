@@ -149,6 +149,7 @@ DEFEXE(3dsegment-ahmed    mia3d)
 DEFEXE(3dcombine-mr-segmentations mia3d)
 
 DEFEXE(3dlandmarks-transform mia3d)
+DEFEXE(3dlandmarks-distances mia3d)
 
 DEFEXE(plugin-help miamesh )
 DEFEXE(meshdistance-to-stackmask miamesh )
