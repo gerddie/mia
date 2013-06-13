@@ -23,7 +23,7 @@ IF (USE_VISTAIO)
   if (STRICT_DEPENDECIES)
     pkg_check_modules(VISTAIO REQUIRED libvistaio>=1.2.14)
   else (STRICT_DEPENDECIES)
-    pkg_check_modules(VISTAIO libvistaio)
+    pkg_check_modules(VISTAIO libvistaio>=1.2.14)
   endif (STRICT_DEPENDECIES)
   
   IF( VISTAIO_FOUND )
