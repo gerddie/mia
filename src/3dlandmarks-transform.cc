@@ -59,8 +59,8 @@ int do_main(int argc, char **argv)
 	const auto& lmxio = C3DLandmarklistIOPluginHandler::instance();
 	const auto& transio = C3DTransformationIOPluginHandler::instance(); 
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required, &lmxio));
-	options.add(make_opt( out_filename, "out-file", 'o', "transformed image", CCmdOption::required, &lmxio));
+	options.add(make_opt( src_filename, "in-file", 'i', "input landmark set", CCmdOption::required, &lmxio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output landmark set", CCmdOption::required, &lmxio));
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", CCmdOption::required, &transio));
 
 
