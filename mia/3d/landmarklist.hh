@@ -40,6 +40,9 @@ class EXPORT_3D C3DLandmarklist : public CIOData {
 	typedef std::map<std::string, P3DLandmark> CMap; 
 public: 
 
+	/// Type of the map values (needed for lambda arguments)
+	typedef CMap::value_type value_type; 
+
 	/// read only iterator 
 	typedef CMap::const_iterator const_iterator; 
 
@@ -108,7 +111,7 @@ public:
 	/// \returns the name of the landmark list 
 	const std::string &get_name() const; 
 private: 
-	std::map<std::string, P3DLandmark> m_list; 
+	CMap m_list; 
 
 	boost::filesystem::path m_path; 
 	std::string m_name; 
