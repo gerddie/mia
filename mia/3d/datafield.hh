@@ -66,6 +66,15 @@ public:
          */
         void make_single_ref();
 
+	/**
+	   Checks whether the data hold by the data field is unique. 
+	   \returns true if it is 
+	 */
+	bool holds_unique_data()const { 
+		return m_data.unique(); 
+	}
+			
+
 	/// a shortcut data type
 
 	/// \cond SELFEXPLAINING 
