@@ -105,9 +105,18 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_shift = m_kernel->get_active_halfrange() - 1; 
 	m_enlarge.x = m_enlarge.y = 2*m_shift; 
 
-	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + m_enlarge.x,
-			size_t((range.y + c_rate.y - 1) / c_rate.y) + m_enlarge.y);
-	m_coefficients = C2DFVectorfield(csize);
+	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x),
+			size_t((range.y + c_rate.y - 1) / c_rate.y));
+	
+	if (csize.x <= 1 || csize.y <= 1) {
+		throw create_exception<invalid_argument>("C2DSplineTransformation: your coefficient rate [", 
+							 c_rate, "] is too large of the current image dimensions [", 
+							 range, "], reduce the crate parameter of the transformation "
+							 "or the number of multi-resolution levels if you run a "
+							 "registration algorithm."); 
+	}
+
+	m_coefficients = C2DFVectorfield(csize + m_enlarge);
 	m_xbc->set_width(m_coefficients.get_size().x); 
 	m_ybc->set_width(m_coefficients.get_size().y); 
 
@@ -141,9 +150,19 @@ void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfie
 void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 {
 	TRACE_FUNCTION;
+	if ((field.get_size().x <= 1) || (field.get_size().y <= 1)) {
+		throw create_exception<invalid_argument>("C2DSplineTransformation::set_coefficients: "
+							 "your coefficient field of size [", field.get_size(), "] "
+							 "is too small, all dimensions must be larger than 1");  
+	}
+
 	cvdebug() << "set_coefficients from " << m_coefficients.get_size() << " to " << field.get_size() << "\n"; 
 	m_interpolator_valid &= (m_coefficients.get_size() == field.get_size());
+	
+
 	m_coefficients = field;
+
+
 
 	cvdebug() << "m_interpolator_valid=" << m_interpolator_valid << "\n"; 
 	m_xbc->set_width(field.get_size().x); 
