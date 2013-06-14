@@ -150,10 +150,11 @@ void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfie
 void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 {
 	TRACE_FUNCTION;
-	if ((field.get_size().x <= 1) || (field.get_size().y <= 1)) {
+	if ((field.get_size().x <= 1 + m_enlarge.x) || (field.get_size().y <= 1 + m_enlarge.y)) {
 		throw create_exception<invalid_argument>("C2DSplineTransformation::set_coefficients: "
 							 "your coefficient field of size [", field.get_size(), "] "
-							 "is too small, all dimensions must be larger than 1");  
+							 "is too small, dimensions must be larger than [",  
+							 m_enlarge + C2DBounds::_1, "]"); 
 	}
 
 	cvdebug() << "set_coefficients from " << m_coefficients.get_size() << " to " << field.get_size() << "\n"; 

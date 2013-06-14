@@ -140,14 +140,15 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	m_enlarge = 2 * m_shift;
 
 	C3DBounds csize( (C3DFVector(range - C3DBounds::_1 ) + c_rate )/ c_rate); 
-	if (csize.x < 2)
-		csize.x = 2; 
-	if (csize.y < 2)
-		csize.y = 2; 
-	if (csize.z < 2)
-		csize.z = 2; 
-	csize += m_enlarge;
-	m_coefficients = C3DFVectorfield(csize);
+	if (csize.x <= 1 || csize.y <= 1 || csize.z <= 1)  {
+		throw create_exception<invalid_argument>("C3DSplineTransformation: your coefficient rate [", 
+							 c_rate, "] is too large of the current image dimensions [", 
+							 range, "], reduce the crate parameter of the transformation "
+							 "or the number of multi-resolution levels if you run a "
+							 "registration algorithm."); 
+	}
+
+	m_coefficients = C3DFVectorfield(csize + m_enlarge);
 	m_x_boundary->set_width(m_coefficients.get_size().x); 
 	m_y_boundary->set_width(m_coefficients.get_size().y); 
 	m_z_boundary->set_width(m_coefficients.get_size().z); 
@@ -160,6 +161,16 @@ C3DSplineTransformation::~C3DSplineTransformation()
 void C3DSplineTransformation::set_coefficients(const C3DFVectorfield& field)
 {
 	TRACE_FUNCTION;
+	if ((field.get_size().x <= 1 + m_enlarge.x) || 
+	    (field.get_size().y <= 1 + m_enlarge.y) || 
+	    (field.get_size().z <= 1 + m_enlarge.z)) {
+		throw create_exception<invalid_argument>("C3DSplineTransformation::set_coefficients: "
+							 "your coefficient field of size [", field.get_size(), "] "
+							 "is too small, dimensions must be larger than[",
+							 m_enlarge + C3DBounds::_1, "]"); 
+	}
+
+
 	m_scales_valid = (m_coefficients.get_size() == field.get_size());
 	m_coefficients = field;
 	m_x_boundary->set_width(m_coefficients.get_size().x); 

@@ -1140,3 +1140,41 @@ double TransformSplineFixtureMixed::graddiv2(double , double , double )const
 {
 	return 0.0; 
 }
+
+
+BOOST_AUTO_TEST_CASE(check_small_range_throw) 
+{
+	BOOST_CHECK_THROW(C3DSplineTransformation(C3DBounds(10,10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C3DFVector(10,2,10),  C3DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P3DSplineTransformPenalty()), invalid_argument); 
+
+	BOOST_CHECK_THROW(C3DSplineTransformation(C3DBounds(10,10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C3DFVector(2,10,10),  C3DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P3DSplineTransformPenalty()), invalid_argument); 
+
+	BOOST_CHECK_THROW(C3DSplineTransformation(C3DBounds(10,10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C3DFVector(10,10,2),  C3DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P3DSplineTransformPenalty()), invalid_argument); 
+
+}
+
+
+BOOST_AUTO_TEST_CASE(check_small_field_throw) 
+{
+	C3DSplineTransformation t(C3DBounds(10,10,10), 
+				  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+				  C3DInterpolatorFactory("bspline:d=3", "mirror"), 
+				  P3DSplineTransformPenalty()); 
+	
+		
+	BOOST_CHECK_THROW(t.set_coefficients(C3DFVectorfield(C3DBounds(3,10,5))), invalid_argument); 
+	BOOST_CHECK_THROW(t.set_coefficients(C3DFVectorfield(C3DBounds(10,3,5))), invalid_argument); 
+	BOOST_CHECK_THROW(t.set_coefficients(C3DFVectorfield(C3DBounds(10,10,3))), invalid_argument); 
+
+}
+
+
+
