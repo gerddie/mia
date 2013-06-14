@@ -68,7 +68,7 @@ C2DFullCostList create_costs(double imageweight)
 P2DTransformationFactory create_transform_creator(size_t c_rate,double divcurlweight)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate << "penalty=[divcurl:weight=" << divcurlweight << "]"; 
+	transf << "spline:rate=" << c_rate << ",penalty=[divcurl:weight=" << divcurlweight << "]"; 
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 
