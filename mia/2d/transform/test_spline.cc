@@ -895,6 +895,33 @@ double Cost2DMock::ref_value(const C2DFVector& x)const
 	return exp( - (p.x * p.x + p.y * p.y) / m_r); 
 }
 
+BOOST_AUTO_TEST_CASE(check_small_range_throw) 
+{
+	BOOST_CHECK_THROW(C2DSplineTransformation(C2DBounds(10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C2DFVector(10,2),  C2DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P2DSplineTransformPenalty()), invalid_argument); 
+
+	BOOST_CHECK_THROW(C2DSplineTransformation(C2DBounds(10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C2DFVector(2,10),  C2DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P2DSplineTransformPenalty()), invalid_argument); 
+
+}
+
+
+BOOST_AUTO_TEST_CASE(check_small_field_throw) 
+{
+	C2DSplineTransformation t(C2DBounds(10,10), 
+				  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+				  C2DInterpolatorFactory("bspline:d=3", "mirror"), 
+				  P2DSplineTransformPenalty()); 
+	
+		
+	BOOST_CHECK_THROW(t.set_coefficients(C2DFVectorfield(C2DBounds(1,10))), invalid_argument); 
+	BOOST_CHECK_THROW(t.set_coefficients(C2DFVectorfield(C2DBounds(10,1))), invalid_argument); 
+
+}
 
 
 
