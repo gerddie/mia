@@ -1,0 +1,117 @@
+#!/usr/bin/octave 
+
+function y = bspline3_weight_at(x)
+  onebysix= 1.0/6.0;
+  zwo = 2.0;
+  x=abs(x);
+  if (x <= 1.0 )
+    y = zwo / 3.0 - x * x * ( 1 - 0.5 * x );
+  elseif (x < zwo)
+    y =  (zwo-x)*(zwo-x)*(zwo-x) * onebysix;
+  else
+    y =0.0;
+  endif
+endfunction
+
+function y = bspline3_iweight_at(x)
+  zwo = 2.0;
+  if (x < -2)
+    y = 0; 
+  elseif ( x < -1 )
+    h = (zwo+x);
+    y =  h * h * h * h / 24;
+  elseif (x <= 0.0 )
+    y = 0.5 + x * 2.0 / 3.0 - x * x * x / 3.0 - x*x*x*x/8;
+  elseif (x <= 1.0 )
+    y = 0.5 + x * 2.0 / 3.0 - x * x * x / 3.0 + x*x*x*x/8;
+  elseif (x < zwo)
+    h = (zwo-x); 
+    y = 1 - h * h * h * h / 24;
+  else
+    y = 1; 
+  endif
+endfunction
+
+
+function y = bspline3_dweight_at(x)
+  ax = abs(x);
+  if (ax <= 1.0)
+    y = (1.5 .* ax - 2) .* x;
+  elseif (ax <= 2.0)
+    if (x > 0)
+      y =  -0.5 .* (2-ax) .* (2-ax) ;
+    else
+      y =  0.5 .* (2-ax) .* (2-ax) ;
+    endif
+  else 
+    y = 0;
+  endif
+endfunction
+
+function y = bspline3_ddweight_at(x)
+  x=abs(x);
+  if (x>2.0) 
+    y = 0.0;
+  elseif (x>1.0) 
+    y = 2.0-x;
+  else
+    y = 3.0*x-2.0;
+  endif
+endfunction
+
+function y = bspline3_weight(x,d)
+  switch (d)
+    case -1
+      y = bspline3_iweight_at(x); 
+    case 0
+      y = bspline3_weight_at(x); 
+    case 1
+      y = bspline3_dweight_at(x); 
+    case 2
+      y = bspline3_ddweight_at(x); 
+    otherwise
+      y = 0; 
+  endswitch
+endfunction
+
+function y = b11_10_10(x) 
+  y = bspline3_weight(x-10, 1) * bspline3_weight(x-10, 1);
+endfunction
+
+function y = b11_10_11(x) 
+  y = bspline3_weight(x-10, 1) * bspline3_weight(x-11, 1);
+endfunction
+
+function y = b11_20_20(x) 
+  y = bspline3_weight(x-20, 1) * bspline3_weight(x-20, 1);
+endfunction
+
+
+function y = b20_10_11(x) 
+  y = bspline3_weight(x-10, 2) * bspline3_weight(x-11, 0);
+endfunction
+
+function y = b20_10_10(x) 
+  y = bspline3_weight(x-10, 2) * bspline3_weight(x-10, 0);
+endfunction
+
+function y = b20_0_1(x) 
+  y = bspline3_weight(x, 2) * bspline3_weight(x-1, 0);
+endfunction
+
+function y = b02_29_28(x) 
+  y = bspline3_weight(x - 29, 0) * bspline3_weight(x-27, 2);
+endfunction
+
+
+[v, ier, nfun, err] = quad ("b20_10_10", 0, 30); 
+"b20_10_10"
+v
+
+[v, ier, nfun, err] = quad ("b11_10_10", 0, 30); 
+"b11_10_10"
+v
+
+[v, ier, nfun, err] = quad ("b20_10_11", 0, 30)
+[v, ier, nfun, err] = quad ("b11_10_11", 0, 30)
+

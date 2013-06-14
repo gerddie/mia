@@ -1,0 +1,51 @@
+function y = ngf(src, ref)
+  dotsr  = dot(ref, src); 
+  norms  = sqrt(dot(src,src)); 
+  normr  = sqrt(dot(ref,ref));
+  f = dotsr / (norms * normr); 
+  delta = ref - f * src; 
+  y = dot(delta,delta) / 2; 
+endfunction 
+
+
+field = [[ ...
+	  [ [1,2,3],[2,3,5],[4,5,1] ], ...
+	  [ [2,5,5],[3,2,4],[5,1,2] ], ...
+	  [ [0,3,1],[1,2,2],[2,1,2] ], ...
+	  ],...
+	 [ ...
+	  [ [2,1,2],[3,1,4],[2,4,2] ], ...
+	  [ [5,6,7],[2,3,6],[3,2,4] ], ...
+	  [ [1,2,3],[2,3,8],[8,5,3] ], ...
+	  ],...
+	 [ ...
+	  [ [2,3,5],[4,5,6],[4,3,1] ], ...
+	  [ [1,3,2],[7,8,9],[3,5,7] ], ...
+	  [ [1,2,5],[3,4,5],[4,5,2] ] ...
+	  ] ...
+	 ]; 
+field = reshape(field,[3,3,3,3]); 
+
+ref = field(:,1,1,1);
+src = field(:,2,2,2);
+result = ngf(ref, src)
+ 
+dsx = 0.5 * (field(:,3,2,2) - field(:,1,2,2))
+dsy = 0.5 * (field(:,2,3,2) - field(:,2,1,2))
+dsz = 0.5 * (field(:,2,2,3) - field(:,2,2,1))
+
+dotrs = dot(ref,src);
+norms = sqrt(dot(src,src));
+normr = sqrt(dot(ref,ref));
+
+cos_a = dotrs / (norms * normr)
+delta = ref - cos_a * src
+
+p1 = cos_a / (norms * norms)
+
+p2 = 1/(normr * norms)
+hx = ( p1 * dot(src, dsx)  - p2 * dot(ref, dsx) ) * src - cos_a * dsx
+gx = dot(delta, hx )
+gy = dot(delta, ( p1 * dot(src, dsy)  - p2 * dot(ref, dsy) ) * src - cos_a * dsy)
+gz = dot(delta, ( p1 * dot(src, dsz)  - p2 * dot(ref, dsz) ) * src - cos_a * dsz)
+
