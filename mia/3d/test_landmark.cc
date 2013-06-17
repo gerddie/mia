@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE ( test_landmark_list )
 	lml.add(lm1); 
 	lml.add(lm2); 
 	
-	BOOST_CHECK_THROW(lml.get("name3"), invalid_argument); 
+	BOOST_CHECK(!lml.get("name3")); 
 	BOOST_CHECK_EQUAL(lml.get(n1)->get_location(), pos1); 
 	BOOST_CHECK_EQUAL(lml.get(n2)->get_location(), pos2); 
 	
