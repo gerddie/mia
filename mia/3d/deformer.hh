@@ -57,17 +57,18 @@ struct FDeformer3D: public TFilter<P3DImage> {
 	template <typename T> 
 	P3DImage operator () (const T3DImage<T>& image, T3DImage<T>& result) const {
 		assert(result.get_size() == m_vf.get_size()); 
-		std::shared_ptr<T3DConvoluteInterpolator<T> > interp(m_ipfac.create(image.data())); 
+		std::unique_ptr<T3DConvoluteInterpolator<T> > interp(m_ipfac.create(image.data())); 
+		const auto& rinterp = *interp; 
 
-		auto callback = [this, &interp, &result](const tbb::blocked_range<size_t>& range){
+		auto callback = [this, &rinterp, &result](const tbb::blocked_range<size_t>& range){
 			CThreadMsgStream thread_stream;
-			CWeightCache cache = interp->create_cache(); 
+			CWeightCache cache = rinterp.create_cache(); 
 			for (auto z = range.begin(); z != range.end();++z) {
 				auto r = result.begin_at(0,0,z); 
 				auto v = m_vf.begin_at(0,0,z); 
 				for (size_t y = 0; y < result.get_size().y; ++y)
 					for (size_t x = 0; x < result.get_size().x; ++x, ++r, ++v)
-						*r = (*interp)(C3DFVector(x - v->x, y - v->y, z - v->z), cache);
+						*r = rinterp(C3DFVector(x - v->x, y - v->y, z - v->z), cache);
 			}
 		}; 
 		tbb::parallel_for(tbb::blocked_range<size_t>(0, result.get_size().z, 1), callback); 
