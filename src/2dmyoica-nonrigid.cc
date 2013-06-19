@@ -166,7 +166,7 @@ int do_main( int argc, char *argv[] )
 	string save_reg_filename;
 
 	// this parameter is currently not exported - reading the image data is 
-	// therefore done from the path given in the segmentation set 
+	// therefore done from the path given with the segmentation set 
 	bool override_src_imagepath = true;
 
 	// registration parameters
