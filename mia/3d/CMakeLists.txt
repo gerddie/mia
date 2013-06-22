@@ -16,6 +16,17 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
+
+IF(ITPP_FOUND)
+  SET(ITPP_SRC 
+    ica.cc 
+    )
+  SET(ITPP_HEADER 
+    ica.hh
+    )
+ENDIF(ITPP_FOUND)
+
+
 SET(MIA3D_SRC 
   camera.cc
   cost.cc
@@ -32,7 +43,6 @@ SET(MIA3D_SRC
   fullcost.cc
   fuzzyseg.cc
   fuzzyClusterSolverCG.cc
-  ica.cc
   imagecollect.cc
   interpolator.cc
   landmark.cc
@@ -56,6 +66,7 @@ SET(MIA3D_SRC
   transformio.cc
   shape.cc
   stackdisttrans.cc
+  ${ITPP_SRC}
   )
 
 SET(MIA3D_HEADERS
@@ -109,6 +120,7 @@ SET(MIA3D_HEADERS
   transformfactory.hh
   transformio.hh
   transformmock.hh
+  ${ITPP_HEADER}
   )
 
 SET(MIA3DTEST_SRC
@@ -178,7 +190,9 @@ TEST_3D(nfg nfg)
 TEST_3D(vectorfield vectorfield)
 TEST_3D(orientation orientation)
 TEST_3D(deform deform)
-TEST_3D(ica ica)
+IF(ITPP_FOUND)
+  TEST_3D(ica ica)
+ENDIF(ITPP_FOUND)
 TEST_3D(transformfactory transformfactory)
 TEST_3D(rigidregister rigidregister)
 TEST_3D(nonrigidregister nonrigidregister)

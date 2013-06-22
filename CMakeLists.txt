@@ -254,10 +254,7 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 # search for some blas
 # 
 
-FIND_LIBRARY(BLAS_LIBRARIES NAMES "blas" PATHS
-  /usr/lib
-  /usr/local/lib
-  )
+FIND_PACKAGE(BLAS)
 IF (NOT BLAS_LIBRARIES) 
   MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
 ENDIF(NOT BLAS_LIBRARIES) 
@@ -358,7 +355,13 @@ ENDIF (XMLPP_FOUND)
 #
 OPTION(WITH_ITPP "Use IT++ for some additional features" ${SEARCH_LIBS_DEFAULT})
 IF(WITH_ITPP)
-  pkg_check_modules(ITPP itpp)
+  
+  IF (STRICT_DEPENDECIES)
+    pkg_check_modules(ITPP itpp REQUIRED)
+  ELSE (STRICT_DEPENDECIES)
+    pkg_check_modules(ITPP itpp)
+  ENDIF(STRICT_DEPENDECIES)
+  
   IF(ITPP_FOUND)
     INCLUDE_DIRECTORIES(${ITPP_INCLUDE_DIRS})
     LINK_DIRECTORIES(${ITPP_LIBRARY_DIRS})
