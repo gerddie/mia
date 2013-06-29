@@ -249,6 +249,11 @@ int TSORSolver::solve(const C3DFVectorfield& b, C3DFVectorfield *xvf)
 	int nIter = 0;
 	float firstres=0;
 
+	/*
+	  This parallelization constituts a race conditions, i.e. reads and writes to the velocity field 
+	  are not syncronized. This is not a big deal, because the solver is stable, in the worst case convergence 
+	  is a bit slower. 
+	 */
 	auto solve_slice = [this, &b, &xvf](const tbb::blocked_range<size_t>& range, float res) -> float{
 		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end();++z) {
@@ -269,8 +274,6 @@ int TSORSolver::solve(const C3DFVectorfield& b, C3DFVectorfield *xvf)
 
 	float residuum = 0.0; 
 	do {
-		// note that this code has a race condition, i.e. slice solving 
-		
 		residuum = tbb::parallel_reduce( tbb::blocked_range<size_t>(1, size.z-1, 4), 0.0f, solve_slice, 
 						 [](float x, float y){return x+y;}); 
 		
@@ -319,7 +322,15 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 	float  gSize = b.get_size().z *  b.get_size().y * b.get_size().x;
 
 	cvinfo() << "SORA: [" << gSize << "]\n";
-	// first run on full field
+
+	/*
+	  This parallelization constituts a race conditions, i.e. reads and writes to the velocity field 
+	  are not syncronized. This shouldn't be a big deal, because in the worst case the solver reads a value that is 
+	  not yet updated, which corresponds to the a habdling like there was no update at all, an actual feature of the 
+	  algorithm. Since solver is stable, in the worst case convergence is a bit slower. 
+	  Neverteless, copying the data to a local cache to avoid this race may be better, because it would also speed 
+	  up memory access.
+	*/
 	auto first_run =[this, &b, &xvf, &residua, &update_needed]
 		(const tbb::blocked_range<size_t>& range, float firstres) -> float {
 		CThreadMsgStream thread_stream;
