@@ -38,25 +38,146 @@ H5Handle::operator hid_t()
         return m_hid; 
 }
 
-H5Dataset::H5Dataset(hid_t hid):H5Handle(hid, H5Dclose) 
+H5Dataset::H5Dataset(hid_t hid):
+	H5Handle(hid, H5Dclose) 
 {
 }
 
-H5Dataset::Pointer H5Dataset::create(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t dcpl_id)
+H5Dataset::Pointer H5Dataset::create(hid_t loc_id, const char *name, hid_t type_id, H5Space::Pointer dataspace)
 {
-        auto id = H5Dcreate(loc_id, name, type_id, space_id, dcpl_id); 
-        return Pointer(new H5Dataset(id)); 
+        auto id = H5Dcreate(loc_id, name, type_id, *dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); 
+        return Pointer(new H5Dataset(id, dataspace)); 
 }
- 
-H5Attribute::H5Attribute(hid_t hid):H5Handle(hid, H5Aclose) 
+
+
+int H5Dataset::add_attributes(const CAttributedData& attr)
+{
+	for (auto i = attr.begin(); i != attr.end(); ++i) {
+		H5Attribute::create(*this, i->first.c_str(), *i->second); 
+	}
+}
+
+int H5Dataset::write(hid_t internal_type, void *data) 
+{
+	
+
+	return H5Dwrite(*this, *m_dataspace, internal_type , H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+};
+
+H5Attribute::H5Attribute(hid_t hid):
+	H5Handle(hid, H5Aclose) 
 {
 }
 
-H5Attribute::Pointer H5Attribute::create(hid_t loc_id, const char *attr_name, hid_t type_id, hid_t space_id, hid_t acpl_id )
+
+// non-vector types 
+#define H5MiaAttributeTranslator_SCALAR_SPECIAL(T)				\
+	template <>							\
+	struct H5MiaAttributeTranslator<T> {				\
+	static H5Attribute::Pointer apply(hid_t loc_id, const char *attr_name, const TAttribute<T>& attr) { \
+		auto file_datatype = Mia_to_h5_types<T>::file_datatype;	\
+		auto mem_datatype = Mia_to_h5_types<T>::mem_datatype;	\
+									\
+		auto space = H5Space::create();				\
+		auto id = H5Acreate(loc_id, attr_name, file_datatype, *space,H5P_DEFAULT); \
+		T value = *attr;					\
+		H5Awrite(*id, mem_datatype, &value); 			\
+		return id; 						\
+	}								\
+	}; 
+
+
+H5MiaAttributeTranslator_SCALAR_SPECIAL(signed char); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(unsigned char); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(signed short); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(unsigned short); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(signed int); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(unsigned int); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(signed long); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(unsigned long); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(float); 
+H5MiaAttributeTranslator_SCALAR_SPECIAL(double); 
+
+#undef H5MiaAttributeTranslator_SCALAR_SPECIAL
+
+// non-vector types 
+#define H5MiaAttributeTranslator_VECTOR_SPECIAL(T)			\
+	template <>							\
+	struct H5MiaAttributeTranslator<vector<T> > {			\
+		static H5Attribute::Pointer apply(hid_t loc_id, const char *attr_name, const TAttribute<vector<T>>& attr) { \
+			auto file_datatype = Mia_to_h5_types<T>::file_datatype;	\
+			auto mem_datatype = Mia_to_h5_types<T>::mem_datatype; \
+			const vector<T>& value = *attr;			\
+			int dim = value.size();				\
+			auto space = H5Space::create(1, &dim);		\
+			auto id = H5Acreate(loc_id, attr_name, file_datatype, *space, H5P_DEFAULT); \
+			H5Awrite(*id, mem_datatype, &value[0]);		\
+			return id;					\
+		}							\
+	}; 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(signed char); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(unsigned char); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(signed short); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(unsigned short); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(signed int); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(unsigned int); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(signed long); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(unsigned long); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(float); 
+H5MiaAttributeTranslator_VECTOR_SPECIAL(double); 
+
+#undef H5MiaAttributeTranslator_VECTOR_SPECIAL
+
+template <typename T>
+H5Attribute::Pointer create_h5attr(hid_t loc_id, const char *attr_name, const TAttribute<T>& attr) 
 {
-        auto id = H5Acreate(loc_id, attr_name, type_id, space_id, acpl_id); 
-        return Pointer(new H5Attribute(id));
+	return H5MiaAttributeTranslator<T>::apply(loc_id, attr_name,  attr); 
 }
+
+#warning This will not work because it can not be extended 
+
+H5Attribute::Pointer H5Attribute::create(hid_t id, const char *attr_name, const CAttribute& attr )
+{
+#define call_create(type) create_h5attr(id, name, dynamic_cast<const TAttribute<type>&>(attr))
+	
+	int type_id = attr.type_id(); 
+	if (EAttributeType::is_vector(type_id)) {
+		switch (EAttributeType::scalar_type(type_id)) {
+		case EAttributeType::attr_uchar: return call_create(vector<unsigned char>);
+		case EAttributeType::attr_schar: return call_create(vector<signed char>);
+		case EAttributeType::attr_ushort:return call_create(vector<unsigned short>);
+		case EAttributeType::attr_sshort:return call_create(vector<signed short>);
+		case EAttributeType::attr_uint:  return call_create(vector<unsigned int>);
+		case EAttributeType::attr_sint:  return call_create(vector<signed int>);
+		case EAttributeType::attr_ulong: return call_create(vector<unsigned long>);
+		case EAttributeType::attr_slong: return call_create(vector<signed long>);
+		case EAttributeType::attr_float: return call_create(vector<float>);
+		case EAttributeType::attr_double:return call_create(vector<double>); 
+		default:
+			cvwarn() << "don't know how to translate attribute " << attr_name << " of type " << type_id 
+				 << ", dropping attribute\n"; 
+		}
+	} else {
+		switch (type_id) {
+		case EAttributeType::attr_uchar: return call_create(unsigned char);
+		case EAttributeType::attr_schar: return call_create(signed char);
+		case EAttributeType::attr_ushort:return call_create(unsigned short);
+		case EAttributeType::attr_sshort:return call_create(signed short);
+		case EAttributeType::attr_uint:  return call_create(unsigned int);
+		case EAttributeType::attr_sint:  return call_create(signed int);
+		case EAttributeType::attr_ulong: return call_create(unsigned long);
+		case EAttributeType::attr_slong: return call_create(signed long);
+		case EAttributeType::attr_float: return call_create(float);
+		case EAttributeType::attr_double:return call_create(double); 
+		default:
+			cvwarn() << "don't know how to translate attribute " << attr_name << " of type " << type_id 
+				 << ", dropping attribute\n"; 
+		}
+	}
+#undef call_create
+	return H5Attribute::Pointer(); 
+}
+
 
 H5File::H5File(hid_t hid):H5Handle(hid, H5Fclose) 
 {
@@ -79,10 +200,15 @@ H5Space::H5Space(hid_t hid):H5Handle(hid, H5Sclose)
 }
 
 
-Pointer H5Space::create(int rank, const hsize_t *dims)
+H5Space::Pointer H5Space::create(int rank, const hsize_t *dims)
 {
-        auto id = H5Screate(rank, dims, NULL); 
+        auto id = H5Screate_simple(rank, dims, NULL); 
         return Pointer(new H5Space(id)); 
+}
+
+H5Space::Pointer H5Space::create()
+{
+	return Pointer(new H5Space(H5Screate(H5S_SCALAR)));  
 }
 
 NS_MIA_END

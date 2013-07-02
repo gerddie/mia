@@ -49,73 +49,18 @@ CHDF53DImageIOPlugin::PData CHDF53DImageIOPlugin::do_load(const std::string& fna
         
 }
 
-
-template <typename T>
-struct Mia_to_h5 {
-        H5T_t file_datatype() const {
-                static_assert(sizeof(T) == 0, "input data type not supported"); 
-        }
-        hid_t internal_datatype() const {
-                static_assert(sizeof(T) == 0, "input data type not supported"); 
-        }
-
-}; 
-
-#define MIA_TO_H5_TYPE(T, V)                                            \
-        template <>                                                     \
-        struct Mia_to_h5_types<T> {                                     \
-                static H5T_t file_datatype() const {                    \
-                        H5T_t datatype(H5Tcopy(V));                     \
-                        auto status = H5Tset_order(datatype, H5T_ORDER_LE); \
-                        return datatype;                                \
-                }                                                       \
-                static hid_t internal_datatype() const {                \
-                        return V;                                       \
-                }                                                       \
-        };                                                              \
-
-template <>                                                        
-struct Mia_to_h5_types<bool> {                                     
-        static H5T_t file_datatype() const {                    
-                return H5T_t(H5Tcopy(H5T_STD_B8LE));
-        }                                                       
-        static hid_t internal_datatype() const {                
-                return H5T_NATIVE_B8;                           
-        }                           
-};                                                              
-
-
-MIA_TO_H5_TYPE(bool, H5T_NATIVE_B8); 
-
-MIA_TO_H5_TYPE(signed char, H5T_NATIVE_SCHAR); 
-MIA_TO_H5_TYPE(unsigned char, H5T_NATIVE_UCHAR); 
-
-MIA_TO_H5_TYPE(signed short, H5T_NATIVE_SHORT); 
-MIA_TO_H5_TYPE(unsigned short, H5T_NATIVE_USHORT); 
-
-MIA_TO_H5_TYPE(signed int, H5T_NATIVE_INT); 
-MIA_TO_H5_TYPE(unsigned int, H5T_NATIVE_UINT); 
-
-#ifdef LONG_64BIT
-MIA_TO_H5_TYPE(signed long, H5T_NATIVE_LONG); 
-MIA_TO_H5_TYPE(unsigned long, H5T_NATIVE_ULONG); 
-#endif        
-
-MIA_TO_H5_TYPE(float, H5T_NATIVE_FLOAT); 
-MIA_TO_H5_TYPE(double, H5T_NATIVE_DOUBLE);
-
-
 struct FH5ImageSaver : public TFilter<void> {
-        FH5ImageSaver(hid_t file_id):m_file_id(file_id){}; 
+        FH5ImageSaver(H5File& h5_file):m_h5_file(h5_file){}; 
 
         template <typename Image> 
         void operator ()( const Image& image); 
 
         void operator ()( const C3DBitImage& image); 
 
-        hid_t file_id; 
+        H5File& h5_file; 
         int index = 0; 
 }; 
+
 
 
 template <typename T> 
@@ -128,23 +73,21 @@ void FH5ImageSaver::operator ()( const T3DImage<T>& image)
                 hdf5path = s.str(); 
         }
 
+
         int dims[3]; 
         dims[0] = image.get_size().z; 
         dims[1] = image.get_size().y; 
         dims[2] = image.get_size().x; 
 
-        H5S_t dataspace_id(H5Screate_simple(3, dims, NULL));
+        auto file_data_type = Mia_to_h5_types<T>::file_datatype();
+        auto mem_data_type = Mia_to_h5_types<T>::internal_datatype();
 	
-        auto file_type = Mia_to_h5_types<T>::file_datatype();
-        auto internal_type = Mia_to_h5_types<T>::internal_datatype();
-        
-        // create the data set 
-        H5D_t dataset_id(H5Dcreate(m_file_id, hdf5path.c_str(), file_type, dataspace_id, 
-                                   H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT));
-        
-        status = H5Dwrite(dataset_id, dataspace_id, internal_type, H5S_ALL, H5S_ALL, H5P_DEFAULT, 
-                          &image(0,0,0));
+	auto space =  H5Space::create(3, dims); 
+	auto dataset = H5Dataset::create(h5_file, hdf5path.c_str(), file_data_type, *space); 
+	auto status = dataset->write(space, mem_data_type, &image(0,0,0)); 
+	
 
+	
 	
 }
 
