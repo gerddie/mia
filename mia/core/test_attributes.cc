@@ -162,6 +162,8 @@ void test_type_attribute()
 	attr = dynamic_cast<TAttribute<T>*>(attr_list["one"].get());
 	BOOST_REQUIRE(attr);
 	BOOST_REQUIRE(*attr == 1);
+
+	
 }
 
 
@@ -303,7 +305,7 @@ BOOST_AUTO_TEST_CASE( test_lists_equal )
 
 
 template <typename T>
-void check_add_and_read(CAttributeMap& map, const char *name, T value)
+void check_add_and_read(CAttributeMap& map, const char *name, T value, int id)
 {
 	typedef const TAttribute<T> * PAttr;
 	add_attribute(map, name, value);
@@ -312,10 +314,12 @@ void check_add_and_read(CAttributeMap& map, const char *name, T value)
 	BOOST_REQUIRE(attr);
 	T test_value = *attr;
 	BOOST_CHECK_EQUAL(value, test_value);
+
+	BOOST_CHECK_EQUAL(attr->type_id(), id); 
 }
 
 template <>
-void check_add_and_read(CAttributeMap& map, const char *name, const char *value)
+void check_add_and_read(CAttributeMap& map, const char *name, const char *value, int id)
 {
 	typedef const TAttribute<string>& PAttr;
 	add_attribute(map, name, value);
@@ -324,39 +328,40 @@ void check_add_and_read(CAttributeMap& map, const char *name, const char *value)
 	PAttr attr = dynamic_cast<PAttr>(*map[name].get());
 	string test_value = attr;
 	BOOST_CHECK_EQUAL(string(value), test_value);
+	BOOST_CHECK_EQUAL(map[name]->type_id(), id); 
 }
 
 BOOST_AUTO_TEST_CASE( test_add_attribute_int )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "int", 10);
+	check_add_and_read(map, "int", 10, EAttributeType::attr_sint);
 }
 
 BOOST_AUTO_TEST_CASE( test_add_attribute_short )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "short", (short)20);
+	check_add_and_read(map, "short", (short)20, EAttributeType::attr_sshort);
 }
 BOOST_AUTO_TEST_CASE( test_add_attribute_cstring )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "char*", "char*_value");
+	check_add_and_read(map, "char*", "char*_value", EAttributeType::attr_string);
 }
 BOOST_AUTO_TEST_CASE( test_add_attribute_string )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "string", string("string_value"));
+	check_add_and_read(map, "string", string("string_value"), EAttributeType::attr_string);
 }
 BOOST_AUTO_TEST_CASE( test_add_attribute_float )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "float", 1.0f);
+	check_add_and_read(map, "float", 1.0f, EAttributeType::attr_float);
 }
 
 BOOST_AUTO_TEST_CASE( test_add_attribute )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "double", 1.0);
+	check_add_and_read(map, "double", 1.0, EAttributeType::attr_double);
 
 }
 
