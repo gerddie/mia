@@ -21,13 +21,18 @@
 #ifndef addons_hdf5_hdf5mia_hh
 #define addons_hdf5_hdf5mia_hh
 
+#include <mia/core/attributes.hh> 
+#include <miaconfig.h> 
 #include <hdf5.h>
 
 NS_MIA_BEGIN
 
+
 class  H5Handle {
+public: 
+	operator hid_t(); 	
 protected: 
-        typedef void (FCloseHandle)(hid_t hid); 
+        typedef herr_t (*FCloseHandle)(hid_t hid); 
         
         H5Handle(hid_t hid,  FCloseHandle close_handle);
 
@@ -37,16 +42,17 @@ protected:
 
         ~H5Handle(); 
         
+
 private:
-        hid_t m_hid; 
         FCloseHandle m_close_handle; 
+        hid_t m_hid; 
 }; 
 
 
 class H5Space: public H5Handle {
         H5Space(hid_t hid);
 public: 
-        typedef shared_ptr<H5Space> Pointer; 
+        typedef std::shared_ptr<H5Space> Pointer; 
         static Pointer create(int rank, const hsize_t *dims);
         static Pointer create();
 };
@@ -60,9 +66,9 @@ struct H5MiaAttributeTranslator {
 }; 
 
 class H5Attribute: public H5Handle {
-        H5Attribute(hid_t hid);
 public: 
-        typedef shared_ptr<H5Attribute> Pointer; 
+        H5Attribute(hid_t hid);
+        typedef std::shared_ptr<H5Attribute> Pointer; 
         static Pointer create(hid_t loc_id, const char *attr_name, const CAttribute& attr);
 
 };
@@ -70,8 +76,8 @@ public:
 class H5Dataset: public H5Handle {
         H5Dataset(hid_t hid, H5Space::Pointer m_dataspace);
 public: 
-        typedef shared_ptr<H5Dataset> Pointer; 
-        static Pointer create(hid_t file_id, const char *name, hid_t type_id, const H5Space& dataspace); 
+        typedef std::shared_ptr<H5Dataset> Pointer; 
+        static Pointer create(hid_t file_id, const char *name, hid_t type_id, H5Space::Pointer dataspace); 
         static Pointer open(hid_t file_id, const char *name); 
 	
 	int add_attributes(const CAttributedData& attr); 
@@ -85,22 +91,28 @@ private:
 class H5File: public H5Handle {
         H5File(hid_t hid);
 public: 
-        typedef shared_ptr<H5File> Pointer; 
+        typedef std::shared_ptr<H5File> Pointer; 
         static Pointer create(const char *filename, unsigned access_mode);
         static Pointer open(const char *filename);
 };
 
 template <typename T>
-struct h5_iotypes {
-        static const hid_t file_datatype =  0;
-        static const hid_t mem_datatype = 0;
+struct Mia_to_h5_types {
+        static hid_t file_datatype() {
+		static_assert(sizeof(T) == 0, "Mia_to_h5_types needs to be specialized for T"); 
+		return -1; 
+	}
+        static hid_t mem_datatype(){
+		static_assert(sizeof(T) == 0, "Mia_to_h5_types needs to be specialized for T"); 
+		return -1; 
+	}
 };
 
 #define MIA_TO_H5_TYPE(T, FILE_TYPE, MEM_TYPE)                          \
         template <>                                                     \
         struct Mia_to_h5_types<T> {                                     \
-                static const hid_t file_datatype =  FILE_TYPE;          \
-                static const hid_t mem_datatype = MEM_TYPE;             \
+		static hid_t file_datatype(){ return FILE_TYPE;}	\
+                static hid_t mem_datatype(){ return MEM_TYPE;}		\
         };                                                              \
 
 
@@ -110,7 +122,7 @@ MIA_TO_H5_TYPE(signed char,    H5T_STD_I8LE, H5T_NATIVE_SCHAR);
 MIA_TO_H5_TYPE(unsigned char,  H5T_STD_U8LE, H5T_NATIVE_UCHAR); 
 
 MIA_TO_H5_TYPE(signed short,   H5T_STD_I16LE, H5T_NATIVE_SHORT); 
-MIA_TO_H5_TYPE(unsigned short, H5T_STD_u16LE, H5T_NATIVE_USHORT); 
+MIA_TO_H5_TYPE(unsigned short, H5T_STD_U16LE, H5T_NATIVE_USHORT); 
 
 MIA_TO_H5_TYPE(signed int,     H5T_STD_I32LE, H5T_NATIVE_INT); 
 MIA_TO_H5_TYPE(unsigned int,   H5T_STD_U32LE, H5T_NATIVE_UINT); 

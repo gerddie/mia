@@ -46,7 +46,9 @@ HDF5CoreFileFixture::HDF5CoreFileFixture()
 	access_plist = H5Pcreate(H5P_FILE_ACCESS);
 	H5Pset_fapl_core (access_plist, 1024, 0); 
 
-	m_core_file = H5FCreate("core.h5", H5F_ACC_RDWR, H5P_DEFAULT, access_plist); 
+	m_core_file = H5Fcreate("core.h5", H5F_ACC_TRUNC, H5P_DEFAULT, access_plist); 
+	if (m_core_file < 0) 
+		throw logic_error("H5Fcreate failed"); 
 }
 
 HDF5CoreFileFixture::~HDF5CoreFileFixture()

@@ -22,9 +22,11 @@
 
 NS_MIA_BEGIN
 
-H5Handle::H5Handle(hid_t hid,  FCloseHandle close_handle);:
-m_hid(hid), 
-        m_close_handle(close_handle)
+using std::vector; 
+
+H5Handle::H5Handle(hid_t hid,  FCloseHandle close_handle):
+	m_close_handle(close_handle), 
+	m_hid(hid)
 {
 }
 
@@ -38,8 +40,9 @@ H5Handle::operator hid_t()
         return m_hid; 
 }
 
-H5Dataset::H5Dataset(hid_t hid):
-	H5Handle(hid, H5Dclose) 
+H5Dataset::H5Dataset(hid_t hid, H5Space::Pointer dataspace):
+	H5Handle(hid, H5Dclose), 
+	m_dataspace(dataspace)
 {
 }
 
@@ -52,16 +55,17 @@ H5Dataset::Pointer H5Dataset::create(hid_t loc_id, const char *name, hid_t type_
 
 int H5Dataset::add_attributes(const CAttributedData& attr)
 {
-	for (auto i = attr.begin(); i != attr.end(); ++i) {
+	for (auto i = attr.begin_attributes(); i != attr.end_attributes(); ++i) {
 		H5Attribute::create(*this, i->first.c_str(), *i->second); 
 	}
+	return 0; 
 }
 
 int H5Dataset::write(hid_t internal_type, void *data) 
 {
 	
 
-	return H5Dwrite(*this, *m_dataspace, internal_type , H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+	return H5Dwrite(*this, *m_dataspace, internal_type , H5S_ALL, H5P_DEFAULT, data);
 };
 
 H5Attribute::H5Attribute(hid_t hid):
@@ -75,14 +79,14 @@ H5Attribute::H5Attribute(hid_t hid):
 	template <>							\
 	struct H5MiaAttributeTranslator<T> {				\
 	static H5Attribute::Pointer apply(hid_t loc_id, const char *attr_name, const TAttribute<T>& attr) { \
-		auto file_datatype = Mia_to_h5_types<T>::file_datatype;	\
-		auto mem_datatype = Mia_to_h5_types<T>::mem_datatype;	\
+		auto file_datatype = Mia_to_h5_types<T>::file_datatype(); \
+		auto mem_datatype = Mia_to_h5_types<T>::mem_datatype();	\
 									\
 		auto space = H5Space::create();				\
-		auto id = H5Acreate(loc_id, attr_name, file_datatype, *space,H5P_DEFAULT); \
-		T value = *attr;					\
-		H5Awrite(*id, mem_datatype, &value); 			\
-		return id; 						\
+		auto id = H5Acreate(loc_id, attr_name, file_datatype, *space, H5P_DEFAULT, H5P_DEFAULT); \
+		T value = attr;					\
+		H5Awrite(id, mem_datatype, &value); 			\
+		return H5Attribute::Pointer(new H5Attribute(id));	\
 	}								\
 	}; 
 
@@ -105,14 +109,14 @@ H5MiaAttributeTranslator_SCALAR_SPECIAL(double);
 	template <>							\
 	struct H5MiaAttributeTranslator<vector<T> > {			\
 		static H5Attribute::Pointer apply(hid_t loc_id, const char *attr_name, const TAttribute<vector<T>>& attr) { \
-			auto file_datatype = Mia_to_h5_types<T>::file_datatype;	\
-			auto mem_datatype = Mia_to_h5_types<T>::mem_datatype; \
-			const vector<T>& value = *attr;			\
-			int dim = value.size();				\
+			auto file_datatype = Mia_to_h5_types<T>::file_datatype(); \
+			auto mem_datatype = Mia_to_h5_types<T>::mem_datatype(); \
+			const std::vector<T>& value = attr;		\
+			hsize_t dim = value.size();				\
 			auto space = H5Space::create(1, &dim);		\
-			auto id = H5Acreate(loc_id, attr_name, file_datatype, *space, H5P_DEFAULT); \
-			H5Awrite(*id, mem_datatype, &value[0]);		\
-			return id;					\
+			auto id = H5Acreate(loc_id, attr_name, file_datatype, *space, H5P_DEFAULT, H5P_DEFAULT); \
+			H5Awrite(id, mem_datatype, &value[0]);	\
+			return H5Attribute::Pointer(new H5Attribute(id)); \
 		}							\
 	}; 
 H5MiaAttributeTranslator_VECTOR_SPECIAL(signed char); 
@@ -138,7 +142,7 @@ H5Attribute::Pointer create_h5attr(hid_t loc_id, const char *attr_name, const TA
 
 H5Attribute::Pointer H5Attribute::create(hid_t id, const char *attr_name, const CAttribute& attr )
 {
-#define call_create(type) create_h5attr(id, name, dynamic_cast<const TAttribute<type>&>(attr))
+#define call_create(type) create_h5attr(id, attr_name, dynamic_cast<const TAttribute<type>&>(attr))
 	
 	int type_id = attr.type_id(); 
 	if (EAttributeType::is_vector(type_id)) {
@@ -183,13 +187,13 @@ H5File::H5File(hid_t hid):H5Handle(hid, H5Fclose)
 {
 }
 
-H5File::Pointer H5File::create(const char *filename, unsigned access_mode, hid_t create_prp, hid_t  access_prp)
+H5File::Pointer H5File::create(const char *filename, unsigned access_mode)
 {
-        auto id = H5Fcreate(filename, access_mode, create_prp, access_prp); 
+        auto id = H5Fcreate(filename, access_mode, H5P_DEFAULT, H5P_DEFAULT); 
         return Pointer((id >= 0) ? new H5File(id) : nullptr); 
 }
 
-H5File::Pointer H5File::open(const char *filename, unsigned flags)
+H5File::Pointer H5File::open(const char *filename)
 {
         auto id = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT); 
         return Pointer( (id >= 0) ? new H5File(id) : nullptr); 
