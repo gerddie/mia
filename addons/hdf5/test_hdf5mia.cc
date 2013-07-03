@@ -26,8 +26,46 @@ NS_MIA_USE
 using namespace std;
 
 
+class HDF5CoreFileFixture {
+	
+protected: 
+	HDF5CoreFileFixture(); 
+	~HDF5CoreFileFixture(); 
+
+	hid_t get_file_id() const; 
+private: 
+	hid_t access_plist;
+	hid_t m_core_file; 
+
+}; 
+
+
+HDF5CoreFileFixture::HDF5CoreFileFixture()
+{
+	
+	access_plist = H5Pcreate(H5P_FILE_ACCESS);
+	H5Pset_fapl_core (access_plist, 1024, 0); 
+
+	m_core_file = H5FCreate("core.h5", H5F_ACC_RDWR, H5P_DEFAULT, access_plist); 
+}
+
+HDF5CoreFileFixture::~HDF5CoreFileFixture()
+{
+	H5Pclose(access_plist); 
+	H5Fclose(m_core_file); 
+}
+
+
+hid_t HDF5CoreFileFixture::get_file_id() const
+{
+	return m_core_file; 
+}
 
 
 
 
+BOOST_FIXTURE_TEST_CASE(test_core_hdf5_io_driver,  HDF5CoreFileFixture)
+{
+	
+}
 

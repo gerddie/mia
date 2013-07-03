@@ -33,7 +33,6 @@ IF (USE_HDF5)
     SET(HDF5MIALIBS miacore ${HDF5_LIBRARIES})
     MIA_ADD_LIBRARY(hdf5mia "${HDF5IO_SRC}" "${HDF5MIALIBS}")
 
-    ADD_EXECUTABLE(test-vista4mia  test_vista4mia.cc)
     NEW_TEST(hdf5mia hdf5mia)
 
   ENDIF(HDF5_FOUND)
