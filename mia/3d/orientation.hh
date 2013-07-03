@@ -132,6 +132,17 @@ typedef TAttribute<E3DPatientPositioning> CPatientPositionAttribute;
 */
 typedef TTranslator<E3DPatientPositioning> CPatientPositionTranslator;
 
+template <> 
+struct attribute_type<E3DImageOrientation> : public EAttributeType {
+        static const int value = 3000;
+}; 
+
+template <> 
+struct attribute_type<E3DPatientPositioning> : public EAttributeType {
+        static const int value = 3001;
+}; 
+
+
 extern EXPORT_3D const char * IDPatientPosition; 
 
 NS_MIA_END

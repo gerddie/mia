@@ -31,6 +31,7 @@
 
 #include <mia/core/defines.hh>
 #include <mia/core/type_traits.hh>
+#include <mia/core/attributetype.hh>
 
 NS_MIA_BEGIN
 
@@ -276,6 +277,21 @@ public:
 	/// the number of elements this vector holds (=3)
 	static const unsigned int  elements; 
 };
+
+
+struct EAttributeType_3d : public EAttributeType {
+	
+	static const int vector_3d_bit = 0x40000; 
+	
+	static bool is_vector(int type) {
+		return type & vector_3d_bit; 
+        }
+}; 
+
+template <typename T> 
+struct attribute_type<T3DVector<T>> : public EAttributeType_3d {
+        static const int value = attribute_type<T>::value | vector_3d_bit;
+}; 
 
 
 /// @cond NEVER  

@@ -463,6 +463,12 @@ private:
 };
 
 /**
+   This class is a hack to work around the vista voxel size stringyfied  value. 
+   Normaly one would write "x,y,z" but in vista it is "x y z", which means a different 
+   translator is needed as compared to a T3DVector. 
+   For everything else the T3DVector interpretation is used (based on type_id); 
+   
+
    @ingroup basic 
    @brief a 3D vector value used in attributes 
    @tparam T the data type of the vector elements 
@@ -486,6 +492,11 @@ public:
 	 */
 	const char *typedescr() const	{
 		return typeid(T3DVector<T>).name();
+	}
+	
+	// 
+	int type_id() const {
+		return 	 attribute_type<T3DVector<T>>::value; 
 	}
 private:
 	std::string do_as_string() const;

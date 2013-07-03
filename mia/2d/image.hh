@@ -34,6 +34,7 @@ NS_MIA_BEGIN
 
 #define ATTR_IMAGE_KMEANS_CLASSES "kmeans"
 
+
 /**
    \ingroup basic
    \brief This is the base class for 2D images that can hold generic pixel data
