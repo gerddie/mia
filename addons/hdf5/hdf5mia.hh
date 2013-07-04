@@ -96,6 +96,75 @@ public:
 	static H5File open(const char *name, unsigned flags, hid_t access_prop);
 }; 
 
+class H5Space: public H5Base {
+	H5Space (hid_t id); 
+public: 
+	H5Space() = default; 
+	static H5Space create();
+	static H5Space create(unsigned rank, hsize_t *dims);
+	
+}; 
+
+
+class H5Dataset: public H5Base {
+	H5Dataset (hid_t id, const H5Space& space); 
+public: 
+	H5Dataset() = default; 
+	static H5Dataset create(const H5Base& parent, const char *name, hid_t type_id, const H5Space& space);
+
+	void  write( hid_t type_id, void *data);
+
+private: 
+	H5Space m_space; 
+}; 
+
+
+
+
+
+
+template <typename T>
+struct Mia_to_h5_types {
+        static hid_t file_datatype() {
+		static_assert(sizeof(T) == 0, "Mia_to_h5_types needs to be specialized for T"); 
+		return -1; 
+	}
+        static hid_t mem_datatype(){
+		static_assert(sizeof(T) == 0, "Mia_to_h5_types needs to be specialized for T"); 
+		return -1; 
+	}
+};
+
+#define MIA_TO_H5_TYPE(T, FILE_TYPE, MEM_TYPE)                          \
+        template <>                                                     \
+        struct Mia_to_h5_types<T> {                                     \
+		static hid_t file_datatype(){ return FILE_TYPE;}	\
+                static hid_t mem_datatype(){ return MEM_TYPE;}		\
+        };                                                              \
+
+
+MIA_TO_H5_TYPE(bool,           H5T_STD_B8LE, H5T_NATIVE_B8); 
+
+MIA_TO_H5_TYPE(signed char,    H5T_STD_I8LE, H5T_NATIVE_SCHAR); 
+MIA_TO_H5_TYPE(unsigned char,  H5T_STD_U8LE, H5T_NATIVE_UCHAR); 
+
+MIA_TO_H5_TYPE(signed short,   H5T_STD_I16LE, H5T_NATIVE_SHORT); 
+MIA_TO_H5_TYPE(unsigned short, H5T_STD_U16LE, H5T_NATIVE_USHORT); 
+
+MIA_TO_H5_TYPE(signed int,     H5T_STD_I32LE, H5T_NATIVE_INT); 
+MIA_TO_H5_TYPE(unsigned int,   H5T_STD_U32LE, H5T_NATIVE_UINT); 
+
+#ifdef LONG_64BIT
+MIA_TO_H5_TYPE(signed long,   H5T_STD_I64LE, H5T_NATIVE_LONG); 
+MIA_TO_H5_TYPE(unsigned long, H5T_STD_U64LE, H5T_NATIVE_ULONG); 
+#endif        
+
+MIA_TO_H5_TYPE(float,  H5T_IEEE_F32LE,  H5T_NATIVE_FLOAT); 
+MIA_TO_H5_TYPE(double, H5T_IEEE_F64LE,  H5T_NATIVE_DOUBLE);
+
+#undef MIA_TO_H5_TYPE
+
+
 
 NS_MIA_END
 

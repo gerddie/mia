@@ -24,6 +24,7 @@ NS_MIA_BEGIN
 
 using std::vector; 
 using std::invalid_argument; 
+using std::runtime_error; 
 
 
 H5Handle::H5Handle(hid_t hid, const TSingleReferencedObject<hid_t>::Destructor& d):
@@ -157,6 +158,48 @@ H5File H5File::open(const char *name, unsigned flags, hid_t access_prop)
 	auto id = H5Fopen(name, flags, access_prop); 
 	check_id(id, "H5File", "Open", name);
 	return H5File(id);
+}
+
+
+H5Space::H5Space (hid_t id):
+	H5Base(H5SpaceHandle(id))
+{
+}
+	
+H5Space H5Space::create() 
+{
+	return H5Space(H5Screate(H5S_SCALAR)); 
+}
+
+H5Space H5Space::create(unsigned rank, hsize_t *dims)
+{
+	auto id = H5Screate_simple(rank, dims, NULL); 
+	check_id(id, "H5Space", "create_simple", rank);
+	return H5Space(id); 
+}
+
+
+H5Dataset::H5Dataset (hid_t id, const H5Space& space):
+	H5Base(H5DatasetHandle(id)), 
+	m_space(space)
+{
+}
+
+H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_id, const H5Space& space)
+{
+	auto id =  H5Dcreate(parent, name, type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	check_id(id, "H5Dataset", "create", name);
+	H5Dataset set(id, space); 
+	set.set_parent(parent);
+	return set;
+}
+
+void  H5Dataset::write( hid_t type_id, void *data)
+{
+	auto err =  H5Dwrite(*this, type_id, m_space,  H5S_ALL, H5P_DEFAULT, data);
+	if (err < 0) {
+		throw create_exception<runtime_error>("H5Dataset::write: error writing data set TODO:display name"); 
+	}
 }
 
 
