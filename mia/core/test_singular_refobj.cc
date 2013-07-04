@@ -41,3 +41,11 @@ BOOST_AUTO_TEST_CASE ( test_singlular_refobj )
         
 }
 
+BOOST_AUTO_TEST_CASE ( test_singlular_refobj_empty )
+{
+	TSingleReferencedObject<int> myobj; 
+	BOOST_CHECK_EQUAL(myobj.get_refcount(), 0u); 
+
+	TSingleReferencedObject<int> myobj2(myobj); 
+	BOOST_CHECK_EQUAL(myobj.get_refcount(), 0u); 
+}
