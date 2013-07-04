@@ -56,6 +56,8 @@ public:
 
 	static const EmptyDestructor empty_destructor; 
 
+	TSingleReferencedObject(); 
+
         TSingleReferencedObject(T data, const Destructor& d = empty_destructor);
         
         TSingleReferencedObject(const TSingleReferencedObject<T>& other);
@@ -90,6 +92,13 @@ private:
 
 template <typename T> 
 const typename TSingleReferencedObject<T>::EmptyDestructor TSingleReferencedObject<T>::empty_destructor; 
+
+
+template <typename T> 
+TSingleReferencedObject<T>::TSingleReferencedObject():
+	m_object(nullptr)
+{
+}
 
 template <typename T> 
 TSingleReferencedObject<T>::TSingleReferencedObject(T data, const Destructor& d)

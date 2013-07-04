@@ -49,3 +49,18 @@ BOOST_AUTO_TEST_CASE ( test_singlular_refobj_empty )
 	TSingleReferencedObject<int> myobj2(myobj); 
 	BOOST_CHECK_EQUAL(myobj.get_refcount(), 0u); 
 }
+
+BOOST_AUTO_TEST_CASE ( test_singlular_refobj_empty_then_copy )
+{
+	TSingleReferencedObject<int> myobj; 
+	BOOST_CHECK_EQUAL(myobj.get_refcount(), 0u); 
+
+	TSingleReferencedObject<int> myobj2(1); 
+	myobj = myobj2; 
+	BOOST_CHECK_EQUAL(myobj.get_refcount(), 2u); 
+
+	myobj2 = TSingleReferencedObject<int>(); 
+	BOOST_CHECK_EQUAL(myobj2.get_refcount(), 0u);
+	BOOST_CHECK_EQUAL(myobj.get_refcount(), 1u); 
+	
+}
