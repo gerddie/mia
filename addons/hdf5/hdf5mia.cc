@@ -25,197 +25,140 @@ NS_MIA_BEGIN
 using std::vector; 
 using std::invalid_argument; 
 
-H5Handle::H5Handle(hid_t hid,  FCloseHandle close_handle):
-	m_close_handle(close_handle), 
-	m_hid(hid)
+
+H5Handle::H5Handle(hid_t hid, const TSingleReferencedObject<hid_t>::Destructor& d):
+	TSingleReferencedObject<hid_t>(hid, d)
 {
 }
 
-H5Handle::~H5Handle() 
+void H5Handle::set_parent(const H5Handle& parent)
 {
-        m_close_handle(m_hid); 
-}
-
-H5Handle::operator hid_t() 
-{
-        return m_hid; 
-}
-
-H5Dataset::H5Dataset(hid_t hid, H5Space::Pointer dataspace):
-	H5Handle(hid, H5Dclose), 
-	m_dataspace(dataspace)
-{
-}
-
-H5Dataset::Pointer H5Dataset::create(hid_t loc_id, const char *name, hid_t type_id, H5Space::Pointer dataspace)
-{
-        auto id = H5Dcreate(loc_id, name, type_id, *dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); 
-        return Pointer(new H5Dataset(id, dataspace)); 
+	m_parent = parent; 
 }
 
 
-int H5Dataset::add_attributes(const CAttributedData& attr)
-{
-	for (auto i = attr.begin_attributes(); i != attr.end_attributes(); ++i) {
-		H5Attribute::create(*this, i->first.c_str(), *i->second); 
+struct H5SpaceDestructor : public TSingleReferencedObject<hid_t>::Destructor {	
+	virtual void operator ()(hid_t& handle)const {			
+		herr_t err = H5Sclose(handle);				
+		if (err != 0) {						
+			throw std::runtime_error("H5SpaceDestructor: error closing handle."); 
+		}				
 	}
-	return 0; 
-}
+};						
 
-int H5Dataset::write(hid_t mem_type, void *data) 
-{
-	
-
-	return H5Dwrite(*this, mem_type, *m_dataspace,  H5S_ALL, H5P_DEFAULT, data);
-};
-
-H5Attribute::H5Attribute(hid_t hid):
-	H5Handle(hid, H5Aclose) 
-{
-}
+static const H5SpaceDestructor H5SpaceDestructor; 
 
 
-// non-vector types 
-#define H5MiaAttributeTranslator_SCALAR_SPECIAL(T)				\
-	template <>							\
-	struct H5MiaAttributeTranslator<T> {				\
-	static H5Attribute::Pointer apply(hid_t loc_id, const char *attr_name, const TAttribute<T>& attr) { \
-		auto file_datatype = Mia_to_h5_types<T>::file_datatype(); \
-		auto mem_datatype = Mia_to_h5_types<T>::mem_datatype();	\
-									\
-		auto space = H5Space::create();				\
-		auto id = H5Acreate(loc_id, attr_name, file_datatype, *space, H5P_DEFAULT, H5P_DEFAULT); \
-		T value = attr;					\
-		H5Awrite(id, mem_datatype, &value); 			\
-		return H5Attribute::Pointer(new H5Attribute(id));	\
-	}								\
-	}; 
-
-
-H5MiaAttributeTranslator_SCALAR_SPECIAL(signed char); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(unsigned char); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(signed short); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(unsigned short); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(signed int); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(unsigned int); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(signed long); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(unsigned long); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(float); 
-H5MiaAttributeTranslator_SCALAR_SPECIAL(double); 
-
-#undef H5MiaAttributeTranslator_SCALAR_SPECIAL
-
-// non-vector types 
-#define H5MiaAttributeTranslator_VECTOR_SPECIAL(T)			\
-	template <>							\
-	struct H5MiaAttributeTranslator<vector<T> > {			\
-		static H5Attribute::Pointer apply(hid_t loc_id, const char *attr_name, const TAttribute<vector<T>>& attr) { \
-			auto file_datatype = Mia_to_h5_types<T>::file_datatype(); \
-			auto mem_datatype = Mia_to_h5_types<T>::mem_datatype(); \
-			const std::vector<T>& value = attr;		\
-			hsize_t dim = value.size();				\
-			auto space = H5Space::create(1, &dim);		\
-			auto id = H5Acreate(loc_id, attr_name, file_datatype, *space, H5P_DEFAULT, H5P_DEFAULT); \
-			H5Awrite(id, mem_datatype, &value[0]);	\
-			return H5Attribute::Pointer(new H5Attribute(id)); \
+#define H5Destructor(TYPE, CALL)					\
+	struct TYPE : public TSingleReferencedObject<hid_t>::Destructor {				\
+		virtual void operator ()(hid_t& handle)const {		\
+			herr_t err = CALL(handle);			\
+			if (err != 0) {					\
+				throw std::runtime_error(#TYPE ": error closing handle."); \
+			}						\
 		}							\
-	}; 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(signed char); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(unsigned char); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(signed short); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(unsigned short); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(signed int); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(unsigned int); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(signed long); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(unsigned long); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(float); 
-H5MiaAttributeTranslator_VECTOR_SPECIAL(double); 
+	};								\
+	static const TYPE TYPE;						\
 
-#undef H5MiaAttributeTranslator_VECTOR_SPECIAL
+H5Destructor(H5GroupDestructor, H5Gclose);
 
-template <typename T>
-H5Attribute::Pointer create_h5attr(hid_t loc_id, const char *attr_name, const TAttribute<T>& attr) 
+//H5Destructor(H5SpaceDestructor, H5Sclose);
+
+H5Destructor(H5DatasetDestructor, H5Dclose);
+H5Destructor(H5FileDestructor, H5Fclose);
+H5Destructor(H5AttributeDestructor, H5Aclose);
+H5Destructor(H5PropertyDestructor, H5Pclose); 
+
+H5SpaceHandle::H5SpaceHandle(hid_t hid):
+	H5Handle(hid, H5SpaceDestructor)
 {
-	return H5MiaAttributeTranslator<T>::apply(loc_id, attr_name,  attr); 
 }
 
-#warning This will not work because it can not be extended 
-
-H5Attribute::Pointer H5Attribute::create(hid_t id, const char *attr_name, const CAttribute& attr )
+H5GroupHandle::H5GroupHandle(hid_t hid):
+	H5Handle(hid, H5GroupDestructor)
 {
-#define call_create(type) create_h5attr(id, attr_name, dynamic_cast<const TAttribute<type>&>(attr))
-	
-	int type_id = attr.type_id(); 
-	if (EAttributeType::is_vector(type_id)) {
-		switch (EAttributeType::scalar_type(type_id)) {
-		case EAttributeType::attr_uchar: return call_create(vector<unsigned char>);
-		case EAttributeType::attr_schar: return call_create(vector<signed char>);
-		case EAttributeType::attr_ushort:return call_create(vector<unsigned short>);
-		case EAttributeType::attr_sshort:return call_create(vector<signed short>);
-		case EAttributeType::attr_uint:  return call_create(vector<unsigned int>);
-		case EAttributeType::attr_sint:  return call_create(vector<signed int>);
-		case EAttributeType::attr_ulong: return call_create(vector<unsigned long>);
-		case EAttributeType::attr_slong: return call_create(vector<signed long>);
-		case EAttributeType::attr_float: return call_create(vector<float>);
-		case EAttributeType::attr_double:return call_create(vector<double>); 
-		default:
-			cvwarn() << "don't know how to translate attribute " << attr_name << " of type " << type_id 
-				 << ", dropping attribute\n"; 
-		}
-	} else {
-		switch (type_id) {
-		case EAttributeType::attr_uchar: return call_create(unsigned char);
-		case EAttributeType::attr_schar: return call_create(signed char);
-		case EAttributeType::attr_ushort:return call_create(unsigned short);
-		case EAttributeType::attr_sshort:return call_create(signed short);
-		case EAttributeType::attr_uint:  return call_create(unsigned int);
-		case EAttributeType::attr_sint:  return call_create(signed int);
-		case EAttributeType::attr_ulong: return call_create(unsigned long);
-		case EAttributeType::attr_slong: return call_create(signed long);
-		case EAttributeType::attr_float: return call_create(float);
-		case EAttributeType::attr_double:return call_create(double); 
-		default:
-			cvwarn() << "don't know how to translate attribute " << attr_name << " of type " << type_id 
-				 << ", dropping attribute\n"; 
-		}
+}
+
+H5DatasetHandle::H5DatasetHandle(hid_t hid):
+	H5Handle(hid, H5DatasetDestructor)
+{
+}
+
+H5AttributeHandle::H5AttributeHandle(hid_t hid):
+	H5Handle(hid, H5AttributeDestructor)
+{
+}
+
+H5PropertyHandle::H5PropertyHandle(hid_t hid):
+	H5Handle(hid, H5PropertyDestructor)
+{
+}	
+
+H5FileHandle::H5FileHandle(hid_t hid):
+	H5Handle(hid, H5FileDestructor)
+{
+}
+
+H5Base::H5Base(const H5Handle& handle):
+	m_handle(handle)
+{
+}
+
+void H5Base::set_parent(const H5Base& parent)
+{
+	m_handle.set_parent(parent.get_handle()); 
+}
+
+const H5Handle& H5Base::get_handle() const
+{
+	return m_handle; 
+}
+
+H5Base::operator hid_t() const
+{
+	return m_handle; 
+}
+
+template <typename I> 
+static void check_id(hid_t id, const char *domain, const char *action, I info) 
+{
+	if (id < 0) {
+		throw create_exception<invalid_argument>(domain, ": error in ", action, ":", info);  
 	}
-#undef call_create
-	return H5Attribute::Pointer(); 
 }
 
-
-H5File::H5File(hid_t hid):H5Handle(hid, H5Fclose) 
+H5Property::H5Property(hid_t id):
+	H5Base(H5PropertyHandle(id))
 {
 }
 
-H5File::Pointer H5File::create(const char *filename, unsigned access_mode)
+H5Property H5Property::create(hid_t cls)
 {
-        auto id = H5Fcreate(filename, access_mode, H5P_DEFAULT, H5P_DEFAULT); 
-        return Pointer((id >= 0) ? new H5File(id) : nullptr); 
-}
-
-H5File::Pointer H5File::open(const char *filename)
-{
-        auto id = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT); 
-        return Pointer( (id >= 0) ? new H5File(id) : nullptr); 
-}
-
-H5Space::H5Space(hid_t hid):H5Handle(hid, H5Sclose) 
-{
+	auto id = H5Pcreate(cls); 
+	check_id(id, "H5Property", "Create", cls); 
+	return H5Property(id); 
 }
 
 
-H5Space::Pointer H5Space::create(int rank, const hsize_t *dims)
+H5File::H5File(hid_t id):
+	H5Base(H5FileHandle(id))
 {
-        auto id = H5Screate_simple(rank, dims, NULL); 
-	if (id < 0) 
-		throw invalid_argument("H5Space::create: failed to create space id"); 
-        return Pointer(new H5Space(id)); 
 }
 
-H5Space::Pointer H5Space::create()
+H5File H5File::create(const char *name, unsigned flags, hid_t  creation_prop, hid_t access_prop)
 {
-	return Pointer(new H5Space(H5Screate(H5S_SCALAR)));  
+	auto id = H5Fcreate(name, flags, creation_prop, access_prop); 
+	check_id(id, "H5File", "Create", name);
+	return H5File(id); 
 }
+	
+H5File H5File::open(const char *name, unsigned flags, hid_t access_prop)
+{
+	auto id = H5Fopen(name, flags, access_prop); 
+	check_id(id, "H5File", "Open", name);
+	return H5File(id);
+}
+
+
 
 NS_MIA_END
