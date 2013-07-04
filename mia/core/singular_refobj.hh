@@ -27,6 +27,13 @@
 
 NS_MIA_BEGIN
 
+
+template <typename T> 
+struct empty_desctructor {
+	static void apply(T& MIA_PARAM_UNUSED(data)) {
+	}; 
+}; 
+
 /**
    \brief a singulater reference counted object that gets destroyed when the refount goes to zero 
 
@@ -36,14 +43,15 @@ NS_MIA_BEGIN
 
 */
 
-template <typename T> 
+
+template <typename T, typename D = empty_desctructor<T>> 
 class TSingleReferencedObject {
 public: 
         TSingleReferencedObject(T data);
         
-        TSingleReferencedObject(const TSingleReferencedObject<T>& other);
+        TSingleReferencedObject(const TSingleReferencedObject<T,D>& other);
 
-        TSingleReferencedObject& operator = (const TSingleReferencedObject<T>& other);
+        TSingleReferencedObject& operator = (const TSingleReferencedObject<T,D>& other);
 
         ~TSingleReferencedObject(); 
 
@@ -71,22 +79,22 @@ private:
 }; 
 
 
-template <typename T> 
-TSingleReferencedObject<T>::TSingleReferencedObject(T data)
+template <typename T, typename D> 
+TSingleReferencedObject<T,D>::TSingleReferencedObject(T data)
 {
         m_object = new TheObject(data); 
 }
 
-template <typename T> 
-TSingleReferencedObject<T>::TSingleReferencedObject(const TSingleReferencedObject<T>& other)
+template <typename T, typename D> 
+TSingleReferencedObject<T,D>::TSingleReferencedObject(const TSingleReferencedObject<T,D>& other)
 {
         m_object = other.m_object; 
         if (m_object)
                 m_object->add_ref(); 
 }
 
-template <typename T> 
-TSingleReferencedObject<T>& TSingleReferencedObject<T>::operator = (const TSingleReferencedObject<T>& other)
+template <typename T, typename D> 
+TSingleReferencedObject<T,D>& TSingleReferencedObject<T,D>::operator = (const TSingleReferencedObject<T,D>& other)
 {
         if (m_object)
                 m_object->del_ref(); 
@@ -96,22 +104,22 @@ TSingleReferencedObject<T>& TSingleReferencedObject<T>::operator = (const TSingl
 	return *this; 
 }
 
-template <typename T> 
-TSingleReferencedObject<T>::~TSingleReferencedObject()
+template <typename T, typename D> 
+TSingleReferencedObject<T,D>::~TSingleReferencedObject()
 {
         if (m_object)
                 if (m_object->del_ref()) 
                         delete m_object; 
 }
 
-template <typename T> 
-TSingleReferencedObject<T>::operator T() const 
+template <typename T, typename D> 
+TSingleReferencedObject<T,D>::operator T() const 
 {
         return m_object->get();
 }
 
-template <typename T> 
-unsigned TSingleReferencedObject<T>::get_refcount()const
+template <typename T, typename D> 
+unsigned TSingleReferencedObject<T,D>::get_refcount()const
 {
         if (m_object) 
                 return m_object->get_refcount(); 
@@ -119,40 +127,41 @@ unsigned TSingleReferencedObject<T>::get_refcount()const
                 return 0; 
 }
 
-template <typename T> 
-TSingleReferencedObject<T>::TheObject::TheObject(T data):
+template <typename T, typename D> 
+TSingleReferencedObject<T,D>::TheObject::TheObject(T data):
         m_data(data), 
         m_refcount(1)
 {
 }
 
-template <typename T> 
-TSingleReferencedObject<T>::TheObject::~TheObject()
+template <typename T, typename D> 
+TSingleReferencedObject<T,D>::TheObject::~TheObject()
 {
 	assert(m_refcount == 0); 
+	D::apply(m_data); 
 }
                 
-template <typename T> 
-void TSingleReferencedObject<T>::TheObject::add_ref()
+template <typename T, typename D> 
+void TSingleReferencedObject<T,D>::TheObject::add_ref()
 {
         ++m_refcount; 
 }
 
-template <typename T> 
-bool TSingleReferencedObject<T>::TheObject::del_ref()
+template <typename T, typename D> 
+bool TSingleReferencedObject<T,D>::TheObject::del_ref()
 {
         --m_refcount; 
         return (m_refcount <= 0); 
 }
 
-template <typename T> 
-unsigned TSingleReferencedObject<T>::TheObject::get_refcount()const
+template <typename T, typename D> 
+unsigned TSingleReferencedObject<T,D>::TheObject::get_refcount()const
 {
 	return m_refcount; 
 }
 
-template <typename T> 
-T TSingleReferencedObject<T>::TheObject::get() const 
+template <typename T, typename D> 
+T TSingleReferencedObject<T,D>::TheObject::get() const 
 {
         return m_data; 
 }
