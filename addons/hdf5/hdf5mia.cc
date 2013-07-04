@@ -20,9 +20,12 @@
 
 #include <addons/hdf5/hdf5mia.hh>
 
+#include <stack>
 NS_MIA_BEGIN
 
 using std::vector; 
+using std::string; 
+using std::stack; 
 using std::invalid_argument; 
 using std::runtime_error; 
 
@@ -185,6 +188,69 @@ H5Space H5Space::create(unsigned rank, hsize_t *dims)
 	return H5Space(id); 
 }
 
+H5Group::H5Group (hid_t id):
+	H5Base(H5GroupHandle(id))
+{
+}
+
+H5Base H5Group::create_or_open_hierarchy(const H5Base& parent, string& relative_name)
+{
+
+	H5Base pp = parent; 
+	// only deal with fully qualified names
+	assert(relative_name[0] == '/'); 
+
+	size_t last_slash = relative_name.find_last_of('/'); 
+	
+	// only root group required no need to do anything 
+	if (last_slash > 0)  {
+		string base = relative_name.substr(0, last_slash); 
+		
+		relative_name = relative_name.substr(last_slash+1);
+		
+		stack<string> path; 
+		last_slash = base.find_last_of('/'); 
+		while (last_slash > 0)  {
+			path.push(base.substr(last_slash+1)); 
+			base = relative_name.substr(0, last_slash); 
+			last_slash = base.find_last_of('/'); 
+		}
+		
+		while (!path.empty()) {
+			auto name = path.top(); 
+			path.pop(); 
+			
+			// it needs to be tested whether multiple slashes are to be merged
+			if (name.empty()) 
+				continue; 
+			
+			auto id = H5Gopen(parent, name.c_str(), H5P_DEFAULT); 
+			if (id < 0) {
+				id = H5Gcreate(parent, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); 
+				check_id(id, "H5Group", "create", name);
+			}
+			
+			H5Group p(id); 
+			p.set_parent(pp); 
+			pp = p; 
+		}
+	}
+	return pp; 
+}
+
+H5Type::H5Type (hid_t id):
+	H5Base(H5TypeHandle(id))
+{
+}
+
+H5Type H5Type::get_native_type() const
+{
+	auto id = H5Tget_native_type(*this, H5T_DIR_ASCEND);
+	if (id < 0) {
+		throw runtime_error("H5Type::get_native_type, Unable to deduct mem_type for reading data");
+	}
+	return H5Type(id); 
+}
 
 H5Dataset::H5Dataset (hid_t id, const H5Space& space):
 	H5Base(H5DatasetHandle(id)), 
@@ -194,10 +260,13 @@ H5Dataset::H5Dataset (hid_t id, const H5Space& space):
 
 H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_id, const H5Space& space)
 {
-	auto id =  H5Dcreate(parent, name, type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	check_id(id, "H5Dataset", "create", name);
+	string relative_name(name); 
+	H5Base p = H5Group::create_or_open_hierarchy(parent, relative_name); 
+	
+	auto id =  H5Dcreate(p, relative_name.c_str(), type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	check_id(id, "H5Dataset", "create", relative_name);
 	H5Dataset set(id, space); 
-	set.set_parent(parent);
+	set.set_parent(p);
 	return set;
 }
 
@@ -219,6 +288,14 @@ void  H5Dataset::write( hid_t type_id, void *data)
 	auto err =  H5Dwrite(*this, type_id, m_space,  H5S_ALL, H5P_DEFAULT, data);
 	if (err < 0) {
 		throw create_exception<runtime_error>("H5Dataset::write: error writing data set TODO:display name"); 
+	}
+}
+
+void  H5Dataset::read( hid_t type_id, void *data)
+{
+	auto err =  H5Dread(*this, type_id, m_space,  H5S_ALL, H5P_DEFAULT, data);
+	if (err < 0) {
+		throw create_exception<runtime_error>("H5Dataset::read: error reading data set TODO:display name"); 
 	}
 }
 

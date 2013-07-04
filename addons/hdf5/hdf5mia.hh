@@ -111,6 +111,23 @@ public:
 }; 
 
 
+class H5Group: public H5Base {
+public: 
+	H5Group (hid_t id); 
+	H5Group() = default;
+	static H5Base create_or_open_hierarchy(const H5Base& parent, std::string& relative_name); 
+}; 
+
+
+class H5Type: public H5Base {
+public: 
+	H5Type (hid_t id); 
+	H5Type() = default; 
+	
+	H5Type get_native_type() const;
+}; 
+
+
 class H5Dataset: public H5Base {
 	H5Dataset (hid_t id, const H5Space& space); 
 public: 
@@ -120,6 +137,7 @@ public:
 	static H5Dataset open(const H5Base& parent, const char *name);
 
 	void  write( hid_t type_id, void *data);
+	void  read( hid_t type_id, void *data);
 
 	std::vector <hsize_t> get_size() const; 
 private: 
