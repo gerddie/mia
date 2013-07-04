@@ -69,11 +69,18 @@ H5Destructor(H5DatasetDestructor, H5Dclose);
 H5Destructor(H5FileDestructor, H5Fclose);
 H5Destructor(H5AttributeDestructor, H5Aclose);
 H5Destructor(H5PropertyDestructor, H5Pclose); 
+H5Destructor(H5TypeDestructor, H5Tclose); 
 
 H5SpaceHandle::H5SpaceHandle(hid_t hid):
 	H5Handle(hid, H5SpaceDestructor)
 {
 }
+
+H5TypeHandle::H5TypeHandle(hid_t hid):
+	H5Handle(hid, H5TypeDestructor)
+{
+}
+
 
 H5GroupHandle::H5GroupHandle(hid_t hid):
 	H5Handle(hid, H5GroupDestructor)
@@ -194,6 +201,19 @@ H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_i
 	return set;
 }
 
+H5Dataset H5Dataset::open(const H5Base& parent, const char *name)
+{
+	auto id =  H5Dopen(parent, name, H5P_DEFAULT);
+	check_id(id, "H5Dataset", "open", name);
+
+	int space_id = H5Dget_space(id); 
+	check_id(space_id, "H5Dataset", "open", H5Dget_space);
+	H5Space space(space_id); 
+	H5Dataset set(id, space); 
+	set.set_parent(parent);
+	return set;
+}
+
 void  H5Dataset::write( hid_t type_id, void *data)
 {
 	auto err =  H5Dwrite(*this, type_id, m_space,  H5S_ALL, H5P_DEFAULT, data);
@@ -202,6 +222,17 @@ void  H5Dataset::write( hid_t type_id, void *data)
 	}
 }
 
-
+vector <hsize_t> H5Dataset::get_size() const
+{
+	int  dims = H5Sget_simple_extent_ndims(m_space);
+	if (dims < 0) 
+		throw create_exception<runtime_error>("H5Dataset::get_size: error reading dimensions");
+	
+	vector <hsize_t> result(dims); 
+	auto status = H5Sget_simple_extent_dims(m_space,  &result[0], NULL);
+	if (status < 0) 
+		throw create_exception<runtime_error>("H5Dataset::get_size: error reading dimensions");
+	return result; 
+}
 
 NS_MIA_END

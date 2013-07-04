@@ -43,6 +43,11 @@ struct H5SpaceHandle: public H5Handle {
         H5SpaceHandle(hid_t hid);
 };
 
+struct H5TypeHandle: public H5Handle {
+        H5TypeHandle(hid_t hid);
+};
+
+
 struct H5GroupHandle: public H5Handle {
         H5GroupHandle(hid_t hid);
 };
@@ -97,8 +102,8 @@ public:
 }; 
 
 class H5Space: public H5Base {
-	H5Space (hid_t id); 
 public: 
+	H5Space (hid_t id); 
 	H5Space() = default; 
 	static H5Space create();
 	static H5Space create(unsigned rank, hsize_t *dims);
@@ -112,8 +117,11 @@ public:
 	H5Dataset() = default; 
 	static H5Dataset create(const H5Base& parent, const char *name, hid_t type_id, const H5Space& space);
 
+	static H5Dataset open(const H5Base& parent, const char *name);
+
 	void  write( hid_t type_id, void *data);
 
+	std::vector <hsize_t> get_size() const; 
 private: 
 	H5Space m_space; 
 }; 
