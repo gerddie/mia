@@ -28,11 +28,6 @@
 NS_MIA_BEGIN
 
 
-template <typename T> 
-struct empty_desctructor {
-	static void apply(T& MIA_PARAM_UNUSED(data)) {
-	}; 
-}; 
 
 /**
    \brief a singulater reference counted object that gets destroyed when the refount goes to zero 
@@ -48,14 +43,24 @@ struct empty_desctructor {
 */
 
 
-template <typename T, typename D = empty_desctructor<T>> 
+template <typename T> 
 class TSingleReferencedObject {
 public: 
-        TSingleReferencedObject(T data);
-        
-        TSingleReferencedObject(const TSingleReferencedObject<T,D>& other);
+	struct Destructor {
+		virtual void operator ()(T& MIA_PARAM_UNUSED(data)) const = 0;
+	}; 
 
-        TSingleReferencedObject& operator = (const TSingleReferencedObject<T,D>& other);
+	struct EmptyDestructor : public Destructor{
+		virtual void operator ()(T& MIA_PARAM_UNUSED(data))const {}
+	};
+
+	static const EmptyDestructor empty_destructor; 
+
+        TSingleReferencedObject(T data, const Destructor& d = empty_destructor);
+        
+        TSingleReferencedObject(const TSingleReferencedObject<T>& other);
+
+        TSingleReferencedObject& operator = (const TSingleReferencedObject<T>& other);
 
         ~TSingleReferencedObject(); 
 
@@ -66,7 +71,7 @@ public:
 private: 
         class TheObject {
         public: 
-                TheObject(T data); 
+                TheObject(T data, const Destructor& d = empty_destructor); 
                 ~TheObject();
                 void add_ref(); 
                 bool del_ref();
@@ -78,27 +83,30 @@ private:
                 TheObject& operator = (const TheObject& data) = delete; 
                 T m_data; 
                 unsigned m_refcount; 
+		const Destructor& m_destructor; 
         }; 
         TheObject *m_object; 
 }; 
 
+template <typename T> 
+const typename TSingleReferencedObject<T>::EmptyDestructor TSingleReferencedObject<T>::empty_destructor; 
 
-template <typename T, typename D> 
-TSingleReferencedObject<T,D>::TSingleReferencedObject(T data)
+template <typename T> 
+TSingleReferencedObject<T>::TSingleReferencedObject(T data, const Destructor& d)
 {
-        m_object = new TheObject(data); 
+        m_object = new TheObject(data, d); 
 }
 
-template <typename T, typename D> 
-TSingleReferencedObject<T,D>::TSingleReferencedObject(const TSingleReferencedObject<T,D>& other)
+template <typename T> 
+TSingleReferencedObject<T>::TSingleReferencedObject(const TSingleReferencedObject<T>& other)
 {
         m_object = other.m_object; 
         if (m_object)
                 m_object->add_ref(); 
 }
 
-template <typename T, typename D> 
-TSingleReferencedObject<T,D>& TSingleReferencedObject<T,D>::operator = (const TSingleReferencedObject<T,D>& other)
+template <typename T> 
+TSingleReferencedObject<T>& TSingleReferencedObject<T>::operator = (const TSingleReferencedObject<T>& other)
 {
         if (m_object)
                 m_object->del_ref(); 
@@ -108,22 +116,22 @@ TSingleReferencedObject<T,D>& TSingleReferencedObject<T,D>::operator = (const TS
 	return *this; 
 }
 
-template <typename T, typename D> 
-TSingleReferencedObject<T,D>::~TSingleReferencedObject()
+template <typename T> 
+TSingleReferencedObject<T>::~TSingleReferencedObject()
 {
         if (m_object)
                 if (m_object->del_ref()) 
                         delete m_object; 
 }
 
-template <typename T, typename D> 
-TSingleReferencedObject<T,D>::operator T() const 
+template <typename T> 
+TSingleReferencedObject<T>::operator T() const 
 {
         return m_object->get();
 }
 
-template <typename T, typename D> 
-unsigned TSingleReferencedObject<T,D>::get_refcount()const
+template <typename T> 
+unsigned TSingleReferencedObject<T>::get_refcount()const
 {
         if (m_object) 
                 return m_object->get_refcount(); 
@@ -131,41 +139,42 @@ unsigned TSingleReferencedObject<T,D>::get_refcount()const
                 return 0; 
 }
 
-template <typename T, typename D> 
-TSingleReferencedObject<T,D>::TheObject::TheObject(T data):
+template <typename T> 
+TSingleReferencedObject<T>::TheObject::TheObject(T data, const Destructor& d):
         m_data(data), 
-        m_refcount(1)
+        m_refcount(1), 
+	m_destructor(d)
 {
 }
 
-template <typename T, typename D> 
-TSingleReferencedObject<T,D>::TheObject::~TheObject()
+template <typename T> 
+TSingleReferencedObject<T>::TheObject::~TheObject()
 {
 	assert(m_refcount == 0); 
-	D::apply(m_data); 
+	m_destructor(m_data); 
 }
                 
-template <typename T, typename D> 
-void TSingleReferencedObject<T,D>::TheObject::add_ref()
+template <typename T> 
+void TSingleReferencedObject<T>::TheObject::add_ref()
 {
         ++m_refcount; 
 }
 
-template <typename T, typename D> 
-bool TSingleReferencedObject<T,D>::TheObject::del_ref()
+template <typename T> 
+bool TSingleReferencedObject<T>::TheObject::del_ref()
 {
         --m_refcount; 
         return (m_refcount <= 0); 
 }
 
-template <typename T, typename D> 
-unsigned TSingleReferencedObject<T,D>::TheObject::get_refcount()const
+template <typename T> 
+unsigned TSingleReferencedObject<T>::TheObject::get_refcount()const
 {
 	return m_refcount; 
 }
 
-template <typename T, typename D> 
-T TSingleReferencedObject<T,D>::TheObject::get() const 
+template <typename T> 
+T TSingleReferencedObject<T>::TheObject::get() const 
 {
         return m_data; 
 }
