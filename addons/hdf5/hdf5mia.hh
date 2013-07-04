@@ -115,7 +115,7 @@ class H5Group: public H5Base {
 public: 
 	H5Group (hid_t id); 
 	H5Group() = default;
-	static H5Base create_or_open_hierarchy(const H5Base& parent, std::string& relative_name); 
+	static H5Base create_or_open_hierarchy(const H5Base& parent, std::string& relative_name, bool create); 
 }; 
 
 

@@ -193,9 +193,29 @@ H5Group::H5Group (hid_t id):
 {
 }
 
-H5Base H5Group::create_or_open_hierarchy(const H5Base& parent, string& relative_name)
-{
 
+struct SilenceH5Errors {
+	SilenceH5Errors();
+	~SilenceH5Errors(); 
+private:
+	H5E_auto2_t  old_func;
+	void *old_client_data;
+}; 
+
+SilenceH5Errors::SilenceH5Errors()
+{
+	H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+	H5Eset_auto(H5E_DEFAULT, NULL, NULL); 
+}
+
+SilenceH5Errors::~SilenceH5Errors()
+{
+	H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+}
+
+
+H5Base H5Group::create_or_open_hierarchy(const H5Base& parent, string& relative_name, bool create)
+{
 	H5Base pp = parent; 
 	// only deal with fully qualified names
 	assert(relative_name[0] == '/'); 
@@ -204,31 +224,38 @@ H5Base H5Group::create_or_open_hierarchy(const H5Base& parent, string& relative_
 	
 	// only root group required no need to do anything 
 	if (last_slash > 0)  {
+		SilenceH5Errors err; 
 		string base = relative_name.substr(0, last_slash); 
+		cvdebug() << "Base: " << base << "\n"; 
 		
 		relative_name = relative_name.substr(last_slash+1);
 		
 		stack<string> path; 
 		last_slash = base.find_last_of('/'); 
 		while (last_slash > 0)  {
+			auto tail = base.substr(last_slash+1); 
+
 			path.push(base.substr(last_slash+1)); 
-			base = relative_name.substr(0, last_slash); 
+			base = base.substr(0, last_slash); 
+			cvdebug() << "tail:" << tail << " "
+				  << "base:" << base << "\n"; 
 			last_slash = base.find_last_of('/'); 
 		}
+		path.push(base.substr(1)); 
+		
 		
 		while (!path.empty()) {
+
 			auto name = path.top(); 
 			path.pop(); 
-			
+
+			cvdebug() << "do group '" << name <<"'\n";
 			// it needs to be tested whether multiple slashes are to be merged
-			if (name.empty()) 
+			if (name.empty())
 				continue; 
-			
 			auto id = H5Gopen(parent, name.c_str(), H5P_DEFAULT); 
-			if (id < 0) {
+			if (id < 0 && create)
 				id = H5Gcreate(parent, name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); 
-				check_id(id, "H5Group", "create", name);
-			}
 			
 			H5Group p(id); 
 			p.set_parent(pp); 
@@ -261,7 +288,7 @@ H5Dataset::H5Dataset (hid_t id, const H5Space& space):
 H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_id, const H5Space& space)
 {
 	string relative_name(name); 
-	H5Base p = H5Group::create_or_open_hierarchy(parent, relative_name); 
+	H5Base p = H5Group::create_or_open_hierarchy(parent, relative_name, true); 
 	
 	auto id =  H5Dcreate(p, relative_name.c_str(), type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	check_id(id, "H5Dataset", "create", relative_name);
@@ -272,14 +299,18 @@ H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_i
 
 H5Dataset H5Dataset::open(const H5Base& parent, const char *name)
 {
-	auto id =  H5Dopen(parent, name, H5P_DEFAULT);
-	check_id(id, "H5Dataset", "open", name);
+	string relative_name(name); 
+	H5Base p = H5Group::create_or_open_hierarchy(parent, relative_name, false); 
+
+
+	auto id =  H5Dopen(p, relative_name.c_str(), H5P_DEFAULT);
+	check_id(id, "H5Dataset", "open", relative_name);
 
 	int space_id = H5Dget_space(id); 
 	check_id(space_id, "H5Dataset", "open", H5Dget_space);
 	H5Space space(space_id); 
 	H5Dataset set(id, space); 
-	set.set_parent(parent);
+	set.set_parent(p);
 	return set;
 }
 
@@ -311,5 +342,7 @@ vector <hsize_t> H5Dataset::get_size() const
 		throw create_exception<runtime_error>("H5Dataset::get_size: error reading dimensions");
 	return result; 
 }
+
+
 
 NS_MIA_END
