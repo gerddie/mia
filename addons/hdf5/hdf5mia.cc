@@ -23,6 +23,7 @@
 NS_MIA_BEGIN
 
 using std::vector; 
+using std::invalid_argument; 
 
 H5Handle::H5Handle(hid_t hid,  FCloseHandle close_handle):
 	m_close_handle(close_handle), 
@@ -61,11 +62,11 @@ int H5Dataset::add_attributes(const CAttributedData& attr)
 	return 0; 
 }
 
-int H5Dataset::write(hid_t internal_type, void *data) 
+int H5Dataset::write(hid_t mem_type, void *data) 
 {
 	
 
-	return H5Dwrite(*this, *m_dataspace, internal_type , H5S_ALL, H5P_DEFAULT, data);
+	return H5Dwrite(*this, mem_type, *m_dataspace,  H5S_ALL, H5P_DEFAULT, data);
 };
 
 H5Attribute::H5Attribute(hid_t hid):
@@ -207,6 +208,8 @@ H5Space::H5Space(hid_t hid):H5Handle(hid, H5Sclose)
 H5Space::Pointer H5Space::create(int rank, const hsize_t *dims)
 {
         auto id = H5Screate_simple(rank, dims, NULL); 
+	if (id < 0) 
+		throw invalid_argument("H5Space::create: failed to create space id"); 
         return Pointer(new H5Space(id)); 
 }
 

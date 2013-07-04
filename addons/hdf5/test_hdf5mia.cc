@@ -71,3 +71,20 @@ BOOST_FIXTURE_TEST_CASE(test_core_hdf5_io_driver,  HDF5CoreFileFixture)
 	
 }
 
+BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
+{
+	hsize_t dims[2] = {2,3}; 
+
+	int data [6] = {1,2,3,4,5,6}; 
+
+	auto file_type = Mia_to_h5_types<int>::file_datatype(); 
+	auto mem_type = Mia_to_h5_types<int>::mem_datatype(); 
+	
+	auto space = H5Space::create(2, dims); 
+	auto dataset = H5Dataset::create(get_file_id(), "/testset", file_type, space);
+	
+	dataset->write(mem_type, data);
+	
+	
+}
+
