@@ -41,6 +41,10 @@ struct empty_desctructor {
    but that do also not fit the sigleton pattern. An example use are the HDF5 file, group, and 
    dataset handles. 
 
+   \tparam T type of the data to be hold
+   \tparam D type of a functor that frees the resource. It must provide a static method 
+         static void apply(T& data) that frees the resource. 
+
 */
 
 
