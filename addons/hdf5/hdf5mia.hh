@@ -106,7 +106,8 @@ public:
 	H5Space (hid_t id); 
 	H5Space() = default; 
 	static H5Space create();
-	static H5Space create(unsigned rank, hsize_t *dims);
+	static H5Space create(unsigned rank, const hsize_t *dims);
+	static H5Space create(const std::vector<hsize_t>& dims);
 	
 }; 
 
@@ -136,7 +137,7 @@ public:
 
 	static H5Dataset open(const H5Base& parent, const char *name);
 
-	void  write( hid_t type_id, void *data);
+	void  write( hid_t type_id, const void *data);
 	void  read( hid_t type_id, void *data);
 
 	std::vector <hsize_t> get_size() const; 

@@ -181,11 +181,16 @@ H5Space H5Space::create()
 	return H5Space(H5Screate(H5S_SCALAR)); 
 }
 
-H5Space H5Space::create(unsigned rank, hsize_t *dims)
+H5Space H5Space::create(unsigned rank, const hsize_t *dims)
 {
 	auto id = H5Screate_simple(rank, dims, NULL); 
 	check_id(id, "H5Space", "create_simple", rank);
 	return H5Space(id); 
+}
+
+H5Space H5Space::create(const std::vector<hsize_t>& dims)
+{
+	return create(dims.size(), &dims[0]); 
 }
 
 H5Group::H5Group (hid_t id):
@@ -314,7 +319,7 @@ H5Dataset H5Dataset::open(const H5Base& parent, const char *name)
 	return set;
 }
 
-void  H5Dataset::write( hid_t type_id, void *data)
+void  H5Dataset::write( hid_t type_id, const void *data)
 {
 	auto err =  H5Dwrite(*this, type_id, m_space,  H5S_ALL, H5P_DEFAULT, data);
 	if (err < 0) {
@@ -342,6 +347,7 @@ vector <hsize_t> H5Dataset::get_size() const
 		throw create_exception<runtime_error>("H5Dataset::get_size: error reading dimensions");
 	return result; 
 }
+
 
 
 
