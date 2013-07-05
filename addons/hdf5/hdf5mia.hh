@@ -18,6 +18,16 @@
  *
  */
 
+
+/**
+   This file defines all the helper classes needed to translate between HDF5 
+   and MIA data sets. 
+
+   The H5 classes encapsulate the HDF5 C interface, because the C++ interface is not thread save, and therefore 
+   not installed in GNU/Debian. 
+
+*/
+
 #ifndef addons_hdf5_hdf5mia_hh
 #define addons_hdf5_hdf5mia_hh
 
@@ -28,7 +38,17 @@
 
 NS_MIA_BEGIN
 
-
+/**
+   This is the excapsulation of the basic HDF5 handle id. All handles need to be 
+   freed with H5Xclose, but it is not well documented whether the handles are 
+   ref-counted internally. Therefore, we ref-count each created handle, reference 
+   its parent, and destroy it only if noone is referencing it anymore. 
+   On top of that 'X' is different for each type of HDF5 object which makes it necessary to 
+   keep the specific close function with the handle. On top of  that there are default 
+   handles that don't need to be destroyed with makes the  whole thing a bit inconsistent, 
+   i.e. sometimes the here defined intefaces accept plain HDF5 types and sometimes the 
+   wrapper is needed. However, the wrapper also provides an automatic conversion to the handle type. 
+*/
 struct H5Handle: public  TSingleReferencedObject<hid_t> {
 	H5Handle() = default; 
 	H5Handle(hid_t hid, const Destructor& d); 
@@ -36,8 +56,6 @@ struct H5Handle: public  TSingleReferencedObject<hid_t> {
 private: 
 	TSingleReferencedObject<hid_t> m_parent;
 }; 
-
-
 
 struct H5SpaceHandle: public H5Handle {
         H5SpaceHandle(hid_t hid);
@@ -89,7 +107,6 @@ class H5Property: public H5Base {
 public: 
 	H5Property() = default; 
 	static H5Property create(hid_t cls);
-	
 }; 
 
 class H5File: public H5Base {
@@ -106,11 +123,12 @@ public:
 	H5Space (hid_t id); 
 	H5Space() = default; 
 	static H5Space create();
+	static H5Space create(hsize_t dim1);
 	static H5Space create(unsigned rank, const hsize_t *dims);
 	static H5Space create(const std::vector<hsize_t>& dims);
 	
+	std::vector<hsize_t> get_size() const; 
 }; 
-
 
 class H5Group: public H5Base {
 public: 
@@ -126,8 +144,48 @@ public:
 	H5Type() = default; 
 	
 	H5Type get_native_type() const;
+
+	int get_mia_type_id() const; 
 }; 
 
+
+class H5Attribute: public H5Base {
+public: 
+	H5Attribute(hid_t id, const H5Space& space); 
+	H5Attribute() = default; 
+	static H5Attribute write(const H5Base& parent, const char *name, const CAttribute& attr);
+	static PAttribute read(const H5Base& parent, const char *name);
+
+	H5Type get_type() const; 
+	std::vector <hsize_t> get_size() const; 
+private: 
+	PAttribute read_scalar();
+	PAttribute read_vector();
+	
+	H5Space m_space; 
+}; 
+
+class H5AttributeTranslator {
+public: 
+	virtual H5Attribute apply(const H5Base& parent, const char *name, const CAttribute& attr) const = 0; 
+	virtual PAttribute apply(const H5Attribute& attr ) const = 0; 
+}; 
+typedef std::shared_ptr<H5AttributeTranslator> PH5AttributeTranslator; 
+
+class H5AttributeTranslatorMap {
+	H5AttributeTranslatorMap(); 
+
+	H5AttributeTranslatorMap(const H5AttributeTranslatorMap& other) = delete; 
+	H5AttributeTranslatorMap& operator = (const H5AttributeTranslatorMap& other) = delete; 
+public: 
+	static H5AttributeTranslatorMap& instance(); 
+	void register_translator(int type_id, PH5AttributeTranslator translator);
+	H5Attribute translate(const H5Base& parent, const char *name, const CAttribute& attr);
+	PAttribute  translate(const H5Attribute& parent);
+private: 
+	typedef std::map<int,  PH5AttributeTranslator> TranslatorMap; 
+	TranslatorMap m_map;
+}; 
 
 class H5Dataset: public H5Base {
 	H5Dataset (hid_t id, const H5Space& space); 
@@ -190,6 +248,16 @@ MIA_TO_H5_TYPE(float,  H5T_IEEE_F32LE,  H5T_NATIVE_FLOAT);
 MIA_TO_H5_TYPE(double, H5T_IEEE_F64LE,  H5T_NATIVE_DOUBLE);
 
 #undef MIA_TO_H5_TYPE
+
+template <typename T>
+struct Mia_to_h5_types<std::vector<T>>  {
+        static hid_t file_datatype() {
+		return Mia_to_h5_types<T>::file_datatype(); 
+	}
+        static hid_t mem_datatype(){
+		return Mia_to_h5_types<T>::mem_datatype(); 
+	}
+};
 
 
 

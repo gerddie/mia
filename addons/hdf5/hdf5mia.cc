@@ -19,7 +19,8 @@
  */
 
 #include <addons/hdf5/hdf5mia.hh>
-
+#include <boost/mpl/vector.hpp>
+#include <boost/mpl/for_each.hpp>
 #include <stack>
 NS_MIA_BEGIN
 
@@ -28,6 +29,22 @@ using std::string;
 using std::stack; 
 using std::invalid_argument; 
 using std::runtime_error; 
+
+
+typedef boost::mpl::vector<signed char,
+			   unsigned char,
+			   signed short,
+			   unsigned short,
+			   signed int,
+			   float,
+			   unsigned int,
+#ifdef LONG_64BIT
+			   signed long,
+			   unsigned long,
+#endif
+
+			   double
+			   > HDF5BasicPixelTypes;
 
 
 H5Handle::H5Handle(hid_t hid, const TSingleReferencedObject<hid_t>::Destructor& d):
@@ -181,6 +198,13 @@ H5Space H5Space::create()
 	return H5Space(H5Screate(H5S_SCALAR)); 
 }
 
+H5Space H5Space::create(hsize_t dim1)
+{
+	auto id = H5Screate_simple(1, &dim1, NULL); 
+	check_id(id, "H5Space", "create_simple 1d", dim1);
+	return H5Space(id);
+}
+
 H5Space H5Space::create(unsigned rank, const hsize_t *dims)
 {
 	auto id = H5Screate_simple(rank, dims, NULL); 
@@ -191,6 +215,21 @@ H5Space H5Space::create(unsigned rank, const hsize_t *dims)
 H5Space H5Space::create(const std::vector<hsize_t>& dims)
 {
 	return create(dims.size(), &dims[0]); 
+}
+
+std::vector<hsize_t> H5Space::get_size() const
+{
+	int  dims = H5Sget_simple_extent_ndims(*this);
+	if (dims < 0) 
+		throw create_exception<runtime_error>("H5Dataset::get_size: error reading dimensions");
+	
+	vector <hsize_t> result(dims); 
+	if (dims > 0) {
+		auto status = H5Sget_simple_extent_dims(*this,  &result[0], NULL);
+		if (status < 0) 
+			throw create_exception<runtime_error>("H5Dataset::get_size: error reading dimensions");
+	}
+	return result; 
 }
 
 H5Group::H5Group (hid_t id):
@@ -284,6 +323,206 @@ H5Type H5Type::get_native_type() const
 	return H5Type(id); 
 }
 
+int H5Type::get_mia_type_id() const
+{
+	H5T_class_t cls =  H5Tget_class(*this); 
+	size_t size = H5Tget_size(*this); 
+
+	switch (cls) {
+	case H5T_INTEGER: 
+		switch (size) {
+		case 1: return 2 | H5Tget_sign(*this ); 
+		case 2: return 4 | H5Tget_sign(*this ); 
+		case 4: return 6 | H5Tget_sign(*this ); 
+		case 8: return 8 | H5Tget_sign(*this ); 			
+		default: 
+			return EAttributeType::attr_unknown;
+		}
+			
+	case H5T_FLOAT: 
+		if (size == 4) 
+			return EAttributeType::attr_float; 
+		else if (size == 8) 
+			return EAttributeType::attr_double; 
+		else 
+			return EAttributeType::attr_unknown;
+	case H5T_STRING:
+		return EAttributeType::attr_string; 
+	default: 
+		return EAttributeType::attr_unknown;
+	}
+}
+
+H5Attribute::H5Attribute(hid_t id, const H5Space& space):
+	H5Base(H5AttributeHandle(id)), 
+	m_space(space)
+{
+}
+
+H5Attribute H5Attribute::write(const H5Base& parent, const char *name, const CAttribute& attr)
+{
+	return H5AttributeTranslatorMap::instance().translate(parent, name, attr); 
+}
+
+std::vector <hsize_t> H5Attribute::get_size() const
+{
+	return m_space.get_size(); 
+}
+
+H5Type H5Attribute::get_type() const
+{
+	H5Type file_type(H5Aget_type(*this)); 
+	return file_type.get_native_type(); 
+}
+
+PAttribute H5Attribute::read(const H5Base& parent, const char *name)
+{
+	auto id = H5Aopen(parent, name, H5P_DEFAULT); 
+	check_id(id, "H5Attribute", "open", name);
+
+	
+	auto space_id = H5Dget_space(id); 
+	check_id(space_id, "H5Attribute", "get_space", name);
+	H5Space space(space_id); 
+	H5Attribute attr(id, space_id); 
+
+	return 	H5AttributeTranslatorMap::instance().translate(attr); 
+}
+
+
+template <typename T> 
+class H5TAttributeTranslator: public H5AttributeTranslator {
+	H5Attribute apply(const H5Base& parent, const char *name, const CAttribute& attr) const; 
+	virtual PAttribute apply(const H5Attribute& attr ) const; 
+}; 
+
+template <typename T> 
+struct  __dispatch_H5TAttributeTranslator {
+	static H5Attribute apply(const H5Base& parent, const char *name, const TAttribute<T>& attr);
+}; 
+
+template <typename T> 
+struct  __dispatch_H5TAttributeTranslator<vector<T>> {
+	static H5Attribute apply(const H5Base& parent, const char *name, const TAttribute<vector<T>>& attr);
+}; 
+
+
+template <typename T> 
+H5Attribute  __dispatch_H5TAttributeTranslator<T>::apply(const H5Base& parent, const char *name, const TAttribute<T>& attr)
+{
+	auto file_datatype = Mia_to_h5_types<T>::file_datatype();      
+	auto mem_datatype = Mia_to_h5_types<T>::mem_datatype();
+
+	T value = attr;
+	auto space = H5Space::create();
+	
+	auto id = H5Acreate(parent, name, file_datatype, space, H5P_DEFAULT, H5P_DEFAULT);
+	check_id(id, "H5Attribute", "translate", name);
+	H5Attribute result(id, space);
+
+	H5Awrite(result, mem_datatype, &value);
+	result.set_parent(parent); 
+	return result; 
+}
+
+template <typename T> 
+H5Attribute  __dispatch_H5TAttributeTranslator<vector<T>>::apply(const H5Base& parent, const char *name, 
+								 const TAttribute<vector<T>>& attr) 
+{
+	auto file_datatype = Mia_to_h5_types<T>::file_datatype();      
+	auto mem_datatype = Mia_to_h5_types<T>::mem_datatype();
+	const std::vector<T>& value = attr;
+	
+	auto space = H5Space::create(value.size());
+	
+	auto id = H5Acreate(parent, name, file_datatype, space, H5P_DEFAULT, H5P_DEFAULT);
+	check_id(id, "H5Attribute", "translate", name);
+	H5Attribute result(id, space);
+
+	H5Awrite(result, mem_datatype, &value[0]);
+	result.set_parent(parent); 
+	return result; 
+}
+
+template <typename T> 
+H5Attribute H5TAttributeTranslator<T>::apply(const H5Base& parent, const char *name, const CAttribute& __attr) const
+{
+	auto& attr = dynamic_cast<const TAttribute<T>&>(__attr);
+	return __dispatch_H5TAttributeTranslator<T>::apply(parent, name, attr); 
+}
+
+template <typename T> 
+PAttribute H5TAttributeTranslator<T>::apply(const H5Attribute& attr) const
+{
+	auto dim = attr.get_size(); 
+	if (dim.empty()) {
+		T result_value; 
+		H5Aread(attr, Mia_to_h5_types<T>::mem_datatype(), &result_value); 
+		return PAttribute(new TAttribute<T>(result_value)); 
+	}else if (dim.size() == 1) {
+		vector<T> data(dim[0]); 
+		H5Aread(attr, Mia_to_h5_types<T>::mem_datatype(), &data[0]);
+		return PAttribute(new TAttribute<vector<T>>(data));
+	}else {
+		throw create_exception<runtime_error>("H5TAttributeTranslator: ", dim.size(), " attributes not supported by generic translator"); 
+	}
+}
+
+
+struct translator_append {
+	translator_append(H5AttributeTranslatorMap& map):m_map(map){}; 
+	template <typename T> 
+	void operator () (T& MIA_PARAM_UNUSED(dummy)) {
+		m_map.register_translator(attribute_type<T>::value, 
+					  PH5AttributeTranslator(new H5TAttributeTranslator<T>)); 
+		m_map.register_translator(attribute_type<vector<T>>::value, 
+					  PH5AttributeTranslator(new H5TAttributeTranslator<vector<T>>)); 
+
+	}
+	H5AttributeTranslatorMap& m_map; 
+};
+
+H5AttributeTranslatorMap::H5AttributeTranslatorMap()
+{
+	boost::mpl::for_each<HDF5BasicPixelTypes>(translator_append(*this)); 
+}
+
+H5AttributeTranslatorMap& H5AttributeTranslatorMap::instance()
+{
+	static H5AttributeTranslatorMap map; 
+	return map; 
+
+}
+
+void H5AttributeTranslatorMap::register_translator(int type_id, PH5AttributeTranslator translator)
+{
+	assert(m_map.find(type_id) == m_map.end()); 
+	m_map[type_id] = translator; 	
+}
+
+PAttribute  H5AttributeTranslatorMap::translate(const H5Attribute& attr)
+{
+	auto type_id = attr.get_type().get_mia_type_id(); 
+	auto itranslator = m_map.find(type_id); 
+	if (itranslator != m_map.end()) {
+		return itranslator->second->apply(attr); 
+	}else{
+		throw create_exception<invalid_argument>("No translator for type id ", type_id); 
+	}
+}
+
+H5Attribute H5AttributeTranslatorMap::translate(const H5Base& parent, const char *name, const CAttribute& attr)
+{
+	
+	auto type_id = attr.type_id(); 
+	auto itranslator = m_map.find(type_id); 
+	if (itranslator != m_map.end()) {
+		return itranslator->second->apply(parent, name, attr); 
+	}else{
+		throw create_exception<invalid_argument>("No translator for '", name, "' with type id ", type_id); 
+	}
+}
+
 H5Dataset::H5Dataset (hid_t id, const H5Space& space):
 	H5Base(H5DatasetHandle(id)), 
 	m_space(space)
@@ -312,7 +551,7 @@ H5Dataset H5Dataset::open(const H5Base& parent, const char *name)
 	check_id(id, "H5Dataset", "open", relative_name);
 
 	int space_id = H5Dget_space(id); 
-	check_id(space_id, "H5Dataset", "open", H5Dget_space);
+	check_id(space_id, "H5Dataset", "get space", name);
 	H5Space space(space_id); 
 	H5Dataset set(id, space); 
 	set.set_parent(p);
@@ -337,15 +576,7 @@ void  H5Dataset::read( hid_t type_id, void *data)
 
 vector <hsize_t> H5Dataset::get_size() const
 {
-	int  dims = H5Sget_simple_extent_ndims(m_space);
-	if (dims < 0) 
-		throw create_exception<runtime_error>("H5Dataset::get_size: error reading dimensions");
-	
-	vector <hsize_t> result(dims); 
-	auto status = H5Sget_simple_extent_dims(m_space,  &result[0], NULL);
-	if (status < 0) 
-		throw create_exception<runtime_error>("H5Dataset::get_size: error reading dimensions");
-	return result; 
+	return m_space.get_size(); 
 }
 
 

@@ -210,3 +210,31 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_dataset_io, T , test_pixel_types )
 	TestDatasetIOInGroupFixture<T>().run(); 
 }
 
+
+template <typename T>
+class TestAttrfixture : public HDF5CoreFileFixture {
+public: 
+	void run(); 
+}; 
+
+template <typename T>
+void TestAttrfixture<T>::run() 
+{
+	const T value = 10; 
+	PAttribute attr(new TAttribute<T>(value));
+	auto h5attr = H5AttributeTranslatorMap::instance().translate(get_file(), "attr", *attr); 
+
+	auto pattr = H5AttributeTranslatorMap::instance().translate(h5attr); 
+	int test_type = attribute_type<T>::value; 
+	BOOST_CHECK_EQUAL(pattr->type_id(), test_type); 
+
+	auto& rattr = dynamic_cast<const TAttribute<T>&>(*pattr); 
+	
+	BOOST_CHECK_EQUAL(rattr, value); 
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_attributes , T , test_pixel_types )
+{
+	TestAttrfixture<T>().run(); 
+}
+
