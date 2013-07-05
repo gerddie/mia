@@ -468,6 +468,33 @@ PAttribute H5TAttributeTranslator<T>::apply(const H5Attribute& attr) const
 	}
 }
 
+class H5TAttributeStringTranslator: public H5AttributeTranslator {
+	H5Attribute apply(const H5Base& parent, const char *name, const CAttribute& attr) const; 
+	virtual PAttribute apply(const H5Attribute& attr ) const; 
+};
+
+H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char *name, const CAttribute& __attr) const
+{
+	auto& attr = dynamic_cast<const TAttribute<string>&>(__attr);
+	const string value = attr; 
+	auto space = H5Space::create();
+	H5Type stype(H5Tcopy (H5T_C_S1));
+	H5Tset_size(stype, value.size()+1);
+	auto id = H5Acreate(parent, name, stype, space, H5P_DEFAULT, H5P_DEFAULT);
+	check_id(id, "H5Attribute", "translate string", name);
+	H5Attribute result(id, space);
+
+	H5Awrite(result, stype, value.c_str());
+	result.set_parent(parent); 
+	return result; 
+}
+
+PAttribute H5TAttributeStringTranslator::apply(const H5Attribute& attr ) const
+{
+	
+}
+
+
 
 struct translator_append {
 	translator_append(H5AttributeTranslatorMap& map):m_map(map){}; 
