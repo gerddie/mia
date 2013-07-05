@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <mia/core/defines.hh>
+#include <miaconfig.h>
 
 
 NS_MIA_BEGIN
