@@ -369,6 +369,11 @@ std::vector <hsize_t> H5Attribute::get_size() const
 	return m_space.get_size(); 
 }
 
+H5Space H5Attribute::get_space()const
+{
+	return H5Space(H5Aget_space (*this));
+}
+
 H5Type H5Attribute::get_type() const
 {
 	H5Type file_type(H5Aget_type(*this)); 
@@ -478,15 +483,19 @@ PAttribute H5TAttributeTranslator<T>::apply(const H5Attribute& attr) const
 class H5TAttributeStringTranslator: public H5AttributeTranslator {
 	H5Attribute apply(const H5Base& parent, const char *name, const CAttribute& attr) const; 
 	virtual PAttribute apply(const H5Attribute& attr ) const; 
+	
+	H5Attribute apply(const H5Base& parent, const char *name, const CStringAttribute& attr) const; 
+	H5Attribute apply(const H5Base& parent, const char *name, const CVStringAttribute& attr) const; 
+
 };
 
-H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char *name, const CAttribute& __attr) const
+H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char *name, const CStringAttribute& attr) const
 {
-	auto& attr = dynamic_cast<const TAttribute<string>&>(__attr);
 	const string value = attr; 
+	cvdebug() << "Write string attribute '" << attr << "'\n"; 
 
 	H5Type stype(H5Tcopy (H5T_C_S1));
-	H5Tset_size(stype, value.size());
+	H5Tset_size(stype, H5T_VARIABLE);
 
 	vector<hsize_t> size(1, 1); 
 	auto space = H5Space::create(size);
@@ -495,50 +504,90 @@ H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char
 	check_id(id, "H5Attribute", "translate string", name);
 	H5Attribute result(id, space);
 
-	if (H5Awrite(result, stype, value.c_str()) < 0) 
+	const char *s = value.c_str(); 
+	if (H5Awrite(result, stype, &s) < 0) 
 		cvwarn() << "error writing attribute '"<< name << "'\n"; 
 	
+	result.set_parent(parent); 
+	cvdebug() << "done with '" << attr << "'\n"; 
+	return result; 
+
+}
+
+H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char *name, const CVStringAttribute& attr) const
+{
+	const vector<string> value = attr;
+	vector<hsize_t> dims(1,value.size()); 
+	
+	H5Type stype(H5Tcopy (H5T_C_S1));
+	H5Tset_size(stype, H5T_VARIABLE); 
+	
+	
+	H5Space space = H5Space::create(dims);
+
+	auto id = H5Acreate(parent, name, stype, space, H5P_DEFAULT, H5P_DEFAULT);
+	check_id(id, "H5Attribute", "translate string vector", name);
+	H5Attribute result(id, space);
+
+	vector<const char *> wstrings(value.size());
+	transform(value.begin(), value.end(), wstrings.begin(), 
+		  [](const string& s){return s.c_str();}); 
+	
+	if (H5Awrite(result, stype, &wstrings[0]) < 0) 
+		cvwarn() << "error writing vector<string> attribute '"<< name << "'\n"; 
 	result.set_parent(parent); 
 	return result; 
 }
 
+H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char *name, const CAttribute& __attr) const
+{
+	if (EAttributeType::is_vector(__attr.type_id())) {
+		auto& attr = dynamic_cast<const CVStringAttribute&>(__attr);
+		return apply(parent, name, attr); 
+	} else {
+		auto& attr = dynamic_cast<const CStringAttribute&>(__attr);
+		return apply(parent, name, attr); 
+	}
+}
+
 PAttribute H5TAttributeStringTranslator::apply(const H5Attribute& attr ) const
 {
-	H5Type type = attr.get_type(); 
-	
-	auto sdim = H5Tget_size (type);
+	PAttribute result; 
 	auto size = attr.get_size(); 
+	auto space = attr.get_space(); 
 	
 	if (size.size() > 1) {
 		cvwarn() << "Suport for " << size.size() << "-dimensional string attributes not implemented."
 			 <<" Reading only first dimension.\n"; 
 	}
 	
-	H5Type memtype = type.get_native_type();
-	assert(H5Tget_class(type) == H5T_STRING); 
-
+	H5Type memtype(H5Tcopy (H5T_C_S1));
+	H5Tset_size (memtype, H5T_VARIABLE);
 
 	if (size.empty() || size[0] == 1) { 
-		vector<char> rdata(sdim);
-		auto status = H5Aread (attr, type, &rdata[0]);
+		vector<char *> rdata(1);
+		auto status = H5Aread (attr, memtype, &rdata[0]);
 		if (status < 0) {
 			cvwarn() << "Error reading string attribute\n"; 
 			return PAttribute(); 
 		}
-		return PAttribute(new CStringAttribute(string(rdata.begin(), rdata.end()))); 
+		result.reset(new CStringAttribute(string(rdata[0]))); 
+		H5Dvlen_reclaim (memtype, space, H5P_DEFAULT, &rdata[0]); 
 	}else { 
-		vector<char> rdata(sdim * size[0]);
-		auto status = H5Aread (attr, type, &rdata[0]);
+		vector<char *> rdata(size[0]);
+		auto status = H5Aread (attr, memtype, &rdata[0]);
 		if (status < 0) {
 			cvwarn() << "Error reading vector<string> attribute\n"; 
 			return PAttribute(); 
 		}
-		vector<string> result; 
+		vector<string> result_value; 
 		for (size_t i = 0; i < size[0]; ++i) {
-			result.push_back(string(rdata.begin() + i * sdim,  rdata.begin() + (i+1) * sdim)); 
+			result_value.push_back(string(rdata[i])); 
 		}
-		return PAttribute(new CVStringAttribute(result)); 
+		result.reset(new CVStringAttribute(result_value)); 
+		H5Dvlen_reclaim (memtype, space, H5P_DEFAULT, &rdata[0]); 
 	}
+	return result; 
 }
 
 struct translator_append {
@@ -595,7 +644,6 @@ PAttribute  H5AttributeTranslatorMap::translate(const H5Attribute& attr)
 
 H5Attribute H5AttributeTranslatorMap::translate(const H5Base& parent, const char *name, const CAttribute& attr)
 {
-	
 	return get_translator(attr.type_id()).apply(parent, name, attr); 
 }
 

@@ -158,6 +158,8 @@ public:
 
 	H5Type get_type() const; 
 	std::vector <hsize_t> get_size() const; 
+
+	H5Space get_space()const; 
 private: 
 	PAttribute read_scalar();
 	PAttribute read_vector();
