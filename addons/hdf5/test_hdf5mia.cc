@@ -326,11 +326,8 @@ BOOST_FIXTURE_TEST_CASE (test_attribute_list, HDF5CoreFileFixture)
 	original_data.set_attribute("int", PAttribute(new CIntAttribute(10))); 
 	original_data.set_attribute("vfloat", PAttribute(new CVFloatAttribute({1.0, 2.3, 3.4}))); 
 
+	translate_to_hdf5_attributes(get_file(), original_data); 
 	
-	for( auto a = original_data.begin_attributes(); a != original_data.end_attributes(); ++a)
-		H5AttributeTranslatorMap::instance().translate(get_file(), a->first.c_str(), *a->second); 
-	
-
 	CAttributedData loaded_data = get_file().read_attributes(); 
 	
 	BOOST_CHECK_EQUAL(loaded_data, original_data); 

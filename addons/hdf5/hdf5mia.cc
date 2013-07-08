@@ -406,7 +406,4 @@ vector <hsize_t> H5Dataset::get_size() const
 	return m_space.get_size(); 
 }
 
-
-
-
 NS_MIA_END

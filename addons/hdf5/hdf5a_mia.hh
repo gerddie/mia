@@ -68,6 +68,8 @@ private:
 	TranslatorMap m_map;
 }; 
 
+void translate_to_hdf5_attributes(const H5Base& target, const CAttributedData& data); 
+
 NS_MIA_END
 
 #endif 

@@ -347,4 +347,10 @@ H5Attribute H5AttributeTranslatorMap::translate(const H5Base& parent, const char
 	return get_translator(attr.type_id()).apply(parent, name, attr); 
 }
 
+void translate_to_hdf5_attributes(const H5Base& target, const CAttributedData& data)
+{
+	for( auto a = data.begin_attributes(); a != data.end_attributes(); ++a)
+		H5AttributeTranslatorMap::instance().translate(target, a->first.c_str(), *a->second); 
+}
+
 NS_MIA_END
