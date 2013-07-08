@@ -24,7 +24,7 @@
 #include <boost/test/test_case_template.hpp>
 #include <boost/mpl/insert_range.hpp>
 
-#include <addons/hdf5/hdf5mia.hh> 
+#include <addons/hdf5/hdf5a_mia.hh> 
 
 NS_MIA_USE
 using namespace std;
