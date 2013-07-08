@@ -155,7 +155,7 @@ public:
 }; 
 
 class H5Dataset: public H5Base {
-	H5Dataset (hid_t id, const H5Space& space); 
+	H5Dataset (hid_t id, const H5Space& space, const char *name); 
 public: 
 	H5Dataset() = default; 
 	static H5Dataset create(const H5Base& parent, const char *name, hid_t type_id, const H5Space& space);
@@ -168,6 +168,7 @@ public:
 	std::vector <hsize_t> get_size() const; 
 private: 
 	H5Space m_space; 
+	std::string m_name; 
 }; 
 
 template <typename T>

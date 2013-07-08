@@ -348,9 +348,10 @@ int H5Type::get_mia_type_id() const
 }
 
 
-H5Dataset::H5Dataset (hid_t id, const H5Space& space):
+H5Dataset::H5Dataset (hid_t id, const H5Space& space, const char *name):
 	H5Base(H5DatasetHandle(id)), 
-	m_space(space)
+	m_space(space), 
+	m_name(name)
 {
 }
 
@@ -361,7 +362,7 @@ H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_i
 	
 	auto id =  H5Dcreate(p, relative_name.c_str(), type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	check_id(id, "H5Dataset", "create", relative_name);
-	H5Dataset set(id, space); 
+	H5Dataset set(id, space, name); 
 	set.set_parent(p);
 	return set;
 }
@@ -379,7 +380,7 @@ H5Dataset H5Dataset::open(const H5Base& parent, const char *name)
 	H5Space space(space_id); 
 	
 
-	H5Dataset set(id, space); 
+	H5Dataset set(id, space, name); 
 	set.set_parent(p);
 	return set;
 }
@@ -388,7 +389,7 @@ void  H5Dataset::write( hid_t type_id, const void *data)
 {
 	auto err =  H5Dwrite(*this, type_id, m_space,  H5S_ALL, H5P_DEFAULT, data);
 	if (err < 0) {
-		throw create_exception<runtime_error>("H5Dataset::write: error writing data set TODO:display name"); 
+		throw create_exception<runtime_error>("H5Dataset::write: error writing data set '", m_name, "'"); 
 	}
 }
 
@@ -396,7 +397,7 @@ void  H5Dataset::read( hid_t type_id, void *data)
 {
 	auto err =  H5Dread(*this, type_id, m_space,  H5S_ALL, H5P_DEFAULT, data);
 	if (err < 0) {
-		throw create_exception<runtime_error>("H5Dataset::read: error reading data set TODO:display name"); 
+		throw create_exception<runtime_error>("H5Dataset::read: error reading data set  '", m_name, "'"); 
 	}
 }
 
