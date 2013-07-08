@@ -64,14 +64,12 @@ HDF5CoreFileFixture::HDF5CoreFileFixture()
 	access_plist = H5Property::create(H5P_FILE_ACCESS);
 	H5Pset_fapl_core (access_plist, 1024, 0); 
 
-	
-
 	m_core_file = H5File::create("core.h5", H5F_ACC_TRUNC, H5P_DEFAULT, access_plist); 
 }
 
 HDF5CoreFileFixture::~HDF5CoreFileFixture()
 {
-
+	
 	
 }
 
@@ -203,7 +201,7 @@ void TestDatasetIOInGroupFixture<T>::run()
 	vector<hsize_t> dims = {2,3}; 
 	vector<T>  data = {1,2,3,4,5,6}; 
 	const char path[] = "/group1/group2/testset"; 
-	test(path, dims, data); 
+	this->test(path, dims, data); 
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_dataset_io, T , test_pixel_types )
@@ -292,8 +290,6 @@ BOOST_FIXTURE_TEST_CASE (test_string_attribute, HDF5CoreFileFixture)
 	auto& rattr = dynamic_cast<const TAttribute<string>&>(*pattr); 
 	const string rvalue = rattr; 
 	BOOST_CHECK_EQUAL(rvalue, value); 
-
-
 }; 
 
 BOOST_FIXTURE_TEST_CASE (test_vstring_attribute, HDF5CoreFileFixture) 
