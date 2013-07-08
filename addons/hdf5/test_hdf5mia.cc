@@ -315,6 +315,22 @@ BOOST_FIXTURE_TEST_CASE (test_vstring_attribute, HDF5CoreFileFixture)
 	for (auto r = rvalue.begin(), v = value.begin(); r != rvalue.end(); ++r, ++v){
 		BOOST_CHECK_EQUAL(*r, *v); 
 	}
-
-
 }; 
+
+BOOST_FIXTURE_TEST_CASE (test_attribute_list, HDF5CoreFileFixture) 
+{
+	CAttributedData original_data; 
+
+	original_data.set_attribute("string", PAttribute(new CStringAttribute("some string"))); 
+	original_data.set_attribute("int", PAttribute(new CIntAttribute(10))); 
+	original_data.set_attribute("vfloat", PAttribute(new CVFloatAttribute({1.0, 2.3, 3.4}))); 
+
+	
+	for( auto a = original_data.begin_attributes(); a != original_data.end_attributes(); ++a)
+		H5AttributeTranslatorMap::instance().translate(get_file(), a->first.c_str(), *a->second); 
+	
+
+	CAttributedData loaded_data = get_file().read_attributes(); 
+	
+	BOOST_CHECK_EQUAL(loaded_data, original_data); 
+}

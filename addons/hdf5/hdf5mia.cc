@@ -142,6 +142,31 @@ const H5Handle& H5Base::get_handle() const
 	return m_handle; 
 }
 
+struct SIterateData {
+	CAttributedData& list; 
+	H5Base locator_id; 
+}; 
+
+
+herr_t convert_attribute_cb(hid_t location_id, const char *attr_name, const H5A_info_t *ainfo, void *op_data)
+{
+	SIterateData& iter_data = *reinterpret_cast<SIterateData *>(op_data); 
+	cvdebug() << "convert_attribute_cb: read '" << attr_name << "'\n"; 
+	auto pattr = H5Attribute::read(iter_data.locator_id, attr_name); 
+	if (pattr) 
+		iter_data.list.set_attribute(attr_name, pattr); 
+	
+	return 0; 
+}
+
+CAttributedData H5Base::read_attributes() const
+{
+	CAttributedData result; 
+	SIterateData id = {result, *this}; 
+	H5Aiterate2(*this, H5_INDEX_CRT_ORDER, H5_ITER_NATIVE, NULL, convert_attribute_cb, &id);
+	return result; 
+}
+
 H5Base::operator hid_t() const
 {
 	return m_handle; 
@@ -371,7 +396,7 @@ std::vector <hsize_t> H5Attribute::get_size() const
 
 H5Space H5Attribute::get_space()const
 {
-	return H5Space(H5Aget_space (*this));
+	return m_space;
 }
 
 H5Type H5Attribute::get_type() const
@@ -386,10 +411,9 @@ PAttribute H5Attribute::read(const H5Base& parent, const char *name)
 	check_id(id, "H5Attribute", "open", name);
 
 	
-	auto space_id = H5Dget_space(id); 
+	auto space_id = H5Aget_space(id); 
 	check_id(space_id, "H5Attribute", "get_space", name);
-	H5Space space(space_id); 
-	H5Attribute attr(id, space_id); 
+	H5Attribute attr(id, H5Space(space_id)); 
 
 	return 	H5AttributeTranslatorMap::instance().translate(attr); 
 }

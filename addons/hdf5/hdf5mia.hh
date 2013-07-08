@@ -53,6 +53,7 @@ struct H5Handle: public  TSingleReferencedObject<hid_t> {
 	H5Handle() = default; 
 	H5Handle(hid_t hid, const Destructor& d); 
 	void set_parent(const H5Handle& parent); 
+
 private: 
 	TSingleReferencedObject<hid_t> m_parent;
 }; 
@@ -97,6 +98,8 @@ public:
 	const H5Handle& get_handle() const;
 	
 	operator hid_t() const; 
+	
+	CAttributedData read_attributes() const; 
 private: 
 	H5Handle m_handle; 
 }; 
@@ -153,6 +156,7 @@ class H5Attribute: public H5Base {
 public: 
 	H5Attribute(hid_t id, const H5Space& space); 
 	H5Attribute() = default; 
+	
 	static H5Attribute write(const H5Base& parent, const char *name, const CAttribute& attr);
 	static PAttribute read(const H5Base& parent, const char *name);
 
