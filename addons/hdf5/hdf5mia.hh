@@ -123,7 +123,7 @@ public:
 
 class H5Space: public H5Base {
 public: 
-	H5Space (hid_t id); 
+	explicit H5Space (hid_t id); 
 	H5Space() = default; 
 	static H5Space create();
 	static H5Space create(hsize_t dim1);
@@ -135,7 +135,7 @@ public:
 
 class H5Group: public H5Base {
 public: 
-	H5Group (hid_t id); 
+	explicit H5Group (hid_t id); 
 	H5Group() = default;
 	static H5Base create_or_open_hierarchy(const H5Base& parent, std::string& relative_name, bool create); 
 }; 
@@ -143,7 +143,7 @@ public:
 
 class H5Type: public H5Base {
 public: 
-	H5Type (hid_t id); 
+	explicit H5Type (hid_t id); 
 	H5Type() = default; 
 	
 	H5Type get_native_type() const;

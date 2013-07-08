@@ -148,7 +148,8 @@ struct SIterateData {
 }; 
 
 
-herr_t convert_attribute_cb(hid_t location_id, const char *attr_name, const H5A_info_t *ainfo, void *op_data)
+herr_t convert_attribute_cb(hid_t MIA_PARAM_UNUSED(location_id), const char *attr_name, 
+			    const H5A_info_t *MIA_PARAM_UNUSED(ainfo), void *op_data)
 {
 	SIterateData& iter_data = *reinterpret_cast<SIterateData *>(op_data); 
 	cvdebug() << "convert_attribute_cb: read '" << attr_name << "'\n"; 
@@ -413,7 +414,8 @@ PAttribute H5Attribute::read(const H5Base& parent, const char *name)
 	
 	auto space_id = H5Aget_space(id); 
 	check_id(space_id, "H5Attribute", "get_space", name);
-	H5Attribute attr(id, H5Space(space_id)); 
+	H5Space space(space_id); 
+	H5Attribute attr(id, space); 
 
 	return 	H5AttributeTranslatorMap::instance().translate(attr); 
 }
@@ -566,11 +568,9 @@ H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char
 H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char *name, const CAttribute& __attr) const
 {
 	if (EAttributeType::is_vector(__attr.type_id())) {
-		auto& attr = dynamic_cast<const CVStringAttribute&>(__attr);
-		return apply(parent, name, attr); 
+		return apply(parent, name, dynamic_cast<const CVStringAttribute&>(__attr)); 
 	} else {
-		auto& attr = dynamic_cast<const CStringAttribute&>(__attr);
-		return apply(parent, name, attr); 
+		return apply(parent, name, dynamic_cast<const CStringAttribute&>(__attr)); 
 	}
 }
 
