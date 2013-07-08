@@ -112,7 +112,7 @@ const H5Handle& H5Base::get_handle() const
 
 struct SIterateData {
 	CAttributedData& list; 
-	H5Base locator_id; 
+	const H5Base& locator_id; 
 }; 
 
 
