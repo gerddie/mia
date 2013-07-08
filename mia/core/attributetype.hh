@@ -43,7 +43,7 @@ struct EAttributeType {
         static const int attr_double  =   11; 
         static const int attr_string  =   12; 
 
-        static const int vector_bit = 0x10000; 
+        static const int vector_bit = 0x80000000; 
 
         static int scalar_type(int type) {
                 return type & scalar_mask; 
@@ -54,7 +54,7 @@ struct EAttributeType {
         }
 
 private: 
-        static const int scalar_mask  =0xFFFF; 
+        static const int scalar_mask  =0x7FFFFFFF; 
 
 }; 
 

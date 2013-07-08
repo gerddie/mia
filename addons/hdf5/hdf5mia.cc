@@ -447,8 +447,14 @@ H5Attribute  __dispatch_H5TAttributeTranslator<vector<T>>::apply(const H5Base& p
 template <typename T> 
 H5Attribute H5TAttributeTranslator<T>::apply(const H5Base& parent, const char *name, const CAttribute& __attr) const
 {
-	auto& attr = dynamic_cast<const TAttribute<T>&>(__attr);
-	return __dispatch_H5TAttributeTranslator<T>::apply(parent, name, attr); 
+	auto type_id = __attr.type_id(); 
+	if (EAttributeType::is_vector(type_id)) {
+		auto& attr = dynamic_cast<const TAttribute<vector<T>>&>(__attr);
+		return __dispatch_H5TAttributeTranslator<vector<T>>::apply(parent, name, attr); 
+	}else {
+		auto& attr = dynamic_cast<const TAttribute<T>&>(__attr);
+		return __dispatch_H5TAttributeTranslator<T>::apply(parent, name, attr); 
+	}
 }
 
 template <typename T> 
@@ -541,9 +547,6 @@ struct translator_append {
 	void operator () (T& MIA_PARAM_UNUSED(dummy)) {
 		m_map.register_translator(attribute_type<T>::value, 
 					  PH5AttributeTranslator(new H5TAttributeTranslator<T>)); 
-		m_map.register_translator(attribute_type<vector<T>>::value, 
-					  PH5AttributeTranslator(new H5TAttributeTranslator<vector<T>>)); 
-
 	}
 	H5AttributeTranslatorMap& m_map; 
 };
@@ -569,27 +572,31 @@ void H5AttributeTranslatorMap::register_translator(int type_id, PH5AttributeTran
 	m_map[type_id] = translator; 	
 }
 
-PAttribute  H5AttributeTranslatorMap::translate(const H5Attribute& attr)
+const H5AttributeTranslator& H5AttributeTranslatorMap::get_translator(int type_id) const
 {
-	auto type_id = attr.get_type().get_mia_type_id(); 
 	auto itranslator = m_map.find(type_id); 
 	if (itranslator != m_map.end()) {
-		return itranslator->second->apply(attr); 
+		return *itranslator->second; 
 	}else{
-		throw create_exception<invalid_argument>("No translator for type id ", type_id); 
+		auto scalar_type_id = EAttributeType::scalar_type(type_id); 
+		auto itranslator = m_map.find(scalar_type_id); 
+		if (itranslator != m_map.end()) {
+			return *itranslator->second; 
+		}else{
+			throw create_exception<invalid_argument>("No translator for type id ", type_id, " scalar", scalar_type_id); 
+		}
 	}
+}
+
+PAttribute  H5AttributeTranslatorMap::translate(const H5Attribute& attr)
+{
+	return get_translator(attr.get_type().get_mia_type_id()).apply(attr); 
 }
 
 H5Attribute H5AttributeTranslatorMap::translate(const H5Base& parent, const char *name, const CAttribute& attr)
 {
 	
-	auto type_id = attr.type_id(); 
-	auto itranslator = m_map.find(type_id); 
-	if (itranslator != m_map.end()) {
-		return itranslator->second->apply(parent, name, attr); 
-	}else{
-		throw create_exception<invalid_argument>("No translator for '", name, "' with type id ", type_id); 
-	}
+	return get_translator(attr.type_id()).apply(parent, name, attr); 
 }
 
 H5Dataset::H5Dataset (hid_t id, const H5Space& space):

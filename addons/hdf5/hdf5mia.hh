@@ -183,6 +183,7 @@ public:
 	H5Attribute translate(const H5Base& parent, const char *name, const CAttribute& attr);
 	PAttribute  translate(const H5Attribute& parent);
 private: 
+	const H5AttributeTranslator& get_translator(int type_id) const; 
 	typedef std::map<int,  PH5AttributeTranslator> TranslatorMap; 
 	TranslatorMap m_map;
 }; 
