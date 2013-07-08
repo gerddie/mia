@@ -350,9 +350,20 @@ public:
 	/// @cond FRIENDSDOC
 	friend EXPORT_CORE bool operator == (const CAttributedData& a, const CAttributedData& b);
 	/// @endcond 
+
+	void print(std::ostream& os) const  {
+		os << *m_attr; 
+	}
 private:
 	PAttributeMap m_attr;
 };
+
+
+inline std::ostream& operator << (std::ostream& os, const CAttributedData& data)
+{
+	data.print(os); 
+	return os; 
+}
 
 
 
