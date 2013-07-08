@@ -238,3 +238,59 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_attributes , T , test_pixel_types )
 	TestAttrfixture<T>().run(); 
 }
 
+
+
+template <typename T>
+class TestVectorAttrfixture : public HDF5CoreFileFixture {
+public: 
+	void run(); 
+}; 
+
+template <typename T>
+void TestVectorAttrfixture<T>::run() 
+{
+	const vector<T> value = {10, 20, 30}; 
+	PAttribute attr(new TAttribute<vector<T>>(value));
+	auto h5attr = H5AttributeTranslatorMap::instance().translate(get_file(), "attr", *attr); 
+
+	auto pattr = H5AttributeTranslatorMap::instance().translate(h5attr); 
+	int test_type = attribute_type<vector<T>>::value; 
+	BOOST_CHECK_EQUAL(pattr->type_id(), test_type); 
+
+	auto& rattr = dynamic_cast<const TAttribute<vector<T>>&>(*pattr); 
+	const vector<T> rvalue = rattr; 
+
+	BOOST_CHECK_EQUAL(rvalue.size(), value.size()); 
+	BOOST_REQUIRE(rvalue.size() == value.size()); 
+	for (auto r = rvalue.begin(), v = value.begin(); r != rvalue.end(); ++r, ++v){
+		BOOST_CHECK_EQUAL(*r, *v); 
+	}
+}
+
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_attributes , T , test_pixel_types )
+{
+	TestVectorAttrfixture<T>().run(); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE (test_string_attribute, HDF5CoreFileFixture) 
+{
+	string value("a test string"); 
+	PAttribute attr(new TAttribute<string>(value));
+	
+	auto h5attr = H5AttributeTranslatorMap::instance().translate(get_file(), "attr", *attr); 
+
+	auto pattr = H5AttributeTranslatorMap::instance().translate(h5attr); 
+	BOOST_REQUIRE(pattr); 
+
+	int test_type = attribute_type<string>::value; 
+	BOOST_CHECK_EQUAL(pattr->type_id(), test_type);
+	
+	auto& rattr = dynamic_cast<const TAttribute<string>&>(*pattr); 
+	const string rvalue = rattr; 
+	BOOST_CHECK_EQUAL(rvalue, value); 
+
+
+}; 

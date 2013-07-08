@@ -464,7 +464,8 @@ PAttribute H5TAttributeTranslator<T>::apply(const H5Attribute& attr) const
 		H5Aread(attr, Mia_to_h5_types<T>::mem_datatype(), &data[0]);
 		return PAttribute(new TAttribute<vector<T>>(data));
 	}else {
-		throw create_exception<runtime_error>("H5TAttributeTranslator: ", dim.size(), " attributes not supported by generic translator"); 
+		throw create_exception<runtime_error>("H5TAttributeTranslator: ", dim.size(), 
+						      " attributes not supported by generic translator"); 
 	}
 }
 
@@ -477,24 +478,62 @@ H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char
 {
 	auto& attr = dynamic_cast<const TAttribute<string>&>(__attr);
 	const string value = attr; 
-	auto space = H5Space::create();
+
 	H5Type stype(H5Tcopy (H5T_C_S1));
-	H5Tset_size(stype, value.size()+1);
+	H5Tset_size(stype, value.size());
+
+	vector<hsize_t> size(1, 1); 
+	auto space = H5Space::create(size);
+
 	auto id = H5Acreate(parent, name, stype, space, H5P_DEFAULT, H5P_DEFAULT);
 	check_id(id, "H5Attribute", "translate string", name);
 	H5Attribute result(id, space);
 
-	H5Awrite(result, stype, value.c_str());
+	if (H5Awrite(result, stype, value.c_str()) < 0) 
+		cvwarn() << "error writing attribute '"<< name << "'\n"; 
+	
 	result.set_parent(parent); 
 	return result; 
 }
 
 PAttribute H5TAttributeStringTranslator::apply(const H5Attribute& attr ) const
 {
+	H5Type type = attr.get_type(); 
 	
+	auto sdim = H5Tget_size (type);
+	auto size = attr.get_size(); 
+	
+	if (size.size() > 1) {
+		cvwarn() << "Suport for " << size.size() << "-dimensional string attributes not implemented."
+			 <<" Reading only first dimension.\n"; 
+	}
+	
+	H5Type memtype = type.get_native_type();
+	assert(H5Tget_class(type) == H5T_STRING); 
+
+
+	if (size.empty() || size[0] == 1) { 
+		vector<char> rdata(sdim);
+		auto status = H5Aread (attr, type, &rdata[0]);
+		if (status < 0) {
+			cvwarn() << "Error reading string attribute\n"; 
+			return PAttribute(); 
+		}
+		return PAttribute(new CStringAttribute(string(rdata.begin(), rdata.end()))); 
+	}else { 
+		vector<char> rdata(sdim * size[0]);
+		auto status = H5Aread (attr, type, &rdata[0]);
+		if (status < 0) {
+			cvwarn() << "Error reading vector<string> attribute\n"; 
+			return PAttribute(); 
+		}
+		vector<string> result; 
+		for (size_t i = 0; i < size[0]; ++i) {
+			result.push_back(string(rdata.begin() + i * sdim,  rdata.begin() + (i+1) * sdim)); 
+		}
+		return PAttribute(new CVStringAttribute(result)); 
+	}
 }
-
-
 
 struct translator_append {
 	translator_append(H5AttributeTranslatorMap& map):m_map(map){}; 
@@ -512,6 +551,9 @@ struct translator_append {
 H5AttributeTranslatorMap::H5AttributeTranslatorMap()
 {
 	boost::mpl::for_each<HDF5BasicPixelTypes>(translator_append(*this)); 
+
+	register_translator(attribute_type<string>::value, 
+			    PH5AttributeTranslator(new H5TAttributeStringTranslator()));
 }
 
 H5AttributeTranslatorMap& H5AttributeTranslatorMap::instance()
