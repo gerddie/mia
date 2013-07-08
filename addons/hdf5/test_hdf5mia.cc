@@ -294,3 +294,27 @@ BOOST_FIXTURE_TEST_CASE (test_string_attribute, HDF5CoreFileFixture)
 
 
 }; 
+
+BOOST_FIXTURE_TEST_CASE (test_vstring_attribute, HDF5CoreFileFixture) 
+{
+	const vector<string> value= {"a test string", "another test string"}; 
+	PAttribute attr(new TAttribute<vector<string>>(value));
+	
+	auto h5attr = H5AttributeTranslatorMap::instance().translate(get_file(), "attr", *attr); 
+
+	auto pattr = H5AttributeTranslatorMap::instance().translate(h5attr); 
+	BOOST_REQUIRE(pattr); 
+
+	int test_type = attribute_type<vector<string>>::value; 
+	BOOST_CHECK_EQUAL(pattr->type_id(), test_type);
+	
+	auto& rattr = dynamic_cast<const TAttribute<vector<string>>&>(*pattr); 
+	const vector<string> rvalue = rattr; 
+	BOOST_CHECK_EQUAL(rvalue.size(), value.size());
+	
+	for (auto r = rvalue.begin(), v = value.begin(); r != rvalue.end(); ++r, ++v){
+		BOOST_CHECK_EQUAL(*r, *v); 
+	}
+
+
+}; 
