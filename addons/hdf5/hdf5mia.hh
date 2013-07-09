@@ -242,7 +242,7 @@ typename Image::Pointer read_image(typename Image::dimsize_type& size, const H5D
 	typename Image::Pointer presult(result); 
 	
 	dataset.read_and_append_attributes(*result);
-	dataset.read(Mia_to_h5_types<value_type>::get_mem_type(), &(*result)(Bounds::_0));
+	dataset.read(result->begin(), result->end());
 	
 	return presult; 
 }

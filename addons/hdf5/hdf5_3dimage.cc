@@ -23,6 +23,7 @@ NS_BEGIN(hdf5_3dimage)
 CHDF53DImageIOPlugin::CHDF53DImageIOPlugin():
         C3DImageIOPlugin("hdf5")
 {
+        add_supported_type(it_bool);
         add_supported_type(it_sbyte);
         add_supported_type(it_ubyte);
 	add_supported_type(it_sshort);
@@ -79,6 +80,9 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *info,
 		H5Type mem_type = file_type.get_native_type(); 
 		int type_id = mem_type.get_mia_type_id(); 
 		switch (type_id) {
+		case EAttributeType::attr_bool: 
+			cbd->result.push_back(read_image<C3DBitImage>(bsize, dataset)); 
+			break; 
 		case EAttributeType::attr_uchar: 
 			cbd->result.push_back(read_image<C3DUBImage>(bsize, dataset)); 
 			break; 
