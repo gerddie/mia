@@ -131,9 +131,14 @@ static herr_t convert_attribute_cb(hid_t MIA_PARAM_UNUSED(location_id), const ch
 CAttributedData H5Base::read_attributes() const
 {
 	CAttributedData result; 
-	SIterateData id = {result, *this}; 
-	H5Aiterate2(*this, H5_INDEX_CRT_ORDER, H5_ITER_NATIVE, NULL, convert_attribute_cb, &id);
+	read_and_append_attributes(result); 
 	return result; 
+}
+
+void  H5Base::read_and_append_attributes(CAttributedData& target) const
+{
+	SIterateData id = {target, *this}; 
+	H5Aiterate2(*this, H5_INDEX_CRT_ORDER, H5_ITER_NATIVE, NULL, convert_attribute_cb, &id);
 }
 
 H5Base::operator hid_t() const
