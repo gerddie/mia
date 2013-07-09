@@ -102,6 +102,8 @@ public:
 	operator hid_t() const; 
 	
 	CAttributedData read_attributes() const; 
+
+	void  read_and_append_attributes(CAttributedData& target) const; 
 private: 
 	H5Handle m_handle; 
 }; 
@@ -166,10 +168,13 @@ public:
 	void  read( hid_t type_id, void *data);
 
 	std::vector <hsize_t> get_size() const; 
+	
 private: 
 	H5Space m_space; 
 	std::string m_name; 
 }; 
+
+
 
 template <typename T>
 struct Mia_to_h5_types {
@@ -215,6 +220,22 @@ struct Mia_to_h5_types<std::vector<T>>  {
 		return Mia_to_h5_types<T>::mem_datatype(); 
 	}
 };
+
+
+template <typename Image> 
+typename Image::Pointer read_image(typename Image::dimsize_type& size, const H5Dataset& dataset)
+{
+	typedef typename Image::dimsize_type Bounds; 
+	typedef typename Image::value_type value_type; 
+
+	Image *result = new Image(size); 
+	typename Image::Pointer presult(result); 
+	
+	dataset.read_and_append_attributes(*result);
+	dataset.read(Mia_to_h5_types<value_type>::get_mem_type(), &(*result)(Bounds::_0));
+	
+	return presult; 
+}
 
 NS_MIA_END
 
