@@ -18,8 +18,8 @@
  *
  */
 
-namespace hdf5_3dimage {
-
+NS_BEGIN(hdf5_3dimage)
+	
 CHDF53DImageIOPlugin::CHDF53DImageIOPlugin():
         C3DImageIOPlugin("hdf5")
 {
@@ -43,8 +43,8 @@ CHDF53DImageIOPlugin::CHDF53DImageIOPlugin():
 }
 
 struct HDF5ReadCallbackdata { 
-        CHDF53DImageIOPlugin::Data& result; 
-        string path;
+	CHDF53DImageIOPlugin::Data& result; 
+	string path;
         H5Base& id; 
 }; 
 
@@ -53,8 +53,6 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *info,
 {
         herr_t          status;
         H5O_info_t      infobuf;
-
-        
 
         status = H5Oget_info_by_name (loc_id, name, &infobuf, H5P_DEFAULT);
         HDF5ReadCallbackdata *cbd = reinterpret_cast<HDF5ReadCallbackdata *>(operator_data); 
@@ -70,13 +68,57 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *info,
         case H5O_TYPE_DATASET: 
         case H5O_TYPE_NAMED_DATATYPE: {
                 // read the data set 
-                
-
+		auto dataset = H5Dataset::open(cbd->id, name);
+		auto size = dataset.get_size(); 
+		if (size.size() != 3) {
+			cvdebug() << "HDF5 (3dimage): found " << size.size() << " data set, ignoring\n"; 
+			break; 
+		}
+		C3DBounds bsize(size[2], size[1], size[0]); 
+		H5Type file_type(H5Dget_type(dataset)); 
+		H5Type mem_type = file_type.get_native_type(); 
+		int type_id = mem_type.get_mia_type_id(); 
+		switch (type_id) {
+		case EAttributeType::attr_uchar: 
+			cbd->result.push_back(read_image<C3DUBImage>(bsize, dataset)); 
+			break; 
+		case EAttributeType::attr_schar:
+			cbd->result.push_back(read_image<C3DSBImage>(bsize, dataset)); 
+			break; 
+		case EAttributeType::attr_ushort:
+			cbd->result.push_back(read_image<C3DUSImage>(bsize, dataset)); 
+			break; 
+		case EAttributeType::attr_sshort:
+			cbd->result.push_back(read_image<C3DSSImage>(bsize, dataset)); 
+			break; 
+		case EAttributeType::attr_uint:
+			cbd->result.push_back(read_image<C3DUIImage>(bsize, dataset)); 
+			break; 
+		case EAttributeType::attr_sint:
+			cbd->result.push_back(read_image<C3DSIImage>(bsize, dataset)); 
+			break; 
+#ifdef LONG_64BIT
+		case EAttributeType::attr_ulong:
+			cbd->result.push_back(read_image<C3DULImage>(bsize, dataset)); 
+			break; 
+		case EAttributeType::attr_slong:
+			cbd->result.push_back(read_image<C3DSLImage>(bsize, dataset)); 
+			break; 
+#endif
+		case EAttributeType::attr_float:
+			cbd->result.push_back(read_image<C3DFImage>(bsize, dataset)); 
+			break; 
+		case EAttributeType::attr_double:
+			cbd->result.push_back(read_image<C3DDImage>(bsize, dataset)); 
+			break; 
+		default: 
+			cverr() << "HDF5 (3dimage): Found unsupported image pixel type " << type_id << "\n"; 
+		}
         }break; 
         default: 
                 cvdebug() << "HDF5 read: ignoring unknown '" << name << "'\n"; 
         }; 
-        
+        return 0; 
 }
 
 
@@ -84,13 +126,17 @@ CHDF53DImageIOPlugin::PData CHDF53DImageIOPlugin::do_load(const string&  filenam
 {
         PData result(new Data); 
         
-
         H5File file = H5File::open(fname.c_str(), H5F_RDONLY, H5P_DEFAULT); 
+	if (file < 0) {
+		// either the file doesn't exist or it is not a HDF5 file
+		return PData(); 
+	}
         
         HDF5ReadCallbackdata cbd = {*result, "", file}; 
 
-        status = H5Literate (file, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, hdf5_walk, &cbd);
-
+        auto status = H5Literate (file, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, hdf5_walk, &cbd);
+	
+	return result; 
 }
 
 class FHDF5Saver:public TFilter<void> {
@@ -155,4 +201,4 @@ const std::string CHDF53DImageIOPlugin::do_get_descr() const
 }
 
 
-}
+NS_END
