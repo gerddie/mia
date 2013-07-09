@@ -164,12 +164,22 @@ public:
 
 	static H5Dataset open(const H5Base& parent, const char *name);
 
-	void  write( hid_t type_id, const void *data);
-	void  read( hid_t type_id, void *data);
+	template <typename Iterator> 
+	void  write(Iterator begin, Iterator end);
+	
+	template <typename Iterator> 
+	void  read(Iterator begin, Iterator end);
 
 	std::vector <hsize_t> get_size() const; 
 	
 private: 
+
+	template <typename Iterator, typename T> 
+	friend struct __dispatch_h5dataset_rw; 
+	
+	void  write( hid_t type_id, const void *data);
+	void  read( hid_t type_id, void *data);
+
 	H5Space m_space; 
 	std::string m_name; 
 }; 
@@ -236,6 +246,53 @@ typename Image::Pointer read_image(typename Image::dimsize_type& size, const H5D
 	
 	return presult; 
 }
+
+template <typename Iterator, typename T> 
+struct __dispatch_h5dataset_rw {
+	static void apply_write(H5Dataset& id, Iterator begin, Iterator MIA_PARAM_UNUSED(end)) {
+		TRACE_FUNCTION; 
+		id.write(Mia_to_h5_types<T>::mem_datatype(), &begin[0]); 
+	}
+	static void apply_read(H5Dataset& id, Iterator begin, Iterator MIA_PARAM_UNUSED(end)) {
+		TRACE_FUNCTION; 
+		id.read(Mia_to_h5_types<T>::mem_datatype(), &begin[0]); 
+	}
+}; 
+
+template <typename Iterator> 
+struct __dispatch_h5dataset_rw<Iterator, bool> {
+	static void apply_write(H5Dataset& id, Iterator begin, Iterator end) {
+		TRACE_FUNCTION; 
+		std::vector<char> help(std::distance( begin, end)); 
+		copy(begin, end, help.begin()); 
+		id.write(Mia_to_h5_types<bool>::mem_datatype(), &help[0]); 
+		
+	}
+	static void apply_read(H5Dataset& id, Iterator begin, Iterator end) {
+		TRACE_FUNCTION; 
+		std::vector<char> help(std::distance(begin, end)); 
+		id.read(Mia_to_h5_types<bool>::mem_datatype(), &help[0]); 
+		copy(help.begin(), help.end(), begin);
+	}
+}; 
+
+
+
+template <typename Iterator> 
+void  H5Dataset::write(Iterator begin, Iterator end)
+{
+	typedef __dispatch_h5dataset_rw<Iterator, typename Iterator::value_type> h5dataset_rw; 
+	h5dataset_rw::apply_write(*this, begin, end); 
+}
+
+template <typename Iterator> 
+void  H5Dataset::read(Iterator begin, Iterator end)
+{
+	typedef __dispatch_h5dataset_rw<Iterator, typename Iterator::value_type> h5dataset_rw; 
+	h5dataset_rw::apply_read(*this, begin, end); 
+}
+
+
 
 NS_MIA_END
 

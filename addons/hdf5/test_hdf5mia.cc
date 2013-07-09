@@ -90,7 +90,7 @@ BOOST_FIXTURE_TEST_CASE(test_core_hdf5_io_driver,  HDF5CoreFileFixture)
 BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 {
 	hsize_t dims[2] = {2,3}; 
-	int data [6] = {1,2,3,4,5,6}; 
+	vector<int> data = {1,2,3,4,5,6}; 
 	auto mem_type_in = Mia_to_h5_types<int>::mem_datatype(); 
 
 	// write the data set 
@@ -102,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 		auto space = H5Space::create(2, dims); 
 		auto dataset = H5Dataset::create(get_file(), "/testset", file_type, space);
 		
-		dataset.write(mem_type_in, data);
+		dataset.write(data.begin(), data.end());
 	}
 	// close data set automatically, and now reopen it 
 	{
@@ -117,9 +117,50 @@ BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 
 		BOOST_CHECK(H5Tequal( mem_type, mem_type_in ) > 0); 
 
-		int read_data [6] = {0,0,0,0,0,0};
+		vector<int> read_data(6);
 		
-		dataset.read(mem_type, read_data); 
+		dataset.read(read_data.begin(), read_data.end()); 
+
+		for (int i = 0; i < 6; ++i)
+			BOOST_CHECK_EQUAL(read_data[i], data[i]); 
+	}
+	
+}
+
+
+BOOST_FIXTURE_TEST_CASE(test_bool_dataset,  HDF5CoreFileFixture)
+{
+	hsize_t dims[2] = {2,3}; 
+	vector<bool> data {false, true, true, false, false, true}; 
+	auto mem_type_in = Mia_to_h5_types<bool>::mem_datatype(); 
+
+	// write the data set 
+	{
+		
+		auto file_type = Mia_to_h5_types<bool>::file_datatype(); 
+
+		
+		auto space = H5Space::create(2, dims); 
+		auto dataset = H5Dataset::create(get_file(), "/testset", file_type, space);
+		
+		dataset.write(data.begin(), data.end());
+	}
+	// close data set automatically, and now reopen it 
+	{
+		auto dataset = H5Dataset::open(get_file(), "/testset");
+		auto size = dataset.get_size(); 
+		BOOST_CHECK_EQUAL(size.size(), 2u); 
+		BOOST_CHECK_EQUAL(size[0],2u);
+		BOOST_CHECK_EQUAL(size[1],3u); 
+
+		H5Type file_type(H5Dget_type(dataset)); 
+		H5Type mem_type = file_type.get_native_type(); 
+
+		BOOST_CHECK(H5Tequal( mem_type, mem_type_in ) > 0); 
+
+		vector<bool> read_data(6); 
+		
+		dataset.read(read_data.begin(), read_data.end()); 
 
 		for (int i = 0; i < 6; ++i)
 			BOOST_CHECK_EQUAL(read_data[i], data[i]); 
@@ -149,20 +190,18 @@ void TestDatasetFixture<T>::test(const string& path, const std::vector<hsize_t>&
 template <typename T> 
 void TestDatasetFixture<T>::save(const string& path, const std::vector<hsize_t>& size, const std::vector<T>& data)
 {
-	auto mem_type_in = Mia_to_h5_types<T>::mem_datatype(); 
 	auto file_type = Mia_to_h5_types<T>::file_datatype(); 
 	
 	
 	auto space = H5Space::create(size); 
 	auto dataset = H5Dataset::create(get_file(), path.c_str(), file_type, space);
-	dataset.write(mem_type_in, &data[0]);
+	dataset.write(data.begin(), data.end());
 }
 
 template <typename T> 
 void TestDatasetFixture<T>::read_and_test(const string& path, const std::vector<hsize_t>& test_size, 
 					  const std::vector<T>& test_data)
 {
-	auto mem_type_in = Mia_to_h5_types<T>::mem_datatype(); 
 	auto dataset = H5Dataset::open(get_file(), path.c_str());
 	auto size = dataset.get_size(); 
 	BOOST_CHECK_EQUAL(size.size(), test_size.size()); 
@@ -177,11 +216,11 @@ void TestDatasetFixture<T>::read_and_test(const string& path, const std::vector<
 	H5Type file_type(H5Dget_type(dataset)); 
 	H5Type mem_type = file_type.get_native_type(); 
 
-	BOOST_REQUIRE(H5Tequal( mem_type, mem_type_in ) > 0); 
+	BOOST_REQUIRE(H5Tequal( mem_type, Mia_to_h5_types<T>::mem_datatype() ) > 0); 
 	
 	std::vector<T> read_data(length); 
 	
-	dataset.read(mem_type, &read_data[0]); 
+	dataset.read(read_data.begin(), read_data.end()); 
 		
 	for (size_t i = 0; i < length; ++i)
 		BOOST_CHECK_EQUAL(read_data[i], test_data[i]); 
