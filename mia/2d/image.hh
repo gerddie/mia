@@ -132,6 +132,7 @@ public:
 	typedef typename T2DDatafield<T>::size_type size_type;
 	typedef typename T2DDatafield<T>::range_iterator range_iterator; 
 	typedef typename T2DDatafield<T>::const_range_iterator const_range_iterator; 
+	typedef	typename T2DDatafield<T>::data_array data_array;
 
 	/// \endcond
 
@@ -147,7 +148,7 @@ public:
 	   \param size 
 	   \param init_data must at least be of size (size.x*size.y)
 	*/
-	T2DImage(const C2DBounds& size, const typename T2DDatafield<T>::data_array& init_data);
+	T2DImage(const C2DBounds& size, const data_array& init_data);
 	/**
 	   Create a 2D image with thegiven size and attach the given meta-data list. 
 	   \param size image size 
