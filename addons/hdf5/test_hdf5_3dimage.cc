@@ -20,3 +20,84 @@
 
 #include <mia/internal/autotest.hh>
 
+#include <boost/mpl/vector.hpp>
+#include <boost/test/test_case_template.hpp>
+
+
+template <typename T> 
+struct __fill_image {
+	static void apply(T3DImage<T>& image) {
+		int v = 1; 
+		for (auto i = image.begin(); i != image.end(); ++i) 
+			*i = v++; 
+	}
+}; 
+
+template <> 
+struct __fill_image<bool> {
+	static void apply(C3DBitImage<T>& image) {
+		bool v = false; 
+		for (auto i = image.begin(); i != image.end(); ++i) {
+			*i = v; 
+			v = !v; 
+		}
+	}
+}; 
+
+
+typedef boost::mpl::vector<
+	bool, 
+	signed char,  
+	unsigned char,
+	signed short,
+	unsigned short,
+	signed int,
+	unsigned int,
+#ifdef LONG_64BIT
+	signed long, 
+	unsigned long, 
+#endif
+	float,
+	double
+	> test_pixeltypes;
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes ) 
+{
+	C3DBounds size (2,3,4); 
+	T3DImage<T> *image = new T3DImage<T>(size); 
+	image->add_attribute("int", PAttribute(new CIntAttribute(2))); 
+
+	__fill_image<T>::apply(*image); 
+	
+	CHDF53DImageIOPlugin io; 
+        CHDF53DImageIOPlugin::Data images;
+        images.push_back(P3DImage(image)); 
+	
+	stringstream filename; 
+	filename << "testimage-" << __type_descr<T>::value << ".h5"; 
+
+	cvdebug() << "test with " << filename.str() << "\n"; 
+
+	BOOST_REQUIRE(io.save(filename.str(), images)); 
+	
+	auto loaded = io.load(filename.str()); 
+	BOOST_REQUIRE(loaded); 
+	
+	BOOST_REQUIRE(loaded->size() == 1u); 
+        const auto& ploaded = dynamic_cast<const T3DImage<T>&>(*(*loaded)[0]); 	
+	iv = image->begin(); 
+
+
+	auto il = ploaded.begin(); 
+	
+	while (iv != ev) {
+		BOOST_CHECK_EQUAL(*il, *iv); 
+		++iv; 
+		++il; 
+	}
+        unlink(filename.str().c_str()); 
+
+}
+
+
