@@ -18,6 +18,7 @@
  *
  */
 
+#define VSTREAM_DOMAIN "HDF5MIA-test"
 #include <mia/internal/autotest.hh>
 
 #include <boost/mpl/vector.hpp>

@@ -18,6 +18,8 @@
  *
  */
 
+#define VSTREAM_DOMAIN "HDF5"
+
 #include <addons/hdf5/hdf5a_mia.hh>
 #include <stack>
 NS_MIA_BEGIN
@@ -382,12 +384,39 @@ H5Dataset::H5Dataset (hid_t id, const H5Space& space, const char *name):
 {
 }
 
+static bool can_gzip() 
+{
+	if (!H5Zfilter_avail(H5Z_FILTER_DEFLATE)) 
+		return false; 
+
+	unsigned int filter_info; 
+	H5Zget_filter_info (H5Z_FILTER_DEFLATE, &filter_info);
+	
+	return ((filter_info & H5Z_FILTER_CONFIG_ENCODE_ENABLED) && 
+		(filter_info & H5Z_FILTER_CONFIG_DECODE_ENABLED)); 
+
+}
+
 H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_id, const H5Space& space)
 {
 	string relative_name(name); 
 	H5Base p = H5Group::create_or_open_hierarchy(parent, relative_name, true); 
+
+	hid_t id; 
+
+	if (can_gzip()) {
+		auto dcpl = H5Property::create (H5P_DATASET_CREATE);
+		auto status = H5Pset_deflate (dcpl, 9);
+		// we compress the whole data in one chunk
+		auto chunk_size = space.get_size(); 
+		status = H5Pset_chunk (dcpl, chunk_size.size(), &chunk_size[0]);
+		id = H5Dcreate (p, relative_name.c_str(), type_id, space, H5P_DEFAULT, dcpl,
+				H5P_DEFAULT);
+		cvdebug() << "HDF5: Dataset '"<< name <<"' created with gzip compression enabled\n"; 
+	}else {
+		id =  H5Dcreate(p, relative_name.c_str(), type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
 	
-	auto id =  H5Dcreate(p, relative_name.c_str(), type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	check_id(id, "H5Dataset", "create", relative_name);
 	H5Dataset set(id, space, name); 
 	set.set_parent(p);
