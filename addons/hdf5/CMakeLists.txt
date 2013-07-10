@@ -16,10 +16,28 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
+OPTION(USE_HDF5 "use hdf5 for data UI" TRUE)
 
-ADD_SUBDIRECTORY(dicom   )
-ADD_SUBDIRECTORY(hdf5 )
-ADD_SUBDIRECTORY(openexr )
-ADD_SUBDIRECTORY(vtk   )
-ADD_SUBDIRECTORY(vistaio )
+
+IF (USE_HDF5)
+  if (STRICT_DEPENDECIES)
+    find_package(HDF5 REQUIRED)
+  else (STRICT_DEPENDECIES)
+    find_package(HDF5)
+  endif (STRICT_DEPENDECIES)
+  
+  IF(HDF5_FOUND)
+    INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIRS})
+    LINK_DIRECTORIES(${HDF5_LIBRARY_DIRS})
+    SET(HDF5IO_SRC hdf5mia.cc hdf5a_mia.cc)
+    SET(HDF5MIALIBS miacore ${HDF5_LIBRARIES})
+    MIA_ADD_LIBRARY(hdf5mia "${HDF5IO_SRC}" "${HDF5MIALIBS}")
+
+    NEW_TEST(hdf5mia hdf5mia)
+    SET(DEPS3D hdf5mia mia3d)
+
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" hdf5_3dimage  "${DEPS3D}")
+
+  ENDIF(HDF5_FOUND)
+  
+ENDIF(USE_HDF5)
