@@ -245,7 +245,7 @@ struct EAttributeType_2d : public EAttributeType {
 	
 	static const int vector_2d_bit = 0x20000; 
 	
-	static bool is_vector(int type) {
+	static bool is_vector2d(int type) {
 		return type & vector_2d_bit; 
         }
 }; 
