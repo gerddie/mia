@@ -53,6 +53,9 @@ CHDF53DImageIOPlugin::CHDF53DImageIOPlugin():
 	add_suffix(".h5");
 	add_suffix(".H5");
 
+	add_property(io_plugin_property_multi_record);
+	add_property(io_plugin_property_has_attributes);
+
         // enable some translators for post-conversion
 	CVoxelAttributeTranslator::register_for("voxel");
 	C3DIntAttributeTranslator::register_for("ca");
@@ -66,24 +69,28 @@ struct HDF5ReadCallbackdata {
         H5Base& id; 
 }; 
 
-herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *info,
+herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *MIA_PARAM_UNUSED(info),
                   void *operator_data)
 {
-        herr_t          status;
         H5O_info_t      infobuf;
 
-        status = H5Oget_info_by_name (loc_id, name, &infobuf, H5P_DEFAULT);
         HDF5ReadCallbackdata *cbd = reinterpret_cast<HDF5ReadCallbackdata *>(operator_data); 
-        string path = cbd->path + string("/") + string(name); 
-        cvdebug() << "HDF5 read: " << path << "\n"; 
+        herr_t status = H5Oget_info_by_name (loc_id, name, &infobuf, H5P_DEFAULT);
+	if (status < 0) {
+		cvdebug() << "hdf5_walk: H5Oget_info_by_name returned " << status 
+			  << " for '" << name << "' with current path '"  << cbd->path << "'\n"; 
+	}
 
+        string path = cbd->path + string("/") + string(name); 
+	
         switch (infobuf.type) {
         case H5O_TYPE_GROUP: { // recursion 
-		cvdebug() << "Dive into group '" << name << "'\n"; 
+		cvdebug() << "Open group '" << name << "'\n"; 
 		string sname(name);
 		H5Base group =  H5Group::open(cbd->id, sname);
                 HDF5ReadCallbackdata rec_cbd = {cbd->result, path, group};
                 status = H5Literate (group, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, hdf5_walk, &rec_cbd);
+		cvdebug() << "hdf5_walk:H5Literate returned with status " << status << "\n"; 
         }break; 
                 
         case H5O_TYPE_DATASET: 
@@ -136,7 +143,7 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *info,
 			cbd->result.push_back(read_image<C3DDImage>(bsize, dataset)); 
 			break; 
 		default: 
-			cverr() << "HDF5 (3dimage): Found unsupported image pixel type " << type_id << "\n"; 
+			cverr() << "HDF5 (3dimage): Found unsupported image pixel type " << type_id << ", skipping.\n"; 
 		}
         }break; 
         default: 
@@ -158,7 +165,9 @@ CHDF53DImageIOPlugin::PData CHDF53DImageIOPlugin::do_load(const string&  filenam
         
         HDF5ReadCallbackdata cbd = {*result, "", file}; 
 
-        auto status = H5Literate (file, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, hdf5_walk, &cbd);
+	auto status = H5Literate (file, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, hdf5_walk, &cbd);
+	cvdebug() << "CHDF53DImageIOPlugin::do_load: H5Literate returned with status " 
+		  << status << "\n"; 
 	
 	return result; 
 }
