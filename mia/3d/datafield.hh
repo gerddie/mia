@@ -44,7 +44,9 @@ NS_MIA_BEGIN
 template <class T>
 class  EXPORT_3D T3DDatafield {
 
-        typedef std::shared_ptr<std::vector<T>  >  ref_data_type;
+	typedef  ::std::vector<T> data_array;
+
+        typedef std::shared_ptr<data_array>  ref_data_type;
 
         /** Size of the field */
         C3DBounds  m_size;
@@ -103,6 +105,13 @@ public:
             \param data to use for initialization
          */
         T3DDatafield(const C3DBounds& size, const T *data);
+
+
+        /** Constructor to create Datafield if given size and with initialization data
+            \param size the size of the 3D-field
+            \param data to use for initialization
+         */
+        T3DDatafield(const C3DBounds& size, const data_array& data);
 
 
         /** copy - Constructor */
