@@ -72,6 +72,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes )
 	C3DBounds size (2,3,4); 
 	T3DImage<T> *image = new T3DImage<T>(size); 
 	image->set_attribute("int", PAttribute(new CIntAttribute(2))); 
+	const C3DFVector voxel_size(2,2.5,2.5); 
+	image->set_voxel_size(voxel_size); 
 
 	__fill_image<T>::apply(*image); 
 	
@@ -102,6 +104,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes )
 		++iv; 
 		++il; 
 	}
+	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel_size); 
 //        unlink(filename.str().c_str()); 
 
 }

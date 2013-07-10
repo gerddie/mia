@@ -47,7 +47,7 @@ private:
 class H5AttributeTranslator {
 public: 
 	virtual H5Attribute apply(const H5Base& parent, const char *name, const CAttribute& attr) const = 0; 
-	virtual PAttribute apply(const H5Attribute& attr ) const = 0; 
+	virtual PAttribute apply(const char *name, const H5Attribute& attr ) const = 0; 
 }; 
 typedef std::shared_ptr<H5AttributeTranslator> PH5AttributeTranslator; 
 
@@ -61,7 +61,7 @@ public:
 	static H5AttributeTranslatorMap& instance(); 
 	void register_translator(int type_id, PH5AttributeTranslator translator);
 	H5Attribute translate(const H5Base& parent, const char *name, const CAttribute& attr);
-	PAttribute  translate(const H5Attribute& parent);
+	PAttribute  translate(const char *name, const H5Attribute& parent);
 private: 
 	const H5AttributeTranslator& get_translator(int type_id) const; 
 	typedef std::map<int,  PH5AttributeTranslator> TranslatorMap; 

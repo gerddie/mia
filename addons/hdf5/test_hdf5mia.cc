@@ -262,7 +262,7 @@ void TestAttrfixture<T>::run()
 	PAttribute attr(new TAttribute<T>(value));
 	auto h5attr = H5AttributeTranslatorMap::instance().translate(get_file(), "attr", *attr); 
 
-	auto pattr = H5AttributeTranslatorMap::instance().translate(h5attr); 
+	auto pattr = H5AttributeTranslatorMap::instance().translate("attr", h5attr); 
 	int test_type = attribute_type<T>::value; 
 	BOOST_CHECK_EQUAL(pattr->type_id(), test_type); 
 
@@ -291,7 +291,7 @@ void TestVectorAttrfixture<T>::run()
 	PAttribute attr(new TAttribute<vector<T>>(value));
 	auto h5attr = H5AttributeTranslatorMap::instance().translate(get_file(), "attr", *attr); 
 
-	auto pattr = H5AttributeTranslatorMap::instance().translate(h5attr); 
+	auto pattr = H5AttributeTranslatorMap::instance().translate("attr", h5attr); 
 	int test_type = attribute_type<vector<T>>::value; 
 	BOOST_CHECK_EQUAL(pattr->type_id(), test_type); 
 
@@ -320,7 +320,7 @@ BOOST_FIXTURE_TEST_CASE (test_string_attribute, HDF5CoreFileFixture)
 	
 	auto h5attr = H5AttributeTranslatorMap::instance().translate(get_file(), "attr", *attr); 
 
-	auto pattr = H5AttributeTranslatorMap::instance().translate(h5attr); 
+	auto pattr = H5AttributeTranslatorMap::instance().translate("attr", h5attr); 
 	BOOST_REQUIRE(pattr); 
 
 	int test_type = attribute_type<string>::value; 
@@ -338,7 +338,7 @@ BOOST_FIXTURE_TEST_CASE (test_vstring_attribute, HDF5CoreFileFixture)
 	
 	auto h5attr = H5AttributeTranslatorMap::instance().translate(get_file(), "attr", *attr); 
 
-	auto pattr = H5AttributeTranslatorMap::instance().translate(h5attr); 
+	auto pattr = H5AttributeTranslatorMap::instance().translate("attr", h5attr); 
 	BOOST_REQUIRE(pattr); 
 
 	int test_type = attribute_type<vector<string>>::value; 

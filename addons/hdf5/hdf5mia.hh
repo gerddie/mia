@@ -156,6 +156,8 @@ public:
 	H5Type get_native_type() const;
 
 	int get_mia_type_id() const; 
+private:
+	int do_get_mia_type_id() const;
 }; 
 
 class H5Dataset: public H5Base {

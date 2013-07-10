@@ -30,6 +30,9 @@ using std::string;
 using std::vector; 
 using std::stringstream; 
 
+
+
+
 CHDF53DImageIOPlugin::CHDF53DImageIOPlugin():
         C3DImageIOPlugin("hdf5")
 {
@@ -50,7 +53,11 @@ CHDF53DImageIOPlugin::CHDF53DImageIOPlugin():
 	add_suffix(".h5");
 	add_suffix(".H5");
 
-        // enable the 3DVector translator for the voxel size 
+        // enable some translators for post-conversion
+	CVoxelAttributeTranslator::register_for("voxel");
+	C3DIntAttributeTranslator::register_for("ca");
+	C3DIntAttributeTranslator::register_for("cp");
+
 }
 
 struct HDF5ReadCallbackdata { 
@@ -219,6 +226,7 @@ const std::string CHDF53DImageIOPlugin::do_get_descr() const
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
+
 	return new CHDF53DImageIOPlugin; 
 }
 

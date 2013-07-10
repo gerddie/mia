@@ -365,11 +365,15 @@ int H5Type::get_mia_type_id() const
 			cvwarn() << "HDF5: bitfield type of size " << size << " not supported in MIA\n"; 
 		}
 	default: 
-		cvwarn() << "HDF5: type class " << cls << " of size " << size << " not supported in MIA\n";
-		return EAttributeType::attr_unknown;
+		return do_get_mia_type_id(); 
 	}
 }
 
+int H5Type::do_get_mia_type_id() const
+{
+//	cvwarn() << "HDF5: type class " << cls << " of size " << size << " not supported in MIA\n";
+	return EAttributeType::attr_unknown;
+}
 
 H5Dataset::H5Dataset (hid_t id, const H5Space& space, const char *name):
 	H5Base(H5DatasetHandle(id)), 

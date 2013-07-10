@@ -93,14 +93,14 @@ PAttribute H5Attribute::read(const H5Base& parent, const char *name)
 	H5Space space(space_id); 
 	H5Attribute attr(id, space); 
 
-	return 	H5AttributeTranslatorMap::instance().translate(attr); 
+	return 	H5AttributeTranslatorMap::instance().translate(name, attr); 
 }
 
 
 template <typename T> 
 class H5TAttributeTranslator: public H5AttributeTranslator {
 	H5Attribute apply(const H5Base& parent, const char *name, const CAttribute& attr) const; 
-	virtual PAttribute apply(const H5Attribute& attr ) const; 
+	virtual PAttribute apply(const char *name, const H5Attribute& attr ) const; 
 }; 
 
 template <typename T> 
@@ -165,7 +165,7 @@ H5Attribute H5TAttributeTranslator<T>::apply(const H5Base& parent, const char *n
 }
 
 template <typename T> 
-PAttribute H5TAttributeTranslator<T>::apply(const H5Attribute& attr) const
+PAttribute H5TAttributeTranslator<T>::apply(const char *name, const H5Attribute& attr) const
 {
 	auto dim = attr.get_size(); 
 	if (dim.empty()) {
@@ -177,23 +177,23 @@ PAttribute H5TAttributeTranslator<T>::apply(const H5Attribute& attr) const
 		H5Aread(attr, Mia_to_h5_types<T>::mem_datatype(), &data[0]);
 		return PAttribute(new TAttribute<vector<T>>(data));
 	}else {
-		throw create_exception<runtime_error>("H5TAttributeTranslator: ", dim.size(), 
-						      " attributes not supported by generic translator"); 
+		throw create_exception<runtime_error>("H5TAttributeTranslator: attribute(", name, "): with ", dim.size(), 
+						      " not supported not supported by translator"); 
 	}
 }
 
 class H5TAttributeStringTranslator: public H5AttributeTranslator {
 	H5Attribute apply(const H5Base& parent, const char *name, const CAttribute& attr) const; 
-	virtual PAttribute apply(const H5Attribute& attr ) const; 
+	virtual PAttribute apply(const char *name, const H5Attribute& attr ) const; 
 	
-	H5Attribute apply(const H5Base& parent, const char *name, const CStringAttribute& attr) const; 
+	H5Attribute generic_apply(const H5Base& parent, const char *name, const CAttribute& attr) const; 
 	H5Attribute apply(const H5Base& parent, const char *name, const CVStringAttribute& attr) const; 
 
 };
 
-H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char *name, const CStringAttribute& attr) const
+H5Attribute H5TAttributeStringTranslator::generic_apply(const H5Base& parent, const char *name, const CAttribute& attr) const
 {
-	const string value = attr; 
+	const string value = attr.as_string(); 
 	cvdebug() << "Write string attribute '" << attr << "'\n"; 
 
 	H5Type stype(H5Tcopy (H5T_C_S1));
@@ -246,11 +246,11 @@ H5Attribute H5TAttributeStringTranslator::apply(const H5Base& parent, const char
 	if (EAttributeType::is_vector(__attr.type_id())) {
 		return apply(parent, name, dynamic_cast<const CVStringAttribute&>(__attr)); 
 	} else {
-		return apply(parent, name, dynamic_cast<const CStringAttribute&>(__attr)); 
+		return generic_apply(parent, name, __attr); 
 	}
 }
 
-PAttribute H5TAttributeStringTranslator::apply(const H5Attribute& attr ) const
+PAttribute H5TAttributeStringTranslator::apply(const char *name, const H5Attribute& attr ) const
 {
 	PAttribute result; 
 	auto size = attr.get_size(); 
@@ -271,7 +271,8 @@ PAttribute H5TAttributeStringTranslator::apply(const H5Attribute& attr ) const
 			cvwarn() << "Error reading string attribute\n"; 
 			return PAttribute(); 
 		}
-		result.reset(new CStringAttribute(string(rdata[0]))); 
+		cvdebug() << "post-convert '" << name << "' from '" << rdata[0] << "'\n"; 
+		result = CStringAttrTranslatorMap::instance().to_attr(name, string(rdata[0])); 
 		H5Dvlen_reclaim (memtype, space, H5P_DEFAULT, &rdata[0]); 
 	}else { 
 		vector<char *> rdata(size[0]);
@@ -329,17 +330,18 @@ const H5AttributeTranslator& H5AttributeTranslatorMap::get_translator(int type_i
 	}else{
 		auto scalar_type_id = EAttributeType::scalar_type(type_id); 
 		auto itranslator = m_map.find(scalar_type_id); 
-		if (itranslator != m_map.end()) {
-			return *itranslator->second; 
-		}else{
-			throw create_exception<invalid_argument>("No translator for type id ", type_id, " scalar", scalar_type_id); 
+		if (itranslator == m_map.end()) {
+			auto tid = attribute_type<string>::value; 
+			itranslator = m_map.find(tid); 
+			assert(itranslator != m_map.end()); 
 		}
+		return *itranslator->second; 
 	}
 }
 
-PAttribute  H5AttributeTranslatorMap::translate(const H5Attribute& attr)
+PAttribute  H5AttributeTranslatorMap::translate(const char *name, const H5Attribute& attr)
 {
-	return get_translator(attr.get_type().get_mia_type_id()).apply(attr); 
+	return get_translator(attr.get_type().get_mia_type_id()).apply(name, attr); 
 }
 
 H5Attribute H5AttributeTranslatorMap::translate(const H5Base& parent, const char *name, const CAttribute& attr)
