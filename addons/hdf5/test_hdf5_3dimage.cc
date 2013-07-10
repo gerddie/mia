@@ -18,6 +18,7 @@
  *
  */
 
+
 #define VSTREAM_DOMAIN "test-HDF5-3dimage"
 #include <mia/internal/autotest.hh>
 

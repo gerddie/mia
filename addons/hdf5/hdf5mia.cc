@@ -18,6 +18,7 @@
  *
  */
 
+
 #define VSTREAM_DOMAIN "HDF5"
 
 #include <addons/hdf5/hdf5a_mia.hh>
@@ -383,6 +384,7 @@ H5Dataset::H5Dataset (hid_t id, const H5Space& space, const char *name):
 	m_name(name)
 {
 }
+
 
 static bool can_gzip() 
 {
