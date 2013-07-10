@@ -106,45 +106,49 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *MIA_PARAM_UN
 		H5Type file_type(H5Dget_type(dataset)); 
 		H5Type mem_type = file_type.get_native_type(); 
 		int type_id = mem_type.get_mia_type_id(); 
+		P3DImage new_image; 
 		switch (type_id) {
 		case EAttributeType::attr_bool: 
-			cbd->result.push_back(read_image<C3DBitImage>(bsize, dataset)); 
+			new_image = read_image<C3DBitImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_uchar: 
-			cbd->result.push_back(read_image<C3DUBImage>(bsize, dataset)); 
+			new_image = read_image<C3DUBImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_schar:
-			cbd->result.push_back(read_image<C3DSBImage>(bsize, dataset)); 
+			new_image = read_image<C3DSBImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_ushort:
-			cbd->result.push_back(read_image<C3DUSImage>(bsize, dataset)); 
+			new_image = read_image<C3DUSImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_sshort:
-			cbd->result.push_back(read_image<C3DSSImage>(bsize, dataset)); 
+			new_image = read_image<C3DSSImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_uint:
-			cbd->result.push_back(read_image<C3DUIImage>(bsize, dataset)); 
+			new_image = read_image<C3DUIImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_sint:
-			cbd->result.push_back(read_image<C3DSIImage>(bsize, dataset)); 
+			new_image = read_image<C3DSIImage>(bsize, dataset); 
 			break; 
 #ifdef LONG_64BIT
 		case EAttributeType::attr_ulong:
-			cbd->result.push_back(read_image<C3DULImage>(bsize, dataset)); 
+			new_image = read_image<C3DULImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_slong:
-			cbd->result.push_back(read_image<C3DSLImage>(bsize, dataset)); 
+			new_image = read_image<C3DSLImage>(bsize, dataset); 
 			break; 
 #endif
 		case EAttributeType::attr_float:
-			cbd->result.push_back(read_image<C3DFImage>(bsize, dataset)); 
+			new_image = read_image<C3DFImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_double:
-			cbd->result.push_back(read_image<C3DDImage>(bsize, dataset)); 
+			new_image = read_image<C3DDImage>(bsize, dataset); 
 			break; 
 		default: 
 			cverr() << "HDF5 (3dimage): Found unsupported image pixel type " << type_id << ", skipping.\n"; 
+			return 0; 
 		}
+		new_image->set_attribute("path", path); 
+		cbd->result.push_back(new_image); 
         }break; 
         default: 
                 cvdebug() << "HDF5 read: ignoring unknown '" << name << "'\n"; 
