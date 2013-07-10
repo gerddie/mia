@@ -283,7 +283,7 @@ struct EAttributeType_3d : public EAttributeType {
 	
 	static const int vector_3d_bit = 0x40000; 
 	
-	static bool is_vector(int type) {
+	static bool is_vector3d(int type) {
 		return type & vector_3d_bit; 
         }
 }; 
