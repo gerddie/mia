@@ -105,7 +105,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes )
 		++il; 
 	}
 	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel_size); 
-//        unlink(filename.str().c_str()); 
+	
+	auto int_attr = ploaded.get_attribute_as<int>("int"); 
+	BOOST_CHECK_EQUAL(int_attr, 2); 
+
+        unlink(filename.str().c_str()); 
 
 }
 
