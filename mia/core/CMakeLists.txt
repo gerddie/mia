@@ -84,6 +84,7 @@ SET(MIACORE_SRC_BASE
 
 SET(MIACORE_HEADER_BASE
   attributes.hh
+  attributetype.hh
   boundary_conditions.hh
   bfsv23dispatch.hh
   callback.hh
@@ -122,7 +123,6 @@ SET(MIACORE_HEADER_BASE
   history.hh
   histogram.hh
   index.hh
-  splinekernel.hh
   import_handler.hh
   iodata.hh
   iohandler.cxx iohandler.hh
@@ -150,9 +150,11 @@ SET(MIACORE_HEADER_BASE
   scaler1d.hh
   shape.hh shape.cxx
   seriesstats.hh
+  singular_refobj.hh
   slopestatistics.hh
   slopeclassifier.hh
   slopevector.hh
+  splinekernel.hh
   splineparzenmi.hh
   spacial_kernel.hh
   sparse_solver.hh
@@ -301,6 +303,7 @@ NEW_TEST(productcache  miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(scaler1d miacore)
 NEW_TEST(seriesstats miacore)
+NEW_TEST(singular_refobj miacore)
 NEW_TEST(shape miacore)
 NEW_TEST(simpson miacore)
 NEW_TEST(slopeclassifier miacore)

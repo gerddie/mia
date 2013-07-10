@@ -66,6 +66,14 @@ T3DDatafield<T>::T3DDatafield(const C3DBounds& size, const T *data):
 {
 	std::copy(data, data + m_data->size(), m_data->begin()); 
 }
+
+template <typename T>
+T3DDatafield<T>::T3DDatafield(const C3DBounds& size, const data_array& data):
+	m_size(size), 
+	m_xy(size.x * size.y), 
+	m_data(new data_array(data))
+{
+}
 	
 template <typename T>
 T3DDatafield<T>::~T3DDatafield()

@@ -56,6 +56,8 @@ const C2DBounds& C2DImage::get_size() const
 	return m_size;
 }
 
+
+
 C2DFVector C2DImage::get_pixel_size() const
 {
         const PAttribute attr = get_attribute("pixel");

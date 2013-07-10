@@ -70,6 +70,14 @@ T3DImage<T>::T3DImage(const C3DBounds& size, const T* init_data):
 }
 
 template <typename T>
+T3DImage<T>::T3DImage(const C3DBounds& size, const data_array& init_data):
+	C3DImage((EPixelType)pixel_type<T>::value),
+	m_image(size, init_data)
+{
+}
+
+
+template <typename T>
 T3DImage<T>::T3DImage(const C3DBounds& size, const CAttributedData& attr):
 	C3DImage(attr, (EPixelType)pixel_type<T>::value),
 	m_image(size)
