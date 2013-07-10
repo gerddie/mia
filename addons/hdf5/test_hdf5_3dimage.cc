@@ -23,6 +23,11 @@
 #include <boost/mpl/vector.hpp>
 #include <boost/test/test_case_template.hpp>
 
+#include <addons/hdf5/hdf5_3dimage.hh>
+
+using namespace std; 
+using namespace mia; 
+using namespace hdf5_3dimage; 
 
 template <typename T> 
 struct __fill_image {
@@ -35,7 +40,7 @@ struct __fill_image {
 
 template <> 
 struct __fill_image<bool> {
-	static void apply(C3DBitImage<T>& image) {
+	static void apply(C3DBitImage& image) {
 		bool v = false; 
 		for (auto i = image.begin(); i != image.end(); ++i) {
 			*i = v; 
@@ -66,7 +71,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes )
 {
 	C3DBounds size (2,3,4); 
 	T3DImage<T> *image = new T3DImage<T>(size); 
-	image->add_attribute("int", PAttribute(new CIntAttribute(2))); 
+	image->set_attribute("int", PAttribute(new CIntAttribute(2))); 
 
 	__fill_image<T>::apply(*image); 
 	
@@ -86,7 +91,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes )
 	
 	BOOST_REQUIRE(loaded->size() == 1u); 
         const auto& ploaded = dynamic_cast<const T3DImage<T>&>(*(*loaded)[0]); 	
-	iv = image->begin(); 
+	auto iv = image->begin(); 
+	auto ev = image->end(); 
 
 
 	auto il = ploaded.begin(); 
@@ -96,7 +102,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes )
 		++iv; 
 		++il; 
 	}
-        unlink(filename.str().c_str()); 
+//        unlink(filename.str().c_str()); 
 
 }
 

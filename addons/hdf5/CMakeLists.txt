@@ -34,6 +34,9 @@ IF (USE_HDF5)
     MIA_ADD_LIBRARY(hdf5mia "${HDF5IO_SRC}" "${HDF5MIALIBS}")
 
     NEW_TEST(hdf5mia hdf5mia)
+    SET(DEPS3D hdf5mia mia3d)
+
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" hdf5_3dimage  "${DEPS3D}")
 
   ENDIF(HDF5_FOUND)
   

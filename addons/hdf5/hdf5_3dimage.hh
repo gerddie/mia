@@ -21,13 +21,15 @@
 #ifndef addons_hdf5_3fimage_hh
 #define addons_hdf5_3fimage_hh
 
+#include <mia/3d/imageio.hh>
+
 namespace hdf5_3dimage {
 
 class CHDF53DImageIOPlugin : public mia::C3DImageIOPlugin {
 public:
 	CHDF53DImageIOPlugin();
 private:
-
+	std::string do_get_preferred_suffix() const; 
         virtual PData do_load(const std::string&  filename) const;
 	virtual bool do_save(const std::string& fname, const Data& data) const;
 	virtual const std::string do_get_descr() const;

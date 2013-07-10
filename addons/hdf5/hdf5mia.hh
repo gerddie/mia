@@ -143,6 +143,8 @@ public:
 	explicit H5Group (hid_t id); 
 	H5Group() = default;
 	static H5Base create_or_open_hierarchy(const H5Base& parent, std::string& relative_name, bool create); 
+
+	static H5Base open(const H5Base& parent, const std::string& relative_name); 
 }; 
 
 
@@ -168,7 +170,7 @@ public:
 	void  write(Iterator begin, Iterator end);
 	
 	template <typename Iterator> 
-	void  read(Iterator begin, Iterator end);
+	void  read(Iterator begin, Iterator end) const;
 
 	std::vector <hsize_t> get_size() const; 
 	
@@ -178,7 +180,7 @@ private:
 	friend struct __dispatch_h5dataset_rw; 
 	
 	void  write( hid_t type_id, const void *data);
-	void  read( hid_t type_id, void *data);
+	void  read( hid_t type_id, void *data) const;
 
 	H5Space m_space; 
 	std::string m_name; 
@@ -253,7 +255,7 @@ struct __dispatch_h5dataset_rw {
 		TRACE_FUNCTION; 
 		id.write(Mia_to_h5_types<T>::mem_datatype(), &begin[0]); 
 	}
-	static void apply_read(H5Dataset& id, Iterator begin, Iterator MIA_PARAM_UNUSED(end)) {
+	static void apply_read(const H5Dataset& id, Iterator begin, Iterator MIA_PARAM_UNUSED(end)) {
 		TRACE_FUNCTION; 
 		id.read(Mia_to_h5_types<T>::mem_datatype(), &begin[0]); 
 	}
@@ -268,14 +270,13 @@ struct __dispatch_h5dataset_rw<Iterator, bool> {
 		id.write(Mia_to_h5_types<bool>::mem_datatype(), &help[0]); 
 		
 	}
-	static void apply_read(H5Dataset& id, Iterator begin, Iterator end) {
+	static void apply_read(const H5Dataset& id, Iterator begin, Iterator end) {
 		TRACE_FUNCTION; 
 		std::vector<char> help(std::distance(begin, end)); 
 		id.read(Mia_to_h5_types<bool>::mem_datatype(), &help[0]); 
 		copy(help.begin(), help.end(), begin);
 	}
 }; 
-
 
 
 template <typename Iterator> 
@@ -286,7 +287,7 @@ void  H5Dataset::write(Iterator begin, Iterator end)
 }
 
 template <typename Iterator> 
-void  H5Dataset::read(Iterator begin, Iterator end)
+void  H5Dataset::read(Iterator begin, Iterator end)const
 {
 	typedef __dispatch_h5dataset_rw<Iterator, typename Iterator::value_type> h5dataset_rw; 
 	h5dataset_rw::apply_read(*this, begin, end); 

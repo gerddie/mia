@@ -18,12 +18,22 @@
  *
  */
 
+#include <mia/core/filter.hh>
+
+#include <addons/hdf5/hdf5a_mia.hh>
+#include <addons/hdf5/hdf5_3dimage.hh>
+
 NS_BEGIN(hdf5_3dimage)
-	
+using namespace mia; 
+
+using std::string; 
+using std::vector; 
+using std::stringstream; 
+
 CHDF53DImageIOPlugin::CHDF53DImageIOPlugin():
         C3DImageIOPlugin("hdf5")
 {
-        add_supported_type(it_bool);
+        add_supported_type(it_bit);
         add_supported_type(it_sbyte);
         add_supported_type(it_ubyte);
 	add_supported_type(it_sshort);
@@ -62,13 +72,16 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *info,
 
         switch (infobuf.type) {
         case H5O_TYPE_GROUP: { // recursion 
-                HDF5ReadCallbackdata rec_cbd = {cbd->result, path, loc_id};
-                status = H5Literate (loc_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, hdf5_walk, &rec_cbd);
+		cvdebug() << "Dive into group '" << name << "'\n"; 
+		string sname(name);
+		H5Base group =  H5Group::open(cbd->id, sname);
+                HDF5ReadCallbackdata rec_cbd = {cbd->result, path, group};
+                status = H5Literate (group, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, hdf5_walk, &rec_cbd);
         }break; 
                 
         case H5O_TYPE_DATASET: 
         case H5O_TYPE_NAMED_DATATYPE: {
-                // read the data set 
+		cvdebug() << "Found data set\n"; 
 		auto dataset = H5Dataset::open(cbd->id, name);
 		auto size = dataset.get_size(); 
 		if (size.size() != 3) {
@@ -130,7 +143,7 @@ CHDF53DImageIOPlugin::PData CHDF53DImageIOPlugin::do_load(const string&  filenam
 {
         PData result(new Data); 
         
-        H5File file = H5File::open(fname.c_str(), H5F_RDONLY, H5P_DEFAULT); 
+        H5File file = H5File::open(filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT); 
 	if (file < 0) {
 		// either the file doesn't exist or it is not a HDF5 file
 		return PData(); 
@@ -144,11 +157,12 @@ CHDF53DImageIOPlugin::PData CHDF53DImageIOPlugin::do_load(const string&  filenam
 }
 
 class FHDF5Saver:public TFilter<void> {
+public: 
         FHDF5Saver(H5File& file):m_file(file), m_id(0){}
         
         template <typename T> 
         void operator ()( const T3DImage<T>& image); 
-
+private: 
         H5File& m_file; 
         int m_id; 
 
@@ -161,8 +175,7 @@ void FHDF5Saver::operator ()( const T3DImage<T>& image)
         
         auto space = H5Space::create(dims); 
         
-        auto file_type = Mia_to_h5_types<int>::file_datatype(); 
-        auto mem_type = Mia_to_h5_types<int>::mem_datatype(); 
+        auto file_type = Mia_to_h5_types<T>::file_datatype(); 
         
         stringstream path_str; 
         path_str << "/mia/" << m_id++; 
@@ -170,7 +183,7 @@ void FHDF5Saver::operator ()( const T3DImage<T>& image)
         if (image.has_attribute("hdf5-path")) {
                 auto stored_path = image.get_attribute("hdf5-path");
                 if (stored_path->type_id() == EAttributeType::attr_string) {
-                        string s = stored->as_string(); 
+                        string s = stored_path->as_string(); 
                         if (s[0] == '/') {
                                 path = s; 
                         }else{
@@ -178,9 +191,9 @@ void FHDF5Saver::operator ()( const T3DImage<T>& image)
                         }
                 }
         }
-
-        auto dataset = H5Dataset::create(get_file(), path.c_str(), file_type, space);
-        dataset.write(mem_type, &image(0,0,0)); 
+	cvdebug() << "Add image to '" << path << "'\n"; 
+        auto dataset = H5Dataset::create(m_file, path.c_str(), file_type, space);
+        dataset.write(image.begin(), image.end()); 
         translate_to_hdf5_attributes(dataset, image); 
 }
 
@@ -202,6 +215,11 @@ bool CHDF53DImageIOPlugin::do_save(const string& fname, const Data& data) const
 const std::string CHDF53DImageIOPlugin::do_get_descr() const
 {
         return "HDF5 3D image IO"; 
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new CHDF53DImageIOPlugin; 
 }
 
 

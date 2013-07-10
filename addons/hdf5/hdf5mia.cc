@@ -257,6 +257,16 @@ SilenceH5Errors::~SilenceH5Errors()
 }
 
 
+H5Base H5Group::open(const H5Base& parent, const std::string& name)
+{
+	
+	assert(name.find_last_of('/') == string::npos); 
+	auto id = H5Gopen(parent, name.c_str(), H5P_DEFAULT); 
+	assert(id >= 0); 
+	return H5Group(id); 
+}
+
+
 H5Base H5Group::create_or_open_hierarchy(const H5Base& parent, string& relative_name, bool create)
 {
 	H5Base pp = parent; 
@@ -347,7 +357,15 @@ int H5Type::get_mia_type_id() const
 			return EAttributeType::attr_unknown;
 	case H5T_STRING:
 		return EAttributeType::attr_string; 
+		
+	case H5T_BITFIELD:
+		if (size == 1) 
+			return EAttributeType::attr_bool; 
+		else {
+			cvwarn() << "HDF5: bitfield type of size " << size << " not supported in MIA\n"; 
+		}
 	default: 
+		cvwarn() << "HDF5: type class " << cls << " of size " << size << " not supported in MIA\n";
 		return EAttributeType::attr_unknown;
 	}
 }
@@ -374,8 +392,11 @@ H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_i
 
 H5Dataset H5Dataset::open(const H5Base& parent, const char *name)
 {
+	
 	string relative_name(name); 
-	H5Base p = H5Group::create_or_open_hierarchy(parent, relative_name, false); 
+	H5Base p = parent; 
+	if (relative_name.find_last_of('/') != string::npos)
+		p = H5Group::create_or_open_hierarchy(parent, relative_name, false); 
 
 	auto id =  H5Dopen(p, relative_name.c_str(), H5P_DEFAULT);
 	check_id(id, "H5Dataset", "open", relative_name);
@@ -398,7 +419,7 @@ void  H5Dataset::write( hid_t type_id, const void *data)
 	}
 }
 
-void  H5Dataset::read( hid_t type_id, void *data)
+void  H5Dataset::read( hid_t type_id, void *data) const 
 {
 	auto err =  H5Dread(*this, type_id, m_space,  H5S_ALL, H5P_DEFAULT, data);
 	if (err < 0) {
