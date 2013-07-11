@@ -60,13 +60,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
 	T3DImage<T> *image = new T3DImage<T>(size); 
         P3DImage pimage(image); 
 
+	C3DFVector voxel(2.0,3.0,4.0); 
         auto iv = image->begin(); 
 	auto ev = image->end();
         int i = 0; 
 
 	while (iv != ev)
 		*iv++ = i++;
-       
+	pimage->set_voxel_size(voxel); 
 
 	CVtk3DImageIOPlugin io; 
         CVtk3DImageIOPlugin::Data images;
@@ -94,6 +95,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
 		++iv; 
 		++il; 
 	}
+
+	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel); 
         unlink(filename.str().c_str()); 
 }
 
@@ -123,7 +126,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_xml_write_read, T, type_xml )
 
 	while (iv != ev)
 		*iv++ = i++;
-       
+	
+	C3DFVector voxel(2.0,3.0,4.0); 
+	pimage->set_voxel_size(voxel); 
 
 	CVtkXML3DImageIOPlugin io; 
         CVtkXML3DImageIOPlugin::Data images;
@@ -151,6 +156,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_xml_write_read, T, type_xml )
 		++iv; 
 		++il; 
 	}
+	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel); 
         unlink(filename.str().c_str()); 
 }
 
@@ -181,6 +187,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_mhd_write_read, T, type_mhd )
 
 	while (iv != ev)
 		*iv++ = i++;
+
+	C3DFVector voxel(2.0,3.0,4.0); 
+	pimage->set_voxel_size(voxel); 
        
 
 	CMhd3DImageIOPlugin io; 
@@ -216,6 +225,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_mhd_write_read, T, type_mhd )
 		++iv; 
 		++il; 
 	}
+	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel); 
         unlink(filename.str().c_str()); 
         unlink(rawfilename.str().c_str()); 
         unlink(zrawfilename.str().c_str()); 

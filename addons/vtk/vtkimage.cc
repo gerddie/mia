@@ -106,6 +106,7 @@ C3DImage *read_image(const C3DBounds& size, void *scalars)
 	T3DImage<T> *result = new  T3DImage<T>(size); 
 	copy(my_scalars, my_scalars + result->size(), result->begin()); 
 
+
 	return result; 
 }
 
@@ -147,6 +148,10 @@ static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname)
 							 "data type ", vtk_image->GetScalarTypeAsString(), 
 							 "(", vtk_image->GetScalarType(), ") not supported"); 
 	}
+	double sp[3]; 
+	vtk_image->GetSpacing (sp); 
+	result_image->set_voxel_size(C3DFVector(sp[0], sp[1], sp[2])); 
+
 	return result_image; 
 }
 
