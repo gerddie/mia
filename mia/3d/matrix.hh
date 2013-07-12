@@ -144,8 +144,11 @@ struct T3DMatrix: public T3DVector< T3DVector<T> > {
 }; 
 
 
-/// a simple 3x3 matrix 
+/// a simple 3x3 matrix with single precision floating point values 
 typedef T3DMatrix<float> C3DFMatrix; 
+
+/// a simple 3x3 matrix with double precision floating point values 
+typedef T3DMatrix<double> C3DDMatrix; 
 
 
 template <typename T> 
@@ -176,7 +179,9 @@ T3DMatrix<T> T3DMatrix<T>::diagonal(const T3DVector<T>& v)
 template <typename T> 
 template <typename I>
 T3DMatrix<T>::T3DMatrix(const T3DMatrix<I>& o):
-	T3DVector<T3DVector<T> >(o.x, o.y, o.z)
+	T3DVector<T3DVector<T> >(T3DVector<T>(o.x), 
+				 T3DVector<T>(o.y), 
+				 T3DVector<T>(o.z))
 {
 }
 

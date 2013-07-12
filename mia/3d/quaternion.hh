@@ -23,7 +23,8 @@
 
 #include <ostream>
 #include <mia/3d/defines3d.hh>
-#include <mia/3d/vector.hh>
+#include <mia/3d/matrix.hh>
+
 
 
 NS_MIA_BEGIN 
@@ -56,6 +57,12 @@ public:
 	*/
 	Quaternion(const C3DDVector& rot); 
 
+
+	/**
+	   Create the quatrenion from a 3x3 matrix that should express a rotation. 
+	 */
+
+	Quaternion(const C3DFMatrix& rot); 
 	/**
 	   Constructor to create a quaternion by directly setting its elements. 
 	 */
@@ -121,6 +128,9 @@ public:
 	/// \returns the z- or $x_3$ component of the quaternion 
 	double z() const; 
 
+
+	/// \returns the corresponding rotation matrix 
+	C3DFMatrix get_rotation_matrix() const; 
 private:
 	C3DDVector m_v; 
 	double m_w; 

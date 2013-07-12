@@ -135,6 +135,119 @@ BOOST_FIXTURE_TEST_CASE( test_euler, QuaternionFixture)
 #endif
 
 
+BOOST_FIXTURE_TEST_CASE( test_from_rot_matrix_x, QuaternionFixture) 
+{
+	float rx = M_PI/3.0; 
+	float sx, cx; 
+	sincosf(rx, &sx, &cx); 
+	
+	const C3DFMatrix rotx(C3DFVector(  1,  0,   0), 
+			      C3DFVector(  0, cx, -sx), 
+			      C3DFVector(  0, sx, cx)); 
+	
+	Quaternion qx(rotx);
+	CHECK_Quaternion_CLOSE(qx, Quaternion(sqrt(3.0)/2.0, 0.5, 0, 0),0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_from_rot_matrix_y, QuaternionFixture) 
+{
+	float r = M_PI/3.0; 
+	float s, c; 
+	sincosf(r, &s, &c);
+	
+	const C3DFMatrix rot(C3DFVector( c, 0, -s), 
+			     C3DFVector( 0, 1,  0), 
+			     C3DFVector( s, 0, c)); 
+	
+	Quaternion q(rot);
+	CHECK_Quaternion_CLOSE(q, Quaternion(sqrt(3.0)/2.0, 0, -0.5, 0),0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_from_rot_matrix_z, QuaternionFixture) 
+{
+	float r = M_PI/3.0; 
+	float s, c; 
+	sincosf(r, &s, &c);
+	
+	const C3DFMatrix rot(C3DFVector( c,-s, 0), 
+			     C3DFVector( s, c, 0), 
+			     C3DFVector( 0, 0, 1)); 
+	
+	Quaternion q(rot);
+	CHECK_Quaternion_CLOSE(q, Quaternion(sqrt(3.0)/2.0, 0, 0, 0.5),0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_get_rot_matrix_z, QuaternionFixture) 
+{
+	Quaternion q(sqrt(3.0)/2.0, 0, 0, 0.5); 
+	C3DFMatrix rot = q.get_rotation_matrix(); 
+	
+
+	float r = M_PI/3.0; 
+	float s, c; 
+	sincosf(r, &s, &c);
+	
+	BOOST_CHECK_CLOSE(rot.x.x, c, 0.1); 
+	BOOST_CHECK_CLOSE(rot.x.y, -s, 0.1); 
+	BOOST_CHECK_CLOSE(rot.y.x,  s, 0.1); 
+	BOOST_CHECK_CLOSE(rot.y.y, c, 0.1); 
+	BOOST_CHECK_CLOSE(rot.z.z, 1.0, 0.1); 
+
+	BOOST_CHECK_SMALL(rot.x.z,0.0001f); 
+	BOOST_CHECK_SMALL(rot.y.z,0.0001f); 
+	BOOST_CHECK_SMALL(rot.z.x,0.0001f); 
+	BOOST_CHECK_SMALL(rot.z.y,0.0001f); 
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_get_rot_matrix_y, QuaternionFixture) 
+{
+	Quaternion q(sqrt(3.0)/2.0, 0, -0.5, 0); 
+	C3DFMatrix rot = q.get_rotation_matrix(); 
+	
+
+	float r = M_PI/3.0; 
+	float s, c; 
+	sincosf(r, &s, &c);
+	
+	BOOST_CHECK_CLOSE(rot.x.x, c, 0.1); 
+	BOOST_CHECK_CLOSE(rot.x.z, -s, 0.1); 
+	BOOST_CHECK_CLOSE(rot.z.x,  s, 0.1); 
+	BOOST_CHECK_CLOSE(rot.z.z, c, 0.1); 
+	BOOST_CHECK_CLOSE(rot.y.y, 1.0, 0.1); 
+
+	BOOST_CHECK_SMALL(rot.x.y,0.0001f); 
+	BOOST_CHECK_SMALL(rot.y.z,0.0001f); 
+	BOOST_CHECK_SMALL(rot.y.x,0.0001f); 
+	BOOST_CHECK_SMALL(rot.z.y,0.0001f); 
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_get_rot_matrix_x, QuaternionFixture) 
+{
+	Quaternion q(sqrt(3.0)/2.0, 0.5, 0, 0); 
+	C3DFMatrix rot = q.get_rotation_matrix(); 
+	
+
+	float r = M_PI/3.0; 
+	float s, c; 
+	sincosf(r, &s, &c);
+	
+	BOOST_CHECK_CLOSE(rot.x.x, 1, 0.1); 
+	BOOST_CHECK_CLOSE(rot.y.z,-s, 0.1); 
+	BOOST_CHECK_CLOSE(rot.z.y, s, 0.1); 
+	BOOST_CHECK_CLOSE(rot.z.z, c, 0.1); 
+	BOOST_CHECK_CLOSE(rot.y.y, c, 0.1); 
+
+	BOOST_CHECK_SMALL(rot.x.y,0.0001f); 
+	BOOST_CHECK_SMALL(rot.x.z,0.0001f); 
+	BOOST_CHECK_SMALL(rot.y.x,0.0001f); 
+	BOOST_CHECK_SMALL(rot.z.x,0.0001f); 
+
+}
+
+
+
 QuaternionFixture::QuaternionFixture():
 	q1(1, 2, 3, 4), 
 	q2(2, 4, 2, 1)

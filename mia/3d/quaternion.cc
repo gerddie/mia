@@ -25,6 +25,7 @@
 
 NS_MIA_BEGIN 
 using std::swap; 
+using std::invalid_argument; 
 
 Quaternion::Quaternion():
 	m_w(0.0)
@@ -47,6 +48,34 @@ Quaternion::Quaternion(const C3DDVector& rot):
 	m_v.y = cos_phi * sin_psi* cos_theta + sin_phi * cos_psi * sin_theta;  
 	m_v.z = cos_phi * cos_psi* sin_theta - sin_phi * sin_psi * cos_theta; 
 
+}
+
+
+Quaternion::Quaternion(const C3DFMatrix& rot)
+{
+	double q4  = 1 + rot.x.x + rot.y.y + rot.z.z; 
+	if (q4 <= 0) {
+		throw create_exception<invalid_argument>("Quaternion: Matrix ", rot, 
+							 " is not evem close to be a rotation matrix.");
+	}
+	
+	m_w = 0.5 * sqrt(q4);
+	double s = 0.25 / m_w; 
+	
+	m_v.x = s * (rot.z.y - rot.y.z);  
+	m_v.y = s * (rot.x.z - rot.z.x); 
+	m_v.z = s * (rot.y.x - rot.x.y);  
+}
+
+
+C3DFMatrix Quaternion::get_rotation_matrix() const
+{
+	const C3DDMatrix qq(m_v.x * m_v, m_v.y * m_v, m_v.z * m_v);  
+	const C3DDMatrix Q(C3DDVector(0, -m_v.z, m_v.y), 
+			   C3DDVector(m_v.z, 0, -m_v.x), 
+			   C3DDVector(-m_v.y, m_v.x, 0)); 
+	const C3DDMatrix r = (m_w * m_w - m_v.norm2()) * C3DDMatrix::_1 + 2.0 * qq + 2.0 * m_w * Q; 
+	return C3DFMatrix(r); 
 }
 
 Quaternion::Quaternion(double w, double  x, double y, double z):
