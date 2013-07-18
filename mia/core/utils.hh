@@ -24,6 +24,7 @@
 #include <limits>
 #include <string>
 #include <sstream>
+#include <iostream>
 #include <vector>
 #include <cmath>
 #include <stdexcept>
@@ -180,6 +181,15 @@ T mia_round_clamped(double x)
 {
 	const bool is_floating_point = std::is_floating_point<T>::value; 
 	return __round_clamped<T, is_floating_point>::apply(x); 
+}
+
+
+inline void eat_char( std::istream& is, char expect_val, const char *message) 
+{
+	char c; 
+	is >> c; 
+	if ( c != expect_val)
+		throw std::runtime_error(message); 
 }
 
 NS_MIA_END

@@ -65,7 +65,7 @@ public:
 	    \a do_is_less
 
 	 */
-	bool is_less(const CAttribute& other) const;
+	bool is_less(const CAttribute& other) const; 
 
 	/// \returns a descriptive name of the type
 	virtual const char *typedescr() const = 0;
@@ -92,20 +92,9 @@ inline bool operator == (const CAttribute& a, const CAttribute& b)
 	return a.is_equal(b);
 }
 
-inline bool operator < (const CAttribute& a, const CAttribute& b)
-{
-	return a.is_less(b);
-}
 
 /// define the shared pointer wrapped attribute pointer
 typedef std::shared_ptr<CAttribute > PAttribute;
-
-struct pattr_less {
-	bool operator () (PAttribute const& a, PAttribute const& b)
-	{
-		return *a < *b;
-	}
-};
 
 /** 
    \ingroup basic

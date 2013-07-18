@@ -84,7 +84,7 @@ extern const TDictMap<E3DImageOrientation> g_image_orientation_map;
    
 */
 
-class C3DOrientationAndPosition {
+class EXPORT_3D C3DOrientationAndPosition {
 public: 
 	C3DOrientationAndPosition(); 
 	
@@ -102,8 +102,12 @@ public:
 	C3DOrientationAndPosition& operator +=(const C3DOrientationAndPosition& other); 
 	
 	bool operator == (const C3DOrientationAndPosition& other) const; 
+
+	bool operator < (const C3DOrientationAndPosition& other) const; 
 	
 	E3DImageOrientation get_axis_orientation() const; 
+
+	void print(std::ostream& os) const; 
 
 private:
 	
@@ -182,6 +186,29 @@ EXPORT_3D  std::istream& operator >> (std::istream& is, E3DImageOrientation& ori
 
 /**
    \ingroup basic 
+   @brief Stream operator to write orientation+position to stream \a os 
+   \param os
+   \param orient
+   \returns os 
+ */
+inline std::ostream& operator << (std::ostream& os, const C3DOrientationAndPosition& orient) 
+{
+	orient.print(os); 
+	return os; 
+}
+
+/**
+   \ingroup basic 
+   @brief Stream operator to read orientation+position from  stream \a is 
+   \param is
+   \param[out] orient
+   \returns is 
+ */
+EXPORT_3D  std::istream& operator >> (std::istream& is, C3DOrientationAndPosition& orient);
+
+
+/**
+   \ingroup basic 
    @brief Stream operator to write patient position orient to stream \a  os 
    \param os
    \param pp
@@ -216,6 +243,9 @@ typedef TTranslator<E3DImageOrientation> COrientationTranslator;
 */
 typedef TAttribute<E3DPatientPositioning> CPatientPositionAttribute;
 
+
+typedef TAttribute<C3DOrientationAndPosition> C3DImageOrientationPositionAttribute;
+typedef TTranslator<C3DOrientationAndPosition> COrientationPositionTranslator;
 /**
    @ingroup basic 
    @brief translator for the patient position 
@@ -231,6 +261,12 @@ template <>
 struct attribute_type<E3DPatientPositioning> : public EAttributeType {
         static const int value = 3001;
 }; 
+
+template <> 
+struct attribute_type<C3DOrientationAndPosition>: public EAttributeType {
+        static const int value = 3002;
+}; 
+
 
 
 extern EXPORT_3D const char * IDPatientPosition; 

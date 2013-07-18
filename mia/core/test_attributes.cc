@@ -400,43 +400,6 @@ bool operator==(PAttribute const & a, PAttribute const & b)
 	return *a == *b;
 }
 
-BOOST_AUTO_TEST_CASE( test_attribute_compare )
-{
-	PAttribute t1(new TAttribute<string>("testwert1"));
-	PAttribute t2(new TAttribute<string>("testwert2"));
-	PAttribute t3(new TAttribute<int>(1));
-	PAttribute t4(new TAttribute<int>(2));
-
-	BOOST_CHECK(*t1 < *t2);
-	BOOST_CHECK(*t2 < *t3);
-	BOOST_CHECK(*t3 < *t4);
-
-	BOOST_CHECK(!(*t4 < *t4));
-}
-
-BOOST_AUTO_TEST_CASE( test_attribute_as_map_key )
-{
-	map<PAttribute, string, pattr_less> testmap;
-
-	PAttribute t1(new CStringAttribute("testwert1"));
-	PAttribute t2(new CStringAttribute("testwert2"));
-	PAttribute t3(new CIntAttribute(1));
-	PAttribute t4(new CIntAttribute(1));
-
-	testmap[t1] = "stringvalue1";
-	testmap[t2] = "stringvalue2";
-	testmap[t3] = "intvalue1";
-
-	BOOST_CHECK_EQUAL(testmap[t3], "intvalue1");
-
-	testmap[t4] = "intvalue2";
-
-	BOOST_CHECK_EQUAL(testmap[t4], "intvalue2");
-	BOOST_CHECK_EQUAL(testmap[t3], "intvalue2");
-
-
-}
-
 BOOST_AUTO_TEST_CASE( test_get_attribute_as_non_existent )
 {
 	CAttributedData data;

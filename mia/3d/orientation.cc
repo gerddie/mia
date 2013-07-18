@@ -19,6 +19,7 @@
  */
 
 #include <mia/3d/orientation.hh>
+#include <mia/core/utils.hh>
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -146,6 +147,15 @@ C3DOrientationAndPosition& C3DOrientationAndPosition::operator +=(const C3DOrien
 
 bool C3DOrientationAndPosition::operator == (const C3DOrientationAndPosition& other) const
 {
+	return 	m_axisorder == other.m_axisorder && 
+		m_origin == other.m_origin && 
+		m_scale == other.m_scale && 
+		m_rotation == other.m_rotation; 
+
+}
+
+bool C3DOrientationAndPosition::operator < (const C3DOrientationAndPosition& other) const
+{
 	assert(0 && "to be implemented"); 
 }
 
@@ -237,5 +247,49 @@ EXPORT_3D  istream& operator >> (istream& is, E3DPatientPositioning& pp)
 }
 
 EXPORT_3D const char * IDPatientPosition = "PatientPosition"; 
+
+
+void C3DOrientationAndPosition::print(std::ostream& os)const
+{
+	os << "[" << m_axisorder << " [" << m_origin << "] [" 
+	   << m_scale << "] [" << m_rotation << "]]"; 
+}
+
+EXPORT_3D  std::istream& operator >> (std::istream& is, C3DOrientationAndPosition& orient)
+{
+	const char *msg = "unable to read C3DOrientationAndPosition from stream"; 
+	E3DImageOrientation axisorder; 
+	C3DFVector origin; 
+	C3DFVector scale; 
+	Quaternion rotation; 
+
+	eat_char(is, '[', msg); 
+	
+	is >> axisorder; 
+
+	eat_char(is, '[', msg); 
+
+	is >> origin; 
+
+	eat_char(is, ']', msg); 
+	eat_char(is, '[', msg); 
+	
+	is >> scale; 
+	
+	eat_char(is, ']', msg); 
+	eat_char(is, '[', msg); 
+	
+	
+	is >> rotation; 
+	
+	eat_char(is, ']', msg); 
+	eat_char(is, ']', msg); 
+
+	orient = C3DOrientationAndPosition(axisorder, origin, scale, rotation);
+	
+	return is; 
+}
+
+
 
 NS_MIA_END

@@ -218,9 +218,23 @@ const C3DFMatrix Quaternion::get_rotation_matrix() const
 }
 #endif 
 
+
+
 void Quaternion::print(std::ostream& os) const
 {
-	os << "(" << m_w << "," << m_v << ")"; 
+	os << m_w << "," << m_v; 
+}
+
+EXPORT_3D std::istream& operator >> (std::istream& is, Quaternion& a)
+{
+	const char *msg = "Unable to read quaternion from stream"; 
+	float w; 
+	C3DFVector v; 
+	is >> w; 
+	eat_char(is, ',', msg); 
+	is >> v; 
+	a = Quaternion(w, v.x, v.y, v.z); 
+	return is; 
 }
 
 bool operator == (const Quaternion& a, const Quaternion& b)

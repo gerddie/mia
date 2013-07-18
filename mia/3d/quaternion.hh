@@ -173,6 +173,8 @@ inline std::ostream& operator << (std::ostream& os, const Quaternion& a)
 	return os; 
 }
 
+EXPORT_3D std::istream& operator >> (std::istream& os, Quaternion& a); 
+
 NS_MIA_END
 
 #endif

@@ -49,12 +49,20 @@ EPixelType C3DImage::get_pixel_type() const
 
 C3DOrientationAndPosition C3DImage::get_orientation() const
 {
-	assert(0 && "to be implemented"); 
+	const PAttribute attr = get_attribute("orientation");
+	if (!attr)
+		return C3DOrientationAndPosition(); 
+	
+	auto op = dynamic_cast<const C3DImageOrientationPositionAttribute *>(attr.get());
+	if (!op) {
+		cvwarn() << "C3DImage::get_orientation: Bogus orientation attribute, return default\n"; 
+	}
+	return *op; 
 }
 
 void C3DImage::set_orientation(const C3DOrientationAndPosition& orient)
 {
-	assert(0 && "to be implemented"); 
+	set_attribute("orientation", PAttribute(new C3DImageOrientationPositionAttribute(orient))); 
 }
 
 template <typename T>
