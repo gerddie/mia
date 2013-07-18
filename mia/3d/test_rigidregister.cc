@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #define VSTREAM_DOMAIN "test-rigidregister"
 #include <stdexcept>
@@ -142,8 +141,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimize
 		stringstream out_name; 
 		out_name << "reg-" << t.get_creator_string()
 			 << "-" << minimizer->get_init_string() << ".hdr"; 
-		save_image
-(out_name.str(), ref);
+		save_image(out_name.str(), ref);
 	}
 }
 
@@ -178,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
 	params[2] = 2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.01,ftolr=0.01", 0.4); 
+	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.01,ftolr=0.01", 0.8); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
@@ -199,7 +197,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_rigid_gd, RigidRegisterFixture )
+BOOST_FIXTURE_TEST_CASE( test_rigid_ld_lbfgs, RigidRegisterFixture )
 {
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
 	auto transformation = tr_creator->create(size); 
@@ -213,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_gd, RigidRegisterFixture )
 	
 	transformation->set_parameters(params); 
 
-	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.001,ftolr=0.001", 4.0); 
+	run(*transformation, "nlopt:opt=ld-lbfgs,xtolr=0.001,ftolr=0.001", 4.0); 
 }
 
 #if 0 

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -72,10 +72,10 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 
 	// it is not confirmed that this data is correct
 	const float test[4] = {
-		-0.304008901,
-		 0.8986637,
-		 2.10133624,
-		 3.30400896
+		 0.375,
+		 1.125,
+		 1.875,
+		 2.625
 	};
 
 	C2DFImage fimage(C2DBounds(4, 4), init );

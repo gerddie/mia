@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -40,11 +40,42 @@ struct ipfFixture {
 	C3DInterpolatorFactory ipf; 
 }; 
 
+void affin_add_translate(C3DAffineTransformation& rtrans, double x, double y, double z) 
+{
+	auto params = rtrans.get_parameters(); 
+	params[3] += x; 
+	params[7] += y; 
+	params[11] += z; 
+	rtrans.set_parameters(params); 
+}
+
+void affin_add_scale(C3DAffineTransformation& rtrans, double x, double y, double z) 
+{
+	auto params = rtrans.get_parameters(); 
+	const double expx = exp(x);
+	const double expy = exp(y);
+	const double expz = exp(z);
+	params[0] *= expx;
+	params[1] *= expx;
+	params[2] *= expx;
+	params[3] *= expx;
+	params[4] *= expy;
+	params[5] *= expy;
+	params[6] *= expy;
+	params[7] *= expy;
+	params[8] *= expz;
+	params[9] *= expz;
+	params[10] *= expz;
+	params[11] *= expz;
+	rtrans.set_parameters(params); 
+}
+
+
 struct TranslateTransFixture: public  ipfFixture{
 	TranslateTransFixture():size(60, 80, 20),
 				rtrans(size, ipf)
 		{
-			rtrans.translate(1.0, 2.0, 3.0);
+			affin_add_translate(rtrans, 1.0, 2.0, 3.0);
 		}
 	C3DBounds size;
 	C3DAffineTransformation rtrans;
@@ -118,12 +149,12 @@ BOOST_FIXTURE_TEST_CASE(test_affine3d, ipfFixture)
 	C3DFVector y0 = t1(x0);
 	BOOST_CHECK_EQUAL(y0, x0);
 
-	t1.scale(std::log(2.0), std::log(3.0), std::log(4.0));
+	affin_add_scale(t1, std::log(2.0), std::log(3.0), std::log(4.0));
 
 	C3DFVector y1 = t1(x0);
 	BOOST_CHECK_EQUAL(y1, C3DFVector(2.0f, 6.0f, 12.0));
 
-	t1.translate(1.0f, 2.0f, 1.5f);
+	affin_add_translate(t1, 1.0f, 2.0f, 1.5f);
 	BOOST_CHECK_EQUAL(t1(x0), C3DFVector(3.0f, 8.0f, 13.5));
 
 }

@@ -1,7 +1,8 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
 #
-# This program is free software; you can redistribute it and/or modify
+# MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
@@ -12,15 +13,12 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
 PROJECT("mia")
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.0 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5 FATAL_ERROR)
 
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
@@ -43,9 +41,9 @@ SET(VENDOR "Gert Wollny")
 SET(PACKAGE_NAME "mia")
 SET(MAJOR_VERSION 2)
 SET(MINOR_VERSION 0)
-SET(MICRO_VERSION 4)
-SET(INTERFACE_AGE 0)
-SET(BINARY_AGE    0)
+SET(MICRO_VERSION 10)
+SET(INTERFACE_AGE 2)
+SET(BINARY_AGE    2)
 
 SET(PACKAGE_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}")
 SET(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}")
@@ -66,6 +64,8 @@ OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are a
 OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" TRUE)
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 
+INCLUDE(GNUInstallDirs)
+
 INCLUDE (CheckIncludeFiles)
 INCLUDE (TestBigEndian)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros.cmake)
@@ -75,15 +75,17 @@ INCLUDE (CheckTypeSize)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
 
-
 IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
   MESSAGE(FATAL_ERROR 
     "This source code requires the C++0x auto type and lambda features. "
     "If your compiler is supposed to support this feature, "
     "please enable the appropriate flags and delete the CMakeCache.txt file before "
     "re-running cmake.\n"
-    "For g++ >= 4.5 this is '-std=c++0x' ")
+    "For g++ >= 4.6 this is '-std=c++0x' ")
 ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
+
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkAltivecEnabled.cmake)
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkSSEEnabled.cmake)
 
 ASSERT_SIZE(char 1)
 ASSERT_SIZE(short 2)
@@ -137,16 +139,16 @@ ENDIF(MSVC)
 
 SET(SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 SET(BUILD_ROOT "${CMAKE_CURRENT_BINARY_DIR}")
-SET(LIB_ROOT_INSTALL_PATH "lib/${MIA_NAME}")
+SET(LIB_ROOT_INSTALL_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/${MIA_NAME}")
 SET(CONFIG_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/config")
 SET(LIB_INCLUDE_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/include")
 SET(PLUGIN_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/plugins")
-SET(PLUGIN_SEARCH_PATH "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_PATH}")
+SET(PLUGIN_SEARCH_PATH "${PLUGIN_INSTALL_PATH}")
 SET(DOC_INSTALL_PATH "share/doc/${MIA_NAME}")
 SET(FULL_DOC_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/${DOC_INSTALL_PATH}")
-SET(BINARY_INSTALL_PATH "bin")
-SET(LIBRARY_INSTALL_PATH "lib")
-SET(INCLUDE_INSTALL_PATH "include/${MIA_NAME}")
+SET(BINARY_INSTALL_PATH "${CMAKE_INSTALL_BINDIR}")
+SET(LIBRARY_INSTALL_PATH "${CMAKE_INSTALL_LIBDIR}")
+SET(INCLUDE_INSTALL_PATH "${CMAKE_INSTALL_INCLUDEDIR}/${MIA_NAME}")
 
 
 ######################################################################################
@@ -171,31 +173,12 @@ IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
 ENDIF(WIN32)
 
-FIND_PACKAGE( Boost 1.42.0 COMPONENTS
+FIND_PACKAGE( Boost 1.46.1 COMPONENTS
   ${BOOST_COMPONENTS}
   REQUIRED)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-
-
-#
-# currently we completely disable boost based portable binary archives 
-# VITSA provides what is needed in big binary archieves 
-#
-IF(FALSE) 
-  find_path(HAVE_BOOST_PORTABLE_BINARY_ARCHIVE  
-    portable_binary_archive.hpp 
-    ${Boost_INCLUDE_DIR}/boost/archive)
-  IF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-    ADD_SUBDIRECTORY(backport)
-    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/backport")
-  ELSE(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-    #if the portable binary archive has become part of the BOOST distribution 
-    #just link the serialization library 
-    SET(portable_binary_archive ${Boost_SERIALIZATION})
-  ENDIF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-ENDIF(FALSE)
 
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
 ADD_DEFINITIONS(-DBOOST_FILESYSTEM_VERSION=3)
@@ -204,7 +187,7 @@ SET(BOOST_DEPS  ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYST
 SET(BOOST_UNITTEST  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 IF (WIN32 AND NOT UNIX)
-   FOREACH(l ${Boost_THREAD_LIBRARY}
+   FOREACH(l 
        ${Boost_REGEX_LIBRARIES}
        ${Boost_FILESYSTEM_LIBRARY}
        ${Boost_SYSTEM}
@@ -223,10 +206,6 @@ IF (MSYS OR MINGW)
   SET(BASELIBS ${BOOST_DEPS})
 ENDIF (MSYS OR MINGW)
 
-IF(UNIX)
-  GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
-  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} -lpthread -ldl")
-ENDIF(UNIX)
 #
 # end BOOST 
 #
@@ -249,6 +228,18 @@ ENDIF(TBB_FOUND)
 ################################################################################
 
 ################################################################################
+#
+# Intel Threading Building Blocks 
+# 
+
+SET(CMAKE_THREAD_PREFER_PTHREAD ON) 
+FIND_PACKAGE(Threads)
+
+IF(CMAKE_USE_PTHREADS_INIT)
+  set(PTHREADLIB -lpthread)
+ENDIF(CMAKE_USE_PTHREADS_INIT)
+
+################################################################################
 # 
 # Handle the GNU Scientific Library, this might be a showstopper 
 # on MS windows when using Visual C++ 
@@ -260,39 +251,21 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 
 ################################################################################
 # 
-# search for some cblas
+# search for some blas
 # 
-# Note, on Gentoo on can use 'eselect blas set X' to select the actual BLAS provider
-# 
-# 
-FIND_LIBRARY(BLAS_LIBRARY NAMES "blas" PATHS
-  /usr/lib
-  /usr/local/lib
-  )
 
-IF(NOT BLAS_LIBRARY)
-  #try mkl 
-  FIND_LIBRARY(MKLIF_LIBRARY NAMES "mkl_intel_lp64" PATHS
-    /opt/intel/mkl/lib/intel64 
-    )
-  FIND_LIBRARY(MKL_sequential_LIBRARY NAMES "mkl_sequential" PATHS
-    /opt/intel/mkl/lib/intel64 
-    )
-  FIND_LIBRARY(MKL_core_LIBRARY NAMES "mkl_core" PATHS
-    /opt/intel/mkl/lib/intel64 
-    )
-  IF (MKL_core_LIBRARY AND MKL_sequential_LIBRARY AND MKLIF_LIBRARY)
-    set(BLAS_LIBRARY ${MKLIF_LIBRARY} ${MKL_sequential_LIBRARY}
-      ${MKL_core_LIBRARY} 
-      )
-  ENDIF(MKL_core_LIBRARY AND MKL_sequential_LIBRARY AND MKLIF_LIBRARY)
-ENDIF(NOT BLAS_LIBRARY)
+FIND_PACKAGE(BLAS)
+IF (NOT BLAS_LIBRARIES) 
+  MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
+ENDIF(NOT BLAS_LIBRARIES) 
 
-IF (BLAS_LIBRARY) 
-  ADD_DEFINITIONS(-DHAVE_BLAS)
-ELSE(BLAS_LIBRARY) 
-  MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required")
-ENDIF(BLAS_LIBRARY)
+IF(UNIX)
+  GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
+  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${BLAS_LIBRARIES} ${TBB_LIBRARIES} ${PTHREADLIB} -ldl")
+ENDIF(UNIX)
+
+
+ADD_DEFINITIONS(-DHAVE_BLAS)
 #
 # End BLAS 
 # 
@@ -312,6 +285,7 @@ ENDIF(NOT GZIP)
 # take care of modules loading infrastructure
 #
 IF(NOT WIN32)
+
   FIND_LIBRARY(DL dl
     PATH
     /lib
@@ -322,12 +296,11 @@ IF(NOT WIN32)
   IF(DL_NOTFOUND)
     MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
   ENDIF(DL_NOTFOUND)
-  SET(BASELIBS  ${BOOST_DEPS} ${DL})
-
+  SET(BASELIBS  ${BOOST_DEPS} ${PTHREADLIB} ${DL})
 ENDIF(NOT WIN32)
 SET(PLUGSUFFIX ".mia")
 
-OPTION(WARN_OLD_PLUGINSTYLE "Warn if plugins use old implementation style" OFF)
+OPTION(WARN_MISSING_OR_OLD_PLUGINTESTS "Warn if plugins don't provided tests or use the old buildsystem to do so" OFF)
 #
 #
 #
@@ -382,7 +355,13 @@ ENDIF (XMLPP_FOUND)
 #
 OPTION(WITH_ITPP "Use IT++ for some additional features" ${SEARCH_LIBS_DEFAULT})
 IF(WITH_ITPP)
-  pkg_check_modules(ITPP itpp)
+  
+  IF (STRICT_DEPENDECIES)
+    pkg_check_modules(ITPP itpp REQUIRED)
+  ELSE (STRICT_DEPENDECIES)
+    pkg_check_modules(ITPP itpp)
+  ENDIF(STRICT_DEPENDECIES)
+  
   IF(ITPP_FOUND)
     INCLUDE_DIRECTORIES(${ITPP_INCLUDE_DIRS})
     LINK_DIRECTORIES(${ITPP_LIBRARY_DIRS})
@@ -391,7 +370,7 @@ IF(WITH_ITPP)
     #if ITPP was found check if it supports the return value in separate 
     INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkITPPBoolseparate.cmake)
     IF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-      MESSAGE(WARNING "You are using  an unpatched version of IT++"
+      MESSAGE(WARNING "You are using  an unpatched version of IT++. "
 	"In this version using APPROACH_DEFL may run forever, and FastICA::separate " 
 	"doesn't return a value indicating success, "
 	"therefore, APPROACH_DEFL will not be used. See also: "
@@ -428,15 +407,6 @@ ELSE(ALWAYS_CREATE_DOC)
 ENDIF(ALWAYS_CREATE_DOC)
 
 
-ADD_SUBDIRECTORY(gsl++   )
-ADD_SUBDIRECTORY(mia     )
-ADD_SUBDIRECTORY(addons  )
-ADD_SUBDIRECTORY(testdata)
-
-IF(BUILD_EXAMPLES)
-  ADD_SUBDIRECTORY(examples)
-ENDIF(BUILD_EXAMPLES)
-
 ##############################################
 #
 # python is needed for creating end-user documentation 
@@ -452,12 +422,34 @@ IF(PYTHONINTERP_FOUND)
   ENDIF(LXML_ERR) 
 ENDIF(PYTHONINTERP_FOUND) 
 
-#disabled because moved to other package 
-#ADD_SUBDIRECTORY(python  )
+#############################################
+#
+# define plug-in related values and directories and add the test directory link target 
+# 
 
-#disabled for this release since it doesn't compile 
-#ADD_SUBDIRECTORY(idl     )
-#ADD_SUBDIRECTORY(matlab  )
+DEFINE_PLUGIN_NAMES( 1d  "spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dsplinepenalty  "transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dstack  "filter" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dvf  "io" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dlandmarklist "io"  ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dvf "io"  ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( generator  "noise" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( mesh "filter;io" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( minimizer  "singlecost" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( rgbimage "io" ${PLUGIN_INSTALL_PATH})
+
+ADD_SUBDIRECTORY(gsl++   )
+ADD_SUBDIRECTORY(mia     )
+ADD_SUBDIRECTORY(addons  )
+ADD_SUBDIRECTORY(testdata)
+
+IF(BUILD_EXAMPLES)
+  ADD_SUBDIRECTORY(examples)
+ENDIF(BUILD_EXAMPLES)
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(doc)
@@ -471,11 +463,12 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/miamesh.pc.cmake ${CMAKE_CURRENT_BINA
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mia3d.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/mia3d-${VERSION}.pc)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mia.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/mia-${VERSION}.pc)
 
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/miacore-${VERSION}.pc DESTINATION "lib/pkgconfig")
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mia2d-${VERSION}.pc DESTINATION "lib/pkgconfig")
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mia3d-${VERSION}.pc DESTINATION "lib/pkgconfig")
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mia2dmyocardperf-${VERSION}.pc DESTINATION "lib/pkgconfig")
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/miamesh-${VERSION}.pc DESTINATION "lib/pkgconfig")
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/miacore-${VERSION}.pc DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mia2d-${VERSION}.pc DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mia3d-${VERSION}.pc DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mia2dmyocardperf-${VERSION}.pc 
+  DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/miamesh-${VERSION}.pc DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/miaconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/miaconfig.h)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
@@ -485,9 +478,6 @@ INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/miaconfig.h DESTINATION ${LIB_INCLUDE_
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/mia.hh DESTINATION ${INCLUDE_INSTALL_PATH})
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COPYING 
   DESTINATION ${DOC_INSTALL_PATH})
-
-INCLUDE(cmake/package.cmake)
-INSTALL(EXPORT Mia DESTINATION ${CONFIG_INSTALL_PATH})
 
  
 ADD_CUSTOM_TARGET(dist bash ${CMAKE_SOURCE_DIR}/create_package "${PACKAGE_NAME}" "${PACKAGE_VERSION}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")

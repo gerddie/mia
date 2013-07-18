@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -374,7 +374,10 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
        
 
 	m_transf.set_parameters(x);
-	double result = m_costs.cost_value(m_transf);
+	double result = m_costs.cost_value(m_transf); 
+	if (m_transf.has_energy_penalty())
+		result += m_transf.get_energy_penalty();
+	
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 
 	
@@ -409,7 +412,17 @@ double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDo
 {
 	m_transf.set_parameters(x);
 	std::fill(g.begin(), g.end(), 0.0); 
+
 	double result = m_costs.evaluate(m_transf, g);
+
+	if (m_transf.has_energy_penalty()) {
+		CDoubleVector help(g.size()); 
+		const double penalty = m_transf.get_energy_penalty_and_gradient(help);
+		result += penalty; 
+		std::transform(help.begin(), help.end(), g.begin(), g.begin(), 
+			  [](double x, double y){return x+y;}); 
+		cvinfo() << "Penalty=" << std::setw(20) << std::setprecision(12) << penalty << "\n"; 
+	}
 
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 

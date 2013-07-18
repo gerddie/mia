@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,13 +14,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-
-#define BOOST_TEST_MODULE 2DIMAGEFIFOFILTER_TEST
+#define BOOST_TEST_MODULE TEST_ORIENTATION 
 #include <sstream>
 #include <mia/internal/autotest.hh>
 #include <mia/core/cmdlineparser.hh>
@@ -32,7 +31,7 @@ using namespace boost;
 
 using namespace boost::unit_test;
 
-static void run_test_read(const string& id, E3DImageOrientation test_orient)
+static void run_test_read(const string& id, E3DImageOrientation test_orient, const string& expect)
 {
 	E3DImageOrientation orient;
 	istringstream is(id);
@@ -41,16 +40,16 @@ static void run_test_read(const string& id, E3DImageOrientation test_orient)
 
 	stringstream os;
 	os << test_orient;
-	BOOST_CHECK_EQUAL(os.str(), id);
+	BOOST_CHECK_EQUAL(os.str(), expect);
 
 }
 
 BOOST_AUTO_TEST_CASE( test_orientation_streamio )
 {
-	run_test_read("axial", ior_axial);
-	run_test_read("coronal", ior_coronal);
-	run_test_read("saggital", ior_saggital);
-	run_test_read("unknown", ior_unknown);
+	run_test_read("axial", ior_axial, "axial");
+	run_test_read("coronal", ior_coronal, "coronal");
+	run_test_read("saggital", ior_saggital, "saggital");
+	run_test_read("unknown", ior_undefined, "(undefined)");
 }
 
 BOOST_AUTO_TEST_CASE( test_orientation_attribute )

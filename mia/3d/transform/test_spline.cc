@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -51,7 +51,7 @@ struct TransformSplineFixture: public ipfFixture {
 		kernel(produce_spline_kernel("bspline:d=3")),
 		range(50, 80, 30),
 		r(range.x - 1, range.y - 1, range.z - 1),
-		stransf(range, kernel, ipf), 
+		stransf(range, kernel, ipf, P3DSplineTransformPenalty()), 
 		center(range.x/2.0, range.y/2.0, range.z/2.0), 
 		fscale(range.x * range.y * range.z)
 
@@ -247,27 +247,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(result_operator.x, testx.x - fx(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_operator.y, testx.y - fy(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_operator.z, testx.z - fz(testx), 0.1);
-}
-
-BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
-{
-	stransf.reinit();
-	C3DFVector testx(30.4, 42.8, 12.3); 
-
-	C3DFVector r1( testx.x - fx(testx), 
-		       testx.y - fy(testx), 
-		       testx.z - fz(testx));
-	C3DFVector r2( r1.x - fx(r1), r1.y -fy(r1), r1.z - fz(r1)); 
-
-	stransf.add(stransf);
-	stransf.reinit();
-	C3DFVector result = stransf(testx);
-	// don't like the hight tolerance 
-	// should be checked again 
-	BOOST_CHECK_CLOSE(result.x, r2.x, 0.1);
-	BOOST_CHECK_CLOSE(result.y, r2.y, 0.1);
-	BOOST_CHECK_CLOSE(result.z, r2.z, 0.1);
-
 }
 
 BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineFixture )
@@ -623,7 +602,7 @@ BOOST_FIXTURE_TEST_CASE( test_spline_c_rate_create, ipfFixture )
 	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 	C3DBounds size(20, 32, 25);
 	C3DFVector c_rate(2.5, 3.2, 5.0);
-	C3DSplineTransformation  stransf(size, kernel, c_rate, ipf);
+	C3DSplineTransformation  stransf(size, kernel, c_rate, ipf, P3DSplineTransformPenalty());
 
 	C3DBounds gridsize = stransf.get_coeff_size();
 	BOOST_CHECK_EQUAL(gridsize.x, 10u);
@@ -745,7 +724,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transform, ipfFixture )
 	
 	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 
-	C3DSplineTransformation trans(size, kernel, ipf);
+	C3DSplineTransformation trans(size, kernel, ipf, P3DSplineTransformPenalty());
 
 	C3DFImage *psrc = new C3DFImage(size); 
 	P3DImage src(psrc);
@@ -782,7 +761,7 @@ struct TransformSplineFixtureFieldBase: public ipfFixture {
 		field(size),
 		kernel(produce_spline_kernel("bspline:d=3")), 
 		range(16, 16,16),
-		stransf(range, kernel, ipf),
+		stransf(range, kernel, ipf, P3DSplineTransformPenalty()),
 		scale(1.0 / range.x, 1.0 / range.y, 1.0 / range.z)
 	{
 
@@ -853,7 +832,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_set_parameter, ipfFixture)
 {
 	C3DBounds size(20,30,25); 
 	PSplineKernel kernel(produce_spline_kernel("bspline:d=3")); 
-	C3DSplineTransformation t(size, kernel, C3DFVector(5.0,5.0,5.0), ipf);
+	C3DSplineTransformation t(size, kernel, C3DFVector(5.0,5.0,5.0), ipf, P3DSplineTransformPenalty());
 	auto params = t.get_parameters();
 	
 	params[0] = 1.0; 
@@ -899,7 +878,7 @@ BOOST_FIXTURE_TEST_CASE (test_3d_cost_mock, ipfFixture )
 
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
-	C3DSplineTransformation t(size, kernel, ipf);
+	C3DSplineTransformation t(size, kernel, ipf, P3DSplineTransformPenalty());
 	C3DFVectorfield coefs(C3DBounds(12,12,12)); 
 	t.set_coefficients(coefs); 
 	t.reinit(); 
@@ -1073,7 +1052,7 @@ struct TransformSplineFixtureFieldBase2 : public ipfFixture{
 		field_range.y = 2 * range; 
 		field_range.z = 2 * range; 
 
-		auto t = new C3DSplineTransformation(C3DBounds(field_range), kernel, ipf); 
+		auto t = new C3DSplineTransformation(C3DBounds(field_range), kernel, ipf, P3DSplineTransformPenalty()); 
 		transform.reset(t);
 		
 		graddiv2sum = 0.0; 
@@ -1161,3 +1140,41 @@ double TransformSplineFixtureMixed::graddiv2(double , double , double )const
 {
 	return 0.0; 
 }
+
+
+BOOST_AUTO_TEST_CASE(check_small_range_throw) 
+{
+	BOOST_CHECK_THROW(C3DSplineTransformation(C3DBounds(10,10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C3DFVector(10,2,10),  C3DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P3DSplineTransformPenalty()), invalid_argument); 
+
+	BOOST_CHECK_THROW(C3DSplineTransformation(C3DBounds(10,10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C3DFVector(2,10,10),  C3DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P3DSplineTransformPenalty()), invalid_argument); 
+
+	BOOST_CHECK_THROW(C3DSplineTransformation(C3DBounds(10,10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C3DFVector(10,10,2),  C3DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P3DSplineTransformPenalty()), invalid_argument); 
+
+}
+
+
+BOOST_AUTO_TEST_CASE(check_small_field_throw) 
+{
+	C3DSplineTransformation t(C3DBounds(10,10,10), 
+				  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+				  C3DInterpolatorFactory("bspline:d=3", "mirror"), 
+				  P3DSplineTransformPenalty()); 
+	
+		
+	BOOST_CHECK_THROW(t.set_coefficients(C3DFVectorfield(C3DBounds(3,10,5))), invalid_argument); 
+	BOOST_CHECK_THROW(t.set_coefficients(C3DFVectorfield(C3DBounds(10,3,5))), invalid_argument); 
+	BOOST_CHECK_THROW(t.set_coefficients(C3DFVectorfield(C3DBounds(10,10,3))), invalid_argument); 
+
+}
+
+
+

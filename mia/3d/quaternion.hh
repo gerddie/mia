@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifndef mia_3d_quaternion_hh
 #define mia_3d_quaternion_hh
@@ -26,7 +25,6 @@
 #include <mia/3d/defines3d.hh>
 #include <mia/3d/matrix.hh>
 #include <mia/3d/vector.hh>
-
 
 NS_MIA_BEGIN 
 
@@ -59,13 +57,14 @@ public:
 	*/
 	Quaternion(const C3DDVector& rot); 
 
+
 	/**
 	   This constructor creates a quaternion from a 3x3 rotation matrix. 
 	   If mat3x3 is not a true rotation matrix, then this constructor evaluates the 
 	   rotation quaternion that best resembles the matrix transformation.
-	   \param max3x3
+	   \param rot
 	*/
-	Quaternion(const C3DFMatrix& mat3x3); 
+	Quaternion(const C3DFMatrix& rot); 
 
 	/**
 	   Constructor to create a quaternion by directly setting its elements. 
@@ -131,6 +130,7 @@ public:
 
 	/// \returns the z- or $x_3$ component of the quaternion 
 	double z() const; 
+
 
 	const C3DFMatrix get_rotation_matrix() const; 
 

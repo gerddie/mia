@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -59,22 +59,22 @@ CVista2DVFIOPlugin::PData  CVista2DVFIOPlugin::do_load(const string& fname) cons
 {
 	CInputFile f(fname);
 
-	VAttrList vlist = VReadFile(f,NULL);
+	VistaIOAttrList vlist = VistaIOReadFile(f,NULL);
 
-	VResetProgressIndicator();
+	VistaIOResetProgressIndicator();
 
 	if (!vlist)
 		return CVista2DVFIOPlugin::PData();
 
 	CVista2DVFIOPlugin::PData result;
-	VAttrListPosn posn;
+	VistaIOAttrListPosn posn;
 
-	for (VFirstAttr(vlist, &posn); VAttrExists(&posn) && !result; VNextAttr(&posn)) {
-		if (VGetAttrRepn(&posn) != VField2DRepn)
+	for (VistaIOFirstAttr(vlist, &posn); VistaIOAttrExists(&posn) && !result; VistaIONextAttr(&posn)) {
+		if (VistaIOGetAttrRepn(&posn) != VistaIOField2DRepn)
 			continue;
 
-		VField2D field = NULL;
-		VGetAttrValue(&posn, 0, VField2DRepn, &field);
+		VistaIOField2D field = NULL;
+		VistaIOGetAttrValue(&posn, 0, VistaIOField2DRepn, &field);
 
 		if (!field)
 			throw runtime_error(fname + "looked like a vector field, but is none");
@@ -82,20 +82,20 @@ CVista2DVFIOPlugin::PData  CVista2DVFIOPlugin::do_load(const string& fname) cons
 		if (field->nsize_element != 2)
 			throw runtime_error(fname + "is not a field of 2D vectors");
 
-		if (field->repn != VFloatRepn) {
+		if (field->repn != VistaIOFloatRepn) {
 			cvdebug() << "Skipping input field, which is not of type float\n";
 			continue;
 		}
 
 
 		result = CVista2DVFIOPlugin::PData(new C2DIOVectorfield(C2DBounds(field->x_dim, field->y_dim)));
-		T2DVector<VFloat> * input  = (T2DVector<VFloat> *)field->p.data;
+		T2DVector<VistaIOFloat> * input  = (T2DVector<VistaIOFloat> *)field->p.data;
 		copy(input, input + result->size(), result->begin());
 		copy_attr_list(*result, field->attr);
 	}
 
 
-	VDestroyAttrList(vlist);
+	VistaIODestroyAttrList(vlist);
 	return result;
 }
 
@@ -105,19 +105,19 @@ bool CVista2DVFIOPlugin::do_save(const string& fname, const C2DIOVectorfield& da
 
 	COutputFile f(fname);
 
-	VAttrList vlist = VCreateAttrList();
-	VField2D out_field = VCreateField2D(data.get_size().x,
+	VistaIOAttrList vlist = VistaIOCreateAttrList();
+	VistaIOField2D out_field = VistaIOCreateField2D(data.get_size().x,
 					    data.get_size().y,
 					    2,
-					    VFloatRepn);
-	T2DVector<VFloat> * output  = (T2DVector<VFloat> *)out_field->p.data;
+					    VistaIOFloatRepn);
+	T2DVector<VistaIOFloat> * output  = (T2DVector<VistaIOFloat> *)out_field->p.data;
 	copy(data.begin(), data.end(), output);
 
 	copy_attr_list(out_field->attr, data);
-	VSetAttr(vlist, "2DFVectorfield", NULL, VField2DRepn, out_field);
+	VistaIOSetAttr(vlist, "2DFVectorfield", NULL, VistaIOField2DRepn, out_field);
 
-	bool result = VWriteFile(f,vlist);
-	VDestroyAttrList(vlist);
+	bool result = VistaIOWriteFile(f,vlist);
+	VistaIODestroyAttrList(vlist);
 
 	return result;
 }

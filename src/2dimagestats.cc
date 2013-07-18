@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -33,7 +33,7 @@ const SProgramDescription g_general_help = {
 	
 	{pdi_description, "This progranm is used to evaluate some statistics of an image. " 
 	 "Output is Mean, Variation, Median, and Median Average Distance of the intensity values. "
-	 "The program allows to set a lower threshold and to cut off a percentage of the high intensity pixels"}, 
+	 "The program allows one to set a lower threshold and to cut off a percentage of the high intensity pixels"}, 
 	
 	{pdi_example_descr, "Evaluate the statistics of image input.png. Don't include the upper 1% "
 	 "of intensities in the statistics. The result is written to stdout"},

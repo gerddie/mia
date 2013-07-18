@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -49,8 +49,8 @@ const SProgramDescription g_general_help = {
 	{pdi_short, "Run a registration of a series of 2D images."}, 
 	
 	{pdi_description, "This program runs the non-rigid registration of an perfusion image series "
-	 "preferable aquired letting the patient breath freely. " 
-	 "The registration algoritm implementes "
+	 "preferable acquired letting the patient breath freely. " 
+	 "The registration algorithm implementes "
 	 "G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
 	 "Quasiperiodicity in Motion Correction of Free-Breathing,\" "
 	 "IEEE Transactions on Medical Imaging, 29(8), 2010\n"}, 
@@ -60,7 +60,7 @@ const SProgramDescription g_general_help = {
 	 "and penalize the transformation by divcurl with weight 5. "
 	 "Store the result in 'registered.set'.\n"}, 
 	
-	{pdi_example_code, "  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"}
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16,penalty=[divcurl:weight=5]"}
 }; 
 
 		
@@ -116,7 +116,6 @@ public:
 		RegistrationParams(); 
 		PMinimizer minimizer;
 		PMinimizer refinement_minimizer;
-		double divcurlweight; 
 		P2DFullCost pass1_cost;  
 		P2DFullCost pass2_cost;
 		P2DFullCost series_select_cost;  
@@ -214,9 +213,6 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images,
 	C2DFullCostList costs; 
 	// create costs
 	costs.push(m_params.pass1_cost); 
-	stringstream divcurl_descr;  
-	divcurl_descr << "divcurl:weight=" << m_params.divcurlweight; 
-	costs.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 
 	C2DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
@@ -245,11 +241,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 	C2DFullCostList costs; 
 	// create costs
 	costs.push(m_params.pass2_cost); 
-	stringstream divcurl_descr;  
-	divcurl_descr << "divcurl:weight=" << m_params.divcurlweight; 
-	costs.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
-
-	C2DNonrigidRegister nr(costs, 
+ 	C2DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
 			       m_params.mg_levels);
@@ -318,7 +310,6 @@ size_t C2DMyocardPeriodicRegistration::get_ref_idx()const
 
 
 C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
-	divcurlweight(5),
 	mg_levels(3),
 	max_candidates(20), 
 	save_ref(false)
@@ -369,10 +360,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( params.refinement_minimizer, "", "refiner", 'R', "optimizer used for additional minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
-	options.add(make_opt( params.divcurlweight, "divcurl", 'd', 
-				    "divcurl regularization weight"));
-
-	options.add(make_opt( params.transform_creator, "spline", "transForm", 'f', 
+	options.add(make_opt( params.transform_creator, "spline:rate=16,penalty=[divcurl:weight=0.01]", "transForm", 'f', 
 				    "transformation type"));
 
 	options.add(make_opt(params.pass1_cost, "image:cost=[ngf:eval=ds]", "cost-subset", '1', 
@@ -416,7 +404,7 @@ int do_main( int argc, char *argv[] )
 			frames[i + skip].inv_transform(*transforms[i]);
 	}
 	
-	input_set.set_prefered_reference(mpr.get_ref_idx() + skip); 
+	input_set.set_preferred_reference(mpr.get_ref_idx() + skip); 
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())

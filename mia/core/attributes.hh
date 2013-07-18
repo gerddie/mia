@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifndef mia_core_attributes_hh
 #define mia_core_attributes_hh
@@ -34,7 +33,7 @@
 #include <stdexcept>
 #include <boost/any.hpp>
 #include <boost/ref.hpp>
-#include <mia/core/defines.hh>
+#include <mia/core/attributetype.hh>
 
 NS_MIA_BEGIN
 
@@ -70,6 +69,9 @@ public:
 
 	/// \returns a descriptive name of the type
 	virtual const char *typedescr() const = 0;
+
+	/// \returns a  type is
+	virtual int type_id() const = 0; 
 private:
 	virtual std::string do_as_string() const = 0;
 
@@ -139,6 +141,8 @@ public:
 
 	/// \returns typeid(T).name(), and is, therefore, dependend on the compiler
 	virtual const char *typedescr() const;
+
+	virtual int type_id() const; 
 protected:
 	/// @returns the value of the attribute 
 	const T& get_value() const;
@@ -219,6 +223,12 @@ typedef TAttribute<std::vector<std::string> > CVStringAttribute;
     \brief A name:attribute map
 */
 typedef std::map<std::string, PAttribute> CAttributeMap;
+
+template <> 
+struct attribute_type<CAttributeMap> : public EAttributeType { 
+        static const int value = 1000;
+}; 
+
 
 /** 
     \ingroup basic 
@@ -340,9 +350,20 @@ public:
 	/// @cond FRIENDSDOC
 	friend EXPORT_CORE bool operator == (const CAttributedData& a, const CAttributedData& b);
 	/// @endcond 
+
+	void print(std::ostream& os) const  {
+		os << *m_attr; 
+	}
 private:
 	PAttributeMap m_attr;
 };
+
+
+inline std::ostream& operator << (std::ostream& os, const CAttributedData& data)
+{
+	data.print(os); 
+	return os; 
+}
 
 
 
@@ -503,6 +524,15 @@ template <typename T>
 const char *TAttribute<T>::typedescr() const
 {
 	return typeid(T).name();
+}
+
+template <typename T>
+int TAttribute<T>::type_id() const
+{
+	static_assert(attribute_type<T>::value != EAttributeType::attr_unknown, 
+		      "You must provide a type specialization for attribute_type<T>"); 
+	
+	return attribute_type<T>::value; 
 }
 
 /**

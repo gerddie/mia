@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- 
+     This is the scheme describing the XML output of the help-xml
+     option. 
+     
+     Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+     
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation; either version 3 of the License, or
+     (at your option) any later version.
+     
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+     -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- definition of attributes -->
+  <xs:attribute name="short" type="xs:string"/>
+  <xs:attribute name="long" type="xs:string"/>
+  <xs:attribute name="required" type="xs:boolean"/>
+  <xs:attribute name="default" type="xs:string"/>
+  <xs:attribute name="name" type="xs:string"/>
+  <xs:attribute name="type" type="xs:string"/>
+  <xs:attribute name="min" type="xs:float"/>
+  <xs:attribute name="max" type="xs:float"/>
+  
+  <!-- complex elements -->
+  <xs:element name="name" type="xs:string" />
+  <xs:element name="section" type="xs:string" />
+  <xs:element name="description" type="xs:string" />
+  <xs:element name="basic_usage" type="xs:string" />
+  <xs:element name="whatis" type="xs:string" />
+
+  <xs:element name="value">
+    <xs:complexType mixed="true">
+      <xs:attribute ref="name"/>    
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="dict">
+    <xs:complexType>
+      <xs:sequence>
+	<xs:element ref="value" minOccurs="2" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="range">
+    <xs:complexType>
+      <xs:attribute ref="min" use="required"/>
+      <xs:attribute ref="max" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="set">
+    <xs:complexType>
+      <xs:sequence>
+	<!-- here I should declare an empty element -->
+	<xs:element name="value" minOccurs="2" maxOccurs="unbounded">
+	  <xs:complexType>
+	    <xs:attribute ref="name"/>
+	  </xs:complexType>
+	</xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="io">
+    <xs:complexType>
+      <xs:attribute ref="name"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="factory">
+    <xs:complexType>
+      <xs:attribute ref="name"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="option">
+    <xs:complexType mixed="true" >
+      <xs:choice minOccurs="0" maxOccurs="1">
+	<xs:element ref="dict" />
+	<xs:element ref="range" />
+	<xs:element ref="set" />
+	<xs:element ref="io" />
+	<xs:element ref="factory" />
+      </xs:choice>
+      <xs:attribute ref="short"/>
+      <xs:attribute ref="long" use="required"/>
+      <xs:attribute ref="required" use="required"/>
+      <xs:attribute ref="default" use="required"/>
+      <xs:attribute ref="type" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="param">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="1">
+	<xs:element ref="dict"/>
+	<xs:element ref="range"/>
+	<xs:element ref="set"/>
+	<xs:element ref="io"/>
+	<xs:element ref="factory"/>
+      </xs:choice>
+      <xs:attribute ref="name" use="required"/>
+      <xs:attribute ref="required" use="required"/>
+      <xs:attribute ref="default" use="required"/>
+      <xs:attribute ref="type" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="group">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+	<xs:element ref="option" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute ref="name" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="plugin">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+	<xs:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+	<xs:element name="noparam" minOccurs="0" maxOccurs="1"/>
+	<xs:element name="suffixes" minOccurs="0" maxOccurs="1"/>
+	<xs:element name="datatypes" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute ref="name" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="handler">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+	<xs:element ref="plugin" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute ref="name" />
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="Code" />
+  
+  <xs:element name="Example">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+	<xs:element ref="Code" minOccurs="1" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="program">
+    <xs:complexType>
+      <xs:sequence>
+	<xs:element ref="name" minOccurs="1" maxOccurs="1"/> 
+	<xs:element ref="section" minOccurs="1" maxOccurs="1"/> 
+	<xs:element ref="description" minOccurs="1" maxOccurs="1"/> 
+	<xs:element ref="basic_usage" minOccurs="1" maxOccurs="1"/> 
+	<xs:element ref="whatis" minOccurs="1" maxOccurs="1"/> 
+	<xs:element ref="group" minOccurs="1" maxOccurs="unbounded"/>
+	<xs:element name="freeparams" minOccurs="0" maxOccurs="1">
+	  <xs:complexType>
+	    <xs:attribute ref="name" use="required"/>
+	    <xs:attribute ref="type" use="required"/>
+	  </xs:complexType>
+	</xs:element>
+	<xs:element ref="handler" minOccurs="0" maxOccurs="unbounded"/>
+	<xs:element ref="Example" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+</xs:schema>

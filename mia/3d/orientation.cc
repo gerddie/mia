@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,15 +14,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <mia/3d/orientation.hh>
 
 NS_MIA_BEGIN
+using namespace std; 
+
 
 C3DOrientationAndPosition::C3DOrientationAndPosition():
 	m_axisorder(ior_default), 
@@ -31,7 +32,15 @@ C3DOrientationAndPosition::C3DOrientationAndPosition():
 {
 }
 
-C3DOrientationAndPosition::C3DOrientationAndPosition(E3DImageAxisOrientation axis, 
+C3DOrientationAndPosition::C3DOrientationAndPosition(E3DImageOrientation axis):
+	m_axisorder(axis), 
+	m_origin(0,0,0), 
+	m_scale(1,1,1), 
+	m_rotation(1,0,0,0)
+{
+}
+
+C3DOrientationAndPosition::C3DOrientationAndPosition(E3DImageOrientation axis, 
 						     const C3DFVector& origin, 
 						     const C3DFVector& scale, 
 						     const Quaternion& rot):
@@ -140,51 +149,93 @@ bool C3DOrientationAndPosition::operator == (const C3DOrientationAndPosition& ot
 	assert(0 && "to be implemented"); 
 }
 
-
-EXPORT_3D  std::ostream& operator << (std::ostream& os, E3DImageAxisOrientation orient)
+E3DImageOrientation C3DOrientationAndPosition::get_axis_orientation() const
 {
-	switch (orient) {
-	case ior_axial:
-		os << "axial";
-		break;
-	case ior_coronal:
-		os << "coronal";
-		break;
-	case ior_saggital:
-		os << "saggital";
-		break;
-	case ior_unknown:
-		os << "unknown";
-		break;
-	default:
-		os << "undefined";
-	}
+	return m_axisorder; 
+}
+
+
+EXPORT_3D  std::ostream& operator << (std::ostream& os, E3DImageOrientation orient)
+{
+	os << g_image_orientation_map.get_name(orient); 
 	return os;
 }
 
-EXPORT_3D std::istream& operator >> (std::istream& is, E3DImageAxisOrientation& orient)
+EXPORT_3D std::istream& operator >> (std::istream& is, E3DImageOrientation& orient)
 {
-	std::string temp;
+	string temp;
 	is >> temp;
-
-	if (temp == "axial")
-		orient = ior_axial;
-	else if (temp == "coronal")
-		orient = ior_coronal;
-	else if (temp == "saggital")
-		orient = ior_saggital;
-	else
-		orient = ior_unknown;
+	orient = g_image_orientation_map.get_value(temp.c_str()); 
 	return is;
 }
 
 const C3DFMatrix C3DOrientationAndPosition::ms_order_XYZ(C3DFVector(1,0,0), C3DFVector(0,1,0), C3DFVector(0,0,1)); 
 const C3DFMatrix C3DOrientationAndPosition::ms_order_YXZ(C3DFVector(0,1,0), C3DFVector(1,0,0), C3DFVector(0,0,1));
 const C3DFMatrix C3DOrientationAndPosition::ms_order_XZY(C3DFVector(1,0,0), C3DFVector(0,0,1), C3DFVector(0,1,0));
-const C3DFMatrix C3DOrientationAndPosition::ms_order_ZYX(C3DFVector(0,0,1), C3DFVector(0,1,0), C3DFVector(1,0,0));
 const C3DFMatrix C3DOrientationAndPosition::ms_order_ZXY(C3DFVector(0,0,1), C3DFVector(1,0,0), C3DFVector(0,1,0));
+const C3DFMatrix C3DOrientationAndPosition::ms_order_ZYX(C3DFVector(0,0,1), C3DFVector(0,1,0), C3DFVector(1,0,0));
 const C3DFMatrix C3DOrientationAndPosition::ms_order_YZX(C3DFVector(0,1,0), C3DFVector(0,0,1), C3DFVector(1,0,0));
 
+const C3DFMatrix C3DOrientationAndPosition::ms_order_XYZ_F(C3DFVector(1,0,0), C3DFVector(0,1,0), C3DFVector(0,0,-1)); 
+const C3DFMatrix C3DOrientationAndPosition::ms_order_YXZ_F(C3DFVector(0,1,0), C3DFVector(1,0,0), C3DFVector(0,0,-1));
+const C3DFMatrix C3DOrientationAndPosition::ms_order_XZY_F(C3DFVector(1,0,0), C3DFVector(0,0,1), C3DFVector(0,-1,0));
+const C3DFMatrix C3DOrientationAndPosition::ms_order_ZXY_F(C3DFVector(0,0,1), C3DFVector(1,0,0), C3DFVector(0,-1,0));
+const C3DFMatrix C3DOrientationAndPosition::ms_order_ZYX_F(C3DFVector(0,0,1), C3DFVector(0,1,0), C3DFVector(-1,0,0));
+const C3DFMatrix C3DOrientationAndPosition::ms_order_YZX_F(C3DFVector(0,1,0), C3DFVector(0,0,1), C3DFVector(-1,0,0));
 
+
+static const TDictMap<E3DImageOrientation>::Table image_orientation_map[] = {
+	{ "(undefined)", ior_undefined, "image orientation not defined"}, 
+	{ "axial", ior_xyz, "transversal/axial"}, 
+	{ "axial-flipped", ior_xyz_flipped, "transversal/axial z-order reverse"}, 
+	{ "axial-transposed",  ior_yxz, "transversal/axial, transposed"}, 
+	{ "axial-transposed-flipped", ior_yxz_flipped, "transversal/axial, z-order reverse, transposed"}, 
+
+	{ "coronal", ior_xzy, "coronal,  face facing front"}, 
+	{ "coronal-flipped", ior_xzy_flipped, "coronal, back facing front"}, 
+	{ "coronal-transposed", ior_zxy, "coronal, face facing front, transposed"}, 
+	{ "coronal-transposed-flipped", ior_zxy_flipped, "coronal, back facing front,  transposed"},
+
+	{ "saggital", ior_yzx, "saggital,  left facing front"}, 
+	{ "saggital-flipped", ior_yzx_flipped, "saggital, right facing front"}, 
+	{ "saggital-transposed", ior_zyx, "saggital, left facing front, transposed"}, 
+	{ "saggital-transposed-flipped", ior_zyx_flipped, "saggital, right facing front,  transposed"},
+	
+	{ nullptr, ior_undefined,  nullptr}
+}; 
+
+const TDictMap<E3DImageOrientation> g_image_orientation_map(image_orientation_map, true); 
+
+static const TDictMap<E3DPatientPositioning>::Table patient_position_map_table[] = {
+	{"(undefined)", ipp_undefined, "undefined patient position"}, 
+	{"HFS", ipp_hfs, " head first supine "},  
+	{"HFP", ipp_hfp, " head first prone "},  
+	{"HFDR", ipp_hfdr, " head first Decubitus Right "},
+	{"HFDL", ipp_hfdl, " head first Decubitus Left "},
+	{"FFP", ipp_ffp, " feet first prone "},  
+	{"FFS", ipp_ffs, " feet first supine "},  
+	{"FFDR", ipp_ffdr, " feet first Decubitus Right "},
+	{"FFDL", ipp_ffdl, " feet first Decubitus Left "}, 
+	{0, ipp_undefined, 0}
+}; 
+
+
+const TDictMap<E3DPatientPositioning> g_patient_position_map(patient_position_map_table, true); 
+
+EXPORT_3D  ostream& operator << (ostream& os, E3DPatientPositioning pp)
+{
+	os << g_patient_position_map.get_name(pp); 
+	return os; 
+}
+
+EXPORT_3D  istream& operator >> (istream& is, E3DPatientPositioning& pp)
+{
+	string s; 
+	is >> s; 
+	pp = g_patient_position_map.get_value(s.c_str()); 
+	return is; 
+}
+
+EXPORT_3D const char * IDPatientPosition = "PatientPosition"; 
 
 NS_MIA_END

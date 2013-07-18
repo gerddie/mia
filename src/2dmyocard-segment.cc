@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #define VSTREAM_DOMAIN "2dmyocard-segment"
 #include <iomanip>
@@ -378,39 +377,6 @@ P2DImage evaluate_cavity(P2DImage feature, const C2DImageFilterChain& seed_chain
 	save_image("prep_seed.@", new_seed); 
 	return run_filter_chain(feature, {"sws:seed=prep_seed.@", "binarize:min=1,max=1"});
 }
-
-class FMeanVar: public TFilter<pair<double, double> > {
-public: 
-	FMeanVar(double thresh): m_thresh(thresh){}; 
-	
-	template <typename Image> 
-	pair<double, double> operator () (const Image& image) const {
-		pair<double, double> result; 
-		int n = 0; 
-		auto begin = image.begin(); 
-		auto end = image.end(); 
-		while (begin != end)  {
-			const double help = *begin; 
-			if (help != 0.0) {
-				result.first += help; 
-				result.second += help * help; 
-				++n; 
-			}
-			++begin; 
-		}
-
-		if (n > 0)
-			result.first /= n; 
-		
-		if (n > 1) 
-			result.second = sqrt((result.second - n * result.first * result.first) / (n - 1));
-		else 
-			result.second = 0.0; 
-		return result; 
-	}
-private: 
-	double m_thresh; 
-}; 
 
 static void create_and_save_evaluation_shapes(const string& save_feature, P2DImage final_myocard_mask)
 {

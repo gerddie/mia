@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,19 +14,22 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifndef reg3d_deformer_hh
 #define reg3d_deformer_hh
 
 #include <memory>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
+
 #include <mia/3d/image.hh>
 #include <mia/3d/filter.hh>
 #include <mia/3d/interpolator.hh>
+#include <mia/core/threadedmsg.hh>
 
 
 NS_MIA_BEGIN 
@@ -44,36 +48,30 @@ struct FDeformer3D: public TFilter<P3DImage> {
 		}
 	template <typename T> 
 	P3DImage operator () (const T3DImage<T>& image) const {
-		T3DImage<T> *timage = new T3DImage<T>(image.get_size(), image); 
+		T3DImage<T> *timage = new T3DImage<T>(m_vf.get_size(), image); 
 		P3DImage result(timage); 
-		std::auto_ptr<T3DInterpolator<T> > interp(m_ipfac.create(image.data())); 
-		
-#ifdef __OPENMP                
-#pragma omp parallel for
-#endif                
-		for (size_t z = 0; z < image.get_size().z; ++z) {
-			typename T3DImage<T>::iterator r = timage->begin_at(0,0,z); 
-			C3DFVectorfield::const_iterator v = m_vf.begin_at(0,0,z); 
-			for (size_t y = 0; y < image.get_size().y; ++y)
-				for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v)
-					*r = (*interp)(C3DFVector(x - v->x, y - v->y, z - v->z));
-		}
+		this->operator()(image, *timage); 
 		return result; 
 	}
 
 	template <typename T> 
 	P3DImage operator () (const T3DImage<T>& image, T3DImage<T>& result) const {
-		std::auto_ptr<T3DInterpolator<T> > interp(m_ipfac.create(image.data())); 
-#ifdef __OPENMP                
-#pragma omp parallel for
-#endif                
-		for (size_t z = 0; z < image.get_size().z; ++z) {
-			typename T3DImage<T>::iterator r = result.begin_at(0,0,z); 
-			C3DFVectorfield::const_iterator v = m_vf.begin_at(0,0,z); 
-			for (size_t y = 0; y < image.get_size().y; ++y)
-				for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v)
-					*r = (*interp)(C3DFVector(x - v->x, y - v->y, z - v->z));
-		}
+		assert(result.get_size() == m_vf.get_size()); 
+		std::unique_ptr<T3DConvoluteInterpolator<T> > interp(m_ipfac.create(image.data())); 
+		const auto& rinterp = *interp; 
+
+		auto callback = [this, &rinterp, &result](const tbb::blocked_range<size_t>& range){
+			CThreadMsgStream thread_stream;
+			CWeightCache cache = rinterp.create_cache(); 
+			for (auto z = range.begin(); z != range.end();++z) {
+				auto r = result.begin_at(0,0,z); 
+				auto v = m_vf.begin_at(0,0,z); 
+				for (size_t y = 0; y < result.get_size().y; ++y)
+					for (size_t x = 0; x < result.get_size().x; ++x, ++r, ++v)
+						*r = rinterp(C3DFVector(x - v->x, y - v->y, z - v->z), cache);
+			}
+		}; 
+		tbb::parallel_for(tbb::blocked_range<size_t>(0, result.get_size().z, 1), callback); 
 		return P3DImage(); 
 	}
 	

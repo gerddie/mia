@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -135,21 +135,21 @@ public:
 	   for time-intensity analysis after motion compensation - if the used motion compensation 
 	   algorithm provides some (like quasiperiodic, one2many, or serial do). Returns -1 if no values is given. 
 	*/
-	int get_prefered_reference() const; 
+	int get_preferred_reference() const; 
 
 
 	/**
-	   Set the prefered reference frame for this segmentation set. 
+	   Set the preferred reference frame for this segmentation set. 
 	   \param value 
 	 */
-	void  set_prefered_reference(int value); 
+	void  set_preferred_reference(int value); 
 
 private:
 	void read(const xmlpp::Document& node);
 	Frames m_frames;
 	int m_RV_peak; 
 	int m_LV_peak; 
-	int m_prefered_reference; 
+	int m_preferred_reference; 
 	int m_version; 
 };
 

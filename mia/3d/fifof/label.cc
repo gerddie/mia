@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,34 +14,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
- */
-
-/* 
-   atexBeginPluginDescription{2D image stack filters}
-   
-   \subsection{Label}
-   \label{fifof:label}
-   
-   \begin{description}
-   
-   \item [Plugin:] label
-   \item [Description:] Labels connected components in a series of binary images. 
-      Since lables may join after preceeding label images are already saved and 
-      discarded from the pipeline stage, a map for labels that were joined is 
-      created. 
-   \item [Input:] Binary images, all of the same size
-   \item [Output:] The labeled image(s) 
-   
-   \plugtabstart
-   \plugtabend
-   shape & string & shape to define neighbourhood of voxels, only simple 2D neighborhoods are supported & 4n \\ 
-   map & string & file name where the label join map will be saved &  - \ \
-   \end{description}
-
-   atexEnd  
  */
 
 #include <limits>
@@ -99,11 +74,7 @@ void C2DLabelStackFilter::grow( int x, int y, C2DBitImage& input, unsigned short
 			unsigned short lold = m_out_buffer(px, py); 
 			if (lold) {
 				if (l != lold) {
-					if (lold < l) {
-						m_joints.insert(T2DVector<unsigned short>(l, lold)); 
-					} else {
-						m_joints.insert(T2DVector<unsigned short>(lold, l)); 
-					}
+					m_joints.add_pair(l, lold); 
 					m_out_buffer(px, py) = l; 
 				}
 			}else if (input(px, py)) {
@@ -198,28 +169,73 @@ void C2DLabelStackFilter::do_push(::boost::call_traits<mia::P2DImage>::param_typ
 
 }
 
-mia::P2DImage C2DLabelStackFilter::do_filter()
+void CLabelRemapper::clear()
+{
+	m_raw_map.clear(); 
+}
+
+P2DImage C2DLabelStackFilter::do_filter()
 {
 	return P2DImage(new C2DUSImage(m_out_buffer)); 
 }
-void C2DLabelStackFilter::post_finalize()
-{
-	priority_queue<T2DVector<unsigned short> > sorted; 
-	cvdebug()<< "got " << m_joints.size() << " joints\n"; 
 
-	for (auto i = m_joints.begin();  i != m_joints.end();  ++i)
+void CLabelRemapper::add_pair(unsigned short a, unsigned short b)
+{
+	if (a > b) 
+		m_raw_map.insert(T2DVector<unsigned short>(a,b));
+	else 
+		m_raw_map.insert(T2DVector<unsigned short>(b,a)); 
+}
+
+struct greater_than {
+	typedef T2DVector<unsigned short> value_type; 
+	bool operator() (const T2DVector<unsigned short>& lhs, 
+			 const T2DVector<unsigned short>& rhs) {
+		return lhs.x > rhs.x || ((lhs.x  == rhs.x)  && lhs.y > rhs.y); 
+	}
+};
+
+CLabelMap CLabelRemapper::get_map() const
+{
+	CLabelMap result; 
+	priority_queue<T2DVector<unsigned short>, vector<T2DVector<unsigned short>>, greater_than> sorted; 
+	cvdebug()<< "got " << m_raw_map.size() << " joints\n"; 
+
+	for (auto i = m_raw_map.begin();  i != m_raw_map.end();  ++i)
 		sorted.push(*i); 
 	
+	
+	
+
 	while (!sorted.empty()) {
 		auto v = sorted.top(); 
+		cvdebug() << "Top = " << v << "\n"; 
 		sorted.pop();
 		
-		auto m = m_target.find(v.y);
-		if (m != m_target.end())  
-			m_target[v.x] = m->second; 
-		else 
-			m_target[v.y] = v.x; 
+		// first check, if the value we map to is already mapped to a lower number
+		// if yes, take this mapping for the new value
+		auto m = result.find(v.y);
+		if (m != result.end()) {
+			result[v.x] = m->second; 
+		} else {
+			// now test of the value to be mapped is already available 
+			// and if not add the new mapping, if yes, add a mapping for the target 
+			m = result.find(v.x);
+			if (m == result.end()) {
+				result[v.x] = v.y; 
+			} else {
+				result[v.y] = m->second; 
+			}
+		}
 	}
+	return result; 
+}
+
+
+void C2DLabelStackFilter::post_finalize()
+{
+	m_target = m_joints.get_map(); 
+	
 	if (!m_map_file.empty()) {
 		ofstream outfile(m_map_file.c_str(), ios_base::out );
 		m_target.save(outfile); 

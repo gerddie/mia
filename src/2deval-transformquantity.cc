@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny, David Pastor 
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -204,7 +204,7 @@ int do_main( int argc, char *argv[] )
 	fprintf(output, "MIA\n"); 
 	fprintf(output, "tensorfield {\n"); 
 	fprintf(output, "  dim=2\n"); 
-        fprintf(output, "  interpretation=%s", tqmap.get_name(quantity)); 
+        fprintf(output, "  interpretation=%s\n", tqmap.get_name(quantity)); 
 	fprintf(output, "  repn=float32\n");
 	const auto size = t->get_size(); 
 	fprintf(output, "  size=%d %d\n", size.x, size.y); 
@@ -216,6 +216,7 @@ int do_main( int argc, char *argv[] )
 #endif
 
 	int element_size = 0; 
+
 	string components; 
 	string style;  
 	
@@ -232,15 +233,15 @@ int do_main( int argc, char *argv[] )
 		element_size = sizeof(C2DFMatrix)/sizeof(float);
 		components.assign("matrix2x2"); 
 		style.assign("grid"); 
+		unsigned int nelements = static_cast<unsigned int>(tensorfield.size()); 
 
 		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  component_description=%s\n", components.c_str()); 
-		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
-		fprintf(output, "  components=%d\n", element_size); 
+		fprintf(output, "  elements=%d\n", nelements); 
 		fprintf(output, "  style=%s\n", style.c_str()); 
 		fprintf(output, "}\n" );
 		
-		if (fwrite(&tensorfield[0], element_size,  tensorfield.size(), output) != tensorfield.size())
+		if (fwrite(&tensorfield[0], sizeof(C2DFMatrix),  tensorfield.size(), output) != tensorfield.size())
 			throw create_exception<runtime_error>("Unable to write data to '", out_filename, "':", 
 							      strerror(errno));
 
@@ -256,15 +257,14 @@ int do_main( int argc, char *argv[] )
 		components.assign("vector3,scalar,matrix3x3"); 
 		style.assign("sparse"); 
 
-	
+		unsigned int nelements = static_cast<unsigned int>(tensorfield.size()); 
 		fprintf(output, "  components=%d\n", element_size); 
 		fprintf(output, "  component_description=%s\n", components.c_str()); 
-		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
-		fprintf(output, "  components=%d\n", element_size); 
+		fprintf(output, "  elements=%d\n", nelements); 
 		fprintf(output, "  style=%s\n", style.c_str()); 
 		fprintf(output, "}\n" );
 		
-		if (fwrite(&tensorfield[0], element_size,  tensorfield.size(), output) != tensorfield.size())
+		if (fwrite(&tensorfield[0], sizeof(SSparseStracPoint),  tensorfield.size(), output) != tensorfield.size())
 			throw create_exception<runtime_error>("Unable to write data to '", out_filename, "':", 
 							      strerror(errno));
 						      

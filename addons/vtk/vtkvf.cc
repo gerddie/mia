@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,17 +14,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-
 #include <vtk/vtkvf.hh>
 
-#include <vtkStructuredGridReader.h>
-#include <vtkStructuredGridWriter.h>
-#include <vtkStructuredGrid.h>
+#include <vtkStructuredPointsReader.h>
+#include <vtkStructuredPointsWriter.h>
+#include <vtkStructuredPoints.h>
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
 
@@ -42,9 +41,25 @@ CVtk3DVFIOPlugin::CVtk3DVFIOPlugin():
 
 }
 
+
+template <typename T> 
+C3DIOVectorfield *read_field_data(const C3DBounds& size, void *scalars) 
+{
+	cvdebug() << "VTKVF read vector data of type " <<  __type_descr<T>::value << "\n"; 
+
+	const T *my_scalars = reinterpret_cast<const T *>(scalars); 
+	if (!my_scalars) 
+		throw create_exception<logic_error>("CVtk3DImageIOPlugin::load: input image scalar type bogus"); 
+	
+	C3DIOVectorfield *result = new  C3DIOVectorfield(size); 
+	copy(my_scalars, my_scalars + 3 * result->size(), &(*result)[0].x); 
+
+	return result; 
+}
+
 CVtk3DVFIOPlugin::PData CVtk3DVFIOPlugin::do_load(const string&  filename) const
 {
-	auto reader = vtkSmartPointer<vtkStructuredGridReader>::New(); 
+	auto reader = vtkSmartPointer<vtkStructuredPointsReader>::New(); 
 	reader->SetFileName(filename.c_str()); 
 	auto iovf = reader->GetOutput(); 
 	iovf->Update(); 
@@ -53,65 +68,62 @@ CVtk3DVFIOPlugin::PData CVtk3DVFIOPlugin::do_load(const string&  filename) const
 	
 	int dim = iovf->GetDataDimension();
 	if (dim != 3) {
-		cvinfo() << "Expect 3 dimensions bug got " << dim << "\n"; 
+		cvinfo() << "Expect 3 dimensions but got " << dim << "\n"; 
 		return PData(); 
 	}
 
 	auto dims = iovf->GetDimensions();
+	if (dim != 3)
+		throw create_exception<invalid_argument>("3D Vtkvf load (", filename ,
+							 "): Expect 3 dimensions but got ", dim); 
 	C3DBounds size(dims[0], dims[1], dims[2]); 
-	
-	PData result(new C3DIOVectorfield(size));
-	
-	auto points = iovf->GetPoints(); 
 
+	int components = iovf->GetNumberOfScalarComponents(); 
+	if (components != 3) 
+		throw create_exception<invalid_argument>("3D Vtkvf load (", filename ,
+							 "): only 3D vectors are allowed, "
+							 "but got ", components, " component elements"); 
 
-	if (points->GetNumberOfPoints() != size.product()) 
-		throw create_exception<invalid_argument>("Got ", points->GetNumberOfPoints(), 
-							 " vectors but require ", size.product());
-	vtkIdType i = 0; 
-	for (auto iv = result->begin(); iv != result->end(); ++iv, ++i) {
-		double x[3]; 
-		points->GetPoint (i, x); 
-		iv->x = x[0]; 
-		iv->y = x[1]; 
-		iv->z = x[2]; 
+	
+	auto array = iovf->GetScalarPointer(); 
+
+	C3DIOVectorfield *result_field = nullptr; 
+	switch 	 (iovf->GetScalarType()) {
+	case VTK_FLOAT:          result_field=read_field_data<float>(size, array); break; 
+	case VTK_DOUBLE:         result_field=read_field_data<double>(size, array); break;  
+	default:
+		throw create_exception<invalid_argument>("3D Vtkvf load (", filename ,"): "
+							 "data type ", iovf->GetScalarTypeAsString(), 
+							 "(", iovf->GetScalarType(), ") not supported"); 
 	}
-	return result; 
+	return PData(result_field); 
 }
 
 bool CVtk3DVFIOPlugin::do_save(const string& fname, const C3DIOVectorfield& data) const
 {
-	int dims[3];
-	dims[0] = data.get_size().x; 
-	dims[1] = data.get_size().y; 
-	dims[2] = data.get_size().z; 
 
-	auto sgrid = vtkSmartPointer<vtkStructuredGrid>::New();
-	sgrid->SetDimensions(dims);
+	auto outfield = vtkSmartPointer<vtkStructuredPoints>::New();
+	outfield->SetOrigin(0,0,0); 
+	outfield->SetSpacing(1.0, 1.0, 1.0); 
+	outfield->SetDimensions(data.get_size().x, data.get_size().y, data.get_size().z); 
 
-	auto points = vtkSmartPointer<vtkPoints>::New();
-	points->Allocate(data.get_size().product());
-
-	int offset = 0; 
-	float v[3]; 
-	for (auto iv = data.begin(); iv != data.end(); ++iv, ++offset) {
-		v[0] = iv->x; 
-		v[1] = iv->y; 
-		v[2] = iv->z; 
-		points->InsertPoint(offset, v); 
-	}
-	sgrid->SetPoints(points); 
+	outfield->SetScalarType(VTK_FLOAT); 
+	outfield->SetNumberOfScalarComponents(3);
+	outfield->AllocateScalars(); 
 	
-	auto writer = vtkSmartPointer<vtkStructuredGridWriter>::New(); 
+	float *out_ptr =  reinterpret_cast<float*>(outfield->GetScalarPointer()); 
+	copy(&data[0].x, &data[0].x + data.size() * 3, out_ptr); 
+	
+	auto writer = vtkSmartPointer<vtkStructuredPointsWriter>::New(); 
 	writer->SetFileName(fname.c_str()); 
 	writer->SetFileTypeToBinary();
-	writer->SetInput(sgrid); 
+	writer->SetInput(outfield); 
 	return writer->Write();
 }
 
 const string CVtk3DVFIOPlugin::do_get_descr() const
 {
-	return "3D Vector field in- and output. No attributes are stored or read."; 
+	return "3D Vector field in- and output (experimental). No attributes are stored or read."; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

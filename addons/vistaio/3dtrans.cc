@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -61,42 +61,42 @@ std::string C3DVistaTransformationIO::do_get_preferred_suffix() const
 P3DTransformation C3DVistaTransformationIO::do_load(const std::string& fname) const
 {
 	CInputFile f(fname);
-	VAttrList vlist = VReadFile(f,NULL);
-	VResetProgressIndicator();
+	VistaIOAttrList vlist = VistaIOReadFile(f,NULL);
+	VistaIOResetProgressIndicator();
 	
 	if (!vlist)
 		return P3DTransformation();
 	
-	VLong sx = 0; 
-	VLong sy = 0; 
-	VLong sz = 0; 
+	VistaIOLong sx = 0; 
+	VistaIOLong sy = 0; 
+	VistaIOLong sz = 0; 
 	char *init_string = NULL;  
-	VImage blob =NULL; 
+	VistaIOImage blob =NULL; 
 	stringstream errmsg; 
-	if (VGetAttr (vlist, "size_x", NULL, VLongRepn, &sx) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "size_x", NULL, VistaIOLongRepn, &sx) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute size_x not found"; 
 		goto fail; 
 	}
-	if (VGetAttr (vlist, "size_y", NULL, VLongRepn, &sy) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "size_y", NULL, VistaIOLongRepn, &sy) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute size_y not found"; 
 		goto fail; 
 	}
-	if (VGetAttr (vlist, "size_z", NULL, VLongRepn, &sz) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "size_z", NULL, VistaIOLongRepn, &sz) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute size_z not found"; 
 		goto fail; 
 	}
 
-	if (VGetAttr (vlist, "init-string", NULL, VStringRepn, &init_string) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "init-string", NULL, VistaIOStringRepn, &init_string) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute init-string not found"; 
 		goto fail; 
 	}
-	if (VGetAttr (vlist, "parameters", NULL, VImageRepn, &blob) != VAttrFound) {
+	if (VistaIOGetAttr (vlist, "parameters", NULL, VistaIOImageRepn, &blob) != VistaIOAttrFound) {
 		errmsg << fname << ":Bogus input, attribute parameters not found"; 
 		goto fail; 
 	}
 	
 	// get the data from the image 
-	if (VPixelRepn(blob) != VDoubleRepn) {
+	if (VistaIOPixelRepn(blob) != VistaIODoubleRepn) {
 		errmsg << fname << ":Bogus input, parameters not if type double"; 
 		goto fail; 
 	}
@@ -106,21 +106,21 @@ P3DTransformation C3DVistaTransformationIO::do_load(const std::string& fname) co
 		auto t = creator->create(C3DBounds(sx, sy, sz)); 
 		auto params = t->get_parameters(); 
 		
-		if ((long)params.size() != VImageNPixels(blob)){
+		if ((long)params.size() != VistaIOImageNPixels(blob)){
 			errmsg << fname << ":Bogus input, expected number of parameters ("
-			       << params.size()<<") differs from provided one (" << VImageNPixels(blob) << ")"; 
+			       << params.size()<<") differs from provided one (" << VistaIOImageNPixels(blob) << ")"; 
 			goto fail; 
 		}
 		{
-			VDouble *data = (VDouble *)VImageData(blob); 
+			VistaIODouble *data = (VistaIODouble *)VistaIOImageData(blob); 
 			std::copy(data, data + params.size(), params.begin());
 			t->set_parameters(params); 
-			VDestroyAttrList(vlist);
+			VistaIODestroyAttrList(vlist);
 			return t; 
 		}
 	}
  fail: 
-	VDestroyAttrList(vlist);
+	VistaIODestroyAttrList(vlist);
 	throw runtime_error(errmsg.str()); 
 	
 }
@@ -129,21 +129,21 @@ bool C3DVistaTransformationIO::do_save(const std::string& fname, const C3DTransf
 {
 
 	COutputFile f(fname);
-	VAttrList vlist = VCreateAttrList();
+	VistaIOAttrList vlist = VistaIOCreateAttrList();
 	
 	auto params = data.get_parameters(); 
-	VImage out_field = VCreateImage(params.size(), 1, 1, VDoubleRepn);
-	VDouble *output  = (VDouble *)out_field->data;
+	VistaIOImage out_field = VistaIOCreateImage(params.size(), 1, 1, VistaIODoubleRepn);
+	VistaIODouble *output  = (VistaIODouble *)out_field->data;
 	copy(params.begin(), params.end(), output);
 	
-	VSetAttr (vlist, "size_x", NULL, VLongRepn, data.get_size().x); 
-	VSetAttr (vlist, "size_y", NULL, VLongRepn, data.get_size().y); 
-	VSetAttr (vlist, "size_z", NULL, VLongRepn, data.get_size().z); 
-	VSetAttr (vlist, "init-string", NULL, VStringRepn, data.get_creator_string().c_str()); 
-	VSetAttr (vlist, "parameters", NULL, VImageRepn, out_field);
+	VistaIOSetAttr (vlist, "size_x", NULL, VistaIOLongRepn, data.get_size().x); 
+	VistaIOSetAttr (vlist, "size_y", NULL, VistaIOLongRepn, data.get_size().y); 
+	VistaIOSetAttr (vlist, "size_z", NULL, VistaIOLongRepn, data.get_size().z); 
+	VistaIOSetAttr (vlist, "init-string", NULL, VistaIOStringRepn, data.get_creator_string().c_str()); 
+	VistaIOSetAttr (vlist, "parameters", NULL, VistaIOImageRepn, out_field);
 
-	bool result = VWriteFile(f,vlist);
-	VDestroyAttrList(vlist);
+	bool result = VistaIOWriteFile(f,vlist);
+	VistaIODestroyAttrList(vlist);
 
 	return result;
 }

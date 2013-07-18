@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifndef mia_3d_image_hh
 #define mia_3d_image_hh
@@ -143,6 +142,7 @@ public:
 	typedef typename T3DDatafield<T>::size_type size_type;
 	typedef typename T3DDatafield<T>::range_iterator range_iterator; 
 	typedef typename T3DDatafield<T>::const_range_iterator const_range_iterator; 
+	typedef	typename T2DDatafield<T>::data_array data_array;
 	/// \endcond
 	
 	/**
@@ -158,6 +158,9 @@ public:
 	   \param attr
 	 */
 	T3DImage(const C3DBounds& size, const CAttributedData& attr);
+
+
+	T3DImage(const C3DBounds& size, const data_array& init_data); 
 	/**
 	   Construct a new image of a given size
 	   \param size
@@ -464,6 +467,12 @@ private:
 };
 
 /**
+   This class is a hack to work around the vista voxel size stringyfied  value. 
+   Normaly one would write "x,y,z" but in vista it is "x y z", which means a different 
+   translator is needed as compared to a T3DVector. 
+   For everything else the T3DVector interpretation is used (based on type_id); 
+   
+
    @ingroup basic 
    @brief a 3D vector value used in attributes 
    @tparam T the data type of the vector elements 
@@ -487,6 +496,11 @@ public:
 	 */
 	const char *typedescr() const	{
 		return typeid(T3DVector<T>).name();
+	}
+	
+	// 
+	int type_id() const {
+		return 	 attribute_type<T3DVector<T>>::value; 
 	}
 private:
 	std::string do_as_string() const;

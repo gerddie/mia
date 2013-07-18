@@ -98,35 +98,19 @@ MACRO(PLUGIN_GROUP_PRE_NOINST prefix plugins libs)
   ENDFOREACH(p)
 ENDMACRO(PLUGIN_GROUP_PRE_NOINST)
 
-MACRO(PLUGIN_GROUP_PRE prefix plugins libs install_path)
-  PLUGIN_GROUP_PRE_NOINST(${prefix}  "${plugins}" "${libs}")
-  ADD_CUSTOM_TARGET(${prefix}_testdir mkdir -p ${PLUGIN_TEST_ROOT}/${install_path})
-  FOREACH(p ${plugins})
-    SET(name ${prefix}-${p})
-    INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
-    ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
-      ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir ${name})
-    ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
-  ENDFOREACH(p)
-  IF(WARN_OLD_PLUGINSTYLE)
-    MESSAGE("Plugins '${plugins}' with target '${install_path}' use old interface")
-  ENDIF(WARN_OLD_PLUGINSTYLE)
-ENDMACRO(PLUGIN_GROUP_PRE)
-
-
 MACRO(INSTALL_WITH_EXPORT lib)
     INSTALL(TARGETS ${lib} 
       EXPORT Mia
-      RUNTIME DESTINATION "bin"
-      LIBRARY DESTINATION "lib"
-      ARCHIVE DESTINATION "lib")  
+      RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+      LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+      ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")  
 ENDMACRO(INSTALL_WITH_EXPORT libs)
 
 MACRO(INSTALL_BASE libs)
   INSTALL(TARGETS ${libs} 
-    RUNTIME DESTINATION "bin"
-    LIBRARY DESTINATION "lib"
-    ARCHIVE DESTINATION "lib")
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 ENDMACRO (INSTALL_BASE)
 
 MACRO(ASSERT_SIZE  NAME EXPECTED)
@@ -143,9 +127,9 @@ MACRO(CREATE_EXE_DOCU name)
     ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     COMMAND rm -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
     DEPENDS mia-${name} plugin_test_links )
-  list(APPEND XMLDOC "${CMAKE_BINARY_DIR}/doc/mia-${name}.xml")
-  
+    
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
+  ADD_DEPENDENCIES(XMLDOC mia-${name}-xml)
   
   SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
   

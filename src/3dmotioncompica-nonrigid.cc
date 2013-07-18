@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -37,7 +37,6 @@
 #include <mia/3d/filter.hh>
 #include <mia/3d/ica.hh>
 
-#include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 using namespace tbb;
@@ -79,7 +78,7 @@ public:
 }; 
 
 
-C3DFullCostList create_costs(double divcurlweight, const string& imagecostbase, int idx)
+C3DFullCostList create_costs(const string& imagecostbase, int idx)
 {
 	stringstream cost_descr; 
 	cost_descr << imagecostbase << "src=src" << idx << ".@,ref=ref" << idx << ".@"; 
@@ -88,16 +87,13 @@ C3DFullCostList create_costs(double divcurlweight, const string& imagecostbase, 
 	C3DFullCostList result; 
 	result.push(imagecost); 
 
-	stringstream divcurl_descr; 
-	divcurl_descr << "divcurl:weight=" << divcurlweight; 
-	result.push(C3DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 	return result; 
 }
 
-P3DTransformationFactory create_transform_creator(size_t c_rate)
+P3DTransformationFactory create_transform_creator(size_t c_rate, double divcurlweight)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate; 
+	transf << "spline:rate=" << c_rate << "penalty=[divcurl:weight=" << divcurlweight << "]";
 	return C3DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 
@@ -107,7 +103,6 @@ struct SeriesRegistration {
 	const C3DImageSeries& references; 
 	string minimizer; 
 	size_t mg_levels; 
-	double divcurlweight; 
 	P3DTransformationFactory transform_creator; 
 	string imagecostbase; 
 	int skip_images; 
@@ -116,7 +111,6 @@ struct SeriesRegistration {
 			   const C3DImageSeries& _references, 
 			   const string& _minimizer, 
 			   size_t _mg_levels, 
-			   double _divcurlweight, 
 			   P3DTransformationFactory _transform_creator, 
 			   string _imagecostbase, 
 			   int _skip_images):
@@ -124,7 +118,6 @@ struct SeriesRegistration {
 		references(_references), 
 		minimizer(_minimizer), 
 		mg_levels(_mg_levels), 
-		divcurlweight(_divcurlweight), 
 		transform_creator(_transform_creator), 
 		imagecostbase(_imagecostbase), 
 		skip_images(_skip_images)
@@ -135,7 +128,7 @@ struct SeriesRegistration {
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
 		for( int i=range.begin(); i!=range.end(); ++i ) {
-			auto costs  = create_costs(divcurlweight, imagecostbase, i); 
+			auto costs  = create_costs(imagecostbase, i); 
 			C3DNonrigidRegister nrr(costs, m,  transform_creator, mg_levels, i);
 			P3DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
 			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
@@ -150,7 +143,7 @@ void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& r
 {
 
 	SeriesRegistration sreg(input_images,references, minimizer, 
-				mg_levels, divcurlweight, create_transform_creator(c_rate), 
+				mg_levels, create_transform_creator(c_rate, divcurlweight), 
 				imagecost, skip_images); 
 	parallel_for(blocked_range<int>( 0, references.size()), sreg);
 }
@@ -197,8 +190,6 @@ int do_main( int argc, char *argv[] )
 	size_t current_pass = 0; 
 	size_t pass = 3; 
 	
-	int max_threads = task_scheduler_init::automatic;
-
 	CCmdOptionList options(g_description);
 	const auto& image3dio = C3DImageIOPluginHandler::instance(); 
 	
@@ -242,16 +233,9 @@ int do_main( int argc, char *argv[] )
 				    "e.g. because as they are of other modalities")); 
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
 
-	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
-			     "This number should be lower or equal to the number of processing cores in the machine"
-			     " (default: automatic estimation)."));  
-
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
-	task_scheduler_init init(max_threads);
-	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
 	size_t format_width = 0;

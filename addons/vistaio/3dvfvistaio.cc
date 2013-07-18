@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -42,6 +42,7 @@ public:
 private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
+	std::string do_get_preferred_suffix() const; 
 	const string do_get_descr() const;
 };
 
@@ -55,27 +56,32 @@ CVista3DVFIOPlugin::CVista3DVFIOPlugin():
 	add_suffix(".VF");
 }
 
+std::string CVista3DVFIOPlugin::do_get_preferred_suffix() const
+{
+	return "vf"; 
+}
+
 
 CVista3DVFIOPlugin::PData  CVista3DVFIOPlugin::do_load(const string& fname) const
 {
 	CInputFile f(fname);
 
-	CVAttrList vlist(VReadFile(f,NULL));
+	CVAttrList vlist(VistaIOReadFile(f,NULL));
 
-	VResetProgressIndicator();
+	VistaIOResetProgressIndicator();
 
 	if (!vlist)
 		return CVista3DVFIOPlugin::PData();
 
 	CVista3DVFIOPlugin::PData result;
-	VAttrListPosn posn;
+	VistaIOAttrListPosn posn;
 
-	for (VFirstAttr(vlist, &posn); VAttrExists(&posn) && !result; VNextAttr(&posn)) {
-		if (VGetAttrRepn(&posn) != VField3DRepn)
+	for (VistaIOFirstAttr(vlist, &posn); VistaIOAttrExists(&posn) && !result; VistaIONextAttr(&posn)) {
+		if (VistaIOGetAttrRepn(&posn) != VistaIOField3DRepn)
 			continue;
 
-		VField3D field = NULL;
-		VGetAttrValue(&posn, 0, VField3DRepn, &field);
+		VistaIOField3D field = NULL;
+		VistaIOGetAttrValue(&posn, 0, VistaIOField3DRepn, &field);
 
 		if (!field)
 			throw runtime_error(fname + "looked like a vector field, but is none");
@@ -83,7 +89,7 @@ CVista3DVFIOPlugin::PData  CVista3DVFIOPlugin::do_load(const string& fname) cons
 		if (field->nsize_element != 3)
 			throw runtime_error(fname + "is not a field of 3D vectors");
 
-		if (field->repn != VFloatRepn) {
+		if (field->repn != VistaIOFloatRepn) {
 			cvdebug() << "Skipping input field, which is not of type float\n";
 			continue;
 		}
@@ -91,7 +97,7 @@ CVista3DVFIOPlugin::PData  CVista3DVFIOPlugin::do_load(const string& fname) cons
 
 		result = CVista3DVFIOPlugin::PData(new C3DIOVectorfield(C3DBounds(field->x_dim, field->y_dim, field->z_dim)));
 		
-		T3DVector<VFloat> * input  = (T3DVector<VFloat> *)field->p.data;
+		T3DVector<VistaIOFloat> * input  = (T3DVector<VistaIOFloat> *)field->p.data;
 		copy(input, input + result->size(), result->begin());
 		copy_attr_list(*result, field->attr);
 	}
@@ -105,18 +111,18 @@ bool CVista3DVFIOPlugin::do_save(const string& fname, const C3DIOVectorfield& da
 
 	COutputFile f(fname);
 
-	CVAttrList vlist(VCreateAttrList()); 
-	VField3D out_field = VCreateField3D(data.get_size().x,
+	CVAttrList vlist(VistaIOCreateAttrList()); 
+	VistaIOField3D out_field = VistaIOCreateField3D(data.get_size().x,
 					    data.get_size().y,
 					    data.get_size().z,
 					    3,
-					    VFloatRepn);
-	T3DVector<VFloat> * output  = (T3DVector<VFloat> *)out_field->p.data;
+					    VistaIOFloatRepn);
+	T3DVector<VistaIOFloat> * output  = (T3DVector<VistaIOFloat> *)out_field->p.data;
 	copy(data.begin(), data.end(), output);
 	copy_attr_list(out_field->attr, data);
-	VSetAttr(vlist, "3DFVectorfield", NULL, VField3DRepn, out_field);
+	VistaIOSetAttr(vlist, "3DFVectorfield", NULL, VistaIOField3DRepn, out_field);
 
-	bool result = VWriteFile(f,vlist);
+	bool result = VistaIOWriteFile(f,vlist);
 	return result;
 }
 
@@ -132,10 +138,11 @@ public:
 private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
+	std::string do_get_preferred_suffix() const; 
 	const string do_get_descr() const;
 	template <typename T>
-	CScaled3DVFIOPlugin::PData read_compressed(const T3DVector<VLong>& _size, const C3DFVector& scale, 
-						   T3DVector<VImage>& values)const; 
+	CScaled3DVFIOPlugin::PData read_compressed(const T3DVector<VistaIOLong>& _size, const C3DFVector& scale, 
+						   T3DVector<VistaIOImage>& values)const; 
 
 };
 
@@ -143,20 +150,20 @@ CScaled3DVFIOPlugin::CScaled3DVFIOPlugin():
 	C3DVFIOPlugin("cvista")
 {
 	add_supported_type(it_float);
-	add_suffix(".svf");
-	add_suffix(".SVF");
+	add_suffix(".cvf");
+	add_suffix(".CVF");
 
 }
 
 template <typename T>
-CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::read_compressed(const T3DVector<VLong>& _size, const C3DFVector& scale, 
-								T3DVector<VImage>& values)const
+CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::read_compressed(const T3DVector<VistaIOLong>& _size, const C3DFVector& scale, 
+								T3DVector<VistaIOImage>& values)const
 {
 	CScaled3DVFIOPlugin::PData result(new C3DIOVectorfield(C3DBounds(_size)));
 
-	T *x = &VPixel( values.x, 0, 0, 0, T );
-	T *y = &VPixel( values.x, 0, 0, 0, T );
-	T *z = &VPixel( values.x, 0, 0, 0, T );
+	T *x = &VistaIOPixel( values.x, 0, 0, 0, T );
+	T *y = &VistaIOPixel( values.x, 0, 0, 0, T );
+	T *z = &VistaIOPixel( values.x, 0, 0, 0, T );
 
 	for (auto r = result->begin(); r != result->end(); ++r, ++y, ++y, ++z) {
 		r->x = scale.x * *x; 
@@ -166,47 +173,53 @@ CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::read_compressed(const T3DVector<
 	return result; 
 }
 
+std::string CScaled3DVFIOPlugin::do_get_preferred_suffix() const
+{
+	return "cvf"; 
+}
+
+
 CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::do_load(const string& fname) const
 {
 	CInputFile f(fname);
 
-	CVAttrList  vlist(VReadFile(f,NULL));
+	CVAttrList  vlist(VistaIOReadFile(f,NULL));
 	
-	VResetProgressIndicator();
+	VistaIOResetProgressIndicator();
 	
 	if (!vlist)
 		return CScaled3DVFIOPlugin::PData();
 	
 	CScaled3DVFIOPlugin::PData result;
-	VAttrListPosn posn;
+	VistaIOAttrListPosn posn;
 
-	if((VLookupAttr( vlist, "3DScaledVectorfield", &posn)) ){
-		if (VGetAttrRepn(&posn) != VListRepn) {
+	if((VistaIOLookupAttr( vlist, "3DScaledVectorfield", &posn)) ){
+		if (VistaIOGetAttrRepn(&posn) != VistaIOListRepn) {
 			throw invalid_argument("CScaled3DVFIOPlugin::do_load; got a 3DScaledVectorfield tag, but it is not an attribute list"); 
 		}
-		VAttrList data; 
-		VGetAttrValue(&posn, 0, VListRepn, &data);
+		VistaIOAttrList data; 
+		VistaIOGetAttrValue(&posn, 0, VistaIOListRepn, &data);
 		
-		VLong pixel_repn; 
+		VistaIOLong pixel_repn; 
 		C3DFVector scale(1.0,1.0,1.0);
-		T3DVector<VLong> size; 
-		T3DVector<VImage> values; 
-		if (!VExtractAttr (data, VRepnAttr, VNumericRepnDict, VLongRepn, &pixel_repn, TRUE) ||
-		    !VExtractAttr (data, "x_scale", 0, VFloatRepn, &scale.x, TRUE) ||
-		    !VExtractAttr (data, "y_scale", 0, VFloatRepn, &scale.y, TRUE) ||
-		    !VExtractAttr (data, "z_scale", 0, VFloatRepn, &scale.z, TRUE) ||
-		    !VExtractAttr (data, "x_component", 0, VImageRepn, &values.x, TRUE) ||
-		    !VExtractAttr (data, "y_component", 0, VImageRepn, &values.y, TRUE) ||
-		    !VExtractAttr (data, "z_component", 0, VImageRepn, &values.z, TRUE)||
-		    !VExtractAttr (data, "size_x", 0, VLongRepn, &size.x, TRUE) ||
-		    !VExtractAttr (data, "size_y", 0, VLongRepn, &size.y, TRUE) ||
-		    !VExtractAttr (data, "size_z", 0, VLongRepn, &size.z, TRUE)) 
+		T3DVector<VistaIOLong> size; 
+		T3DVector<VistaIOImage> values; 
+		if (!VistaIOExtractAttr (data, VistaIORepnAttr, VistaIONumericRepnDict, VistaIOLongRepn, &pixel_repn, TRUE) ||
+		    !VistaIOExtractAttr (data, "x_scale", 0, VistaIOFloatRepn, &scale.x, TRUE) ||
+		    !VistaIOExtractAttr (data, "y_scale", 0, VistaIOFloatRepn, &scale.y, TRUE) ||
+		    !VistaIOExtractAttr (data, "z_scale", 0, VistaIOFloatRepn, &scale.z, TRUE) ||
+		    !VistaIOExtractAttr (data, "x_component", 0, VistaIOImageRepn, &values.x, TRUE) ||
+		    !VistaIOExtractAttr (data, "y_component", 0, VistaIOImageRepn, &values.y, TRUE) ||
+		    !VistaIOExtractAttr (data, "z_component", 0, VistaIOImageRepn, &values.z, TRUE)||
+		    !VistaIOExtractAttr (data, "size_x", 0, VistaIOLongRepn, &size.x, TRUE) ||
+		    !VistaIOExtractAttr (data, "size_y", 0, VistaIOLongRepn, &size.y, TRUE) ||
+		    !VistaIOExtractAttr (data, "size_z", 0, VistaIOLongRepn, &size.z, TRUE)) 
 			throw invalid_argument("CScaled3DVFIOPlugin::do_load: bogus file"); 
 		
 		switch (pixel_repn) {
-		case VShortRepn: result = read_compressed<short>(size, scale, values);
+		case VistaIOShortRepn: result = read_compressed<short>(size, scale, values);
 			break; 
-		case VSByteRepn: result = read_compressed<unsigned char>(size, scale, values);
+		case VistaIOSByteRepn: result = read_compressed<unsigned char>(size, scale, values);
 			break; 
 		default: 
 			throw invalid_argument("CScaled3DVFIOPlugin::do_load: unsupported representation"); 
@@ -223,7 +236,7 @@ bool CScaled3DVFIOPlugin::do_save(const string& /*fname*/, const Data& /*data*/)
 
 const string CScaled3DVFIOPlugin::do_get_descr() const
 {
-	return "a 3d vector field io plugin for compressend vista";
+	return "obsolete 3d vector field io plugin for range compressend vista (saving not supported)";
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()

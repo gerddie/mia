@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -32,7 +32,7 @@ const SProgramDescription g_general_help = {
 	{pdi_description, "This program runs a series filters on a given input mesh. The filters "
 	 "are given as extra parameters on the command line and are run in the order in which they "
 	 "are given. To obtain a list of available filters you may run\n"
-	 "   'mia-plugin-help filter/mesh'\n"
+	 "   'mia-plugin-help mesh/filter'\n"
 	 "from the command line"}, 
 	{pdi_example_descr, "Run an isotropic scaling on input.vmesh to fit it into the box defined "
 	 "by the corners <0,0,0> - <128,128,128> and save the result to output.vmesh"}, 

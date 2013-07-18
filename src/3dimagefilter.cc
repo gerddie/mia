@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <iostream>
 #include <string>
@@ -85,22 +84,24 @@ int do_main( int argc, char *argv[] )
 
 	// read image
 	auto  in_image_list = imageio.load(in_filename);
+	if (!in_image_list) 
+		throw create_exception<runtime_error>("Unable to read 3D image from '", in_filename, "'");
 
+	if (in_image_list->empty()) 
+		throw create_exception<runtime_error>("Got empty image list from '", in_filename, "'");
 
-	if (in_image_list.get() && in_image_list->size()) {
-		auto filter_name = filter_chain.begin();
-		for (auto f = filters.begin();  f != filters.end(); ++f, ++filter_name) {
-			cvmsg() << "Run filter: " << *filter_name << "\n";
-			for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
-				*i = (*f)->filter(**i);
-		}
-
-		if ( !imageio.save(out_filename, *in_image_list) ){
-			string not_save = ("unable to save result to ") + out_filename;
-			throw runtime_error(not_save);
-		};
-
+	auto filter_name = filter_chain.begin();
+	for (auto f = filters.begin();  f != filters.end(); ++f, ++filter_name) {
+		cvmsg() << "Run filter: " << *filter_name << "\n";
+		for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
+			*i = (*f)->filter(**i);
 	}
+	cvdebug() << "Save image to '" << out_filename << "\n"; 
+	
+	if ( !imageio.save(out_filename, *in_image_list) ){
+		throw create_exception<runtime_error>("Unable to save result to '", out_filename, "'");
+	}
+	
 	return EXIT_SUCCESS;
 
 }

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -52,6 +52,7 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 	TTranslator<int>::register_for("SeriesNumber");
 	TTranslator<int>::register_for("AcquisitionNumber");
 	TTranslator<int>::register_for("InstanceNumber");
+	CPatientPositionTranslator::register_for(IDPatientPosition);
 	add_suffix(".dcm");
 	add_suffix(".DCM");
 
@@ -117,14 +118,15 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 		m_slice_pos = new_slice_pos;
 	}
 	assert(m_z < m_nz);
-	target->put_data_plane_xy(m_z, image);
+	target->put_data_plane_xy(m_delta_z < 0 ? m_nz - 1 - m_z: m_z, image);
 	++m_z;
 	return true;
 }
 
 P3DImage C3DImageCreator::get_image() const
 {
-	m_result->set_voxel_size(C3DFVector(m_pixel_size.x, m_pixel_size.y, m_delta_z));
+	m_result->set_voxel_size(C3DFVector(m_pixel_size.x, m_pixel_size.y, 
+					    m_delta_z > 0 ? m_delta_z : - m_delta_z));
 	m_result->delete_attribute(IDSliceLocation);
 	m_result->delete_attribute(IDInstanceNumber);
 
@@ -162,18 +164,24 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::get_images(const vector<P2DImage>
 	CAquisitions acc;
 
 	// read all the images into a map
-	for(vector<P2DImage>::const_iterator i =  candidates.begin();
-	    i != candidates.end(); ++i) {
+	for(auto i =  candidates.begin();   i != candidates.end(); ++i) {
 		if ( (*i)->has_attribute(IDAcquisitionNumber) &&
 		     (*i)->has_attribute(IDInstanceNumber) &&
 		     (*i)->has_attribute(IDSeriesNumber)) {
 			acc[(*i)->get_attribute(IDAcquisitionNumber)]
 				[(*i)->get_attribute(IDSeriesNumber)].push(*i);
+		}else{
+			cvwarn() << "Discard image because of no "
+				 << ((*i)->has_attribute(IDAcquisitionNumber) ? "" : "aquisition") 
+				 << ((*i)->has_attribute(IDInstanceNumber) ? "" : "instance") 
+				 << ((*i)->has_attribute(IDSeriesNumber) ? "" : "series")
+				 << " number\n"; 
+				
 		}
 	}
 
-	for (CAquisitions::iterator a = acc.begin(); a != acc.end(); ++a) {
-		for (CImageSeries::iterator s = a->second.begin(); s != a->second.end(); ++s) {
+	for (auto a = acc.begin(); a != acc.end(); ++a) {
+		for (auto s = a->second.begin(); s != a->second.end(); ++s) {
 			P3DImage image = get_3dimage(s->second);
 			if (image)
 				result->push_back(image);
@@ -226,20 +234,26 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::do_load(const string& fname) cons
 	if (!reader.good())
 		return result;
 
-	vector<P2DImage> candidates;
-	P2DImage prototype = reader.get_image();
-	candidates.push_back(prototype);
-
-	// this is not very nice 
-	string study_id;
-	if (prototype->has_attribute(IDStudyID))
-		study_id = prototype->get_attribute(IDStudyID)->as_string();
-	// now read all the slices in the folder that have the same study id
-
-	add_images(fname, study_id, candidates);
-
-
-	result = get_images(candidates);
+	if (reader.has_3dimage()) {
+		cvdebug() << "Got a multiframe image\n";
+		result.reset(new Data);
+		result->push_back(reader.get_3dimage()); 
+	}else {
+		cvdebug() << "Got a single frame image\n";
+		vector<P2DImage> candidates;
+		P2DImage prototype = reader.get_image();
+		candidates.push_back(prototype);
+		
+		// this is not very nice 
+		string study_id;
+		if (prototype->has_attribute(IDStudyID))
+			study_id = prototype->get_attribute(IDStudyID)->as_string();
+		// now read all the slices in the folder that have the same study id
+		
+		add_images(fname, study_id, candidates);
+		
+		result = get_images(candidates);
+	}
 	return result;
 }
 

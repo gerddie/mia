@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifndef mia_3d_landmarklist_hh
 #define mia_3d_landmarklist_hh
@@ -40,6 +39,9 @@ NS_MIA_BEGIN
 class EXPORT_3D C3DLandmarklist : public CIOData {
 	typedef std::map<std::string, P3DLandmark> CMap; 
 public: 
+
+	/// Type of the map values (needed for lambda arguments)
+	typedef CMap::value_type value_type; 
 
 	/// read only iterator 
 	typedef CMap::const_iterator const_iterator; 
@@ -74,7 +76,7 @@ public:
 
 	/**
 	   \returns the landmark with the giben name. If this landmark 
-	   doesn't exist the function throws an invalid_argument exception.  
+	   doesn't exist the function returns a (shared) null pointer.
 	 */
 	P3DLandmark get(const std::string& name) const; 
 
@@ -109,7 +111,7 @@ public:
 	/// \returns the name of the landmark list 
 	const std::string &get_name() const; 
 private: 
-	std::map<std::string, P3DLandmark> m_list; 
+	CMap m_list; 
 
 	boost::filesystem::path m_path; 
 	std::string m_name; 

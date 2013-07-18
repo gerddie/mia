@@ -4,6 +4,8 @@ import sys
 import re
 from lxml import etree
 
+sys.dont_write_bytecode = True
+
 modules = {'miareadxml' : [0, '', 'none://miareadxml.py' ]
            }
 from miareadxml import parse_file

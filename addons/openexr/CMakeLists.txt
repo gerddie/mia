@@ -1,7 +1,8 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
 #
-# This program is free software; you can redistribute it and/or modify
+# MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
@@ -12,10 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
 OPTION(WITH_OpenEXR "enable support for OpenEXR" ${SEARCH_LIBS_DEFAULT})
@@ -43,12 +41,12 @@ IF(WITH_OpenEXR)
     
     INCLUDE_DIRECTORIES(${EXR_INCLUDE_DIRS})
     
-    PLUGIN_PRE(2d-imageio 2dimgexr "${DEPS2D}" "${image2dio_path}")
-    PLUGIN_PRE(2d-vfio    2dvfexr  "${DEPS2D}" "${vf2dio_path}")
+    PLUGIN_WITH_PREFIX2("2dimage" "io" 2dimgexr "${DEPS2D}")
+    PLUGIN_WITH_PREFIX2("2dvf" "io"    2dvfexr "${DEPS2D}")
     
     # test programs 
     ADD_EXECUTABLE(test-openexr test_openexr.cc)
-    ADD_DEPENDENCIES(test-openexr 2dvfexr 2dimgexr)
+    ADD_DEPENDENCIES(test-openexr 2dimage-io-openexr 2dvf-io-openexr)
     
     SET(DEPLIBS mia2dtest mia2d ${BASELIBS})
     TARGET_LINK_LIBRARIES(test-openexr ${DEPLIBS} ${BOOST_UNITTEST})

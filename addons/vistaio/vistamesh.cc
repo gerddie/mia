@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -68,7 +67,7 @@ const string  CVistaMeshIO::do_get_descr()const
 }
 
 template <class T>
-struct TVNodeType: public VNodeBaseRec {
+struct TVNodeType: public VistaIONodeBaseRec {
 	T type;
 	T3DVector<T> vertex;
 };
@@ -109,13 +108,13 @@ struct TVNCSNodeType: public TVNCNodeType<T> {
 };
 
 struct TTriangelType {
-	VNodeBaseRec base;
+	VistaIONodeBaseRec base;
 	int type;
 	T3DVector<unsigned int> t;
 };
 
 
-static  CTriangleMesh::PTrianglefield  read_triangles(VGraph graph, size_t v_size)
+static  CTriangleMesh::PTrianglefield  read_triangles(VistaIOGraph graph, size_t v_size)
 {
 	cvdebug() << "vista_meshio::read_triangles()\n";
 
@@ -125,12 +124,12 @@ static  CTriangleMesh::PTrianglefield  read_triangles(VGraph graph, size_t v_siz
 		return CTriangleMesh::PTrianglefield();
 	}
 
-	if (VNodeRepn(graph) != VLongRepn) {
+	if (VistaIONodeRepn(graph) != VistaIOLongRepn) {
 		cverr() <<"only long indices supported\n";
 		return CTriangleMesh::PTrianglefield();
 	}
-	TTriangelType *node = (TTriangelType*)VGraphFirstNode(graph);
-	CTriangleMesh::PTrianglefield triangles(new CTriangleMesh::CTrianglefield(VGraphNNodes(graph)));
+	TTriangelType *node = (TTriangelType*)VistaIOGraphFirstNode(graph);
+	CTriangleMesh::PTrianglefield triangles(new CTriangleMesh::CTrianglefield(VistaIOGraphNNodes(graph)));
 
 	CTriangleMesh::triangle_iterator t = triangles->begin();
 	CTriangleMesh::triangle_iterator e = triangles->end();
@@ -154,15 +153,15 @@ static  CTriangleMesh::PTrianglefield  read_triangles(VGraph graph, size_t v_siz
 			cverr() <<"Bougus mesh: Triangle vertex out of bounds - bailing out\n";
 			return CTriangleMesh::PTrianglefield();
 		}
-		node = (TTriangelType*)VGraphNextNode(graph);
+		node = (TTriangelType*)VistaIOGraphNextNode(graph);
 	}
 	return triangles;
 }
 
-static  CTriangleMesh *read_vgraph(VGraph vgraph, VGraph tgraph)
+static  CTriangleMesh *read_vgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 {
-	TVNodeType<float> *node = (TVNodeType<float> *)VGraphFirstNode(vgraph);
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VGraphNNodes(vgraph)));
+	TVNodeType<float> *node = (TVNodeType<float> *)VistaIOGraphFirstNode(vgraph);
+	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VistaIOGraphNNodes(vgraph)));
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
 	CTriangleMesh::vertex_iterator e = vertices->end();
@@ -170,7 +169,7 @@ static  CTriangleMesh *read_vgraph(VGraph vgraph, VGraph tgraph)
 		if (v == e)
 			return NULL;
 		*v++ = node->vertex;
-		node = (TVNodeType<float> *)VGraphNextNode(vgraph);
+		node = (TVNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 	CTriangleMesh::PTrianglefield triangles = read_triangles(tgraph, vertices->size());
 	if (!triangles) {
@@ -179,13 +178,13 @@ static  CTriangleMesh *read_vgraph(VGraph vgraph, VGraph tgraph)
 	return new CTriangleMesh(triangles, vertices);
 }
 
-static CTriangleMesh *read_vsgraph(VGraph vgraph, VGraph tgraph)
+static CTriangleMesh *read_vsgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 {
 	TVSNodeType<float> *node =
-		(TVSNodeType<float> *)VGraphFirstNode(vgraph);
+		(TVSNodeType<float> *)VistaIOGraphFirstNode(vgraph);
 
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PScalefield scales(new CTriangleMesh::CScalefield(VGraphNNodes(vgraph)));
+	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PScalefield scales(new CTriangleMesh::CScalefield(VistaIOGraphNNodes(vgraph)));
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
 	CTriangleMesh::vertex_iterator e = vertices->end();
@@ -195,7 +194,7 @@ static CTriangleMesh *read_vsgraph(VGraph vgraph, VGraph tgraph)
 	while (node && v != e) {
 		*v++ = node->vertex;
 		*s++ = node->scale;
-		node = (TVSNodeType<float> *)VGraphNextNode(vgraph);
+		node = (TVSNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 
 	CTriangleMesh::PTrianglefield triangles = read_triangles(tgraph, vertices->size());
@@ -208,13 +207,13 @@ static CTriangleMesh *read_vsgraph(VGraph vgraph, VGraph tgraph)
 
 }
 
-static CTriangleMesh *read_vcgraph(VGraph vgraph, VGraph tgraph)
+static CTriangleMesh *read_vcgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 {
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PColorfield color(new CTriangleMesh::CColorfield(VGraphNNodes(vgraph)));
+	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PColorfield color(new CTriangleMesh::CColorfield(VistaIOGraphNNodes(vgraph)));
 
 	TVCNodeType<float> *node =
-		(TVCNodeType<float> *)VGraphFirstNode(vgraph);
+		(TVCNodeType<float> *)VistaIOGraphFirstNode(vgraph);
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
 	CTriangleMesh::vertex_iterator e = vertices->end();
@@ -223,7 +222,7 @@ static CTriangleMesh *read_vcgraph(VGraph vgraph, VGraph tgraph)
 	while (node && v != e) {
 		*v++ = node->vertex;
 		*c++ = node->color;
-		node = (TVCNodeType<float> *)VGraphNextNode(vgraph);
+		node = (TVCNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 
 	CTriangleMesh::PTrianglefield triangles = read_triangles(tgraph, vertices->size());
@@ -237,14 +236,14 @@ static CTriangleMesh *read_vcgraph(VGraph vgraph, VGraph tgraph)
 }
 
 
-static CTriangleMesh *read_vcsgraph(VGraph vgraph, VGraph tgraph)
+static CTriangleMesh *read_vcsgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 {
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PColorfield  color(new CTriangleMesh::CColorfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PScalefield  scales(new CTriangleMesh::CScalefield(VGraphNNodes(vgraph)));
+	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PColorfield  color(new CTriangleMesh::CColorfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PScalefield  scales(new CTriangleMesh::CScalefield(VistaIOGraphNNodes(vgraph)));
 
 	TVCSNodeType<float> *node =
-		(TVCSNodeType<float> *)VGraphFirstNode(vgraph);
+		(TVCSNodeType<float> *)VistaIOGraphFirstNode(vgraph);
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
 	CTriangleMesh::vertex_iterator e = vertices->end();
@@ -256,7 +255,7 @@ static CTriangleMesh *read_vcsgraph(VGraph vgraph, VGraph tgraph)
 		*v++ = node->vertex;
 		*c++ = node->color;
 		*s++ = node->scale;
-		node = (TVCSNodeType<float> *)VGraphNextNode(vgraph);
+		node = (TVCSNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 
 	CTriangleMesh::PTrianglefield triangles = read_triangles(tgraph, vertices->size());
@@ -266,13 +265,13 @@ static CTriangleMesh *read_vcsgraph(VGraph vgraph, VGraph tgraph)
 	return new CTriangleMesh(triangles, vertices, CTriangleMesh::PNormalfield(), color, scales);
 }
 
-static CTriangleMesh *read_vngraph(VGraph vgraph, VGraph tgraph)
+static CTriangleMesh *read_vngraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 {
 	TVNNodeType<float> *node =
-		(TVNNodeType<float> *)VGraphFirstNode(vgraph);
+		(TVNNodeType<float> *)VistaIOGraphFirstNode(vgraph);
 
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PNormalfield normals(new CTriangleMesh::CNormalfield(VGraphNNodes(vgraph)));
+	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PNormalfield normals(new CTriangleMesh::CNormalfield(VistaIOGraphNNodes(vgraph)));
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
 	CTriangleMesh::vertex_iterator e = vertices->end();
@@ -281,7 +280,7 @@ static CTriangleMesh *read_vngraph(VGraph vgraph, VGraph tgraph)
 	while (node && v != e) {
 		*v++ =  node->vertex;
 		*n++ =  node->normal;
-		node = (TVNNodeType<float> *)VGraphNextNode(vgraph);
+		node = (TVNNodeType<float> *)VistaIOGraphNextNode(vgraph);
 
 	}
 
@@ -294,14 +293,14 @@ static CTriangleMesh *read_vngraph(VGraph vgraph, VGraph tgraph)
 				 CTriangleMesh::PScalefield());
 }
 
-static CTriangleMesh *read_vnsgraph(VGraph vgraph, VGraph tgraph)
+static CTriangleMesh *read_vnsgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 {
 	TVNSNodeType<float> *node =
-		(TVNSNodeType<float> *)VGraphFirstNode(vgraph);
+		(TVNSNodeType<float> *)VistaIOGraphFirstNode(vgraph);
 
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PNormalfield normals(new CTriangleMesh::CNormalfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PScalefield  scales(new CTriangleMesh::CScalefield(VGraphNNodes(vgraph)));
+	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PNormalfield normals(new CTriangleMesh::CNormalfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PScalefield  scales(new CTriangleMesh::CScalefield(VistaIOGraphNNodes(vgraph)));
 
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
@@ -313,7 +312,7 @@ static CTriangleMesh *read_vnsgraph(VGraph vgraph, VGraph tgraph)
 		*n++ = node->normal;
 		*v++ = node->vertex;
 		*s++ = node->scale;
-		node = (TVNSNodeType<float> *)VGraphNextNode(vgraph);
+		node = (TVNSNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 
 	CTriangleMesh::PTrianglefield triangles = read_triangles(tgraph, vertices->size());
@@ -325,14 +324,14 @@ static CTriangleMesh *read_vnsgraph(VGraph vgraph, VGraph tgraph)
 }
 
 
-static CTriangleMesh *read_vncgraph(VGraph vgraph, VGraph tgraph)
+static CTriangleMesh *read_vncgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 {
 	TVNCNodeType<float> *node =
-		(TVNCNodeType<float> *)VGraphFirstNode(vgraph);
+		(TVNCNodeType<float> *)VistaIOGraphFirstNode(vgraph);
 
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PNormalfield normals(new CTriangleMesh::CNormalfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PColorfield  color(new CTriangleMesh::CColorfield(VGraphNNodes(vgraph)));
+	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PNormalfield normals(new CTriangleMesh::CNormalfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PColorfield  color(new CTriangleMesh::CColorfield(VistaIOGraphNNodes(vgraph)));
 
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
@@ -344,7 +343,7 @@ static CTriangleMesh *read_vncgraph(VGraph vgraph, VGraph tgraph)
 		*n++ = node->normal;
 		*v++ = node->vertex;
 		*c++ = node->color;
-		node = (TVNCNodeType<float> *)VGraphNextNode(vgraph);
+		node = (TVNCNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 
 	CTriangleMesh::PTrianglefield triangles = read_triangles(tgraph, vertices->size());
@@ -355,14 +354,14 @@ static CTriangleMesh *read_vncgraph(VGraph vgraph, VGraph tgraph)
 
 }
 
-static CTriangleMesh *read_vncsgraph(VGraph vgraph, VGraph tgraph)
+static CTriangleMesh *read_vncsgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 {
 	TVNCSNodeType<float> *node =
-		(TVNCSNodeType<float> *)VGraphFirstNode(vgraph);
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PNormalfield normals(new CTriangleMesh::CNormalfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PColorfield  color(new CTriangleMesh::CColorfield(VGraphNNodes(vgraph)));
-	CTriangleMesh::PScalefield  scales(new CTriangleMesh::CScalefield(VGraphNNodes(vgraph)));
+		(TVNCSNodeType<float> *)VistaIOGraphFirstNode(vgraph);
+	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PNormalfield normals(new CTriangleMesh::CNormalfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PColorfield  color(new CTriangleMesh::CColorfield(VistaIOGraphNNodes(vgraph)));
+	CTriangleMesh::PScalefield  scales(new CTriangleMesh::CScalefield(VistaIOGraphNNodes(vgraph)));
 
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
@@ -376,7 +375,7 @@ static CTriangleMesh *read_vncsgraph(VGraph vgraph, VGraph tgraph)
 		*v++ = node->vertex;
 		*c++ = node->color;
 		*s++ = node->scale;
-		node = (TVNCSNodeType<float> *)VGraphNextNode(vgraph);
+		node = (TVNCSNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 
 	CTriangleMesh::PTrianglefield triangles = read_triangles(tgraph, vertices->size());
@@ -387,9 +386,9 @@ static CTriangleMesh *read_vncsgraph(VGraph vgraph, VGraph tgraph)
 }
 
 
-static VGraph create_vgraph(const CTriangleMesh& mesh)
+static VistaIOGraph create_vgraph(const CTriangleMesh& mesh)
 {
-	VGraph result = VCreateGraph(mesh.vertices_size(), 4, VFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 4, VistaIOFloatRepn, 0);
 
 
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
@@ -402,14 +401,14 @@ static VGraph create_vgraph(const CTriangleMesh& mesh)
 
 	while (vi != ve) {
 		node.vertex = *vi++;
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
 }
 
-static VGraph create_vngraph(const CTriangleMesh& mesh)
+static VistaIOGraph create_vngraph(const CTriangleMesh& mesh)
 {
-	VGraph result = VCreateGraph(mesh.vertices_size(), 7, VFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 7, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_normal_iterator ni = mesh.normals_begin();
@@ -421,14 +420,14 @@ static VGraph create_vngraph(const CTriangleMesh& mesh)
 	while (vi != ve) {
 		node.vertex = *vi++;
 		node.normal = *ni++;
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
 }
 
-static VGraph create_vsgraph(const CTriangleMesh& mesh)
+static VistaIOGraph create_vsgraph(const CTriangleMesh& mesh)
 {
-	VGraph result = VCreateGraph(mesh.vertices_size(), 11, VFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 11, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_scale_iterator si = mesh.scale_begin();
@@ -440,16 +439,16 @@ static VGraph create_vsgraph(const CTriangleMesh& mesh)
 	while (vi != ve) {
 		node.vertex = *vi++;
 		node.scale  = *si++;
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
 }
 
 
-static VGraph create_vnsgraph(const CTriangleMesh& mesh)
+static VistaIOGraph create_vnsgraph(const CTriangleMesh& mesh)
 {
 
-	VGraph result = VCreateGraph(mesh.vertices_size(), 8, VFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 8, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_normal_iterator ni = mesh.normals_begin();
@@ -463,15 +462,15 @@ static VGraph create_vnsgraph(const CTriangleMesh& mesh)
 		node.vertex = *vi++;
 		node.normal = *ni++;
 		node.scale  = *si++;
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
 }
 
-static VGraph create_vcgraph(const CTriangleMesh& mesh)
+static VistaIOGraph create_vcgraph(const CTriangleMesh& mesh)
 {
 
-	VGraph result = VCreateGraph(mesh.vertices_size(), 7, VFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 7, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_color_iterator  ci  = mesh.color_begin();
@@ -483,15 +482,15 @@ static VGraph create_vcgraph(const CTriangleMesh& mesh)
 	while (vi != ve) {
 		node.vertex = *vi++;
 		node.color  = *ci++;
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
 }
 
-static VGraph create_vncgraph(const CTriangleMesh& mesh)
+static VistaIOGraph create_vncgraph(const CTriangleMesh& mesh)
 {
 
-	VGraph result = VCreateGraph(mesh.vertices_size(), 10, VFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 10, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_normal_iterator ni = mesh.normals_begin();
@@ -506,15 +505,15 @@ static VGraph create_vncgraph(const CTriangleMesh& mesh)
 		node.normal = *ni++;
 		node.color  = *ci++;
 
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
 }
 
-static VGraph create_vcsgraph(const CTriangleMesh& mesh)
+static VistaIOGraph create_vcsgraph(const CTriangleMesh& mesh)
 {
 
-	VGraph result = VCreateGraph(mesh.vertices_size(), 8, VFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 8, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_color_iterator  ci = mesh.color_begin();
@@ -529,14 +528,14 @@ static VGraph create_vcsgraph(const CTriangleMesh& mesh)
 		node.vertex = *vi++;
 		node.color  = *ci++;
 		node.scale  = *si++;
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
 }
-static VGraph create_vncsgraph(const CTriangleMesh& mesh)
+static VistaIOGraph create_vncsgraph(const CTriangleMesh& mesh)
 {
 
-	VGraph result = VCreateGraph(mesh.vertices_size(), 11, VFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 11, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_normal_iterator ni = mesh.normals_begin();
@@ -552,13 +551,13 @@ static VGraph create_vncsgraph(const CTriangleMesh& mesh)
 		node.normal = *ni++;
 		node.color  = *ci++;
 		node.scale  = *si++;
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
 }
 
-typedef VGraph (*vertexgraph_create)(const CTriangleMesh& mesh);
-typedef CTriangleMesh *   (*vertexgraph_read)(VGraph graph1, VGraph graph2);
+typedef VistaIOGraph (*vertexgraph_create)(const CTriangleMesh& mesh);
+typedef CTriangleMesh *   (*vertexgraph_read)(VistaIOGraph graph1, VistaIOGraph graph2);
 
 typedef struct {
 	int simbio_type;
@@ -598,20 +597,20 @@ vertexio_t vertexio_lookup[]  = {
 };
 
 typedef struct {
-	VGraph graph;
+	VistaIOGraph graph;
 	vertexgraph_read   read;
 } vertex_reader_t;
 
-static bool  lookup_vertex_graph(VAttrList list, VAttrListPosn *pos, vertex_reader_t *result)
+static bool  lookup_vertex_graph(VistaIOAttrList list, VistaIOAttrListPosn *pos, vertex_reader_t *result)
 {
 	vertexio_t *lookup =  vertexio_lookup;
 	while (lookup->simbio_type != 0) {
-		if (VLookupAttr(list,lookup->type_name,pos)) {
-			VGetAttrValue(pos, NULL, VGraphRepn, &result->graph);
+		if (VistaIOLookupAttr(list,lookup->type_name,pos)) {
+			VistaIOGetAttrValue(pos, NULL, VistaIOGraphRepn, &result->graph);
 			if (result->graph) {
 				result->read = lookup->read;
 				cvdebug() <<"found "<<  lookup->type_name << "\n";
-				VNextAttr(pos);
+				VistaIONextAttr(pos);
 				return true;
 			}
 		}
@@ -622,12 +621,12 @@ static bool  lookup_vertex_graph(VAttrList list, VAttrListPosn *pos, vertex_read
 
 	lookup =  vertexio_lookup;
 
-	VFirstAttr(list, pos);
-	while (VAttrExists(pos)) {
-		if (VGetAttrRepn(pos) == VGraphRepn){
+	VistaIOFirstAttr(list, pos);
+	while (VistaIOAttrExists(pos)) {
+		if (VistaIOGetAttrRepn(pos) == VistaIOGraphRepn){
 			cvdebug() <<"Got a graph\n";
-			VGetAttrValue(pos, NULL, VGraphRepn, &result->graph);
-			TVNodeType<float> *node = (TVNodeType<float> *)VGraphFirstNode(result->graph);
+			VistaIOGetAttrValue(pos, NULL, VistaIOGraphRepn, &result->graph);
+			TVNodeType<float> *node = (TVNodeType<float> *)VistaIOGraphFirstNode(result->graph);
 			while (lookup->simbio_type  && lookup->simbio_type != node->type)
 				++lookup;
 
@@ -635,44 +634,44 @@ static bool  lookup_vertex_graph(VAttrList list, VAttrListPosn *pos, vertex_read
 
 			result->read = lookup->read;
 
-			VNextAttr(pos);
+			VistaIONextAttr(pos);
 			break;
 		}
-		VNextAttr(pos);
+		VistaIONextAttr(pos);
 	}
 	return lookup->simbio_type != 0;
 }
 
 
-static VGraph lookup_triangle_graph(VAttrList list, VAttrListPosn *pos)
+static VistaIOGraph lookup_triangle_graph(VistaIOAttrList list, VistaIOAttrListPosn *pos)
 {
-	VAttrListPosn save_pos = *pos;
-	VGraph result = NULL;
-	if (VLookupAttr(list,"Triangles",pos)) {
-		VGetAttrValue(pos, NULL, VGraphRepn, &result);
-		VNextAttr(pos);
+	VistaIOAttrListPosn save_pos = *pos;
+	VistaIOGraph result = NULL;
+	if (VistaIOLookupAttr(list,"Triangles",pos)) {
+		VistaIOGetAttrValue(pos, NULL, VistaIOGraphRepn, &result);
+		VistaIONextAttr(pos);
 	}else{
 		*pos = save_pos;
 		cvdebug() <<"Didn't find an attribute called 'triangles', will try generic graph\n";
-		while (VAttrExists(pos)) {
-			if (VGetAttrRepn(pos) == VGraphRepn){
+		while (VistaIOAttrExists(pos)) {
+			if (VistaIOGetAttrRepn(pos) == VistaIOGraphRepn){
 				cvdebug() <<"Got a graph\n";
-				VGetAttrValue(pos, NULL, VGraphRepn, &result);
-				VNextAttr(pos);
+				VistaIOGetAttrValue(pos, NULL, VistaIOGraphRepn, &result);
+				VistaIONextAttr(pos);
 				break;
 			}
-			VNextAttr(pos);
+			VistaIONextAttr(pos);
 		}
 	}
 	return result;
 }
 
-static CTriangleMesh *do_load_mesh(VAttrList list)
+static CTriangleMesh *do_load_mesh(VistaIOAttrList list)
 {
-	VAttrListPosn pos;
+	VistaIOAttrListPosn pos;
 	vertex_reader_t vertex_source;
 
-	VGraph triangle_graph = NULL;
+	VistaIOGraph triangle_graph = NULL;
 
 	if ( ! lookup_vertex_graph(list,&pos,&vertex_source) ) {
 		cvwarn() <<"Didn't find a graph type attribute\n";
@@ -685,10 +684,10 @@ static CTriangleMesh *do_load_mesh(VAttrList list)
 		return NULL;
 	}
 
-	int v_size = VGraphNNodes(vertex_source.graph);
-	int num_faces = VGraphNNodes(triangle_graph);
+	int v_size = VistaIOGraphNNodes(vertex_source.graph);
+	int num_faces = VistaIOGraphNNodes(triangle_graph);
 
-	if (VNodeRepn(vertex_source.graph) != VFloatRepn) {
+	if (VistaIONodeRepn(vertex_source.graph) != VistaIOFloatRepn) {
 		cvwarn() <<"Sorry, only float vertex coordinates supported\n";
 		return NULL;
 	}
@@ -708,16 +707,16 @@ PTriangleMesh CVistaMeshIO::do_load(string const &  filename) const
 	if (!file)
 		return PTriangleMesh();
 
-	VAttrList list= VReadFile(file,0);
+	VistaIOAttrList list= VistaIOReadFile(file,0);
 
 	CTriangleMesh *result = NULL;
 	if (list) {
 		cvdebug() << "Got a valid vista file\n";
-		VAttrList nested_list;
-		VAttrListPosn pos;
+		VistaIOAttrList nested_list;
+		VistaIOAttrListPosn pos;
 
-		if (VLookupAttr(list,"mesh",&pos)) {
-			VGetAttrValue(&pos,NULL,VAttrListRepn,&nested_list);
+		if (VistaIOLookupAttr(list,"mesh",&pos)) {
+			VistaIOGetAttrValue(&pos,NULL,VistaIOAttrListRepn,&nested_list);
 		}else{
 			cvdebug() << "Let's put meshes in a nested list!\n";
 			nested_list = list;
@@ -725,20 +724,20 @@ PTriangleMesh CVistaMeshIO::do_load(string const &  filename) const
 
 		result = do_load_mesh(nested_list);
 
-		VDestroyAttrList(list);
+		VistaIODestroyAttrList(list);
 	}
 
 	return PTriangleMesh(result);
 }
 
 
-static VGraph create_triangle_graph_and_link(const CTriangleMesh& mesh, VGraph vertex_graph)
+static VistaIOGraph create_triangle_graph_and_link(const CTriangleMesh& mesh, VistaIOGraph vertex_graph)
 {
-	VGraph result = VCreateGraph(mesh.triangle_size(), 4, VLongRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.triangle_size(), 4, VistaIOLongRepn, 0);
 
-	VSetAttr(VGraphAttrList(result), "primitive_interp",  NULL, VStringRepn, "surface");
-	VSetAttr(VGraphAttrList(result), "implicit_links", NULL, VStringRepn, "true");
-	VSetAttr(VGraphAttrList(result), "component_interp", NULL, VStringRepn, "primitive");
+	VistaIOSetAttr(VistaIOGraphAttrList(result), "primitive_interp",  NULL, VistaIOStringRepn, "surface");
+	VistaIOSetAttr(VistaIOGraphAttrList(result), "implicit_links", NULL, VistaIOStringRepn, "true");
+	VistaIOSetAttr(VistaIOGraphAttrList(result), "component_interp", NULL, VistaIOStringRepn, "primitive");
 
 	CTriangleMesh::const_triangle_iterator ti = mesh.triangles_begin();
 	CTriangleMesh::const_triangle_iterator te = mesh.triangles_end();
@@ -752,10 +751,10 @@ static VGraph create_triangle_graph_and_link(const CTriangleMesh& mesh, VGraph v
 		++node.t.x;
 		++node.t.y;
 		++node.t.z;
-		VGraphAddNodeAt(result,(VNodestruct*)&node,pos++);
-		VGraphLinkNodesBi(vertex_graph, node.t.x, node.t.y );
-		VGraphLinkNodesBi(vertex_graph, node.t.y, node.t.z );
-		VGraphLinkNodesBi(vertex_graph, node.t.z, node.t.x );
+		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
+		VistaIOGraphLinkNodesBi(vertex_graph, node.t.x, node.t.y );
+		VistaIOGraphLinkNodesBi(vertex_graph, node.t.y, node.t.z );
+		VistaIOGraphLinkNodesBi(vertex_graph, node.t.z, node.t.x );
 	}
 
 	return result;
@@ -770,13 +769,13 @@ bool CVistaMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh)c
 	if (!outf)
 		return false;
 
-	VGraph vertex_graph;
-	VGraph triangle_graph;
+	VistaIOGraph vertex_graph;
+	VistaIOGraph triangle_graph;
 	int  type = mesh.get_available_data();
 
 	cvdebug() << "available: " << type << "\n";
 
-	VAttrList list = VCreateAttrList();
+	VistaIOAttrList list = VistaIOCreateAttrList();
 
 	vertexio_t *lookup =  vertexio_lookup;
 
@@ -799,17 +798,17 @@ bool CVistaMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh)c
 
 
 
-	VSetAttr(VGraphAttrList(vertex_graph), "component_interp", NULL, VStringRepn, "vertex");
-	VSetAttr(list, lookup->type_name, NULL, VGraphRepn, vertex_graph);
+	VistaIOSetAttr(VistaIOGraphAttrList(vertex_graph), "component_interp", NULL, VistaIOStringRepn, "vertex");
+	VistaIOSetAttr(list, lookup->type_name, NULL, VistaIOGraphRepn, vertex_graph);
 
 	triangle_graph = create_triangle_graph_and_link(mesh, vertex_graph);
 	if (!triangle_graph)
-		VDestroyAttrList(list);
+		VistaIODestroyAttrList(list);
 
-	VSetAttr(list, "Triangles", NULL, VGraphRepn, triangle_graph);
+	VistaIOSetAttr(list, "Triangles", NULL, VistaIOGraphRepn, triangle_graph);
 
-	result = (VWriteFile(outf, list) == TRUE);
-	VDestroyAttrList(list);
+	result = (VistaIOWriteFile(outf, list) == TRUE);
+	VistaIODestroyAttrList(list);
 
 	return result;
 }

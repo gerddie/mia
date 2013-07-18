@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,12 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-
 
 #define VSTREAM_DOMAIN "2dmyopgt"
 #include <iomanip>
@@ -50,7 +48,7 @@ const SProgramDescription g_description = {
 	 "data set as decribed in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
 	 "MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing and Computer-Assisted "
 	 "Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear motion correction "
-	 "a preceeding linear registration step is usually required."},
+	 "a preceding linear registration step is usually required."},
 	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by using Pseudo Ground "
 	 "Truth estimation. Skip two images at the beginning and otherwiese use the default parameters. "
 	 "Store the result in 'registered.set'."}, 
@@ -58,23 +56,19 @@ const SProgramDescription g_description = {
 };
 
 
-C2DFullCostList create_costs(double divcurlweight, double imageweight)
+C2DFullCostList create_costs(double imageweight)
 {
 	C2DFullCostList result; 
-	stringstream divcurl_descr;  
-	divcurl_descr << "divcurl:weight=" << divcurlweight; 
-	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
-
 	stringstream image_descr; 
 	image_descr << "image:weight=" << imageweight; 
 	result.push(C2DFullCostPluginHandler::instance().produce(image_descr.str())); 
 	return result; 
 }
 
-P2DTransformationFactory create_transform_creator(size_t c_rate)
+P2DTransformationFactory create_transform_creator(size_t c_rate,double divcurlweight)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate; 
+	transf << "spline:rate=" << c_rate << ",penalty=[divcurl:weight=" << divcurlweight << "]"; 
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 
@@ -84,8 +78,8 @@ void run_registration_pass(CSegSetWithImages&  input_set, const C2DImageSeries& 
 {
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 	C2DImageSeries input_images = input_set.get_images(); 
-	auto costs  = create_costs(divcurlweight, imageweight); 
-	auto transform_creator = create_transform_creator(c_rate); 
+	auto costs  = create_costs(imageweight); 
+	auto transform_creator = create_transform_creator(c_rate, divcurlweight); 
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 
 	// this loop could be parallized 

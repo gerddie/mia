@@ -1,3 +1,144 @@
+2.0.10
+
+  Fixes of tracked bugs:
+
+  * #3   add a image load plugins to filters
+  * #11  make the author information for the programs a possible program specific parameter
+  * #79 (experimental) remove the need to provide "<>" delimiters when reading 2d/3d vectors and don't write them
+  * #28 Add a filter that applies a transformation (2d/3d)
+  * #91 Fix regression by reintroducing the parameter 's' in the scale filter
+  * #93 Properly interpret the pixel value signedness when loading DICOM images
+  * #94 3d crop filter: change the parameter 'begin' to 'start' to conform with the 2D implementation
+  * #96 Add functions to TDelayedParameter to check key availability
+  * #97 Propper filling of output image in scale filters
+  * #98 (experimental) Dicomio: add  support for reading multiframe dicom images
+  * #102 Correct a race condition in the image filtering when downscaling.
+  * #114 mia/3d/transform/rigid.cc lock access to m_matrix_valid, making code thread save
+  * #116 src/2dmyopgt-nonrigid.cc Add a missing coma in the transform creation.
+
+  Partial fixes:
+
+  * #14  core: add patient position enum and string-enum translator
+  * #89 (experimental) vtkio: change the method of storing vector field data from structured grid to structured points
+  * #101 [23]d/transform/spline.cc Check for the range/c-rate ratio in spline transfromations and give better error messages
+  * #103 2dimagefilterstack.cc: Add options to select first and last image of the series of images to be filtered
+  * #106 2dmyomilles.cc save the coefficient matrix also if no segmentation was requested
+  * #113 (needs testing): correct race conditions in parallel code
+
+  Additional fixes:
+
+  *  3D filters: correct buggy string in morphometric shape definition
+  *  3D transform: deduct the output image size from the deformation field range instead of the input image size
+  *  Dicom: Remove required flag from the MediaStorageSOPClassUID tag
+  *  3D datafield: add functions to test whether the data hold by a field is unique (required for parallelization)
+  *  Add mia/core/statistics.hh to the installed files.
+  *  check precicion of pixel values in jpg and throw if it is larger than 8.
+  *  remove some attribute translators that don't make sense
+
+  new image filters
+
+  * 2D load, transform
+  * 3D load, transform, morphological thinning
+
+  new notable command line tools
+
+  * mia-3dcrispsegment - evaluate a segmentation by first using fuzzy-cmeans and then classify based on the highest class probability
+  * mia-3dlandmarks-distance (experimental) evaluate the Euclidean distance between corresponding 3D landmarks
+  * mia-3dlandmarks-transform (experimental) transform landmarks by applying some 3D transform
+
+2.0.9
+
+  Fixes of tracked bugs:
+
+
+  * fix 58: mia-fluid3d: Add parallelization
+  * fix 52,59,60,61,62: Add 2D Rotation only transformation and centerparameter to rigid and rotation
+  * fix 74: Tests: Fix failing tests on PowerPC
+  * fix 82: core: Add padding to the arrays in splineparzenmo
+  * fix	83: core: Add more tests to the Array-vector wrapper to ensure its proepr working
+  * fix	84: AnalyzeIO: Discard voxel-offset bytes when reading the image data.
+  * fix	85: IO: Add MetaImage IO support based on VTK.
+  * fix	86: Build: Test for Altivec and SSE and discard modules that require it
+	    if not available, Closes Debian Bug #705384
+  * fix 87: core: Set default numbers of threads to 1 on powerpc is the Intel threading building blocks
+	    version is < 4.1u2 (Interface version 6101), and warn user if she sets it higher
+	    This is a workaround for Debian Bug  #705385
+  * fix 88: core:  add the --threads option to the options that are always provided
+
+  Additional fixes and changes:
+
+  * add a program to binarily combine two 3d images
+  * correct the evalation of the gradient-from vectorfield evaluation
+  * correct the gradient from vector field translation
+  * correct the handling of zero-argument flags to satisfy the address sanitizer of LLVM
+  * Parallelize some more code
+  * Correct the libinclude path in the pkg-config files
+  * Relax some tests that compare floating point evaluation to pass tests on i386 were
+	  the limited amount of available registers results in a lower accuracy. 
+	  Closes Debian Bug #705383
+
+
+2.0.8
+
+  Fixes of tracked bugs:
+
+ * fix #69: GSL simplex optimizer now interprets parameter epsilon as simplex size termination parameter
+ * fix #68: Add obtion to revert the triangle winding at surface creation.
+ * fix #65 #66, #67: Store the transformation vector field as transformation in fluid registration
+ * fix #55: isoscale filter now scales to the exact requested voxel size
+ * fix #54: Call cost.reinit() before evaluating the value.
+ * fix #53: make handler initialization thread save,
+ * fix #51: proper relebaling in stack filters
+ * fix #50: correct test for changed coefficient field size
+ * fix #46: Spline transformation now takes the penalty term as parameter (experimental)
+ * fix #41: correct tensor file header.
+ * fix #39: vtk-IO (exterimental):  images (XML and legacy), mesh, and vector field
+ * fix #8:  Add the interface to store attributes with transformations
+
+  Additional fixes and changes:
+
+ * fix compiling with clang-3.2
+ * fix error in voxel size scaling when (down)scaling 3D
+ * fix the transform upscaling to be based on the reference image size
+ * Fix the preferred suffix specification for vector field storing
+ * fix dependecies in miacore.pc to include TBB and BLAS
+ * fix comparison of entries and reading of the histogram.
+ * fix test for required option to use the method 'is_required()' instead of the enum 'required'.
+ * fix compilation errors with clang 3.2 that enforce more standard conformance
+ * fix stackfilter label join map evaluation,  distance evaluation, label remap evaluation
+
+ * add xml scheme for xml-help output
+ * add test to make sure the scaling is to a positive size, even if the voxel size carries negative values.
+
+ * add initial implementation of voxel-to-isometric scaling
+ * add support for unsigned short and unsigned int to vistaio
+
+ * DICOM change the dicom loading interface, to allow default values for entries that should be
+   in the DICOM file and are needed for slice sorting in 3D data
+ * DICOM reading: When the locations show a negative Z-scale, then flip the output image to have a positive scale.
+ * DICOM  also read the instance number for slice sorting
+ * update copyright year
+ * update BLAS handling
+ * update filter help for meshes
+
+ * enable section name based file names for userref
+ * remove empty option groups from --help-xml output
+ * remove obsolete VTK imageio implementation
+ * remove the requirement of equal-sized images in rigid registration, because it is not needed
+ * rename mesh distance program for consitency
+ * remove the vistaio files and always use the system provided version 
+
+2.0.7
+  * change build dependencies to cmake 2.8.5 because of GNUInstallDirs
+  * change installation directories to support multiarch
+  * add test for STRICT_DEPENDENCIES to nlopt and xsltproc
+
+2.0.6
+  * move to new vistaio interface, minimum required external vistaio is now
+	 version 2.1.14
+  * add a new 3D rotation only transformation
+  * fix regressions introduced with 2.0.4
+
 2.0.4
   * Intrusive changes
     - change file nameing scheme of the 2D and 3D files

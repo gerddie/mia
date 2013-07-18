@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -44,7 +44,7 @@ public:
 	TSSDCost(bool normalize); 
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
 	bool m_normalize; 
 };
 
@@ -93,9 +93,8 @@ double TSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 
 template <typename Force>
 struct FEvalForce: public mia::TFilter<float> {
-	FEvalForce(Force& force, float scale, bool normalize):
+	FEvalForce(Force& force, bool normalize):
 		m_force(force), 
-		m_scale(scale),
 		m_normalize(normalize)
 		{
 		}
@@ -108,14 +107,14 @@ struct FEvalForce: public mia::TFilter<float> {
 		auto fi = m_force.begin(); 
 		auto gi = gradient.begin(); 
 
-		float scale = m_normalize ? m_scale / a.size() : m_scale; 
+		float scale = m_normalize ? 1.0 / a.size() : 1.0; 
 		
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi, ++fi, ++gi) {
 			float delta = float(*ai) - float(*bi); 
-			*fi = *gi * delta * scale;
-			cost += delta * delta; 
+			*fi = *gi * delta  * scale;
+			cost += delta * delta * scale; 
 		}
-		return 0.5 * cost * scale; 
+		return 0.5 * cost; 
 	}
 private: 
 	Force& m_force; 
@@ -128,11 +127,11 @@ private:
    This is the force evaluation routine of the cost function   
 */
 template <typename TCost> 
-double TSSDCost<TCost>::do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const
+double TSSDCost<TCost>::do_evaluate_force(const Data& a, const Data& b, Force& force) const
 {
 	assert(a.get_size() == b.get_size()); 
 	assert(a.get_size() == force.get_size()); 
-	FEvalForce<Force> ef(force, scale, m_normalize); 
+	FEvalForce<Force> ef(force, m_normalize); 
 	return filter(ef, a, b); 
 }
 

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <limits>
 #include <sstream>
@@ -73,9 +72,10 @@ CDownscale::result_type CDownscale::operator () (const T2DImage<T>& src) const
 	typename T2DImage<T>::iterator i = fresult->begin();
 	C2DBounds Start(m_block_size.x/2,m_block_size.y/2);
 
-	// Put the Blockaverages into the target
-	for (; Start.y < src.get_size().y; Start.y += m_block_size.y){
-		for (Start.x = m_block_size.x/2; Start.x < src.get_size().x; Start.x += m_block_size.x,++i){
+	// Put the filtered block values into the target
+	for (size_t out_y = 0; out_y < fresult->get_size().y; Start.y += m_block_size.y, ++out_y){
+		Start.x = m_block_size.x/2; 
+		for (size_t out_x = 0; out_x < fresult->get_size().x; Start.x += m_block_size.x,++out_x, ++i){
 			*i = src(Start);
 		}
 	}
@@ -114,7 +114,7 @@ C2DDownscaleFilterPlugin::C2DDownscaleFilterPlugin():
 	add_parameter("kernel", new CStringParameter(m_filter, false,
 						     "smoothing filter kernel to be applied, the "
 						     "size of the filter is estimated based on the blocksize.", 
-						     &C2DFilterPluginHandler::instance()));
+						     &C1DSpacialKernelPluginHandler::instance()));
 }
 
 C2DFilter *C2DDownscaleFilterPlugin::do_create()const

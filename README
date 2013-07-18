@@ -8,4 +8,5 @@ For details, help, etc see http://mia.sourceforge.net
 KNOWN BUGS: 
 
 * Image orientation and pixel size information is not honoured in the image registration code. 
-
+* the implementation of Mutual information needs testing 
+* Further bugs are listed at https://sourceforge.net/p/mia/tickets/

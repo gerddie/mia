@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <stdexcept>
 #include <climits>
@@ -42,7 +41,13 @@ BOOST_AUTO_TEST_CASE( test_pool_inout )
 {
 	TDelayedParameter<int> a("code");
 
+	BOOST_CHECK(a.key_is_valid()); 
+
+	BOOST_CHECK(!a.pool_has_key()); 
+
 	CDatapool::instance().add("code", 10);
+
+	BOOST_CHECK(a.pool_has_key()); 
 
 	try {
 		BOOST_CHECK_EQUAL(10, a.get());
@@ -53,5 +58,19 @@ BOOST_AUTO_TEST_CASE( test_pool_inout )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_is_invalid )
+{
+	TDelayedParameter<int> a;
+	BOOST_CHECK(!a.key_is_valid()); 
+}
+
+
+BOOST_AUTO_TEST_CASE( test_pool_type_mismatch )
+{
+	TDelayedParameter<int> a("code");
+	CDatapool::instance().add("code", 10.1);
+	
+	BOOST_CHECK_THROW(a.get(), std::bad_cast); 
+}
 
 

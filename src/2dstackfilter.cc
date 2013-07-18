@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 #define VSTREAM_DOMAIN "2dstackfilter" 
@@ -33,9 +33,6 @@
 #include <mia/2d/imageio.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
-#include <tbb/task_scheduler_init.h>
-
-using tbb::task_scheduler_init; 
 using namespace std;
 using namespace mia;
 
@@ -117,8 +114,7 @@ int do_main(int argc, char *argv[])
 	string out_type;
 	vector<int> new_size;
 
-	int max_threads = task_scheduler_init::automatic;
-	
+
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	const C2DFifoFilterPluginHandler::Instance& sfh = C2DFifoFilterPluginHandler::instance();
 
@@ -129,15 +125,10 @@ int do_main(int argc, char *argv[])
 			      "by adding the file number based on output order and the extension bysed on the 'type' parameter"
 			      , CCmdOption::required, &imageio));
 	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',
-			      "output file type (if not given deduct from output file name)", CCmdOption::required));
+			      "output file type", CCmdOption::required));
 	options.add(make_help_opt( "help-plugins", 0, 
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
-
-	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
-			     "This number should be lower or equal to the number of processing cores in the machine"
-			     " (default: automatic estimation)."));  
 
 
 	if (options.parse(argc, argv, "filter", &sfh) != CCmdOptionList::hr_no)
@@ -148,7 +139,6 @@ int do_main(int argc, char *argv[])
 	if (filter_chain.empty()) 
 		throw invalid_argument("No filters given, bailing out.");
 
-	task_scheduler_init init(max_threads);
 
 	auto i = filter_chain.begin();
 	auto filter = sfh.produce(*i);

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -40,8 +40,6 @@ public:
 	C3DTransformMock();
 	C3DTransformMock(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
 	virtual C3DTransformation *invert() const;
-	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual void add(const C3DTransformation& a);
 	virtual void update(float step, const C3DFVectorfield& a);
 	virtual size_t degrees_of_freedom() const;
 	virtual void set_identity();

@@ -1,9 +1,9 @@
-
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -14,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <cerrno>
 #include <cstring>
@@ -45,8 +43,6 @@
 NS_MIA_BEGIN
 
 namespace bfs = ::boost::filesystem; 
-
-using namespace std; 
 
 EXPORT_CORE const std::string get_plugin_root(); 
 
@@ -102,7 +98,7 @@ void TPluginHandler<I>::initialise(CPathNameArray searchpath)
 
 
 	// create the pattern match
-	stringstream pattern; 
+	std::stringstream pattern; 
 
 	pattern << ".*\\."<< MIA_MODULE_SUFFIX << "$"; 
 
@@ -111,7 +107,7 @@ void TPluginHandler<I>::initialise(CPathNameArray searchpath)
 		"' using search pattern'" << pattern.str() << "'\n"; 
 
 	boost::regex pat_expr(pattern.str());	
-	vector<bfs::path> candidates; 
+	std::vector<bfs::path> candidates; 
 
 	// search through all the path to find the plugins
 	for (auto dir = searchpath.begin(); dir != searchpath.end(); ++dir){
@@ -142,7 +138,7 @@ void TPluginHandler<I>::initialise(CPathNameArray searchpath)
 			cvdebug()<< " Load '" <<i->string()<<"'\n"; 
 			m_modules.push_back(PPluginModule(new CPluginModule(i->string().c_str())));
 		}
-		catch (invalid_argument& ex) {
+		catch (std::invalid_argument& ex) {
 			cverr() << ex.what() << "\n"; 
 		}
 		catch (std::exception& ex) {
@@ -239,17 +235,17 @@ size_t TPluginHandler<I>::size() const
 }
 
 template <typename I>
-const string TPluginHandler<I>::get_plugin_names() const
+const std::string TPluginHandler<I>::get_plugin_names() const
 {
-	vector<string> names;  
+	std::vector<std::string> names;  
 
 	for (auto i = m_plugins.begin(); i != m_plugins.end(); ++i)
 		names.push_back(i->first);
 
 	sort(names.begin(), names.end()); 
-	stringstream outstr; 
+	std::stringstream outstr; 
 
-	copy(names.begin(), names.end(), ostream_iterator<const string>(outstr, " "));
+	std::copy(names.begin(), names.end(), std::ostream_iterator<const std::string>(outstr, " "));
 	
 	return outstr.str(); 
 }
@@ -268,12 +264,12 @@ typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plu
 {
 	auto p = m_plugins.find(plugin); 
 	if (p == m_plugins.end()) {
-		stringstream msg; 
+		std::stringstream msg; 
 		msg << "Plugin '" << plugin << "' not found in '" 
 		    << I::PlugType::type_descr << "/" <<  I::PlugData::data_descr << "'\n"
 		    << " With search path\n"
 		    << "    '" << get_plugin_root(); 
-		throw invalid_argument(msg.str()); 
+		throw std::invalid_argument(msg.str()); 
 	}
 	return p->second; 
 }
@@ -318,22 +314,35 @@ THandlerSingleton<T>::THandlerSingleton()
 	m_is_created = true; 
 }
 
-	
 template <typename T> 
 const T& THandlerSingleton<T>::instance()
 {
-	CScopedLock lock(m_creation_mutex); 
+	return do_instance(true);
+}
+
+template <typename T> 
+const T* THandlerSingleton<T>::pointer()
+{
+	return &do_instance(false);
+}
+
+template <typename T> 
+const T& THandlerSingleton<T>::do_instance(bool require_initialization)
+{
 	TRACE_FUNCTION; 
-	static THandlerSingleton me; 
+	CScopedLock lock(m_creation_mutex); 
+	static THandlerSingleton<T> me; 
 	cvdebug() << "m_is_initialized = " << m_is_initialized << "\n"; 
-	if (!m_is_initialized) {
-		cvdebug() << "not yet initialized: first check passed\n"; 
-		CScopedLock lock(m_initialization_mutex);
-		m_creation_mutex.unlock();
+
+	if (!m_is_initialized && require_initialization) {
+		TRACE("Unitialized state"); 
+		CScopedLock lock_init(m_initialization_mutex);
 		if (!m_is_initialized) {
-			m_is_initialized = true; 
+			TRACE("Enter locked unitialized state"); 
+			lock.release(); 
 			cvdebug() << "not yet initialized: second check passed\n"; 
 			me.initialise(m_searchpath);
+			m_is_initialized = true; 
 
 		}
 	}

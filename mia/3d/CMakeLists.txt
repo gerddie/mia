@@ -1,7 +1,8 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
 #
-# This program is free software; you can redistribute it and/or modify
+# MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
@@ -12,11 +13,19 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
-#
-#
+
+
+IF(ITPP_FOUND)
+  SET(ITPP_SRC 
+    ica.cc 
+    )
+  SET(ITPP_HEADER 
+    ica.hh
+    )
+ENDIF(ITPP_FOUND)
+
 
 SET(MIA3D_SRC 
   camera.cc
@@ -34,7 +43,6 @@ SET(MIA3D_SRC
   fullcost.cc
   fuzzyseg.cc
   fuzzyClusterSolverCG.cc
-  ica.cc
   imagecollect.cc
   interpolator.cc
   landmark.cc
@@ -51,12 +59,14 @@ SET(MIA3D_SRC
   rigidregister.cc
   timestep.cc
   similarity_profile.cc
+  splinetransformpenalty.cc
   trackpoint.cc
   transform.cc
   transformfactory.cc
   transformio.cc
   shape.cc
   stackdisttrans.cc
+  ${ITPP_SRC}
   )
 
 SET(MIA3D_HEADERS
@@ -102,6 +112,7 @@ SET(MIA3D_HEADERS
   shape.hh 
   similarity_profile.hh
   stackdisttrans.hh
+  splinetransformpenalty.hh
   timestep.hh
   trackpoint.hh
   trait.hh
@@ -109,6 +120,7 @@ SET(MIA3D_HEADERS
   transformfactory.hh
   transformio.hh
   transformmock.hh
+  ${ITPP_HEADER}
   )
 
 SET(MIA3DTEST_SRC
@@ -178,7 +190,9 @@ TEST_3D(nfg nfg)
 TEST_3D(vectorfield vectorfield)
 TEST_3D(orientation orientation)
 TEST_3D(deform deform)
-TEST_3D(ica ica)
+IF(ITPP_FOUND)
+  TEST_3D(ica ica)
+ENDIF(ITPP_FOUND)
 TEST_3D(transformfactory transformfactory)
 TEST_3D(rigidregister rigidregister)
 TEST_3D(nonrigidregister nonrigidregister)
@@ -196,6 +210,7 @@ TEST_3D(similarity_profile similarity_profile)
 TEST_3D(trackpoint similarity_profile)
 TEST_3D(distance distance)
 TEST_3D(imagecollect imagecollect)
+TEST_3D(splinetransformpenalty splinetransformpenalty)
 #
 # installation 
 #
@@ -213,8 +228,9 @@ ADD_SUBDIRECTORY(filter   )
 ADD_SUBDIRECTORY(fifof    )
 ADD_SUBDIRECTORY(fullcost )
 ADD_SUBDIRECTORY(io       )
-ADD_SUBDIRECTORY(shapes   )
 ADD_SUBDIRECTORY(reg3d    )
+ADD_SUBDIRECTORY(shapes   )
+ADD_SUBDIRECTORY(splinepenalty  )
 ADD_SUBDIRECTORY(transform)
 ADD_SUBDIRECTORY(transio)
 ADD_SUBDIRECTORY(lmio)

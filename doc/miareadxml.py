@@ -50,6 +50,9 @@ def get_text_node_simple(tag,  text):
     return node
 
 
+def escape_dash(text): 
+    return re.sub(r'-', r'\-', text) 
+
 def get_dict_table(dictionary, tabletype):
     entry = etree.Element(tabletype, frame="none")
     tgroup = etree.Element("tgroup", cols="2", colsep="0", rowsep ="0")
@@ -71,10 +74,6 @@ def get_dict_table(dictionary, tabletype):
     tgroup.append(tbody)
     entry.append(tgroup)
     return entry
-
-def escape_dash(text): 
-    return re.sub(r'-', r'\-', text) 
-
 
 class CTextNode: 
     def __init__(self, node, expect = None):
@@ -107,7 +106,7 @@ class COption(CTextNode):
                 print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
             else:
                 print ".IP \"%s \-\-%s\""% (short, self.long)
-        print self.text, 
+        print escape_dash(self.text), 
         self.do_print_man()
 
 
@@ -154,8 +153,8 @@ class CDictOption(COption):
             for k in self.dict.keys(): 
                 print ".RS 10"
                 print ".I" 
-                print k
-                print "- %s" % (self.dict[k])
+                print escape_dash(k)
+                print "\(hy %s" % (self.dict[k])
                 print ".RE"
 
 
@@ -263,9 +262,9 @@ class CParam:
         if self.required:
             print "= (required, %s) " % (self.type)
         else:
-            print "= %s (%s) " % (self.default, self.type)
+            print "= %s (%s) " % (escape_dash(self.default), self.type)
         print ".RS 2"
-        print "%s." % (self.text)
+        print "%s." % (escape_dash(self.text))
         self.do_print_man()
         print ".RE"
 
@@ -296,16 +295,22 @@ class CParam:
 class CRangeParam(CParam):
     def __init__(self, node):
         CParam.__init__(self,node)
-        self.min = node.get("min")
-        self.max = node.get("max")
+        self.min = None
+        self.max = None
+        
+        for r in node:
+            if r.tag == "range":
+                self.min = r.get("min")
+                self.max = r.get("max")
 
     def do_print_man(self):
-        print "in [%s, %s]" % (self.min, self.max)
+        if (self.min is not None) and (self.max is not None):
+            print "in [%s, %s]" % (escape_dash(self.min), escape_dash(self.max))
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
         e = etree.SubElement(row, "entry", align="left", valign="top")
-        e.text = p.test + " in [%s, %s]" % (self.min, self.max)
+        e.text = self.text + " in [%s, %s]" % (self.min, self.max)
 
 
 class CDictParam(CParam):
@@ -322,8 +327,8 @@ class CDictParam(CParam):
         for k in self.dict.keys(): 
             print ".RS 4"
             print ".I" 
-            print k
-            print "- %s" % (self.dict[k])
+            print escape_dash(k)
+            print "\(hy %s" % (self.dict[k])
             print ".RE"
         CParam.do_print_man(self)
 
@@ -359,7 +364,7 @@ class CSetParam(CParam):
     def do_print_man(self):
         print "Supported values are:(", 
         for k in self.set:
-            print "%s, " % (k), 
+            print "%s, " % (escape_dash(k)), 
         print ")"
         CParam.do_print_man(self)
 
@@ -437,12 +442,15 @@ class CPlugin:
         for child in node:
             if child.tag == "param": 
                 p = {
-                   "range":   lambda n: CRangeParam(n), 
-                   "factory": lambda n: CFactoryParam(n),
-                   "io":      lambda n: CIOParam(n), 
-                   "set":     lambda n: CSetParam(n),
-                   "dict":    lambda n: CDictParam(n),
-                   }.get(child.get("type"), lambda n: CParam(n))(child)
+                    "int":   lambda n: CRangeParam(n),
+                    "uint":   lambda n: CRangeParam(n),
+                    "float":   lambda n: CRangeParam(n),
+                    "double":   lambda n: CRangeParam(n), 
+                    "factory": lambda n: CFactoryParam(n),
+                    "io":      lambda n: CIOParam(n), 
+                    "set":     lambda n: CSetParam(n),
+                    "dict":    lambda n: CDictParam(n),
+                    }.get(child.get("type"), lambda n: CParam(n))(child)
 
                 self.params.append(p)
             elif child.tag == "noparam": 
@@ -562,6 +570,8 @@ class CDescription:
                 self.option_groups.append(CGroup(n))
             elif n.tag == 'Example': 
                 self.Example = CExample(n)
+            elif n.tag == 'Author': 
+                self.author = n.text
             elif n.tag == 'freeparams':
                 self.FreeParams = n.get("name")
             else: 

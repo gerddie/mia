@@ -1,7 +1,8 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
 #
-# This program is free software; you can redistribute it and/or modify
+# MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
@@ -12,10 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
 OPTION(WITH_DCMTK "enable support for DCMTK DICOM IO" ${SEARCH_LIBS_DEFAULT})
@@ -29,16 +27,16 @@ SET(image3dio_path ${PLUGIN_INSTALL_PATH}/3dimage/io)
 IF (WITH_DCMTK)
   FIND_PACKAGE(DCMTKnew)
   IF(DCMTK_FOUND)
-    SET(dicom4mia_deps mia2d ${DCMTK_LIBRARIES})
+    SET(dicom4mia_deps mia3d ${DCMTK_LIBRARIES})
     MIA_ADD_LIBRARY(dicom4mia "${dicom4mia_SOURCES}" "${dicom4mia_deps}")
     INSTALL_BASE(dicom4mia)
 
     SET(DCMTK_LINK_LIBS_2D dicom4mia)
-    SET(DCMTK_LINK_LIBS_3D dicom4mia mia3d)
+    SET(DCMTK_LINK_LIBS_3D dicom4mia)
     NEW_TEST(dicom4mia dicom4mia)
 
-    PLUGIN_WITH_TEST_AND_PREFIX("2d-imageio" dcm2d "${DCMTK_LINK_LIBS_2D}" "${image2dio_path}")
-    PLUGIN_WITH_TEST_AND_PREFIX("3d-imageio" dcm3d "${DCMTK_LINK_LIBS_3D}" "${image3dio_path}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("2dimage" "io" dcm2d "${DCMTK_LINK_LIBS_2D}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" dcm3d "${DCMTK_LINK_LIBS_3D}")
     INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
 
   ELSEIF(STRICT_DEPENDECIES)

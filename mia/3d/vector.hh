@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifndef __MIA_3DVECTOR_HH
 #define __MIA_3DVECTOR_HH 1
@@ -32,6 +31,7 @@
 
 #include <mia/core/defines.hh>
 #include <mia/core/type_traits.hh>
+#include <mia/core/attributetype.hh>
 
 NS_MIA_BEGIN
 
@@ -183,7 +183,7 @@ public:
 
 	/// print out the formatted vector to the stream
 	void write(std::ostream& os)const {
-		os << "<" << x << "," << y << "," << z << ">"; 
+		os  << x << "," << y << "," << z; 
 	}
 
 	/// read the vector from a formatted string 
@@ -192,6 +192,9 @@ public:
 		
 		T r,s,t; 
 		is >> c;
+		// if we get the opening delimiter '<' then we also expect the closing '>'
+		// otherwise just read three coma separated values. 
+		// could use the BOOST lexicel cast for better error handling
 		if (c == '<') {
 			is >> r;
 			is >> c; 
@@ -214,8 +217,25 @@ public:
 			x = r; 
 			y = s; 
 			z = t;
-		}else
-			is.putback(c);
+		}else{
+			is.putback(c); 
+			is >> r;
+			is >> c; 
+			if (c != ',') {
+				is.clear(std::ios::badbit);
+				return; 
+			}
+			is >> s; 
+			is >> c; 
+			if (c != ',') {
+				is.clear(std::ios::badbit);
+				return; 
+			}
+			is >> t; 
+			x = r; 
+			y = s; 
+			z = t;
+		}
 	}
 
 	/// swizzle operator 
@@ -257,6 +277,21 @@ public:
 	/// the number of elements this vector holds (=3)
 	static const unsigned int  elements; 
 };
+
+
+struct EAttributeType_3d : public EAttributeType {
+	
+	static const int vector_3d_bit = 0x40000; 
+	
+	static bool is_vector3d(int type) {
+		return type & vector_3d_bit; 
+        }
+}; 
+
+template <typename T> 
+struct attribute_type<T3DVector<T>> : public EAttributeType_3d {
+        static const int value = attribute_type<T>::value | vector_3d_bit;
+}; 
 
 
 /// @cond NEVER  

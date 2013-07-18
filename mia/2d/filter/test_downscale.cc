@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <mia/internal/plugintester.hh>
 #include <mia/core/spacial_kernel.hh>
@@ -65,4 +64,38 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	for (auto i = fscaled->begin(); i != fscaled->end();++i) 
 		cverb << " " << *i; 
 	cverb << "\n"; 
+}
+
+BOOST_AUTO_TEST_CASE( test_non_skewedness )
+{
+	// this test fills the columns of the image with same values 
+	// and test whether after filtering the columns are still constant (exept for the boundaries) 
+	// this test checks if Bug #97 is fixed for 2D filters. 
+
+	C2DSSImage *fimage  = new C2DSSImage(C2DBounds(1687, 20));
+	auto i = fimage->begin(); 
+	for (size_t y = 0; y < 20; ++y)
+		for (size_t x = 0; x < 1687; ++x, ++i) {
+			*i = x; 
+		}
+
+	P2DImage image(fimage);
+	fimage->set_pixel_size(C2DFVector(2.0, 3.0));
+
+	auto filter = BOOST_TEST_create_from_plugin<C2DDownscaleFilterPlugin>("downscale:b=[<2,2>],kernel=gauss");
+
+	P2DImage scaled = filter->filter(*image);
+	C2DSSImage *fscaled = dynamic_cast<C2DSSImage *>(&*scaled);
+
+	BOOST_CHECK_EQUAL(scaled->get_size(), C2DBounds(844, 10));
+	BOOST_REQUIRE(scaled->get_size() == C2DBounds(844, 10));
+
+	BOOST_REQUIRE(fscaled);
+
+	BOOST_CHECK_EQUAL(fscaled->get_pixel_size(), C2DFVector(1.0f, 1.5f));
+	
+	for (size_t x = 0; x < 844; ++x)
+		for (size_t y = 3; y < 7; ++y)
+			BOOST_CHECK_EQUAL((*fscaled)(x, y), (*fscaled)(x, 2)); 
+
 }

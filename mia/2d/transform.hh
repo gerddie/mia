@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -25,7 +25,6 @@
 #include <memory>
 #include <ostream>
 
-#include <mia/core/vector.hh>
 #include <mia/core/transformation.hh>
 #include <mia/core/filter.hh>
 #include <mia/2d/matrix.hh>
@@ -257,23 +256,11 @@ public:
 	virtual const_iterator end() const = 0; 
 
 	/**
-	   Placeholder for transformations that might need special initializations
-	   like the B-spline based transformation
-	 */
-	virtual void reinit() const;
-
-	/**
 	   Transforation upscaling to new image size
 	   \param size new size of the transformation
 	   \returns shared pointer to upscaled transformation
 	 */
 	Pointer upscale(const C2DBounds& size) const;
-
-	/**
-	   concat a transformation,
-	   \param a the transformation to be added
-	 */
-	virtual void add(const C2DTransformation& a) = 0;
 
 	/**
 	   update a transformation by using a vector field

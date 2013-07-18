@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -59,7 +59,7 @@ private:
 	class RunCost : mia::TFilter<double>  {
 	public: 
 		typedef TFilter<double>::result_type result_type; 
-		RunCost(float scale, const std::vector<double>& QtQinv, const std::vector<int>& Q_mappping); 
+		RunCost( const std::vector<double>& QtQinv, const std::vector<int>& Q_mappping); 
 		
 		template <typename DataTempl> 
 		double operator()(const DataTempl& ref)const; 
@@ -67,7 +67,6 @@ private:
 		template <typename DataTempl> 
 		double operator()(const DataTempl& ref, Force& force)const; 
 	private: 
-		float m_scale; 
 		const std::vector<double>& m_QtQinv;
 		const std::vector<int>& m_Q_mappping; 
 	}; 
@@ -76,8 +75,7 @@ private:
 	
 	virtual double do_value(const Data& a, const Data& b) const;
 	
-	virtual double do_evaluate_force(const Data& a, const Data& /*b*/, 
-					 float scale, Force& force) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& /*b*/, Force& force) const; 
 	
 	virtual void post_set_reference(const Data& ref); 
 
@@ -151,21 +149,19 @@ void TLSDImageCost<TCost>::post_set_reference(const Data& ref)
 template <typename TCost> 
 double TLSDImageCost<TCost>::do_value(const Data& a, const Data& /*b*/) const
 {
-	RunCost rf(1.0, m_QtQinv, m_Q_mappping); 
+	RunCost rf(m_QtQinv, m_Q_mappping); 
 	return mia::filter(rf, a); 
 }
 
 template <typename TCost> 
-double TLSDImageCost<TCost>::do_evaluate_force(const Data& a, const Data& /*b*/, 
-					       float scale, Force& force) const
+double TLSDImageCost<TCost>::do_evaluate_force(const Data& a, const Data& /*b*/, Force& force) const
 {
-	RunCost rf(scale, m_QtQinv, m_Q_mappping); 
+	RunCost rf(m_QtQinv, m_Q_mappping); 
 	return mia::filter_and_output(rf, a, force); 
 }
 
 template <typename TCost> 
-TLSDImageCost<TCost>::RunCost::RunCost(float scale, const std::vector<double>& QtQinv, const std::vector<int>& Q_mappping):
-	m_scale(scale), 
+TLSDImageCost<TCost>::RunCost::RunCost(const std::vector<double>& QtQinv, const std::vector<int>& Q_mappping):
 	m_QtQinv(QtQinv), 
 	m_Q_mappping(Q_mappping)
 {

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,40 +14,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
- */
-
-/* 
-   LatexBeginPluginDescription{2D image stack filters}
-   
-   \subsection{Probability based region growing}
-   \label{fifof:regiongrow}
-   
-   \begin{description}
-   
-   \item [Plugin:] regiongrow
-   \item [Description:]  
-   \item [Input:] Gray scale images, all of the same size and pixel type  
-   \item [Output:] A binary mask representing the region 
-   
-   \plugtabstart
-   map & string & File name for the intensity--class probability map & -  \\
-   seed  & float & Seed threshold, pixels with a class probablility above or equal to this value 
-                    are used to seed the region growing & 0.98 \\
-   low & float & probability threshold for the acceptance of a probability, 
-                 during the region growing, pixels with a lower class probability are not 
-                 added to the region & 0.5 \\
-   depth & int & Number of slices to keep during processing. A smaller value 
-                 saves working memory but also reduces the possibility 
-                 for the region growing to grow backwards in the image stack & 5 \\
-   class & int & class to be segmented, must be lower then the number of classes in the probability map  & 2 \\
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
  */
 
 #ifdef HAVE_CONFIG_H

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <sstream>
 #include <iterator>
@@ -41,71 +40,99 @@
 
 template <typename T>
 struct vista_repnkind {
-	enum {value = VUnknownRepn};
+	static const VistaIORepnKind value = VistaIOUnknownRepn;
+	static const bool is_unsigned = false; 
 	typedef void type;
 };
 
 template <>
 struct vista_repnkind<unsigned char> {
-	enum {value = VUByteRepn};
-	typedef VUByte type;
+	static const VistaIORepnKind value = VistaIOUByteRepn;
+	static const bool is_unsigned = true; 
+	typedef VistaIOUByte type;
 };
 
 template <>
 struct vista_repnkind<signed char> {
-	enum {value = VSByteRepn};
-	typedef VSByte type;
+	static const VistaIORepnKind value = VistaIOSByteRepn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOSByte type;
 };
 
 template <>
 struct vista_repnkind<short> {
-	enum {value = VShortRepn};
-	typedef VShort type;
+	static const VistaIORepnKind value = VistaIOShortRepn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOShort type;
 };
 
 template <>
 struct vista_repnkind<int> {
-	enum {value = VLongRepn};
-	typedef VLong type;
+	static const VistaIORepnKind value = VistaIOLongRepn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOLong type;
+};
+
+template <>
+struct vista_repnkind<unsigned short> {
+	static const VistaIORepnKind value = VistaIOShortRepn;
+	static const bool is_unsigned = true; 
+	typedef VistaIOShort type;
+};
+
+template <>
+struct vista_repnkind<unsigned int> {
+	static const VistaIORepnKind value = VistaIOLongRepn;
+	static const bool is_unsigned = true; 
+	typedef VistaIOLong type;
 };
 
 template <>
 struct vista_repnkind<float> {
-	enum {value = VFloatRepn};
-	typedef VFloat type;
+	static const VistaIORepnKind value = VistaIOFloatRepn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOFloat type;
 };
 
 template <>
 struct vista_repnkind<double> {
-	enum {value = VDoubleRepn};
-	typedef VDouble type;
+	static const VistaIORepnKind value = VistaIODoubleRepn;
+	static const bool is_unsigned = false; 
+	typedef VistaIODouble type;
 };
 
 template <>
 struct vista_repnkind<bool> {
-	enum {value = VBitRepn};
-	typedef VBit type;
+	static const VistaIORepnKind value = VistaIOBitRepn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOBit type;
 };
 
 template <>
 struct vista_repnkind<std::string> {
-	enum {value = VStringRepn};
-	typedef VString type;
+	static const VistaIORepnKind value = VistaIOStringRepn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOString type;
 };
 
 
 template <typename I, typename O>
 struct dispatch_creat_vimage {
-	static VImage apply(I begin, I end, size_t x, size_t y, size_t z) {
-		VImage result = VCreateImage(z, y, x, (VRepnKind)vista_repnkind<typename std::iterator_traits<I>::value_type>::value);
-		std::copy(begin, end, (O *)VPixelPtr(result,0,0,0));
+	static VistaIOImage apply(I begin, I end, size_t x, size_t y, size_t z) {
+		typedef typename std::iterator_traits<I>::value_type pixel_type; 
+		VistaIOImage result = VistaIOCreateImage(z, y, x, vista_repnkind<pixel_type>::value);
+		
+		VistaIOSetAttr(VistaIOImageAttrList(result), "repn-unsigned", NULL, VistaIOBitRepn, 
+			       vista_repnkind<pixel_type>::is_unsigned);
+
+		std::copy(begin, end, (O *)VistaIOPixelPtr(result,0,0,0));
 		return result;
 	}
 };
 
 template <typename I>
 struct dispatch_creat_vimage<I, void> {
-	static VImage apply(I /*begin*/, I /*end*/, size_t /*x*/, size_t /*y*/, size_t /*z*/) {
+	static VistaIOImage apply(I /*begin*/, I /*end*/, size_t /*x*/, size_t /*y*/, size_t /*z*/) {
 		throw std::invalid_argument("unsupported pixel format in saving to vista");
 		return NULL;
 	}
@@ -113,22 +140,22 @@ struct dispatch_creat_vimage<I, void> {
 
 NS_MIA_BEGIN
 
-VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const mia::CAttributedData& attributes);
-VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributedData& attributes, const VAttrList target);
+VISTA4MIA_EXPORT void copy_attr_list(VistaIOAttrList target, const mia::CAttributedData& attributes);
+VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributedData& attributes, const VistaIOAttrList target);
 
 /**
    Helper class to indice atomatic destruction of vista attribute lists. 
  */
 class CVAttrList {
 public: 
-	CVAttrList(VAttrList list); 
+	CVAttrList(VistaIOAttrList list); 
 	~CVAttrList(); 
-	operator VAttrList(); 
+	operator VistaIOAttrList(); 
 	bool operator !() const; 
 	
-	VAttrList operator ->(); 
+	VistaIOAttrList operator ->(); 
 private: 
-	VAttrList m_list; 
+	VistaIOAttrList m_list; 
 		
 }; 
 

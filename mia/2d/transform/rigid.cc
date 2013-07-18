@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,21 +14,65 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-
 #include <fstream>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/transformfactory.hh>
-
 #include <mia/2d/transform/rigid.hh>
 
 
 NS_MIA_BEGIN
 using namespace std;
+
+C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size, 
+					       const C2DFVector& relative_rot_center, 
+					       const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
+	m_t(6),
+	m_size(size),
+	m_translation(0.0, 0.0),
+	m_rotation(0.0),
+	m_relative_rot_center(relative_rot_center), 
+	m_matrix_valid(false)
+{
+	initialize();
+}
+
+C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
+					       float rotation, 
+					       const C2DFVector& relative_rot_center,
+					       const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
+	m_t(6),
+	m_size(size),
+	m_translation(translation),
+	m_rotation(rotation),
+	m_relative_rot_center(relative_rot_center), 
+	m_matrix_valid(false)
+{
+	initialize(); 
+}
+
+C2DRigidTransformation::C2DRigidTransformation(const C2DRigidTransformation& other):
+	C2DTransformation(other),
+	m_t(other.m_t),
+	m_size(other.m_size),
+	m_translation(other.m_translation),
+	m_rotation(other.m_rotation),
+	m_relative_rot_center(other.m_relative_rot_center), 
+	m_rot_center(other.m_rot_center), 
+	m_matrix_valid(other.m_matrix_valid)
+{
+}
+
+void C2DRigidTransformation::initialize()
+{
+	m_rot_center = C2DFVector(m_size -C2DBounds::_1) * m_relative_rot_center; 
+	cvdebug() << "m_rot_center= " << m_rot_center << "\n"; 
+
+}
 
 C2DFVector C2DRigidTransformation::apply(const C2DFVector& x) const
 {
@@ -47,26 +92,6 @@ C2DFVector C2DRigidTransformation::transform(const C2DFVector& x)const
 			  );
 }
 
-C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf):
-	C2DTransformation(ipf),
-	m_t(6),
-	m_size(size),
-	m_translation(0.0, 0.0),
-	m_rotation(0.0),
-	m_matrix_valid(false)
-{
-
-}
-
-C2DRigidTransformation::C2DRigidTransformation(const C2DRigidTransformation& other):
-	C2DTransformation(other),
-	m_t(other.m_t),
-	m_size(other.m_size),
-	m_translation(other.m_translation),
-	m_rotation(other.m_rotation),
-	m_matrix_valid(other.m_matrix_valid)
-{
-}
 
 C2DTransformation *C2DRigidTransformation::do_clone()const
 {
@@ -85,17 +110,6 @@ C2DTransformation *C2DRigidTransformation::invert()const
 	return result;
 }
 
-
-C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
-					       float rotation, const C2DInterpolatorFactory& ipf):
-	C2DTransformation(ipf),
-	m_t(6),
-	m_size(size),
-	m_translation(translation),
-	m_rotation(rotation),
-	m_matrix_valid(false)
-{
-}
 
 size_t C2DRigidTransformation::degrees_of_freedom() const
 {
@@ -190,7 +204,8 @@ P2DTransformation C2DRigidTransformation::do_upscale(const C2DBounds& size) cons
 {
 	C2DFVector new_trans(float(size.x) / (float)get_size().x * m_translation.x,
 			     float(size.y) / (float)get_size().y * m_translation.y);
-	return P2DTransformation(new C2DRigidTransformation(size, new_trans, m_rotation, get_interpolator_factory()));
+	return P2DTransformation(new C2DRigidTransformation(size, new_trans, m_rotation, 
+							    m_relative_rot_center, get_interpolator_factory()));
 }
 
 C2DFMatrix C2DRigidTransformation::derivative_at(const C2DFVector& MIA_PARAM_UNUSED(x)) const
@@ -224,10 +239,15 @@ void C2DRigidTransformation::evaluate_matrix() const
 
 	m_t[0] = cosa;
 	m_t[1] = -sina;
-	m_t[2] = m_translation.x;
 	m_t[3] = sina;
 	m_t[4] = cosa;
-	m_t[5] = m_translation.y;
+
+	C2DFVector d(m_t[0] * m_rot_center.x + m_t[1] * m_rot_center.y,
+		     m_t[3] * m_rot_center.x + m_t[4] * m_rot_center.y); 
+		
+
+	m_t[2] = m_translation.x - d.x + m_rot_center.x;
+	m_t[5] = m_translation.y - d.y + m_rot_center.y;
 
 	m_matrix_valid = true;
 }
@@ -235,9 +255,9 @@ void C2DRigidTransformation::evaluate_matrix() const
 float C2DRigidTransformation::get_max_transform() const
 {
 	// check the corners
-	float m =      (C2DFVector(get_size()) -  apply(C2DFVector(get_size()))).norm2();
-	float test0Y = (C2DFVector(0, get_size().y) - apply(C2DFVector(0, get_size().y))).norm2();
-	float testX0 = (C2DFVector(get_size().x, 0) - apply(C2DFVector(get_size().x, 0))).norm2();
+	float m =      (C2DFVector(get_size() - C2DBounds::_1) -  apply(C2DFVector(get_size()  - C2DBounds::_1))).norm2();
+	float test0Y = (C2DFVector(0, get_size().y - 1) - apply(C2DFVector(0, get_size().y - 1))).norm2();
+	float testX0 = (C2DFVector(get_size().x - 1, 0) - apply(C2DFVector(get_size().x - 1, 0))).norm2();
 	float test00 = apply(C2DFVector(0, 0)).norm2();
 
 	if (m < test0Y)
@@ -251,11 +271,6 @@ float C2DRigidTransformation::get_max_transform() const
 	return sqrt(m);
 }
 
-void C2DRigidTransformation::add(const C2DTransformation& /*other*/)
-{
-	// *this  = other * *this
-	assert(0 && "not implemented");
-}
 
 C2DFVector C2DRigidTransformation::operator () (const C2DFVector& x) const
 {
@@ -277,16 +292,17 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, CDoubleV
 	vector<double> r(params.size(), 0.0);
 
 	auto g = gradient.begin();
-	for (size_t y = 0; y < m_size.y; ++y) {
-		for (size_t x = 0; x < m_size.x; ++x, ++g) {
+
+	double fy = - m_rot_center.y; 
+	for (size_t y = 0; y < m_size.y; ++y, fy += 1.0) {
+		double fx = - m_rot_center.x; 
+		for (size_t x = 0; x < m_size.x; ++x, fx += 1.0, ++g) {
 			r[0] += g->x;
 			r[1] += g->y;
-			r[2] += -float(y) * g->x + float(x) * g->y; 
+			r[2] += - fy * g->x + fx * g->y; 
 		}
 	}
-	params[0] = r[0];
-	params[1] = r[1];
-	params[2] = r[2];
+	copy(r.begin(), r.end(), params.begin()); 
 }
 
 
@@ -337,38 +353,28 @@ float C2DRigidTransformation::pertuberate(C2DFVectorfield& /*v*/) const
 	assert(!"not implemented");
 }
 
-class C2DRigidTransformCreator: public C2DTransformCreator {
-public: 
-	C2DRigidTransformCreator(const C2DInterpolatorFactory& ipf); 
-private: 
-	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
-};
-
-C2DRigidTransformCreator::C2DRigidTransformCreator(const C2DInterpolatorFactory& ipf):
-	C2DTransformCreator(ipf)
+C2DRigidTransformCreator::C2DRigidTransformCreator(const C2DFVector& relative_rot_center, const C2DInterpolatorFactory& ipf):
+	C2DTransformCreator(ipf), 
+	m_relative_rot_center(relative_rot_center)
 {
 }
 
 P2DTransformation C2DRigidTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
 {
-	return P2DTransformation(new C2DRigidTransformation(size, ipf));
+	return P2DTransformation(new C2DRigidTransformation(size, m_relative_rot_center, ipf));
 }
-
-class C2DRigidTransformCreatorPlugin: public C2DTransformCreatorPlugin {
-public:
-	C2DRigidTransformCreatorPlugin();
-	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	const std::string do_get_descr() const;
-};
 
 C2DRigidTransformCreatorPlugin::C2DRigidTransformCreatorPlugin():
 	C2DTransformCreatorPlugin("rigid")
 {
+	add_parameter("rot-center", make_param(m_relative_rot_center, false, 
+					       "Relative rotation center, i.e.  <0.5,0.5> corresponds "
+					       "to the center of the support rectangle"));
 }
 
 C2DTransformCreator *C2DRigidTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return new C2DRigidTransformCreator(ipf);
+	return new C2DRigidTransformCreator(m_relative_rot_center, ipf);
 }
 
 const std::string C2DRigidTransformCreatorPlugin::do_get_descr() const

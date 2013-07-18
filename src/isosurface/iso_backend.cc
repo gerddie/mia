@@ -1,23 +1,22 @@
-/* -*- mia-c++ -*- 
-**
-** Copyright (C) 1999 Max-Planck-Institute of Cognitive Neurosience
-**                    Gert Wollny <wollnyAtcbs.mpg.de>
-**  
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU Lesser Public License as published by
-** the Free Software Foundation; either version 2.1 of the License, or
-** (at your option) any later version.
-** 
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU Lesser Public License for more details.
-** 
-** You should have received a copy of the GNU Lesser Public License
-** along with this program; if not, write to the Free Software 
-** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
-/* $Id: iso_backend.cc 954 2006-07-13 12:47:09Z write1 $ */
+/* -*- mia-c++  -*-
+ *
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ *
+ * MIA is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 #include <gts.h>
 #include <mia/3d/image.hh>
@@ -453,7 +452,7 @@ static GtsSurface *iso_surface_optimize(GtsSurface *mesh, gint max_edges, gint m
     \param verbose give some output
     \returns an GtsSurface
 */
-GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, gint max_faces, 
+EXPORT GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, gint max_faces, 
 			gdouble max_cost, gboolean bordered, 
 			gfloat coarsen_method_factor)
 {
@@ -463,7 +462,7 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 	return iso_surface_optimize(mesh, max_edges, max_faces, max_cost, coarsen_method_factor); 
 }
 
-GtsSurface *iso_surface(const vector<string>& slices, gfloat iso_value, gint max_edges, gint max_faces, 
+EXPORT GtsSurface  *iso_surface(const vector<string>& slices, gfloat iso_value, gint max_edges, gint max_faces, 
 			gdouble max_cost, gboolean bordered, 
 			gfloat coarsen_method_factor)
 {

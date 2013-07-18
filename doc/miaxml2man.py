@@ -27,6 +27,8 @@ import string
 import htmlentitydefs
 import re
 
+sys.dont_write_bytecode = True
+
 modules = {'miareadxml' : [0, '', 'none://miareadxml.py' ]
            }
 
@@ -36,6 +38,9 @@ from miareadxml import parse_file
 def get_date_string():
     lt = time.localtime(time.time())
     return "%d %s %d"% (lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
+
+def get_version():
+    return "2.0.10"
 
 #taken from http://effbot.org/zone/re-sub.htm#unescape-html
     
@@ -69,7 +74,7 @@ def clean (text):
 
 def write_man_file(descr):
     name = escape_dash(descr.name)
-    print ".TH %s 1 \"%s\" \"git-head\"  \"USER COMMANDS\"" %(descr.name, get_date_string())
+    print ".TH %s 1 \"%s\" \"%s\"  \"USER COMMANDS\"" %(escape_dash(descr.name), get_date_string(), get_version())
     print ".SH NAME"
     print name, 
     print "\- %s" % (clean(descr.whatis))
@@ -133,12 +138,15 @@ def write_man_file(descr):
             for c in descr.Example.code:
                 print ".HP"
                 print "%s %s" % (name, clean(c.text))
+
+    print ".SH AUTHOR(s)"
+    print clean(descr.author)
     
     print ".SH COPYRIGHT"
-    print "This software is copyright (c) Gert Wollny et al."
-    print "It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it"
-    print "under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later)."
-
+    print """This software is Copyright (c) 1999\(hy2013 Leipzig, Germany and Madrid, Spain.
+It comes  with  ABSOLUTELY  NO WARRANTY  and  you  may redistribute it under the terms of the GNU 
+GENERAL PUBLIC LICENSE Version 3 (or later). For more 
+information run the program with the option '\-\-copyright'."""
 
 
 X=parse_file(sys.argv[1])

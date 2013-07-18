@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -133,7 +133,7 @@ protected:
 	   a compatibility layer to make it possible to use STL algorithms and constructs.
 	*/
 template <typename T> 
-class TVector : public gsl_vector_dispatch<T> {
+class TVector : gsl_vector_dispatch<T> {
 public: 
 	typedef typename gsl_vector_dispatch<T>::iterator iterator; 
 	typedef typename gsl_vector_dispatch<T>::const_iterator const_iterator; 
@@ -154,7 +154,7 @@ public:
 	   \param size 
 	   \param clear if set to \a true set all values to zero at allocation 
 	 */
-	TVector(size_type size, bool clear=true);
+	TVector(size_type size, bool clear);
 
 	/**
 	   Wrap a pre-constructed GSL vector. The passed GSL-vector will not be destroyed 

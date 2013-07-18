@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -40,7 +40,7 @@ public:
 	TMIImageCost(size_t fbins, mia::PSplineKernel fkernel, size_t rbins, mia::PSplineKernel rkernel, double cut); 
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
 	virtual void post_set_reference(const Data& ref); 
 	mutable mia::CSplineParzenMI m_parzen_mi; 
 
@@ -58,7 +58,6 @@ struct FEvalMI : public mia::TFilter<double> {
 		m_parzen_mi.fill(a.begin(), a.end(), b.begin(), b.end()); 
 		return  m_parzen_mi.value(); 
 	}
-	bool m_normalize; 
 	mia::CSplineParzenMI& m_parzen_mi; 
 }; 
 
@@ -81,9 +80,8 @@ double TMIImageCost<T>::do_value(const Data& a, const Data& b) const
 
 template <typename Force>
 struct FEvalForce: public mia::TFilter<float> {
-	FEvalForce(Force& force, float scale, mia::CSplineParzenMI& parzen_mi):
+	FEvalForce(Force& force, mia::CSplineParzenMI& parzen_mi):
 		m_force(force), 
-		m_scale(scale),
 		m_parzen_mi(parzen_mi)
 		{
 		}
@@ -95,10 +93,10 @@ struct FEvalForce: public mia::TFilter<float> {
 		typename R::const_iterator bi = b.begin();
 	
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
-			float delta = m_parzen_mi.get_gradient(*ai, *bi); 
-			m_force[i] = gradient[i] * delta * m_scale;
+			float delta = -m_parzen_mi.get_gradient_slow(*ai, *bi); 
+			m_force[i] = gradient[i] * delta;
 		}
-		return m_parzen_mi.value() * m_scale; 
+		return m_parzen_mi.value(); 
 	}
 private: 
 	Force& m_force; 
@@ -111,11 +109,11 @@ private:
    This is the force evaluation routine of the cost function   
 */
 template <typename T> 
-double TMIImageCost<T>::do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const
+double TMIImageCost<T>::do_evaluate_force(const Data& a, const Data& b, Force& force) const
 {
 	assert(a.get_size() == b.get_size()); 
 	assert(a.get_size() == force.get_size()); 
-	FEvalForce<Force> ef(force, scale, m_parzen_mi); 
+	FEvalForce<Force> ef(force, m_parzen_mi); 
 	return filter(ef, a, b); 
 }
 

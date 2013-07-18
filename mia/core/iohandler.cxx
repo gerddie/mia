@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <stdexcept>
 #include <mia/core/bfsv23dispatch.hh>
@@ -66,7 +65,7 @@ TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 		fsuffix = fname; 
 	
 	if (fsuffix[0] != '.') 
-		fsuffix = string(".") + fsuffix; 
+		fsuffix = std::string(".") + fsuffix; 
 	
 	cvdebug() << "looking up plugin for '" << fsuffix << "'\n"; 
 
@@ -137,8 +136,12 @@ const std::set<std::string> TIOPluginHandler<I>::get_supported_suffix_set() cons
 {
 	TRACE_FUNCTION; 
 	std::set<std::string> result; 
-	for (auto i = m_suffixmap.begin(); i != m_suffixmap.end(); ++i)
-		result.insert(i->first); 
+	for (auto i = m_suffixmap.begin(); i != m_suffixmap.end(); ++i) {
+		if (i->first[0] == '.') 
+			result.insert(i->first.substr(1, std::string::npos));
+		else 
+			result.insert(i->first); 
+	}
 	return result; 
 }
 
@@ -214,7 +217,7 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 template <typename T>
 void  TIOPluginHandler<T>::do_print_help(std::ostream& os) const
 {
-	os << ". Supported file types based on prefered extension are:\n"; 
+	os << ". Supported file types based on preferred extension are:\n"; 
 	for (auto i = this->begin(); i != this->end(); ++i) {
 		os << "  '." << i->second->get_preferred_suffix() << "': " << i->second->get_descr() << "\n"; 
 	}
@@ -239,12 +242,12 @@ bool TIOPluginHandler<I>::save(const std::string& fname, const Data& data) const
 	
 	// bail out with an error
 	if (!p) {
-		stringstream errmsg; 
+		std::stringstream errmsg; 
 		errmsg << "Unable to find an appropriate plugin to save to file "
 		       << " '" << fname << "' (based on its extension) "; 
  		if (!data.get_source_format().empty())
 			errmsg << " or to format = '" << data.get_source_format() << "'";
-		throw invalid_argument(errmsg.str()); 
+		throw std::invalid_argument(errmsg.str()); 
 	}
 	return p->save(fname, data); 
 }

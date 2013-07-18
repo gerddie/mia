@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -62,10 +62,6 @@ extern bool fborder (long index, long nx, long ny);
 class C2DSolveCG {
 
   private:
-
-	C2DFImage& m_weight;
-	C2DFImage& m_gain;
-
 	double m_lambda1;
 	double m_lambda2;
 
@@ -103,7 +99,7 @@ class C2DSolveCG {
 
 	double m_r1rho1;   // speichert r1 * rho1
 	double m_r2rho2;   // speichert r2 * rho2
-	double m_normr, m_normr0;
+	double m_normr0;
 	double m_q, m_e, m_sprod;
 
 	// minimal residuum

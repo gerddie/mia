@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -32,24 +32,8 @@ NS_MIA_BEGIN
 class C3DAffineTransformation;
 class EXPORT_3D C3DAffineTransformation : public C3DTransformation {
 public:
-	enum EParamPosition {
-		pp_translate_x = 0,
-		pp_translate_y,
-		pp_rotate,
-		pp_scale_x,
-		pp_scale_y,
-		pp_shear
-	};
-
-
 	C3DAffineTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
-	C3DAffineTransformation(const C3DBounds& size,std::vector<double> transform, const C3DInterpolatorFactory& ipf);
-
-	// these functions should be removed 
-	void scale(float x, float y, float z);
-	void translate(float x, float y, float z);
-	void rotate(float angle);
-	void shear(float v);
+	C3DAffineTransformation(const C3DBounds& size,  std::vector<double> transform, const C3DInterpolatorFactory& ipf);
 
 	C3DFVector apply(const C3DFVector& x) const;
 
@@ -83,7 +67,6 @@ public:
 	virtual const C3DBounds& get_size() const;
 	virtual C3DTransformation *invert() const;
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
-	virtual void add(const C3DTransformation& a);
 	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C3DFVectorfield& a);
@@ -97,6 +80,8 @@ public:
 	virtual C3DFVector operator () (const C3DFVector& x) const;
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
 	C3DFVector transform(const C3DFVector& x)const;
+
+	// these should go away 
 	virtual float divergence() const;
 	virtual float curl() const;
 	float grad_divergence() const;
@@ -105,7 +90,6 @@ public:
 	double get_divcurl_cost(double wd, double wr) const; 
 private:
 	virtual C3DTransformation *do_clone() const;
-	void evaluate_t() const;
 	C3DAffineTransformation(const C3DAffineTransformation& other);
 	C3DAffineTransformation& operator =(const C3DAffineTransformation& other);
 	std::vector<double> m_t;

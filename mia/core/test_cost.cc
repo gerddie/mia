@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -37,7 +37,7 @@ using namespace boost::unit_test;
 
 class TestCost: public TCost<double, double> {
 	double do_value(const double& a, const double& b) const;
-	double do_evaluate_force(const double& a, const double& b, float scale, double& force) const;
+	double do_evaluate_force(const double& a, const double& b, double& force) const;
 };
 
 
@@ -49,10 +49,10 @@ double TestCost::do_value(const double& a, const double& b) const
 }
 
 
-double TestCost::do_evaluate_force(const double& a, const double& b, float scale, double& force) const
+double TestCost::do_evaluate_force(const double& a, const double& b, double& force) const
 {
 	double delta = a - b;
-	force  = scale * a * delta;
+	force  = a * delta;
 	return do_value(a, b); 
 }
 
@@ -67,9 +67,9 @@ BOOST_FIXTURE_TEST_CASE( test_cost_basic, TestCost )
 	BOOST_CHECK_CLOSE(value(a), 2.0, 0.1);
 
 	double force = 1.0;
-	BOOST_CHECK_CLOSE(evaluate_force(a, 3.0, force), 2.0, 0.1); 
+	BOOST_CHECK_CLOSE(evaluate_force(a, force), 2.0, 0.1); 
 
-	BOOST_CHECK_CLOSE(force, -12.0, 0.1);
+	BOOST_CHECK_CLOSE(force, -4.0, 0.1);
 }
 
 #include <mia/core/cost.cxx>

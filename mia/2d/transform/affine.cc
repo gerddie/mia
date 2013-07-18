@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -251,25 +251,6 @@ float C2DAffineTransformation::get_max_transform() const
 		m = test00;
 	return sqrt(m);
 }
-
-void C2DAffineTransformation::add(const C2DTransformation& other)
-{
-	// *this  = other * *this
-	const C2DAffineTransformation& a = dynamic_cast<const C2DAffineTransformation&>(other);
-
-	vector<double> h(m_t.size());
-
-	h[0] = a.m_t[0] * m_t[0] + a.m_t[1] * m_t[3];
-	h[1] = a.m_t[0] * m_t[1] + a.m_t[1] * m_t[4];
-	h[2] = a.m_t[0] * m_t[2] + a.m_t[1] * m_t[5] + a.m_t[2];
-
-	h[3] = a.m_t[3] * m_t[0] + a.m_t[4] * m_t[3];
-	h[4] = a.m_t[3] * m_t[1] + a.m_t[4] * m_t[4];
-	h[5] = a.m_t[3] * m_t[2] + a.m_t[4] * m_t[5] + a.m_t[5];
-
-	copy(h.begin(), h.end(), m_t.begin());
-}
-
 
 C2DFVector C2DAffineTransformation::operator () (const C2DFVector& x) const
 {

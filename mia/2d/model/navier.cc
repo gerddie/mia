@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,43 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-/*
-  LatexBeginPluginDescription{2D model based registration}
-
-  \subsection{Navier-Stokes PDE, SOR version}
-  \label{model2d:navier}
-  
-  \begin{description}
-   
-  \item [Plugin:] navier
-   \item [Description:] This plug-in provides a version of the Navier-Stockes based 
-   registration model that allow for linear-elastic or fluid dynamic registration models. 
-   \begin{equation}
-   \mu \nabla ^{2}\vu(\vx)+(\mu +\lambda )\nabla (\nabla \cdot \vu(\vx)) = -[S(\vx)-R(\vx)]\left. \nabla S\right| _{\vx}\ \
-   \end{equation}
-   
-   The plug-in solves the underlying PDE by running a full SOR algorithm. 
-   For a version that uses a Gauss-Southwell relaxation use \emph{naviera}
-   \ref{model2d:naviera}.
-
-   \plugtabstart
-   mu & float & shear parameter $\mu$  & 1.0 \\
-   lambda & float & dilation parameter $\lambda$  & 1.0 \\
-   omega & float & relaxation parameter & 1.0 \\
-   epsilon & float & stopping parameter & 0.0001 \\
-   iter & int & maximum number of iterations & 100 \\
-   \plugtabend
-
-   \end{description}
-
-						
-  LatexEnd 
-*/ 
 
 #include <limits>
 

@@ -1,7 +1,8 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
 #
-# This program is free software; you can redistribute it and/or modify
+# MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
@@ -12,10 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
 SET(MIACORE_SRC_BASE 
@@ -86,6 +84,7 @@ SET(MIACORE_SRC_BASE
 
 SET(MIACORE_HEADER_BASE
   attributes.hh
+  attributetype.hh
   boundary_conditions.hh
   bfsv23dispatch.hh
   callback.hh
@@ -124,7 +123,6 @@ SET(MIACORE_HEADER_BASE
   history.hh
   histogram.hh
   index.hh
-  splinekernel.hh
   import_handler.hh
   iodata.hh
   iohandler.cxx iohandler.hh
@@ -152,13 +150,16 @@ SET(MIACORE_HEADER_BASE
   scaler1d.hh
   shape.hh shape.cxx
   seriesstats.hh
+  singular_refobj.hh
   slopestatistics.hh
   slopeclassifier.hh
   slopevector.hh
+  splinekernel.hh
   splineparzenmi.hh
   spacial_kernel.hh
   sparse_solver.hh
   sqmin.hh
+  statistics.hh
   streamredir.hh
   testplugin.hh
   threadedmsg.hh
@@ -177,7 +178,6 @@ SET(MIACORETEST_SRC
   test_core.cc
   test_cost.cc
   test_filter.cc
-  test_handler.cc
   test_kernels.cc
   test_optparam.cc
   test_optionparser.cc
@@ -231,11 +231,9 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/revision.hh.cmake ${CMAKE_CURRENT_BIN
 SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC})
 SET(MIACORE_HEADER ${MIACORE_HEADER_BASE} ${ITPP_HEADER} ${FFTWF_HEADER} ${PWPDF_HEADER})
 
-SET(miacore_deps miagsl ${BASELIBS} ${TBB_LIBRARIES} ${FFTWF_LIBRARIES})
+SET(miacore_deps miagsl ${BASELIBS} ${TBB_LIBRARIES} ${FFTWF_LIBRARIES} ${XMLPP_LIBRARIES})
 MIA_ADD_LIBRARY(miacore "${MIACORE_SRC}" "${miacore_deps}")
 ADD_DEPENDENCIES(miacore revision.hh)
-
-TARGET_LINK_LIBRARIES(miacore ${XMLPP_LIBRARIES})
 
 IF(PWPDF_FOUND AND FFTWD_FOUND)
   TARGET_LINK_LIBRARIES(miacore ${PWPDF_LIBRARIES})
@@ -292,6 +290,7 @@ NEW_TEST(filetools miacore)
 NEW_TEST(fixedwidthoutput miacore)
 NEW_TEST(flagstring  miacore)
 NEW_TEST(fullstats miacore)
+NEW_TEST(handler miacore)
 NEW_TEST(histogram miacore)
 NEW_TEST(index miacore)
 NEW_TEST(interpolator1d miacore)
@@ -304,6 +303,7 @@ NEW_TEST(productcache  miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(scaler1d miacore)
 NEW_TEST(seriesstats miacore)
+NEW_TEST(singular_refobj miacore)
 NEW_TEST(shape miacore)
 NEW_TEST(simpson miacore)
 NEW_TEST(slopeclassifier miacore)
@@ -315,7 +315,7 @@ NEW_TEST(statistics miacore)
 NEW_TEST(threadedmsg miacore)
 NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
-NEW_TEST(watch miacore)
+#NEW_TEST(watch miacore)
 NEW_TEST(waveletslopeclassifier miacore)
 
 IF(ITPP_FOUND)

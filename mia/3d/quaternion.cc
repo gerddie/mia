@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,14 +14,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_eigen.h>
-
 
 #include <mia/3d/quaternion.hh>
 #include <mia/core/utils.hh>
@@ -32,6 +31,7 @@
 NS_MIA_BEGIN 
 using std::swap; 
 using std::unique_ptr; 
+using std::invalid_argument; 
 
 Quaternion::Quaternion():
 	m_w(0.0)
@@ -78,13 +78,15 @@ Quaternion::Quaternion(const C3DFMatrix& m)
 
 	gsl_eigen_symmv_sort (eval.get(), evec.get(), GSL_EIGEN_SORT_ABS_ASC);
 
-	for(int i = 0; i < 4; ++i) {
-		cvdebug() << "eval [" << i << "] = " << gsl_vector_get(eval.get(), i) << "\n"; 
-		cvdebug() << "evec [" << i << "] = "; 
-		for (int j = 0; j < 4; ++j) {
-			cverb << gsl_matrix_get(evec.get(), j, i) << ", "; 
+	if (cverb.get_level() <= vstream::ml_debug ) {
+		for(int i = 0; i < 4; ++i) {
+			cvdebug() << "eval [" << i << "] = " << gsl_vector_get(eval.get(), i) << "\n"; 
+			cvdebug() << "evec [" << i << "] = "; 
+			for (int j = 0; j < 4; ++j) {
+				cverb << gsl_matrix_get(evec.get(), j, i) << ", "; 
+			}
+			cverb << "\n\n"; 
 		}
-		cverb << "\n\n"; 
 	}
 
 	m_v.x = gsl_matrix_get(evec.get(), 0, 3); 
@@ -116,6 +118,35 @@ Quaternion::Quaternion(const C3DDVector& rot):
 	m_v.y = cos_phi * sin_psi* cos_theta + sin_phi * cos_psi * sin_theta;  
 	m_v.z = cos_phi * cos_psi* sin_theta - sin_phi * sin_psi * cos_theta; 
 
+}
+
+
+#if 0 
+Quaternion::Quaternion(const C3DFMatrix& rot)
+{
+	double q4  = 1 + rot.x.x + rot.y.y + rot.z.z; 
+	if (q4 <= 0) {
+		throw create_exception<invalid_argument>("Quaternion: Matrix ", rot, 
+							 " is not evem close to be a rotation matrix.");
+	}
+	
+	m_w = 0.5 * sqrt(q4);
+	double s = 0.25 / m_w; 
+	
+	m_v.x = s * (rot.z.y - rot.y.z);  
+	m_v.y = s * (rot.x.z - rot.z.x); 
+	m_v.z = s * (rot.y.x - rot.x.y);  
+}
+#endif 
+
+const C3DFMatrix Quaternion::get_rotation_matrix() const
+{
+	const C3DDMatrix qq(m_v.x * m_v, m_v.y * m_v, m_v.z * m_v);  
+	const C3DDMatrix Q(C3DDVector(0, -m_v.z, m_v.y), 
+			   C3DDVector(m_v.z, 0, -m_v.x), 
+			   C3DDVector(-m_v.y, m_v.x, 0)); 
+	const C3DDMatrix r = (m_w * m_w - m_v.norm2()) * C3DDMatrix::_1 + 2.0 * qq + 2.0 * m_w * Q; 
+	return C3DFMatrix(r); 
 }
 
 Quaternion::Quaternion(double w, double  x, double y, double z):
@@ -165,6 +196,7 @@ Quaternion Quaternion::inverse() const
 }
 
 
+#if 0 
 const C3DFMatrix Quaternion::get_rotation_matrix() const
 {
 	const double a2 = m_w   * m_w;
@@ -184,6 +216,7 @@ const C3DFMatrix Quaternion::get_rotation_matrix() const
 			  C3DFVector(bd - ac, cd + ab, a2 - b2 - c2 + d2));
 	
 }
+#endif 
 
 void Quaternion::print(std::ostream& os) const
 {

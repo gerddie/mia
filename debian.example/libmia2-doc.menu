@@ -1,6 +1,0 @@
-?package(libmia2-doc):needs=x11 \
-	section="Help" \
-        title="Mia Programmes Reference" \
-        longtitle="Mia 2.0 Doxygen renerated programmers reference" \
-	command="xdg-open /usr/share/doc/mia-2.0/libdoc/index.html"
-

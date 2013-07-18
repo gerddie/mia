@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,12 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-
 #ifndef __mia_3d_matrix_hh
 #define __mia_3d_matrix_hh
 
@@ -146,8 +144,11 @@ struct T3DMatrix: public T3DVector< T3DVector<T> > {
 }; 
 
 
-/// a simple 3x3 matrix 
+/// a simple 3x3 matrix with single precision floating point values 
 typedef T3DMatrix<float> C3DFMatrix; 
+
+/// a simple 3x3 matrix with double precision floating point values 
+typedef T3DMatrix<double> C3DDMatrix; 
 
 
 template <typename T> 
@@ -156,7 +157,7 @@ const T3DMatrix<T> T3DMatrix<T>::_1(T3DVector< T >(1,0,0),
 				 T3DVector< T >(0,0,1));
 
 template <typename T> 
-const T3DMatrix<T> T3DMatrix<T>::_0;
+const T3DMatrix<T> T3DMatrix<T>::_0 = T3DMatrix<T>();
 
 
 template <typename T> 
@@ -178,7 +179,9 @@ T3DMatrix<T> T3DMatrix<T>::diagonal(const T3DVector<T>& v)
 template <typename T> 
 template <typename I>
 T3DMatrix<T>::T3DMatrix(const T3DMatrix<I>& o):
-	T3DVector<T3DVector<T> >(o.x, o.y, o.z)
+	T3DVector<T3DVector<T> >(T3DVector<T>(o.x), 
+				 T3DVector<T>(o.y), 
+				 T3DVector<T>(o.z))
 {
 }
 

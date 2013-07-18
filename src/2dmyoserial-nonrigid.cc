@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,12 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-
 
 #define VSTREAM_DOMAIN "2dmyoserial"
 
@@ -58,7 +56,7 @@ const SProgramDescription g_general_help = {
 	 "Store the result in 'registered.set'.\n"}, 
 	
 	
-	{pdi_example_code, "  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5"}
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2  -r 30 image:cost=mi -f spline:rate=5,penalty=[divcurl:weight=5]"}
 }; 
 
 int do_main( int argc, char *argv[] )
@@ -94,7 +92,7 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
-	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
+	options.add(make_opt( transform_creator, "spline:rate=16,penalty=[divcurl:weight=0.01]", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 	options.add(make_opt( skip, "skip", 'k', "skip registration of these images at the beginning of the series")); 
 
@@ -158,7 +156,7 @@ int do_main( int argc, char *argv[] )
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	
-	input_set.set_prefered_reference(reference); 
+	input_set.set_preferred_reference(reference); 
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );

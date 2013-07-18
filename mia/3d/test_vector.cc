@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -54,10 +54,10 @@ static void test_3dvectors()
 	ostringstream so;
 	so << a;
 	cvdebug() << so.str() << "\n";
-	BOOST_CHECK(so.str() == string("<1,2,3>"));
+	BOOST_CHECK(so.str() == string("1,2,3"));
 
 	C3DFVector sc(3.0f, 4.0f, 1.0f);
-	istringstream si("<1.0,2.0,3.0>");
+	istringstream si("1.0,2.0,3.0");
 	si >> sc;
 	BOOST_CHECK (sc == a);
 
@@ -105,7 +105,7 @@ static void test_float_vector_option()
 	C3DFVector v(1,2,3);
 
 	PCmdOption popt(make_opt(v,  "3dvector", 'f', "a float 3d vector option"));
-	const char *str_value = "<1.2,3.4,8.2>";
+	const char *str_value = "1.2,3.4,8.2";
 	try {
 		popt->set_value(str_value);
 		BOOST_CHECK(v.x == 1.2f && v.y == 3.4f && v.z == 8.2f);
@@ -114,7 +114,7 @@ static void test_float_vector_option()
 		BOOST_FAIL(x.what());
 	}
 
-	const char *str_value_err = "1.2,3.4,8.2";
+	const char *str_value_err = "1.2,3.4,8.2x";
 	try {
 		popt->set_value(str_value_err);
 		BOOST_FAIL("error value not detected");
@@ -129,7 +129,7 @@ void test_size_vector_option()
 	C3DBounds v(1,2,3);
 
 	PCmdOption popt(make_opt(v,  "3dbounds", 'f', "a 3d size option"));
-	const char *str_value = "<12,34,256>";
+	const char *str_value = "12,34,256";
 	try {
 		cvdebug() << "initialising from '" << str_value<< "'\n";
 		popt->set_value(str_value);
@@ -139,7 +139,7 @@ void test_size_vector_option()
 		BOOST_FAIL(x.what());
 	}
 
-	const char *str_value_err = "<1.2,3.4,8.2>";
+	const char *str_value_err = "1.2,3.4,8.2";
 	try {
 		popt->set_value(str_value_err);
 		BOOST_FAIL("error value not detected");

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -24,6 +24,7 @@
 #include <mia/core/attributes.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/image.hh>
+#include <mia/3d/image.hh>
 
 #ifdef __GNUC__
 #  define EXPORT_DICOM __attribute__((visibility("default")))
@@ -36,7 +37,6 @@ NS_MIA_BEGIN
 extern EXPORT_DICOM const char * IDMediaStorageSOPClassUID;
 extern EXPORT_DICOM const char * IDStudyDescription;
 extern EXPORT_DICOM const char * IDSeriesDescription;
-extern EXPORT_DICOM const char * IDSamplesPerPixel;
 extern EXPORT_DICOM const char * IDSamplesPerPixel;
 extern EXPORT_DICOM const char * IDTestValue;
 extern EXPORT_DICOM const char * IDSOPClassUID;
@@ -63,11 +63,19 @@ public:
 
 	std::string get_attribute(const std::string& name, bool required)const;
 	C2DFVector get_pixel_size() const;
+	C3DFVector get_voxel_size() const;
 
 	P2DImage get_image() const;
+
+	bool has_3dimage() const; 
+
+	P3DImage get_3dimage() const; 
+
+	int get_number_of_frames() const; 
 private:
+	template <typename T> P3DImage load_image3d()const;
 	template <typename T> P2DImage load_image()const;
-	void add_attribute(C2DImage& image, const char *key, bool required) const;
+
 
 	struct CDicomReaderData *impl;
 	std::string m_filename;

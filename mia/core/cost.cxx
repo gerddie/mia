@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <mia/core/cost.hh>
 
@@ -30,33 +29,15 @@ TCost<T,V>::~TCost()
 }
 
 template <typename T, typename V>
-double TCost<T,V>::value(const T& a, const T& b) const
-{
-	return do_value(a,b); 
-}
-
-template <typename T, typename V>
-double TCost<T,V>::evaluate_force(const T& a, const T& b, float scale, V& force) const
-{
-	return do_evaluate_force(a, b, scale, force); 
-}
-
-template <typename T, typename V>
-void TCost<T,V>::prepare_reference(const T& )
-{
-	
-}
-
-template <typename T, typename V>
 double TCost<T,V>::value(const T& a) const
 {
 	return do_value(a, *m_reference); 
 }
 
 template <typename T, typename V>
-double TCost<T,V>::evaluate_force(const T& a, float scale, V& force) const
+double TCost<T,V>::evaluate_force(const T& a, V& force) const
 {
-	return do_evaluate_force(a, *m_reference, scale, force); 
+	return do_evaluate_force(a, *m_reference, force); 
 }
 
 template <typename T, typename V>

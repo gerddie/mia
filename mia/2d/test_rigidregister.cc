@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -170,7 +170,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_simplex, RigidRegisterFixture )
 	params[5] =  2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, "gsl:opt=simplex,step=1.0", 1.0); 
+	run(*transformation, "gsl:opt=simplex,step=1.0,eps=0.0001", 1.0); 
 }
 
 #ifdef THIS_TEST_USES_THE_TRANSLATE_CODE_THAT_IS_NOT_WORKING
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE( test_rigidreg_affine_cost_gradient ) //, RigidRegisterFixt
 
 BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
 {
-	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid:imgboundary=repeat");
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid:imgboundary=zero");
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] = 1.0;

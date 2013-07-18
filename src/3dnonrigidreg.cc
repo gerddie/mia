@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,14 +14,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
 #include <sstream>
-#include <tbb/task_scheduler_init.h>
-
 #include <mia/core.hh>
 #include <mia/internal/main.hh>
 #include <mia/3d.hh>
@@ -50,7 +48,6 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string trans_filename;
 	PMinimizer minimizer; 
-	int max_threads = tbb::task_scheduler_init::automatic;
 
 	cvdebug() << "auto transform_creator\n"; 
 	P3DTransformationFactory transform_creator; 
@@ -76,16 +73,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "spline:rate=10", "transForm", 'f', "transformation type"));
 
-	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
-			     "This number should be lower or equal to the number of processing cores in the machine"
-			     " (default: automatic estimation)."));  
-
 	if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-
-	tbb::task_scheduler_init init(max_threads);
 	
 	auto cost_descrs = options.get_remaining(); 
 
