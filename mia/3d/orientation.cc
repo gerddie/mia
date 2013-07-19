@@ -128,12 +128,18 @@ void C3DOrientationAndPosition::get_inverse_transform_parameters(CDoubleVector& 
 const C3DFMatrix& C3DOrientationAndPosition::get_axis_switch_matrix() const
 {
 	switch (m_axisorder) {
-	case ior_xyz: return ms_order_XYZ; 
-	case ior_xzy: return ms_order_XZY; 
-	case ior_yxz: return ms_order_YXZ; 
-	case ior_yzx: return ms_order_YZX; 
-	case ior_zxy: return ms_order_ZXY; 
-	case ior_zyx: return ms_order_ZYX; 
+	case ior_xyz:         return ms_order_XYZ; 
+	case ior_xyz_flipped: return ms_order_XYZ_F; 
+	case ior_xzy:         return ms_order_XZY; 
+	case ior_xzy_flipped: return ms_order_XZY_F; 
+	case ior_yxz:         return ms_order_YXZ; 
+	case ior_yxz_flipped: return ms_order_YXZ_F; 
+	case ior_yzx:         return ms_order_YZX; 
+	case ior_yzx_flipped: return ms_order_YZX_F; 
+	case ior_zxy:         return ms_order_ZXY; 
+	case ior_zxy_flipped: return ms_order_ZXY_F; 
+	case ior_zyx:         return ms_order_ZYX; 
+	case ior_zyx_flipped: return ms_order_ZYX_F; 
 	default: 
 		cvwarn() << "C3DOrientationAndPosition: axis ordering not specified, assuming default XYZ\n"; 
 		return ms_order_XYZ; 
