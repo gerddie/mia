@@ -126,12 +126,12 @@ BOOST_AUTO_TEST_CASE( test_rot_x_from_identity )
 	BOOST_CHECK_SMALL(data[4], 1e-5f);
 	BOOST_CHECK_CLOSE(data[5], cos_pi_3, 0.01f);
 	BOOST_CHECK_CLOSE(data[6], -sin_pi_3, 0.01f);
-	BOOST_CHECK_CLOSE(data[7], -12.0f * 0.5f - sin_pi_3 * 3.0f, 0.01f);
+	BOOST_CHECK_CLOSE(data[7], +12.0f * 0.5f + sin_pi_3 * 3.0f, 0.01f);
 
 	BOOST_CHECK_SMALL(data[8], 1e-5f);
 	BOOST_CHECK_CLOSE(data[9], sin_pi_3, 0.01);
 	BOOST_CHECK_CLOSE(data[10],cos_pi_3, 0.01);
-	BOOST_CHECK_CLOSE(data[11],12.0f * sin_pi_3 - 1.5f  , 0.01);
+	BOOST_CHECK_CLOSE(data[11], -12.0f * sin_pi_3 + 1.5f  , 0.01);
 
 	BOOST_CHECK_SMALL(data[12], 1e-5f); 
 	BOOST_CHECK_SMALL(data[13], 1e-5f); 
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE( test_rot_y_from_identity )
 	BOOST_CHECK_CLOSE(data[0], cos_pi_3, 0.01f);
 	BOOST_CHECK_SMALL(data[1], 1e-5f);
 	BOOST_CHECK_CLOSE(data[2], -sin_pi_3, 0.01f);
-	BOOST_CHECK_CLOSE(data[3], -12.0f * 0.5f - sin_pi_3 * 3.0f, 0.01f);
+	BOOST_CHECK_CLOSE(data[3], 20.0f * 0.5f + sin_pi_3 * 3.0f, 0.01f);
 
 	BOOST_CHECK_SMALL(data[4], 1e-5f);
 	BOOST_CHECK_CLOSE(data[5], 1.0f, 0.01);
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE( test_rot_y_from_identity )
 	BOOST_CHECK_CLOSE(data[8], sin_pi_3, 0.01);
 	BOOST_CHECK_SMALL(data[9], 1e-5f);
 	BOOST_CHECK_CLOSE(data[10],cos_pi_3, 0.01);
-	BOOST_CHECK_CLOSE(data[11],12.0f * sin_pi_3 - 1.5f  , 0.01);
+	BOOST_CHECK_CLOSE(data[11],-20.0f * sin_pi_3 + 1.5f  , 0.01);
 
 	BOOST_CHECK_SMALL(data[12], 1e-5f); 
 	BOOST_CHECK_SMALL(data[13], 1e-5f); 
@@ -190,13 +190,13 @@ BOOST_AUTO_TEST_CASE( test_rot_z_from_identity )
 	BOOST_CHECK_CLOSE(data[0], cos_pi_3, 0.01f);
 	BOOST_CHECK_CLOSE(data[1], -sin_pi_3, 0.01f);
 	BOOST_CHECK_SMALL(data[2], 1e-5f);
-	BOOST_CHECK_CLOSE(data[3], -12.0f * 0.5f - sin_pi_3 * 3.0f, 0.01f);
+	BOOST_CHECK_CLOSE(data[3], 20.0f * 0.5f + sin_pi_3 * 12.0f, 0.01f);
 
 
 	BOOST_CHECK_CLOSE(data[4], sin_pi_3, 0.01);
 	BOOST_CHECK_CLOSE(data[5],cos_pi_3, 0.01);
 	BOOST_CHECK_SMALL(data[6], 1e-5f);
-	BOOST_CHECK_CLOSE(data[7],12.0f * sin_pi_3 - 1.5f  , 0.01);
+	BOOST_CHECK_CLOSE(data[7], -20.0f * sin_pi_3 + 6.0f  , 0.01);
 
 
 	BOOST_CHECK_SMALL(data[8], 1e-5f);
@@ -209,8 +209,93 @@ BOOST_AUTO_TEST_CASE( test_rot_z_from_identity )
 	BOOST_CHECK_SMALL(data[13], 1e-5f); 
 	BOOST_CHECK_SMALL(data[14], 1e-5f); 
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
-	
-
 }
 
+BOOST_AUTO_TEST_CASE( test_translate_from_identity ) 
+{
+	CAffinTransformMatrix m; 
+	m.translate(C3DFVector(2.0f, 3.0f, 4.0f)); 
+	
+	const auto& data = m.data();
+
+	BOOST_CHECK_CLOSE(data[0], 1.0f, 0.01f);
+	BOOST_CHECK_SMALL(data[1], 1e-5f);
+	BOOST_CHECK_SMALL(data[2], 1e-5f);
+	BOOST_CHECK_CLOSE(data[3], 2.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(data[4], 1e-5f);
+	BOOST_CHECK_CLOSE(data[5], 1.0f, 0.01f);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
+	BOOST_CHECK_CLOSE(data[7], 3.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(data[8], 1e-5f);
+	BOOST_CHECK_SMALL(data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(data[10], 1.0f, 0.01f);
+	BOOST_CHECK_CLOSE(data[11], 4.0f, 0.01);
+
+
+	BOOST_CHECK_SMALL(data[12], 1e-5f); 
+	BOOST_CHECK_SMALL(data[13], 1e-5f); 
+	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
+	
+
+	const auto inv = m.inverse(); 
+	const auto& inv_data = inv.data();
+
+
+	BOOST_CHECK_CLOSE(inv_data[0], 1.0f, 0.01f);
+	BOOST_CHECK_SMALL(inv_data[1], 1e-5f);
+	BOOST_CHECK_SMALL(inv_data[2], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[3], -2.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(inv_data[4], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[5], 1.0f, 0.01f);
+	BOOST_CHECK_SMALL(inv_data[6], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[7], -3.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(inv_data[8], 1e-5f);
+	BOOST_CHECK_SMALL(inv_data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[10], 1.0f, 0.01f);
+	BOOST_CHECK_CLOSE(inv_data[11], -4.0f, 0.01);
+
+
+	BOOST_CHECK_SMALL(inv_data[12], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[13], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[14], 1e-5f); 
+	BOOST_CHECK_CLOSE(inv_data[15], 1.0f, 0.01);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_translate ) 
+{
+	CAffinTransformMatrix start(2.0f, 1.0f, 3.0f, 1.0f, 
+				    2.0f, 0.5f, 4.0f, 2.0f, 
+				    3.0f, 4.0f, 0.2f, 1.0f);
+
+	C3DFVector x(2.0, 4.0, 9.0); 
+	
+	C3DFVector y1 = start * x; 
+	C3DFVector t(1.0, 2.0, 3.0); 
+	
+
+	start.translate(t); 
+
+	
+	C3DFVector y2 = start * x;
+	C3DFVector y_test = y1 + t; 
+	
+	BOOST_CHECK_CLOSE(y2.x, y_test.x, 0.01); 
+	BOOST_CHECK_CLOSE(y2.y, y_test.y, 0.01); 
+	BOOST_CHECK_CLOSE(y2.z, y_test.z, 0.01); 
+	
+	
+
+
+	
+}
 

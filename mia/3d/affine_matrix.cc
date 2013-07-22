@@ -60,42 +60,25 @@ void CAffinTransformMatrix::rotate_x(const C3DFVector& center, float angle)
         float c, s; 
         sincosf(angle, &s, &c); 
 
-        const float ac_1 = m_matrix[1] * c; 
-        const float ac_2 = m_matrix[2] * c; 
-        const float ac_5 = m_matrix[5] * c; 
-        const float ac_6 = m_matrix[6] * c; 
-        const float ac_9 = m_matrix[9] * c; 
-        const float ac_A = m_matrix[10]* c; 
+	float ac[8]; 
+	float as[8]; 
 
-        const float as_1 = m_matrix[1] * s; 
-        const float as_2 = m_matrix[2] * s; 
-        const float as_5 = m_matrix[5] * s; 
-        const float as_6 = m_matrix[6] * s; 
-        const float as_9 = m_matrix[9] * s; 
-        const float as_A = m_matrix[10]* s; 
+	for (int i = 0; i < 8; ++i) {
+		ac[i] = m_matrix[4+i] * c; 
+		as[i] = m_matrix[4+i] * s; 
+	}
 
-	const float cys = center.y * s; 
-	const float czs = center.z * s; 
+	m_matrix[4] = ac[0] - as[4]; 
+	m_matrix[5] = ac[1] - as[5]; 
+	m_matrix[6] = ac[2] - as[6]; 
+	m_matrix[7] = ac[3] - as[7] + center.z * s - center.y * c + center.y; 
+
+	m_matrix[8] = as[0] + ac[4]; 
+	m_matrix[9] = as[1] + ac[5]; 
+	m_matrix[10] = as[2] + ac[6]; 
+	m_matrix[11] = as[3] + ac[7] - center.y * s - center.z * c + center.z;
 	
-	const float cyc = center.y * c; 
-	const float czc = center.z * c; 
-	
-	const float c1 = -czs + cyc - center.y; 
-	const float c2 = cys + czc - center.z; 
 
-	m_matrix[3] += m_matrix[1] * c1 + m_matrix[2] * c2; 
-	m_matrix[7] += m_matrix[5] * c1 + m_matrix[6] * c2; 
-	m_matrix[11] += m_matrix[9] * c1 + m_matrix[10] * c2;
-
-	m_matrix[1] = ac_1 + as_2; 
-	m_matrix[2] = ac_2 - as_1; 
-
-	m_matrix[5] = ac_5 + as_6; 
-	m_matrix[6] = ac_6 - as_5; 
-
-	m_matrix[9] = ac_9 + as_A; 
-	m_matrix[10]= ac_A - as_9; 
-	
 }
 
 void CAffinTransformMatrix::rotate_y(const C3DFVector& center, float angle)
@@ -103,41 +86,29 @@ void CAffinTransformMatrix::rotate_y(const C3DFVector& center, float angle)
         float c, s; 
         sincosf(angle, &s, &c); 
 
-        const float ac_0 = m_matrix[0] * c; 
-        const float ac_2 = m_matrix[2] * c; 
-        const float ac_4 = m_matrix[4] * c; 
-        const float ac_6 = m_matrix[6] * c; 
-        const float ac_8 = m_matrix[8] * c; 
-        const float ac_A = m_matrix[10]* c; 
+	float ac[8]; 
+	float as[8]; 
 
-        const float as_0 = m_matrix[0] * s; 
-        const float as_2 = m_matrix[2] * s; 
-        const float as_4 = m_matrix[4] * s; 
-        const float as_6 = m_matrix[6] * s; 
-        const float as_8 = m_matrix[8] * s; 
-        const float as_A = m_matrix[10]* s; 
+	for (int i = 0; i < 4; ++i) {
+		ac[i] = m_matrix[i] * c; 
+		as[i] = m_matrix[i] * s; 
+	}
 
-	const float cys = center.y * s; 
-	const float czs = center.z * s; 
-	
-	const float cyc = center.y * c; 
-	const float czc = center.z * c; 
-	
-	const float c1 = -czs + cyc - center.y; 
-	const float c2 = cys + czc - center.z; 
+	for (int i = 4; i < 8; ++i) {
+		ac[i] = m_matrix[4+i] * c; 
+		as[i] = m_matrix[4+i] * s; 
+	}
 
-	m_matrix[3] += m_matrix[0] * c1 + m_matrix[2] * c2; 
-	m_matrix[7] += m_matrix[4] * c1 + m_matrix[6] * c2; 
-	m_matrix[11] += m_matrix[8] * c1 + m_matrix[10] * c2;
 
-	m_matrix[0] = ac_0 + as_2; 
-	m_matrix[2] = ac_2 - as_0; 
+	m_matrix[0] = ac[0] - as[4]; 
+	m_matrix[1] = ac[1] - as[5]; 
+	m_matrix[2] = ac[2] - as[6]; 
+	m_matrix[3] = ac[3] - as[7] + center.z * s - center.x * c + center.x; 
 
-	m_matrix[4] = ac_4 + as_6; 
-	m_matrix[6] = ac_6 - as_4; 
-
-	m_matrix[8] = ac_8 + as_A; 
-	m_matrix[10]= ac_A - as_8; 
+	m_matrix[8] = as[0] + ac[4]; 
+	m_matrix[9] = as[1] + ac[5]; 
+	m_matrix[10] = as[2] + ac[6]; 
+	m_matrix[11] = as[3] + ac[7] - center.x * s - center.z * c + center.z;
 
 }
 
@@ -146,42 +117,24 @@ void CAffinTransformMatrix::rotate_z(const C3DFVector& center, float angle)
         float c, s; 
         sincosf(angle, &s, &c); 
 
-        const float ac_0 = m_matrix[0] * c; 
-        const float ac_1 = m_matrix[1] * c; 
-        const float ac_4 = m_matrix[4] * c; 
-        const float ac_5 = m_matrix[5] * c; 
-        const float ac_8 = m_matrix[8] * c; 
-        const float ac_9 = m_matrix[9]* c; 
+	float ac[8]; 
+	float as[8]; 
 
-        const float as_0 = m_matrix[0] * s; 
-        const float as_1 = m_matrix[1] * s; 
-        const float as_4 = m_matrix[4] * s; 
-        const float as_5 = m_matrix[5] * s; 
-        const float as_8 = m_matrix[8] * s; 
-        const float as_9 = m_matrix[9]* s; 
+	for (int i = 0; i < 8; ++i) {
+		ac[i] = m_matrix[i] * c; 
+		as[i] = m_matrix[i] * s; 
+	}
 
-	const float cys = center.y * s; 
-	const float czs = center.z * s; 
-	
-	const float cyc = center.y * c; 
-	const float czc = center.z * c; 
-	
-	const float c1 = -czs + cyc - center.y; 
-	const float c2 = cys + czc - center.z; 
 
-	m_matrix[3] += m_matrix[0] * c1 + m_matrix[1] * c2; 
-	m_matrix[7] += m_matrix[4] * c1 + m_matrix[5] * c2; 
-	m_matrix[11] += m_matrix[8] * c1 + m_matrix[9] * c2;
+	m_matrix[0] = ac[0] - as[4]; 
+	m_matrix[1] = ac[1] - as[5]; 
+	m_matrix[2] = ac[2] - as[6]; 
+	m_matrix[3] = ac[3] - as[7] + center.y * s - center.x * c + center.x; 
 
-	m_matrix[0] = ac_0 + as_1; 
-	m_matrix[1] = ac_1 - as_0; 
-
-	m_matrix[4] = ac_4 + as_5; 
-	m_matrix[5] = ac_5 - as_4; 
-
-	m_matrix[8] = ac_8 + as_9; 
-	m_matrix[9] = ac_9 - as_8; 
-
+	m_matrix[4] = as[0] + ac[4]; 
+	m_matrix[5] = as[1] + ac[5]; 
+	m_matrix[6] = as[2] + ac[6]; 
+	m_matrix[7] = as[3] + ac[7] - center.x * s - center.y * c + center.y;
 }
 
 void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q)
@@ -210,10 +163,9 @@ const std::vector<float>& CAffinTransformMatrix::data() const
 
 void CAffinTransformMatrix::translate(const C3DFVector& shift)
 {
-	const C3DFVector c = *this * shift; 
-	m_matrix[3] = c.x; 
-	m_matrix[7] = c.y; 
-	m_matrix[11] = c.z; 
+	m_matrix[3] += shift.x; 
+	m_matrix[7] += shift.y; 
+	m_matrix[11] += shift.z; 
 }
 
 void CAffinTransformMatrix::identity()
