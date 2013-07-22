@@ -28,6 +28,7 @@ ENDIF(ITPP_FOUND)
 
 
 SET(MIA3D_SRC 
+  affine_matrix.cc
   camera.cc
   cost.cc
   creator.cc
@@ -70,6 +71,7 @@ SET(MIA3D_SRC
   )
 
 SET(MIA3D_HEADERS
+  affine_matrix.hh
   2dimagefifofilter.hh
   datafield.hh datafield.cxx
   vectorfield.hh
@@ -184,6 +186,7 @@ ELSE (WIN32)
   ADD_TEST(3d-imageio test-3dimageio)
 ENDIF(WIN32)
 
+TEST_3D(affine_matrix affine_matrix)
 TEST_3D(imageio imageio)
 TEST_3D(2dimagefifofilter imagefifofilter)
 TEST_3D(nfg nfg)
