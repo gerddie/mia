@@ -139,6 +139,32 @@ void CAffinTransformMatrix::rotate_z(const C3DFVector& center, float angle)
 
 void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q)
 {
+	const auto rot = q.get_rotation_matrix(); 
+	cvdebug()<< "rot=" << rot << "\n"; 
+	// 3dmatrix is column - major implemented, why?? 
+	const auto shift = center - center * rot; 
+	cvdebug()<< "shift=" << shift << "\n"; 
+	vector<float> help(16,0.0f); 
+	
+	help[0] = m_matrix[0] * rot.x.x + m_matrix[4] * rot.x.y + m_matrix[8] * rot.x.z;  
+	help[1] = m_matrix[1] * rot.x.x + m_matrix[5] * rot.x.y + m_matrix[9] * rot.x.z;  
+	help[2] = m_matrix[2] * rot.x.x + m_matrix[6] * rot.x.y + m_matrix[10] * rot.x.z;
+	help[3] = m_matrix[3] * rot.x.x + m_matrix[7] * rot.x.y + m_matrix[11] * rot.x.z + shift.x; 
+
+	help[4] = m_matrix[0] * rot.y.x + m_matrix[4] * rot.y.y + m_matrix[8] * rot.y.z;  
+	help[5] = m_matrix[1] * rot.y.x + m_matrix[5] * rot.y.y + m_matrix[9] * rot.y.z;  
+	help[6] = m_matrix[2] * rot.y.x + m_matrix[6] * rot.y.y + m_matrix[10] * rot.y.z;
+	help[7] = m_matrix[3] * rot.y.x + m_matrix[7] * rot.y.y + m_matrix[11] * rot.y.z + shift.y;
+
+	help[8] = m_matrix[0] * rot.z.x + m_matrix[4] * rot.z.y + m_matrix[8] * rot.z.z;  
+	help[9] = m_matrix[1] * rot.z.x + m_matrix[5] * rot.z.y + m_matrix[9] * rot.z.z;  
+	help[10] = m_matrix[2] * rot.z.x + m_matrix[6] * rot.z.y + m_matrix[10] * rot.z.z;
+	help[11] = m_matrix[3] * rot.z.x + m_matrix[7] * rot.z.y + m_matrix[11] * rot.z.z + shift.z;
+	help[15] = 1.0f; 
+	cvdebug() << help << "\n"; 
+
+	swap(help, m_matrix); 
+
 }
 
 void CAffinTransformMatrix::scale(const C3DFVector& center, const C3DFVector& scale)

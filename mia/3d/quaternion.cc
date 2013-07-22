@@ -139,15 +139,22 @@ Quaternion::Quaternion(const C3DFMatrix& rot)
 }
 #endif 
 
+#if 0 
 const C3DFMatrix Quaternion::get_rotation_matrix() const
 {
 	const C3DDMatrix qq(m_v.x * m_v, m_v.y * m_v, m_v.z * m_v);  
+	cvdebug() << qq << "\n"; 
 	const C3DDMatrix Q(C3DDVector(0, -m_v.z, m_v.y), 
 			   C3DDVector(m_v.z, 0, -m_v.x), 
 			   C3DDVector(-m_v.y, m_v.x, 0)); 
+	cvdebug() << Q << "\n"; 
+
+	cvdebug() << (m_w * m_w - m_v.norm2()) * C3DDMatrix::_1 << "\n"; 
 	const C3DDMatrix r = (m_w * m_w - m_v.norm2()) * C3DDMatrix::_1 + 2.0 * qq + 2.0 * m_w * Q; 
+	cvdebug() << r << "\n"; 
 	return C3DFMatrix(r); 
 }
+#endif 
 
 Quaternion::Quaternion(double w, double  x, double y, double z):
 	m_v(x,y,z), 
@@ -196,7 +203,6 @@ Quaternion Quaternion::inverse() const
 }
 
 
-#if 0 
 const C3DFMatrix Quaternion::get_rotation_matrix() const
 {
 	const double a2 = m_w   * m_w;
@@ -216,7 +222,6 @@ const C3DFMatrix Quaternion::get_rotation_matrix() const
 			  C3DFVector(bd - ac, cd + ab, a2 - b2 - c2 + d2));
 	
 }
-#endif 
 
 
 

@@ -278,13 +278,10 @@ BOOST_AUTO_TEST_CASE( test_translate )
 				    3.0f, 4.0f, 0.2f, 1.0f);
 
 	C3DFVector x(2.0, 4.0, 9.0); 
-	
 	C3DFVector y1 = start * x; 
 	C3DFVector t(1.0, 2.0, 3.0); 
-	
 
 	start.translate(t); 
-
 	
 	C3DFVector y2 = start * x;
 	C3DFVector y_test = y1 + t; 
@@ -310,28 +307,57 @@ BOOST_AUTO_TEST_CASE( test_scale_from_identity )
 	BOOST_CHECK_SMALL(data[2], 1e-5f);
 	BOOST_CHECK_CLOSE(data[3], -1.0f, 0.01f);
 
-
 	BOOST_CHECK_SMALL(data[4], 1e-5f);
 	BOOST_CHECK_CLOSE(data[5], 3.0f, 0.01f);
 	BOOST_CHECK_SMALL(data[6], 1e-5f);
 	BOOST_CHECK_CLOSE(data[7], -4.0f, 0.01f);
-
 
 	BOOST_CHECK_SMALL(data[8], 1e-5f);
 	BOOST_CHECK_SMALL(data[9], 1e-5f);
 	BOOST_CHECK_CLOSE(data[10], 4.0f, 0.01f);
 	BOOST_CHECK_CLOSE(data[11],-9.0f, 0.01);
 
-
 	BOOST_CHECK_SMALL(data[12], 1e-5f); 
 	BOOST_CHECK_SMALL(data[13], 1e-5f); 
 	BOOST_CHECK_SMALL(data[14], 1e-5f); 
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
 	
-	
-
-
-	
 }
 
+
+BOOST_AUTO_TEST_CASE( test_rot_from_quaternion_and_identity ) 
+{
+	
+	CAffinTransformMatrix m; 
+
+	C3DFVector center(20.0f, 12.0f, 3.0f); 
+	Quaternion q(sqrt(10.0f)/4.0f, 0.25f, -0.25f, 0.5f); 
+	
+	m.rotate(center, q);
+	
+	const auto& data = m.data();
+
+	BOOST_CHECK_CLOSE(data[0], 0.375f, 0.01f);
+	BOOST_CHECK_CLOSE(data[1], 2 * ( -1/16.0- sqrt(10.0)/8.0)  , 0.01f);
+	BOOST_CHECK_CLOSE(data[2], 2 * (0.125 - sqrt(10.0)/16.0 ), 0.01f );
+	BOOST_CHECK_CLOSE(data[3], 20.0f - (data[0] * 20.0f + data[1] *12.0f + data[2] * 3.0f  ), 0.01f);
+
+
+	BOOST_CHECK_CLOSE(data[4], 2 * ( sqrt(10.0)/8.0 -1/16.0) , 0.01);
+	BOOST_CHECK_CLOSE(data[5], 0.375f, 0.01);
+	BOOST_CHECK_CLOSE(data[6], 2 * (-.125 - sqrt(10.0)/16.0), 0.01f);
+	BOOST_CHECK_CLOSE(data[7], 12.0f - (data[4] * 20 + data[5] *12.0f + data[6] * 3.0f  ) , 0.01);
+
+
+	BOOST_CHECK_CLOSE(data[8], 2 * (1/8.0 + sqrt(10.0)/16.0), 0.01f);
+	BOOST_CHECK_CLOSE(data[9], 2 * (-1/8.0 + sqrt(10.0)/16.0), 0.01f);
+	BOOST_CHECK_CLOSE(data[10], 3.0f/4.0f, 0.01);
+	BOOST_CHECK_CLOSE(data[11], 3.0f - (data[8] * 20 + data[9] *12.0f + data[10]* 3.0f  ), 0.01f);
+
+
+	BOOST_CHECK_SMALL(data[12], 1e-5f); 
+	BOOST_CHECK_SMALL(data[13], 1e-5f); 
+	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
+}
 
