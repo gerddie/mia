@@ -293,9 +293,45 @@ BOOST_AUTO_TEST_CASE( test_translate )
 	BOOST_CHECK_CLOSE(y2.y, y_test.y, 0.01); 
 	BOOST_CHECK_CLOSE(y2.z, y_test.z, 0.01); 
 	
+}
+
+BOOST_AUTO_TEST_CASE( test_scale_from_identity ) 
+{
+	CAffinTransformMatrix m;
+	
+	C3DFVector center(1,2,3); 
+	m.scale(center, C3DFVector(2.0f, 3.0f, 4.0f)); 
+
+	
+	const auto& data = m.data(); 
+
+	BOOST_CHECK_CLOSE(data[0], 2.0f, 0.01f);
+	BOOST_CHECK_SMALL(data[1], 1e-5f);
+	BOOST_CHECK_SMALL(data[2], 1e-5f);
+	BOOST_CHECK_CLOSE(data[3], -1.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(data[4], 1e-5f);
+	BOOST_CHECK_CLOSE(data[5], 3.0f, 0.01f);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
+	BOOST_CHECK_CLOSE(data[7], -4.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(data[8], 1e-5f);
+	BOOST_CHECK_SMALL(data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(data[10], 4.0f, 0.01f);
+	BOOST_CHECK_CLOSE(data[11],-9.0f, 0.01);
+
+
+	BOOST_CHECK_SMALL(data[12], 1e-5f); 
+	BOOST_CHECK_SMALL(data[13], 1e-5f); 
+	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
+	
 	
 
 
 	
 }
+
 
