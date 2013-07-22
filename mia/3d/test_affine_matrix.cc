@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( test_inverse )
         
 }
 
-BOOST_AUTO_TEST_CASE( test_rot_x ) 
+BOOST_AUTO_TEST_CASE( test_rot_x_from_identity ) 
 {
 	
 	CAffinTransformMatrix m; 
@@ -132,6 +132,78 @@ BOOST_AUTO_TEST_CASE( test_rot_x )
 	BOOST_CHECK_CLOSE(data[9], sin_pi_3, 0.01);
 	BOOST_CHECK_CLOSE(data[10],cos_pi_3, 0.01);
 	BOOST_CHECK_CLOSE(data[11],12.0f * sin_pi_3 - 1.5f  , 0.01);
+
+	BOOST_CHECK_SMALL(data[12], 1e-5f); 
+	BOOST_CHECK_SMALL(data[13], 1e-5f); 
+	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
+	
+
+}
+
+BOOST_AUTO_TEST_CASE( test_rot_y_from_identity ) 
+{
+	
+	CAffinTransformMatrix m; 
+	
+	m.rotate_y(C3DFVector(20.0f, 12.0f, 3.0f), M_PI/3.0f); 
+	
+	const float sin_pi_3 = sqrt(3.0f)/ 2.0f; 
+	const float cos_pi_3 = 1.0f/ 2.0f; 
+	
+	const auto& data = m.data();
+
+	BOOST_CHECK_CLOSE(data[0], cos_pi_3, 0.01f);
+	BOOST_CHECK_SMALL(data[1], 1e-5f);
+	BOOST_CHECK_CLOSE(data[2], -sin_pi_3, 0.01f);
+	BOOST_CHECK_CLOSE(data[3], -12.0f * 0.5f - sin_pi_3 * 3.0f, 0.01f);
+
+	BOOST_CHECK_SMALL(data[4], 1e-5f);
+	BOOST_CHECK_CLOSE(data[5], 1.0f, 0.01);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
+	BOOST_CHECK_SMALL(data[7], 1e-5f);
+
+
+	BOOST_CHECK_CLOSE(data[8], sin_pi_3, 0.01);
+	BOOST_CHECK_SMALL(data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(data[10],cos_pi_3, 0.01);
+	BOOST_CHECK_CLOSE(data[11],12.0f * sin_pi_3 - 1.5f  , 0.01);
+
+	BOOST_CHECK_SMALL(data[12], 1e-5f); 
+	BOOST_CHECK_SMALL(data[13], 1e-5f); 
+	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
+}
+
+BOOST_AUTO_TEST_CASE( test_rot_z_from_identity ) 
+{
+	
+	CAffinTransformMatrix m; 
+	
+	m.rotate_z(C3DFVector(20.0f, 12.0f, 3.0f), M_PI/3.0f); 
+	
+	const float sin_pi_3 = sqrt(3.0f)/ 2.0f; 
+	const float cos_pi_3 = 1.0f/ 2.0f; 
+	
+	const auto& data = m.data();
+
+	BOOST_CHECK_CLOSE(data[0], cos_pi_3, 0.01f);
+	BOOST_CHECK_CLOSE(data[1], -sin_pi_3, 0.01f);
+	BOOST_CHECK_SMALL(data[2], 1e-5f);
+	BOOST_CHECK_CLOSE(data[3], -12.0f * 0.5f - sin_pi_3 * 3.0f, 0.01f);
+
+
+	BOOST_CHECK_CLOSE(data[4], sin_pi_3, 0.01);
+	BOOST_CHECK_CLOSE(data[5],cos_pi_3, 0.01);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
+	BOOST_CHECK_CLOSE(data[7],12.0f * sin_pi_3 - 1.5f  , 0.01);
+
+
+	BOOST_CHECK_SMALL(data[8], 1e-5f);
+	BOOST_CHECK_SMALL(data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(data[10], 1.0f, 0.01);
+	BOOST_CHECK_SMALL(data[11], 1e-5f);
+
 
 	BOOST_CHECK_SMALL(data[12], 1e-5f); 
 	BOOST_CHECK_SMALL(data[13], 1e-5f); 
