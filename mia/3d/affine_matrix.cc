@@ -143,17 +143,17 @@ void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q
 
 void CAffinTransformMatrix::scale(const C3DFVector& center, const C3DFVector& scale)
 {
-	const C3DFVector sh = center * (scale - C3DFVector::_1); 
+	const C3DFVector sh = (C3DFVector::_1 - scale) * center; 
 
-	m_matrix[3] += m_matrix[2]* sh.z + m_matrix[1]* sh.y + m_matrix[0] *sh.x;
-	m_matrix[7] += m_matrix[6]* sh.z + m_matrix[5]* sh.y + m_matrix[4] *sh.x;
-	m_matrix[11] += m_matrix[10]* sh.z + m_matrix[9]* sh.y + m_matrix[8] *sh.x;
-
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		m_matrix[4 * i] *= scale.x; 
 		m_matrix[4 * i + 1] *= scale.y; 
 		m_matrix[4 * i + 2] *= scale.z; 
 	}
+	m_matrix[3]  += sh.x; 
+	m_matrix[7]  += sh.y; 
+	m_matrix[11] += sh.z; 
+	
 }
 
 const std::vector<float>& CAffinTransformMatrix::data() const
