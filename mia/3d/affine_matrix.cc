@@ -141,11 +141,12 @@ void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q
 {
 	const auto rot = q.get_rotation_matrix(); 
 	cvdebug()<< "rot=" << rot << "\n"; 
-	// 3dmatrix is column - major implemented, why?? 
-	const auto shift = center - center * rot; 
+
+	const auto shift = center - rot * center; 
 	cvdebug()<< "shift=" << shift << "\n"; 
 	vector<float> help(16,0.0f); 
 	
+	// multiplying from left side with rot
 	help[0] = m_matrix[0] * rot.x.x + m_matrix[4] * rot.x.y + m_matrix[8] * rot.x.z;  
 	help[1] = m_matrix[1] * rot.x.x + m_matrix[5] * rot.x.y + m_matrix[9] * rot.x.z;  
 	help[2] = m_matrix[2] * rot.x.x + m_matrix[6] * rot.x.y + m_matrix[10] * rot.x.z;

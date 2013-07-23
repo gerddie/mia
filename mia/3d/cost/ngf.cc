@@ -68,7 +68,7 @@ C3DFVector  FScalar::grad (int nx, int nxy, C3DFVectorfield::const_range_iterato
 {
 	double d = dot(*irsrc,ref);
 	cost -= d * d;
-	return - d * (ref * get_gradient(irsrc, nx, nxy)); 
+	return - d * (get_gradient(irsrc, nx, nxy) * ref); 
 }
 
 double FCross::cost(const C3DFVector& src, const C3DFVector& ref) const

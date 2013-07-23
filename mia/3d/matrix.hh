@@ -227,13 +227,13 @@ T3DMatrix<T>  T3DMatrix<T>::transposed()const
 }
 
 template <typename T> 
-T3DVector<T> operator * (const T3DVector<T>& x, const T3DMatrix<T>& m)
+T3DVector<T> operator * (const T3DMatrix<T>& m, const T3DVector<T>& x)
 {
 	return T3DVector<T>(dot(m.x, x), dot(m.y, x), dot(m.z, x)); 
 }
 
 template <typename T> 
-T3DVector<T> operator * (const T3DMatrix<T>& m, const T3DVector<T>& x  )
+T3DVector<T> operator * (const T3DVector<T>& x, const T3DMatrix<T>& m )
 {
 	return T3DVector<T>(m.x.x * x.x + m.y.x * x.y + m.z.x * x.z, 
 			    m.x.y * x.x + m.y.y * x.y + m.z.y * x.z,

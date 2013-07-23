@@ -50,7 +50,7 @@ BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_dot, C3DFVectorfieldFixture )
 	BOOST_CHECK_CLOSE( cost, - 26.0f* 26.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.x, 13.0f * 19.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.y, -13.0f * 15.0f, 0.01f); 
-	BOOST_CHECK_CLOSE( grad.z, -13.0f * 31.0f, 0.01f); 
+	BOOST_CHECK_CLOSE( grad.z, -13.0f * 31.0f, 0.01f);
 	
 }
 
