@@ -482,6 +482,25 @@ BOOST_AUTO_TEST_CASE( test_multiply )
 	
 }
 
+#if 0 
+// not yet supported, will be added if needed 
+BOOST_AUTO_TEST_CASE( test_shear ) 
+{
+	CAffinTransformMatrix m; 
+	m.shear(1.1, 1.5, 0.5); 
+
+	C3DFVector x(1,2,3); 
+
+	auto y = m * x; 
+	
+	BOOST_CHECK_CLOSE(y.x, 5.6f, 0.01f);
+	BOOST_CHECK_CLOSE(y.y, 4.5f, 0.01f);
+	BOOST_CHECK_CLOSE(y.z, 3.0f, 0.01f);
+
+
+}
+#endif 
+
 BOOST_AUTO_TEST_CASE( test_multiply_const_input ) 
 {
 	const CAffinTransformMatrix lhs(2.0f, 1.0f, 3.0f, 1.0f, 
@@ -517,3 +536,4 @@ BOOST_AUTO_TEST_CASE( test_multiply_const_input )
 	BOOST_CHECK_EQUAL(data[15], 1.0f);
 	
 }
+
