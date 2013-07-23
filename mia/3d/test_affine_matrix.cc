@@ -456,9 +456,7 @@ BOOST_AUTO_TEST_CASE( test_multiply )
 				  2.0f, 1.5f, 2.0f, 3.0f, 
 				  3.5f, 2.0f, 2.2f, 2.0f);
 
-	
 	lhs *= rhs; 
-
 	
 	const auto& data = lhs.data();
 
@@ -467,24 +465,55 @@ BOOST_AUTO_TEST_CASE( test_multiply )
 	BOOST_CHECK_CLOSE(data[2], 10.6, 0.01);
 	BOOST_CHECK_CLOSE(data[3], 24.0, 0.01);
 
-
 	BOOST_CHECK_CLOSE(data[4], 21.0, 0.01);
 	BOOST_CHECK_CLOSE(data[5], 16.75, 0.01);
 	BOOST_CHECK_CLOSE(data[6], 11.8, 0.01);
 	BOOST_CHECK_CLOSE(data[7], 25.5, 0.01);
-
 
 	BOOST_CHECK_CLOSE(data[8], 17.7, 0.01);
 	BOOST_CHECK_CLOSE(data[9], 18.4, 0.01);
 	BOOST_CHECK_CLOSE(data[10], 11.44, 0.01);
 	BOOST_CHECK_CLOSE(data[11], 34.4, 0.01);
 
+	BOOST_CHECK_SMALL(data[12], 1e-5f); 
+	BOOST_CHECK_SMALL(data[13], 1e-5f); 
+	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_EQUAL(data[15], 1.0f);
+	
+}
+
+BOOST_AUTO_TEST_CASE( test_multiply_const_input ) 
+{
+	const CAffinTransformMatrix lhs(2.0f, 1.0f, 3.0f, 1.0f, 
+				  2.0f, 0.5f, 4.0f, 2.0f, 
+				  3.0f, 4.0f, 0.2f, 1.0f); 
+
+	const CAffinTransformMatrix rhs(3.0f, 4.0f, 1.0f, 7.0f, 
+				  2.0f, 1.5f, 2.0f, 3.0f, 
+				  3.5f, 2.0f, 2.2f, 2.0f);
+
+	auto r = lhs * rhs; 
+	
+	const auto& data = r.data();
+
+	BOOST_CHECK_CLOSE(data[0], 18.5, 0.01);
+	BOOST_CHECK_CLOSE(data[1], 15.5, 0.01);
+	BOOST_CHECK_CLOSE(data[2], 10.6, 0.01);
+	BOOST_CHECK_CLOSE(data[3], 24.0, 0.01);
+
+	BOOST_CHECK_CLOSE(data[4], 21.0, 0.01);
+	BOOST_CHECK_CLOSE(data[5], 16.75, 0.01);
+	BOOST_CHECK_CLOSE(data[6], 11.8, 0.01);
+	BOOST_CHECK_CLOSE(data[7], 25.5, 0.01);
+
+	BOOST_CHECK_CLOSE(data[8], 17.7, 0.01);
+	BOOST_CHECK_CLOSE(data[9], 18.4, 0.01);
+	BOOST_CHECK_CLOSE(data[10], 11.44, 0.01);
+	BOOST_CHECK_CLOSE(data[11], 34.4, 0.01);
 
 	BOOST_CHECK_SMALL(data[12], 1e-5f); 
 	BOOST_CHECK_SMALL(data[13], 1e-5f); 
 	BOOST_CHECK_SMALL(data[14], 1e-5f); 
 	BOOST_CHECK_EQUAL(data[15], 1.0f);
-
-
 	
 }
