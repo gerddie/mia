@@ -140,10 +140,7 @@ void CAffinTransformMatrix::rotate_z(const C3DFVector& center, float angle)
 void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q)
 {
 	const auto rot = q.get_rotation_matrix(); 
-	cvdebug()<< "rot=" << rot << "\n"; 
-
 	const auto shift = center - rot * center; 
-	cvdebug()<< "shift=" << shift << "\n"; 
 	vector<float> help(16,0.0f); 
 	
 	// multiplying from left side with rot
@@ -162,7 +159,6 @@ void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q
 	help[10] = m_matrix[2] * rot.z.x + m_matrix[6] * rot.z.y + m_matrix[10] * rot.z.z;
 	help[11] = m_matrix[3] * rot.z.x + m_matrix[7] * rot.z.y + m_matrix[11] * rot.z.z + shift.z;
 	help[15] = 1.0f; 
-	cvdebug() << help << "\n"; 
 
 	swap(help, m_matrix); 
 
@@ -173,9 +169,9 @@ void CAffinTransformMatrix::scale(const C3DFVector& center, const C3DFVector& sc
 	const C3DFVector sh = (C3DFVector::_1 - scale) * center; 
 
 	for (int i = 0; i < 4; ++i) {
-		m_matrix[4 * i] *= scale.x; 
-		m_matrix[4 * i + 1] *= scale.y; 
-		m_matrix[4 * i + 2] *= scale.z; 
+		m_matrix[i] *= scale.x; 
+		m_matrix[i + 4] *= scale.y; 
+		m_matrix[i + 8] *= scale.z; 
 	}
 	m_matrix[3]  += sh.x; 
 	m_matrix[7]  += sh.y; 

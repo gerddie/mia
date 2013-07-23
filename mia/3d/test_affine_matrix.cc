@@ -271,25 +271,46 @@ BOOST_AUTO_TEST_CASE( test_translate_from_identity )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_translate ) 
+struct ConcatationFixture {
+	
+	ConcatationFixture(); 
+	void run_check(const CAffinTransformMatrix& m); 
+
+	CAffinTransformMatrix start; 
+	C3DFVector x; 
+	C3DFVector y1;
+}; 
+
+ConcatationFixture::ConcatationFixture():
+	start(2.0f, 1.0f, 3.0f, 1.0f, 
+	      2.0f, 0.5f, 4.0f, 2.0f, 
+	      3.0f, 4.0f, 0.2f, 1.0f), 
+	x(2.0, 4.0, 9.0), 
+	y1(start * x)
+	
 {
-	CAffinTransformMatrix start(2.0f, 1.0f, 3.0f, 1.0f, 
-				    2.0f, 0.5f, 4.0f, 2.0f, 
-				    3.0f, 4.0f, 0.2f, 1.0f);
+}
 
-	C3DFVector x(2.0, 4.0, 9.0); 
-	C3DFVector y1 = start * x; 
+void ConcatationFixture::run_check(const CAffinTransformMatrix& m)
+{
+	C3DFVector y2_direct = start * x;
+	C3DFVector y2_step = m * y1; 
+
+	BOOST_CHECK_CLOSE(y2_direct.x, y2_step.x, 0.01); 
+	BOOST_CHECK_CLOSE(y2_direct.y, y2_step.y, 0.01); 
+	BOOST_CHECK_CLOSE(y2_direct.z, y2_step.z, 0.01); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE( test_translate , ConcatationFixture) 
+{
 	C3DFVector t(1.0, 2.0, 3.0); 
-
 	start.translate(t); 
+
+	CAffinTransformMatrix m; 
+	m.translate(t); 
 	
-	C3DFVector y2 = start * x;
-	C3DFVector y_test = y1 + t; 
-	
-	BOOST_CHECK_CLOSE(y2.x, y_test.x, 0.01); 
-	BOOST_CHECK_CLOSE(y2.y, y_test.y, 0.01); 
-	BOOST_CHECK_CLOSE(y2.z, y_test.z, 0.01); 
-	
+	run_check(m); 
 }
 
 BOOST_AUTO_TEST_CASE( test_scale_from_identity ) 
@@ -327,7 +348,6 @@ BOOST_AUTO_TEST_CASE( test_scale_from_identity )
 
 BOOST_AUTO_TEST_CASE( test_rot_from_quaternion_and_identity ) 
 {
-	
 	CAffinTransformMatrix m; 
 
 	C3DFVector center(20.0f, 12.0f, 3.0f); 
@@ -361,3 +381,110 @@ BOOST_AUTO_TEST_CASE( test_rot_from_quaternion_and_identity )
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
 }
 
+
+BOOST_FIXTURE_TEST_CASE( test_rot_from_quaternion_and_pseudorando_matrix , ConcatationFixture) 
+{
+	
+	C3DFVector center(20.0f, 12.0f, 3.0f); 
+	Quaternion q(sqrt(10.0f)/4.0f, 0.25f, -0.25f, 0.5f); 
+
+	CAffinTransformMatrix m; 	
+	m.rotate(center, q);
+	start.rotate(center, q);
+	
+	run_check(m); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_rot_x_pseudorando_matrix , ConcatationFixture) 
+{
+	
+	C3DFVector center(20.0f, 12.0f, 3.0f); 
+
+	CAffinTransformMatrix m; 	
+	m.rotate_x(center, 1.0);
+	start.rotate_x(center, 1.0);
+	
+	run_check(m); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rot_y_pseudorando_matrix , ConcatationFixture) 
+{
+	
+	C3DFVector center(20.0f, 12.0f, 3.0f); 
+
+	CAffinTransformMatrix m; 	
+	m.rotate_y(center, 1.0);
+	start.rotate_y(center, 1.0);
+	
+	run_check(m); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rot_z_pseudorando_matrix , ConcatationFixture) 
+{
+	
+	C3DFVector center(20.0f, 12.0f, 3.0f); 
+
+	CAffinTransformMatrix m; 	
+	m.rotate_z(center, 1.0);
+	start.rotate_z(center, 1.0);
+	
+	run_check(m); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_scale_pseudorando_matrix , ConcatationFixture) 
+{
+	
+	C3DFVector center(20.0f, 12.0f, 3.0f); 
+	C3DFVector scales(2.0f, 12.0f, 0.5f); 
+
+	CAffinTransformMatrix m; 	
+	m.scale(center, scales);
+	start.scale(center, scales);
+	
+	run_check(m); 
+}
+
+
+BOOST_AUTO_TEST_CASE( test_multiply ) 
+{
+	CAffinTransformMatrix lhs(2.0f, 1.0f, 3.0f, 1.0f, 
+				  2.0f, 0.5f, 4.0f, 2.0f, 
+				  3.0f, 4.0f, 0.2f, 1.0f); 
+
+	CAffinTransformMatrix rhs(3.0f, 4.0f, 1.0f, 7.0f, 
+				  2.0f, 1.5f, 2.0f, 3.0f, 
+				  3.5f, 2.0f, 2.2f, 2.0f);
+
+	
+	lhs *= rhs; 
+
+	
+	const auto& data = lhs.data();
+
+	BOOST_CHECK_CLOSE(data[0], 18.5, 0.01);
+	BOOST_CHECK_CLOSE(data[1], 15.5, 0.01);
+	BOOST_CHECK_CLOSE(data[2], 10.6, 0.01);
+	BOOST_CHECK_CLOSE(data[3], 24.0, 0.01);
+
+
+	BOOST_CHECK_CLOSE(data[4], 21.0, 0.01);
+	BOOST_CHECK_CLOSE(data[5], 16.75, 0.01);
+	BOOST_CHECK_CLOSE(data[6], 11.8, 0.01);
+	BOOST_CHECK_CLOSE(data[7], 25.5, 0.01);
+
+
+	BOOST_CHECK_CLOSE(data[8], 17.7, 0.01);
+	BOOST_CHECK_CLOSE(data[9], 18.4, 0.01);
+	BOOST_CHECK_CLOSE(data[10], 11.44, 0.01);
+	BOOST_CHECK_CLOSE(data[11], 34.4, 0.01);
+
+
+	BOOST_CHECK_SMALL(data[12], 1e-5f); 
+	BOOST_CHECK_SMALL(data[13], 1e-5f); 
+	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_EQUAL(data[15], 1.0f);
+
+
+	
+}
