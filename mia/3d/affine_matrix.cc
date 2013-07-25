@@ -54,29 +54,6 @@ CAffinTransformMatrix::CAffinTransformMatrix(float a11, float a12, float a13, fl
 
 }
 
-void CAffinTransformMatrix::transpose()
-{
-	vector<float> help(m_matrix); 
-	
-	m_matrix[1] = help[4]; 
-	m_matrix[2] = help[8]; 
-	m_matrix[3] = help[12]; 
-
-	m_matrix[4] = help[1]; 
-	m_matrix[6] = help[9]; 
-	m_matrix[7] = help[13]; 
-
-	m_matrix[8] = help[2]; 
-	m_matrix[9] = help[6]; 
-	m_matrix[11] = help[14]; 
-
-	m_matrix[12] = help[3]; 
-	m_matrix[13] = help[7]; 
-	m_matrix[14] = help[11]; 
-
-}
-
-
 void CAffinTransformMatrix::rotate_x(const C3DFVector& center, float angle)
 {
         float c, s; 
@@ -277,6 +254,13 @@ CAffinTransformMatrix& CAffinTransformMatrix::operator *= (const CAffinTransform
 
 	swap(m_matrix, help); 
 	return *this; 
+}
+
+C3DFVector CAffinTransformMatrix::rotate(const C3DFVector& x) const
+{
+	return C3DFVector(m_matrix[0] * x.x + m_matrix[4] * x.y + m_matrix[8] * x.z, 
+			  m_matrix[1] * x.x + m_matrix[5] * x.y + m_matrix[9] * x.z, 
+			  m_matrix[2] * x.x + m_matrix[6] * x.y + m_matrix[10] * x.z); 
 }
 
 const CAffinTransformMatrix CAffinTransformMatrix::inverse() const
