@@ -48,23 +48,23 @@ BOOST_AUTO_TEST_CASE( test_simple_inverse )
 	const auto& inv_data = inv.data(); 
 
 	BOOST_CHECK_CLOSE(inv_data[0], 0.5f, 0.01);
-	BOOST_CHECK_SMALL(inv_data[1], 1e-5f); 
-	BOOST_CHECK_SMALL(inv_data[2], 1e-5f); 
-	BOOST_CHECK_SMALL(inv_data[3], 1e-5f); 
-
 	BOOST_CHECK_SMALL(inv_data[4], 1e-5f); 
-	BOOST_CHECK_CLOSE(inv_data[5], 2.0f, 0.01);
-	BOOST_CHECK_SMALL(inv_data[6], 1e-5f); 
-	BOOST_CHECK_SMALL(inv_data[7], 1e-5f); 
-
 	BOOST_CHECK_SMALL(inv_data[8], 1e-5f); 
-	BOOST_CHECK_SMALL(inv_data[9], 1e-5f); 
-	BOOST_CHECK_CLOSE(inv_data[10], 5.0f, 0.01);
-	BOOST_CHECK_SMALL(inv_data[11], 1e-5f); 
-
 	BOOST_CHECK_SMALL(inv_data[12], 1e-5f); 
+
+	BOOST_CHECK_SMALL(inv_data[1], 1e-5f); 
+	BOOST_CHECK_CLOSE(inv_data[5], 2.0f, 0.01);
+	BOOST_CHECK_SMALL(inv_data[9], 1e-5f); 
 	BOOST_CHECK_SMALL(inv_data[13], 1e-5f); 
+
+	BOOST_CHECK_SMALL(inv_data[2], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[6], 1e-5f); 
+	BOOST_CHECK_CLOSE(inv_data[10], 5.0f, 0.01);
 	BOOST_CHECK_SMALL(inv_data[14], 1e-5f); 
+
+	BOOST_CHECK_SMALL(inv_data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(inv_data[15], 1.0f, 0.01);
         
 }
@@ -82,25 +82,24 @@ BOOST_AUTO_TEST_CASE( test_inverse )
 	const auto& inv_data = inv.data(); 
 
 	BOOST_CHECK_CLOSE(inv_data[0], -0.25f, 0.01);
-	BOOST_CHECK_CLOSE(inv_data[1], 1.0f/42.0f, 0.01);
-	BOOST_CHECK_CLOSE(inv_data[2], 5.0f/14.0f, 0.01);
-	BOOST_CHECK_CLOSE(inv_data[3], -43.0f/84.0f, 0.01);
+	BOOST_CHECK_CLOSE(inv_data[4], 1.0f/42.0f, 0.01);
+	BOOST_CHECK_CLOSE(inv_data[8], 5.0f/14.0f, 0.01);
+	BOOST_CHECK_CLOSE(inv_data[12], -43.0f/84.0f, 0.01);
 
-	BOOST_CHECK_CLOSE(inv_data[4], 1.0f/2.0f, 0.01);
+	BOOST_CHECK_CLOSE(inv_data[1], 1.0f/2.0f, 0.01);
 	BOOST_CHECK_CLOSE(inv_data[5], -1.0f/3.0f, 0.01);
-	BOOST_CHECK_SMALL(inv_data[6], 1e-5f);
-	BOOST_CHECK_CLOSE(inv_data[7], 7.0f/6.0f, 0.01);
+	BOOST_CHECK_SMALL(inv_data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[13], 7.0f/6.0f, 0.01);
 
 
-	BOOST_CHECK_SMALL(inv_data[8], 1e-5f);
-
-	BOOST_CHECK_CLOSE(inv_data[9], 10.0f/21.0f, 0.01);
+	BOOST_CHECK_SMALL(inv_data[2], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[6], 10.0f/21.0f, 0.01);
 	BOOST_CHECK_CLOSE(inv_data[10], -5.0f/14.0f, 0.01);
-	BOOST_CHECK_CLOSE(inv_data[11], -73.0f/42.0f, 0.01);
+	BOOST_CHECK_CLOSE(inv_data[14], -73.0f/42.0f, 0.01);
 
-	BOOST_CHECK_SMALL(inv_data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(inv_data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(inv_data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(inv_data[15], 1.0f, 0.01);
         
 }
@@ -119,23 +118,23 @@ BOOST_AUTO_TEST_CASE( test_rot_x_from_identity )
 
 
 	BOOST_CHECK_CLOSE(data[0], 1.0, 0.01);
-	BOOST_CHECK_SMALL(data[1], 1e-5f);
-	BOOST_CHECK_SMALL(data[2], 1e-5f);
-	BOOST_CHECK_SMALL(data[3], 1e-5f);
-
 	BOOST_CHECK_SMALL(data[4], 1e-5f);
-	BOOST_CHECK_CLOSE(data[5], cos_pi_3, 0.01f);
-	BOOST_CHECK_CLOSE(data[6], -sin_pi_3, 0.01f);
-	BOOST_CHECK_CLOSE(data[7], +12.0f * 0.5f + sin_pi_3 * 3.0f, 0.01f);
-
 	BOOST_CHECK_SMALL(data[8], 1e-5f);
-	BOOST_CHECK_CLOSE(data[9], sin_pi_3, 0.01);
-	BOOST_CHECK_CLOSE(data[10],cos_pi_3, 0.01);
-	BOOST_CHECK_CLOSE(data[11], -12.0f * sin_pi_3 + 1.5f  , 0.01);
+	BOOST_CHECK_SMALL(data[12], 1e-5f);
 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(data[1], 1e-5f);
+	BOOST_CHECK_CLOSE(data[5], cos_pi_3, 0.01f);
+	BOOST_CHECK_CLOSE(data[9], -sin_pi_3, 0.01f);
+	BOOST_CHECK_CLOSE(data[13], +12.0f * 0.5f + sin_pi_3 * 3.0f, 0.01f);
+
+	BOOST_CHECK_SMALL(data[2], 1e-5f);
+	BOOST_CHECK_CLOSE(data[6], sin_pi_3, 0.01);
+	BOOST_CHECK_CLOSE(data[10],cos_pi_3, 0.01);
+	BOOST_CHECK_CLOSE(data[14], -12.0f * sin_pi_3 + 1.5f  , 0.01);
+
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
 	
 
@@ -154,24 +153,24 @@ BOOST_AUTO_TEST_CASE( test_rot_y_from_identity )
 	const auto& data = m.data();
 
 	BOOST_CHECK_CLOSE(data[0], cos_pi_3, 0.01f);
-	BOOST_CHECK_SMALL(data[1], 1e-5f);
-	BOOST_CHECK_CLOSE(data[2], -sin_pi_3, 0.01f);
-	BOOST_CHECK_CLOSE(data[3], 20.0f * 0.5f + sin_pi_3 * 3.0f, 0.01f);
-
 	BOOST_CHECK_SMALL(data[4], 1e-5f);
+	BOOST_CHECK_CLOSE(data[8], -sin_pi_3, 0.01f);
+	BOOST_CHECK_CLOSE(data[12], 20.0f * 0.5f + sin_pi_3 * 3.0f, 0.01f);
+
+	BOOST_CHECK_SMALL(data[1], 1e-5f);
 	BOOST_CHECK_CLOSE(data[5], 1.0f, 0.01);
-	BOOST_CHECK_SMALL(data[6], 1e-5f);
-	BOOST_CHECK_SMALL(data[7], 1e-5f);
-
-
-	BOOST_CHECK_CLOSE(data[8], sin_pi_3, 0.01);
 	BOOST_CHECK_SMALL(data[9], 1e-5f);
-	BOOST_CHECK_CLOSE(data[10],cos_pi_3, 0.01);
-	BOOST_CHECK_CLOSE(data[11],-20.0f * sin_pi_3 + 1.5f  , 0.01);
+	BOOST_CHECK_SMALL(data[13], 1e-5f);
 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+
+	BOOST_CHECK_CLOSE(data[2], sin_pi_3, 0.01);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
+	BOOST_CHECK_CLOSE(data[10],cos_pi_3, 0.01);
+	BOOST_CHECK_CLOSE(data[14],-20.0f * sin_pi_3 + 1.5f  , 0.01);
+
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
 }
 
@@ -188,26 +187,26 @@ BOOST_AUTO_TEST_CASE( test_rot_z_from_identity )
 	const auto& data = m.data();
 
 	BOOST_CHECK_CLOSE(data[0], cos_pi_3, 0.01f);
-	BOOST_CHECK_CLOSE(data[1], -sin_pi_3, 0.01f);
-	BOOST_CHECK_SMALL(data[2], 1e-5f);
-	BOOST_CHECK_CLOSE(data[3], 20.0f * 0.5f + sin_pi_3 * 12.0f, 0.01f);
-
-
-	BOOST_CHECK_CLOSE(data[4], sin_pi_3, 0.01);
-	BOOST_CHECK_CLOSE(data[5],cos_pi_3, 0.01);
-	BOOST_CHECK_SMALL(data[6], 1e-5f);
-	BOOST_CHECK_CLOSE(data[7], -20.0f * sin_pi_3 + 6.0f  , 0.01);
-
-
+	BOOST_CHECK_CLOSE(data[4], -sin_pi_3, 0.01f);
 	BOOST_CHECK_SMALL(data[8], 1e-5f);
+	BOOST_CHECK_CLOSE(data[12], 20.0f * 0.5f + sin_pi_3 * 12.0f, 0.01f);
+
+
+	BOOST_CHECK_CLOSE(data[1], sin_pi_3, 0.01);
+	BOOST_CHECK_CLOSE(data[5],cos_pi_3, 0.01);
 	BOOST_CHECK_SMALL(data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(data[13], -20.0f * sin_pi_3 + 6.0f  , 0.01);
+
+
+	BOOST_CHECK_SMALL(data[2], 1e-5f);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
 	BOOST_CHECK_CLOSE(data[10], 1.0f, 0.01);
-	BOOST_CHECK_SMALL(data[11], 1e-5f);
+	BOOST_CHECK_SMALL(data[14], 1e-5f);
 
 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
 }
 
@@ -219,26 +218,26 @@ BOOST_AUTO_TEST_CASE( test_translate_from_identity )
 	const auto& data = m.data();
 
 	BOOST_CHECK_CLOSE(data[0], 1.0f, 0.01f);
-	BOOST_CHECK_SMALL(data[1], 1e-5f);
-	BOOST_CHECK_SMALL(data[2], 1e-5f);
-	BOOST_CHECK_CLOSE(data[3], 2.0f, 0.01f);
-
-
 	BOOST_CHECK_SMALL(data[4], 1e-5f);
-	BOOST_CHECK_CLOSE(data[5], 1.0f, 0.01f);
-	BOOST_CHECK_SMALL(data[6], 1e-5f);
-	BOOST_CHECK_CLOSE(data[7], 3.0f, 0.01f);
-
-
 	BOOST_CHECK_SMALL(data[8], 1e-5f);
+	BOOST_CHECK_CLOSE(data[12], 2.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(data[1], 1e-5f);
+	BOOST_CHECK_CLOSE(data[5], 1.0f, 0.01f);
 	BOOST_CHECK_SMALL(data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(data[13], 3.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(data[2], 1e-5f);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
 	BOOST_CHECK_CLOSE(data[10], 1.0f, 0.01f);
-	BOOST_CHECK_CLOSE(data[11], 4.0f, 0.01);
+	BOOST_CHECK_CLOSE(data[14], 4.0f, 0.01);
 
 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
 	
 
@@ -247,26 +246,26 @@ BOOST_AUTO_TEST_CASE( test_translate_from_identity )
 
 
 	BOOST_CHECK_CLOSE(inv_data[0], 1.0f, 0.01f);
-	BOOST_CHECK_SMALL(inv_data[1], 1e-5f);
-	BOOST_CHECK_SMALL(inv_data[2], 1e-5f);
-	BOOST_CHECK_CLOSE(inv_data[3], -2.0f, 0.01f);
-
-
 	BOOST_CHECK_SMALL(inv_data[4], 1e-5f);
-	BOOST_CHECK_CLOSE(inv_data[5], 1.0f, 0.01f);
-	BOOST_CHECK_SMALL(inv_data[6], 1e-5f);
-	BOOST_CHECK_CLOSE(inv_data[7], -3.0f, 0.01f);
-
-
 	BOOST_CHECK_SMALL(inv_data[8], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[12], -2.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(inv_data[1], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[5], 1.0f, 0.01f);
 	BOOST_CHECK_SMALL(inv_data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(inv_data[13], -3.0f, 0.01f);
+
+
+	BOOST_CHECK_SMALL(inv_data[2], 1e-5f);
+	BOOST_CHECK_SMALL(inv_data[6], 1e-5f);
 	BOOST_CHECK_CLOSE(inv_data[10], 1.0f, 0.01f);
-	BOOST_CHECK_CLOSE(inv_data[11], -4.0f, 0.01);
+	BOOST_CHECK_CLOSE(inv_data[14], -4.0f, 0.01);
 
 
-	BOOST_CHECK_SMALL(inv_data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(inv_data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(inv_data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(inv_data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(inv_data[15], 1.0f, 0.01);
 }
 
@@ -324,23 +323,23 @@ BOOST_AUTO_TEST_CASE( test_scale_from_identity )
 	const auto& data = m.data(); 
 
 	BOOST_CHECK_CLOSE(data[0], 2.0f, 0.01f);
-	BOOST_CHECK_SMALL(data[1], 1e-5f);
-	BOOST_CHECK_SMALL(data[2], 1e-5f);
-	BOOST_CHECK_CLOSE(data[3], -1.0f, 0.01f);
-
 	BOOST_CHECK_SMALL(data[4], 1e-5f);
-	BOOST_CHECK_CLOSE(data[5], 3.0f, 0.01f);
-	BOOST_CHECK_SMALL(data[6], 1e-5f);
-	BOOST_CHECK_CLOSE(data[7], -4.0f, 0.01f);
-
 	BOOST_CHECK_SMALL(data[8], 1e-5f);
-	BOOST_CHECK_SMALL(data[9], 1e-5f);
-	BOOST_CHECK_CLOSE(data[10], 4.0f, 0.01f);
-	BOOST_CHECK_CLOSE(data[11],-9.0f, 0.01);
+	BOOST_CHECK_CLOSE(data[12], -1.0f, 0.01f);
 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(data[1], 1e-5f);
+	BOOST_CHECK_CLOSE(data[5], 3.0f, 0.01f);
+	BOOST_CHECK_SMALL(data[9], 1e-5f);
+	BOOST_CHECK_CLOSE(data[13], -4.0f, 0.01f);
+
+	BOOST_CHECK_SMALL(data[2], 1e-5f);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
+	BOOST_CHECK_CLOSE(data[10], 4.0f, 0.01f);
+	BOOST_CHECK_CLOSE(data[14],-9.0f, 0.01);
+
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
 	
 }
@@ -358,26 +357,26 @@ BOOST_AUTO_TEST_CASE( test_rot_from_quaternion_and_identity )
 	const auto& data = m.data();
 
 	BOOST_CHECK_CLOSE(data[0], 0.375f, 0.01f);
-	BOOST_CHECK_CLOSE(data[1], 2 * ( -1/16.0- sqrt(10.0)/8.0)  , 0.01f);
-	BOOST_CHECK_CLOSE(data[2], 2 * (0.125 - sqrt(10.0)/16.0 ), 0.01f );
-	BOOST_CHECK_CLOSE(data[3], 20.0f - (data[0] * 20.0f + data[1] *12.0f + data[2] * 3.0f  ), 0.01f);
+	BOOST_CHECK_CLOSE(data[4], 2 * ( -1/16.0- sqrt(10.0)/8.0)  , 0.01f);
+	BOOST_CHECK_CLOSE(data[8], 2 * (0.125 - sqrt(10.0)/16.0 ), 0.01f );
+	BOOST_CHECK_CLOSE(data[12], 20.0f - (data[0] * 20.0f + data[4] *12.0f + data[8] * 3.0f  ), 0.01f);
 
 
-	BOOST_CHECK_CLOSE(data[4], 2 * ( sqrt(10.0)/8.0 -1/16.0) , 0.01);
+	BOOST_CHECK_CLOSE(data[1], 2 * ( sqrt(10.0)/8.0 -1/16.0) , 0.01);
 	BOOST_CHECK_CLOSE(data[5], 0.375f, 0.01);
-	BOOST_CHECK_CLOSE(data[6], 2 * (-.125 - sqrt(10.0)/16.0), 0.01f);
-	BOOST_CHECK_CLOSE(data[7], 12.0f - (data[4] * 20 + data[5] *12.0f + data[6] * 3.0f  ) , 0.01);
+	BOOST_CHECK_CLOSE(data[9], 2 * (-.125 - sqrt(10.0)/16.0), 0.01f);
+	BOOST_CHECK_CLOSE(data[13], 12.0f - (data[1] * 20 + data[5] *12.0f + data[9] * 3.0f  ) , 0.01);
 
 
-	BOOST_CHECK_CLOSE(data[8], 2 * (1/8.0 + sqrt(10.0)/16.0), 0.01f);
-	BOOST_CHECK_CLOSE(data[9], 2 * (-1/8.0 + sqrt(10.0)/16.0), 0.01f);
+	BOOST_CHECK_CLOSE(data[2], 2 * (1/8.0 + sqrt(10.0)/16.0), 0.01f);
+	BOOST_CHECK_CLOSE(data[6], 2 * (-1/8.0 + sqrt(10.0)/16.0), 0.01f);
 	BOOST_CHECK_CLOSE(data[10], 3.0f/4.0f, 0.01);
-	BOOST_CHECK_CLOSE(data[11], 3.0f - (data[8] * 20 + data[9] *12.0f + data[10]* 3.0f  ), 0.01f);
+	BOOST_CHECK_CLOSE(data[14], 3.0f - (data[2] * 20 + data[6] *12.0f + data[10]* 3.0f  ), 0.01f);
 
 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_CLOSE(data[15], 1.0f, 0.01);
 }
 
@@ -461,23 +460,23 @@ BOOST_AUTO_TEST_CASE( test_multiply )
 	const auto& data = lhs.data();
 
 	BOOST_CHECK_CLOSE(data[0], 18.5, 0.01);
-	BOOST_CHECK_CLOSE(data[1], 15.5, 0.01);
-	BOOST_CHECK_CLOSE(data[2], 10.6, 0.01);
-	BOOST_CHECK_CLOSE(data[3], 24.0, 0.01);
+	BOOST_CHECK_CLOSE(data[4], 15.5, 0.01);
+	BOOST_CHECK_CLOSE(data[8], 10.6, 0.01);
+	BOOST_CHECK_CLOSE(data[12], 24.0, 0.01);
 
-	BOOST_CHECK_CLOSE(data[4], 21.0, 0.01);
+	BOOST_CHECK_CLOSE(data[1], 21.0, 0.01);
 	BOOST_CHECK_CLOSE(data[5], 16.75, 0.01);
-	BOOST_CHECK_CLOSE(data[6], 11.8, 0.01);
-	BOOST_CHECK_CLOSE(data[7], 25.5, 0.01);
+	BOOST_CHECK_CLOSE(data[9], 11.8, 0.01);
+	BOOST_CHECK_CLOSE(data[13], 25.5, 0.01);
 
-	BOOST_CHECK_CLOSE(data[8], 17.7, 0.01);
-	BOOST_CHECK_CLOSE(data[9], 18.4, 0.01);
+	BOOST_CHECK_CLOSE(data[2], 17.7, 0.01);
+	BOOST_CHECK_CLOSE(data[6], 18.4, 0.01);
 	BOOST_CHECK_CLOSE(data[10], 11.44, 0.01);
-	BOOST_CHECK_CLOSE(data[11], 34.4, 0.01);
+	BOOST_CHECK_CLOSE(data[14], 34.4, 0.01);
 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_EQUAL(data[15], 1.0f);
 	
 }
@@ -516,23 +515,23 @@ BOOST_AUTO_TEST_CASE( test_multiply_const_input )
 	const auto& data = r.data();
 
 	BOOST_CHECK_CLOSE(data[0], 18.5, 0.01);
-	BOOST_CHECK_CLOSE(data[1], 15.5, 0.01);
-	BOOST_CHECK_CLOSE(data[2], 10.6, 0.01);
-	BOOST_CHECK_CLOSE(data[3], 24.0, 0.01);
+	BOOST_CHECK_CLOSE(data[4], 15.5, 0.01);
+	BOOST_CHECK_CLOSE(data[8], 10.6, 0.01);
+	BOOST_CHECK_CLOSE(data[12], 24.0, 0.01);
 
-	BOOST_CHECK_CLOSE(data[4], 21.0, 0.01);
+	BOOST_CHECK_CLOSE(data[1], 21.0, 0.01);
 	BOOST_CHECK_CLOSE(data[5], 16.75, 0.01);
-	BOOST_CHECK_CLOSE(data[6], 11.8, 0.01);
-	BOOST_CHECK_CLOSE(data[7], 25.5, 0.01);
+	BOOST_CHECK_CLOSE(data[9], 11.8, 0.01);
+	BOOST_CHECK_CLOSE(data[13], 25.5, 0.01);
 
-	BOOST_CHECK_CLOSE(data[8], 17.7, 0.01);
-	BOOST_CHECK_CLOSE(data[9], 18.4, 0.01);
+	BOOST_CHECK_CLOSE(data[2], 17.7, 0.01);
+	BOOST_CHECK_CLOSE(data[6], 18.4, 0.01);
 	BOOST_CHECK_CLOSE(data[10], 11.44, 0.01);
-	BOOST_CHECK_CLOSE(data[11], 34.4, 0.01);
+	BOOST_CHECK_CLOSE(data[14], 34.4, 0.01);
 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-	BOOST_CHECK_SMALL(data[13], 1e-5f); 
-	BOOST_CHECK_SMALL(data[14], 1e-5f); 
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_EQUAL(data[15], 1.0f);
 	
 }

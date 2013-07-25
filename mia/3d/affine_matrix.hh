@@ -39,6 +39,7 @@ public:
         void rotate(const C3DFVector& center, const Quaternion& q);
         void scale(const C3DFVector& center, const C3DFVector& scale); 
         void translate(const C3DFVector& shift); 
+        void transpose(); 
 
         void identity();
 
