@@ -168,13 +168,43 @@ void CAffinTransformMatrix::rotate_z(const C3DFVector& center, float angle)
 	m_matrix[13]= as[aC] + ac[aD] - center.x * s - center.y * c + center.y;
 }
 
+
+void CAffinTransformMatrix::transform_centered(const C3DFVector& center, const C3DFMatrix& m)
+{
+	const auto shift = center - m * center; 
+	vector<float> help(16,0.0f); 
+	
+	// multiplying from right side with m transposed 
+	help[0] = m_matrix[0] * m.x.x + m_matrix[1] * m.x.y + m_matrix[2] * m.x.z;  
+	help[1] = m_matrix[0] * m.y.x + m_matrix[1] * m.y.y + m_matrix[2] * m.y.z;  
+	help[2] = m_matrix[0] * m.z.x + m_matrix[1] * m.z.y + m_matrix[2] * m.z.z;  
+
+	help[4] = m_matrix[4] * m.x.x + m_matrix[5] * m.x.y + m_matrix[6] * m.x.z;  
+	help[5] = m_matrix[4] * m.y.x + m_matrix[5] * m.y.y + m_matrix[6] * m.y.z;  
+	help[6] = m_matrix[4] * m.z.x + m_matrix[5] * m.z.y + m_matrix[6] * m.z.z;  
+
+	help[8] = m_matrix[8] * m.x.x + m_matrix[9] * m.x.y + m_matrix[10] * m.x.z;
+	help[9] = m_matrix[8] * m.y.x + m_matrix[9] * m.y.y + m_matrix[10] * m.y.z;
+	help[10]= m_matrix[8] * m.z.x + m_matrix[9] * m.z.y + m_matrix[10] * m.z.z;
+
+	help[12] = m_matrix[12] * m.x.x + m_matrix[13] * m.x.y + m_matrix[14] * m.x.z + shift.x; 
+	help[13] = m_matrix[12] * m.y.x + m_matrix[13] * m.y.y + m_matrix[14] * m.y.z + shift.y;
+	help[14] = m_matrix[12] * m.z.x + m_matrix[13] * m.z.y + m_matrix[14] * m.z.z + shift.z;
+
+
+	help[15] = 1.0f; 
+
+	swap(help, m_matrix); 
+
+}
+
 void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q)
 {
 	const auto rot = q.get_rotation_matrix(); 
 	const auto shift = center - rot * center; 
 	vector<float> help(16,0.0f); 
 	
-	// multiplying from left side with rot
+	// multiplying from right side with rot transposed 
 	help[0] = m_matrix[0] * rot.x.x + m_matrix[1] * rot.x.y + m_matrix[2] * rot.x.z;  
 	help[1] = m_matrix[0] * rot.y.x + m_matrix[1] * rot.y.y + m_matrix[2] * rot.y.z;  
 	help[2] = m_matrix[0] * rot.z.x + m_matrix[1] * rot.z.y + m_matrix[2] * rot.z.z;  

@@ -74,6 +74,13 @@ public:
         void rotate(const C3DFVector& center, const Quaternion& q);
 
 	/**
+	   multiply the current matrix by a 3x3 transformation matrix centered at the given location 
+	   \param center rotation center 
+	   \param m 3x3 transformation matrix 
+	*/
+        void transform_centered(const C3DFVector& center, const C3DFMatrix& m);
+
+	/**
 	   multiply the current matrix by a scaling matrix centered at the given location
 	   \param center of the scaling 
 	   \param scale saling factors along the three axis

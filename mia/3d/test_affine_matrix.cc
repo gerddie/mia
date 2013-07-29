@@ -536,3 +536,41 @@ BOOST_AUTO_TEST_CASE( test_multiply_const_input )
 	
 }
 
+BOOST_AUTO_TEST_CASE( test_transform_centered ) 
+{
+	CAffinTransformMatrix lhs(2.0f, 1.0f, 3.0f, 1.0f, 
+				  2.0f, 8.0f, 4.0f, 2.0f, 
+				  3.0f, 4.0f, 6.0f, 1.0f); 
+	
+	C3DFMatrix m(C3DFVector(2.0, 3.0, 5.0), 
+		     C3DFVector(4.0, 1.0, 8.0), 
+		     C3DFVector(6.0, 7.0, 9.0)); 
+	
+
+	C3DFVector c(10,11,12);
+	
+	lhs.transform_centered(c, m);
+
+	const auto& data = lhs.data();
+
+	BOOST_CHECK_CLOSE(data[0], 25, 0.01);
+	BOOST_CHECK_CLOSE(data[1], 34, 0.01);
+	BOOST_CHECK_CLOSE(data[2], 53, 0.01);
+	BOOST_CHECK_SMALL(data[3], 1e-5f); 
+
+	BOOST_CHECK_CLOSE(data[4], 46, 0.01);
+	BOOST_CHECK_CLOSE(data[5], 44, 0.01);
+	BOOST_CHECK_CLOSE(data[6], 98, 0.01);
+	BOOST_CHECK_SMALL(data[7], 1e-5f); 
+
+	BOOST_CHECK_CLOSE(data[8], 48, 0.01);
+	BOOST_CHECK_CLOSE(data[9], 64, 0.01);
+	BOOST_CHECK_CLOSE(data[10], 100, 0.01);
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
+
+	BOOST_CHECK_CLOSE(data[12], -90, 0.01);
+	BOOST_CHECK_CLOSE(data[13], -122, 0.01);
+	BOOST_CHECK_CLOSE(data[14], -204, 0.01);
+	BOOST_CHECK_EQUAL(data[15], 1.0f);
+	
+}

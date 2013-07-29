@@ -347,7 +347,20 @@ BOOST_FIXTURE_TEST_CASE( test_get_rot_matrix_x, QuaternionFixture)
 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_get_rot_matrix, QuaternionFixture) 
+{
+	Quaternion q(sqrt(3.0)/2.0, 0.5, 1.9, 40.0); 
+	q.normalize(); 
+	C3DFMatrix rot = q.get_rotation_matrix(); 
 
+	Quaternion q2(rot); 
+
+	BOOST_CHECK_CLOSE(q2.x(), q.x(), 0.1); 
+	BOOST_CHECK_CLOSE(q2.y(), q.y(), 0.1); 
+	BOOST_CHECK_CLOSE(q2.z(), q.z(), 0.1); 
+	BOOST_CHECK_CLOSE(q2.w(), q.w(), 0.1); 
+
+}
 
 QuaternionFixture::QuaternionFixture():
 	q1(1, 2, 3, 4), 
