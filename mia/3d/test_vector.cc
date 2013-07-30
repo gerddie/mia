@@ -179,6 +179,18 @@ static void test_fill()
 
 }
 
+static void test_minus()
+{
+	T3DVector<int> test(1,-2,3);
+	T3DVector<int> mtest = -test; 
+
+	BOOST_CHECK_EQUAL(mtest.x, -1);
+	BOOST_CHECK_EQUAL(mtest.y,  2);
+	BOOST_CHECK_EQUAL(mtest.z, -3);
+
+
+}
+
 
 void add_3dvector_tests(boost::unit_test::test_suite* suite)
 {
@@ -187,4 +199,5 @@ void add_3dvector_tests(boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE( &test_size_vector_option));
 	suite->add( BOOST_TEST_CASE( &test_swizzle ));
 	suite->add( BOOST_TEST_CASE( &test_fill ));
+	suite->add( BOOST_TEST_CASE(test_minus)); 
 }

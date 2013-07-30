@@ -181,6 +181,10 @@ public:
 		return *this;
 	}
 
+	T3DVector operator -() const {
+		return 	T3DVector<T>(-x, -y, -z);
+	}
+
 	/// print out the formatted vector to the stream
 	void write(std::ostream& os)const {
 		os  << x << "," << y << "," << z; 
