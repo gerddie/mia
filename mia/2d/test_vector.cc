@@ -122,3 +122,14 @@ BOOST_AUTO_TEST_CASE(test_vector_fill)
 
 }
 
+BOOST_AUTO_TEST_CASE( test_minus )
+{
+	T2DVector<int> test(1,-2);
+	T2DVector<int> mtest = -test; 
+
+	BOOST_CHECK_EQUAL(mtest.x, -1);
+	BOOST_CHECK_EQUAL(mtest.y,  2);
+
+
+
+}

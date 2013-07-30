@@ -148,6 +148,10 @@ public:
 		return *this;
 	}
 
+	T2DVector operator -() const {
+		return 	T2DVector<T>(-x, -y); 
+	}
+
 	/// returns the size of this vector, always 2
 	size_t size() const {
 		return 2;
