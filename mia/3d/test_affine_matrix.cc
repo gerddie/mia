@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( test_rot_x_from_identity )
 	
 	CAffinTransformMatrix m; 
 	
-	m.rotate_x(C3DFVector(20.0f, 12.0f, 3.0f), M_PI/3.0f); 
+	m.rotate_x(M_PI/3.0f, C3DFVector(20.0f, 12.0f, 3.0f)); 
 	
 	const float sin_pi_3 = sqrt(3.0f)/ 2.0f; 
 	const float cos_pi_3 = 1.0f/ 2.0f; 
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE( test_rot_y_from_identity )
 	
 	CAffinTransformMatrix m; 
 	
-	m.rotate_y(C3DFVector(20.0f, 12.0f, 3.0f), M_PI/3.0f); 
+	m.rotate_y(M_PI/3.0f, C3DFVector(20.0f, 12.0f, 3.0f)); 
 	
 	const float sin_pi_3 = sqrt(3.0f)/ 2.0f; 
 	const float cos_pi_3 = 1.0f/ 2.0f; 
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE( test_rot_z_from_identity )
 	
 	CAffinTransformMatrix m; 
 	
-	m.rotate_z(C3DFVector(20.0f, 12.0f, 3.0f), M_PI/3.0f); 
+	m.rotate_z(M_PI/3.0f, C3DFVector(20.0f, 12.0f, 3.0f)); 
 	
 	const float sin_pi_3 = sqrt(3.0f)/ 2.0f; 
 	const float cos_pi_3 = 1.0f/ 2.0f; 
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE( test_scale_from_identity )
 	CAffinTransformMatrix m;
 	
 	C3DFVector center(1,2,3); 
-	m.scale(center, C3DFVector(2.0f, 3.0f, 4.0f)); 
+	m.scale(C3DFVector(2.0f, 3.0f, 4.0f), center); 
 
 	
 	const auto& data = m.data(); 
@@ -352,7 +352,7 @@ BOOST_AUTO_TEST_CASE( test_rot_from_quaternion_and_identity )
 	C3DFVector center(20.0f, 12.0f, 3.0f); 
 	Quaternion q(sqrt(10.0f)/4.0f, 0.25f, -0.25f, 0.5f); 
 	
-	m.rotate(center, q);
+	m.rotate(q, center);
 	
 	const auto& data = m.data();
 
@@ -388,8 +388,8 @@ BOOST_FIXTURE_TEST_CASE( test_rot_from_quaternion_and_pseudorando_matrix , Conca
 	Quaternion q(sqrt(10.0f)/4.0f, 0.25f, -0.25f, 0.5f); 
 
 	CAffinTransformMatrix m; 	
-	m.rotate(center, q);
-	start.rotate(center, q);
+	m.rotate(q, center);
+	start.rotate(q, center);
 	
 	run_check(m); 
 }
@@ -401,8 +401,8 @@ BOOST_FIXTURE_TEST_CASE( test_rot_x_pseudorando_matrix , ConcatationFixture)
 	C3DFVector center(20.0f, 12.0f, 3.0f); 
 
 	CAffinTransformMatrix m; 	
-	m.rotate_x(center, 1.0);
-	start.rotate_x(center, 1.0);
+	m.rotate_x(1.0, center);
+	start.rotate_x(1.0, center);
 	
 	run_check(m); 
 }
@@ -413,8 +413,8 @@ BOOST_FIXTURE_TEST_CASE( test_rot_y_pseudorando_matrix , ConcatationFixture)
 	C3DFVector center(20.0f, 12.0f, 3.0f); 
 
 	CAffinTransformMatrix m; 	
-	m.rotate_y(center, 1.0);
-	start.rotate_y(center, 1.0);
+	m.rotate_y(1.0, center);
+	start.rotate_y(1.0, center);
 	
 	run_check(m); 
 }
@@ -425,8 +425,8 @@ BOOST_FIXTURE_TEST_CASE( test_rot_z_pseudorando_matrix , ConcatationFixture)
 	C3DFVector center(20.0f, 12.0f, 3.0f); 
 
 	CAffinTransformMatrix m; 	
-	m.rotate_z(center, 1.0);
-	start.rotate_z(center, 1.0);
+	m.rotate_z(1.0, center);
+	start.rotate_z(1.0, center);
 	
 	run_check(m); 
 }
@@ -438,8 +438,8 @@ BOOST_FIXTURE_TEST_CASE( test_scale_pseudorando_matrix , ConcatationFixture)
 	C3DFVector scales(2.0f, 12.0f, 0.5f); 
 
 	CAffinTransformMatrix m; 	
-	m.scale(center, scales);
-	start.scale(center, scales);
+	m.scale(scales, center);
+	start.scale(scales, center);
 	
 	run_check(m); 
 }
@@ -549,7 +549,7 @@ BOOST_AUTO_TEST_CASE( test_transform_centered )
 
 	C3DFVector c(10,11,12);
 	
-	lhs.transform_centered(c, m);
+	lhs.transform_centered(m, c);
 
 	const auto& data = lhs.data();
 

@@ -47,45 +47,48 @@ public:
 
 	/**
 	   multiply the current matrix by a rotation around the x axis centered at the given location and with the given angle. 
-	   \param center rotation center 
 	   \param angle rotation angle in radians 
+	   \param center rotation center 
 	*/
-        void rotate_x(const C3DFVector& center, float angle); 
+        void rotate_x(float angle, const C3DFVector& center = C3DFVector::_0); 
 
 	/**
 	   multiply the current matrix by a rotation around the y axis centered at the given location and with the given angle. 
-	   \param center rotation center 
 	   \param angle rotation angle in radians 
+	   \param center rotation center 
 	*/
-        void rotate_y(const C3DFVector& center, float angle); 
+        void rotate_y(float angle, const C3DFVector& center = C3DFVector::_0); 
 
 	/**
 	   multiply the current matrix by a rotation around the z axis centered at the given location and with the given angle. 
-	   \param center rotation center 
 	   \param angle rotation angle in radians 
+	   \param center rotation center 
 	*/
-        void rotate_z(const C3DFVector& center, float angle); 
+        void rotate_z(float angle, const C3DFVector& center = C3DFVector::_0); 
 
 	/**
 	   multiply the current matrix by a rotation as defined by the given quaternion  centered at the given location
-	   \param center rotation center 
 	   \param q quaternion describing rotation axis and angle
+	   \param center rotation center 
+
 	*/
-        void rotate(const C3DFVector& center, const Quaternion& q);
+        void rotate(const Quaternion& q, const C3DFVector& center = C3DFVector::_0);
 
 	/**
 	   multiply the current matrix by a 3x3 transformation matrix centered at the given location 
-	   \param center rotation center 
 	   \param m 3x3 transformation matrix 
+	   \param center rotation center 
+
 	*/
-        void transform_centered(const C3DFVector& center, const C3DFMatrix& m);
+        void transform_centered(const C3DFMatrix& m, const C3DFVector& center = C3DFVector::_0);
 
 	/**
 	   multiply the current matrix by a scaling matrix centered at the given location
-	   \param center of the scaling 
 	   \param scale saling factors along the three axis
+	   \param center of the scaling 
+
 	*/
-        void scale(const C3DFVector& center, const C3DFVector& scale); 
+        void scale(const C3DFVector& scale, const C3DFVector& center = C3DFVector::_0); 
 
 	/**
 	   multiply the current matrix by a translation matrix

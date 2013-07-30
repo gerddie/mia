@@ -54,7 +54,7 @@ CAffinTransformMatrix::CAffinTransformMatrix(float a11, float a12, float a13, fl
 
 }
 
-void CAffinTransformMatrix::rotate_x(const C3DFVector& center, float angle)
+void CAffinTransformMatrix::rotate_x(float angle, const C3DFVector& center)
 {
         float c, s; 
         sincosf(angle, &s, &c); 
@@ -93,7 +93,7 @@ void CAffinTransformMatrix::rotate_x(const C3DFVector& center, float angle)
 
 }
 
-void CAffinTransformMatrix::rotate_y(const C3DFVector& center, float angle)
+void CAffinTransformMatrix::rotate_y(float angle, const C3DFVector& center)
 {
         float c, s; 
         sincosf(angle, &s, &c); 
@@ -131,7 +131,7 @@ void CAffinTransformMatrix::rotate_y(const C3DFVector& center, float angle)
 
 }
 
-void CAffinTransformMatrix::rotate_z(const C3DFVector& center, float angle)
+void CAffinTransformMatrix::rotate_z(float angle, const C3DFVector& center)
 {
         float c, s; 
         sincosf(angle, &s, &c); 
@@ -169,7 +169,7 @@ void CAffinTransformMatrix::rotate_z(const C3DFVector& center, float angle)
 }
 
 
-void CAffinTransformMatrix::transform_centered(const C3DFVector& center, const C3DFMatrix& m)
+void CAffinTransformMatrix::transform_centered(const C3DFMatrix& m, const C3DFVector& center)
 {
 	const auto shift = center - m * center; 
 	vector<float> help(16,0.0f); 
@@ -198,7 +198,7 @@ void CAffinTransformMatrix::transform_centered(const C3DFVector& center, const C
 
 }
 
-void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q)
+void CAffinTransformMatrix::rotate(const Quaternion& q, const C3DFVector& center)
 {
 	const auto rot = q.get_rotation_matrix(); 
 	const auto shift = center - rot * center; 
@@ -228,7 +228,7 @@ void CAffinTransformMatrix::rotate(const C3DFVector& center, const Quaternion& q
 
 }
 
-void CAffinTransformMatrix::scale(const C3DFVector& center, const C3DFVector& scale)
+void CAffinTransformMatrix::scale(const C3DFVector& scale, const C3DFVector& center)
 {
 	const C3DFVector sh = (C3DFVector::_1 - scale) * center; 
 
