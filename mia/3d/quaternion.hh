@@ -134,6 +134,8 @@ public:
 
 	const C3DFMatrix get_rotation_matrix() const; 
 
+	static const Quaternion _1; 
+
 private:
 	C3DDVector m_v; 
 	double m_w; 
