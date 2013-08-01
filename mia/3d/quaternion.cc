@@ -50,6 +50,7 @@ Quaternion::Quaternion(const C3DDVector& rot):
 
 }
 
+const Quaternion Quaternion::_1(1, 0, 0, 0); 
 
 Quaternion::Quaternion(const C3DFMatrix& rot)
 {
