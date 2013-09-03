@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DImageCombinerPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"labelxmap", "absdiff", "add", "sub", "mul", "div"
+	        "absdiff", "add", "sub", "mul", "div"
 	}; 
 	test(C3DImageCombinerPluginHandler::instance().get_set(), test_data); 
 }
