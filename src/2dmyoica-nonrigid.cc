@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -64,21 +64,20 @@ const SProgramDescription description = {
 	{pdi_example_code, g_program_example_code}
 }; 
 
-C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
+C2DFullCostList create_costs(P2DFullCost imagecost)
 {
 	C2DFullCostList result; 
 	result.push(imagecost); 
-
-	stringstream divcurl_descr; 
-	divcurl_descr << "divcurl:weight=[" << divcurlweight <<"]"; 
-	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 	return result; 
 }
 
-P2DTransformationFactory create_transform_creator(size_t c_rate)
+P2DTransformationFactory create_transform_creator(size_t c_rate, float penalty)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate << ",imgboundary=mirror,imgkernel=[bspline:d=3]";
+	transf << "spline:rate=" << c_rate 
+	       << ",imgboundary=mirror,imgkernel=[bspline:d=3],penalty=[divcurl:weight="
+	       << penalty << "]"; 
+	cvinfo() << "Transform:" <<  transf.str() << "\n"; 
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 	
@@ -124,8 +123,8 @@ void run_registration_pass(CSegSetWithImages&  input_set,
 {
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 	C2DImageSeries input_images = input_set.get_images(); 
-	auto costs  = create_costs(divcurlweight, imagecost); 
-	auto transform_creator = create_transform_creator(c_rate); 
+	auto costs  = create_costs(imagecost); 
+	auto transform_creator = create_transform_creator(c_rate, divcurlweight); 
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 	if (refinement_minimizer)
 		nrr.set_refinement_minimizer(refinement_minimizer); 
@@ -167,17 +166,17 @@ int do_main( int argc, char *argv[] )
 	string save_reg_filename;
 
 	// this parameter is currently not exported - reading the image data is 
-	// therefore done from the path given in the segmentation set 
+	// therefore done from the path given with the segmentation set 
 	bool override_src_imagepath = true;
 
 	// registration parameters
 	PMinimizer minimizer;
 	PMinimizer refinement_minimizer;
 	P2DFullCost imagecost;
-	double c_rate = 32; 
-	double c_rate_divider = 4; 
-	double divcurlweight = 20.0; 
-	double divcurlweight_divider = 4.0; 
+	double c_rate = 16; 
+	double c_rate_divider = 2; 
+	double divcurlweight = 10.0; 
+	double divcurlweight_divider = 2.0; 
 
 	size_t mg_levels = 3; 
 
@@ -192,7 +191,7 @@ int do_main( int argc, char *argv[] )
 		segmethod=C2DPerfusionAnalysis::bs_features; 
 
 	size_t current_pass = 0; 
-	size_t pass = 3; 
+	size_t pass = 5; 
 
 	CCmdOptionList options(description);
 	

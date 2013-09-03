@@ -1,7 +1,8 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
 #
-# This program is free software; you can redistribute it and/or modify
+# MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
@@ -12,10 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
 SET(REG3DLIBS mia3d)
@@ -29,17 +27,17 @@ SET(SSE_MODELS
   navierasse navierpsse
 )
 
-# this is not very nice, we assume if it's not 64 bit it doesn't support SSE 
-IF (NOT MSVC AND LONG_64BIT)
+IF (NOT MSVC AND (BUILD_HAS_ALTIVEC_ENABLED OR BUILD_HAS_SSE_ENABLED))
   SET(models3d ${models3d} ${SSE_MODELS})
-ENDIF (NOT MSVC AND LONG_64BIT)
+ENDIF (NOT MSVC AND (BUILD_HAS_ALTIVEC_ENABLED OR BUILD_HAS_SSE_ENABLED))
 
-PLUGIN_GROUP_PRE("3d-model" "${models3d}" "${REG3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dimage/model")
+PLUGINGROUP_WITH_PREFIX2("3dimage" "model" "${models3d}" "${REG3DLIBS}")
 
 SET(timesteps3d
   fluid
   direct
 )
 
-PLUGIN_GROUP_PRE("3d-timestep" "${timesteps3d}" "${REG3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dimage/timestep")
+PLUGINGROUP_WITH_PREFIX2("3dimage" "timestep" "${timesteps3d}" "${REG3DLIBS}")
+
 

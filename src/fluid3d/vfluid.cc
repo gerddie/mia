@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -24,8 +24,6 @@
 */
 
 
-#define THRESH 4
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -33,6 +31,11 @@
 #include <iomanip>
 #include <algorithm>
 #include <mia/3d/deformer.hh>
+
+#include <mia/core/threadedmsg.hh>
+#include <tbb/parallel_reduce.h>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
 
 
 //#include "3Dinterpolator.hh"
@@ -159,37 +162,50 @@ inline C3DFVector TFluidReg::forceAt(int hardcode,float *misma)const
 	return mis * tmp.get_gradient(hardcode);
 }
 
-// to parallize
 float  TFluidReg::calculatePerturbation()
 {
-	float gamma = 0;
-        for (size_t z = Start.z; z < End.z; z++)  {
-                for (size_t y = Start.y; y < End.y; y++)  {
-                        for (size_t x = Start.x; x < End.x; x++)  {
-                                float g = perturbationAt(x, y, z);
-                                if (g > gamma){
-					gamma = g;
+	auto callback = [this](const tbb::blocked_range<size_t>& range, float gamma) -> float{
+		C3DBounds max_p; 
+		for (auto z = range.begin(); z != range.end();++z)
+			for (size_t y = Start.y; y < End.y; y++)  {
+				for (size_t x = Start.x; x < End.x; x++)  {
+					float g = perturbationAt(x, y, z);
+					if (g > gamma){
+						gamma = g;
+						max_p.x = x; 
+						max_p.y = y; 
+						max_p.z = z; 
+					}
 				}
-                        }
-                }
-        }
-	cvdebug() << "pert = " << gamma << endl;
+			}	
+		return gamma; 
+	}; 
+
+	float gamma = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z, End.z, 1), 
+					   0.0f, callback, 
+					   [](float x, float y){return max(x,y);}); 
+
+	cvinfo() << "pert = " << gamma << "\n";
 	return gamma;
 }
 
-// to parallize
 float  TFluidReg::calculateJacobian()const
 {
-	float jmin = HUGE;
-        for (size_t z = Start.z+1; z < End.z-1; z++)  {
-                for (size_t y = Start.y+1; y < End.y-1; y++)  {
-                        for (size_t x = Start.x+1; x < End.x-1; x++)  {
-                                float j = jacobianAt(x, y, z);
-                                if (j < jmin) jmin = j;
-                        };
-                };
-        };
-	cvdebug() << "jacobian = " << jmin << endl;
+	auto callback = [this](const tbb::blocked_range<size_t>& range, float jmin) -> float{
+		for (auto z = range.begin(); z != range.end();++z)
+			for (size_t y = Start.y+1; y < End.y-1; y++)
+				for (size_t x = Start.x+1; x < End.x-1; x++) {
+					float j = jacobianAt(x, y, z);
+					if (j < jmin) jmin = j;
+				}
+		return jmin; 
+	}; 
+	
+	
+	float jmin = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z + 1, End.z-1, 1), 
+					   numeric_limits<float>::max(), callback, 
+					   [](float x, float y){return min(x,y);}); 
+	cvinfo() << "jacobian = " << jmin << endl;
         return jmin;
 }
 
@@ -215,13 +231,12 @@ float TFluidReg::work(P3DImage NewSource, C3DFVectorfield& uIn )
 	if (max_iter > 100)
 		max_iter = 100;
 
-	cvmsg() << "    ";
 
 	dmin = calculateForces();
 
 	for (int i = 0; (i < max_iter) && (trys < 5); i++)  {
 
-		cvmsg() << "\r" << "<" << i << ">: " << dmin;
+		cvmsg() << setw(3) << i << ": " << dmin << "\r";
                 // Algorithm 2, step 2+3:
 
 		// Algorithm 2, step 4:
@@ -289,6 +304,7 @@ step5:
 	//	*u = Backup; // restore better fit
 	DeleteTemps();
 
+	cvmsg() << "\n";
 	return dmin;
 }
 
@@ -304,33 +320,30 @@ void TFluidReg::DeleteTemps()
 
 float	TFluidReg::calculateForces()
 {
-	float res = 0.0f;
-	float mis;
-	float  max_mis = 0.0;
-	C3DBounds max_b(0,0,0);
-	int iz = 0;
-	for (size_t z = Start.z; z < End.z - 1; z++,iz++)  {
-		int iy = 0;
-                for (size_t y = Start.y; y < End.y - 1 ; y++,iy++)  {
-			int ix =0;
-			int hardcode = Start.x + ref.get_size().x * (y + z * ref.get_size().y);
-
-                        for (size_t x = Start.x; x < End.x - 1; x++,ix++,hardcode++)  {
-
-				cvdebug() << ix << ", " << iy << ", " << iz << " = "
-					  << x << ", " << y << ", " << z  << "\n";
-				(*B)(ix,iy,iz) = forceAt(x,y,z,&mis);
-				if (max_mis < mis){
-					max_mis = mis;
-					max_b = C3DBounds(x,y,z);
+	auto callback = [this](const tbb::blocked_range<size_t>& range, float mismatch) -> float{
+		CThreadMsgStream thread_stream;
+		C3DBounds max_p; 
+		for (auto z = range.begin(); z != range.end();++z) {
+			int iz = z - Start.z;
+			int iy = 0;
+			for (size_t y = Start.y; y < End.y; y++, iy++)  {
+				int ix =0;
+				for (size_t x = Start.x; x < End.x; x++,ix++)  {
+					float mis;
+					(*B)(ix,iy,iz) = forceAt(x,y,z,&mis);
+					mismatch += mis;
 				}
-
-				res += mis;
 			}
                 }
-        }
+		return mismatch; 
+        }; 
+	
+	float mismatch = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z, End.z, 1), 
+					       0.0f, callback, 
+					       [](float x, float y){return x + y;}); 
+	
 
-	return res/ref.size();
+	return mismatch/ref.size();
 }
 
 float  TFluidReg::jacobianAt(int x, int y, int z)const
@@ -381,16 +394,20 @@ float  TFluidReg::perturbationAt(int x, int y, int z)
 
 void  TFluidReg::ApplyShift()
 {
-	int iz = 0;
-	for (size_t z = Start.z; z < End.z; z++,iz++) {
-		int iy = 0;
-		for (size_t y = Start.y; y < End.y; y++,iy++) {
-			int ix = 0;
-			for (size_t x = Start.x; x < End.x; x++,ix++) {
-				(*u)(x,y,z) += float(delta) * (*B)(ix,iy,iz);
+	auto callback = [this](const tbb::blocked_range<size_t>& range){
+		CThreadMsgStream thread_stream;
+
+		for (auto z = range.begin(); z != range.end();++z) {
+			int iz = z - Start.z; 
+			int iy = 0;
+			for (size_t y = Start.y; y < End.y; y++,iy++) {
+				std::transform(u->begin_at(Start.x,y,z), u->begin_at(End.x,y,z), 
+					       B->begin_at(0, iy, iz), u->begin_at(Start.x,y,z), 
+					       [this](const C3DFVector& uv, const C3DFVector& ub) {return uv + delta*ub;}); 
 			}
 		}
-	}
+	}; 
+	tbb::parallel_for(tbb::blocked_range<size_t>(Start.z, End.z, 1), callback); 
 
 	tmp = C3DFImage(src.get_size());
 
@@ -411,150 +428,6 @@ void TFluidReg::solvePDE()
 }
 
 double g_start;
-
-//#define __ALWAYS_UPSCALE
-#ifdef __ALWAYS_UPSCALE
-
-static C3DFVectorfield *do_transform(const TFluidRegParams& params, C3DFVectorfield *Shift,TLinEqnSolver *solver,TMeasureList *measure_list)
-{
-	assert(Shift);
-
-	TMeasurement Measure;
-	memset(&Measure,0,sizeof(Measure));
-	Measure.Size = Shift->get_size();
-
-	C3DFVectorfield *s = Shift;
-
-	C3DFVectorfield *u = new C3DFVectorfield(Shift->get_size());
-
-	double mismatch = HUGE;
-	bool do_continue = true;
-
-	TFluidReg *Register;
-
-	assert (solver);
-	Register = new TFluidReg(params,solver);
-
-
-	for (int i= 0; i < 30 && do_continue; i++){
-
-		T3DTriLinInterpolator<C3DFImage> interp(*params.source);
-		C3DFImage ModelDeformed = transform3d<C3DFImage>(params.source->get_size(), interp, *s);
-		// Here is the place to add the interface to the PVM-Slave-threads
-		// instead of the following
-
-		cvmsg() << "[" << i << "]:" << ModelDeformed.get_size();
-		if (params.useMutual) {
-			gauss_3d(&ModelDeformed,1,1,1);
-		}
-
-		double new_mismatch = Register->work(&ModelDeformed, u);
-
-		if (new_mismatch < 0) { // returned because no better fit
-			new_mismatch = -new_mismatch;
-			do_continue = false;
-		}
-
-		Measure.PDEEval += Register->Measurement.PDEEval;
-		Measure.PDETime += Register->Measurement.PDETime;
-		Measure.niter   += Register->Measurement.niter;
-		Measure.Regrids++;
-
-		if (new_mismatch < mismatch) {
-			if (new_mismatch > mismatch * 0.95) {
-				do_continue = false;
-			}
-			*u += *s;
-			C3DFVectorfield *help = u;
-			u = s;
-			s = help;
-
-			u->clear();
-			mismatch = new_mismatch;
-		}else{
-			break;
-		}
-		cvmsg() << endl;
-	}
-	delete Register;
-	delete u;
-	Measure.allovertime = Clock.get_seconds() - g_start;
-	cvmsg() << "time: " << Measure.allovertime << endl;
-	measure_list->insert(measure_list->end(),Measure);
-	return s;
-}
-
-C3DFVectorfield *fluid_transform(const TFluidRegParams& params,TLinEqnSolver *solver,
-				 bool use_multigrid, bool use_fullres,TMeasureList *measure_list)
-{
-	C3DFVectorfield *GlobalShift = NULL;
-
-	bool change_res = false;
-	if (use_multigrid){
-
-		int x_shift = log2(params.source->get_size().x / STARTSIZE);
-		int y_shift = log2(params.source->get_size().y / STARTSIZE);
-		int z_shift = log2(params.source->get_size().z / STARTSIZE);
-
-		while (x_shift || y_shift || z_shift){
-			C3DBounds BlockSize(1 << x_shift, 1 << y_shift, 1 << z_shift);
-
-			C3DFImage *deformed_helper = params.source->get_deformed(*GlobalShift);
-			C3DFImage *ModelScale = down_scale_gauss_filtered(*deformed_helper, BlockSize);
-			delete deformed_helper;
-
-			C3DFImage *RefScale =  down_scale_gauss_filtered(*params.reference, BlockSize);
-
-			C3DFVectorfield *Shift = new C3DFVectorfield(ModelScale->get_size());
-
-			TFluidRegParams newparams = params;
-			newparams.source = ModelScale;
-			newparams.reference = RefScale;
-
-			Shift = do_transform(newparams,Shift,solver,measure_list);
-
-			delete ModelScale;
-			delete RefScale;
-
-			C3DFVectorfield *GShift = Shift->upscale(params.source->get_size());
-			delete Shift;
-			if (GlobalShift) {
-				*GShift += *GlobalShift;
-				delete GlobalShift;
-			}
-			GlobalShift = GShift;
-
-			if (change_res) {
-
-				if (x_shift){x_shift--;}
-				if (y_shift){y_shift--;}
-				if (z_shift){z_shift--;}
-
-				change_res = false;
-			}else{
-				change_res = true;
-			}
-		}
-	}
-
-	// Since the upscaling will lead to a larger Vectorfield, then the real image is
-	// cut away all unneccessary data
-
-	if (use_fullres) {
-		// Now for the final registration at pixel-level
-		// Without multigrid the only step
-		if (params.useMutual) {
-			gauss_3d(params.reference,1,1,1);
-		}
-
-		GlobalShift = do_transform(params,GlobalShift,solver,measure_list);
-	}
-
-	cvmsg() << "Registration complete\n" << endl;
-	return GlobalShift;
-}
-
-#else
 static P3DFVectorfield do_transform(const TFluidRegParams& params,
 				    P3DFVectorfield in_shift,
 				    TLinEqnSolver *solver,TMeasureList *measure_list,
@@ -575,10 +448,9 @@ static P3DFVectorfield do_transform(const TFluidRegParams& params,
 
 	unique_ptr< TFluidReg> Register(new TFluidReg(params,solver, ipf));
 
-	cvmsg() << "size:" << params.source->get_size() << endl;
 
 	for (int i= 0; i < 30 && do_continue; i++){
-
+		cvmsg() << "[" << setw(2) << i << "] @ size:" << params.source->get_size() << endl;
 
 		FDeformer3D deformer(*s, ipf);
 		P3DImage ModelDeformed = ::mia::filter(deformer, *params.source);
@@ -606,7 +478,6 @@ static P3DFVectorfield do_transform(const TFluidRegParams& params,
 		}else{
 			break;
 		}
-		cvmsg() << "[" << setw(3) << i << "]" << endl;
 	}
 	Measure.allovertime = Clock.get_seconds() - g_start;
 	cvmsg() << "time: " <<  Measure.allovertime << endl;
@@ -628,15 +499,21 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 	float iy_mult = 1.0f / y_mult;
 	float iz_mult = 1.0f / z_mult;
 
-	C3DFVectorfield::iterator i = Result->begin();
+	auto callback = [&](const tbb::blocked_range<size_t>& range){
+		CThreadMsgStream thread_stream;
+		
+		for (auto z = range.begin(); z != range.end();++z) { 
+			auto i = Result->begin_at(0,0,z);
+			for (unsigned int y = 0; y < size.y; y++)
+				for (unsigned int x = 0; x < size.x; x++,++i){
+					C3DFVector help(ix_mult * x, iy_mult * y, iz_mult * z);
+					C3DFVector val = vf.get_interpol_val_at(help);
+					*i = C3DFVector(val.x * x_mult,val.y * y_mult, val.z * z_mult);
+				}
+		}
+	}; 
+	tbb::parallel_for(tbb::blocked_range<size_t>(0, size.z, 1), callback);
 
-	for (unsigned int z = 0; z < size.z; z++)
-		for (unsigned int y = 0; y < size.y; y++)
-			for (unsigned int x = 0; x < size.x; x++,++i){
-				C3DFVector help(ix_mult * x, iy_mult * y, iz_mult * z);
-				C3DFVector val = vf.get_interpol_val_at(help);
-				*i = C3DFVector(val.x * x_mult,val.y * y_mult, val.z * z_mult);
-			}
 	return Result;
 }
 
@@ -655,9 +532,6 @@ P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *sol
 				const C3DInterpolatorFactory& ipf
 				)
 {
-	//C3DFVectorfield *GlobalShift = new C3DFVectorfield (params.source->get_size());
-
-	// Adjust my and lambda to reflect image min max
 
 	P3DFVectorfield current_shift;
 	bool change_res = false;
@@ -751,6 +625,4 @@ P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *sol
 	cvmsg() << "Registration complete" << endl;
 	return current_shift;
 }
-
-#endif
 

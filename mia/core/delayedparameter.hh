@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -60,6 +60,18 @@ public:
 	   key is not available in the data pool 
 	 */
 	const T get() const; 
+
+	/**
+	   Check if the key is available in the data bool. 
+	   \returns true if the key is available
+	*/
+	bool pool_has_key() const; 
+
+	/**
+	   Check if this key is actually valid (i.e. not  empty)
+	   \returns true if the key is valid 
+	*/
+	bool key_is_valid() const; 
 private:
 	std::string m_key;
 }; 
@@ -80,6 +92,19 @@ const T TDelayedParameter<T>::get() const
 						    "' is not availabe in the data pool");  
 	}
 	return boost::any_cast<T>(CDatapool::instance().get(m_key)); 
+}
+
+template <typename T>
+bool TDelayedParameter<T>::pool_has_key() const
+{
+	return CDatapool::instance().has_key(m_key); 
+}
+
+
+template <typename T>
+bool TDelayedParameter<T>::key_is_valid() const
+{
+	return !m_key.empty(); 
 }
 
 NS_MIA_END

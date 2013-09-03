@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -215,7 +215,7 @@ int CGSLFMinimizer::do_run(CDoubleVector& x)
 		if (status) 
 			break; 
 		const double size = gsl_multimin_fminimizer_size (m_s);
-		status = gsl_multimin_test_size (size, 1e-3);
+		status = gsl_multimin_test_size (size, m_stop_eps);
 		
 	} while (status == GSL_CONTINUE && iter < m_maxiter); 
 	
@@ -255,7 +255,8 @@ CGSLMinimizerPlugin::CGSLMinimizerPlugin():
 						"some tolerance parameter"));
 	
 	add_parameter("eps", new CDoubleParameter(m_stop_eps, 1e-10, 10.0, false, 
-						"gradient norm stopping criterion (stop when |g| < eps)"));
+						  "gradient based optimizers: stop when |grad| < eps, "
+						  "simplex: stop when simplex size < eps."));
 	
 	add_parameter("iter", new CIntParameter(m_maxiter, 1, numeric_limits<int>::max(), 
 						false, "maximum number of iterations"));

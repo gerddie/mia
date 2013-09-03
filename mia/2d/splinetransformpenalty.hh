@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifndef mia_2d_splinetransformpenalty_hh
 #define mia_2d_splinetransformpenalty_hh
@@ -116,17 +115,35 @@ private:
 	PSplineKernel m_kernel;
 }; 
 
+typedef std::shared_ptr<C2DSplineTransformPenalty> P2DSplineTransformPenalty; 
 
-typedef TFactory<C2DSplineTransformPenalty> C2DSplineTransformPenaltyPlugin;
+
+class EXPORT_2D C2DSplineTransformPenaltyPlugin: public TFactory<C2DSplineTransformPenalty> {
+public: 
+	C2DSplineTransformPenaltyPlugin(char const * const  name); 
+private: 
+	virtual Product *do_create() const __attribute__((warn_unused_result));
+	virtual Product *do_create(float weight) const __attribute__((warn_unused_result)) = 0 ;
+
+	float m_weight; 
+}; 
+
 
 /// Plugin handler for image combiner plugins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DSplineTransformPenaltyPlugin> > 
          C2DSplineTransformPenaltyPluginHandler;
 
+
 FACTORY_TRAIT(C2DSplineTransformPenaltyPluginHandler); 
 
 
 EXPORT_2D  C2DSplineTransformPenaltyPluginHandler::ProductPtr produce_2d_spline_transform_penalty(const std::string& descr); 
+
+
+class EXPORT_2D C2DSplineTransformPenaltyPluginHandlerTest {
+public: 
+	C2DSplineTransformPenaltyPluginHandlerTest(); 
+}; 
 
 NS_MIA_END
 

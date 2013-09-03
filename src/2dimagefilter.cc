@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -29,9 +29,10 @@ using namespace std;
 const SProgramDescription g_general_help = {
         {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
 	{pdi_short, "Run filters on a 2D image."}, 
-	{pdi_description, "This program runs a series filters on a given input image. The filters "
-	 "are given as extra parameters on the command line and are run in the order in which they "
-	 "are given. To obtain a list of available filters you may run\n"
+	{pdi_description, "This program runs a series filters on a given input image. "
+	 "The filters are given as extra parameters on the command line and "
+	 "Ware run in the order in which they are given. To obtain a list of "
+	 "available filters you may run\n"
 	 "   'mia-plugin-help filter/2dimage'\n"
 	 "from the command line"}, 
 	{pdi_example_descr, "Run a kmeans classification of 5 classes on input.png and then "
@@ -41,13 +42,13 @@ const SProgramDescription g_general_help = {
 
 int do_main( int argc, char *argv[] )
 {
-
+	
 	string in_filename;
 	string out_filename;
-
+	
 	const auto& filter_plugins = C2DFilterPluginHandler::instance();
 	const auto& imageio = C2DImageIOPluginHandler::instance();
-
+	
 	CCmdOptionList options(g_general_help);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 			      CCmdOption::required, &imageio));
@@ -60,8 +61,8 @@ int do_main( int argc, char *argv[] )
 	
 	if (options.parse(argc, argv, "filter", &filter_plugins) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
-
+	
+	
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
 

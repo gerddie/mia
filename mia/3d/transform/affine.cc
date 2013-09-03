@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <fstream>
 #include <cmath>
@@ -123,62 +122,6 @@ size_t C3DAffineTransformation::degrees_of_freedom() const
 void C3DAffineTransformation::update(float /*step*/, const C3DFVectorfield& /*a*/)
 {
 	assert(!"not implemented");
-}
-
-void C3DAffineTransformation::scale(float x, float y, float z)
-{
-	const double expx = exp(x);
-	const double expy = exp(y);
-	const double expz = exp(z);
-	m_t[0] *= expx;
-	m_t[1] *= expx;
-	m_t[2] *= expx;
-	m_t[3] *= expx;
-	m_t[4] *= expy;
-	m_t[5] *= expy;
-	m_t[6] *= expy;
-	m_t[7] *= expy;
-	m_t[8] *= expz;
-	m_t[9] *= expz;
-	m_t[10] *= expz;
-	m_t[11] *= expz;
-
-
-}
-
-void C3DAffineTransformation::translate(float x, float y, float z)
-{
-	m_t[ 3] +=  x;
-	m_t[ 7] +=  y;
-	m_t[11] +=  z;
-}
-
-void C3DAffineTransformation::rotate(float angle)
-{
-	assert(0 && "Eliminate function"); 
-	const double sina = sin(angle);
-	const double cosa = cos(angle);
-
-	const double tx      = cosa * m_t[2] - sina * m_t[5];
-	m_t[5] = sina * m_t[2] + cosa * m_t[5];
-	m_t[2] = tx;
-
-	const double a = m_t[0] * cosa - sina * m_t[3];
-	const double b = m_t[1] * cosa - sina * m_t[4];
-	const double c = m_t[0] * sina + cosa * m_t[3];
-	const double d = m_t[1] * sina + cosa * m_t[4];
-
-	m_t[0] = a;
-	m_t[1] = b;
-	m_t[3] = c;
-	m_t[4] = d;
-
-}
-
-
-void C3DAffineTransformation::shear(float /*v*/)
-{
-	assert(0 && "not implemented");
 }
 
 CDoubleVector C3DAffineTransformation::get_parameters() const
@@ -292,31 +235,6 @@ float C3DAffineTransformation::get_max_transform() const
 	}
 
 	return sqrt(result);
-}
-
-void C3DAffineTransformation::add(const C3DTransformation& other)
-{
-	// *this  = other * *this
-	const C3DAffineTransformation& a = dynamic_cast<const C3DAffineTransformation&>(other);
-
-	vector<double> h(m_t.size());
-
-	h[0] = a.m_t[0] * m_t[0] + a.m_t[1] * m_t[4] + a.m_t[2] * m_t[8];
-	h[1] = a.m_t[0] * m_t[1] + a.m_t[1] * m_t[5] + a.m_t[2] * m_t[9];
-	h[2] = a.m_t[0] * m_t[2] + a.m_t[1] * m_t[6] + a.m_t[2] * m_t[10];
-	h[3] = a.m_t[0] * m_t[3] + a.m_t[1] * m_t[7] + a.m_t[2] * m_t[11] + a.m_t[3];
-
-	h[4] = a.m_t[4] * m_t[0] + a.m_t[5] * m_t[4] + a.m_t[6] * m_t[8];
-	h[5] = a.m_t[4] * m_t[1] + a.m_t[5] * m_t[5] + a.m_t[6] * m_t[9];
-	h[6] = a.m_t[4] * m_t[2] + a.m_t[5] * m_t[6] + a.m_t[6] * m_t[10];
-	h[7] = a.m_t[4] * m_t[3] + a.m_t[5] * m_t[7] + a.m_t[6] * m_t[11] + a.m_t[7];
-
-	h[8]  = a.m_t[8] * m_t[0] + a.m_t[9] * m_t[4] + a.m_t[10] * m_t[8];
-	h[9]  = a.m_t[8] * m_t[1] + a.m_t[9] * m_t[5] + a.m_t[10] * m_t[9];
-	h[10] = a.m_t[8] * m_t[2] + a.m_t[9] * m_t[6] + a.m_t[10] * m_t[10];
-	h[11] = a.m_t[8] * m_t[3] + a.m_t[9] * m_t[7] + a.m_t[10] * m_t[11] + a.m_t[11];
-
-	copy(h.begin(), h.end(), m_t.begin());
 }
 
 

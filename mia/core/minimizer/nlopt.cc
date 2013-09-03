@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,12 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-
 
 #include <mia/core/minimizer/nlopt.hh>
 #include <stdexcept>
@@ -156,6 +154,8 @@ SOpt::SOpt():
 	rel_ftol(0.0),  
 	abs_ftol(0.0), 
 	step(0),
+	min_boundary(-HUGE_VAL), 
+	max_boundary(HUGE_VAL), 
 	maxiter(100)
 {
 }
@@ -242,6 +242,16 @@ void CNLOptFDFMinimizer::do_set_problem()
 	
 	nlopt_set_stopval(m_opt, m_options.stopval);
 	nlopt_set_maxeval(m_opt, m_options.maxiter);
+
+	if (m_options.min_boundary != -HUGE_VAL) {
+		cvinfo() << "Set lower boundary to " << m_options.min_boundary << "\n"; 
+		nlopt_set_lower_bounds1(m_opt, m_options.min_boundary); 
+	}
+
+	if (m_options.max_boundary != HUGE_VAL) {
+		cvinfo() << "Set higher boundary to " << m_options.max_boundary << "\n"; 
+		nlopt_set_lower_bounds1(m_opt, m_options.max_boundary); 
+	}
 	
 	if (m_options.step > 0.0)
 		nlopt_set_initial_step1(m_opt, m_options.step);
@@ -259,7 +269,7 @@ int CNLOptFDFMinimizer::do_run(CDoubleVector& x)
 		case NLOPT_FAILURE: cvinfo() << "CNLOptFDFMinimizer: optimization failed for ungiven reasons\n"; 
 			// okay, it's a lie
 			return CMinimizer::success; 
-		case NLOPT_INVALID_ARGS: throw invalid_argument("CNLOptFDFMinimizer: invalid arguments given");
+		case NLOPT_INVALID_ARGS: throw invalid_argument("CNLOptFDFMinimizer: invalid arguments given.");
 		case NLOPT_OUT_OF_MEMORY: throw runtime_error("CNLOptFDFMinimizer: out of memory"); 
 		case NLOPT_FORCED_STOP: throw runtime_error("CNLOptFDFMinimizer: optimization was forced to stop"); 
 		case NLOPT_ROUNDOFF_LIMITED:  
@@ -327,6 +337,13 @@ CNLOptMinimizerPlugin::CNLOptMinimizerPlugin():
 	
 	add_parameter("step", new CDoubleParameter(m_options.step, 0.0, HUGE_VAL, false, 
 					 "Initial step size for gradient free methods")); 
+
+	add_parameter("lower", new CDoubleParameter(m_options.min_boundary, -HUGE_VAL, HUGE_VAL, false, 
+					 "Lower boundary (equal for all parameters)")); 
+
+	add_parameter("higher", new CDoubleParameter(m_options.max_boundary, -HUGE_VAL, HUGE_VAL, false, 
+					 "Higher boundary (equal for all parameters)")); 
+
 }
 	
 CMinimizer *CNLOptMinimizerPlugin::do_create() const

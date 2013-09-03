@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -436,14 +436,26 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "     --help-xml         print help formatted as XML\n"
 			  "  -? --usage            print a short help\n"
 			  "     --version          print the version number and exit\n\n"
+			  "Processing               \n"
+#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
+			  "     --threads=1 (int)  Maxiumum number of threads to use for \n"
+#else
+			  "     --threads=-1 (int) \n"
+			  "                        Maxiumum number of threads to use for \n"
+#endif
+
+			  "                        processing,This number should be lower or \n"
+			  "                        equal to the number of logical processor \n"
+			  "                        cores in the machine. (-1: automatic \n"
+			  "                        estimation). \n\n"
 			  "Example usage:\n  Example text\n"
 			  "    \n    test-program Example command\n\n"
 			  "Copyright:\n"
-			  "  This software is Copyright (c) 1999-2012 Leipzig, Germany and \n"
-			  "  Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and you may \n"
-			  "  redistribute it under the terms of the GNU GENERAL PUBLIC LICENSE \n"
-			  "  Version 3 (or later). For more information run the program with the\n"
-			  "  option '--copyright'.\n  \n"); 
+			  "  This software is Copyright (c) Gert Wollny 1999-2013 Leipzig, \n"
+			  "  Germany and Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and\n"
+			  "  you may redistribute it under the terms of the GNU GENERAL PUBLIC \n"
+			  "  LICENSE Version 3 (or later). For more information run the program \n"
+			  "  with the option '--copyright'.\n  \n"); 
   
 
 	BOOST_CHECK_EQUAL(output.str().size(), test.size()); 
@@ -455,8 +467,10 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 		while (io != output.str().end() && it != test.end()) {
 			if (*io == *it) 
 				cerr << *io; 
-			else 
+			else {
+				cerr << "\nERROR:'"<< *io << "' versus '" << *it <<"'\n"; 
 				break; 
+			}
 			++io; 
 			++it; 
 		}

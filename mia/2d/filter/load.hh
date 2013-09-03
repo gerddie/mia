@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -23,17 +23,18 @@
 NS_BEGIN( load_2dimage_filter)
 
 
-class C2DLoadImage : public mia::C2DFilter {
+class C2DLoad : public mia::C2DFilter {
 public:
-	C2DLoadImage(const std::string& name);
+	C2DLoad(const std::string& name);
+
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 	std::string m_name; 
 };
 
-class C2DLoadImageFilterPlugin: public mia::C2DFilterPlugin {
+class C2DLoadFilterPluginFactory: public mia::C2DFilterPlugin {
 public:
-	C2DLoadImageFilterPlugin();
+	C2DLoadFilterPluginFactory();
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;

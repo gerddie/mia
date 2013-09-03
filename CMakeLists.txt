@@ -1,7 +1,8 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
 #
-# This program is free software; you can redistribute it and/or modify
+# MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
@@ -12,10 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
 PROJECT("mia")
@@ -43,9 +41,9 @@ SET(VENDOR "Gert Wollny")
 SET(PACKAGE_NAME "mia")
 SET(MAJOR_VERSION 2)
 SET(MINOR_VERSION 0)
-SET(MICRO_VERSION 7)
-SET(INTERFACE_AGE 3)
-SET(BINARY_AGE    3)
+SET(MICRO_VERSION 11)
+SET(INTERFACE_AGE 0)
+SET(BINARY_AGE    0)
 
 SET(PACKAGE_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}")
 SET(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}")
@@ -74,6 +72,24 @@ INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/pluginmacro.cmake)
 INCLUDE (CheckTypeSize)
 
+include(CheckCXXCompilerFlag)
+IF(CMAKE_COMPILER_IS_GNUCXX)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_GNU_CXX11_FLAG)
+  IF(HAS_GNU_CXX11_FLAG)
+    SET(CXX_11_FLAG "-std=c++11")
+  ELSE(HAS_GNU_CXX11_FLAG)
+    CHECK_CXX_COMPILER_FLAG("-std=c++0x" HAS_GNU_CXX0X_FLAG)
+    IF(HAS_GNU_CXX0X_FLAG)
+      SET(CXX_11_FLAG "-std=c++0x")
+    ELSE(HAS_GNU_CXX0X_FLAG)
+      MESSAGE(WARNING "Don't know how to enable C++11, if you are lucky, they are enabled by default")
+    ENDIF(HAS_GNU_CXX0X_FLAG)
+  ENDIF(HAS_GNU_CXX11_FLAG)
+  
+  ADD_DEFINITIONS("${CXX_11_FLAG}")
+  SET(CMAKE_REQUIRED_FLAGS "${CXX_11_FLAG}")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
 
@@ -84,8 +100,11 @@ IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
     "If your compiler is supposed to support this feature, "
     "please enable the appropriate flags and delete the CMakeCache.txt file before "
     "re-running cmake.\n"
-    "For g++ >= 4.5 this is '-std=c++0x' ")
+    "For g++ >= 4.6 this is '-std=c++0x' ")
 ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
+
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkAltivecEnabled.cmake)
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkSSEEnabled.cmake)
 
 ASSERT_SIZE(char 1)
 ASSERT_SIZE(short 2)
@@ -173,31 +192,12 @@ IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
 ENDIF(WIN32)
 
-FIND_PACKAGE( Boost 1.42.0 COMPONENTS
+FIND_PACKAGE( Boost 1.46.1 COMPONENTS
   ${BOOST_COMPONENTS}
   REQUIRED)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-
-
-#
-# currently we completely disable boost based portable binary archives 
-# VITSA provides what is needed in big binary archieves 
-#
-IF(FALSE) 
-  find_path(HAVE_BOOST_PORTABLE_BINARY_ARCHIVE  
-    portable_binary_archive.hpp 
-    ${Boost_INCLUDE_DIR}/boost/archive)
-  IF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-    ADD_SUBDIRECTORY(backport)
-    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/backport")
-  ELSE(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-    #if the portable binary archive has become part of the BOOST distribution 
-    #just link the serialization library 
-    SET(portable_binary_archive ${Boost_SERIALIZATION})
-  ENDIF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-ENDIF(FALSE)
 
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
 ADD_DEFINITIONS(-DBOOST_FILESYSTEM_VERSION=3)
@@ -206,7 +206,7 @@ SET(BOOST_DEPS  ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYST
 SET(BOOST_UNITTEST  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 IF (WIN32 AND NOT UNIX)
-   FOREACH(l ${Boost_THREAD_LIBRARY}
+   FOREACH(l 
        ${Boost_REGEX_LIBRARIES}
        ${Boost_FILESYSTEM_LIBRARY}
        ${Boost_SYSTEM}
@@ -225,10 +225,6 @@ IF (MSYS OR MINGW)
   SET(BASELIBS ${BOOST_DEPS})
 ENDIF (MSYS OR MINGW)
 
-IF(UNIX)
-  GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
-  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} -lpthread -ldl")
-ENDIF(UNIX)
 #
 # end BOOST 
 #
@@ -251,6 +247,18 @@ ENDIF(TBB_FOUND)
 ################################################################################
 
 ################################################################################
+#
+# Intel Threading Building Blocks 
+# 
+
+SET(CMAKE_THREAD_PREFER_PTHREAD ON) 
+FIND_PACKAGE(Threads)
+
+IF(CMAKE_USE_PTHREADS_INIT)
+  set(PTHREADLIB -lpthread)
+ENDIF(CMAKE_USE_PTHREADS_INIT)
+
+################################################################################
 # 
 # Handle the GNU Scientific Library, this might be a showstopper 
 # on MS windows when using Visual C++ 
@@ -262,10 +270,19 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 
 ################################################################################
 # 
-# search for some cblas
+# search for some blas
 # 
 
-pkg_check_modules(BLAS blas REQUIRED)
+FIND_PACKAGE(BLAS)
+IF (NOT BLAS_LIBRARIES) 
+  MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
+ENDIF(NOT BLAS_LIBRARIES) 
+
+IF(UNIX)
+  GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
+  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${BLAS_LIBRARIES} ${TBB_LIBRARIES} ${PTHREADLIB} -ldl")
+ENDIF(UNIX)
+
 
 ADD_DEFINITIONS(-DHAVE_BLAS)
 #
@@ -287,6 +304,7 @@ ENDIF(NOT GZIP)
 # take care of modules loading infrastructure
 #
 IF(NOT WIN32)
+
   FIND_LIBRARY(DL dl
     PATH
     /lib
@@ -297,12 +315,11 @@ IF(NOT WIN32)
   IF(DL_NOTFOUND)
     MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
   ENDIF(DL_NOTFOUND)
-  SET(BASELIBS  ${BOOST_DEPS} ${DL})
-
+  SET(BASELIBS  ${BOOST_DEPS} ${PTHREADLIB} ${DL})
 ENDIF(NOT WIN32)
 SET(PLUGSUFFIX ".mia")
 
-OPTION(WARN_OLD_PLUGINSTYLE "Warn if plugins use old implementation style" OFF)
+OPTION(WARN_MISSING_OR_OLD_PLUGINTESTS "Warn if plugins don't provided tests or use the old buildsystem to do so" OFF)
 #
 #
 #
@@ -357,7 +374,13 @@ ENDIF (XMLPP_FOUND)
 #
 OPTION(WITH_ITPP "Use IT++ for some additional features" ${SEARCH_LIBS_DEFAULT})
 IF(WITH_ITPP)
-  pkg_check_modules(ITPP itpp)
+  
+  IF (STRICT_DEPENDECIES)
+    pkg_check_modules(ITPP itpp REQUIRED)
+  ELSE (STRICT_DEPENDECIES)
+    pkg_check_modules(ITPP itpp)
+  ENDIF(STRICT_DEPENDECIES)
+  
   IF(ITPP_FOUND)
     INCLUDE_DIRECTORIES(${ITPP_INCLUDE_DIRS})
     LINK_DIRECTORIES(${ITPP_LIBRARY_DIRS})
@@ -403,15 +426,6 @@ ELSE(ALWAYS_CREATE_DOC)
 ENDIF(ALWAYS_CREATE_DOC)
 
 
-ADD_SUBDIRECTORY(gsl++   )
-ADD_SUBDIRECTORY(mia     )
-ADD_SUBDIRECTORY(addons  )
-ADD_SUBDIRECTORY(testdata)
-
-IF(BUILD_EXAMPLES)
-  ADD_SUBDIRECTORY(examples)
-ENDIF(BUILD_EXAMPLES)
-
 ##############################################
 #
 # python is needed for creating end-user documentation 
@@ -427,12 +441,34 @@ IF(PYTHONINTERP_FOUND)
   ENDIF(LXML_ERR) 
 ENDIF(PYTHONINTERP_FOUND) 
 
-#disabled because moved to other package 
-#ADD_SUBDIRECTORY(python  )
+#############################################
+#
+# define plug-in related values and directories and add the test directory link target 
+# 
 
-#disabled for this release since it doesn't compile 
-#ADD_SUBDIRECTORY(idl     )
-#ADD_SUBDIRECTORY(matlab  )
+DEFINE_PLUGIN_NAMES( 1d  "spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dsplinepenalty  "transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dstack  "filter" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dvf  "io" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dlandmarklist "io"  ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dvf "io"  ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( generator  "noise" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( mesh "filter;io" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( minimizer  "singlecost" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( rgbimage "io" ${PLUGIN_INSTALL_PATH})
+
+ADD_SUBDIRECTORY(gsl++   )
+ADD_SUBDIRECTORY(mia     )
+ADD_SUBDIRECTORY(addons  )
+ADD_SUBDIRECTORY(testdata)
+
+IF(BUILD_EXAMPLES)
+  ADD_SUBDIRECTORY(examples)
+ENDIF(BUILD_EXAMPLES)
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(doc)

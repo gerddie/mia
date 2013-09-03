@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -35,7 +35,7 @@ CSplineKernelTestPath kernel_test_path;
 
 struct TranslateTransFixture {
 	TranslateTransFixture():size(60, 80),
-				rtrans(size, C2DInterpolatorFactory("bspline:d=3", "mirror"))
+				rtrans(size, C2DFVector::_0, C2DInterpolatorFactory("bspline:d=3", "mirror"))
 		{
 			rtrans.translate(1.0, 2.0);
 		}
@@ -88,7 +88,7 @@ struct ipfFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_rigid2d, ipfFixture)
 {
-	C2DRigidTransformation t1(C2DBounds(10,20), ipf);
+	C2DRigidTransformation t1(C2DBounds(10,20), C2DFVector::_0, ipf);
 
 	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 3u);
 
@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_CASE(test_rigid2d, ipfFixture)
 	BOOST_CHECK_CLOSE(yr1.x ,-4.0, 0.1f);
 	BOOST_CHECK_CLOSE(yr1.y , 2.0, 0.1f);
 
-	C2DRigidTransformation t2(C2DBounds(10,20), ipf);
+	C2DRigidTransformation t2(C2DBounds(10,20), C2DFVector::_0, ipf);
 	t2.rotate(M_PI / 2.0);
 	C2DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid2d_iterator, ipfFixture )
 {
 	C2DBounds size(10,20);
 
-	C2DRigidTransformation t1(size, ipf);
+	C2DRigidTransformation t1(size, C2DFVector::_0, ipf);
 	C2DRigidTransformation::const_iterator ti = t1.begin();
 
 	for (size_t y = 0; y < size.y; ++y)
@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid2d_iterator, ipfFixture )
 struct RotateTransFixture : public ipfFixture {
 	RotateTransFixture():
 		size(60, 80),
-		rtrans(size, ipf),
+		rtrans(size, C2DFVector::_0, ipf),
 		rot_cos(cos(M_PI / 3.0)),
 		rot_sin(sin(M_PI / 3.0))
 	{
@@ -157,7 +157,7 @@ BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
 
 BOOST_FIXTURE_TEST_CASE(max_RotateTransFixture, RotateTransFixture)
 {
-	C2DFVector x(60, 80);
+	C2DFVector x(59, 79);
 	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), (x - rtrans(x)).norm(), 0.1);
 }
 
@@ -256,7 +256,7 @@ BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid)
 
 RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
 	size(80,80),
-	trans(size, ipf)
+	trans(size, C2DFVector::_0, ipf)
 {
 	trans.translate(-1, -3);
 //	trans.rotate(0.0);
@@ -267,7 +267,7 @@ RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
 BOOST_FIXTURE_TEST_CASE (test_inverse_rigid, ipfFixture)
 {
 	C2DBounds size(10,2);
-	C2DRigidTransformation trans(size, ipf);
+	C2DRigidTransformation trans(size, C2DFVector::_0, ipf);
 	auto a = trans.get_parameters();
 	a[0] = -1; 
 	a[1] = -3;
@@ -288,3 +288,29 @@ BOOST_FIXTURE_TEST_CASE (test_inverse_rigid, ipfFixture)
 	BOOST_CHECK_EQUAL(b[2],-1.0);
 
 }
+
+struct RigidCenteredFixture : public ipfFixture{
+	RigidCenteredFixture();
+	C2DBounds size;
+	C2DRigidTransformation trans;
+};
+
+BOOST_FIXTURE_TEST_CASE (test_centered_rotation_rigid, RigidCenteredFixture)
+{
+	BOOST_CHECK_CLOSE(trans.get_max_transform(), 10.f * sqrtf(26.0f), 0.1);
+		
+	C2DFVector x(10,40); 
+	
+	auto y = trans(x); 
+	
+	BOOST_CHECK_CLOSE(y.x, 10.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.y, 20.0f, 0.1); 
+
+}
+
+RigidCenteredFixture::RigidCenteredFixture():
+	size(41,61),
+	trans(size, C2DFVector::_0, M_PI / 2.0, C2DFVector(0.5, 0.5), ipf)
+{
+}
+	

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,12 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-
 
 #define BOOST_TEST_DYN_LINK
 
@@ -164,6 +162,8 @@ void test_type_attribute()
 	attr = dynamic_cast<TAttribute<T>*>(attr_list["one"].get());
 	BOOST_REQUIRE(attr);
 	BOOST_REQUIRE(*attr == 1);
+
+	
 }
 
 
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE( test_lists_equal )
 
 
 template <typename T>
-void check_add_and_read(CAttributeMap& map, const char *name, T value)
+void check_add_and_read(CAttributeMap& map, const char *name, T value, int id)
 {
 	typedef const TAttribute<T> * PAttr;
 	add_attribute(map, name, value);
@@ -314,10 +314,12 @@ void check_add_and_read(CAttributeMap& map, const char *name, T value)
 	BOOST_REQUIRE(attr);
 	T test_value = *attr;
 	BOOST_CHECK_EQUAL(value, test_value);
+
+	BOOST_CHECK_EQUAL(attr->type_id(), id); 
 }
 
 template <>
-void check_add_and_read(CAttributeMap& map, const char *name, const char *value)
+void check_add_and_read(CAttributeMap& map, const char *name, const char *value, int id)
 {
 	typedef const TAttribute<string>& PAttr;
 	add_attribute(map, name, value);
@@ -326,39 +328,40 @@ void check_add_and_read(CAttributeMap& map, const char *name, const char *value)
 	PAttr attr = dynamic_cast<PAttr>(*map[name].get());
 	string test_value = attr;
 	BOOST_CHECK_EQUAL(string(value), test_value);
+	BOOST_CHECK_EQUAL(map[name]->type_id(), id); 
 }
 
 BOOST_AUTO_TEST_CASE( test_add_attribute_int )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "int", 10);
+	check_add_and_read(map, "int", 10, EAttributeType::attr_sint);
 }
 
 BOOST_AUTO_TEST_CASE( test_add_attribute_short )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "short", (short)20);
+	check_add_and_read(map, "short", (short)20, EAttributeType::attr_sshort);
 }
 BOOST_AUTO_TEST_CASE( test_add_attribute_cstring )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "char*", "char*_value");
+	check_add_and_read(map, "char*", "char*_value", EAttributeType::attr_string);
 }
 BOOST_AUTO_TEST_CASE( test_add_attribute_string )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "string", string("string_value"));
+	check_add_and_read(map, "string", string("string_value"), EAttributeType::attr_string);
 }
 BOOST_AUTO_TEST_CASE( test_add_attribute_float )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "float", 1.0f);
+	check_add_and_read(map, "float", 1.0f, EAttributeType::attr_float);
 }
 
 BOOST_AUTO_TEST_CASE( test_add_attribute )
 {
 	CAttributeMap map;
-	check_add_and_read(map, "double", 1.0);
+	check_add_and_read(map, "double", 1.0, EAttributeType::attr_double);
 
 }
 
@@ -395,43 +398,6 @@ BOOST_AUTO_TEST_CASE( test_attribute_data )
 bool operator==(PAttribute const & a, PAttribute const & b)
 {
 	return *a == *b;
-}
-
-BOOST_AUTO_TEST_CASE( test_attribute_compare )
-{
-	PAttribute t1(new TAttribute<string>("testwert1"));
-	PAttribute t2(new TAttribute<string>("testwert2"));
-	PAttribute t3(new TAttribute<int>(1));
-	PAttribute t4(new TAttribute<int>(2));
-
-	BOOST_CHECK(*t1 < *t2);
-	BOOST_CHECK(*t2 < *t3);
-	BOOST_CHECK(*t3 < *t4);
-
-	BOOST_CHECK(!(*t4 < *t4));
-}
-
-BOOST_AUTO_TEST_CASE( test_attribute_as_map_key )
-{
-	map<PAttribute, string, pattr_less> testmap;
-
-	PAttribute t1(new CStringAttribute("testwert1"));
-	PAttribute t2(new CStringAttribute("testwert2"));
-	PAttribute t3(new CIntAttribute(1));
-	PAttribute t4(new CIntAttribute(1));
-
-	testmap[t1] = "stringvalue1";
-	testmap[t2] = "stringvalue2";
-	testmap[t3] = "intvalue1";
-
-	BOOST_CHECK_EQUAL(testmap[t3], "intvalue1");
-
-	testmap[t4] = "intvalue2";
-
-	BOOST_CHECK_EQUAL(testmap[t4], "intvalue2");
-	BOOST_CHECK_EQUAL(testmap[t3], "intvalue2");
-
-
 }
 
 BOOST_AUTO_TEST_CASE( test_get_attribute_as_non_existent )

@@ -1,0 +1,126 @@
+#!/usr/bin/octave 
+
+function y = bspline4_weight_at(x)
+  x=abs(x);
+  if (x <= 0.5) 
+    f = 1.0 / 192.0;
+    x2 = x * x;
+    y = f * (115.0 + (48.0 * x2 - 120) * x2);
+  elseif (x <= 1.5) 
+    f = 1.0 / 96.0;
+    ax = x - 1.0;
+    y = -f * ((((16 * ax - 16) * ax -24) * ax + 44)* ax - 19);
+  elseif (x <= 2.5)
+    h = 2.5 - x;
+    h *= h;
+    y = h * h / 24.0;
+  else
+    y= 0.0;
+  endif
+endfunction
+
+function y = bspline4_iweight_at(x)
+  zwo = 2.0;
+  if (x < -2)
+    y = 0; 
+  elseif ( x < -1 )
+    h = (zwo+x);
+    y =  h * h * h * h / 24;
+  elseif (x <= 0.0 )
+    y = 0.5 + x * 2.0 / 3.0 - x * x * x / 3.0 - x*x*x*x/8;
+  elseif (x <= 1.0 )
+    y = 0.5 + x * 2.0 / 3.0 - x * x * x / 3.0 + x*x*x*x/8;
+  elseif (x < zwo)
+    h = (zwo-x); 
+    y = 1 - h * h * h * h / 24;
+  else
+    y = 1; 
+  endif
+endfunction
+
+
+function z = bspline4_dweight_at(x)
+  ax=abs(x);
+  if (ax <= 0.5) 
+    x2 = x * x;
+    z = x * (x2  - 1.25);
+  elseif (ax <= 1.5) 
+    if (x > 0) 
+      f = - 1.0 / 96.0; 
+    else
+      f = 1.0 / 96.0;
+    endif
+    bx =  ax - 1.0;
+    z = f * (64 * bx * bx * bx - 48 * bx * bx - 48 * bx + 44);
+  elseif (ax <= 2.5) 
+    if (x < 0)
+      h = 2.5 - ax; 
+    else
+      h = ax - 2.5;
+    endif; 
+    z = h * h * h / 6.0;
+  else
+    z = 0.0;
+  endif
+endfunction
+
+function z = bspline4_ddweight_at(x)
+  ax=abs(x);
+  if (ax <= 0.5)
+    z =  3 * x * x  - 1.25;
+  elseif (ax <= 1.5) 
+    f = - 1.0 / 2.0;
+    bx =  ax - 1.0;
+    z = f * (4 * bx * bx - 2 * bx - 1);
+  elseif (ax <= 2.5) 
+    if (x > 0)
+      h =  2.5 - ax; 
+    else
+      h =  ax - 2.5;
+    endif
+    z = h * h / 2.0;
+  else
+    z = 0.0;
+  endif
+endfunction
+
+function y = bspline4_weight(x,d)
+  switch (d)
+    case 0
+      y = bspline4_weight_at(x); 
+    case 1
+      y = bspline4_dweight_at(x); 
+    case 2
+      y = bspline4_ddweight_at(x); 
+    otherwise
+      y = 0; 
+  endswitch
+endfunction
+
+function integral = integrate(s1, s2, d1, d2, L) 
+  integral = 0;
+  for i = 1:L
+    integral = integral + bspline4_weight(i-s1, d1) * bspline4_weight(i-s2, d2); 
+  endfor
+endfunction
+
+
+function y = b11_10_10(x) 
+  y = bspline4_weight(x-10, 1) * bspline4_weight(x-10, 1);
+endfunction
+
+function y = b20_10_10(x) 
+  y = bspline4_weight(x-10, 2) * bspline4_weight(x-10, 0);
+endfunction
+
+
+[v, ier, nfun, err] = quad ("b20_10_10", 0, 30); 
+"b20_10_10"
+v 
+[v, ier, nfun, err] = quad ("b11_10_10", 0, 30); 
+"b11_10_10"
+v 
+
+
+
+

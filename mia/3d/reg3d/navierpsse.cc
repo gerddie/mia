@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 
 /*
@@ -71,9 +70,7 @@ private:
 
 //	void set_flags(C3DUBImage::iterator loc)const;
 //	float  solve_at(const C3DFVector& b, v4sf *x, const v4sf *param)const;
-	float m_mu;
-	float m_lambda;
-	float m_a1,m_a, m_b, m_c, m_a_b, m_b_4;
+	float m_a, m_c, m_a_b, m_b_4;
 //	float m_omega;
 	float m_epsilon;
 	size_t m_max_iter;
@@ -136,8 +133,6 @@ struct VF4ToC3DVector {
 };
 
 C3DNavierRegModel::C3DNavierRegModel(float mu, float lambda, size_t maxiter,  float epsilon):
-	m_mu(mu),
-	m_lambda(lambda),
 	m_epsilon(epsilon),
 	m_max_iter(maxiter)
 {

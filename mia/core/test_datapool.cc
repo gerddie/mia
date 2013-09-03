@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -31,7 +31,6 @@
 
 #include <mia/core/datapool.hh>
 
-#include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 #include <tbb/atomic.h>
@@ -128,7 +127,6 @@ void PoolAccessTest::operator() ( const blocked_range<int>& range ) const
 
 BOOST_AUTO_TEST_CASE( test_pool_parallel_access )
 {
-	task_scheduler_init init;
 	tbb::atomic<int> n_errors;
 	n_errors = 0; 
 	PoolAccessTest ptest(&n_errors); 
@@ -173,7 +171,6 @@ void PoolWriteLaterReadTest::operator() ( const blocked_range<int>& range ) cons
 
 BOOST_AUTO_TEST_CASE( test_pool_parallel_access_2 )
 {
-	task_scheduler_init init;
 	tbb::atomic<int> n_errors; 
 	n_errors = 0; 
 	PoolWriteLaterReadTest ptest(&n_errors); 

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -82,7 +82,8 @@ public:
 	double value() const; 
 
 	/**
-	   Evaluate the gradient of the MI with respect to a given intensity pair 
+	   Evaluate the gradient of the MI with respect to a given intensity pair using 
+	   an approximation  
 	   @param moving intensity in the moving image 
 	   @param reference intensity in the moving image 
 	   @returns gradient 
@@ -90,9 +91,22 @@ public:
 	double get_gradient(double moving, double reference) const; 
 
 	/**
+	   Evaluate the gradient of the MI with respect to a given intensity pair 
+	   @param moving intensity in the moving image 
+	   @param reference intensity in the moving image 
+	   @returns gradient 
+	 */
+
+	double get_gradient_slow(double moving, double reference) const; 
+	/**
 	   reset the ranges to force a new evaluation
 	*/
 	void reset(); 
+protected: 
+	/** these function is for test purpouses only */ 
+	void fill_histograms(const std::vector<double>& values, 
+				      double rmin, double rmax,
+				      double mmin, double mmax); 
 private: 
        
 	double scale_moving(double x) const; 
@@ -125,8 +139,6 @@ private:
 
 	std::vector<std::vector<double> > m_pdfLogCache; 
 	double  m_cut_histogram; 
-	double m_nscale; 
-
 	
 	template <typename Iterator>
 	std::pair<double,double> get_reduced_range(Iterator begin, Iterator end)const; 
@@ -193,9 +205,9 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 
 	cvdebug() << "CSplineParzenMI::fill: counted " << N << " pixels\n"; 
 	// normalize joined histogram 
-	m_nscale = 1.0/N; 
+	const double nscale = 1.0/N; 
 	transform(m_joined_histogram.begin(), m_joined_histogram.end(), m_joined_histogram.begin(), 
-		  [this](double jhvalue){return jhvalue * this->m_nscale;}); 
+		  [&nscale](double jhvalue){return jhvalue * nscale;}); 
 	
 	evaluate_histograms();  
 	evaluate_log_cache(); 
@@ -211,7 +223,7 @@ std::pair<double,double> CSplineParzenMI::get_reduced_range(Iterator begin, Iter
 	auto reduced_range = h.get_reduced_range(m_cut_histogram); 
 	cvinfo() << "CSplineParzenMI: reduce range by "<< m_cut_histogram
 		<<"% from [" << *range.first << ", " << *range.second 
-		<< "] to [" << reduced_range.first << ", " << reduced_range.second << "\n"; 
+		<< "] to [" << reduced_range.first << ", " << reduced_range.second << "]\n"; 
 	return std::pair<double,double>(reduced_range.first, reduced_range.second); 
        
 }

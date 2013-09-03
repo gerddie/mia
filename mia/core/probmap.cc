@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -41,7 +41,7 @@ CProbabilityVector::CProbabilityVector()
 }
 
 CProbabilityVector::CProbabilityVector(size_t nClass, size_t nElm):
-	std::vector<CDoubleVector>(nClass, CDoubleVector(nElm))
+	std::vector<double_vector>(nClass, double_vector(nElm))
 {
 }
 
@@ -97,7 +97,7 @@ void CProbabilityVector::do_load(istream& is)
 
 	resize(nclasses);
 	for (size_t k = 0; k < size(); ++k) {
-		(*this)[k] = CDoubleVector(hsize);
+		(*this)[k] = double_vector(hsize);
 	}
 
 
@@ -116,9 +116,9 @@ EXPORT_CORE bool operator == (const CProbabilityVector& a, const CProbabilityVec
 	if ( a.size() != b.size() )
 		return false;
 
-	CProbabilityVector::const_iterator ai = a.begin();
-	CProbabilityVector::const_iterator ae = a.end();
-	CProbabilityVector::const_iterator bi = b.begin();
+	auto ai = a.begin();
+	auto ae = a.end();
+	auto bi = b.begin();
 
 	while (ai != ae)  {
 		if (*ai++ != *bi++)
@@ -158,7 +158,7 @@ bool CLabelMap::do_save(ostream& os) const
 	os << label_map_signature << "\n";
 	os << size()<<'\n';
 
-	for (CLabelMap::const_iterator im = begin(), em = end();
+	for (auto im = begin(), em = end();
 	     im != em; ++im) {
 		os << im->first << ' ' << im->second << '\n';
 	}
@@ -196,9 +196,9 @@ EXPORT_CORE bool operator == (const CLabelMap& a, const CLabelMap& b)
 	if (a.size() != b.size())
 		return false;
 
-	CLabelMap::const_iterator ai = a.begin();
-	CLabelMap::const_iterator bi = b.begin();
-	CLabelMap::const_iterator ae = a.end();
+	auto ai = a.begin();
+	auto bi = b.begin();
+	auto ae = a.end();
 
 	while (ai != ae) {
 		if (ai->first != bi->first ||

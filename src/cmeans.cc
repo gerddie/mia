@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -89,16 +88,16 @@ private:
 class CCMeans {
 public: 
 	CCMeans(double k, double epsilon, bool start_even); 
-	CProbabilityVector operator()(CDoubleVector const& histogram, 
-				      CDoubleVector& class_centers, bool initialise, bool auto_k) const; 
+	CProbabilityVector operator()(double_vector const& histogram, 
+				      double_vector& class_centers, bool initialise, bool auto_k) const; 
 private:
-	void initialise_cc(CDoubleVector& class_centers, CDoubleVector const& histogram) const; 
-	void evaluate_probabilities(CDoubleVector const& classes, size_t nvalues , 
+	void initialise_cc(double_vector& class_centers, double_vector const& histogram) const; 
+	void evaluate_probabilities(double_vector const& classes, size_t nvalues , 
 				    CProbabilityVector& pv, double k)const;
-	double update_class_centers(CDoubleVector& center, CDoubleVector const& histo, CDoubleVector const& shisto, 
+	double update_class_centers(double_vector& center, double_vector const& histo, double_vector const& shisto, 
 				    CProbabilityVector const& pv)const;
 
-	double adjust_k(CDoubleVector const& class_centers, CDoubleVector const& histogram, CProbabilityVector const & pv)const; 
+	double adjust_k(double_vector const& class_centers, double_vector const& histogram, CProbabilityVector const & pv)const; 
 	
 	double _M_k; 
 	double _M_epsilon; 
@@ -114,7 +113,7 @@ CCMeans::CCMeans(double k, double epsilon, bool start_even):
 }
 	
 
-void CCMeans::evaluate_probabilities(CDoubleVector const& classes, size_t nvalues , 
+void CCMeans::evaluate_probabilities(double_vector const& classes, size_t nvalues , 
 				     CProbabilityVector& pv, double k)const
 {
 	for (size_t i = 0; i < nvalues; ++i) {
@@ -136,8 +135,8 @@ void CCMeans::evaluate_probabilities(CDoubleVector const& classes, size_t nvalue
 	}
 }
 
-double CCMeans::update_class_centers(CDoubleVector& class_center, CDoubleVector const& histo, 
-				     CDoubleVector const& shisto,CProbabilityVector const& pv)const
+double CCMeans::update_class_centers(double_vector& class_center, double_vector const& histo, 
+				     double_vector const& shisto,CProbabilityVector const& pv)const
 {
 	double residuum = 0.0; 
 
@@ -148,10 +147,10 @@ double CCMeans::update_class_centers(CDoubleVector& class_center, CDoubleVector 
 		double sum_prob   = cblas_ddot(histo.size(), &histo[0], 1, &pv[i][0], 1);
 		double sum_weight = cblas_ddot(histo.size(), &shisto[0], 1, &pv[i][0], 1); 
 #else		
-		CDoubleVector::const_iterator ihelp = histo.begin(); 
-		CDoubleVector::const_iterator shelp = shisto.begin(); 
-		CDoubleVector::const_iterator iprob = pv[i].begin(); 
-		CDoubleVector::const_iterator eprob = pv[i].end();
+		double_vector::const_iterator ihelp = histo.begin(); 
+		double_vector::const_iterator shelp = shisto.begin(); 
+		double_vector::const_iterator iprob = pv[i].begin(); 
+		double_vector::const_iterator eprob = pv[i].end();
 		
 		double sum_prob = 0.0; 
 		double sum_weight = 0.0; 
@@ -180,9 +179,9 @@ double CCMeans::update_class_centers(CDoubleVector& class_center, CDoubleVector 
 
 }
 
-double CCMeans::adjust_k(CDoubleVector const& class_centers, CDoubleVector const& histogram, CProbabilityVector const & pv)const
+double CCMeans::adjust_k(double_vector const& class_centers, double_vector const& histogram, CProbabilityVector const & pv)const
 {
-	CDoubleVector cc(class_centers.size()); 
+	double_vector cc(class_centers.size()); 
 	size_t hsize = histogram.size(); 
 	transform(class_centers.begin(), class_centers.end(), cc.begin(), 
 		  [hsize](double x){return x * hsize;}); 
@@ -191,8 +190,8 @@ double CCMeans::adjust_k(CDoubleVector const& class_centers, CDoubleVector const
 	vector<int> classmap(histogram.size(), 0); 
 	vector<double> classprob(pv[0]);
 	for (size_t i = 1; i < cc.size(); ++i) {
-		CDoubleVector::const_iterator iprob = pv[i].begin(); 
-		CDoubleVector::const_iterator eprob = pv[i].end();
+		double_vector::const_iterator iprob = pv[i].begin(); 
+		double_vector::const_iterator eprob = pv[i].end();
 		vector<int>::iterator cmi = classmap.begin(); 
 		vector<double>::iterator cpi = classprob.begin(); 
 
@@ -225,7 +224,7 @@ double CCMeans::adjust_k(CDoubleVector const& class_centers, CDoubleVector const
 	return new_k > 0.001 ? new_k : 0.001; 
 }
 	
-CProbabilityVector CCMeans::operator()(CDoubleVector const& histogram, CDoubleVector& class_centers, 
+CProbabilityVector CCMeans::operator()(double_vector const& histogram, double_vector& class_centers, 
 				       bool initialise, bool auto_k) const
 {
 	if (initialise)
@@ -233,7 +232,7 @@ CProbabilityVector CCMeans::operator()(CDoubleVector const& histogram, CDoubleVe
 	
 	CProbabilityVector pv(class_centers.size(), histogram.size()); 
 
-	CDoubleVector scale_histo(histogram); 
+	double_vector scale_histo(histogram); 
 	const double dx = 1.0 / histogram.size(); 
 	double x = 0.0; 
 	
@@ -254,7 +253,7 @@ CProbabilityVector CCMeans::operator()(CDoubleVector const& histogram, CDoubleVe
 		evaluate_probabilities(class_centers, size, pv, k);
 		
 		cvmsg() << "Class centers: ";  
-		for (CDoubleVector::const_iterator i = class_centers.begin(), e = class_centers.end(); 
+		for (double_vector::const_iterator i = class_centers.begin(), e = class_centers.end(); 
 		     i != e; ++i) {
 			cverb << *i << ", "; 
 		}
@@ -266,13 +265,13 @@ CProbabilityVector CCMeans::operator()(CDoubleVector const& histogram, CDoubleVe
 		cvmsg() << '\n';
 	};
 	
-	for (CDoubleVector::iterator i = class_centers.begin(), e = class_centers.end(); i != e; ++i)
+	for (double_vector::iterator i = class_centers.begin(), e = class_centers.end(); i != e; ++i)
 		*i *= size; 
 	
 	return pv; 
 }
 
-void CCMeans::initialise_cc(CDoubleVector& class_centers, CDoubleVector const& histogram)const
+void CCMeans::initialise_cc(double_vector& class_centers, double_vector const& histogram)const
 {
 	double const size = histogram.size(); 
 	double const step = size / double(class_centers.size() + 1); 
@@ -284,8 +283,8 @@ void CCMeans::initialise_cc(CDoubleVector& class_centers, CDoubleVector const& h
 	}else{
 		class_centers[0] = 0.0; 
 		
-		CDoubleVector::const_iterator hi = histogram.begin(); 
-		CDoubleVector::const_iterator const he = histogram.end(); 
+		double_vector::const_iterator hi = histogram.begin(); 
+		double_vector::const_iterator const he = histogram.end(); 
 		++hi; 
 
 		double const thresh = accumulate(hi, he, 0.0) / size;
@@ -312,7 +311,7 @@ void test(double k, bool auto_k)
 	
 	cvdebug() << "k = " << k << "\n"; 
 	
-	CDoubleVector class_centers(Nc);
+	double_vector class_centers(Nc);
 	float cstep = 1.0 / float(Nc); 
 
 	cvdebug() << "class centers: "; 
@@ -322,7 +321,7 @@ void test(double k, bool auto_k)
 	}
 	cverb << "\n"; 
 	
-	CDoubleVector histogram(Nh);
+	double_vector histogram(Nh);
 	
 	CProbabilityVector pv(class_centers.size(), histogram.size());
 	
@@ -346,7 +345,7 @@ void test(double k, bool auto_k)
 		cout << "\n"; 
 	}
 
-	CDoubleVector eval_class_centers(Nc);
+	double_vector eval_class_centers(Nc);
 	for (size_t i = 0; i < Nc; ++i)
 		eval_class_centers[i] = i * cstep;
 	
@@ -374,7 +373,7 @@ int do_main(int argc, char *argv[])
 	
 	string in_filename; 
 	string out_filename; 
-	CDoubleVector class_centers; 
+	double_vector class_centers; 
 
 	CCmdOptionList options(g_description);
 

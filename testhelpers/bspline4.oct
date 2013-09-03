@@ -1,0 +1,39 @@
+function y = bspline4(x)
+  ax=abs(x); 
+  if (ax <= 0.5) 
+    x2 = x * x;
+    t = (1.0 / 6.0) * x2;
+    t0 = ax * (t - 11.0 / 24.0);
+    t1 = 19.0 / 96.0 + x2 * (1.0 / 4.0 - t);
+    h = 0.5 - ax;
+    w0 =  h * h  * h * h / 24.0; 
+    w4 = w0 + t0 + (1.0 / 2.0) * ax;
+    y = 1.0 - w0 - 2 * t1 - w4;
+  elseif (ax <= 1.5)
+    ax = ax - 1.0; 
+    x2 = ax * ax;
+    y = ax * (1.0 / 6.0) * x2 - ax * 11.0 / 24.0 + 19.0 / 96.0 + x2 / 4.0 - x2 * x2 / 6.0;
+    
+  elseif (ax <= 2.5)
+    h = 2.5 - ax;
+    y =  h * h  * h * h / 24.0; 
+  else
+    y = 0; 
+  endif
+endfunction 
+
+x=-30:30
+y=x
+for i=1:61
+  y(i) = bspline4(x(i)/10);
+endfor
+
+plot(y)
+
+a1 = bspline4(-2)
+a2 = bspline4(-1)
+a3 = bspline4(-0)
+a4 = bspline4( 1)
+a5 = bspline4( 2)
+
+a1 + a2 + a3 + a4 + a5

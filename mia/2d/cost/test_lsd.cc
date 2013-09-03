@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -46,14 +46,14 @@ BOOST_FIXTURE_TEST_CASE( test_LSD_2D_self, LSDFixture )
 	cost.set_reference(*src);
 	
 	double cost_value = cost.value(*src);
-	BOOST_CHECK_CLOSE(cost_value, 0.0, 0.1);
+	BOOST_CHECK_SMALL(cost_value, 1e-10);
 
 	C2DFVectorfield force(C2DBounds(8,8));
 
-	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, 0.5, force), 0.0, 0.1);
+	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, force), 0.0, 0.1);
 
-	BOOST_CHECK_EQUAL(force(1,1).x, 0.0f);
-	BOOST_CHECK_EQUAL(force(1,1).y, 0.0f);
+	BOOST_CHECK_SMALL(force(1,1).x, 1e-10f);
+	BOOST_CHECK_SMALL(force(1,1).y, 1e-10f);
 	
 }
 
@@ -67,12 +67,21 @@ BOOST_FIXTURE_TEST_CASE( test_LSD_2D, LSDFixture )
 
 	C2DFVectorfield force(C2DBounds(8,8));
 
-	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, 1.0, force), 74.402, 0.1);
+	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, force), 74.402, 0.1);
 
 
 	for (auto iforce = force.begin(), ig = grad.begin(); ig != grad.end(); ++ig, ++iforce) {
-		BOOST_CHECK_CLOSE(iforce->x, ig->x, 0.1f);
-		BOOST_CHECK_CLOSE(iforce->y, ig->y, 0.1f);
+		if (ig->x == 0.0) 
+			BOOST_CHECK_SMALL(iforce->x, 1e-10f); 
+		else 
+			BOOST_CHECK_CLOSE(iforce->x, ig->x, 0.1f);
+
+		if (ig->y == 0.0) 
+			BOOST_CHECK_SMALL(iforce->y, 1e-10f); 
+		else 
+			BOOST_CHECK_CLOSE(iforce->y, ig->y, 0.1f);
+		
+
 	}; 
 }
 

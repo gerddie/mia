@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -43,12 +43,14 @@ const SProgramDescription g_description = {
 	 "use case will be to sort labels of connected components in out-of-core image processing."}, 
 }; 
 
-typedef pair<double, size_t> CEntry; 
+typedef pair<unsigned short, size_t> CEntry; 
 
-bool operator < (const CEntry& a, const CEntry& b) 
-{
-	return a.second < b.second; 
-}
+struct FEntryCompare {
+	bool operator () (const CEntry& a, const CEntry& b) const {
+		return a.second < b.second; 
+		
+	}
+}; 
 
 
 int do_main(int argc, char *argv[]) 
@@ -65,26 +67,31 @@ int do_main(int argc, char *argv[])
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
-	priority_queue<CEntry> hist; 
+	priority_queue<CEntry, vector<CEntry>, FEntryCompare> hist; 
 	
 	ifstream ifs( in_filename); 
 	
 	CEntry entry; 
 	while (ifs.good()) {
 		ifs >> entry.first >> entry.second; 
-		hist.push(entry); 
-	}
+		if (ifs.good())
+			hist.push(entry); 
+	} ; 
+	
 	ifs.close(); 
 		
 
 	cvmsg() << "got a (label) histogram with " << hist.size() << " values\n";
 		
 	CLabelMap result; 
-		
+
+	unsigned short pos = 0; 		
 	while (!hist.empty()) {
 		CEntry e = hist.top(); 
 		hist.pop(); 
-		result[e.second] = e.first;
+		if (e.second > 0) {
+			result[e.first] = pos++;
+		}
 	}
 
 	

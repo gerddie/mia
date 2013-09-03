@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -94,17 +94,25 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_derivative, GridTransformFixture)
 			C2DFMatrix dv =  field.derivative_at(x, y);
 			if ( x > 0 && x < size.x- 1) {
 				BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x, y), 1);
-				BOOST_CHECK_CLOSE(dv.x.y, -dfy_x(x, y), 1);
+				float test_value = -dfy_x(x, y); 
+				if (fabs(test_value) < 1e-10) 
+					BOOST_CHECK_SMALL(dv.x.y,1e-10f);
+				else 
+					BOOST_CHECK_CLOSE(dv.x.y, test_value, 0.1);
 			}else {
-				BOOST_CHECK_EQUAL(dv.x.x, 1.0f);
-				BOOST_CHECK_EQUAL(dv.x.y, 0);
+				BOOST_CHECK_CLOSE(dv.x.x, 1.0f, 0.1);
+				BOOST_CHECK_SMALL(dv.x.y, 1e-10f);
 			}
 			if ( y > 0 && y < size.y - 1) {
-				BOOST_CHECK_CLOSE(dv.y.x, -dfx_y(x, y), 1);
+				float test_value = -dfx_y(x, y); 
+				if (fabs(test_value) < 1e-10) 
+					BOOST_CHECK_SMALL(dv.y.x, 1e-10f);
+				else 
+					BOOST_CHECK_CLOSE(dv.y.x, test_value , 1);
 				BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x, y), 1);
 			}else {
-				BOOST_CHECK_EQUAL(dv.y.x, 0);
-				BOOST_CHECK_EQUAL(dv.y.y, 1.0f);
+				BOOST_CHECK_SMALL(dv.y.x, 1e-10f);
+				BOOST_CHECK_CLOSE(dv.y.y, 1.0f, 0.1);
 			}
 		}
 

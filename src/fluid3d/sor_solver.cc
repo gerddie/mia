@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,12 +14,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
 #include <errno.h>
+
+#include <mia/core/threadedmsg.hh>
+#include <tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
+
 #include "sor_solver.hh"
 
 
@@ -26,9 +31,6 @@
 #include <iostream>
 using namespace std;
 using namespace mia;
-
-//#define USE_OLD
-//#define USE_VERY_OLD
 
 TSORSolver::TSORSolver(int _max_steps, float _rel_res, float _abs_res,
 		       float mu, float lambda):
@@ -79,8 +81,8 @@ float TSORSolver::solve_at_very_old(const C3DFVectorfield& B,C3DFVectorfield *V,
 
 
 
-float TSORSolver::solve_at(C3DFVector *Data,const C3DFVector& bv){
-	register int sizex = size.x;
+float TSORSolver::solve_at(C3DFVector *Data, const C3DFVector& bv){
+	int sizex = size.x;
 	C3DFVector *Data_alt = &Data[ -d_xy ];
 	C3DFVector q;
 	C3DFVector p;
@@ -236,7 +238,7 @@ float TSORSolver::solve_at_old(C3DFVector *Data,const C3DFVector& bv)
 
 
 
-int TSORSolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
+int TSORSolver::solve(const C3DFVectorfield& b, C3DFVectorfield *xvf)
 {
 	assert(b.get_size() == xvf->get_size());
 
@@ -245,46 +247,47 @@ int TSORSolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 	d_xy = size.x * size.y;
 	bool firsttime = true;
 	int nIter = 0;
-	float res;
 	float firstres=0;
-	do {
 
-		nIter++;
-		res = 0;
-		int hardcode = d_xy + size.x + 1;
-		for (size_t  z = 1; z < size.z - 1; z++) {
-			cvinfo() << "SORA: [" << nIter << "]" << z << std::endl;
+	/*
+	  This parallelization constituts a race conditions, i.e. reads and writes to the velocity field 
+	  are not syncronized. This is not a big deal, because the solver is stable, in the worst case convergence 
+	  is a bit slower. 
+	 */
+	auto solve_slice = [this, &b, &xvf](const tbb::blocked_range<size_t>& range, float res) -> float{
+		CThreadMsgStream thread_stream;
+		for (auto z = range.begin(); z != range.end();++z) {
+			int hardcode = z * d_xy + size.x + 1;
 			for (size_t  y = 1; y < size.y - 1; y++){
 				for (size_t  x = 1; x < size.x - 1; x++,hardcode++) {
 					C3DFVector bv = b[hardcode]; // cache on stack
-
-#ifdef USE_VERY_OLD
-					res += solve_at_very_old(b,xvf,x,y,z);
-#else
-#ifndef USE_OLD
-					res += solve_at(&(*xvf)[hardcode],bv);
-#else
-					res += solve_at_old(&(*xvf)[hardcode],bv);
-#endif
-#endif
-
-
+					float r = solve_at(&(*xvf)[hardcode],bv);
+					res += r; 
 				}
 				hardcode+=2;
 			}
 			hardcode += size.x << 1;
 		}
+
+		return res; 
+	}; 
+
+	float residuum = 0.0; 
+	do {
+		residuum = tbb::parallel_reduce( tbb::blocked_range<size_t>(1, size.z-1, 4), 0.0f, solve_slice, 
+						 [](float x, float y){return x+y;}); 
+		
 		if (firsttime) {
-			firstres = res;
+			firstres = residuum;
 			firsttime = false;
 		}
-		cvinfo() << "SORA: [" << nIter << "]" <<res << "\n";
-	}while (res > firstres * rel_res && nIter < max_steps && res > abs_res );
+		cvinfo() << "SORA: [" << ++nIter << "] res=" << residuum << "\n";
+	} while (residuum > firstres * rel_res && nIter < max_steps && residuum > abs_res );
 
 	// return why we have finished
 	if (nIter >= max_steps) return 1;
-	if (res < firstres * rel_res) return 2;
-	if (res <abs_res) return 3;
+	if (residuum < firstres * rel_res) return 2;
+	if (residuum <abs_res) return 3;
 	return 0;
 }
 
@@ -316,63 +319,61 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 	update_needed = &update_info_1;
 	need_update = &update_info_2;
 
-	//	xvf->clear();
-
 	float  gSize = b.get_size().z *  b.get_size().y * b.get_size().x;
 
 	cvinfo() << "SORA: [" << gSize << "]\n";
-	// first run on full field
-	int hardcode = d_xy + size.x + 1;
-	for (size_t  z = 1; z < size.z-1; z++) {
-		for (size_t  y = 1; y < size.y - 1; y++){
-			for (size_t  x = 1; x < size.x - 1; x++,hardcode++){
-				C3DFVector bv = b[hardcode]; // cache on stack
-				cvinfo() << "SORA: [" << hardcode << "]" << bv << "\n";
-				if (bv.norm2() > 0) {
-					float step;
-#ifndef USE_OLD
-					firstres += (residua[hardcode] = step =
-						     solve_at(&(*xvf)[hardcode],bv));
-#else
-					firstres += (residua[hardcode] = step =
-					             solve_at_old(&(*xvf)[hardcode],bv));
-#endif
-					if (step > 0){
-						cvinfo() << "update\n";
-						update_needed->set_update(hardcode);
-						cvinfo() << "done\n";
 
+	/*
+	  This parallelization constituts a race conditions, i.e. reads and writes to the velocity field 
+	  are not syncronized. This shouldn't be a big deal, because in the worst case the solver reads a value that is 
+	  not yet updated, which corresponds to the a habdling like there was no update at all, an actual feature of the 
+	  algorithm. Since solver is stable, in the worst case convergence is a bit slower. 
+	  Neverteless, copying the data to a local cache to avoid this race may be better, because it would also speed 
+	  up memory access.
+	*/
+	auto first_run =[this, &b, &xvf, &residua, &update_needed]
+		(const tbb::blocked_range<size_t>& range, float firstres) -> float {
+		CThreadMsgStream thread_stream;
+		for (auto z = range.begin(); z != range.end();++z) {
+			int hardcode = z * d_xy + size.x + 1;
+			for (size_t  y = 1; y < size.y - 1; y++){
+				for (size_t  x = 1; x < size.x - 1; x++,hardcode++) {
+					C3DFVector bv = b[hardcode]; // cache on stack		
+					if (bv.norm2() > 0) {
+						float step;
+						firstres += (residua[hardcode] = step =
+							     solve_at(&(*xvf)[hardcode],bv));
+						if (step > 0){
+							update_needed->set_update(hardcode);
+						}
 					}
 				}
-
+				hardcode+=2;
 			}
-			hardcode += 2;
+			hardcode += size.x << 1;
 		}
-		hardcode += size.x << 1;
-	}
+		return firstres; 
+	};
+	
+	firstres = tbb::parallel_reduce( tbb::blocked_range<size_t>(1, size.z-1, 4), 0.0f, first_run, 
+				    [](float x, float y){return x+y;}); 
+
 	doorstep = firstres / gSize;
 	lastres = firstres;
 	int nIter = 1;
-	cvinfo() << "SORA: [" << nIter << "]" << res << "\n";
-	do {
-		nIter++;
-		res = 0;
 
-		hardcode = d_xy + size.x + 1;
-		for (size_t  z = 1; z < size.z-1; z++) {
+	auto iterate_run =[this, &b, &xvf, &doorstep, &residua, &update_needed, &need_update](const tbb::blocked_range<size_t>& range, float res) -> float {
+		CThreadMsgStream thread_stream;
+		for (auto z = range.begin(); z != range.end();++z) {
+			int hardcode = z * d_xy + size.x + 1;
 			for (size_t  y = 1; y < size.y - 1; y++){
-				auto ixvf =  &(*xvf)[hardcode]; 
-				for (size_t  x = 1; x < size.x - 1; x++,hardcode++, ++ixvf){
+				auto ixvf =  &(*xvf)[hardcode];
+				for (size_t  x = 1; x < size.x - 1; x++,hardcode++, ++ixvf) {
 					float  step;
 					if ((*update_needed)[hardcode]) {
 						C3DFVector bv = b[hardcode];
-#ifndef USE_OLD
 						residua[hardcode] = step =
 							solve_at(ixvf,bv);
-#else
-						residua[hardcode] = step =
-							solve_at_old(ixvf,bv);
-#endif
 					}else
 						step = residua[hardcode];
 
@@ -381,21 +382,25 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 					}
 					res += step;
 				}
-				hardcode += 2;
+				hardcode+=2;
 			}
 			hardcode += size.x << 1;
 		}
+		return res; 
+	};
 
+	do {
+		res = tbb::parallel_reduce( tbb::blocked_range<size_t>(1, size.z-1, 4), 0.0f, iterate_run, 
+					    [](float x, float y){return x+y;}); 
+		
 		doorstep = res * res / (gSize * lastres * nIter * nIter);
 		lastres = res;
-
+		
 		// FIXME replace this by STL confom fill
 		update_needed->clear();
 
-		TUpdateInfo * update_temp = update_needed;
-		update_needed = need_update;
-		need_update = update_temp;
-		cvinfo() << "SORA: [" << nIter << "]" << res << "\n";
+		std::swap(update_needed, need_update); 
+		cvinfo() << "SORA: [" << ++nIter << "]" << res << "\n";
 	}while (res > firstres * rel_res && nIter < max_steps && res > abs_res );
 
 	// return why we have finished

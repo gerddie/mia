@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -158,21 +158,30 @@ public:
 	/// the name,plug-in pair \remark why do I need this 
 	typedef typename T::CPluginMap::value_type value_type;
 	
-	/// \returns a reference to the only instance of the plugin handler 
-	static const T& instance(); 
-protected:
-	/** initialize the handler singleton with a specific plugin search path 
-	    (used for running tests) 
-	    \remark why not private?  
+	/**
+	   \returns a reference to the only instance of the plugin handler 
 	*/
-	
-	THandlerSingleton(); 
+	static const T& instance(); 
+
+	/**
+	   \returns a pointer to the only instance of the plugin handler, it is possible that 
+	   this instance is not yet initialized.   
+	*/
+	static const T* pointer(); 
+protected:
 
 	/** This mutex ensures that each Singleton is indeed only created once and 
 	    no race condition happens within a multi-threaded environmnet */ 
 	static CMutex m_creation_mutex; 
 
 private: 
+	// the constructor is private because you must not derive the singleton
+	// derive the handler if you need specific funcionality, and then 
+	// template the singleton with the derived handler. 
+	THandlerSingleton(); 
+
+	static const T& do_instance(bool require_initialization); 
+
 	static CPathNameArray m_searchpath; 
 	static bool m_is_created; 
 	static CMutex m_initialization_mutex;

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -35,7 +35,6 @@
 #include <mia/2d/imageio.hh>
 #include <mia/internal/main.hh>
 
-#include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
@@ -55,7 +54,7 @@ const SProgramDescription g_general_help = {
 	 "Skip two images at the beginning and using mutual information as cost function, "
 	 "and penalize the transformation by divcurl with weight 5. "
 	 "Store the result in 'registeredXXXX.png'."}, 
-	{pdi_example_code, "  -i input0000.png -o registered%04d.png -k 2 -r 30 mi divcurl:weight=5"}
+	{pdi_example_code, "  -i input0000.png -o registered%04d.png -k 2 -r 30 image:cost=mi divcurl:weight=5"}
 }; 
 
 C2DFullCostList create_costs(const std::vector<string>& costs, int idx)
@@ -136,8 +135,6 @@ int do_main( int argc, char *argv[] )
 	int reference_param = -1; 
 	int skip = 0; 
 
-	int max_threads = task_scheduler_init::automatic;
-	
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("\nFile-IO"); 
@@ -154,16 +151,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 	options.add(make_opt( skip, "skip", 'k', "skip registration of these images at the beginning of the series")); 
 
-	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
-			     "This number should be lower or equal to the number of processing cores in the machine"
-			     " (default: automatic estimation)."));  
-
-
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-	task_scheduler_init init(max_threads);
 	
         // create cost function chain
 	auto cost_functions = options.get_remaining(); 

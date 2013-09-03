@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -73,9 +73,11 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 	C3DBounds Start(m_block_size.x/2,m_block_size.y/2,m_block_size.z/2);
 
 	// Put the Blockaverages into the target
-	for (; Start.z < src.get_size().z; Start.z += m_block_size.z){
-		for (Start.y = 0; Start.y < src.get_size().y; Start.y += m_block_size.y){
-			for (Start.x = 0; Start.x < src.get_size().x; Start.x += m_block_size.x,++i){
+	for (size_t z = 0; z < fresult->get_size().z; Start.z += m_block_size.z, ++z){
+		Start.y = m_block_size.y/2; 
+		for (size_t y = 0; y < fresult->get_size().y; Start.y += m_block_size.y, ++y){
+			Start.x = m_block_size.x/2; 
+			for (size_t x = 0; x < fresult->get_size().x; Start.x += m_block_size.x, ++x, ++i){
 				*i = src(Start);
 			}
 		}
@@ -83,9 +85,9 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 
 
 	C3DFVector pixel_size = src.get_voxel_size();
-	pixel_size.x /= m_block_size.x;
-	pixel_size.y /= m_block_size.y;
-	pixel_size.z /= m_block_size.z;
+	pixel_size.x *= m_block_size.x;
+	pixel_size.y *= m_block_size.y;
+	pixel_size.z *= m_block_size.z;
 	fresult->set_voxel_size(pixel_size);
 	cvdebug() << "CDownscale::operator () end\n";
 	return Result;
@@ -119,7 +121,8 @@ C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 
 	add_parameter("kernel", new CStringParameter(m_filter, false,
 						     "smoothing filter kernel to be applied "
-						     "(filter width is determined based on the scaling factor)"));
+						     "(filter width is determined based on the scaling factor)", 
+						     &C1DSpacialKernelPluginHandler::instance()));
 }
 
 C3DFilter *C3DDownscaleFilterPlugin::do_create()const

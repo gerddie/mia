@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -54,7 +54,7 @@ BOOST_FIXTURE_TEST_CASE( test_MI_3D_self, MIFixture )
 
 	C3DFVectorfield force(C3DBounds(4,4,4));
 	
-	BOOST_CHECK_CLOSE(cost->evaluate_force(*ref, 0.5, force), 0.5 * test_cost_value, 0.1);
+	BOOST_CHECK_CLOSE(cost->evaluate_force(*ref, force), 1.0 * test_cost_value, 0.1);
 	
 	BOOST_CHECK_EQUAL(force(2,2,2).x, 0.0f);
 	BOOST_CHECK_EQUAL(force(2,2,2).y, 0.0f);

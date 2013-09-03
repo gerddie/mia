@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -23,7 +23,6 @@
 #include <mia/internal/autotest.hh>
 #include <iomanip>
 #include <mia/core/threadedmsg.hh>
-#include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 using namespace tbb;
@@ -83,8 +82,6 @@ void ThreadFixture2::operator () ( const blocked_range<int>& range ) const
 
 BOOST_AUTO_TEST_CASE( test_threaded_msg )
 {
-	task_scheduler_init init;
-
 	auto old_level =  cverb.get_level();
 	cverb.set_verbosity(vstream::ml_message); 
 	ThreadFixture fix; 
@@ -118,8 +115,6 @@ BOOST_AUTO_TEST_CASE( test_threaded_msg )
 
 BOOST_AUTO_TEST_CASE( test_threaded_msg_sync )
 {
-	task_scheduler_init init;
-
 	auto old_level =  cverb.get_level();
 	cverb.set_verbosity(vstream::ml_message); 
 	ThreadFixture2 fix; 

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -55,6 +55,17 @@ protected:
 	public:
 		TUpdateInfo(const mia::C3DBounds& size): mia::C3DUBDatafield(size){
 		};
+
+		/*
+		  This code will show up as race condition, because writes may occure in parallel 
+		  However, since it is always the same value that it is written (i.e. 1), this 
+		  is of no consequence. 
+		  Since the update indicator fields are swapped in serial code, reads do not clash with
+		  writes. Note however, that because there is no "official" syncronization, Intel 
+		  Thread Inspector will complain. 
+		  An option to silence this would be to use a field of atomics or one should add a memory 
+		  barrier before the swap. 
+		*/
 		void set_update(int hardcode) {
 			const unsigned char val = 1;
 			unsigned char *ptr = &(*this)[hardcode];

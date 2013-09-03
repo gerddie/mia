@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -42,6 +42,7 @@ public:
 private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
+	std::string do_get_preferred_suffix() const; 
 	const string do_get_descr() const;
 };
 
@@ -53,6 +54,11 @@ CVista3DVFIOPlugin::CVista3DVFIOPlugin():
 	add_suffix(".vf");
 	add_suffix(".V");
 	add_suffix(".VF");
+}
+
+std::string CVista3DVFIOPlugin::do_get_preferred_suffix() const
+{
+	return "vf"; 
 }
 
 
@@ -132,6 +138,7 @@ public:
 private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
+	std::string do_get_preferred_suffix() const; 
 	const string do_get_descr() const;
 	template <typename T>
 	CScaled3DVFIOPlugin::PData read_compressed(const T3DVector<VistaIOLong>& _size, const C3DFVector& scale, 
@@ -143,8 +150,8 @@ CScaled3DVFIOPlugin::CScaled3DVFIOPlugin():
 	C3DVFIOPlugin("cvista")
 {
 	add_supported_type(it_float);
-	add_suffix(".svf");
-	add_suffix(".SVF");
+	add_suffix(".cvf");
+	add_suffix(".CVF");
 
 }
 
@@ -165,6 +172,12 @@ CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::read_compressed(const T3DVector<
 	}
 	return result; 
 }
+
+std::string CScaled3DVFIOPlugin::do_get_preferred_suffix() const
+{
+	return "cvf"; 
+}
+
 
 CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::do_load(const string& fname) const
 {
@@ -223,7 +236,7 @@ bool CScaled3DVFIOPlugin::do_save(const string& /*fname*/, const Data& /*data*/)
 
 const string CScaled3DVFIOPlugin::do_get_descr() const
 {
-	return "a 3d vector field io plugin for compressend vista";
+	return "obsolete 3d vector field io plugin for range compressend vista (saving not supported)";
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()

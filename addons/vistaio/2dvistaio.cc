@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -52,7 +52,9 @@ CVista2DImageIOPlugin::CVista2DImageIOPlugin():
 	add_supported_type(it_ubyte);
 	add_supported_type(it_sbyte);
 	add_supported_type(it_sshort);
+	add_supported_type(it_ushort);
 	add_supported_type(it_sint);
+	add_supported_type(it_uint);
 	add_supported_type(it_float);
 	add_supported_type(it_double);
 	add_property(io_plugin_property_multi_record);
@@ -93,16 +95,28 @@ void read_image(VistaIOImage image, CVista2DImageIOPlugin::Data& result_list, in
 
 void copy_from_vista(VistaIOImage image, CVista2DImageIOPlugin::Data& result, int i)
 {
-	// this could be changed to add a bunch of images
-	// however, then one would also have to write these as such ...
+	VistaIOBoolean is_unsigned = 0; 
+	VistaIOExtractAttr (VistaIOImageAttrList(image), "repn-unsigned",NULL, VistaIOBitRepn, 
+			    &is_unsigned, 0);
+
 	switch (VistaIOPixelRepn(image)) {
-	case VistaIOBitRepn : return read_image<bool>(image, result, i);
-	case VistaIOUByteRepn : return read_image<unsigned char>(image, result, i);
-	case VistaIOSByteRepn : return read_image<signed char>(image, result, i);
-	case VistaIOShortRepn : return read_image<signed short>(image, result, i);
-	case VistaIOLongRepn : return read_image<signed int>(image, result, i);
-	case VistaIOFloatRepn : return read_image<float>(image, result, i);
-	case VistaIODoubleRepn : return read_image<double>(image, result, i);
+	case VistaIOBitRepn :  read_image<bool>(image, result, i);break;
+	case VistaIOUByteRepn :  read_image<unsigned char>(image, result, i);break;
+	case VistaIOSByteRepn :  read_image<signed char>(image, result, i);break;
+	case VistaIOShortRepn : 
+		if (is_unsigned) 
+			read_image<unsigned short>(image, result, i);
+		else 
+			 read_image<signed short>(image, result, i);
+		break;
+	case VistaIOLongRepn : 
+		if (is_unsigned) 
+			 read_image<unsigned int>(image, result, i);
+		else
+			 read_image<signed int>(image, result, i);
+		break;
+	case VistaIOFloatRepn :  read_image<float>(image, result, i);break;
+	case VistaIODoubleRepn : read_image<double>(image, result, i);break;
 	default:
 		throw invalid_argument("2d vista load: Unknown pixel format");
 	}

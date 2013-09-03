@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -23,6 +23,7 @@
 
 #include <iterator>
 #include <mia/2d/transform.hh>
+#include <mia/2d/transformfactory.hh>
 
 
 NS_MIA_BEGIN
@@ -39,9 +40,11 @@ public:
 	};
 
 
-	C2DRigidTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf);
-	C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
-					       float rotation, const C2DInterpolatorFactory& ipf);
+	C2DRigidTransformation(const C2DBounds& size, const C2DFVector& m_reltative_rot_center, 
+			       const C2DInterpolatorFactory& ipf);
+	C2DRigidTransformation(const C2DBounds& size, const C2DFVector& translation,
+			       float rotation, const C2DFVector& m_reltative_rot_center,
+			       const C2DInterpolatorFactory& ipf);
 
 	void translate(float x, float y);
 	void rotate(float angle);
@@ -72,7 +75,6 @@ public:
 	virtual const C2DBounds& get_size() const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
-	virtual void add(const C2DTransformation& a);
 	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
@@ -93,6 +95,7 @@ public:
 	double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 private:
+	void initialize(); 
 	virtual C2DTransformation *do_clone() const;
 	void evaluate_matrix() const;
 	C2DRigidTransformation(const C2DRigidTransformation& other);
@@ -101,9 +104,27 @@ private:
 	C2DBounds m_size;
 	C2DFVector m_translation;
 	float m_rotation;
+	C2DFVector m_relative_rot_center; 
+	C2DFVector m_rot_center; 
 	mutable bool m_matrix_valid;
 };
 
+
+class C2DRigidTransformCreator: public C2DTransformCreator {
+public: 
+	C2DRigidTransformCreator(const C2DFVector& relative_rot_center, const C2DInterpolatorFactory& ipf); 
+private: 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
+	C2DFVector m_relative_rot_center; 
+};
+
+class C2DRigidTransformCreatorPlugin: public C2DTransformCreatorPlugin {
+public:
+	C2DRigidTransformCreatorPlugin();
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
+	const std::string do_get_descr() const;
+	C2DFVector m_relative_rot_center; 
+};
 
 NS_MIA_END
 

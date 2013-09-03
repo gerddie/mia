@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-#define VSTREAM_DOMAIN "3dvistaio"
 
 #include <sstream>
 #include <cassert>
@@ -28,8 +27,9 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/imageio.hh>
 
+
+#include <vistaio/3dvistaio.hh>
 #include <vistaio/vista4mia.hh>
 
 NS_BEGIN(vista_3d_io)
@@ -39,15 +39,6 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
-class CVista3DImageIOPlugin : public C3DImageIOPlugin {
-public:
-	CVista3DImageIOPlugin();
-private:
-	PData do_load(const string& fname) const;
-	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const;
-	std::string do_get_preferred_suffix() const; 
-};
 
 CVista3DImageIOPlugin::CVista3DImageIOPlugin():
 	C3DImageIOPlugin("vista")
@@ -56,7 +47,9 @@ CVista3DImageIOPlugin::CVista3DImageIOPlugin():
 	add_supported_type(it_ubyte);
 	add_supported_type(it_sbyte);
 	add_supported_type(it_sshort);
+	add_supported_type(it_ushort);
 	add_supported_type(it_sint);
+	add_supported_type(it_uint);
 	add_supported_type(it_float);
 	add_supported_type(it_double);
 	add_property(io_plugin_property_multi_record);
@@ -86,14 +79,27 @@ P3DImage read_image(VistaIOImage image)
 
 P3DImage copy_from_vista(VistaIOImage image)
 {
+
+	VistaIOBoolean is_unsigned = 0; 
+	VistaIOExtractAttr (VistaIOImageAttrList(image), "repn-unsigned",NULL, VistaIOBitRepn, 
+			    &is_unsigned, 0);
+	
 	// this could be changed to add a bunch of images
 	// however, then one would also have to write these as such ...
 	switch (VistaIOPixelRepn(image)) {
 	case VistaIOBitRepn : return read_image<bool>(image);
 	case VistaIOUByteRepn : return read_image<unsigned char>(image);
 	case VistaIOSByteRepn : return read_image<signed char>(image);
-	case VistaIOShortRepn : return read_image<signed short>(image);
-	case VistaIOLongRepn : return read_image<signed int>(image);
+	case VistaIOShortRepn : 
+		if (is_unsigned) 
+			return read_image<unsigned short>(image);
+		else 
+			return read_image<signed short>(image);
+	case VistaIOLongRepn : 
+		if (is_unsigned) 
+			return read_image<unsigned int>(image);
+		else
+			return read_image<signed int>(image);
 	case VistaIOFloatRepn : return read_image<float>(image);
 	case VistaIODoubleRepn : return read_image<double>(image);
 	default:
@@ -185,13 +191,6 @@ std::string CVista3DImageIOPlugin::do_get_preferred_suffix() const
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	CDoubleTranslator::register_for("double");
-	CFloatTranslator::register_for("float");
-	CUBTranslator::register_for("ubyte");
-	CSBTranslator::register_for("sbyte");
-	CSSTranslator::register_for("short");
-	CSITranslator::register_for("int");
-	CBitTranslator::register_for("bit");
 	CVoxelAttributeTranslator::register_for("voxel");
 	C3DIntAttributeTranslator::register_for("ca");
 	C3DIntAttributeTranslator::register_for("cp");

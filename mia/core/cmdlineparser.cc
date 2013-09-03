@@ -1,9 +1,9 @@
-
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -14,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <config.h>
 //#include <miaconfig.h>
@@ -33,6 +31,7 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
+#include <tbb/task_scheduler_init.h>
 
 #include <libxml++/libxml++.h>
 #include <mia/core/tools.hh>
@@ -42,8 +41,11 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/fixedwidthoutput.hh>
 
+#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
+#define TBB_PREFERE_ONE_THREAD 1
+#endif 
 
-extern void print_full_copyright(const char *name);
+extern void print_full_copyright(const char *name, const char *author);
 
 
 NS_MIA_BEGIN
@@ -53,6 +55,7 @@ using std::ostream;
 using std::ostringstream;
 using std::string;
 using std::invalid_argument; 
+using std::logic_error; 
 using std::vector; 
 using std::map; 
 using std::unique_ptr; 
@@ -64,7 +67,8 @@ const std::map<EProgramDescriptionEntry, const char *> g_DescriptionEntryNames =
 	ENTRY(pdi_short), 
 	ENTRY(pdi_description), 
 	ENTRY(pdi_example_descr),
-	ENTRY(pdi_example_code)
+	ENTRY(pdi_example_code),
+	ENTRY(pdi_author)
 }; 
 
 struct CCmdOptionListData {
@@ -82,6 +86,7 @@ struct CCmdOptionListData {
 	bool version; 
 	bool copyright;
 	vstream::Level verbose;
+	int max_threads;
 
 	CCmdOptionListData(const SProgramDescription& description); 
 
@@ -104,8 +109,9 @@ struct CCmdOptionListData {
 	vector<const char *> has_unset_required_options() const; 
 	void set_logstream(std::ostream& os); 
 	string set_description_value(EProgramDescriptionEntry entry, 
-				     const SProgramDescription& description); 
+				     const SProgramDescription& description, const char *default_value = ""); 
 
+	const char *get_author() const; 
 	
 	string m_program_group; 
 	string m_short_descr; 
@@ -113,6 +119,7 @@ struct CCmdOptionListData {
 	string m_program_example_descr;
 	string m_program_example_code; 
 	string m_free_parametertype; 
+	string m_author; 
 	ostream *m_log; 
 };
 
@@ -122,7 +129,7 @@ void CCmdOptionListData::set_logstream(ostream& os)
 }
 
 string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry, 
-						 const SProgramDescription& description)
+						 const SProgramDescription& description, const char *default_value)
 {
 	auto id = description.find(entry); 
 	if (id != description.end()) 
@@ -130,17 +137,22 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 	else {
 		auto ed = g_DescriptionEntryNames.find(entry); 
 		assert(ed != g_DescriptionEntryNames.end()); 
-		cvwarn() << "Description value '" <<  ed->second << "' not set\n"; 
-		return string(""); 
+		if (!default_value) 
+			cvwarn() << "Description value '" <<  ed->second << "' not set\n"; 
+		else 
+			cvdebug() << "Description value '" <<  ed->second 
+				  << "' not set, using default '" << default_value << "'\n"; 
+		return string(default_value); 
 	}
 }
 
 const char *g_help_optiongroup="Help & Info"; 
-const char *g_basic_copyright = 
-	"This software is Copyright (c) 1999-2012 Leipzig, Germany and Madrid, Spain. "
-	"It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
-	"under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
-	"For more information run the program with the option '--copyright'.\n"; 
+const char *g_default_author = "Gert Wollny"; 
+const char *g_basic_copyright1 = "This software is Copyright (c) "; 
+const char *g_basic_copyright2 = " 1999-2013 Leipzig, Germany and Madrid, Spain. "
+	      "It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
+	      "under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
+	      "For more information run the program with the option '--copyright'.\n"; 
 
 CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	help(false),
@@ -149,6 +161,11 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	version(false), 
 	copyright(false),
 	verbose(vstream::ml_warning), 
+#if TBB_PREFERE_ONE_THREAD
+	max_threads(1), 
+#else 
+	max_threads(tbb::task_scheduler_init::automatic), 
+#endif 
 	m_log(&std::cout)
 {
 
@@ -157,6 +174,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	m_general_help = set_description_value(pdi_description, description);  
 	m_program_example_descr = set_description_value(pdi_example_descr, description); 
 	m_program_example_code = set_description_value(pdi_example_code, description); 
+	m_author = set_description_value(pdi_author, description, g_default_author); 
 	
 	options[""] = vector<PCmdOption>();
 
@@ -169,7 +187,18 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML"));
 	add(make_opt(usage,  "usage", '?', "print a short help"));
 	add(make_opt(version,  "version", 0, "print the version number and exit"));
+
+	set_current_group("Processing"); 
+	add(make_opt(max_threads, "threads", 0, "Maxiumum number of threads to use for processing," 
+			     "This number should be lower or equal to the number of logical processor cores in the machine. "
+			     "(-1: automatic estimation).")); 
+	
 	set_current_group("");
+}
+
+const char *CCmdOptionListData::get_author() const
+{
+	return m_author.c_str(); 
 }
 
 void CCmdOptionListData::add(PCmdOption opt)
@@ -306,6 +335,8 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	Element* example_code = example->add_child("Code"); 
 	example_code->set_child_text(m_program_example_code); 
 	
+	Element* cr = nodeRoot->add_child("Author");
+	cr->set_child_text(m_author); 
 
 	*m_log << doc->write_to_string_formatted();
 	*m_log << "\n"; 
@@ -445,7 +476,9 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	console.write("\n"); 
 	console.push_offset(2);
 	console.write("Copyright:\n");
-	console.write(g_basic_copyright);
+	console.write(g_basic_copyright1);
+	console.write(get_author());
+	console.write(g_basic_copyright2);
 	console.pop_offset(); 
 	console.write("\n");
 	*m_log << setiosflags(std::ios_base::right);
@@ -474,7 +507,9 @@ void CCmdOptionListData::print_usage(const char *name) const
 void CCmdOptionListData::print_version(const char *name_help) const
 {
 	*m_log << name_help << " revision:" << get_revision() << "\n\n"; 
-	*m_log << g_basic_copyright << "\n"; 
+	*m_log << g_basic_copyright1; 
+	*m_log << get_author(); 
+	*m_log << g_basic_copyright2 << "\n"; 
 }
 
 CCmdOptionList::CCmdOptionList(const SProgramDescription& description):
@@ -521,6 +556,7 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t remaining_args, con
 				break;
 			case 1:
                                 // this handles when the option value is attacted to the flag 
+				// like in -bsomevalue
 				opt->set_value(arg);
 				bool_options_only = false;
 				break;
@@ -529,13 +565,28 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t remaining_args, con
 						       "parameter for multiple parameters");
 			}
 		}else {
-			cvdebug() << "remaining_args = " << remaining_args << ", but " << nargs << " needed\n"; 
+			cvdebug() << "remaining_args = " << remaining_args << ", and " << nargs << " needed\n"; 
 			if (remaining_args < nargs ) {
 				throw create_exception<invalid_argument>("Option -", opt->get_short_option(), 
 							       ": requires ", nargs, " arguments, but only ", 
 							       remaining_args, " remaining.");
 			}
-			opt->set_value(args[0]);
+
+			switch (nargs) {
+			case 0:
+				opt->set_value(NULL);
+				bool_options_only = true;
+				break;
+			case 1:
+                                // this handles when the option value is not attacted to the flag 
+				// like in -b somevalue
+				opt->set_value(args[0]);
+				bool_options_only = false;
+				break;
+			default:// actually currently multiple 
+				throw logic_error("Command line parameters that take more then"
+						  " one parameter are not yet implemented");
+			}
 			return nargs;
 		}
 	} while (*arg && bool_options_only);
@@ -572,6 +623,24 @@ CCmdOptionList::parse(size_t argc, char *args[], const string& additional_type,
 	m_impl->m_free_parametertype = additional_type; 
 	return do_parse(argc, (const char **)args, true, additional_help);
 }
+
+struct TBBTaskScheduler {
+	static const tbb::task_scheduler_init& initialize(int max_threads);
+}; 
+
+const tbb::task_scheduler_init& TBBTaskScheduler::initialize(int max_threads)
+{
+#if TBB_PREFERE_ONE_THREAD
+	if (max_threads > 1)
+		cvwarn() << "You use an old version (interface="
+			 << TBB_INTERFACE_VERSION 
+			 << ") of Intel Threading Building Blocks."
+			 << " This version may hang og powerpc when using more than one thread.\n"; 
+#endif 
+	static tbb::task_scheduler_init init(max_threads);
+	return init; 
+}
+
 
 CCmdOptionList::EHelpRequested
 CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional, 
@@ -649,7 +718,7 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 		m_impl->print_version(name_help);
 		return hr_version;
 	} else if (m_impl->copyright) {
-		::print_full_copyright(name_help);
+		::print_full_copyright(name_help, m_impl->get_author());
 		return hr_copyright;
 	}
 
@@ -673,9 +742,16 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 			msg << " '--" << *i << "' "; 
 		msg << "\n"; 
 		msg << "run '" << args[0] << " --help' for more information\n"; 
-		msg << g_basic_copyright; 
+		msg << g_basic_copyright1; 
+		msg << m_impl->get_author(); 
+		msg << g_basic_copyright2; 
 		throw invalid_argument(msg.str());
 	}
+	
+	// the return value and info output is mostly used to make sure the compiler 
+	// doesn't optimize anything away. 
+	const auto& ts  = TBBTaskScheduler::initialize(m_impl->max_threads); 
+	cvinfo() << "Task scheduler set to " << (ts.is_active() ? "active":"inactive") << "\n"; 
 	return hr_no; 
 }
 

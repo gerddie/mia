@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -68,29 +68,6 @@ P3DTransformation C3DGridTransformation::do_upscale(const C3DBounds& size) const
 const C3DBounds& C3DGridTransformation::get_size() const
 {
 	return m_field.get_size();
-}
-
-void C3DGridTransformation::add(const C3DTransformation& a)
-{
-	if (a.get_size() != get_size()) {
-		throw create_exception<invalid_argument>("C3DGridTransformation::add: trying to add a transformation "
-							 "with domain ", a.get_size(), 
-							 " to a transformation with domain ", get_size());
-	}
-
-
-	C3DFVectorfield help(m_field);
-	C3DFVectorfield::iterator i = m_field.begin();
-	auto u = a.begin();
-
-	for (size_t z = 0; z < a.get_size().z; ++z)  {
-		for (size_t y = 0; y < a.get_size().y; ++y)  {
-			for (size_t x = 0; x < a.get_size().x; ++x, ++i, ++u)  {
-				C3DFVector xi = C3DFVector(x, y, z) - *u;
-				*i = help.get_interpol_val_at(*u) +  xi ;
-			}
-		}
-	}
 }
 
 void C3DGridTransformation::update(float step, const C3DFVectorfield& a)

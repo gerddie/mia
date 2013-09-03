@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -253,21 +253,6 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 	BOOST_CHECK_CLOSE(params[3], 4.0, 0.1);
 	BOOST_CHECK_CLOSE(params[4], -1.0, 0.1);
 	BOOST_CHECK_CLOSE(params[5], -2.0, 0.1);
-}
-
-BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
-{
-	C2DFVector test = trans(C2DFVector(2,1));
-	cvinfo() << test << "\n";
-	test = trans(test);
-	cvinfo() << test << "\n";
-	trans.add(trans);
-
-	C2DFVector probe = trans(C2DFVector(2,1));
-
-	cvinfo() << probe << "\n";
-	BOOST_CHECK_CLOSE(probe.x, test.x, 0.1);
-	BOOST_CHECK_CLOSE(probe.y, test.y, 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE (test_upscale, AffineGrad2ParamFixtureAffine)

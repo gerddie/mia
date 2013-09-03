@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/fifotestfixture.hh>
@@ -114,16 +113,6 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_label , fifof_Fixture )
 	C2DLabelStackFilter filter("", shape ); 
 	call_test(filter);
 
-	auto jmap = filter.get_joints(); 
-	BOOST_CHECK_EQUAL(jmap.size(), 2u); 
-
-	auto val_pair = jmap.begin(); 
-	BOOST_CHECK_EQUAL(val_pair->first, 2); 
-	BOOST_CHECK_EQUAL(val_pair->second, 5); 
-	++val_pair; 
-	BOOST_CHECK_EQUAL(val_pair->first, 3); 
-	BOOST_CHECK_EQUAL(val_pair->second, 5); 
-
 }
 
 class C1n2DShape: public C2DShape {
@@ -132,6 +121,34 @@ public:
 		insert(C2DShape::Flat::value_type( 0, 0));
 	}
 };
+
+
+BOOST_AUTO_TEST_CASE( test_labelremap ) 
+{
+	CLabelRemapper remap; 
+
+	remap.add_pair(1,2); 
+	remap.add_pair(2,3); 
+	remap.add_pair(3,4); 
+	remap.add_pair(13,7); 
+	remap.add_pair(13,1); 
+	
+	
+	CLabelMap result = remap.get_map(); 
+	
+	BOOST_CHECK_EQUAL(result.size(), 5u); 
+	BOOST_REQUIRE(result.find(3) != result.end()); 
+	BOOST_REQUIRE(result.find(2) != result.end()); 
+	BOOST_REQUIRE(result.find(4) != result.end()); 
+	BOOST_REQUIRE(result.find(7) != result.end()); 
+	BOOST_REQUIRE(result.find(13) != result.end()); 
+	BOOST_CHECK_EQUAL(result[2], 1); 
+	BOOST_CHECK_EQUAL(result[3], 1); 
+	BOOST_CHECK_EQUAL(result[4], 1); 
+	BOOST_CHECK_EQUAL(result[7], 1); 
+	BOOST_CHECK_EQUAL(result[13], 1); 
+
+}	
 
 
 BOOST_AUTO_TEST_CASE( test_overflow ) 

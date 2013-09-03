@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -24,7 +24,8 @@
 #include <mia/3d/interpolator.hh>
 #include <mia/3d/transform.hh>
 #include <mia/3d/ppmatrix.hh>
-#include <mia/core/scaler1d.hh>
+#include <mia/3d/splinetransformpenalty.hh>
+
 
 NS_MIA_BEGIN
 
@@ -34,8 +35,9 @@ public:
 	using C3DTransformation::operator ();
 
 	C3DSplineTransformation(const C3DSplineTransformation& org);
-	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf);
-	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf);
+	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf, P3DSplineTransformPenalty penalty);
+	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DFVector& c_rate, 
+				const C3DInterpolatorFactory& ipf, P3DSplineTransformPenalty penalty);
 	~C3DSplineTransformation(); 
 
 	void set_coefficients(const C3DFVectorfield& field);
@@ -78,7 +80,6 @@ public:
 
 	virtual C3DTransformation *invert() const;
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
-	virtual void add(const C3DTransformation& a);
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C3DFVectorfield& a);
 	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
@@ -99,6 +100,10 @@ public:
 
 	C3DBounds get_enlarge() const; 
 private:
+
+	double do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
+	double do_get_energy_penalty() const;
+	bool do_has_energy_penalty() const; 
 	
 	C3DFVector sum(const C3DBounds& start, 
 		       const std::vector<double>& xweights, 
@@ -141,6 +146,8 @@ private:
 	PSplineBoundaryCondition m_z_boundary; 
 	
 	mutable CMutex m_mutex; 
+
+	P3DSplineTransformPenalty m_penalty; 
 };
 
 NS_MIA_END

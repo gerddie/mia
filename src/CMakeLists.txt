@@ -1,7 +1,8 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
 #
-# This program is free software; you can redistribute it and/or modify
+# MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
@@ -12,11 +13,10 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 #
-#
+
 ADD_CUSTOM_TARGET(manpages)
 
 ADD_CUSTOM_TARGET(XMLDOC)
@@ -115,7 +115,7 @@ DEFEXE(3dimagecombine     mia3d )
 DEFEXE(3dimagecreator     mia3d )
 DEFEXE(3dimagefilterstack mia3d )
 DEFEXE(raw2volume         mia3d )
-#DEFEXE(3dnrreg            mia3d )
+DEFEXE(3dcrispsegment     mia3d )
 DEFEXE(3ddeform           mia3d )
 DEFEXE(3dforce            mia3d )
 DEFEXE(3dfuzzysegment     mia3d )
@@ -132,6 +132,7 @@ DEFEXE(3dmaskseeded       mia3d )
 DEFEXE(3dfield2norm       mia3d )
 DEFEXE(3dimageselect      mia3d )
 DEFEXE(3dbrainextractT1   mia3d )
+DEFEXE(3dbinarycombine   mia3d )
 DEFEXE(3dimageaddattributes  mia3d )
 DEFEXE(3dvectorfieldcreate  mia3d )
 DEFEXE(3dserial-nonrigid  mia3d )
@@ -144,10 +145,14 @@ DEFEXE(3dvf2transform mia3d )
 DEFEXE(3dvfcompare mia3d )
 DEFEXE(3deval-transformquantity mia3d)
 DEFEXE(3dcost-translatedgrad mia3d)
+DEFEXE(3dsegment-ahmed    mia3d)
+DEFEXE(3dcombine-mr-segmentations mia3d)
+
+DEFEXE(3dlandmarks-transform mia3d)
+DEFEXE(3dlandmarks-distances mia3d)
 
 DEFEXE(plugin-help miamesh )
-DEFEXE(distance-mesh2mask miamesh )
-DEFEXE(distance-mesh-to-mask miamesh )
+DEFEXE(meshdistance-to-stackmask miamesh )
 DEFEXE(meshfilter miamesh )
 
 ADD_EXECUTABLE(mia-test-plugins-as-installed test_plugins_as_installed.cc)  

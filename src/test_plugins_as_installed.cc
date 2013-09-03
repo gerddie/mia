@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -49,9 +49,11 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", "erode", "gauss", "gradnorm", 
-		"growmask", "invert", "kmeans",  "label", "mask", "median", "mlv", "open",  "reorient", "resize",
-		"sandp", "scale", "selectbig", "sepconv", "sws", "ws" 
+		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", 
+		"erode", "gauss", "gradnorm", "growmask", "invert", "isovoxel", "kmeans",  
+		"label", "load", "mask", "median", "mlv", "open",  "reorient", "resize",
+		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", 
+		"transform", "ws" 
 	}; 
 	test(C3DFilterPluginHandler::instance().get_set(), test_data); 
 }
@@ -59,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DImageCombinerPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"labelxmap"
+	        "absdiff", "add", "sub", "mul", "div"
 	}; 
 	test(C3DImageCombinerPluginHandler::instance().get_set(), test_data); 
 }
@@ -69,7 +71,10 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageIOPluginHandler,PluginTestFixture)
 	set<string> test_data = {
 		"analyze",  
 		"inria", 
+		"hdf5", 
+		"mhd", 
 		"vff", 
+		"vti", 
 		"vtk", 
 		"dicom", 
 		"vista", 
@@ -97,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageCreatorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DTransformCreatorHandler,PluginTestFixture) 
 {
 	set<string> test_data = { 
-		"affine", "rigid", "spline", "translate"
+		"affine", "rigid", "spline", "translate", "rotation", "vf"
 	}; 
 	test(C3DTransformCreatorHandler::instance().get_set(), test_data); 
 }
@@ -162,7 +167,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DRegModelPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_CMeshIOPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = { 
-		"datapool", "off", "vista", "ply", "stl"
+		"datapool", "off", "vista", "ply", "stl", "vtk"
 	}; 
 
 	test(CMeshIOPluginHandler::instance().get_set(), test_data); 
@@ -228,7 +233,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DImageCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DImageIOPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data =  {
-		"bmp", "exr", "datapool", "dicom", "png", "raw", "tif", "vista"
+		"bmp", "exr", "datapool", "dicom", "jpg", "png", "raw", "tif", "vista"
 	}; 
 	test(C2DImageIOPluginHandler::instance().get_set(), test_data); 
 }
@@ -254,9 +259,10 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture)
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", 
 		"convert", "close", "crop", "dilate", "distance", 
 		"downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
-		"label", "labelmap", "mask", "mean", "median", "mlv", 
-		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", "scale", "selectbig", 
-		"sepconv", "shmean", "sort-label", "sws", "tee", "thinning", "thresh", "ws"
+		"label", "labelmap", "load", "mask", "mean", "median", "mlv", 
+		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", 
+		"scale", "selectbig", "sepconv", "shmean", "sort-label", "sws", 
+		"tee", "thinning", "thresh", "transform", "ws"
 	}; 
 	test(C2DFilterPluginHandler::instance().get_set(), test_data); 
 }

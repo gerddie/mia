@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -60,9 +60,11 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 {
 	// collect series 
 	// \todo maybe one should also look for SeriesNumber
-	typedef map<int, SImage> AquisitionSeries; 
+	typedef map<int, SImage> InstanceSeries; 
+	typedef map<int, InstanceSeries> AquisitionSeries; 
 	map<float, AquisitionSeries> series; 
 	int aq_number = 0; 
+	int is_number = 0; 
 	for (auto i = images.begin(); i != images.end(); ++i) {
 		float slice_location = 0.0;
 		
@@ -85,19 +87,36 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 			++aq_number; 
 		}
 		cvmsg() << "Add aquisition " << aq_number << "\n"; 
-		if (aqs.find(aq_number) != aqs.end()) {
-			cverr() << "Will ignore  '" << i->second 
-				<< "' because '" << aqs.find(aq_number)->second.second  
-				<< "' has same aquisition number and slice location\n";
-		}else
-			aqs[aq_number] = *i; 
+
+		if (aqs.find(aq_number) == aqs.end()) {
+			aqs[aq_number] = InstanceSeries(); 
+		}
+
+		
+		InstanceSeries& is = aqs[aq_number]; 
+		auto pInstanceNumber = dynamic_cast<const CIntAttribute *>(i->first->get_attribute(IDInstanceNumber).get());
+		if (pInstanceNumber) {
+			is_number = *pInstanceNumber; 
+		}else {
+			++is_number; 
+		}
+		cvmsg() << "Add instance " << is_number << "\n"; 
+
+		if (is.find(is_number) != is.end()) {
+			cvwarn() << "got duplicate slice aquisition/instance/location = " 
+				 << aq_number << "/" << is_number << "/" << slice_location
+				 << ", Ignoring this slice\n"; 
+		}else {
+			is[is_number] = *i;
+		}
 	}
 	// copy series to output vectors
 	vector<C2DImageVectorWithName> result; 
 	for (auto loc = series.begin(); loc != series.end(); ++loc) {
 		C2DImageVectorWithName aqseries; 
-		for (auto slice = loc->second.begin(); slice != loc->second.end(); ++slice)
-			aqseries.push_back(slice->second);
+		for (auto aq = loc->second.begin(); aq != loc->second.end(); ++aq)
+			for (auto slice = aq->second.begin(); slice != aq->second.end(); ++slice)
+				aqseries.push_back(slice->second);
 		result.push_back(aqseries); 
 	}
 	return result; 

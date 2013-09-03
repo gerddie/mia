@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -34,7 +34,6 @@
 #include <mia/2d/SegSetWithImages.hh>
 
 
-#include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
@@ -52,8 +51,9 @@ const SProgramDescription g_description = {
 	{pdi_example_descr, "Register the perfusion series given in segment.set by optimizing a "
 	 "spline based transformation with a coefficient rate of 16 pixel using Mutual Information "
 	 "and penalize the transformation by using divcurl with aweight of 2.0."}, 
-	{pdi_example_code, "-i segment.set -o registered.set -F spline:rate=16 "
-	 "image:cost=mi,weight=2.0 divcurl:weight=2.0"}
+	{pdi_example_code, "-i segment.set -o registered.set \n"
+	                   "    -f spline:rate=16,penalty=[divcurl:weight=2.0] "
+	 "image:cost=mi,weight=2.0"}
 }; 
 
 C2DFullCostList create_costs(const vector<string>& costs, int idx)
@@ -136,8 +136,7 @@ int do_main( int argc, char *argv[] )
 	int reference_param = -1; 
 	int skip = 0; 
 	
-	int max_threads = task_scheduler_init::automatic;
-	
+
 	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO"); 
@@ -146,7 +145,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( out_filename, "out-file", 'o', 
 				    "output perfusion data set", CCmdOption::required));
 	options.add(make_opt( registered_filebase, "out-filebase", 0, "file name basae for registered files, file "
-			      "Wtype is deducted from the image file type in the input data set.")); 
+			      "type is deducted from the image file type in the input data set.")); 
 
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( skip, "skip", 'k', "Skip images at the beginning of the series"));
@@ -155,16 +154,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
-	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
-			     "This number should be lower or equal to the number of processing cores in the machine"
-			     " (default: automatic estimation)."));  
-	
-
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
-	task_scheduler_init init(max_threads);
 	
 	CSegSetWithImages  input_set(in_filename, true);
 	C2DImageSeries input_images = input_set.get_images(); 

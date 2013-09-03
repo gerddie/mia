@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -292,7 +292,7 @@ void swap_endian(T3DImage<T>& image)
 }
 
 
-template <typename T, bool flipped>
+template <typename T>
 struct do_read_image {
 	static C3DImage * apply(const C3DBounds& size, CInputFile& data_file, bool do_swap_endian) {
 		T3DImage<T> *result = new T3DImage<T>(size);
@@ -304,38 +304,7 @@ struct do_read_image {
 	}
 };
 
-template <typename T>
-struct do_read_image<T, true> {
-	static C3DImage * apply(const C3DBounds& size, CInputFile& data_file, bool do_swap_endian) {
-		T3DImage<T> *result = new T3DImage<T>(size);
-		for (size_t z = size.z; z > 0; --z)
-			if (fread(&(*result)(0,0,z - 1), sizeof(T), result->size(), data_file) != result->size())
-				throw runtime_error("Analyze: unable to read data");
-		if (do_swap_endian)
-			swap_endian(*result);
-		return result;
-	}
-};
 
-
-#if 0
-template <>
-struct do_read_image<bool> {
-	static C3DImage * apply(const C3DBounds& size, CInputFile& data_file, bool swap_endian) const {
-
-
-		T3DImage<bool> *result = new T3DImage<bool>(size);
-		if (fread(&(*result)(0,0,0), sizeof(T), result->size(), data_file) != result->size())
-			throw runtime_error("Analyze: unable to read data");
-		if (swap_endian)
-			swap_endian(*result);
-		return result;
-	}
-};
-
-#endif
-
-template <bool flipped>
 C3DImage *CAnalyze3DImageIOPlugin::read_image(const C3DBounds& size, short datatype, CInputFile& data_file) const
 {
 	if (datatype & 128)
@@ -343,11 +312,11 @@ C3DImage *CAnalyze3DImageIOPlugin::read_image(const C3DBounds& size, short datat
 
 	switch (datatype & 0xFF) {
 //	case DT_BINARY       :return do_read_image<bool>::apply(size, data_file, m_swap_endian);
-	case DT_UNSIGNED_CHAR:return do_read_image<unsigned char, flipped>::apply(size, data_file, m_swap_endian);
-	case DT_SIGNED_SHORT :return do_read_image<signed short, flipped>::apply(size, data_file, m_swap_endian);
-	case DT_SIGNED_INT   :return do_read_image<signed int, flipped>::apply(size, data_file, m_swap_endian);
-	case DT_FLOAT        :return do_read_image<float, flipped>::apply(size, data_file, m_swap_endian);
-	case DT_DOUBLE       :return do_read_image<double, flipped>::apply(size, data_file, m_swap_endian);
+	case DT_UNSIGNED_CHAR:return do_read_image<unsigned char>::apply(size, data_file, m_swap_endian);
+	case DT_SIGNED_SHORT :return do_read_image<signed short>::apply(size, data_file, m_swap_endian);
+	case DT_SIGNED_INT   :return do_read_image<signed int>::apply(size, data_file, m_swap_endian);
+	case DT_FLOAT        :return do_read_image<float>::apply(size, data_file, m_swap_endian);
+	case DT_DOUBLE       :return do_read_image<double>::apply(size, data_file, m_swap_endian);
 	default:
 		stringstream msg;
 		msg << "Analyze: unsupported image type:" << datatype;
@@ -447,29 +416,31 @@ CAnalyze3DImageIOPlugin::PData CAnalyze3DImageIOPlugin::do_load(const string&  f
 	while (num_img > 0) {
 		--num_img;
 		E3DImageOrientation orientation = ior_unknown;
-		bool unflipped = false;
 		switch ( hdr.hist.orient ) {
-		case ao_transverse_unflipped: unflipped = true;
-		case ao_transverse_flipped: orientation = ior_axial;
+		case ao_transverse_unflipped: orientation = ior_axial;
+			break; 
+		case ao_transverse_flipped: orientation = ior_axial_flipped;
 			break;
-		case ao_coronal_unflipped: unflipped = true;
-		case ao_coronal_flipped:    orientation = ior_coronal;
+		case ao_coronal_unflipped: orientation = ior_coronal;
+			break; 
+		case ao_coronal_flipped:   orientation = ior_coronal_flipped ;
 			break;
-		case ao_saggital_unflipped: unflipped = true;
-		case ao_saggital_flipped:    orientation = ior_saggital;
+		case ao_saggital_unflipped: orientation = ior_saggital;
+			break; 
+		case ao_saggital_flipped:   orientation = ior_saggital_flipped;
 			break;
 		default:
-			unflipped = true;
 			orientation = ior_unknown;
 		}
-		C3DImage *img = unflipped ?
-			read_image<false>(size, hdr.dime.datatype , data_file)
-			:
-			read_image<true>(size, hdr.dime.datatype , data_file);
-
-		P3DImage image(img);
+		if (hdr.dime.vox_offset > 0) {
+			vector<char> junk(hdr.dime.vox_offset); 
+			if (fread(&junk[0], 1, hdr.dime.vox_offset, data_file) != hdr.dime.vox_offset) 
+				throw runtime_error(string("Analyze: unable to read from:") + data_file_name);  
+		}
+		P3DImage image(read_image(size, hdr.dime.datatype , data_file));
 		image->set_voxel_size(voxel);
-		image->set_orientation(orientation);
+		C3DOrientationAndPosition  o(orientation, C3DFVector::_0, C3DFVector::_1 /* voxelsize!! */, Quaternion()); 
+		image->set_orientation(o);
 		result->push_back(image);
 	}
 
@@ -554,17 +525,26 @@ bool CAnalyze3DImageIOPlugin::do_save(const string& fname, const Data& data) con
 	C3DFVector voxel = (*k)->get_voxel_size();
 	EPixelType pixel_type = (*k)->get_pixel_type();
 
-	E3DImageOrientation orient = (*k)->get_orientation();
+	auto orient = (*k)->get_orientation();
 
-	switch (orient) {
+	switch (orient.get_axis_orientation()) {
 	case ior_axial:
 			hdr.hist.orient = ao_transverse_unflipped;
+			break;
+	case ior_axial_flipped:
+			hdr.hist.orient = ao_transverse_flipped;
 			break;
 	case ior_coronal:
 			hdr.hist.orient = ao_coronal_unflipped;
 			break;
+	case ior_coronal_flipped:
+			hdr.hist.orient = ao_coronal_flipped;
+			break;
 	case ior_saggital:
 			hdr.hist.orient = ao_saggital_unflipped;
+			break;
+	case ior_saggital_flipped:
+			hdr.hist.orient = ao_saggital_flipped;
 			break;
 	default:
 		hdr.hist.orient = ao_unknown;

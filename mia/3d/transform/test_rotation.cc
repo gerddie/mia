@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -45,7 +45,7 @@ struct ipfFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_rotation3d, ipfFixture)
 {
-	C3DRotationTransformation t1(C3DBounds(10,20,30), ipf); 
+	C3DRotationTransformation t1(C3DBounds(10,20,30), C3DFVector::_0, ipf); 
 
 	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 3u);
 
@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE(test_rotation3d, ipfFixture)
 	}
 
 
-	C3DRotationTransformation t2(C3DBounds(10,20,30), ipf);
+	C3DRotationTransformation t2(C3DBounds(10,20,30), C3DFVector::_0, ipf);
 	t2.rotate(M_PI / 2.0, 0, 0);
 	C3DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation3d_iterator, ipfFixture)
 {
 	C3DBounds size(10,20,5);
 
-	C3DRotationTransformation t1(size, ipf);
+	C3DRotationTransformation t1(size, C3DFVector::_0, ipf);
 	C3DRotationTransformation::const_iterator ti = t1.begin();
 
 	for (size_t z = 0; z < size.z; ++z)
@@ -123,21 +123,19 @@ BOOST_FIXTURE_TEST_CASE( test_translate_gradient, ipfFixture)
 	field(1,1,1) = C3DFVector(2,6,3);
 	
 	
-	C3DRotationTransformation t1(size, ipf);
+	C3DRotationTransformation t1(size, C3DFVector::_0, ipf);
 
 	
 	
 
 }
 
-
-
 BOOST_FIXTURE_TEST_CASE( test_rotation3d_ranged_iterator, ipfFixture)
 {
 	C3DBounds size(10,20,30);
 	C3DBounds delta(1,2,3); 
 
-	C3DRotationTransformation t1(size, ipf);
+	C3DRotationTransformation t1(size, C3DFVector::_0, ipf);
 	auto ti = t1.begin_range(delta, size - delta);
 
 	for (size_t z = delta.z; z < size.z - delta.z; ++z)
@@ -147,5 +145,87 @@ BOOST_FIXTURE_TEST_CASE( test_rotation3d_ranged_iterator, ipfFixture)
 			}
 
 	BOOST_CHECK(ti == t1.end_range(delta, size - delta));
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rotation3d_rotxcentered_basic, ipfFixture)
+{
+	C3DBounds size(61, 81, 41);
+	C3DRotationTransformation rcrot(size, 
+				    C3DFVector(M_PI * 0.5, 0.0, 0.0),
+				    C3DFVector(0.5,0.5,0.5), ipf);
+
+
+	BOOST_CHECK_CLOSE(rcrot.get_max_transform(), 20.f * sqrtf(10.0f), 0.1);
+
+	C3DFVector x(20,40,30); 
+	
+	auto y = rcrot(x); 
+	
+	BOOST_CHECK_CLOSE(y.x, 20.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.y, 30.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.z, 20.0f, 0.1); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rotation3d_rotzcentered_basic, ipfFixture)
+{
+
+	C3DBounds size(61, 81, 41); 
+	C3DRotationTransformation rcrot(size, 
+				     C3DFVector(0.0, 0.0, M_PI * 0.5),
+				     C3DFVector(0.5,0.5,0.5), ipf); 
+		
+	BOOST_CHECK_CLOSE(rcrot.get_max_transform(), 10.f * sqrtf(50.0f), 0.1);
+
+	C3DFVector x(20,40,30);
+	
+	auto y = rcrot(x);
+	
+	BOOST_CHECK_CLOSE(y.x, 30.0f, 0.1);
+	BOOST_CHECK_CLOSE(y.y, 30.0f, 0.1);
+	BOOST_CHECK_CLOSE(y.z, 30.0f, 0.1);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_rotation3d_rotxcentered_translate_field, ipfFixture)
+{
+	C3DBounds size(31, 21, 21);
+	C3DRotationTransformation rcrot(size, 
+				     C3DFVector(0.02, 0.0, 0.0),
+				     C3DFVector(0.5,0.5,0.5), ipf);
+
+	C3DFVectorfield field(size); 
+	auto ifield = field.begin_range(C3DBounds::_0, size); 
+	for (auto ir = rcrot.begin(); ir != rcrot.end(); ++ir, ++ifield) {
+		*ifield = *ir - C3DFVector(ifield.pos()); 
+	}
+	CDoubleVector grad(rcrot.degrees_of_freedom());
+
+	rcrot.translate(field, grad); 
+	
+	// 32340  = 2 sum_x,y[-10,10]x[-10,10] ( x^2 + y^2 ) 
+	BOOST_CHECK_CLOSE(grad[0], sin(0.02) * 31 * 32340, 0.1 ); 
+	BOOST_CHECK_SMALL(grad[1], 1e-2); 
+	BOOST_CHECK_SMALL(grad[2], 1e-2); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rotation3d_rotycentered_basic, ipfFixture)
+{
+	C3DBounds size(61, 81, 41);
+	C3DRotationTransformation rcrot(size, 
+				    C3DFVector(0.0, M_PI * 0.5, 0.0),
+				    C3DFVector(0.5,0.5,0.5), ipf);
+
+
+	BOOST_CHECK_CLOSE(rcrot.get_max_transform(), 10.f * sqrtf(26.0f), 0.1);
+
+	C3DFVector x(20,40,30); 
+	
+	auto y = rcrot(x); 
+	
+	BOOST_CHECK_CLOSE(y.x, 20.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.y, 40.0f, 0.1); 
+	BOOST_CHECK_CLOSE(y.z, 10.0f, 0.1); 
+	
+	
 }
 

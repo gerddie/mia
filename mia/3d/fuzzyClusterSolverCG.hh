@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -66,8 +66,6 @@ class solve_sCG {
 
   private:
 
-	C3DFImage& __gain;
-
 	double __lambda1;
 	double __lambda2;
 
@@ -105,7 +103,7 @@ class solve_sCG {
 
 	double __r1rho1;   // speichert r1 * rho1
 	double __r2rho2;   // speichert r2 * rho2
-	double __normr, __normr0;
+	double __normr0;
 	double __q, __e, __sprod;
 
 	// minimal residuum

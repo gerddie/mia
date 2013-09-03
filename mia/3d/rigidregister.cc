@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #define VSTREAM_DOMAIN "rigidreg"
 
@@ -124,7 +123,6 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 {
 	assert(src);
 	assert(ref);
-	assert(src->get_size() == ref->get_size());
 
 	P3DTransformation transform;
 
@@ -156,7 +154,7 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 		auto ref_scaled = x_shift && y_shift ? downscaler->filter(*ref) : ref;
 
 		if (transform)
-			transform = transform->upscale(src_scaled->get_size());
+			transform = transform->upscale(ref_scaled->get_size());
 		else {
 			transform = m_transform_creator->create(ref_scaled->get_size());
 			// set initial scale 
@@ -219,7 +217,7 @@ double  C3DRegGradientProblem::do_f(const CDoubleVector& x)
 	++m_feval; 
 	P3DImage temp = apply(x);
 	const double value = m_cost.value(*temp);
-	cvmsg() << "Cost(f="<<m_feval<<",g="<< m_geval <<") = " << value << "\r";
+	cvmsg() << "Cost(f="<<m_feval<<",g="<< m_geval <<") = " << value << "\n";
 	return value;
 }
 
@@ -229,8 +227,8 @@ void    C3DRegGradientProblem::do_df(const CDoubleVector& x, CDoubleVector&  g)
 
 	P3DImage temp = apply(x);
 
-	C3DFVectorfield gradient(m_model.get_size());
-	m_cost.evaluate_force(*temp, 1.0, gradient);
+	C3DFVectorfield gradient(m_transf.get_size());
+	m_cost.evaluate_force(*temp, gradient);
 	m_transf.translate(gradient, g);
 }
 
@@ -239,11 +237,11 @@ double  C3DRegGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 	++m_geval; 
 	++m_feval;
 	P3DImage temp = apply(x);
-	C3DFVectorfield gradient(m_model.get_size());
-	const double value = m_cost.evaluate_force(*temp, 1.0, gradient);
+	C3DFVectorfield gradient(m_transf.get_size());
+	const double value = m_cost.evaluate_force(*temp, gradient);
 	m_transf.translate(gradient, g);
 
-	cvmsg() << "Cost(f="<<m_feval<<",g="<< m_geval <<") = " << value << "\r";
+	cvmsg() << "Cost(f="<<m_feval<<",g="<< m_geval <<") = " << value << "\n";
 	return value;
 }
 

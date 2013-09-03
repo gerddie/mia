@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -61,17 +61,27 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string out_type;
 	bool help_plugins = false;
+
+	size_t startid = 0; 
+	size_t endid = numeric_limits<int>::max(); 
 		
 	const C2DFilterPluginHandler::Instance& filter_plugins = C2DFilterPluginHandler::instance();
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 		
 	
 	CCmdOptionList options(g_general_help);
+
+	options.set_group("File IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name base, the file type is set "
 			      " accurding to the 'type' option", CCmdOption::required, &imageio));
 	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',"output file type, if "
 			      "not given the input type is used"));
+
+	options.set_group("Processing1"); 
+	options.add(make_opt(startid, "start", 's', "first possible number of file number range to be filtered")); 
+	options.add(make_opt(endid, "end", 'e', "last possible number of file number range to be filtered")); 
+	
 		
 	options.set_group(g_help_optiongroup); 
 	options.add(make_help_opt( "help-filters", 0,
@@ -125,14 +135,17 @@ int do_main( int argc, char *argv[] )
 		filters.push_back(filter);
 	}
 
-	size_t start_filenum = 0;
-	size_t end_filenum  = 0;
+	size_t start_filenum = startid;
+	size_t end_filenum  = endid;
 	size_t format_width = 0;
 
 	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
 	if (start_filenum >= end_filenum)
 		throw invalid_argument(string("no files match pattern ") + src_basename);
 
+	if (end_filenum > endid) 
+		end_filenum = endid; 
+	
 	char new_line = cverb.show_debug() ? '\n' : '\r';
 #ifndef WIN32
 	time_t start_time = time(NULL);

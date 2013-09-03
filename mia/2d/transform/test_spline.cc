@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -42,7 +42,7 @@ struct TransformSplineFixture {
 		kernel(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 		range(33, 65),
 		r(range.x - 1, range.y - 1),
-		stransf(range, kernel, C2DInterpolatorFactory("bspline:d=3", "mirror")),
+		stransf(range, kernel, C2DInterpolatorFactory("bspline:d=3", "mirror"), P2DSplineTransformPenalty()),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y)
 	{
 		coeff_shift = kernel->get_active_halfrange() - 1; 
@@ -202,8 +202,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 	cvdebug() << fscale << "\n";
 	P2DTransformation  stransf_upscaled = stransf.upscale(new_range);
 
-	stransf_upscaled->reinit();
-
 	C2DFVector test2(15.4, 20.3);
 
 	C2DFVector result2 = stransf_upscaled->apply(fscale * test2);
@@ -214,22 +212,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 }
 #endif
 
-
-BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
-{
-	stransf.reinit();
-	C2DFVector testx(20.4, 30.8);
-
-	C2DFVector r1( testx.x - fx(testx.x, testx.y), testx.y - fy(testx.x, testx.y));
-	C2DFVector r2( r1.x - fx(r1.x,r1.y), r1.y -fy(r1.x, r1.y));
-
-	stransf.add(stransf);
-	stransf.reinit();
-	C2DFVector result = stransf(testx);
-	BOOST_CHECK_CLOSE(result.x, r2.x, 0.2);
-	BOOST_CHECK_CLOSE(result.y, r2.y, 0.2);
-
-}
 
 BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineFixture )
 {
@@ -372,7 +354,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 		}
 
 	stransf.update(2.0, update);
-	stransf.reinit();
 
 	C2DFVector testx(20.4, 42.4);
 	C2DFVector result = stransf.apply(testx);
@@ -479,7 +460,7 @@ BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 	PSplineKernel kernel(CSplineKernelPluginHandler::instance().produce("bspline:d=3")); 
 	C2DBounds size(20, 32);
 	C2DFVector c_rate(2.5, 3.2);
-	C2DSplineTransformation  stransf(size, kernel, c_rate, 	C2DInterpolatorFactory(kernel, "mirror"));
+	C2DSplineTransformation  stransf(size, kernel, c_rate, 	C2DInterpolatorFactory(kernel, "mirror"), P2DSplineTransformPenalty());
 
 	C2DBounds gridsize = stransf.get_coeff_size();
 	BOOST_CHECK_EQUAL(gridsize.x, 10u);
@@ -597,7 +578,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(kernel, "mirror")); 
 
-	C2DSplineTransformation trans(size, kernel, *ipf);
+	C2DSplineTransformation trans(size, kernel, *ipf, P2DSplineTransformPenalty());
 
 	P2DImage src(new C2DFImage(size, src_image_init));
 	C2DFVectorfield field(C2DBounds(5,4)); 
@@ -688,7 +669,7 @@ struct TransformSplineFixtureFieldBase {
 						*produce_spline_boundary_condition("mirror"), 
 						*produce_spline_boundary_condition("mirror"))), 
 		range(16, 16),
-		stransf(range, kernel, *ipf),
+		stransf(range, kernel, *ipf, P2DSplineTransformPenalty()),
 		scale(1.0 / range.x, 1.0 / range.y)
 	{
 
@@ -705,7 +686,6 @@ struct TransformSplineFixtureFieldBase {
 			}
 
 		stransf.set_coefficients(field);
-		stransf.reinit();
 	}
 	C2DBounds size;
 	C2DFVectorfield field;
@@ -756,7 +736,7 @@ BOOST_AUTO_TEST_CASE (test_spline_set_parameter)
 	C2DBounds size(20,30); 
 	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds)); 
 	PSplineKernel kernel(CSplineKernelPluginHandler::instance().produce("bspline:d=3")); 
-	C2DSplineTransformation t(size, kernel, C2DFVector(5.0,5.0), *ipf);
+	C2DSplineTransformation t(size, kernel, C2DFVector(5.0,5.0), *ipf, P2DSplineTransformPenalty());
 	auto params = t.get_parameters();
 	
 	params[0] = 1.0; 
@@ -776,7 +756,7 @@ BOOST_AUTO_TEST_CASE (test_spline_set_parameter)
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
 	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds)); 
-	C2DSplineTransformation t(size, kernel, C2DFVector(5.0,5.0), *ipf);
+	C2DSplineTransformation t(size, kernel, C2DFVector(5.0,5.0), *ipf, P2DSplineTransformPenalty());
 	
 
 	auto params = t.get_parameters();
@@ -915,6 +895,33 @@ double Cost2DMock::ref_value(const C2DFVector& x)const
 	return exp( - (p.x * p.x + p.y * p.y) / m_r); 
 }
 
+BOOST_AUTO_TEST_CASE(check_small_range_throw) 
+{
+	BOOST_CHECK_THROW(C2DSplineTransformation(C2DBounds(10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C2DFVector(10,2),  C2DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P2DSplineTransformPenalty()), invalid_argument); 
+
+	BOOST_CHECK_THROW(C2DSplineTransformation(C2DBounds(10,10), 
+						  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+						  C2DFVector(2,10),  C2DInterpolatorFactory("bspline:d=3", "mirror"), 
+						  P2DSplineTransformPenalty()), invalid_argument); 
+
+}
+
+
+BOOST_AUTO_TEST_CASE(check_small_field_throw) 
+{
+	C2DSplineTransformation t(C2DBounds(10,10), 
+				  CSplineKernelPluginHandler::instance().produce("bspline:d=3"), 
+				  C2DInterpolatorFactory("bspline:d=3", "mirror"), 
+				  P2DSplineTransformPenalty()); 
+	
+		
+	BOOST_CHECK_THROW(t.set_coefficients(C2DFVectorfield(C2DBounds(1,10))), invalid_argument); 
+	BOOST_CHECK_THROW(t.set_coefficients(C2DFVectorfield(C2DBounds(10,1))), invalid_argument); 
+
+}
 
 
 

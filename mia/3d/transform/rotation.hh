@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -32,15 +32,10 @@ NS_MIA_BEGIN
 class C3DRotationTransformation;
 class EXPORT_3D C3DRotationTransformation : public C3DTransformation {
 public:
-	enum EParamPosition {
-		pp_rotate_xy = 0,
-		pp_rotate_xz,
-		pp_rotate_yz,
-	};
 
-
-	C3DRotationTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
-	C3DRotationTransformation(const C3DBounds& size, const C3DFVector&  rotation, const C3DInterpolatorFactory& ipf);
+	C3DRotationTransformation(const C3DBounds& size, const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf);
+	C3DRotationTransformation(const C3DBounds& size, const C3DFVector& rotation, 
+				  const C3DFVector& relative_rot_center, const C3DInterpolatorFactory& ipf);
 
 	C3DRotationTransformation(const C3DRotationTransformation& other);
 	C3DRotationTransformation& operator =(const C3DRotationTransformation& other);
@@ -78,7 +73,6 @@ public:
 	virtual const C3DBounds& get_size() const;
 	virtual C3DTransformation *invert() const;
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
-	virtual void add(const C3DTransformation& a);
 	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C3DFVectorfield& a);
@@ -101,11 +95,14 @@ public:
 private:
 	virtual C3DTransformation *do_clone() const;
 	void evaluate_matrix() const;
-
-
+	void initialize(); 
+		
 	mutable std::vector<double> m_t;
 	C3DBounds m_size;
 	C3DFVector m_rotation;
+	C3DFVector m_relative_rot_center;
+	C3DFVector m_rot_center;
+	mutable C3DFVector m_shift; 
 	mutable bool m_matrix_valid;
 	mutable CMutex m_mutex; 
 };

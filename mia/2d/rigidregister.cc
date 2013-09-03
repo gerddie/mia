@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -210,15 +210,20 @@ void    C2DRegGradientProblem::do_df(const CDoubleVector& x, CDoubleVector&  g)
 	P2DImage temp = apply(x);
 
 	C2DFVectorfield gradient(m_model.get_size());
-	m_cost.evaluate_force(*temp, -1.0, gradient);
+	m_cost.evaluate_force(*temp, gradient);
+	transform(gradient.begin(), gradient.end(), gradient.begin(), 
+		  [](const C2DFVector& x) {return -1.0f * x;}); 
 	m_transf.translate(gradient, g);
+	
 }
 
 double  C2DRegGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 {
 	P2DImage temp = apply(x);
 	C2DFVectorfield gradient(m_model.get_size());
-	double result = m_cost.evaluate_force(*temp, -1.0, gradient);
+	double result = m_cost.evaluate_force(*temp, gradient);
+	transform(gradient.begin(), gradient.end(), gradient.begin(), 
+		  [](const C2DFVector& x) {return -1.0f * x;}); 
 	m_transf.translate(gradient, g);
 	return result;
 }

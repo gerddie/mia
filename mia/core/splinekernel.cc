@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -29,6 +29,7 @@
 #include <cassert>
 #include <iomanip>
 #include <limits>
+#include <miaconfig.h>
 #include <mia/core/export_handler.hh>
 #include <mia/core/splinekernel.hh>
 #include <mia/core/errormacro.hh>
@@ -45,8 +46,8 @@
 #include <emmintrin.h>
 #endif
 
-
 #define USE_FASTFLOOR
+
 NS_MIA_BEGIN
 using namespace std;
 
@@ -150,7 +151,7 @@ void CSplineKernel::get_uncached(double x, SCache& cache)const
 const double _double2fixmagic = 68719476736.0*1.5;     //2^36 * 1.5,  (52-_shiftamt=36) uses limited precisicion to floor
 const int    _shiftamt        = 16;                    //16.16 fixed point representation,
 
-#if BIGENDIAN_
+#if WORDS_BIGENDIAN
 	#define iexp_				0
 	#define iman_				1
 #else

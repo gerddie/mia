@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -22,6 +22,7 @@
 #define mia_2drgbimageio_hh
 
 #include <vector>
+#include <mia/2d/defines2d.hh>
 #include <mia/2d/vector.hh>
 #include <mia/core/iodata.hh>
 #include <mia/core/ioplugin.hh>
@@ -40,7 +41,7 @@ NS_MIA_BEGIN
 */
 
 
-class CRGB2DImage : public mia::CIOData{
+class EXPORT_2D CRGB2DImage : public mia::CIOData{
 public: 
 	/// unifying pointer definition for this class. 
 	typedef std::shared_ptr<CRGB2DImage> Pointer; 
@@ -105,7 +106,7 @@ typedef C2DRGBImageIOPluginPluginHandler::Instance::DataKey C2DRGBImageDataKey;
    \returns true if the image was saved successfully. If the saving failes, 
    the function may also throw some exception providing an error message. 
  */
-bool save_image(const std::string& filename, const CRGB2DImage& image); 
+bool EXPORT_2D save_image(const std::string& filename, const CRGB2DImage& image); 
 
 NS_MIA_END
 

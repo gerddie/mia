@@ -1,22 +1,22 @@
 /* -*- mia-c++  -*-
-**
-** Copyright (C) 1999 Max-Planck-Institute of Cognitive Neurosience
-**                    Gert Wollny <wollnyAtcbs.mpg.de>
-**  
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU Lesser Public License as published by
-** the Free Software Foundation; either version 2.1 of the License, or
-** (at your option) any later version.
-** 
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU Lesser Public License for more details.
-** 
-** You should have received a copy of the GNU Lesser Public License
-** along with this program; if not, write to the Free Software 
-** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ *
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ *
+ * MIA is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -40,7 +40,7 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 				gfloat coarsen_method_factor);
 
 
-CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface);
+CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface, bool reverse_winding);
 
 const SProgramDescription g_description = {
         {pdi_group, "Creation, analysis, and filtering of triangular 3D meshes"}, 
@@ -61,6 +61,7 @@ int do_main (int argc, char * argv[])
 
 	float iso_value = 128.0f; 
 	bool use_border = false; 
+	bool reverse_winding = false; 
 	
 	gint max_faces = -1; 
 	gint max_edges = -1; 
@@ -77,13 +78,17 @@ int do_main (int argc, char * argv[])
 	options.set_group("Image options"); 
 	options.add(make_opt(  iso_value, "iso-value", 's', "iso-value of iso surface to be extracted")); 
 	options.add(make_opt(  use_border, "bordered", 'b', "put an empty border around the image to ensure a closed surface")); 
+
 	
-	options.set_group("Mesh optimization"); 
+	options.set_group("Mesh options"); 
 	options.add(make_opt(  max_faces, "max-faces", 'f', "maximum number of Faces,")); 
 	options.add(make_opt(  max_edges, "max-edges", 'e', "maximum number of Edges")); 
 	options.add(make_opt(  max_cost, "max-cost", 'c', "maximum cost for edge collaps")); 
 	options.add(make_opt(  factor, "ratio", 'r', "ratio of faces(edges) to target number, at which  "
 			       "the optimization changes from edge-length to volume-optimized"));
+	options.add(make_opt(  reverse_winding, "reverse-winding", 'w', "reverse the winding of the triangles in order "
+			       "to make normals point away from the high intensity area")); 
+
 	
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
@@ -98,7 +103,7 @@ int do_main (int argc, char * argv[])
 					  max_cost, use_border, factor);
 
 	if (surface) {
-		unique_ptr<CTriangleMesh> mesh(gts_to_mona_mesh(surface));
+		unique_ptr<CTriangleMesh> mesh(gts_to_mona_mesh(surface, reverse_winding));
 		gts_object_destroy((GtsObject*)surface);
 		
 		if ( !CMeshIOPluginHandler::instance().save(out_filename, *mesh) ) {

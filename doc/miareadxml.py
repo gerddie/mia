@@ -50,6 +50,9 @@ def get_text_node_simple(tag,  text):
     return node
 
 
+def escape_dash(text): 
+    return re.sub(r'-', r'\-', text) 
+
 def get_dict_table(dictionary, tabletype):
     entry = etree.Element(tabletype, frame="none")
     tgroup = etree.Element("tgroup", cols="2", colsep="0", rowsep ="0")
@@ -71,10 +74,6 @@ def get_dict_table(dictionary, tabletype):
     tgroup.append(tbody)
     entry.append(tgroup)
     return entry
-
-def escape_dash(text): 
-    return re.sub(r'-', r'\-', text) 
-
 
 class CTextNode: 
     def __init__(self, node, expect = None):
@@ -154,8 +153,8 @@ class CDictOption(COption):
             for k in self.dict.keys(): 
                 print ".RS 10"
                 print ".I" 
-                print k
-                print "- %s" % (self.dict[k])
+                print escape_dash(k)
+                print "\(hy %s" % (self.dict[k])
                 print ".RE"
 
 
@@ -328,8 +327,8 @@ class CDictParam(CParam):
         for k in self.dict.keys(): 
             print ".RS 4"
             print ".I" 
-            print k
-            print "- %s" % (self.dict[k])
+            print escape_dash(k)
+            print "\(hy %s" % (self.dict[k])
             print ".RE"
         CParam.do_print_man(self)
 
@@ -571,6 +570,8 @@ class CDescription:
                 self.option_groups.append(CGroup(n))
             elif n.tag == 'Example': 
                 self.Example = CExample(n)
+            elif n.tag == 'Author': 
+                self.author = n.text
             elif n.tag == 'freeparams':
                 self.FreeParams = n.get("name")
             else: 

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -47,19 +47,22 @@ EPixelType C3DImage::get_pixel_type() const
 	return m_pixel_type;
 }
 
-E3DImageOrientation C3DImage::get_orientation() const
+C3DOrientationAndPosition C3DImage::get_orientation() const
 {
-	const PAttribute orattr = get_attribute("orientation");
-	const C3DImageOrientation *orient = dynamic_cast<const C3DImageOrientation *>(orattr.get());
-	if (!orient)
-		return ior_unknown;
-	else
-		return *orient;
+	const PAttribute attr = get_attribute("orientation");
+	if (!attr)
+		return C3DOrientationAndPosition(); 
+	
+	auto op = dynamic_cast<const C3DImageOrientationPositionAttribute *>(attr.get());
+	if (!op) {
+		cvwarn() << "C3DImage::get_orientation: Bogus orientation attribute, return default\n"; 
+	}
+	return *op; 
 }
 
-void C3DImage::set_orientation(E3DImageOrientation orient)
+void C3DImage::set_orientation(const C3DOrientationAndPosition& orient)
 {
-	set_attribute("orientation", PAttribute(new C3DImageOrientation(orient)));
+	set_attribute("orientation", PAttribute(new C3DImageOrientationPositionAttribute(orient))); 
 }
 
 template <typename T>
@@ -68,6 +71,14 @@ T3DImage<T>::T3DImage(const C3DBounds& size, const T* init_data):
 	m_image(size, init_data)
 {
 }
+
+template <typename T>
+T3DImage<T>::T3DImage(const C3DBounds& size, const data_array& init_data):
+	C3DImage((EPixelType)pixel_type<T>::value),
+	m_image(size, init_data)
+{
+}
+
 
 template <typename T>
 T3DImage<T>::T3DImage(const C3DBounds& size, const CAttributedData& attr):

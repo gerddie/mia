@@ -1,9 +1,0 @@
-.compile test_echo.pro
-.compile filter.pro
-.compile filter3d.pro
-test_echo
-filter
-filter3d
-exit
-
-

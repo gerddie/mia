@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -61,20 +61,20 @@ BOOST_AUTO_TEST_CASE( round_clamped )
  	double xmax = numeric_limits<double>::max(); 
 
 	BOOST_CHECK_EQUAL(mia_round_clamped<float>(xmax), numeric_limits<float>::max()); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xmax), 2147483647); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xmax), 32767); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<char>(xmax), 127); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xmax), numeric_limits<int>::max()); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xmax), numeric_limits<short>::max()); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<signed char>(xmax), numeric_limits<signed char>::max()); 
 
-	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xmax), 4294967295u); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xmax), 65535u); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned char>(xmax), 255u);
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xmax), numeric_limits<unsigned int>::max()); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xmax), numeric_limits<unsigned short>::max()); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned char>(xmax), numeric_limits<unsigned char>::max());
 
 	double xmin = -numeric_limits<double>::max(); 
 
 	BOOST_CHECK_EQUAL(mia_round_clamped<float>(xmin), -numeric_limits<float>::max()); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xmin), -2147483648); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xmin), -32768); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<char>(xmin), -128); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xmin), numeric_limits<int>::min()); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xmin), numeric_limits<short>::min()); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<signed char>(xmin), numeric_limits<signed char>::min()); 
 
 	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xmin), 0u); 
 	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xmin), 0u); 
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( round_clamped )
 	BOOST_CHECK_EQUAL(mia_round_clamped<float>(xp), 4.567f); 
 	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xp), 5); 
 	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xp), 5); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<char>(xp), 5); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<signed char>(xp), 5); 
 
 	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xp), 5u); 
 	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xp), 5u); 
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( round_clamped )
 	BOOST_CHECK_EQUAL(mia_round_clamped<float>(xm), -3.3f); 
 	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xm), -3); 
 	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xm), -3); 
-	BOOST_CHECK_EQUAL(mia_round_clamped<char>(xm), -3); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<signed char>(xm), -3); 
 
 	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xm), 0u); 
 	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xm), 0u); 

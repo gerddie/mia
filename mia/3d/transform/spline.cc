@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -39,7 +39,9 @@ extern "C" {
 NS_MIA_BEGIN
 using namespace std;
 
-C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf):
+C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, 
+						 const C3DInterpolatorFactory& ipf, 
+						 P3DSplineTransformPenalty penalty):
 	C3DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(1,1,1),
@@ -70,6 +72,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	assert(m_range.x > 0);
 	assert(m_range.y > 0);
 	assert(m_range.z > 0);
+
+	if (penalty) 
+		m_penalty.reset(penalty->clone());
+
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& org):
@@ -93,10 +99,14 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& 
 	m_z_boundary(produce_spline_boundary_condition("mirror"))
 {
 	TRACE_FUNCTION;
+	if (org.m_penalty) 
+		m_penalty.reset(org.m_penalty->clone());
+
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, 
-						 const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf):
+						 const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf, 
+						 P3DSplineTransformPenalty penalty):
 	C3DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(c_rate),
@@ -111,7 +121,8 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	m_grid_valid(false), 
 	m_x_boundary(produce_spline_boundary_condition("mirror")),  
 	m_y_boundary(produce_spline_boundary_condition("mirror")),
-	m_z_boundary(produce_spline_boundary_condition("mirror"))
+	m_z_boundary(produce_spline_boundary_condition("mirror")), 
+	m_penalty(penalty)
 {
 	TRACE_FUNCTION;
 
@@ -129,14 +140,15 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	m_enlarge = 2 * m_shift;
 
 	C3DBounds csize( (C3DFVector(range - C3DBounds::_1 ) + c_rate )/ c_rate); 
-	if (csize.x < 2)
-		csize.x = 2; 
-	if (csize.y < 2)
-		csize.y = 2; 
-	if (csize.z < 2)
-		csize.z = 2; 
-	csize += m_enlarge;
-	m_coefficients = C3DFVectorfield(csize);
+	if (csize.x <= 1 || csize.y <= 1 || csize.z <= 1)  {
+		throw create_exception<invalid_argument>("C3DSplineTransformation: your coefficient rate [", 
+							 c_rate, "] is too large of the current image dimensions [", 
+							 range, "], reduce the crate parameter of the transformation "
+							 "or the number of multi-resolution levels if you run a "
+							 "registration algorithm."); 
+	}
+
+	m_coefficients = C3DFVectorfield(csize + m_enlarge);
 	m_x_boundary->set_width(m_coefficients.get_size().x); 
 	m_y_boundary->set_width(m_coefficients.get_size().y); 
 	m_z_boundary->set_width(m_coefficients.get_size().z); 
@@ -149,6 +161,16 @@ C3DSplineTransformation::~C3DSplineTransformation()
 void C3DSplineTransformation::set_coefficients(const C3DFVectorfield& field)
 {
 	TRACE_FUNCTION;
+	if ((field.get_size().x <= 1 + m_enlarge.x) || 
+	    (field.get_size().y <= 1 + m_enlarge.y) || 
+	    (field.get_size().z <= 1 + m_enlarge.z)) {
+		throw create_exception<invalid_argument>("C3DSplineTransformation::set_coefficients: "
+							 "your coefficient field of size [", field.get_size(), "] "
+							 "is too small, dimensions must be larger than[",
+							 m_enlarge + C3DBounds::_1, "]"); 
+	}
+
+
 	m_scales_valid = (m_coefficients.get_size() == field.get_size());
 	m_coefficients = field;
 	m_x_boundary->set_width(m_coefficients.get_size().x); 
@@ -199,6 +221,7 @@ C3DBounds C3DSplineTransformation::get_enlarge() const
 	return m_enlarge; 
 }
 
+
 void C3DSplineTransformation::reinit() const
 {
 	if (m_scales_valid) 
@@ -207,6 +230,9 @@ void C3DSplineTransformation::reinit() const
 	TRACE_FUNCTION;
 	CScopedLock lock(m_mutex); 
 	if (!m_scales_valid) {
+		if (m_penalty) 
+			m_penalty->initialize(m_coefficients.get_size(), C3DFVector(m_range), m_kernel); 
+
 		TRACE("C3DSplineTransformation::reinit applies");
 		m_scale = C3DFVector(m_coefficients.get_size() - C3DBounds::_1 - m_enlarge) / 
 			C3DFVector(m_range - C3DBounds::_1);
@@ -377,7 +403,7 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 
 	C3DFVector mx(C3DFVector(size) / C3DFVector(m_range));
 
-	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel, get_interpolator_factory());
+	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel, get_interpolator_factory(), m_penalty);
 	C3DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
 	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 
@@ -385,42 +411,6 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 	help->set_coefficients(new_coefs); 
 	help->m_target_c_rate = m_target_c_rate; 
 	return P3DTransformation(help);
-}
-
-void C3DSplineTransformation::add(const C3DTransformation& a)
-{
-	// it is very likely that this is not correct, especially if a is not a spline transformation 
-	TRACE_FUNCTION;
-
-	if (degrees_of_freedom() < a.degrees_of_freedom()) {
-		throw create_exception<invalid_argument>("C3DSplineTransformation::add: trying to add a transformation "
-							 "with a more degrees of freedom (", a.degrees_of_freedom(), 
-							 " versus ", degrees_of_freedom(), ")"); 
-	}
-	if (a.get_size() != get_size()) {
-		throw create_exception<invalid_argument>("C3DSplineTransformation::add: trying to add a transformation "
-							 "with domain ", a.get_size(), 
-							 " to a transformation with domain ", get_size());
-	}
-	
-	cvwarn() << "Adding to a spline transformation is probably not very accurate\n"; 
-	
-	reinit();
-	a.reinit();
-	
-	C3DFVectorfield new_coef(m_coefficients.get_size()); 
-	auto i = new_coef.begin();
-
-	for (size_t z = 0; z < m_coefficients.get_size().z; ++z)  {
-		for (size_t y = 0; y < m_coefficients.get_size().y; ++y)  {
-			for (size_t x = 0; x < m_coefficients.get_size().x; ++x, ++i)  {
-				C3DFVector v = (C3DFVector(x, y, z) - C3DFVector(m_shift)) * m_inv_scale;
-				C3DFVector u = a(v);
-				*i = v + apply(u) - u;
-			}
-		}
-	}
-	m_coefficients = new_coef; 
 }
 
 size_t C3DSplineTransformation::degrees_of_freedom() const
@@ -1012,6 +1002,24 @@ void C3DSplineTransformation::iterator_impl::do_z_increment()
 	m_value_it += m_delta.z; 
 }
 
+double C3DSplineTransformation::do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const
+{
+	assert(m_penalty); 
+	return m_penalty->value_and_gradient(m_coefficients, gradient); 
+}
+
+double C3DSplineTransformation::do_get_energy_penalty() const
+{
+	assert(m_penalty); 
+	return m_penalty->value(m_coefficients); 
+
+}
+
+bool C3DSplineTransformation::do_has_energy_penalty() const
+{
+	return m_penalty.operator bool(); 
+}
+
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION;
@@ -1051,18 +1059,25 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C3DSplinebigTransformCreator: public C3DTransformCreator {
 public:
-	C3DSplinebigTransformCreator(PSplineKernel ip, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, bool debug);
+	C3DSplinebigTransformCreator(PSplineKernel ip, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, 
+				     P3DSplineTransformPenalty penalty, 
+				     bool debug);
 private:
 	virtual P3DTransformation do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const;
 	PSplineKernel m_kernel;
 	C3DFVector m_rates;
+	P3DSplineTransformPenalty m_penalty;
 	bool m_debug; 
 };
 
-C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, bool debug):
+C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel, const C3DFVector& rates, 
+							   const C3DInterpolatorFactory& ipf, 
+							   P3DSplineTransformPenalty penalty, 
+							   bool debug):
 	C3DTransformCreator(ipf), 
 	m_kernel(kernel),
 	m_rates(rates), 
+	m_penalty(penalty),
 	m_debug(debug)
 {
 	TRACE_FUNCTION;
@@ -1074,7 +1089,7 @@ P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size,
 	TRACE_FUNCTION;
 
 	assert(m_kernel); 
-	P3DTransformation result(new C3DSplineTransformation(size, m_kernel, m_rates, ipf));
+	P3DTransformation result(new C3DSplineTransformation(size, m_kernel, m_rates, ipf, m_penalty));
 	if (m_debug) 
 		result->set_debug(); 
 	return result;
@@ -1090,6 +1105,7 @@ private:
 	PSplineKernel m_kernel;
 	float m_rate;
 	C3DFVector m_rate3d;
+	P3DSplineTransformPenalty m_penalty;
 	bool m_debug; 
 };
 
@@ -1109,6 +1125,7 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 
 	add_parameter("debug",
 		      new CBoolParameter(m_debug, false, "enable additional debuging output"));
+	add_parameter("penalty", make_param(m_penalty, "", false, "transformation penalty energy term")); 
 
 }
 
@@ -1125,7 +1142,7 @@ C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create(const C3DInterpo
 	if (rate3d.z <= 0) 
 		rate3d.z = m_rate; 
 
-	return new C3DSplinebigTransformCreator(m_kernel, rate3d, ipf, m_debug);
+	return new C3DSplinebigTransformCreator(m_kernel, rate3d, ipf, m_penalty, m_debug);
 }
 
 const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const

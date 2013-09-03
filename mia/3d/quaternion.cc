@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,24 +14,92 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_eigen.h>
 
 #include <mia/3d/quaternion.hh>
 #include <mia/core/utils.hh>
 #include <mia/core/msgstream.hh>
 #include <vector>
+#include <memory>
 
 
 NS_MIA_BEGIN 
 using std::swap; 
+using std::unique_ptr; 
+using std::invalid_argument; 
 
 Quaternion::Quaternion():
 	m_w(0.0)
 {
+}
+
+Quaternion::Quaternion(const C3DFMatrix& m)
+{
+	const double m00 = (m.x.x - m.y.y - m.z.z) / 3.0; 
+	const double m01 = (m.y.x + m.x.y) / 3.0; 
+	const double m02 = (m.z.x + m.x.z) / 3.0; 
+	const double m03 = (m.z.y - m.y.z) / 3.0; 
+	
+
+	const double m11 = (m.y.y - m.x.x - m.z.z) / 3.0; 
+	const double m12 = (m.z.y + m.y.z) / 3.0; 
+	const double m13 = (m.x.z - m.z.x) / 3.0; 
+
+	const double m22 = (m.z.z - m.x.x - m.y.y) / 3.0; 
+	const double m23 = (m.y.x - m.x.y) / 3.0; 
+	
+	const double m33 = (m.z.z + m.x.x + m.y.y) / 3.0; 
+	
+	double data[16] = {
+		m00, m01, m02, m03, 
+		m01, m11, m12, m13, 
+		m02, m12, m22, m23, 
+		m03, m13, m23, m33
+	}; 
+
+	gsl_matrix_view gslm  = gsl_matrix_view_array (data, 4, 4);
+	
+	
+	auto gsl_vector_delete = [](gsl_vector * p) { gsl_vector_free(p); };
+	unique_ptr<gsl_vector, decltype(gsl_vector_delete)> eval(gsl_vector_alloc (4), gsl_vector_delete ); 
+
+	auto gsl_matrix_delete = [](gsl_matrix * p) { gsl_matrix_free(p); };
+	unique_ptr<gsl_matrix, decltype(gsl_matrix_delete)> evec(gsl_matrix_alloc (4, 4), gsl_matrix_delete );
+
+	auto gsl_eigen_symmv_delete = [](gsl_eigen_symmv_workspace * p) { gsl_eigen_symmv_free(p); };
+	unique_ptr<gsl_eigen_symmv_workspace, decltype(gsl_eigen_symmv_delete)> ws(gsl_eigen_symmv_alloc (4), gsl_eigen_symmv_delete);
+
+	gsl_eigen_symmv (&gslm.matrix, eval.get(), evec.get(), ws.get());
+
+	gsl_eigen_symmv_sort (eval.get(), evec.get(), GSL_EIGEN_SORT_ABS_ASC);
+
+	if (cverb.get_level() <= vstream::ml_debug ) {
+		for(int i = 0; i < 4; ++i) {
+			cvdebug() << "eval [" << i << "] = " << gsl_vector_get(eval.get(), i) << "\n"; 
+			cvdebug() << "evec [" << i << "] = "; 
+			for (int j = 0; j < 4; ++j) {
+				cverb << gsl_matrix_get(evec.get(), j, i) << ", "; 
+			}
+			cverb << "\n\n"; 
+		}
+	}
+
+	m_v.x = gsl_matrix_get(evec.get(), 0, 3); 
+	m_v.y = gsl_matrix_get(evec.get(), 1, 3); 
+	m_v.z = gsl_matrix_get(evec.get(), 2, 3);
+	m_w   = gsl_matrix_get(evec.get(), 3, 3); 
+
+	// technically, this is not necessary, but for testing it is better 
+	if (m_w < 0.0) {
+		m_v *= -1.0f; 
+		m_w = -m_w; 
+	}
+
 }
 
 Quaternion::Quaternion(const C3DDVector& rot):
@@ -50,6 +119,43 @@ Quaternion::Quaternion(const C3DDVector& rot):
 	m_v.z = cos_phi * cos_psi* sin_theta - sin_phi * sin_psi * cos_theta; 
 
 }
+
+const Quaternion Quaternion::_1(1, 0, 0, 0); 
+
+#if 0 
+Quaternion::Quaternion(const C3DFMatrix& rot)
+{
+	double q4  = 1 + rot.x.x + rot.y.y + rot.z.z; 
+	if (q4 <= 0) {
+		throw create_exception<invalid_argument>("Quaternion: Matrix ", rot, 
+							 " is not evem close to be a rotation matrix.");
+	}
+	
+	m_w = 0.5 * sqrt(q4);
+	double s = 0.25 / m_w; 
+	
+	m_v.x = s * (rot.z.y - rot.y.z);  
+	m_v.y = s * (rot.x.z - rot.z.x); 
+	m_v.z = s * (rot.y.x - rot.x.y);  
+}
+#endif 
+
+#if 0 
+const C3DFMatrix Quaternion::get_rotation_matrix() const
+{
+	const C3DDMatrix qq(m_v.x * m_v, m_v.y * m_v, m_v.z * m_v);  
+	cvdebug() << qq << "\n"; 
+	const C3DDMatrix Q(C3DDVector(0, -m_v.z, m_v.y), 
+			   C3DDVector(m_v.z, 0, -m_v.x), 
+			   C3DDVector(-m_v.y, m_v.x, 0)); 
+	cvdebug() << Q << "\n"; 
+
+	cvdebug() << (m_w * m_w - m_v.norm2()) * C3DDMatrix::_1 << "\n"; 
+	const C3DDMatrix r = (m_w * m_w - m_v.norm2()) * C3DDMatrix::_1 + 2.0 * qq + 2.0 * m_w * Q; 
+	cvdebug() << r << "\n"; 
+	return C3DFMatrix(r); 
+}
+#endif 
 
 Quaternion::Quaternion(double w, double  x, double y, double z):
 	m_v(x,y,z), 
@@ -98,9 +204,43 @@ Quaternion Quaternion::inverse() const
 }
 
 
+const C3DFMatrix Quaternion::get_rotation_matrix() const
+{
+	const double a2 = m_w   * m_w;
+	const double b2 = m_v.x * m_v.x;
+	const double c2 = m_v.y * m_v.y;
+	const double d2 = m_v.z * m_v.z;
+
+	const double bc = 2.0 * m_v.x * m_v.y; 
+	const double ad = 2.0 * m_w * m_v.z; 
+	const double bd = 2.0 * m_v.x * m_v.z; 
+	const double ac = 2.0 * m_w * m_v.y; 
+	const double cd = 2.0 * m_v.y * m_v.z; 
+	const double ab = 2.0 * m_w * m_v.x; 
+	
+	return C3DFMatrix(C3DFVector(a2 + b2 - c2 - d2, bc - ad, bd + ac), 
+			  C3DFVector(bc + ad, a2 - b2 + c2 - d2, cd - ab), 
+			  C3DFVector(bd - ac, cd + ab, a2 - b2 - c2 + d2));
+	
+}
+
+
+
 void Quaternion::print(std::ostream& os) const
 {
-	os << "(" << m_w << "," << m_v << ")"; 
+	os << m_w << "," << m_v; 
+}
+
+EXPORT_3D std::istream& operator >> (std::istream& is, Quaternion& a)
+{
+	const char *msg = "Unable to read quaternion from stream"; 
+	float w; 
+	C3DFVector v; 
+	is >> w; 
+	eat_char(is, ',', msg); 
+	is >> v; 
+	a = Quaternion(w, v.x, v.y, v.z); 
+	return is; 
 }
 
 bool operator == (const Quaternion& a, const Quaternion& b)

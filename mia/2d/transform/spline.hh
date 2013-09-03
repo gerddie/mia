@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -23,8 +23,9 @@
 
 #include <mia/2d/interpolator.hh>
 #include <mia/2d/transform.hh>
+#include <mia/2d/splinetransformpenalty.hh>
 #include <mia/2d/ppmatrix.hh>
-#include <mia/core/scaler1d.hh>
+
 
 NS_MIA_BEGIN
 
@@ -34,12 +35,15 @@ public:
 	using C2DTransformation::operator ();
 
 	C2DSplineTransformation(const C2DSplineTransformation& org);
-	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf);
-	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf);
+	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf, 
+				P2DSplineTransformPenalty penalty);
+	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, 
+				const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf, 
+				P2DSplineTransformPenalty penalty);
 
 	void set_coefficients(const C2DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C2DFVectorfield& field);
-	void reinit()const;
+	virtual void reinit();
 	C2DFVector apply( const C2DFVector& x) const;
 	C2DFVector scale( const C2DFVector& x) const;
 
@@ -71,7 +75,6 @@ public:
 
 	virtual C2DTransformation *invert() const;
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
-	virtual void add(const C2DTransformation& a);
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
@@ -99,32 +102,37 @@ private:
 
 	C2DSplineTransformation& operator = (const C2DSplineTransformation& org); 
 
-	void init_grid()const; 
+	double do_get_energy_penalty_and_gradient(CDoubleVector& gradient) const;
+	double do_get_energy_penalty() const;
+	bool   do_has_energy_penalty() const;
+
+
+	void init_grid(); 
 	C2DFVector interpolate(const C2DFVector& x) const; 
 
-	void run_downscaler(C1DScalarFixed& scaler, std::vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds m_range;
 	C2DFVector m_target_c_rate;
 	C2DFVectorfield m_coefficients;
 	PSplineKernel m_kernel; 
 	int m_shift; 
-	int m_enlarge; 
-	mutable C2DFVector m_scale;
-	mutable C2DFVector m_inv_scale;
-	mutable bool m_interpolator_valid;
+	C2DBounds m_enlarge; 
+	C2DFVector m_scale;
+	C2DFVector m_inv_scale;
+	bool m_interpolator_valid;
 	//mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  m_interpolator;
 	mutable std::shared_ptr<C2DPPDivcurlMatrix > m_divcurl_matrix; 
-	mutable std::vector<std::vector<double> > m_x_weights; 
-	mutable std::vector<int> m_x_indices; 
-	mutable std::vector<std::vector<double> > m_y_weights; 
-	mutable std::vector<int> m_y_indices; 
-	mutable CSplineDerivativeRow  m_mx; 
-	mutable CSplineDerivativeRow  m_my; 
-	mutable bool m_grid_valid; 
+	std::vector<std::vector<double> > m_x_weights; 
+	std::vector<int> m_x_indices; 
+	std::vector<std::vector<double> > m_y_weights; 
+	std::vector<int> m_y_indices; 
+	CSplineDerivativeRow  m_mx; 
+	CSplineDerivativeRow  m_my; 
 
 	PSplineBoundaryCondition m_xbc; 
 	PSplineBoundaryCondition m_ybc; 
+
+	P2DSplineTransformPenalty m_penalty; 
 
 };
 

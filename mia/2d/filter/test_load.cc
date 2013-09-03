@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,36 +14,50 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
 
 #include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/load.hh>
+#include <mia/core/datapool.hh>
+#include <mia/2d/imageio.hh>
 
-BOOST_AUTO_TEST_CASE( test_2dfilter_load )
+NS_MIA_USE
+using namespace std;
+using namespace ::boost;
+using namespace ::boost::unit_test;
+using namespace load_2dimage_filter;
+
+struct LoadFixture {
+	LoadFixture(); 
+	~LoadFixture(); 
+	
+
+	C2DUBImage *orig; 
+	P2DImage image; 
+}; 
+
+LoadFixture::LoadFixture()
 {
-	auto load = BOOST_TEST_create_from_plugin<C2DLoadImage>("load:file=test.@");
-	
-	C2DBounds size = C2DBounds::_1; 
-	
-	C2DFImage *src_img = new C2DFImage(size);
-	(*src_img)(0,0) = 10; 
+	const unsigned char init[4] = {1,2,3,4}; 
+	orig = new C2DUBImage(C2DBounds(2,2), init); 
+	image.reset(orig); 
+        save_image("test.@", image); 
+}
 
-	P2DImage src(src_img); 
-	C2DFImage dummy(C2DBounds(1,2)); 
-	dummy(0,0) = 2; 
-	
-
-	save_image("test.@", src); 
-	
-	auto loaded = load->filter(dummy); 
-	
-	BOOST_CHECK_EQUAL(loaded->get_size(), src->get_size()); 
+LoadFixture::~LoadFixture()
+{
+	boost::any dummy = CDatapool::instance().get_and_remove("test.@");
+}
 	
 
-	
-
+BOOST_FIXTURE_TEST_CASE( test_2dfilter_load, LoadFixture )
+{
+        C2DUBImage dummy(C2DBounds(3,2)); 
+        
+	auto t = BOOST_TEST_create_from_plugin<C2DLoadFilterPluginFactory>("load:file=test.@");
+	auto loaded = t->filter(image); 
+	BOOST_CHECK(*image == *loaded);
 }

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -253,6 +253,7 @@ void handle_endian(Iterator b, Iterator e)
 		}
 		break;
 	case 4:
+		cvdebug() << "Endian correct 32 bit data\n";
 		while (b != e) {
 			shuffle s;
 			s.v = *b;
@@ -262,6 +263,7 @@ void handle_endian(Iterator b, Iterator e)
 			++b;
 		}
 		break;
+		cvdebug() << "Endian correct 64 bit data\n";
 	case 8:
 		while (b != e) {
 
@@ -278,7 +280,8 @@ void handle_endian(Iterator b, Iterator e)
 			++b;
 		}
 		break;
-		// default:
+	default:
+		cvdebug() << "8 bit data, no correction needed\n";
 	}
 }
 

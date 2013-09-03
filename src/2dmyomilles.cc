@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -101,15 +101,16 @@ int do_main( int argc, char *argv[] )
 	
 	size_t current_pass = 0; 
 	size_t pass = 2; 
-	
+
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
 	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered files")); 
 	options.add(make_opt( ref_filebase, "save-references", 0, "save reference images to this file base")); 
 	
-	options.add(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file")); 
-	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images")); 
+	options.add(make_opt( cropped_filename, "save-cropped", 0, "save cropped image set to this file")); 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images to png "
+			      " with the given file name base ")); 
 
 	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
 	options.add(make_opt( minimizer, "gsl:opt=simplex,step=1.0", "optimizer", 'O', "Optimizer used for minimization"));
@@ -207,6 +208,10 @@ int do_main( int argc, char *argv[] )
 		
 		input_set.transform(*shift);
 		input_set.set_images(input_images);  
+	} else if (!save_crop_feature.empty()) {
+		stringstream cfile; 
+		cfile << save_crop_feature << "-coeff.txt"; 
+		ica.save_coefs(cfile.str()); 
 	}
 	
 	if (!cropped_filename.empty()) {

@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -38,7 +38,7 @@ using namespace xmlpp;
 
 
 const char *testpoint_init  =
-	"<?xml version=\"1.0\"?>\n<test><point y=\"20\" x=\"10\"/></test>\n";
+	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><point y=\"20\" x=\"10\"/></test>\n";
 
 BOOST_AUTO_TEST_CASE(segpoint_read)
 {
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(segpoint_write)
 	CSegPoint2D point(10,20);
 	point.write(*nodeRoot);
 
-	const string xmldoc = document.write_to_string();
+	const string xmldoc = document.write_to_string("UTF-8");
 	const string testdoc(testpoint_init);
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(segstar_write)
 	Element* nodeRoot = document.create_root_node("test");
 	star.write(*nodeRoot);
 
-	const string xmldoc = document.write_to_string();
+	const string xmldoc = document.write_to_string("UTF-8");
 
 	string teststar(teststar_init);
 	BOOST_CHECK_EQUAL(xmldoc.size(), teststar.size());
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(segment_section_write)
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
 	section.write(*nodeRoot, 1);
 
-	const string xmldoc = document.write_to_string();
+	const string xmldoc = document.write_to_string("UTF-8");
 	const string testdoc(testsection_init);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_CASE( test_segset_write )
 
 	auto_ptr<xmlpp::Document> document(segset.write());
 
-	const string xmldoc = document->write_to_string();
+	const string xmldoc = document->write_to_string("UTF-8");
 	const string testdoc(testset_init2);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -427,7 +427,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_shift_and_rename, SegSetReadFixture )
 	C2DFVector shift(-3.0f, -10.0f);
 	CSegSet result = segset.shift_and_rename(0, shift, "moved");
 	unique_ptr<xmlpp::Document> document(result.write());
-	const string xmldoc = document->write_to_string();
+	const string xmldoc = document->write_to_string("UTF-8");
 	const string testdoc(testset_shift_and_rename);
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
@@ -491,7 +491,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read_write, SegSetReadFixture )
 	}
 
 	unique_ptr<xmlpp::Document> document(segset.write());
-	const string xmldoc = document->write_to_string();
+	const string xmldoc = document->write_to_string("UTF-8");
 	const string testdoc(testset_version_2);
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
@@ -626,7 +626,7 @@ void SectionTestRead::check(const float *x_data, const float *y_data) const
 
 
 
-const char *sestsection_for_draw = "<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
+const char *sestsection_for_draw = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><section color=\"white\">"
 	"<point y=\"4\" x=\"1\"/>"
 	"<point y=\"8\" x=\"1\"/>"
 	"<point y=\"8\" x=\"7\"/>"
@@ -638,7 +638,7 @@ const char *sestsection_for_draw = "<?xml version=\"1.0\"?>\n<test><section colo
 	"</section></test>\n";
 
 const char *teststar_init  =
-	"<?xml version=\"1.0\"?>\n<test>"
+	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
 	"<point y=\"10\" x=\"20\"/>"
@@ -647,20 +647,20 @@ const char *teststar_init  =
 
 
 const char *teststar_init2  =
-	"<?xml version=\"1.0\"?>\n<test>"
+	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"  <point y=\"20\" x=\"10\"/>"
 	"  <point y=\"10\" x=\"20\"/>"
 	"  <point y=\"4\" x=\"0\"/>"
 	"</star></test>\n";
 
-const char *testsection_init = "<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
+const char *testsection_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><section color=\"white\">"
 	"<point y=\"20\" x=\"10\"/>"
 	"<point y=\"10\" x=\"20\"/>"
 	"<point y=\"4\" x=\"0\"/>"
 	"</section></test>\n";
 
-const char *testsection_init2 = "<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
+const char *testsection_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><section color=\"white\">"
 	"<point y=\"20\" x=\"10\"/>"
 	"<point y=\"10\" x=\"20\"/>"
 	"<point y=\"4\" x=\"0\"/>"
@@ -669,7 +669,7 @@ const char *testsection_init2 = "<?xml version=\"1.0\"?>\n<test><section color=\
 
 
 
-const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
+const char *testset_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"0\"/><LVpeak value=\"1\"/><PreferedRef value=\"1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
@@ -707,7 +707,7 @@ const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
 	"</frame>"
 	"</workset>\n";
 
-const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
+const char *testset_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/><PreferedRef value=\"-1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
@@ -725,7 +725,7 @@ const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
 	"</frame>"
 	"</workset>\n";
 
-const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
+const char *testset_init3 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/><PreferedRef value=\"-1\"/></description>"
 	" <frame image=\"image.png\">"
 	"  <star y=\"118\" x=\"109\" r=\"21\">"
@@ -744,7 +744,7 @@ const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_bboxtest =
-"<?xml version=\"1.0\"?>\n<workset>"
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
   "<description>"
 	"<RVpeak value=\"2\"/>"
 	"<LVpeak value=\"3\"/>"
@@ -783,7 +783,7 @@ const char *testset_bboxtest =
 
 
 const char *testset_shift_and_rename =
-"<?xml version=\"1.0\"?>\n<workset>"
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"2\"/><LVpeak value=\"3\"/><PreferedRef value=\"1\"/></description>"
   "<frame image=\"moved0000.png\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"
@@ -817,7 +817,7 @@ const char *testset_shift_and_rename =
 
 
 const char *testset_version_2 =
-"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset version=\"2\">"
 	"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
   "<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"

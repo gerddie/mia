@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,11 +14,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
+#include <mia/core/threadedmsg.hh>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
 
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
@@ -66,44 +69,58 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 {
 	typedef std::vector<T> invec_t;
 
-	T3DImage<T> *data = new T3DImage<T>(image);
+	T3DImage<T> *data = new T3DImage<T>(image.get_size(), image);
+	copy(image.begin(), image.end(), data->begin()); 
 	CSeparableConvolute::result_type result(data);
 
 	int cachXSize = data->get_size().x;
 	int cachYSize = data->get_size().y;
 	int cachZSize = data->get_size().z;
 
-	if (m_kx.get()) {
+	auto filter_x = [cachXSize, cachYSize, data, this](const tbb::blocked_range<size_t>& range) {
 		invec_t buffer(cachXSize);
-		for (int z = 0; z < cachZSize; z++){
+		for (auto z = range.begin(); z != range.end();++z) {
 			for (int y = 0; y < cachYSize; y++) {
 				data->get_data_line_x(y,z,buffer);
 				fold(buffer, *m_kx);
 				data->put_data_line_x(y,z,buffer);
 			}
 		}
-	}
+	}; 
 
-	if (m_ky.get()) {
+	auto filter_y = [cachXSize, cachYSize, data, this](const tbb::blocked_range<size_t>& range) {
 		invec_t buffer(cachYSize);
-		for (int z = 0; z < cachZSize; z++){
+		for (auto z = range.begin(); z != range.end();++z) {
 			for (int x = 0; x < cachXSize; x++) {
 				data->get_data_line_y(x,z,buffer);
 				fold(buffer, *m_ky);
 				data->put_data_line_y(x,z,buffer);
 			}
 		}
-	}
+	}; 
 
-	if (m_kz.get()) {
+	auto filter_z = [cachXSize, cachZSize, data, this](const tbb::blocked_range<size_t>& range) {
 		invec_t buffer(cachZSize);
-		for (int y = 0; y < cachYSize; y++){
+		for (auto y = range.begin(); y != range.end();++y) {
 			for (int x = 0; x < cachXSize; x++) {
 				data->get_data_line_z(x,y,buffer);
 				fold(buffer, *m_kz);
 				data->put_data_line_z(x,y,buffer);
 			}
 		}
+	}; 
+
+	if (m_kx.get()) {
+		tbb::parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_x); 
+	}
+
+
+	if (m_ky.get()) {
+		tbb::parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_y); 
+	}
+
+	if (m_kz.get()) {
+		tbb::parallel_for(tbb::blocked_range<size_t>(0, cachYSize, 1), filter_z); 	
 	}
 	return result;
 }

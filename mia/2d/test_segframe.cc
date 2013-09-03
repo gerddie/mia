@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(segframe_shift, FrameTestRead)
 #endif
 
 
-const char *testframe_init = "<?xml version=\"1.0\"?>\n<test>"
+const char *testframe_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"1\" x=\"0\"/>"
@@ -163,7 +163,7 @@ const char *testframe_init = "<?xml version=\"1.0\"?>\n<test>"
 	"</test>\n";
 
 
-const char *testframe_shifted = "<?xml version=\"1.0\"?>\n<test>"
+const char *testframe_shifted = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"newname\">"
 	"<star y=\"116\" x=\"108\" r=\"21\">"
 	"<point y=\"1\" x=\"0\"/>"
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
 	frame.write(*nodeRoot, 1);
 
-	const string xmldoc = document.write_to_string();
+	const string xmldoc = document.write_to_string("UTF-8");
 	const string testdoc(testframe_shifted);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -258,9 +258,9 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask, FrameTestRead)
 BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
 {
 
-	CSegPoint2D center(7.5,7.5); 
+	CSegPoint2D center(7.6,7.59); 
 	float r = 4; 
-	CSegPoint2D d1(1.0,0); 
+	CSegPoint2D d1(1.0, 0.0); 
 	CSegPoint2D d2(0.0,-1.0); 
 	CSegPoint2D d3(-1.0,0.0); 
 	CSegStar star(center, r, d1, d2, d3); 
@@ -310,15 +310,15 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
                 /*                            x                      */   
 		/*8*/   0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
 		
-		/*9*/   0, 4, 4, 4, 4, 4, 0, 0, 2, 1, 1, 1, 1, 0, 0, 0,
+		/*9*/   0, 4, 4, 4, 4, 4, 0, 0, 2, 2, 1, 1, 1, 0, 0, 0,
 		
-		/*10*/  0, 0, 4, 4, 4, 4, 3, 3, 2, 2, 2, 1, 0, 0, 0, 0,
+		/*10*/  0, 0, 4, 4, 4, 4, 3, 3, 2, 2, 2, 1, 1, 0, 0, 0,
 		
 		/*11*/  0, 0, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 0, 0, 0, 0,
 		
 		/*12*/  0, 0, 0, 4, 3, 3, 3, 3, 2, 2, 2, 0, 0, 0, 0, 0,
 		
-		/*13*/  0, 0, 0, 0, 0, 3, 3, 3, 2, 0, 0, 0, 0, 0, 0, 0,
+		/*13*/  0, 0, 0, 0, 0, 3, 3, 3, 2, 2, 0, 0, 0, 0, 0, 0,
 		
 		/*14*/  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		
@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE(segframe_write)
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
 	frame.write(*nodeRoot, 1);
 
-	const string xmldoc = document.write_to_string();
+	const string xmldoc = document.write_to_string("UTF-8");
 	const string testdoc(testframe_init);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -475,7 +475,7 @@ BOOST_AUTO_TEST_CASE(segframe_write)
 
 }
 
-const char *testframe_init2 = "<?xml version=\"1.0\"?>\n<test>"
+const char *testframe_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"

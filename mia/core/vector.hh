@@ -1,8 +1,9 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+ * This file is part of MIA - a toolbox for medical image analysis 
+ * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
  *
- * This program is free software; you can redistribute it and/or modify
+ * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
@@ -13,16 +14,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 
 #ifndef mia_core_vector_hh
 #define mia_core_vector_hh
 
 #include <mia/core/defines.hh>
+#include <mia/core/errormacro.hh>
 #include <memory>
 #include <cstring>
 #include <cassert>
@@ -149,8 +149,10 @@ public:
 	 */
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
-		assert(m_data); 
-		assert(m_data.unique()); 
+		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
+					   "Vector::operator[]: No writeable data availabe or not unique,"
+					   " call Vector::make_unique() first or enforce the use of  "
+					   "'Vector::operator[](...) const'");
 		return m_data.get()[i]; 
 	}
 
@@ -166,8 +168,10 @@ public:
 	   STL compatible iterator, begin of range  
 	 */
 	iterator begin() {
-		assert(m_data); 
-		assert(m_data.unique()); 
+		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
+					   "Vector::begin(): No writeable data availabe or not unique, "
+					   "call Vector::make_unique() first or enforce the use of "
+					   "'Vector::begin() const'");
 		return m_data.get(); 
 	}
 
@@ -175,7 +179,10 @@ public:
 	   STL compatible iterator, end of range  
 	 */
 	iterator end() {
-		assert(m_data); 
+		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
+					   "Vector::begin(): No writeable data availabe or not unique, "
+					   "call Vector::make_unique() first or enforce the use of "
+					   "'Vector::end() const'");
 		return m_data.get() + m_size; 
 	}
 	
@@ -202,6 +209,25 @@ public:
 		return m_size; 
 	}
 
+	/** 
+	    If the wrapped data is referenced more than once or is 
+	    read-only, make a copy inside this object that is refereneces 
+	    only once and writable. 
+	*/
+	void make_unique()
+	{
+		// if we have writable dataand is it already unique
+		// then do nothing 
+		if (m_data && m_data.unique()) 
+			return; 
+		
+		// create the new array and copy from the constant origial
+		// in case we didn't have writable data 
+		m_data.reset(new T[m_size], array_destructor<T>()); 
+		std::copy(m_cdata, m_cdata + m_size, m_data.get()); 
+		m_cdata = m_data.get(); 
+	}
+
 private: 
 	size_t m_size; 
 	std::shared_ptr<T> m_data; 
@@ -212,7 +238,7 @@ private:
 /** 
     \ingroup misc
     
-    STL like c-array wrapper for double floating point
+    STL vector like c-array wrapper for double floating point arrays
 */
 typedef Vector<double> CDoubleVector; 
 
