@@ -81,36 +81,36 @@ CombinerOpsFixture::CombinerOpsFixture():
 
 BOOST_FIXTURE_TEST_CASE( test_add_combiner, CombinerOpsFixture )
 {
-	auto result = any_cast<P3DImage>(C3DAddImageCombiner().combine(*src1, *src2)->get()); 
+	auto result = C3DAddImageCombiner().combine(*src1, *src2); 
 	test_result<float>(*result, test_add); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_sub_combiner, CombinerOpsFixture )
 {
-	auto result = any_cast<P3DImage>(C3DSubImageCombiner().combine(*src1, *src2)->get()); 
+	auto result = C3DSubImageCombiner().combine(*src1, *src2); 
 	test_result<float>(*result, test_sub12); 
 	
-	result = any_cast<P3DImage>(C3DSubImageCombiner().combine(*src2, *src1)->get()); 
+	result = C3DSubImageCombiner().combine(*src2, *src1); 
 	test_result<float>(*result, test_sub21); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_times_combiner, CombinerOpsFixture )
 {
-	auto result = any_cast<P3DImage>(C3DTimesImageCombiner().combine(*src1, *src2)->get()); 
+	auto result = C3DTimesImageCombiner().combine(*src1, *src2); 
 	test_result<float>(*result, test_mult); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_div_combiner, CombinerOpsFixture )
 {
-	auto result = any_cast<P3DImage>(C3DDivImageCombiner().combine(*src2, *src1)->get()); 
+	auto result = C3DDivImageCombiner().combine(*src2, *src1); 
 	test_result<float>(*result, test_div21); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_absdiff_combiner, CombinerOpsFixture )
 {
-	auto result = any_cast<P3DImage>(C3DAbsDiffImageCombiner().combine(*src2, *src1)->get()); 
+	auto result = C3DAbsDiffImageCombiner().combine(*src2, *src1); 
 	test_result<float>(*result, test_absdiff); 
-	result = any_cast<P3DImage>(C3DAbsDiffImageCombiner().combine(*src1, *src2)->get()); 
+	result = C3DAbsDiffImageCombiner().combine(*src1, *src2); 
 	test_result<float>(*result, test_absdiff); 
 }
 

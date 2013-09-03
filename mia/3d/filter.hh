@@ -66,7 +66,7 @@ typedef std::shared_ptr<C3DFilter> P3DFilter;
    This class is the base class for all combiners that are used to combine two 3D images.  
    The result of the combination can be anything derived from CCombinerResult. 
 */
-class EXPORT_3D C3DImageCombiner : public TFilter< PCombinerResult >, public CProductBase {
+class EXPORT_3D C3DImageCombiner : public TFilter< P3DImage >, public CProductBase {
 public:
 	typedef C3DImage plugin_data; 
 	typedef combiner_type plugin_type; 

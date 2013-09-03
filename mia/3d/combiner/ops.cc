@@ -26,25 +26,10 @@ NS_BEGIN(Combiner3d)
 using namespace mia; 
 using namespace std; 
 
-C3DImageOpCombinerResult::C3DImageOpCombinerResult(P3DImage result):
-	m_result(result)
-{
-	
-}
-
-void C3DImageOpCombinerResult::do_save(const std::string& fname) const
-{
-	save_image(fname, m_result); 
-}
-
-boost::any C3DImageOpCombinerResult::do_get() const
-{
-	return boost::any(m_result);
-}
 
 template <typename BO>
 template <typename T, typename S>
-mia::PCombinerResult T3DImageCombiner<BO>::operator () ( const T3DImage<T>& a, const T3DImage<S>& b) const
+mia::P3DImage T3DImageCombiner<BO>::operator () ( const T3DImage<T>& a, const T3DImage<S>& b) const
 {
 	// there's got to be a better way ...
 	BO bo; 
@@ -55,11 +40,11 @@ mia::PCombinerResult T3DImageCombiner<BO>::operator () ( const T3DImage<T>& a, c
 	P3DImage result(r);
 
 	transform(a.begin(), a.end(), b.begin(), r->begin(), bo); 
-        return mia::PCombinerResult(new C3DImageOpCombinerResult(result)); 
+        return result; 
 }
 
 template <typename BO>
-mia::PCombinerResult  T3DImageCombiner<BO>::do_combine( const C3DImage& a, const C3DImage& b) const
+mia::P3DImage  T3DImageCombiner<BO>::do_combine( const C3DImage& a, const C3DImage& b) const
 {
 	if (a.get_size() != b.get_size()) {
 		throw create_exception<invalid_argument>("C3DAddImageCombiner: input images have different size: ", 

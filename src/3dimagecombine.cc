@@ -34,8 +34,8 @@ const SProgramDescription g_description = {
         {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images" }, 
 	{pdi_short, "Combine two 3D images."}, 
 	{pdi_description, "This program is used to combine two images using a given image combiner."}, 
-	{pdi_example_descr, "Take two label images l1.v and l2.v and evaluate the label overlap."}, 
-	{pdi_example_code, "-1 l1.v -2 l2.v -c map.txt -c labelxmap"}
+	{pdi_example_descr, "Take two images l1.v and l2.v and evaluate the per-voxel sum."}, 
+	{pdi_example_code, "-1 l1.v -2 l2.v -c sum.v -c add"}
 };  
 
 
@@ -55,7 +55,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOption::required, &imageio));
 	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", 
 			      CCmdOption::required, &imageio));
-	options.add(make_opt( combiner, "labelxmap", "combiner", 'c', "combiner operation", CCmdOption::required));
+	options.add(make_opt( combiner, "add", "combiner", 'c', "combiner operation", CCmdOption::required));
 	options.add(make_opt( out_filename, "out", 'o', "output file", CCmdOption::required, &imageio));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -83,11 +83,12 @@ int do_main( int argc, char *argv[] )
 	if (image2list->size() > 1)
 		cvwarn() << "only first image in " << in_image2 << "will be used\n";
 
-	PCombinerResult combination = combiner->combine(**image1list->begin(), **image2list->begin());
+	auto combination = combiner->combine(**image1list->begin(), **image2list->begin());
 
-	combination->save(out_filename);
+	if (save_image(out_filename, combination)) 
+		return EXIT_SUCCESS; 
 
-	return 0;
+	return EXIT_FAILURE; 
 };
 
 

@@ -18,7 +18,7 @@
 #
 
 SET(combiner3d
-	labelxmap
+#	labelxmap
 	ops
 )
 

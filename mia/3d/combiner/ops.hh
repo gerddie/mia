@@ -27,15 +27,6 @@
 
 NS_BEGIN(Combiner3d)
 
-class C3DImageOpCombinerResult: public mia::CCombinerResult {
-public:
-	C3DImageOpCombinerResult(mia::P3DImage result);
-private:
-	virtual void do_save(const std::string& fname) const;
-	virtual boost::any do_get() const; 
-	mia::P3DImage m_result;
-};
-
 
 template <typename CombineOP>
 class T3DImageCombiner: public mia::C3DImageCombiner {
@@ -44,9 +35,9 @@ class T3DImageCombiner: public mia::C3DImageCombiner {
 	friend typename F::result_type mia::_filter(const F& f, const A& a, const B& b); 
 	
 	template <typename T, typename S>
-	mia::PCombinerResult operator () ( const mia::T3DImage<T>& a, const mia::T3DImage<S>& b) const;
+	mia::P3DImage operator () ( const mia::T3DImage<T>& a, const mia::T3DImage<S>& b) const;
 
-	mia::PCombinerResult do_combine( const mia::C3DImage& a, const mia::C3DImage& b) const;
+	mia::P3DImage do_combine( const mia::C3DImage& a, const mia::C3DImage& b) const;
 }; 
 
 
