@@ -92,7 +92,7 @@ public:
 
 	/**
 	   multiply the current matrix by a translation matrix
-	   \param shirt the translation 
+	   \param shift the translation 
 	*/
         void translate(const C3DFVector& shift); 
 
