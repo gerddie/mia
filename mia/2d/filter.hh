@@ -25,6 +25,7 @@
 #include <mia/core/factory.hh>
 #include <mia/core/filter.hh>
 #include <mia/template/filter_chain.hh>
+#include <mia/template/combiner.hh>
 
 NS_MIA_BEGIN
 
@@ -129,37 +130,20 @@ inline P2DImage  EXPORT_2D run_filter(P2DImage image, const char *filter)
    
    A class to provides the base for operations that combine two images to create a new image
  */
-class EXPORT_2D C2DImageCombiner : public TFilter< P2DImage > ,
-				   public CProductBase {
-public:
-	/// data type for plug-in serachpath component 
-	typedef C2DImage plugin_data; 
-	/// plug-in type for plug-in serachpath component 
-	typedef combiner_type plugin_type; 
-	
-	virtual ~C2DImageCombiner();
-	/**
-	   Combine two images by a given operator 
-	   @param a 
-	   @param b 
-	   @returns combined image 
-	   
-	 */
-	result_type combine( const C2DImage& a, const C2DImage& b) const;
-private:
-	virtual result_type do_combine( const C2DImage& a, const C2DImage& b) const = 0;
-};
-
-
-
-/// Base class for image combiners 
-
+typedef TImageCombiner< C2DImage > C2DImageCombiner; 
+typedef std::shared_ptr<C2DImageCombiner> P2DImageCombiner; 
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
 
 /// Plugin handler for image combiner plugins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > 
         C2DImageCombinerPluginHandler;
 FACTORY_TRAIT(C2DImageCombinerPluginHandler); 
+
+class EXPORT_2D C2DCombinerPluginHandlerTestPath {
+public: 
+	C2DCombinerPluginHandlerTestPath(); 
+}; 
+
 
 NS_MIA_END
 

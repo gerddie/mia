@@ -18,7 +18,8 @@
 
 SET(filters3dNew 	    
   binarize 
-  bandpass 
+  bandpass
+  combiner
   convert 
   crop 
   downscale 
@@ -45,7 +46,7 @@ SET(filters3dNew
   )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dimage" "filter" "${filters3dNew}" 
-  "${MIA3DLIBS}"
+  "${MIA3DLIBS}" TESTLIBS  mia3dtest
   )
 
 

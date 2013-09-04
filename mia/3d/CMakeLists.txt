@@ -78,6 +78,7 @@ SET(MIA3D_HEADERS
   image.hh
   filter.hh
   imageio.hh
+  imagetest.hh
   imageiotest.hh
   vector.hh
   vfio.hh
@@ -157,6 +158,7 @@ SET(MIA3DLIBS mia3d  ${LIBS})
 
 SET(mia3dtestsrc 
   imageiotest.cc 
+  imagetest.cc 
   vfiotest.cc 
   fifotestfixture.cc
   transformmock.cc

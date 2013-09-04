@@ -58,6 +58,12 @@ typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
 */
 typedef THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPluginHandler;
 
+template <> 
+struct IOHandler_of<C3DImage> {
+	typedef C3DImageIOPluginHandler type;
+}; 
+
+
 /**
    @ingroup io
    @brief Data key type used to load and store to the CDatapool 

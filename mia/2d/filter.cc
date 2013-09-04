@@ -26,18 +26,12 @@
 #include <mia/core/handler.cxx>
 #include <mia/2d/shape.hh>
 
+#include <mia/template/combiner.hh>
+#include <mia/template/combiner.cxx>
+
 NS_MIA_BEGIN
 using namespace boost;
 using std::invalid_argument; 
-
-C2DImageCombiner::~C2DImageCombiner()
-{
-}
-
-C2DImageCombiner::result_type C2DImageCombiner::combine( const C2DImage& a, const C2DImage& b) const
-{
-	return do_combine(a,b);
-}
 
 P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[])
 {
@@ -79,6 +73,12 @@ C2DFilterPluginHandlerTestPath::C2DFilterPluginHandlerTestPath()
 	C2DFilterPluginHandler::set_search_path(sksearchpath); 
 }
 
+C2DCombinerPluginHandlerTestPath::C2DCombinerPluginHandlerTestPath()
+{
+	CPathNameArray searchpath; 
+	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/combiner"));
+	C2DFilterPluginHandler::set_search_path(searchpath); 
+}
 
 
 template<> const  char * const 
@@ -101,9 +101,7 @@ template class TFactoryPluginHandler<C2DFilterPlugin>;
 template class TPluginHandler<C2DFilterPlugin>;
 template class TFilterChain<C2DFilterPluginHandler>; 
 
-
-
-
+template class TImageCombiner<C2DImage>; 
 EXPLICIT_INSTANCE_HANDLER(C2DImageCombiner);
 
 NS_MIA_END
