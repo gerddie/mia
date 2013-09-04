@@ -175,6 +175,12 @@ private:
 	template class TPluginHandler<TIOPlugin<IOTYPE>>		\
 
 
+
+template <typename Data> 
+struct IOHandler_of {
+	typedef THandlerSingleton<TIOPluginHandler<TIOPlugin<Data>>> type;
+}; 
+
 /**
    This fakes some load image function 
    \remark what is this for? 

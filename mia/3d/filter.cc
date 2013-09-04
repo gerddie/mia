@@ -21,9 +21,10 @@
 #include <mia/core/export_handler.hh>
 
 #include <mia/3d/filter.hh>
-#include <mia/core/combiner.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
+#include <mia/template/combiner.cxx>
+
 
 NS_MIA_BEGIN
 
@@ -38,16 +39,6 @@ C3DFilterPluginHandlerTestPath::C3DFilterPluginHandlerTestPath()
 	C3DFilterPluginHandler::set_search_path(searchpath); 
 }
 
-
-C3DImageCombiner::~C3DImageCombiner()
-{
-}
-
-C3DImageCombiner::result_type C3DImageCombiner::combine( const C3DImage& a,
-							 const C3DImage& b) const
-{
-	return do_combine(a,b);
-}
 
 
 template<> const  char * const 
@@ -87,11 +78,9 @@ template class TPlugin<C3DImage, filter_type>;
 template class THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> >;
 template class TFactoryPluginHandler<C3DFilterPlugin>;
 template class TPluginHandler<C3DFilterPlugin>;
-template class TPlugin<C3DImage, combiner_type>;
-template class TFactory<C3DImageCombiner>;
-template class THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> >;
-template class TFactoryPluginHandler<C3DImageCombinerPlugin>;
-template class TPluginHandler<C3DImageCombinerPlugin>;
 
+
+template class TImageCombiner<C3DImage>; 
+EXPLICIT_INSTANCE_HANDLER(C3DImageCombiner);
 
 NS_MIA_END

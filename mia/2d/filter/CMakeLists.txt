@@ -42,6 +42,7 @@ SET(filters2dNew_base
   aniso
   bandpass
   binarize
+  combiner
   convert
   crop
   distance

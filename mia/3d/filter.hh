@@ -29,6 +29,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/template/filter_chain.hh>
+#include <mia/template/combiner.hh>
 
 NS_MIA_BEGIN
 
@@ -66,23 +67,13 @@ typedef std::shared_ptr<C3DFilter> P3DFilter;
    This class is the base class for all combiners that are used to combine two 3D images.  
    The result of the combination can be anything derived from CCombinerResult. 
 */
-class EXPORT_3D C3DImageCombiner : public TFilter< P3DImage >, public CProductBase {
-public:
-	typedef C3DImage plugin_data; 
-	typedef combiner_type plugin_type; 
-	
-	virtual ~C3DImageCombiner();
-	/**
-	   Combine two images and and store it in a CCombinerResult return a shared pointer pointer to the result.
-	 */
-	result_type combine( const C3DImage& a, const C3DImage& b) const;
-private:
-	virtual result_type do_combine( const C3DImage& a, const C3DImage& b) const = 0;
-};
-
+typedef TImageCombiner< C3DImage > C3DImageCombiner; 
+typedef std::shared_ptr<C3DImageCombiner> P3DImageCombiner; 
 typedef TFactory<C3DImageCombiner> C3DImageCombinerPlugin;
-typedef std::shared_ptr<C3DImageCombiner > P3DImageCombiner;
-typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > C3DImageCombinerPluginHandler;
+
+/// Plugin handler for image combiner plugins 
+typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > 
+        C3DImageCombinerPluginHandler;
 
 
 /** 
@@ -96,6 +87,12 @@ public:
 private: 
 	C1DSpacialKernelPluginHandlerTestPath spk_path; 
 }; 
+
+class EXPORT_3D C3DCombinerPluginHandlerTestPath {
+public: 
+	C3DCombinerPluginHandlerTestPath(); 
+}; 
+
 /// @endcond 
 
 

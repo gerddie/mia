@@ -80,6 +80,12 @@ protected:
  */
 typedef THandlerSingleton< C2DImageIOPPH > C2DImageIOPluginHandler;
 
+template <> 
+struct IOHandler_of<C2DImage> {
+	typedef C2DImageIOPluginHandler type;
+}; 
+
+
 /** The type for virtual storage access for images 
     \sa CDatapool
  */
