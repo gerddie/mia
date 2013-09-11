@@ -21,6 +21,8 @@ bandpass.cxx
 bandpass.hh
 binarize.cxx
 binarize.hh
+combiner.hh
+combiner_filter.hh
 convert.cxx
 convert.hh
 cvd_io_trait.hh
