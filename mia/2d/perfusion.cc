@@ -299,6 +299,8 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 					min_components_nonzero = movement_components + 10;
 					m_components = i;
 					m_cls = cls; 
+					ica.swap(l_ica);
+					has_one = true; 
 				}
 				cvwarn() << "LV/RV Classification: for " << i << " components failed\n"; 
 				continue; 
