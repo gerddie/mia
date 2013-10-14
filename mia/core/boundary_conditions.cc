@@ -131,6 +131,14 @@ CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()
 	
 }
 
+EXPORT_CORE PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width)
+{
+	auto bc = produce_spline_boundary_condition(descr); 
+	if (bc) 
+		bc->set_width(width); 
+	return bc; 
+}
+
 template<> 
 const char * const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help = "These plug-ins provide various boundary "
 			       "conditions for spline based interpolation."; 
