@@ -78,7 +78,7 @@ int do_main( int argc, char *argv[] )
 
 	// ICA parameters 
 	size_t components = 0;
-	bool no_normalize = false; 
+	bool normalize = false; 
 	bool no_meanstrip = false; 
 	float box_scale = 1.4;
 	size_t skip_images = 0; 
@@ -92,11 +92,13 @@ int do_main( int argc, char *argv[] )
 			      "Image type and numbering scheme are taken from the input images.")); 
 	options.add(make_opt( cropped_filename, "save-cropped", 'c', "save cropped set of the original set to this file, "
 			      "the image files will use the stem of the name as file name base")); 
-	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images and initial ICA mixing matrix")); 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, "save the features images resulting from the ICA and "
+			      "some intermediate images used for the RV-LV segmentation with the given file name base to PNG files. "
+			      "Also save the coefficients of the initial best and the final IC mixing matrix.")); 
 	
 	options.set_group("ICA");
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
-	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs"));
+	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves"));
 	options.add(make_opt( box_scale, "segscale", 's', 
@@ -120,7 +122,7 @@ int do_main( int argc, char *argv[] )
 	
 
 	// run ICA
-	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
+	C2DPerfusionAnalysis ica(components, normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	

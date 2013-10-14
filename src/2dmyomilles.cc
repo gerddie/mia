@@ -103,16 +103,20 @@ int do_main( int argc, char *argv[] )
 	size_t pass = 2; 
 
 	CCmdOptionList options(g_description);
+
+	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
 	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered files")); 
-	options.add(make_opt( ref_filebase, "save-references", 0, "save reference images to this file base")); 
+	options.add(make_opt( ref_filebase, "save-references", 0, "save synthetic reference images to this file base")); 
 	
 	options.add(make_opt( cropped_filename, "save-cropped", 0, "save cropped image set to this file")); 
 	options.add(make_opt( save_crop_feature, "save-feature", 0, "save the features images resulting from the ICA and "
 			      "some intermediate images used for the RV-LV segmentation with the given file name base to PNG files. "
 			      "Also save the coefficients of the initial best and the final IC mixing matrix.")); 
 
+	
+	options.set_group("Registration"); 
 	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
 	options.add(make_opt( minimizer, "gsl:opt=simplex,step=1.0", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "rigid", "transForm", 'f', "transformation type"));
@@ -121,8 +125,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
 
+	options.set_group("ICA"); 
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
-	options.add(make_opt( normalize, "no-normalize", 0, "don't normalized ICs"));
+	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves"));
 	options.add(make_opt( use_guess_model, "guess", 'g', "use initial guess for myocardial perfusion")); 

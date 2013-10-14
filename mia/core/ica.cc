@@ -451,7 +451,7 @@ void CICAAnalysisImpl::normalize_ICs()
 		const double sigma = sqrt((sum2 - m_nlength * ic_shift * ic_shift) / (m_nlength - 1));
 
 		// we want to start all slopes with the negative value
-		// makes only truely sense, if the 1allover mean was stripped
+		// makes only truely sense, if the allover mean was stripped
 		float invert = 1.0;
 		if (m_Mix(0, c) > 0) {
 			cvdebug() << "Component " << c << " invert sign\n";
