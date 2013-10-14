@@ -205,12 +205,12 @@ int do_main( int argc, char *argv[] )
 	
 	options.add(make_opt( cropped_filename, "save-cropped", 0, 
 				    "save cropped set to this file")); 
-	options.add(make_opt( save_crop_feature, "save-feature", 0, 
-				    "save segmentation feature images"
-				    " and initial ICA mixing matrix")); 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, "save the features images resulting from the ICA and "
+			      "some intermediate images used for the RV-LV segmentation with the given file name base to PNG files. "
+			      "Also save the coefficients of the initial best and the final IC mixing matrix.")); 
 
 	options.add(make_opt( save_ref_filename, "save-refs", 0, 
-				    "save reference images")); 
+				    "save synthetic reference images")); 
 	options.add(make_opt( save_reg_filename, "save-regs", 0, 
 				    "save intermediate registered images")); 
 

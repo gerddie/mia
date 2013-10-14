@@ -208,13 +208,15 @@ PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& de
 	return CSplineBoundaryConditionPluginHandler::instance().produce_unique(descr); 
 }
 
+
 /**
    Create a specific instance of a spline interpolation boundary condition. 
    \param descr Description of the requested boundary conditions
    \param width width of the input domain 
    \returns the actual boundary condition 
 */
-EXPORT_CORE PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width); 
+EXPORT_CORE PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width)
+ __attribute__((deprecated)); 
 
 
 /// @cond INTERNAL 
