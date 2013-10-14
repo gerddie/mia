@@ -109,8 +109,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( ref_filebase, "save-references", 0, "save reference images to this file base")); 
 	
 	options.add(make_opt( cropped_filename, "save-cropped", 0, "save cropped image set to this file")); 
-	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images to png "
-			      " with the given file name base ")); 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, "save the features images resulting from the ICA and "
+			      "some intermediate images used for the RV-LV segmentation with the given file name base to PNG files. "
+			      "Also save the coefficients of the initial best and the final IC mixing matrix.")); 
 
 	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
 	options.add(make_opt( minimizer, "gsl:opt=simplex,step=1.0", "optimizer", 'O', "Optimizer used for minimization"));
@@ -212,6 +213,7 @@ int do_main( int argc, char *argv[] )
 		stringstream cfile; 
 		cfile << save_crop_feature << "-coeff.txt"; 
 		ica.save_coefs(cfile.str()); 
+		ica.save_feature_images(save_crop_feature); 
 	}
 	
 	if (!cropped_filename.empty()) {
