@@ -1,3 +1,15 @@
+2.0.11
+
+  Fixes of tracked bugs:
+
+  * #106: mia-2dmyomilles - save feature images also when no segmentation is requested
+  * #122: boundary-condition plug-ins - remove width parameters since it is set internally
+  * #123: Correct handling of ICA instance when RV/LV classification fails for all numbers of components
+
+  Partial fixes:
+
+  * #104: improve some of the command line parameter descriptions
+
 2.0.10
 
   Fixes of tracked bugs:
