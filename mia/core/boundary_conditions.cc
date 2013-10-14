@@ -115,7 +115,7 @@ CSplineBoundaryConditionPlugin::CSplineBoundaryConditionPlugin(const char * name
 	TFactory<CSplineBoundaryCondition>(name), 
 	m_width(0)
 {
-	add_parameter("w", new CIntParameter(m_width, 0, numeric_limits<int>::max(), false, "index range")); 
+//	add_parameter("w", new CIntParameter(m_width, 0, numeric_limits<int>::max(), false, "index range")); 
 }
 	
 CSplineBoundaryCondition *CSplineBoundaryConditionPlugin::do_create() const
@@ -130,15 +130,6 @@ CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()
 	CSplineBoundaryConditionPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/splinebc")}); 
 	
 }
-
-
-PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width)
-{
-	stringstream d; 
-	d << descr << ":w=" << width; 
-	return CSplineBoundaryConditionPluginHandler::instance().produce_unique(d.str()); 
-}
-
 
 template<> 
 const char * const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help = "These plug-ins provide various boundary "

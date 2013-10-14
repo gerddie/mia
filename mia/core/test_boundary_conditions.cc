@@ -38,8 +38,8 @@ BOOST_AUTO_TEST_CASE( test_BoundaryConditionsPlugins )
 
 BOOST_AUTO_TEST_CASE( test_Produce ) 
 {
-	auto bc = produce_spline_boundary_condition("repeat", 10); 
-	BOOST_CHECK_EQUAL(bc->get_init_string(), "repeat:w=10");
+	auto bc = produce_spline_boundary_condition("repeat"); 
+	BOOST_CHECK_EQUAL(bc->get_init_string(), "repeat");
 }
 
 

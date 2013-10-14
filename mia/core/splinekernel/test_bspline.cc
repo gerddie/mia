@@ -698,7 +698,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
 {
 	CBSplineKernel3 kernel;
 	
-	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
+	auto bc = produce_spline_boundary_condition("mirror"); 
+	bc->set_width(10); 
 	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
 	CSplineKernel::VWeight weights(kernel.size()); 
 	CSplineKernel::VIndex indices(kernel.size()); 
@@ -728,7 +729,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_uncached_flat )
 {
 	CBSplineKernel3 kernel;
 	
-	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
+	auto bc = produce_spline_boundary_condition("mirror"); 
+	bc->set_width(10); 
 	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
 	CSplineKernel::VWeight weights(kernel.size()); 
 	CSplineKernel::VIndex indices(kernel.size()); 
@@ -751,7 +753,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_uncached_nonflat )
 {
 	CBSplineKernel3 kernel;
 	
-	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
+	auto bc = produce_spline_boundary_condition("mirror"); 
+	bc->set_width(10); 
 	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
 	CSplineKernel::VWeight weights(kernel.size()); 
 	CSplineKernel::VIndex indices(kernel.size()); 
@@ -777,7 +780,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_cached )
 {
 	CBSplineKernel3 kernel;
 	
-	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
+	auto bc = produce_spline_boundary_condition("mirror"); 
+	bc->set_width(10); 
 	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
 	CSplineKernel::VWeight weights(kernel.size()); 
 	CSplineKernel::VIndex indices(kernel.size()); 
