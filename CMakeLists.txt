@@ -268,6 +268,11 @@ INCLUDE_DIRECTORIES(${GSL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 
 
+PKG_CHECK_MODULES(EIGEN3 REQUIRED eigen3)
+INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIRS})
+LINK_DIRECTORIES(${EIGEN3_LIBRARY_DIRS})
+
+
 ################################################################################
 # 
 # search for some blas
