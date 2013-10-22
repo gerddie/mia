@@ -138,9 +138,9 @@ bool C3DCriticalPointEigen::estimate()
 			cerr << "ERROR: 3 distinct eigenvalues but rank not 3!" << endl; 
 			return false; 
 		}
-		if (portrait.get_eigenvector(eval1,evec1)) cerr << "shouldn't happen 3.3.1" << endl;
-		if (portrait.get_eigenvector(eval2,evec2)) cerr << "shouldn't happen 3.3.2" << endl;
-		if (portrait.get_eigenvector(eval3,evec3)) cerr << "shouldn't happen 3.3.3" << endl;
+		evec1 = portrait.get_eigenvector(0); 
+		evec2 = portrait.get_eigenvector(1); 
+		evec3 = portrait.get_eigenvector(2); 
 		type = ev_real; 
 		return true; 
 		
@@ -150,30 +150,21 @@ bool C3DCriticalPointEigen::estimate()
 				cerr << "ERROR: 3 distinct eigenvalues but rank not 3!" << endl; 
 				return false; 
 			}
-			if (portrait.get_eigenvector(eval1,evec1)) cerr << "shouldn't happen 1.3.1" << endl;
-			// now for the complex eigenvectors
-			C3DFMatrix B =  (portrait * portrait) - (portrait * (2 * eval2)) ; 
-			B.get_eigenvector(- eval3 * eval3 - eval2 * eval2, evec3); 
-			C3DFMatrix C = portrait - C3DFMatrix::diagonal(eval2);
-			evec2 = (C * evec3) / eval3;
+			evec1 = portrait.get_eigenvector(0); 
+			evec2 = portrait.get_eigenvector(1); 
+			evec2 = portrait.get_eigenvector(2); 
+			
 			type = ev_complex; 
 			return true; 
 		}
 	case 2:// three ev's but at least two are equal
-		if (eval1 != eval2) {
-			if ( portrait.get_eigenvector(eval1,evec1)) cerr << "shouldn't happen 2.1" << endl;
-			if ( portrait.get_eigenvector(eval2,evec2)) cerr << "shouldn't happen 2.2" << endl;
-			evec3 = evec1 ^ evec2;
-			type = ev_real_two_equal;
-			return true;
-		}else{
-			evec1 = C3DFVector(1,0,0);
-			evec2 = C3DFVector(0,1,0);
-			evec3 = C3DFVector(0,0,1);			
-		}
-		break; 
+		evec1 = portrait.get_eigenvector(0); 
+		evec2 = portrait.get_eigenvector(1); 
+		evec3 = portrait.get_eigenvector(2); 
+		type = ev_real_two_equal;
+		return true;
 	default: 
-		if ( portrait.get_eigenvector(eval1,evec1)) cerr << "hit default in C3DCriticalPointEigen::estimate()"<< endl;
+		evec1 = portrait.get_eigenvector(0); 
 		return false;
 		
 	}

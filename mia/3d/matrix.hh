@@ -20,8 +20,13 @@
 #ifndef __mia_3d_matrix_hh
 #define __mia_3d_matrix_hh
 
+#include <memory>
+
 #include <mia/3d/vector.hh>
 #include <mia/core/msgstream.hh>
+
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues> 
 
 NS_MIA_BEGIN
 
@@ -36,10 +41,18 @@ NS_MIA_BEGIN
  */
 
 template <typename T> 
-struct T3DMatrix: public T3DVector< T3DVector<T> > {
+class T3DMatrix: public T3DVector< T3DVector<T> > {
+
+private: 
+	typedef Eigen::Matrix<T, 3, 3> EMatrix3; 
+	typedef Eigen::EigenSolver<EMatrix3
+>  ESolver3; 
+public:  
 	
 	T3DMatrix() = default; 
-	T3DMatrix(const T3DMatrix<T>& o) = default; 
+	T3DMatrix(const T3DMatrix<T>& o); 
+
+	T3DMatrix<T>& operator = (const T3DMatrix<T>& o); 
 
 
 	/**
@@ -127,12 +140,10 @@ struct T3DMatrix: public T3DVector< T3DVector<T> > {
 
 	/** Calculate the eigenvector to a given eigenvalues. If the eigenvalue is complex, the 
 	    matrix has to be propagated to a complex one using the type converting copy constructor
-	    \param[in] ev the eigenvalue
-	    \param[out] v the estimated eigenvector 
-	    \returns 0 eigenvector is valid
-	             2 no eigenvector found
+	    \param i number of eigenvector 
+	    \returns the requested eigenvector
 	 */
-	int get_eigenvector(float ev, C3DFVector& v)const; 
+	C3DFVector get_eigenvector(int i)const; 
 
 
 	/// The unity matrix 
@@ -141,6 +152,11 @@ struct T3DMatrix: public T3DVector< T3DVector<T> > {
 	/// The zero matrix 
 	static const T3DMatrix _0; 
 
+private:
+	void evaluate_ev() const; 
+		
+	mutable std::unique_ptr<ESolver3> m_esolver; 
+	mutable int m_ev_order[3]; 
 }; 
 
 
@@ -159,6 +175,25 @@ const T3DMatrix<T> T3DMatrix<T>::_1(T3DVector< T >(1,0,0),
 template <typename T> 
 const T3DMatrix<T> T3DMatrix<T>::_0 = T3DMatrix<T>();
 
+template <typename T> 
+T3DMatrix<T>::T3DMatrix(const T3DMatrix<T>& o):
+	T3DVector< T3DVector<T> >
+(o.x, o.y, o.z)
+{
+}
+
+
+template <typename T> 
+T3DMatrix<T>& T3DMatrix<T>::operator = (const T3DMatrix<T>& o)
+{
+	this->x = o.x; 
+	this->y = o.y; 
+	this->z = o.z; 
+
+	this->m_esolver.reset(nullptr); 
+	return *this; 
+
+}
 
 template <typename T> 
 T3DMatrix<T> T3DMatrix<T>::diagonal(T v)
@@ -254,30 +289,105 @@ T3DMatrix<T> operator * (const T3DMatrix<T>& m, const T3DMatrix<T>& x  )
 					 m.z.x * x.x.z + m.z.y * x.y.z + m.z.z * x.z.z));
 }
 
+template <typename T> 
+void T3DMatrix<T>::evaluate_ev() const
+{
+	EMatrix3  matrix; 
+	matrix << this->x.x, this->x.y, this->x.z, /**/ this->y.x, this->y.y, this->y.z, /**/  this->z.x, this->z.y, this->
+z.z; 
+	m_esolver.reset( new ESolver3(matrix, true)); 
+
+	auto eval = m_esolver->eigenvalues(); 
+
+	// check if there are complex eigenvalues
+	bool complex = false; 
+	for (int i = 0; i < 3 && !complex; ++i) {
+		if (eval[i].imag() != 0.0) {
+			complex = true; 
+		}
+	}
+	
+	if (complex) {
+		for (int i = 0; i < 3; ++i) {
+			if (eval[i].imag() == 0.0) {
+				m_ev_order[0] = i; 
+				// in the complex case, the two complex evalues are 
+				// conjugated complex 
+				m_ev_order[1] = i+1 % 3; 
+				m_ev_order[2] = i+1 % 3; 
+				return; 
+			}
+		}
+	}
+
+	// not complex, just sort the eval indices
+	double evnorms[3]; 
+	for (int i = 0; i < 3; ++i)
+		evnorms[i] = std::norm(eval(i)); 
+
+
+		
+	if (evnorms[0] < evnorms[1]) {
+                if (evnorms[0] < evnorms[2]) {
+			m_ev_order[2] = 0; 
+                        if (evnorms[1] < evnorms[2]) {
+				m_ev_order[0] = 2; 
+				m_ev_order[1] = 1; 
+		
+                        }else{
+				m_ev_order[0] = 1; 
+				m_ev_order[1] = 2; 
+			}
+                }else {
+			m_ev_order[0] = 1; 
+			m_ev_order[1] = 0; 
+			m_ev_order[2] = 2; 
+		}
+                        
+        } else { 
+                
+                if (evnorms[0] > evnorms[2]) {
+			m_ev_order[0] = 0; 
+			
+                        if (evnorms[1] < evnorms[2]) {
+				m_ev_order[1] = 2; 
+				m_ev_order[2] = 1; 
+			}else{
+				m_ev_order[1] = 1; 
+				m_ev_order[2] = 2; 
+			}
+
+                }else{ 
+			m_ev_order[0] = 2; 
+			m_ev_order[1] = 0; 
+			m_ev_order[2] = 1; 
+		}
+	}
+}
 
 template <typename T> 
 int T3DMatrix<T>::get_rank()const
 {
 	C3DFVector ev; 
-	this->get_eigenvalues(ev); 
+	auto type = this->get_eigenvalues(ev); 
 	cvdebug()<< "Matrix = "<< *this <<", Rank: eigenvalues: " << ev << "\n"; 
-	int rank = 0; 
-	if (ev.x != 0.0)  
-		rank++; 
-	if (ev.y != 0.0)  
-		rank++; 
-	if (ev.z != 0.0)  
-		rank++; 
-	return rank; 
-}
+	
+	switch (type) {
+	case 1: return (ev.x != 0.0) ? 3 : 2; 
+	case 3: return (ev.z != 0.0) ? 3 : 2; 
+	default: {
+		int rank = 0; 
+		if (ev.x != 0.0)  
+			rank++; 
+		if (ev.y != 0.0)  
+			rank++; 
+		if (ev.z != 0.0)  
+			rank++; 
+		return rank; 
+	}
 
-inline double cubrt(double a) 
-{
-	if ( a == 0.0 )
-		return 0.0;
-	return  a > 0.0 ? pow(a,1.0/3.0) : - pow(-a, 1.0/ 3.0); 
+	}
 }
-
 
 template <class T>
 T T3DMatrix<T>::get_det()  const 
@@ -291,173 +401,38 @@ T T3DMatrix<T>::get_det()  const
 template <typename T> 
 int T3DMatrix<T>::get_eigenvalues(C3DFVector& result)const
 {
-	int retval = 0; 
+	if (!m_esolver) 
+		evaluate_ev(); 
+
+	auto eval = m_esolver->eigenvalues(); 
+
+	result.x = eval[m_ev_order[0]].real(); 
 	
-	double t = - get_det();
-	double s =   this->x.x * this->y.y + this->z.z * this->y.y + this->x.x * this->z.z -
-		this->x.y * this->y.x - this->x.z * this->z.x - this->y.z * this->z.y;
-	
-	double r =  - this->x.x - this->y.y - this->z.z;
-	
-	//	 a = 1; 
-	
-	double p = s - r * r / 3.0; 
-	double q = ( 27.0 * t - 9.0 * r * s + 2.0 * r * r * r ) / 27.0;
-	
-	double diskr = q *q / 4.0 + p * p * p / 27.0;
-	
-	cvdebug() << "discr =" << diskr << "\n"; 
-	if ( diskr > 1e-6 ) {
-		// complex solution
-		double sqrt_discr = sqrt(diskr);
-		double u = cubrt( - q/2.0 + sqrt_discr );
-		double v = cubrt( - q/2.0 - sqrt_discr );
-		result.x = u + v - r / 3.0;
-		result.y = -(u + v) / 2.0 - r / 3.0; // real part 
-		result.z = (u - v)/2.0 * sqrt(3.0f);    // imag part
+	if (m_ev_order[1] == m_ev_order[2]) {
+		// complex case
+		result.y = eval[m_ev_order[1]].real(); 
+		result.y = eval[m_ev_order[2]].imag(); 
 		return 1;
-		
 	}
 
-	std::vector<double> res(3); 
-	if ( diskr < -1e-6) {
-		double rho = sqrt(-p*p*p/ 27.0); 
-		double cphi = - q / ( 2.0 * rho); 
-		double phi = acos(cphi)/3.0;
-		double sqrt_p = 2 * cubrt(rho);
-		res[0] = sqrt_p * cos(phi)- r/3.;
-		res[1] = sqrt_p * cos(phi + M_PI * 2.0 / 3.0) - r/3.; 
-		res[2] = sqrt_p * cos(phi + M_PI * 4.0 / 3.0) - r/3.; 
-		retval = 3;		
-	} else  { // at least two values are equal, all real  
-		double u = cubrt( - q/2.0 );
-		res[0] = 2.0 * u - r / 3.0;
-		res[1] =  - u - r / 3.0; 
-		res[2] = res[1]; 
-		retval = 2; 
-	}
-	
-	std::sort(res.begin(), res.end(),  [](double x, double y){ return std::fabs(x) > std::fabs(y);}); 
-	
-	for_each(res.begin(), res.end(), [](double& x){ if (std::fabs(x) < 1e-12) x = 0.0;}); 
+	result.y = eval[m_ev_order[1]].real(); 
+	result.z = eval[m_ev_order[2]].real();
 
-	result.x = res[0]; 
-	result.y = res[1]; 
-	result.z = res[2];
-	return retval;
-
+	if (result.x == result.y || result.y == result.z) 
+		return 2; 
+	return 3; 
 }
-
-/** solve a 2x2 system of equations 
-      a11 * x1 + a12 * x2 = b1
-      a21 * x1 + a22 * x2 = b2
-    \param a11
-    \param a12
-    \param b1
-    \param a21
-    \param a22
-    \param b2    
-    \param x1
-    \param x2
-    \returns true if system was solved, false otherwise
-*/
-template<class T> 
-bool solve_2x2(T a11, T a12,T b1,T a21, T a22,T b2,T *x1,T *x2)
-{
-	T h1 = a11 * a22 - a12 * a21; 
-	if (h1 == T())
-		return false;
-	
-	*x1 = (b1 * a22 - b2 * a12) / h1; 
-	*x2 = (b2 * a11 - b1 * a21) / h1; 
-	return true;
-}
-
-/** some struct to help solving the 3x3 Matrix eigenvalue problem */
-struct solve_lines_t {
-	int a,b; 
-};
-
 
 template <typename T> 
-int T3DMatrix<T>::get_eigenvector(float ev, C3DFVector& v)const
+C3DFVector T3DMatrix<T>::get_eigenvector(int i)const
 {
-	const solve_lines_t l[3] = { {0,1}, {1,2}, {2,0}};
-	//	T b1,b2,a11,a12,a21,a22; 
-	if (ev == 0.0) {
-		return 1;
-	}
+	if (!m_esolver) 
+		evaluate_ev(); 
 	
-	T3DMatrix<T> M = *this - T3DMatrix<T>::diagonal(ev);
 
-	float x = std::abs(M.x.x)+std::abs(M.y.x)+std::abs(M.z.x);
-	float y = std::abs(M.x.y)+std::abs(M.y.y)+std::abs(M.z.y);
-	float z = std::abs(M.x.z)+std::abs(M.y.z)+std::abs(M.z.z);
-	
-	if (x+y+z == 0.0) {
-		v = T3DVector<T>(1,0,0);
-		return 0;
-	}
-
-	T3DVector<int> col;
-	T *rx;
-	T *ry;
-
-	// thats tricky: 
-	// 1st col index is 1st column in solver 
-	// 2nd col index is 2nd column in solver
-	// 3th col index is right side 
-	// the respective result value is 0=x,1=y,2=z
-	// the right side presenting value of result is preset with 1.0
-	// the others get a pointer
-	
-	if (x < y) {
-		if (x < z){
-			col = T3DVector<int>(1,2,0);
-			rx = &v.y;
-			ry = &v.z;
-			v.x = 1.0;
-		}else{
-			col = T3DVector<int>(0,1,2);
-			rx = &v.x;
-			ry = &v.y;
-			v.z = 1.0; 
-		}
-	}else{
-		if (y < z){
-			col = T3DVector<int>(0,2,1);
-			rx = &v.x;
-			ry = &v.z;
-			v.y = 1.0; 
-
-		}else{
-			col = T3DVector<int>(0,1,2);			
-			rx = &v.x;
-			ry = &v.y;
-			v.z= 1.0;
-		}
-	}
-	
-	bool good = false; 
-	for (int i = 0; i < 3 && !good; i++) {
-		good = solve_2x2(M[l[i].a][col.x],M[l[i].a][col.y],-M[l[i].a][col.z],
-				 M[l[i].b][col.x],M[l[i].b][col.y],-M[l[i].b][col.z],
-				 rx,ry); 
-	}
-	// seems there is no solution
-	if (!good) 
-		return 2; 
-	
-	
-	if ((M * v).norm2() > 1e-5) {
-		
-		// a solution for only two rows is not a solution
-		// but there is no better
-		fprintf(stderr,"WARNING: rank of A-ev*I\n numerical > 2");
-		return 0;
-	}
-	v /= v.norm();	
-	return 0;
+	const auto evec = m_esolver->eigenvectors().col
+(m_ev_order[i]); 
+	return C3DFVector(evec(0).real(), evec(1).real(), evec(2).real()); 
 }
 
 
