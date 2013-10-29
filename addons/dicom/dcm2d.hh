@@ -32,6 +32,7 @@ private:
 	PData do_load(const std::string& fname) const;
 	bool do_save(const std::string& fname, const Data& data) const;
 	const std::string do_get_descr() const;
+	std::string do_get_preferred_suffix() const; 
 };
 
 NS_END
