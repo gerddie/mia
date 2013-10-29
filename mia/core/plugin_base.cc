@@ -172,6 +172,12 @@ PPluginModule CPluginBase::get_module() const
 	return m_module;
 }
 
+const char *g_plugin_root = nullptr; 
+EXPORT_CORE void plugin_root_test_override()
+{
+	g_plugin_root = PLUGIN_TEST_ROOT; 
+}
+
 #ifdef WIN32
 EXPORT_CORE const string get_plugin_root()
 {
@@ -212,8 +218,15 @@ EXPORT_CORE const string get_plugin_root()
 	return result;
 }
 #else
+
+
+
 const string EXPORT_CORE get_plugin_root()
 {
+	// this is the override for tests
+	if (g_plugin_root) 
+		return string(g_plugin_root); 
+
 	// fixme: this should also go into some config file
 	char *plugin_root = getenv("MIA_PLUGIN_TESTPATH"); 
 	if (plugin_root) 

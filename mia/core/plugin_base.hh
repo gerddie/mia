@@ -41,6 +41,14 @@ NS_MIA_BEGIN
 /// standard string to print out help in the factory plug-in handler 
 EXPORT_CORE extern const std::string plugin_help;
 
+
+/**
+   This functions overrides the normal plug-in search path by 
+   using the build-tree symbolic link based search path. 
+   Use only for testing. 
+ */
+EXPORT_CORE void plugin_root_test_override(); 
+
 /**
     \ingroup plugin
    \brief The base class for all plug-ins.
