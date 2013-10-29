@@ -43,11 +43,18 @@ EXPORT_CORE extern const std::string plugin_help;
 
 
 /**
-   This functions overrides the normal plug-in search path by 
-   using the build-tree symbolic link based search path. 
-   Use only for testing. 
- */
-EXPORT_CORE void plugin_root_test_override(); 
+   This class sets the plug-in search path for 
+   to the build tree based location. It should only instanciated 
+   for running unit-like tests.
+   Calling the destructor will reset the plug-in search path estimation 
+   to its normal behaviour. 
+*/
+
+struct EXPORT_CORE PrepareTestPluginPath {
+	PrepareTestPluginPath(); 
+	~PrepareTestPluginPath(); 
+
+}; 
 
 /**
     \ingroup plugin

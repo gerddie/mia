@@ -173,9 +173,15 @@ PPluginModule CPluginBase::get_module() const
 }
 
 const char *g_plugin_root = nullptr; 
-EXPORT_CORE void plugin_root_test_override()
+
+PrepareTestPluginPath::PrepareTestPluginPath()
 {
-	g_plugin_root = PLUGIN_TEST_ROOT; 
+	g_plugin_root = PLUGIN_TEST_ROOT "/" PLUGIN_INSTALL_PATH; 
+}
+
+PrepareTestPluginPath::~PrepareTestPluginPath()
+{
+	g_plugin_root = nullptr; 
 }
 
 #ifdef WIN32
