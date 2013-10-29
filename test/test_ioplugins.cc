@@ -24,6 +24,7 @@
 #include <mia/internal/autotest.hh>
 
 #include <mia/2d/imageio.hh>
+#include <mia/3d/imageio.hh>
 
 
 using namespace std; 
@@ -50,6 +51,7 @@ BOOST_FIXTURE_TEST_CASE( test_2d_plugin_mapping, PluginMapFixture<C2DImageIOPlug
 	test_filenames.push_back(make_pair("test.bmp", "bmp")); 
 
 	test_prefsuffix.push_back(make_pair("bmp", "bmp")); 
+	test_prefsuffix.push_back(make_pair("BMP", "BMP")); 
 	
 #ifdef HAVE_DCMTK 
 	test_filenames.push_back(make_pair("test.dcm", "dicom")); 
@@ -109,6 +111,65 @@ BOOST_FIXTURE_TEST_CASE( test_2d_plugin_mapping, PluginMapFixture<C2DImageIOPlug
 	test_suffix_from_name_or_suffix(test_prefsuffix); 
 
 }
+
+
+BOOST_FIXTURE_TEST_CASE( test_3d_plugin_mapping, PluginMapFixture<C3DImageIOPluginHandler> )
+{
+	Expectmap test_filenames;
+	Expectmap test_prefsuffix;
+
+#ifdef HAVE_VISTAIO
+	test_filenames.push_back(make_pair("test.v", "vista")); 
+	test_filenames.push_back(make_pair("test.V", "vista")); 
+	test_filenames.push_back(make_pair("test.vista", "vista")); 
+	test_filenames.push_back(make_pair("test.VISTA", "vista")); 
+
+	test_prefsuffix.push_back(make_pair("vista", "v")); 
+	test_prefsuffix.push_back(make_pair("v", "v")); 
+#endif 
+
+#ifdef HAVE_DCMTK 
+	test_filenames.push_back(make_pair("test.dcm", "dicom")); 
+	test_filenames.push_back(make_pair("test.DCM", "dicom")); 
+
+	test_prefsuffix.push_back(make_pair("test.dicom", "dcm")); 
+
+	test_prefsuffix.push_back(make_pair("test.dcm", "dcm")); 
+
+#endif 
+
+	test_filenames.push_back(make_pair("test.hdr", "analyze")); 
+	test_filenames.push_back(make_pair("test.HDR", "analyze")); 
+	
+	test_filenames.push_back(make_pair("test.vff", "vff")); 
+	test_filenames.push_back(make_pair("test.VFF", "vff")); 
+
+	test_filenames.push_back(make_pair("test.inr", "inria")); 
+	test_filenames.push_back(make_pair("test.INR", "inria")); 
+
+#ifdef HAVE_HDF5
+	test_filenames.push_back(make_pair("test.h5", "hdf5")); 
+	test_filenames.push_back(make_pair("test.H5", "hdf5")); 
+#endif 
+	
+
+#ifdef HAVE_VTK
+	test_filenames.push_back(make_pair("test.mhd", "mhd")); 
+	test_filenames.push_back(make_pair("test.MHD", "mhd")); 
+	test_filenames.push_back(make_pair("test.mha", "mhd")); 
+	test_filenames.push_back(make_pair("test.MHA", "mhd")); 
+	
+	test_filenames.push_back(make_pair("test.vtk", "vtk")); 
+	test_filenames.push_back(make_pair("test.VTK", "vtk")); 
+	test_filenames.push_back(make_pair("test.vtkimage", "vtk")); 
+	test_filenames.push_back(make_pair("test.VTKIMAGE", "vtk")); 
+
+	test_filenames.push_back(make_pair("test.VTI", "vti")); 
+	test_filenames.push_back(make_pair("test.vti", "vti")); 
+#endif 
+	test_plugin_from_name(test_filenames); 
+}
+
 
 template <typename Handler> 
 void PluginMapFixture<Handler>::test_plugin_from_name(const Expectmap& map) const
