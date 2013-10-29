@@ -126,6 +126,7 @@ BOOST_FIXTURE_TEST_CASE( test_3d_plugin_mapping, PluginMapFixture<C3DImageIOPlug
 
 	test_prefsuffix.push_back(make_pair("vista", "v")); 
 	test_prefsuffix.push_back(make_pair("v", "v")); 
+	test_prefsuffix.push_back(make_pair("V", "V")); 
 #endif 
 
 #ifdef HAVE_DCMTK 
@@ -133,23 +134,30 @@ BOOST_FIXTURE_TEST_CASE( test_3d_plugin_mapping, PluginMapFixture<C3DImageIOPlug
 	test_filenames.push_back(make_pair("test.DCM", "dicom")); 
 
 	test_prefsuffix.push_back(make_pair("test.dicom", "dcm")); 
-
 	test_prefsuffix.push_back(make_pair("test.dcm", "dcm")); 
 
 #endif 
 
 	test_filenames.push_back(make_pair("test.hdr", "analyze")); 
 	test_filenames.push_back(make_pair("test.HDR", "analyze")); 
+
+	test_prefsuffix.push_back(make_pair("analyze", "hdr")); 
 	
 	test_filenames.push_back(make_pair("test.vff", "vff")); 
 	test_filenames.push_back(make_pair("test.VFF", "vff")); 
 
+	test_prefsuffix.push_back(make_pair("vff", "vff")); 
+
 	test_filenames.push_back(make_pair("test.inr", "inria")); 
 	test_filenames.push_back(make_pair("test.INR", "inria")); 
+
+	test_prefsuffix.push_back(make_pair("inria", "inr")); 
 
 #ifdef HAVE_HDF5
 	test_filenames.push_back(make_pair("test.h5", "hdf5")); 
 	test_filenames.push_back(make_pair("test.H5", "hdf5")); 
+
+	test_prefsuffix.push_back(make_pair("hdf5", "h5")); 
 #endif 
 	
 
@@ -158,14 +166,20 @@ BOOST_FIXTURE_TEST_CASE( test_3d_plugin_mapping, PluginMapFixture<C3DImageIOPlug
 	test_filenames.push_back(make_pair("test.MHD", "mhd")); 
 	test_filenames.push_back(make_pair("test.mha", "mhd")); 
 	test_filenames.push_back(make_pair("test.MHA", "mhd")); 
+
+	test_prefsuffix.push_back(make_pair("mhd", "mhd")); 
 	
 	test_filenames.push_back(make_pair("test.vtk", "vtk")); 
 	test_filenames.push_back(make_pair("test.VTK", "vtk")); 
 	test_filenames.push_back(make_pair("test.vtkimage", "vtk")); 
 	test_filenames.push_back(make_pair("test.VTKIMAGE", "vtk")); 
 
+	test_prefsuffix.push_back(make_pair("vtk", "vtk")); 
+
 	test_filenames.push_back(make_pair("test.VTI", "vti")); 
 	test_filenames.push_back(make_pair("test.vti", "vti")); 
+
+	test_prefsuffix.push_back(make_pair("vti", "vti")); 
 #endif 
 	test_plugin_from_name(test_filenames); 
 }
