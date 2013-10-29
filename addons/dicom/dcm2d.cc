@@ -81,6 +81,11 @@ const string CDicom2DImageIOPlugin::do_get_descr() const
 	return "2D image io for DICOM";
 }
 
+std::string CDicom2DImageIOPlugin::do_get_preferred_suffix() const
+{
+	return "dcm"; 
+}
+
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
