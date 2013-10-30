@@ -79,7 +79,7 @@ BOOST_FIXTURE_TEST_CASE(  test_preferred_suffix, DummyPluginFixture )
 	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("datapool"), "@");
 	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("la"), "hey");
 
-	BOOST_CHECK_THROW(handler.get_preferred_suffix("nonsense"), invalid_argument);
+	BOOST_CHECK_THROW(handler.get_preferred_suffix("nonsense"), runtime_error);
 }
 
 BOOST_FIXTURE_TEST_CASE(  test_datapool_io, DummyPluginFixture )
