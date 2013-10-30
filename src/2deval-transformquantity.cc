@@ -48,10 +48,10 @@ using namespace mia;
 const SProgramDescription g_description = {
 	{pdi_group,"Tools for the Analysis of 2D image series"},
 	{pdi_short, "Evaluate derivative of a transformation"}, 
-	{pdi_description,"Get derivative a transformation obtained by by using image registration for "
+	{pdi_description,"Get derivative a transformation obtained by using image registration for "
 	 "any given positions in 2D. "
 	 "The position data is given in CSV format:\n"
-	 "   id;time;x;y;z;reserved\n"
+	 "   id;time;x;y;reserved\n"
 	 "The output data will be stored in a binary file with an ascii header describing the data. "
 	 "An example header is given below:\n\n"
 	 "MIA\n" 
@@ -63,11 +63,11 @@ const SProgramDescription g_description = {
 	 "  interpretation=strain #interpretation of elements (strain|derivative)\n"
 	 "  style=sparse   #storage style (sparse|grid) \n"
 	 "  repn=float32   #representation of values \n"
-	 "  size=1000 1000 200 #grid size of the transformation\n"
+	 "  size=1000 1000 #grid size of the transformation\n"
 	 "  endian=low     #endianess of binary data (low|big) \n" 
 	 "}\n\n"
 	 
-	 "This example header has to be interpreted like follows: three-dimensional data, each entry consists of 13 values "
+	 "This example header has to be interpreted like follows: two-dimensional data, each entry consists of 7 values "
 	 "the values etry consists of a 2D vector, a scalar, and a 2x2 matrix (saved in row-major format)."
 	 "The data records represent strain tensors, and only a sparse set of points is given. "
 	 "The values are given as single floating point (32 bit). "
@@ -254,7 +254,7 @@ int do_main( int argc, char *argv[] )
 		transform(trackpoints.begin(), trackpoints.end(), back_inserter(tensorfield), translater); 
 		
 		element_size = sizeof(SSparseStracPoint)/sizeof(float); 
-		components.assign("vector3,scalar,matrix3x3"); 
+		components.assign("vector2,scalar,matrix2x2"); 
 		style.assign("sparse"); 
 
 		unsigned int nelements = static_cast<unsigned int>(tensorfield.size()); 
