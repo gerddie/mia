@@ -47,10 +47,12 @@ template <typename T>
 class TSingleReferencedObject {
 public: 
 	struct Destructor {
+		Destructor(){}
 		virtual void operator ()(T& MIA_PARAM_UNUSED(data)) const = 0;
 	}; 
 
 	struct EmptyDestructor : public Destructor{
+		EmptyDestructor(){}
 		virtual void operator ()(T& MIA_PARAM_UNUSED(data))const {}
 	};
 
