@@ -225,7 +225,7 @@ CVtk3DImageIOPlugin::CVtk3DImageIOPlugin():
 	add_suffix(".vtk");
 	add_suffix(".VTK");
 	add_suffix(".vtkimage");
-	add_suffix(".VTKimage");
+	add_suffix(".VTKIMAGE");
 
 }
 

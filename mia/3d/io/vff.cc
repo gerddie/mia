@@ -173,6 +173,7 @@ CVFF3DImageIO::CVFF3DImageIO():
 	add_supported_type(it_sshort);
 	add_supported_type(it_ubyte);
 	add_suffix(".vff");
+	add_suffix(".VFF");
 }
 
 

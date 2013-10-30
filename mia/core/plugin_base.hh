@@ -41,6 +41,21 @@ NS_MIA_BEGIN
 /// standard string to print out help in the factory plug-in handler 
 EXPORT_CORE extern const std::string plugin_help;
 
+
+/**
+   This class sets the plug-in search path for 
+   to the build tree based location. It should only instanciated 
+   for running unit-like tests.
+   Calling the destructor will reset the plug-in search path estimation 
+   to its normal behaviour. 
+*/
+
+struct EXPORT_CORE PrepareTestPluginPath {
+	PrepareTestPluginPath(); 
+	~PrepareTestPluginPath(); 
+
+}; 
+
 /**
     \ingroup plugin
    \brief The base class for all plug-ins.
