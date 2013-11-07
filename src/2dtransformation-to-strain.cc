@@ -67,7 +67,7 @@ int do_main(int argc, char **argv)
 	auto o = tensorfield.begin(); 
 
 	for (unsigned int y = 0; y < size.y; ++y) 
-		for (unsigned int x = 0; x < size.x; ++x, o += 9) {
+		for (unsigned int x = 0; x < size.x; ++x, o += 4) {
 			auto d = transformation->derivative_at(x,y); 
 			auto m = d * d.transposed() - C2DFMatrix::_1;
 			
