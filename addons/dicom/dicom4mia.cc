@@ -121,6 +121,8 @@ struct CDicomReaderData {
 
 
 	C2DFVector getPixelSize();
+
+	C2DFVector getImagePixelSpacing(); 
 };
 
 
@@ -462,12 +464,41 @@ void CDicomReaderData::getPixelData(I out_begin, size_t size)
 	getPixelData_LittleEndianExplicitTransfer(out_begin, size);
 }
 
+C2DFVector CDicomReaderData::getImagePixelSpacing()
+{
+	OFString help;
+	OFCondition success = dcm.getDataset()->findAndGetOFString(DCM_ImagerPixelSpacing, help, 0);
+	if (success.bad()) {
+		throw create_exception<runtime_error>( "Neither 'PixelSpacing' nor 'ImagerPixelSpacing' found!"
+						       " As a workaround to can add either of them by using 'dcmodify'");
+	}
+	C2DFVector result;
+
+	istringstream swidth(help.data());
+	swidth >> result.x;
+
+	success = dcm.getDataset()->findAndGetOFString(DCM_ImagerPixelSpacing, help, 1);
+	if (success.bad()) {
+		throw create_exception<runtime_error>( "Second value in 'ImagerPixelSpacing' not found!"
+						       " As a workaround to can add either of them by using 'dcmodify'");
+	}
+	istringstream sheight(help.data());
+	sheight >> result.y;
+
+	cvwarn() << "The image contained no 'PixelSpacing' tag, only 'ImagerPixelSpacing' that corresponds to the " 
+		 << "detector pixel spacing. If you can not assume that the rays are parallel, then your object "
+		 << "pixel spacing might have to be scaled."; 
+
+	return result;
+	
+}
+
 C2DFVector CDicomReaderData::getPixelSize()
 {
 	OFString help;
 	OFCondition success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 0);
 	if (success.bad()) {
-		throw create_exception<runtime_error>( "Required attribute 'PixelSpacing' not found");
+		return getImagePixelSpacing(); 
 	}
 	C2DFVector result;
 
