@@ -76,7 +76,8 @@ typedef map<PAttribute, CImageSeries, attr_less> CAquisitions;
 
 struct C3DImageCreator: public TFilter<bool> {
 	C3DImageCreator(size_t nz): m_nz(nz),
-				    m_delta_z(0.0) {
+				    m_delta_z(0.0), 
+				    m_has_slice_location(false){
 	};
 
 	template <typename T>
@@ -91,21 +92,27 @@ private:
 	float m_delta_z;
 	C2DBounds m_size2d;
 	C2DFVector m_pixel_size;
+	bool m_has_slice_location; 
 };
 
 template <typename T>
 bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 {
+
 	T3DImage<T> *target = NULL;
 	if (!m_result) {
+		cvdebug() << "read first slice\n"; 
 		m_size2d = image.get_size();
 		target = new T3DImage<T>(C3DBounds(m_size2d.x, m_size2d.y, m_nz), image);
 		m_result.reset(target);
 		m_z = 0;
 		m_pixel_size = image.get_pixel_size();
-		m_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
+		m_has_slice_location = image.has_attribute(IDSliceLocation); 
+		if (m_has_slice_location) 
+			m_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
 		m_result->delete_attribute("pixel");
 	}else {
+		cvdebug() << "read slice "<< m_z << "\n"; 
 		target = dynamic_cast<T3DImage<T> *>(m_result.get());
 		if (!target) {
 			throw invalid_argument("Series input images have different pixel type");
@@ -113,9 +120,14 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 		if (m_size2d != image.get_size()) {
 			throw invalid_argument("Series input images have different slice size");
 		}
-		float new_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
-		m_delta_z = new_slice_pos - m_slice_pos;
-		m_slice_pos = new_slice_pos;
+		if (m_has_slice_location) {
+			float new_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
+			m_delta_z = new_slice_pos - m_slice_pos;
+			m_slice_pos = new_slice_pos;
+		}else{
+			m_delta_z = 0.0; 
+			cvwarn() << "DICOM: 3D, images have no slice location, the data propably  doesn't constitute a volume\n";
+		}
 	}
 	assert(m_z < m_nz);
 	target->put_data_plane_xy(m_delta_z < 0 ? m_nz - 1 - m_z: m_z, image);
