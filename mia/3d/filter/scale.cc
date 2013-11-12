@@ -41,8 +41,8 @@ namespace bfs= ::boost::filesystem;
 template <class T>
 C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_size, 
 			       const C1DScalar& scaler_x, 
-			       C1DScalar& scaler_y, 
-			       C1DScalar& scaler_z) 
+			       const C1DScalar& scaler_y, 
+			       const C1DScalar& scaler_z) 
 {
 	T3DImage<T> *result = new T3DImage<T>(target_size, src);
 	
