@@ -25,6 +25,10 @@
 #include <mia/core/utils.hh>
 #include <mia/3d/filter/scale.hh>
 
+#include <mia/core/threadedmsg.hh>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
 
 
 NS_BEGIN(scale_3dimage_filter)
@@ -36,7 +40,7 @@ namespace bfs= ::boost::filesystem;
 
 template <class T>
 C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_size, 
-			       C1DScalar& scaler_x, 
+			       const C1DScalar& scaler_x, 
 			       C1DScalar& scaler_y, 
 			       C1DScalar& scaler_z) 
 {
@@ -47,41 +51,54 @@ C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_s
 
 // run x-scaling 
 	T3DImage<double> tmp(C3DBounds(target_size.x, src.get_size().y, src.get_size().z)); 
-	for (size_t z = 0; z < src.get_size().z; ++z) {
-		for (size_t y = 0; y < src.get_size().y; ++y) {
-			copy(src.begin_at(0,y,z), src.begin_at(0,y+1,z), scaler_x.input_begin()); 
-			scaler_x.run(); 
-			copy(scaler_x.output_begin(), scaler_x.output_end(), tmp.begin_at(0,y,z)); 
-		}
-	}
+
+	auto filter_x = [&src, &tmp, &scaler_x](const tbb::blocked_range<size_t>& range) {
+		vector<double> in_buffer(src.get_size().x); 
+		vector<double> out_buffer(tmp.get_size().x);
+		for (auto z = range.begin(); z != range.end(); ++z)
+			for (size_t y = 0; y < src.get_size().y; ++y) {
+				copy(src.begin_at(0,y,z), src.begin_at(0,y+1,z), in_buffer.begin()); 
+				scaler_x(in_buffer, out_buffer); 
+				copy(out_buffer.begin(), out_buffer.end(), tmp.begin_at(0,y,z));
+			}
+		
+	};
+	
+	parallel_for(tbb::blocked_range<size_t>(0, src.get_size().z, 1), filter_x); 
 
 	// run y-scaling 
 	T3DImage<double> tmp2(C3DBounds(target_size.x, target_size.y, src.get_size().z)); 
-	vector<double> in_buffer(src.get_size().y); 
-	vector<double> out_buffer(target_size.y);
-	for (size_t z = 0; z < src.get_size().z; ++z) {
-		for (size_t x = 0; x < target_size.x; ++x) {
-			tmp.get_data_line_y(x, z, in_buffer);
-			copy(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin()); 
-			scaler_y.run(); 
-			copy(scaler_y.output_begin(), scaler_y.output_end(), out_buffer.begin());
-			tmp2.put_data_line_y(x, z, out_buffer);
-		}
-	}
 
-	// run z-scaling 
-	in_buffer.resize(src.get_size().z); 
-	vector<T> out_buffer_t(target_size.z);
-	for (size_t y = 0; y < target_size.y; ++y) {
-		for (size_t x = 0; x < target_size.x; ++x) {
-			tmp2.get_data_line_z(x, y, in_buffer);
-			copy(in_buffer.begin(), in_buffer.end(), scaler_z.input_begin()); 
-			scaler_z.run(); 
-			transform(scaler_z.output_begin(), scaler_z.output_end(), out_buffer_t.begin(), 
-				  [](double x){ return mia_round<T>(x); }); 
-			result->put_data_line_z(x, y, out_buffer_t);
-		}
-	}
+	auto filter_y = [&tmp, &tmp2, &scaler_y](const tbb::blocked_range<size_t>& range) {
+		vector<double> in_buffer(tmp.get_size().y); 
+		vector<double> out_buffer(tmp2.get_size().y);
+		for (auto z = range.begin(); z != range.end(); ++z)
+			for (size_t x = 0; x < tmp.get_size().x; ++x) {
+				tmp.get_data_line_y(x, z, in_buffer);
+				scaler_y(in_buffer, out_buffer); 
+				tmp2.put_data_line_y(x, z, out_buffer);
+			}
+		
+	};
+	parallel_for(tbb::blocked_range<size_t>(0, tmp.get_size().z, 1), filter_y); 
+
+	auto filter_z = [&tmp2, result, &scaler_z](const tbb::blocked_range<size_t>& range) {
+		vector<double> in_buffer(tmp2.get_size().z); 
+		vector<double> out_buffer(result->get_size().z);
+		vector<T> out_buffer_T(result->get_size().z);
+		for (auto y = range.begin(); y != range.end(); ++y)
+			for (size_t x = 0; x < tmp2.get_size().x; ++x) {
+				tmp2.get_data_line_z(x, y, in_buffer);
+				scaler_z(in_buffer, out_buffer); 
+				transform(out_buffer.begin(), out_buffer.end(), out_buffer_T.begin(), 
+					  [](double x){ return mia_round_clamped<T>(x);}); 
+				result->put_data_line_z(x, y, out_buffer_T);
+			}
+		
+	};
+
+	parallel_for(tbb::blocked_range<size_t>(0, tmp2.get_size().y, 1), filter_z); 
+
 	return C3DScale::result_type(result);	
 }
 			       
