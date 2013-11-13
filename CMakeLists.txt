@@ -72,6 +72,8 @@ INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/pluginmacro.cmake)
 INCLUDE (CheckTypeSize)
 
+include(CheckCXXCompilerFlag)
+
 MESSAGE("CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 IF(UNIX)
   CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_GNU_CXX11_FLAG)
