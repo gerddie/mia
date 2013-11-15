@@ -36,6 +36,17 @@ using namespace boost::unit_test;
 namespace bfs=::boost::filesystem;
 
 
+BOOST_AUTO_TEST_CASE( test_empty_histogram)
+{
+	THistogram<CUBHistogramFeeder> h(CUBHistogramFeeder(0,0,0));
+
+	BOOST_CHECK_EQUAL(h.average(), 0); 
+	BOOST_CHECK_EQUAL(h.deviation(), 0); 
+	BOOST_CHECK_EQUAL(h.median(), 0);
+	BOOST_CHECK_EQUAL(h.MAD(), 0);
+	
+}
+
 BOOST_AUTO_TEST_CASE( test_histogram)
 {
 	unsigned char init_data[10] = { 1, 2, 3, 4, 5, 5, 5, 5, 4, 3 };
