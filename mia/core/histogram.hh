@@ -361,7 +361,7 @@ typename Feeder::value_type THistogram<Feeder>::median() const
 	while ( sum < n_2 ) 
 		sum +=  m_histogram[k++]; 
 
-	return m_feeder.value(k-1); 
+	return m_feeder.value(k > 0 ? k-1 : k); 
 }
 
 template <typename Feeder> 
