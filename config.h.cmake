@@ -43,5 +43,7 @@
 #cmakedefine HAVE_TIFF 1
 #cmakedefine HAVE_JPG 1
 
+#cmakedefine HAVE_NLOPT 1
+
 
 #endif

@@ -36,37 +36,9 @@ NS_MIA_USE
 using namespace std; 
 namespace bfs=boost::filesystem;
 
-CSplineKernelTestPath splinekernel_init_path; 
+PrepareTestPluginPath g_prepare_pluginpath; 
 
-class PluginPathInitFixture {
-protected:
-	PluginPathInitFixture() {
-		CPathNameArray costsearchpath;
-		costsearchpath.push_back(bfs::path("cost"));
-		C3DImageCostPluginHandler::set_search_path(costsearchpath);
-
-		CPathNameArray transsearchpath;
-		transsearchpath.push_back(bfs::path("transform"));
-		C3DTransformCreatorHandler::set_search_path(transsearchpath);
-
-		CPathNameArray kernelsearchpath;
-		kernelsearchpath.push_back(bfs::path("..")/
-					   bfs::path("core")/bfs::path("spacialkernel"));
-		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
-
-		CPathNameArray filterpath;
-		filterpath.push_back(bfs::path("filter"));
-		C3DFilterPluginHandler::set_search_path(filterpath);
-		
-		CPathNameArray minimizerpath;
-		minimizerpath.push_back(bfs::path("../core/minimizer"));
-		CMinimizerPluginHandler::set_search_path(minimizerpath); 
-
-
-	}
-};
-
-class RigidRegisterFixture : public PluginPathInitFixture {
+class RigidRegisterFixture {
 protected: 
 	RigidRegisterFixture(); 
 	void run(C3DTransformation& t, const std::string& minimizer_descr,  double accuracy); 
@@ -166,19 +138,6 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_nmsimplex, RigidRegisterFixture
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
-{
-	auto tr_creator = C3DTransformCreatorHandler::instance().produce("translate");
-	auto transformation = tr_creator->create(size); 
-	auto params = transformation->get_parameters(); 
-	params[0] = 1.0;
-	params[1] = 1.0;
-	params[2] = 2.0;
-	transformation->set_parameters(params); 
-
-	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.01,ftolr=0.01", 0.8); 
-}
-
 BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
 {
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
@@ -196,6 +155,20 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
 	run(*transformation, "gsl:opt=simplex,step=1.0", 16.0); 
 }
 
+#ifdef HAVE_NLOPT
+
+BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
+{
+	auto tr_creator = C3DTransformCreatorHandler::instance().produce("translate");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] = 1.0;
+	params[1] = 1.0;
+	params[2] = 2.0;
+	transformation->set_parameters(params); 
+
+	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.01,ftolr=0.01", 0.8); 
+}
 
 BOOST_FIXTURE_TEST_CASE( test_rigid_ld_lbfgs, RigidRegisterFixture )
 {
@@ -213,6 +186,8 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_ld_lbfgs, RigidRegisterFixture )
 
 	run(*transformation, "nlopt:opt=ld-lbfgs,xtolr=0.001,ftolr=0.001", 4.0); 
 }
+
+#endif // HAVE_NLOPT
 
 #if 0 
 // the problem with tese tests is, that the images to be registered are 

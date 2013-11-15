@@ -16,7 +16,20 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-NEW_TEST(minimizer miacore)
+OPTION(WITH_NLOPT "enable support for nlopt nonlinear optimizers" ${SEARCH_LIBS_DEFAULT})
+IF(WITH_NLOPT)
 
-NEW_TEST(ioplugins mia3d)
+  IF(NOT NLOPT_LIBRARIES) 
+    PKG_CHECK_MODULES(NLOPT nlopt)
+  ENDIF(NOT NLOPT_LIBRARIES) 
 
+  IF(NLOPT_LIBRARIES) 
+    DEFINE_PROPERTY(GLOBAL PROPERTY HAVE_NLOPT_PROP BRIEF_DOCS "yeah" FULL_DOCS "yeah")
+    SET(NLOPTLIBS miacore ${NLOPT_LIBRARIES})
+    PLUGIN_WITH_TEST_AND_PREFIX2("minimizer" "singlecost" nlopt "${NLOPTLIBS}")
+  ELSE (NLOPT_LIBRARIES)
+    IF(STRICT_DEPENDECIES)
+      MESSAGE(ERROR "Requested library nlopt not found and STRICT_DEPENDECIES given")
+    ENDIF(STRICT_DEPENDECIES)
+  ENDIF(NLOPT_LIBRARIES)
+ENDIF(WITH_NLOPT)

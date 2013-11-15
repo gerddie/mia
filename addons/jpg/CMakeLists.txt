@@ -16,7 +16,21 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-NEW_TEST(minimizer miacore)
+OPTION(WITH_JPEG "enable support for JPEG gray scale images IO and RGB saving" ${SEARCH_LIBS_DEFAULT})
 
-NEW_TEST(ioplugins mia3d)
+IF(WITH_JPEG)
+  IF(STRICT_DEPENDECIES)
+    FIND_PACKAGE(JPEG REQUIRED)
+  ELSE(STRICT_DEPENDECIES)
+    FIND_PACKAGE(JPEG)
+  ENDIF(STRICT_DEPENDECIES)
+ENDIF(WITH_JPEG)
 
+IF(JPEG_FOUND)
+  DEFINE_PROPERTY(GLOBAL PROPERTY HAVE_JPG_PROP BRIEF_DOCS "yeah" FULL_DOCS "yeah")
+  SET(JPEG_LINK_LIBS ${MIA2DLIBS} ${JPEG_LIBRARIES})
+  INCLUDE_DIRECTORIES(${JPEG_INCLUDE_DIR})
+
+  PLUGIN_WITH_PREFIX2("2dimage" "io" jpg-gray "${JPEG_LINK_LIBS}")
+  PLUGIN_WITH_PREFIX2("rgbimage" "io" jpg-rgb "${JPEG_LINK_LIBS}" "${rgbimage2dio_path}")
+ENDIF(JPEG_FOUND)
