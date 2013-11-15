@@ -22,8 +22,13 @@
 
 NS_MIA_BEGIN
 
+C3DCamera::C3DCamera():
+	m_zoom(1.0)
+{
+}	
+
 C3DCamera::C3DCamera(const C3DFVector& loc, const Quaternion& rot, float zoom):
-m_location(loc), 
+	m_location(loc), 
 	m_rotation(rot), 
 	m_zoom(zoom)
 {
