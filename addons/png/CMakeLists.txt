@@ -16,7 +16,26 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-NEW_TEST(minimizer miacore)
+OPTION(WITH_PNG "enable support for PNG gray scale images IO and RGB saving" ${SEARCH_LIBS_DEFAULT})
 
-NEW_TEST(ioplugins mia3d)
+IF (WITH_PNG)
+  IF(STRICT_DEPENDECIES)
+    FIND_PACKAGE(PNG REQUIRED)
+  ELSE(STRICT_DEPENDECIES)
+    FIND_PACKAGE(PNG)
+  ENDIF(STRICT_DEPENDECIES)
+ENDIF(WITH_PNG)
 
+
+IF(PNG_FOUND)
+
+  DEFINE_PROPERTY(GLOBAL PROPERTY HAVE_PNG_PROP BRIEF_DOCS "yeah" FULL_DOCS "yeah")
+
+  SET(PNG_LINK_LIBS ${MIA2DLIBS} ${PNG_LIBRARIES})
+  INCLUDE_DIRECTORIES(${PNG_PNG_INCLUDE_DIR})
+
+  PLUGIN_WITH_PREFIX2("2dimage" "io" png-gray "${PNG_LINK_LIBS}")
+  PLUGIN_WITH_PREFIX2("rgbimage" "io" png-rgb "${PNG_LINK_LIBS}" )
+
+
+ENDIF(PNG_FOUND)

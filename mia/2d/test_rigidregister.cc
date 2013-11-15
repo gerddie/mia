@@ -35,36 +35,9 @@ using namespace mia;
 using namespace std; 
 namespace bfs=boost::filesystem;
 
-CSplineKernelTestPath init_splinekernel_path; 
+PrepareTestPluginPath g_prepare_pluginpath; 
 
-class PluginPathInitFixture {
-protected:
-	PluginPathInitFixture() {
-		CPathNameArray costsearchpath;
-		costsearchpath.push_back(bfs::path("cost"));
-		C2DImageCostPluginHandler::set_search_path(costsearchpath);
-
-		CPathNameArray transsearchpath;
-		transsearchpath.push_back(bfs::path("transform"));
-		C2DTransformCreatorHandler::set_search_path(transsearchpath);
-
-		CPathNameArray kernelsearchpath;
-		kernelsearchpath.push_back(bfs::path("..")/
-					   bfs::path("core")/bfs::path("spacialkernel"));
-		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
-
-		CPathNameArray filterpath;
-		filterpath.push_back(bfs::path("filter"));
-		C2DFilterPluginHandler::set_search_path(filterpath);
-
-		CPathNameArray minimizerpath;
-		minimizerpath.push_back(bfs::path("../core/minimizer"));
-		CMinimizerPluginHandler::set_search_path(minimizerpath); 
-
-	}
-};
-
-class RigidRegisterFixture : public PluginPathInitFixture {
+class RigidRegisterFixture  {
 protected: 
 	RigidRegisterFixture(); 
 	void run(C2DTransformation& t, const string& minimizer_descr,  double accuracy); 
@@ -132,18 +105,6 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_nmsimplex, RigidRegisterFixture
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
-{
-	auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
-	auto transformation = tr_creator->create(size); 
-	auto params = transformation->get_parameters(); 
-	params[0] = 1.0;
-	params[1] = 1.0;
-	transformation->set_parameters(params); 
-
-	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.001,ftolr=0.001", 0.1); 
-}
-
 BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_simplex, RigidRegisterFixture )
 {
 	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid");
@@ -172,6 +133,21 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_simplex, RigidRegisterFixture )
 
 	run(*transformation, "gsl:opt=simplex,step=1.0,eps=0.0001", 1.0); 
 }
+
+#ifdef HAVE_NLOPT
+
+BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
+{
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] = 1.0;
+	params[1] = 1.0;
+	transformation->set_parameters(params); 
+
+	run(*transformation, "nlopt:opt=ld-var1,xtolr=0.001,ftolr=0.001", 0.1); 
+}
+#endif 
 
 #ifdef THIS_TEST_USES_THE_TRANSLATE_CODE_THAT_IS_NOT_WORKING
 BOOST_AUTO_TEST_CASE( test_rigidreg_affine_cost_gradient ) //, RigidRegisterFixture )
