@@ -126,8 +126,13 @@ int do_main( int argc, char *argv[] )
 	if (!mask_image_list.get() || mask_image_list->empty())
 		throw invalid_argument("no mask found");
 
-	const C2DUBImage *mask = dynamic_cast<const C2DUBImage *>( mask_image_list->begin()->get() );
+	const C2DImage *mask_image = mask_image_list->begin()->get(); 
+	const C2DUBImage *mask = dynamic_cast<const C2DUBImage *>( mask_image );
 
+	if (!mask) 
+		throw create_exception<invalid_argument>("Mask image must be an image with pixel type byte, but pixel type '", 
+						      CPixelTypeDict.get_name(mask_image->get_pixel_type()), 
+						      "' was provided."); 
 	C2DStat stat(*mask);
 
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
