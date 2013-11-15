@@ -462,9 +462,10 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 	BOOST_CHECK_EQUAL(output.str(), test); 
 
 	if (output.str() != test) {
-		auto io = output.str().begin(); 
+		const auto ostr = output.str(); 
+		auto io = ostr.begin(); 
 		auto it = test.begin(); 
-		while (io != output.str().end() && it != test.end()) {
+		while (io != ostr.end() && it != test.end()) {
 			if (*io == *it) 
 				cerr << *io; 
 			else {
