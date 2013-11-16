@@ -229,8 +229,8 @@ BOOST_FIXTURE_TEST_CASE( test_dict_option, CmdlineParserFixture )
 	options.push_back("-dtwo");
 	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
 
-	BOOST_CHECK( olist.get_remaining().size() == 0);
-	BOOST_CHECK(value == te_two);
+	BOOST_CHECK_EQUAL( olist.get_remaining().size(), 0);
+	BOOST_CHECK_EQUAL( value, te_two);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
@@ -256,7 +256,7 @@ BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
 	options.push_back("ot");
 	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
 
-	BOOST_CHECK( olist.get_remaining().size() == 0);
+	BOOST_CHECK_EQUAL( olist.get_remaining().size(), 0);
 	BOOST_CHECK(value == te_two || te_one);
 }
 
@@ -335,7 +335,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option"));
 
-	BOOST_CHECK_THROW((olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW((olist.parse(options.size(), &options[0])), invalid_argument); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_missing_argument_short, CmdlineParserFixture )
@@ -346,7 +346,7 @@ BOOST_FIXTURE_TEST_CASE( test_missing_argument_short, CmdlineParserFixture )
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(test, "lala", 'i', "a string option"));
 	
-	BOOST_CHECK_THROW( (olist.parse(options.size(), &options[0])== CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW( (olist.parse(options.size(), &options[0])), invalid_argument); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_missing_string_argument_long, CmdlineParserFixture )
@@ -357,7 +357,7 @@ BOOST_FIXTURE_TEST_CASE( test_missing_string_argument_long, CmdlineParserFixture
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(test, "lala", 'i', "a string option"));
 	
-	BOOST_CHECK_THROW( (olist.parse(options.size(), &options[0])== CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW( (olist.parse(options.size(), &options[0])), invalid_argument); 
 }
 
 
@@ -371,7 +371,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option"));
 
-	BOOST_CHECK_THROW((olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW((olist.parse(options.size(), &options[0])), invalid_argument); 
 }
 
 const SProgramDescription general_help_test = {
