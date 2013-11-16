@@ -104,7 +104,9 @@ std::streamsize thread_streamredir::xsputn( const char * s, std::streamsize n )
 void thread_streamredir::send_to_master()
 {
 	CScopedLock lock(m_master_lock); 
-	*m_master << "[thread " << setw(3) << setfill('0') << m_id << "]:" << m_buffer.str() << "\n"; 
+	char oldfill = m_master->fill(); 
+	*m_master << "[thread " << setw(3) << setfill('0') << m_id << setfill(oldfill) << "]:" 
+		  << m_buffer.str() << "\n"; 
 	m_buffer.str(""); 
 	m_buffer.clear(); 
 }
