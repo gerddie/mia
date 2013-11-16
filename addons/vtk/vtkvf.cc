@@ -62,9 +62,9 @@ CVtk3DVFIOPlugin::PData CVtk3DVFIOPlugin::do_load(const string&  filename) const
 	auto reader = vtkSmartPointer<vtkStructuredPointsReader>::New(); 
 	reader->SetFileName(filename.c_str()); 
 	auto iovf = reader->GetOutput(); 
-	iovf->Update(); 
 	if (!iovf)
 		return PData(); 
+	iovf->Update(); 
 	
 	int dim = iovf->GetDataDimension();
 	if (dim != 3) {
