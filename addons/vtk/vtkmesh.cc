@@ -218,9 +218,10 @@ PTriangleMesh CVtkMeshIO::do_load(string const &  filename) const
 	auto reader = vtkSmartPointer<vtkPolyDataReader>::New();
 	reader->SetFileName(filename.c_str());
 	auto mesh = reader->GetOutput(); 
-	mesh->Update(); 
 	if (!mesh)
 		return PTriangleMesh(); 
+
+	mesh->Update(); 
 	
 	auto vertices = read_vertices(*mesh); 
 	auto triangles = read_triangles(*vertices, *mesh); 
