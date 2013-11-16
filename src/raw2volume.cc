@@ -180,9 +180,12 @@ int do_main(int argc, char *argv[])
 	C3DFVector fscale(scale);
 
 	C3DImageVector out_images;
-	fseek(in_file, skip, SEEK_SET);
-	out_images.push_back(read_image(in_file, pixel_type, bsize, fscale, high_endian));
-
+	if (fseek(in_file, skip, SEEK_SET) == 0) 
+		out_images.push_back(read_image(in_file, pixel_type, bsize, fscale, high_endian));
+	else 
+		throw create_exception<invalid_argument>("Skipping ", skip, " bytes of file '", 
+							 in_filename, "' failed:", strerror(errno)); 
+	
 	return !imageio.save(out_filename, out_images);
 }
 
