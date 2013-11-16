@@ -40,7 +40,11 @@ private:
 
 };
 
-const SProgramDescription general_help{
+#define IF_THIS(A)  \
+	{ if (A) cvdebug() << #A << " is true\n"; }
+
+
+const SProgramDescription general_help {
 	{pdi_group, "Test"}, 
 	{pdi_short, "program tests"}, 
 	{pdi_description, "This program tests the command line parser."}, 
@@ -335,7 +339,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option"));
 
-	BOOST_CHECK_THROW((olist.parse(options.size(), &options[0])), invalid_argument); 
+	BOOST_CHECK_THROW(IF_THIS(olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_missing_argument_short, CmdlineParserFixture )
@@ -346,7 +350,7 @@ BOOST_FIXTURE_TEST_CASE( test_missing_argument_short, CmdlineParserFixture )
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(test, "lala", 'i', "a string option"));
 	
-	BOOST_CHECK_THROW( (olist.parse(options.size(), &options[0])), invalid_argument); 
+	BOOST_CHECK_THROW( IF_THIS(olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_missing_string_argument_long, CmdlineParserFixture )
@@ -357,7 +361,7 @@ BOOST_FIXTURE_TEST_CASE( test_missing_string_argument_long, CmdlineParserFixture
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(test, "lala", 'i', "a string option"));
 	
-	BOOST_CHECK_THROW( (olist.parse(options.size(), &options[0])), invalid_argument); 
+	BOOST_CHECK_THROW( IF_THIS(olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 
@@ -371,7 +375,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option"));
 
-	BOOST_CHECK_THROW((olist.parse(options.size(), &options[0])), invalid_argument); 
+	BOOST_CHECK_THROW(IF_THIS(olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 const SProgramDescription general_help_test = {
