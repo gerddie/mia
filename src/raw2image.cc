@@ -204,8 +204,12 @@ int do_main(int argc, char *argv[])
 		throw invalid_argument("scale takes exactly 2 parameters");
 
 	C2DImageVector out_images;
-	fseek(in_file, skip, SEEK_SET);
-	out_images.push_back(read_image(in_file, pixel_type, size, scale, high_endian));
+	if (fseek(in_file, skip, SEEK_SET) == 0) 
+		out_images.push_back(read_image(in_file, pixel_type, size, scale, high_endian));
+	else 
+		throw create_exception<invalid_argument>("Skipping ", skip, " bytes of file '", 
+							 in_filename, "' failed:", strerror(errno)); 
+							 
 
 	return !imageio.save(out_filename, out_images);
 }
