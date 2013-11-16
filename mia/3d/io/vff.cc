@@ -307,6 +307,7 @@ CVFF3DImageIO::PData CVFF3DImageIO::do_load(string const&  filename)const
 		return PData();
 
 	SHeader header;
+	memset(&header, 0, sizeof(SHeader)); 
 	header.m_elementsize = 1.0;
 
 	while (fgets(buffer, 256, f)) {
@@ -323,7 +324,8 @@ CVFF3DImageIO::PData CVFF3DImageIO::do_load(string const&  filename)const
 			*end = 0;
 
 			if (!store_info(buffer, split, header)) {
-				throw invalid_argument(string("vff-load:Read component '") + string(split)  + string("' failed"));
+				throw invalid_argument(string("vff-load:Read component '") 
+						       + string(split)  + string("' failed"));
 			}
 		}else{
 			if (buffer[0] != 0xC)
@@ -357,7 +359,7 @@ CVFF3DImageIO::PData CVFF3DImageIO::do_load(string const&  filename)const
 		}
 	}break;
 	default:
-		assert(!"input format not implemented");
+		throw invalid_argument(string("vff-load: input format not implemented"));
 	}
 
 	if (result->size() > 0)
