@@ -38,7 +38,8 @@ void CHistory::append(const string& me, const string& version, const CCmdOptionL
 	CHistoryRecord record = options.get_values();
 	record["+PROGRAM"] = me;
 	record["+VERSION"] = version;
-	record["+USER"] = string(getenv("USER"));
+	const char *user = getenv("USER"); 
+	record["+USER"] = string(user ? user : "unknown");
 	record["+LIBMIA_VERSION"] = PACKAGE_VERSION;
 	record["+LIBMIA_REVISION"] = get_revision();
 	time_t t = time(NULL);
