@@ -478,9 +478,9 @@ retry:
 		label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 		lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
 		
-	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 7);
+	} while (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 7);
 	
-	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc == 7) {
+	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y) {
 		cvmsg() << "LV classification failed\n"; 
 		return result;
 	}
