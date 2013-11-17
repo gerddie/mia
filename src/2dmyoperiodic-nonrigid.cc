@@ -255,22 +255,23 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 
 		if (i == *low_index)
 			continue; 
-		
-		if (i == *high_index) {
-			++low_index; 
-			++high_index; 
-			if (high_index != subset.end())
-				continue;
-		}
 
 		// the last images may be registered using SSD without interpolating references 
 		P2DImage ref; 
 		if (high_index != subset.end()) {
 
+			if (i == *high_index) {
+				++low_index; 
+				++high_index; 
+				continue;
+			}
+				
 			float w = float(*high_index - i)/(*high_index - *low_index);  
 			FAddWeighted lerp(w);
 			
-			cvmsg() << "create " << i << " from [" << *low_index << ", " << *high_index << "] w = "<< w <<"\n"; 
+			cvmsg() << "create " << i << " from [" << *low_index << ", " 
+				<< *high_index << "] w = "<< w <<"\n"; 
+			
 			ref = mia::filter(lerp, *images[*high_index], *images[*low_index]); 
 			if (m_params.save_ref) {
 				stringstream refname; 
