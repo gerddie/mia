@@ -123,7 +123,7 @@ static P2DImage  read_bit_pixels(CFile& image, unsigned int width, unsigned int 
 {
         TRACE("read_bit_pixels");
         C2DBitImage *result = new C2DBitImage(C2DBounds(width, height));
-
+	P2DImage presult(result); 
 	for (int y = height-1; y >= 0; --y) {
 		int row_count = 0;
 		C2DBitImage::iterator  p = result->begin() + width * y;
@@ -135,15 +135,18 @@ static P2DImage  read_bit_pixels(CFile& image, unsigned int width, unsigned int 
 		// eat the padding bytes
 		int remain = (4 - row_count % 4) % 4;
 		while (remain--) {
-			cverb << fgetc(image) << " ";
+			if (fgetc(image) == EOF) 
+				throw runtime_error("BPM::Load: incomplete image");
+			
 		}
 	}
-        return P2DImage(result);
+        return presult;
 }
 
 static P2DImage  read_4bit_pixels(CFile& image, unsigned int width, unsigned int height)
 {
 	C2DBitImage *result = new C2DBitImage(C2DBounds(width, height));
+	P2DImage presult(result); 
 	cvdebug() << "read_4bit_pixels\n";
 
 	for (int y = height-1; y >= 0; --y) {
@@ -151,22 +154,26 @@ static P2DImage  read_4bit_pixels(CFile& image, unsigned int width, unsigned int
 		C2DBitImage::iterator p = result->begin() + width * y;
 		for (size_t x = 0; x < width; x += 2, ++row_count) {
 			int inbyte = fgetc(image);
+			if (inbyte == EOF) 
+				throw runtime_error("BPM::Load: incomplete image");
 			*p++ = (inbyte >> 4) & 0xF;
 			*p++ = inbyte & 0xF;
 		}
 		// eat the padding bytes
 		int remain = (4 - row_count % 4) % 4;
 		while (remain--) {
-			fgetc(image);
+			if (fgetc(image) == EOF) 
+				throw runtime_error("BPM::Load: incomplete image");
 		}
 	}
 
-	return P2DImage(result);
+	return presult;
 }
 
 static P2DImage  read_8bit_pixels_uc(CFile& image, unsigned int width, unsigned int height)
 {
 	C2DUBImage *result = new C2DUBImage(C2DBounds(width, height));
+	P2DImage presult(result); 
 	int row_count =  (4 - width % 4) % 4;
 	cvdebug() << "read_8bit_pixels_nc\n";
 
@@ -177,18 +184,19 @@ static P2DImage  read_8bit_pixels_uc(CFile& image, unsigned int width, unsigned 
 
 		int remain = row_count;
 		while (remain--) {
-			fgetc(image);
+			if (fgetc(image) == EOF) 
+				throw runtime_error("BPM::Load: incomplete image");
 		}
 	}
 	cvdebug() << "read_8bit_pixels_nc done\n";
-	return P2DImage(result);
+	return presult;
 }
 
 static P2DImage  read_8bit_pixels_c(CFile& image, unsigned int width, unsigned int height)
 {
         TRACE("read_8bit_pixels_c");
         C2DUBImage *result = new C2DUBImage(C2DBounds(width, height));
-
+	P2DImage presult(result); 
 
 	int x = 0;
 	int y = height-1;
@@ -197,6 +205,9 @@ static P2DImage  read_8bit_pixels_c(CFile& image, unsigned int width, unsigned i
 
 		int n = fgetc(image);
 		int c = fgetc(image);
+		if (n == EOF || c == EOF) 
+			throw runtime_error("BMP::Load: incomplete image");
+
 
 		if (n == 0) {
 			switch (c) {
@@ -208,15 +219,23 @@ static P2DImage  read_8bit_pixels_c(CFile& image, unsigned int width, unsigned i
 			case 1: y = -1;
 				break;
 
-			case 2:
-				x += fgetc(image);
-				y -= fgetc(image);
-				break;
+			case 2: {
+				const int dx = fgetc(image);
+				const int dy = fgetc(image);
+				if (dx == EOF || dy == EOF) 
+					throw runtime_error("BMP::Load: incomplete image");
+				x += dx; 
+				y -= dy; 
+			} break;
 
 			default: {
 				bool odd = c & 1;
-				while ( c-- )
-					(*result)(x++,y) = fgetc(image);
+				while ( c-- ) {
+					const int cc = fgetc(image);
+					if (cc == EOF) 
+						throw runtime_error("BMP::Load: incomplete image");
+					(*result)(x++,y) = cc; 
+				}
 				if (odd)
 					fgetc(image);
 			}
@@ -227,13 +246,14 @@ static P2DImage  read_8bit_pixels_c(CFile& image, unsigned int width, unsigned i
 		}
 	}
 
-	return P2DImage(result);
+	return presult;
 }
 
 
 static P2DImage  read_16bit_pixels(CFile& image, unsigned int width, unsigned int height)
 {
 	C2DUSImage *result = new C2DUSImage(C2DBounds(width, height));
+	P2DImage presult(result); 
 	int row_count = width % 2;
 	cvdebug() << "read_16bit_pixels\n";
 
@@ -247,11 +267,13 @@ static P2DImage  read_16bit_pixels(CFile& image, unsigned int width, unsigned in
 #endif
 		int remain = row_count;
 		while (remain--) {
-			fgetc(image);
-			fgetc(image);
+			if (fgetc(image) == EOF) 
+				throw runtime_error("BPM::Load: incomplete image");
+			if (fgetc(image) == EOF) 
+				throw runtime_error("BPM::Load: incomplete image");
 		}
 	}
-	return P2DImage(result);
+	return presult;
 }
 
 
@@ -261,6 +283,7 @@ static P2DImage  read_24bit_pixels(CFile& image, unsigned int width, unsigned in
 	cvdebug() << "read_24bit_pixels\n";
 
 	C2DUIImage *result = new C2DUIImage(C2DBounds(width, height));
+	P2DImage presult(result); 
 
 	for (int y = height-1; y >= 0; --y) {
 		unsigned int *p = &(*result)(0,y);
@@ -271,7 +294,7 @@ static P2DImage  read_24bit_pixels(CFile& image, unsigned int width, unsigned in
 			ENDIANADAPT(*p);
 #endif
 	}
-	return P2DImage(result);
+	return presult;
 }
 
 #ifdef WORDS_BIGENDIAN
