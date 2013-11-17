@@ -60,7 +60,6 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string out_filename;
 	string out_type;
-	bool help_plugins = false;
 
 	size_t startid = 0; 
 	size_t endid = numeric_limits<int>::max(); 
@@ -96,11 +95,6 @@ int do_main( int argc, char *argv[] )
 		
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
-
-	if (help_plugins) {
-		filter_plugins.print_help(cout);
-		return EXIT_SUCCESS;
-	}
 
 	if ( filter_chain.empty() )
 		cvwarn() << "no filters given, just copy\n";
