@@ -73,9 +73,6 @@ CVtk3DVFIOPlugin::PData CVtk3DVFIOPlugin::do_load(const string&  filename) const
 	}
 
 	auto dims = iovf->GetDimensions();
-	if (dim != 3)
-		throw create_exception<invalid_argument>("3D Vtkvf load (", filename ,
-							 "): Expect 3 dimensions but got ", dim); 
 	C3DBounds size(dims[0], dims[1], dims[2]); 
 
 	int components = iovf->GetNumberOfScalarComponents(); 
