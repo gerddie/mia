@@ -61,7 +61,6 @@ void C2DNavierRegModel::do_solve(const C2DFVectorfield& b, C2DFVectorfield& v) c
 	size_t i = 0;
 
 	do {
-		++i;
 		residuum = 0;
 
 		C2DFVectorfield::const_iterator ib = b.begin() + b.get_size().x;
@@ -76,9 +75,9 @@ void C2DNavierRegModel::do_solve(const C2DFVectorfield& b, C2DFVectorfield& v) c
 		if (i ==0)
 			start_residuum = residuum;
 
-		if (residuum < 1)
+		if (residuum < 0.01)
 			break;
-
+		++i;
 
 	} while (i < m_max_iter && residuum / start_residuum > m_epsilon);
 }
