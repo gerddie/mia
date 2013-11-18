@@ -56,6 +56,7 @@ C3DOrientationAndPosition C3DImage::get_orientation() const
 	auto op = dynamic_cast<const C3DImageOrientationPositionAttribute *>(attr.get());
 	if (!op) {
 		cvwarn() << "C3DImage::get_orientation: Bogus orientation attribute, return default\n"; 
+		return C3DOrientationAndPosition(); 
 	}
 	return *op; 
 }
