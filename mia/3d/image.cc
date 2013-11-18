@@ -47,6 +47,7 @@ EPixelType C3DImage::get_pixel_type() const
 	return m_pixel_type;
 }
 
+
 E3DImageOrientation C3DImage::get_orientation() const
 {
 	const PAttribute orattr = get_attribute("orientation");
