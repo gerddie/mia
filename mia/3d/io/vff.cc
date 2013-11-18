@@ -52,6 +52,13 @@ struct SHeader {
 	float m_max;
 	float m_elementsize;
 	C3DFVector m_spacing;
+	SHeader():m_valid(false), 
+		  m_pixel_type(it_unknown), 
+		  m_rank(0), 
+		  m_min(0), 
+		  m_max(0), 
+		  m_elementsize(0){
+	}
 };
 
 typedef bool (*FDecode)(istream& is, SHeader& header);
@@ -307,7 +314,6 @@ CVFF3DImageIO::PData CVFF3DImageIO::do_load(string const&  filename)const
 		return PData();
 
 	SHeader header;
-	memset(&header, 0, sizeof(SHeader)); 
 	header.m_elementsize = 1.0;
 
 	while (fgets(buffer, 256, f)) {
