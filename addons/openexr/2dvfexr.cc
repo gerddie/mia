@@ -98,11 +98,11 @@ CEXR2DVFIOPlugin::PData  CEXR2DVFIOPlugin::do_load(const string& filename) const
 		file.readPixels (dw.min.y, dw.max.y);
 		return vf;
 	}
-	catch (...) {
-		return CEXR2DVFIOPlugin::PData();
+
+	catch (const std::exception& x) {
+		// should add an debug message 
+		cvwarn() << "OpenXER: failed reading vector field from '"<< filename<< "':" << x.what() << "\n"; 
 	}
-
-
 	return CEXR2DVFIOPlugin::PData();
 }
 
