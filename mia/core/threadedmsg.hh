@@ -68,7 +68,6 @@ private:
 	static void do_set_master_stream(std::ostream& master); 
 	
 	
-
 	std::ostream& m_old; 
 
 }; 

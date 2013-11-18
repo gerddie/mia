@@ -62,16 +62,14 @@ BOOST_AUTO_TEST_CASE( test_streamredir )
 {
 	ostringstream test;
 
-	Cstreamredir *s = new Cstreamredir(test);
-	ostream test_output(s);
+	Cstreamredir s(test);
+	ostream test_output(&s);
 
 	test_output << "test\n";
 	cvdebug() << "test string >>" << test.str() << "<<\n";
 
 	streambuf *os = test_output.rdbuf(0);
-	BOOST_CHECK_EQUAL((void*)os, (void *)s);
-	delete os;
-
+	BOOST_CHECK_EQUAL((void*)os, (void *)&s);
 
 	BOOST_CHECK(test.str() == "test");
 }
@@ -80,13 +78,10 @@ BOOST_AUTO_TEST_CASE( test_streamredir_overflow )
 {
 	ostringstream test;
 
-	Cstreamredir *s = new Cstreamredir(test);
-	ostream test_output(s);
+	Cstreamredir s(test);
+	ostream test_output(&s);
 
 	for (size_t i = 0; i < 2000; ++i) {
 		test_output << i;
 	}
-
-	streambuf *os = test_output.rdbuf(0);
-	delete os;
 }
