@@ -137,12 +137,14 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 	else {
 		auto ed = g_DescriptionEntryNames.find(entry); 
 		assert(ed != g_DescriptionEntryNames.end()); 
-		if (!default_value) 
+		if (!default_value) {
 			cvwarn() << "Description value '" <<  ed->second << "' not set\n"; 
-		else 
+			return string(""); 
+		} else {
 			cvdebug() << "Description value '" <<  ed->second 
 				  << "' not set, using default '" << default_value << "'\n"; 
-		return string(default_value); 
+			return string(default_value); 
+		}
 	}
 }
 
