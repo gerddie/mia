@@ -199,16 +199,16 @@ BOOST_AUTO_TEST_CASE( test_attributes )
 	attr_list["string_attr"] = PAttribute(new CStringAttribute(test_string));
 
 	CIntAttribute *int_attr = dynamic_cast<CIntAttribute*>(attr_list["int_attr"].get());
-	BOOST_CHECK(int_attr);
+	BOOST_REQUIRE(int_attr);
 	BOOST_CHECK(*int_attr == 1);
 
 
 	CFloatAttribute *float_attr = dynamic_cast<CFloatAttribute*>(attr_list["float_attr"].get());
-	BOOST_CHECK(float_attr);
+	BOOST_REQUIRE(float_attr);
 	BOOST_CHECK(*float_attr == 1.0f);
 
 	CStringAttribute *string_attr = dynamic_cast<CStringAttribute*>(attr_list["string_attr"].get());
-	BOOST_CHECK(string_attr);
+	BOOST_REQUIRE(string_attr);
 	string s =  *string_attr;
 	BOOST_CHECK(test_string ==  s);
 
@@ -220,12 +220,12 @@ BOOST_AUTO_TEST_CASE( test_attributes )
 
 	CAttributedData data1(PAttributeMap(new CAttributeMap(attr_list)));
 	int_attr = dynamic_cast<CIntAttribute*>(data1.get_attribute("int_attr").get());
-	BOOST_CHECK(int_attr);
+	BOOST_REQUIRE(int_attr);
 	BOOST_CHECK(*int_attr == 1);
 
 	CAttributedData data2(data1);
 	int_attr = dynamic_cast<CIntAttribute*>(data2.get_attribute("int_attr").get());
-	BOOST_CHECK(int_attr);
+	BOOST_REQUIRE(int_attr);
 	BOOST_CHECK(*int_attr == 1);
 
 	int kk = get_attribute_as<int>(*data2.get_attribute("int_attr"));
@@ -233,11 +233,11 @@ BOOST_AUTO_TEST_CASE( test_attributes )
 
 	data2.set_attribute("int_attr", PAttribute(new CIntAttribute(2)));
 	int_attr = dynamic_cast<CIntAttribute*>(data2.get_attribute("int_attr").get());
-	BOOST_CHECK(int_attr);
+	BOOST_REQUIRE(int_attr);
 	BOOST_CHECK(*int_attr == 2);
 
 	int_attr = dynamic_cast<CIntAttribute*>(data1.get_attribute("int_attr").get());
-	BOOST_CHECK(int_attr);
+	BOOST_REQUIRE(int_attr);
 	BOOST_CHECK(*int_attr == 1);
 
 	CAttributedData data3;
