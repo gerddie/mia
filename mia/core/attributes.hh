@@ -629,13 +629,9 @@ template <>
 struct dispatch_attr_string<CAttributeMap> {
 	static std::string val2string(const CAttributeMap& /*value*/) {
 		throw std::invalid_argument("Conversion of a CAttributeMap to a string not implemented");
-		// avoid warnings ...
-		return std::string("");
 	}
 	static CAttributeMap string2val(const std::string& /*str*/) {
 		throw std::invalid_argument("Conversion of a string to a CAttributeMap not implemented");
-                // avoid warnings ...
-		return CAttributeMap();
 	}
 };
 
