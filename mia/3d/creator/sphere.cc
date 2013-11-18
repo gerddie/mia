@@ -103,7 +103,7 @@ P3DImage C3DSphereCreator::do_create(const C3DBounds& size) const
 				dx = pow(dx, m_p);
 
 				dx += dy;
-				*p =  (dx > l) ? 0 : *p = move_range<T,is_float>::apply(cos( dx / l * m_f * M_PI ));
+				*p =  (dx > l) ? 0 : move_range<T,is_float>::apply(cos( dx / l * m_f * M_PI ));
 			}
 		}
 	}
