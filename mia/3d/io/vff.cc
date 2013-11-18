@@ -271,8 +271,8 @@ void handle_endian(Iterator b, Iterator e)
 			++b;
 		}
 		break;
-		cvdebug() << "Endian correct 64 bit data\n";
 	case 8:
+		cvdebug() << "Endian correct 64 bit data\n";
 		while (b != e) {
 
 			shuffle s;
