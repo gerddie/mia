@@ -154,6 +154,9 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 {
 	std::fill(m_joined_histogram.begin(), m_joined_histogram.end(), 0.0); 
 
+	assert(mov_begin != mov_end); 
+	assert(ref_begin != ref_end); 
+
 	if (m_mov_max < m_mov_min) {
 		// (re)evaluate the ranges 
 		auto mov_range = get_reduced_range(mov_begin, mov_end); 
