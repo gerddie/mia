@@ -236,8 +236,10 @@ static P2DImage  read_8bit_pixels_c(CFile& image, unsigned int width, unsigned i
 						throw runtime_error("BMP::Load: incomplete image");
 					(*result)(x++,y) = cc; 
 				}
-				if (odd)
-					fgetc(image);
+				if (odd) {
+					if (fgetc(image) == EOF) 
+						throw runtime_error("BMP::Load: incomplete image");
+				}
 			}
 			}
 		}else{
