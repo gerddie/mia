@@ -126,11 +126,11 @@ struct FCompareImages: public TFilter<bool> {
 	}
 };
 
-void save(P2DImage image, const string& name)
+bool save(P2DImage image, const string& name)
 {
 	C2DImageIOPluginHandler::Instance::Data vlist;
 	vlist.push_back(image);
-	C2DImageIOPluginHandler::instance().save(name, vlist);
+	return C2DImageIOPluginHandler::instance().save(name, vlist); 
 }
 
 void test_deformadd()
@@ -169,10 +169,11 @@ void test_deformadd()
 	P2DImage result_direct = filter(FDeformer2D(A, *ipf), *image);
 
 	if (!filter_equal(FCompareImages(), *result_direct, *result_add)) {
-		save(image, "original.png");
-		save(im, "inter.png");
-		save(result_direct, "result_direct.png");
-		save(result_add, "result_add.png");
+		if (!save(image, "original.png") ||
+		    !save(im, "inter.png") || 
+		    !save(result_direct, "result_direct.png")||
+		    !save(result_add, "result_add.png"))
+			cverr() << "Couldn't write debug images\n"; 
 	}
 
 }
