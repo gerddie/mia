@@ -73,12 +73,12 @@ solve_sCG::solve_sCG (C3DFImage& w1, C3DFImage& f1, C3DFImage& gain_image, doubl
 	__scale2(new double[__count]),
 	__border(new bool[__count]),
 
-	__r1rho1(0,0), 
-	__r2rho2(0,0),
-	 __normr0(0,0),
-	__q(0,0), 
-	__e(0,0),
-	__sprod(0,0),
+	__r1rho1(0.0), 
+	__r2rho2(0.0),
+	 __normr0(0.0),
+	__q(0.0), 
+	__e(0.0),
+	__sprod(0.0),
 
 	__min_res(m_res),
 	__relres(r_res)
