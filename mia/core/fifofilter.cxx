@@ -35,6 +35,8 @@ TFifoFilter<T>::TFifoFilter(size_t filter_width, size_t min_fill, size_t read_st
 	m_min_fill(min_fill + read_start), 
 	m_read_start(read_start), 
 	m_fill(0), 
+	m_start_slice(0), 
+	m_end_slice(0), 
 	m_initialized(false)
 {
 }
