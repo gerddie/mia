@@ -488,7 +488,7 @@ int do_main( int argc, char *argv[] )
 	if (rv_idx < 0) 
 		throw runtime_error("RV could not be identified"); 
 
-	if (rv_idx < 0) 
+	if (lv_idx < 0) 
 		throw runtime_error("LV could not be identified"); 
 
 	if (perf_idx < 0) 

@@ -52,7 +52,7 @@ struct __dispatch_filter {
 
 template <typename T> 
 struct __dispatch_filter<T, true> {
-	static T apply(const T2DImage<T>& data, int cx, int cy, int hw) {
+	static T apply(const T2DImage<T>& data, int cx, int cy, int  hw) {
 		double result = 0.0; 
 		int n = 0; 
 		for (int y = cy - hw; y <= cy + hw; ++y) {
@@ -91,6 +91,7 @@ template <typename T>
 C2DMean::result_type C2DMean::operator () (const T2DImage<T>& data) const
 {
 	TRACE_FUNCTION; 
+	assert(m_hw >=0); 
 	const bool is_floating_point = boost::is_floating_point<T>::value; 
 
 	T2DImage<T> *tresult = new T2DImage<T>(data.get_size(), data);

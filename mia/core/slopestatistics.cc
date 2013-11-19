@@ -489,6 +489,10 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 		  [](double x) { return fabs(x);}); 
 	
 	int levels = log2(wt_transformed.size()); 
+	if (levels < 2) 
+		throw create_exception<invalid_argument>("CSlopeStatistics::evaluate_wt: Series size", wt_transformed.size(), 
+							 "too short for a sensible evaluation"); 
+
 	int ncoeffs = 1; 
 	m_wt_peak_coefficient = 0.0; 
 	auto c = wt_transformed.begin() + 1; 
