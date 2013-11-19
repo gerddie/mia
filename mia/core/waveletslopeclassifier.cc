@@ -155,6 +155,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl():
 	Baseline_idx(-1), 
 	free_breathing(false), 
 	max_movment_energy(0.0), 
+	n_movement_components(0), 
 	result(CWaveletSlopeClassifier::wsc_fail)
 {
 }
@@ -169,6 +170,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	Baseline_idx(-1), 
 	free_breathing(false), 
 	max_movment_energy(0.0), 
+	n_movement_components(0), 
 	result(CWaveletSlopeClassifier::wsc_fail)
 {
 	vector<PSlopeStatistics> vstats; 
