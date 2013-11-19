@@ -64,7 +64,7 @@ private:
 	PRIVATE float  solve_at(const C3DFVector& b, C3DFVectorfield::iterator& x)const;
 	float m_mu;
 	float m_lambda;
-	float m_a1,m_a, m_b, m_c, m_a_b, m_b_4;
+	float m_a, m_c, m_a_b, m_b_4;
 //	float m_omega;
 	float m_epsilon;
 	size_t m_max_iter;
@@ -85,6 +85,8 @@ C3DNavierRegModel::C3DNavierRegModel(float mu, float lambda, size_t maxiter,  fl
 	m_b_4 = 0.25 * b * m_c;
 	m_a_b = ( a + b ) * m_c;
 	m_a = a * m_c;
+	m_dx = 0; 
+	m_dxy = 0; 
 
 	cvdebug() << "initialise model with mu=" << mu << " lambda=" << lambda << "\n";
 }
