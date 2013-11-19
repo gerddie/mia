@@ -26,6 +26,9 @@
 template <typename T> 
 struct pass_type {
 	typedef T value_type; 
+
+	pass_type(): x(T()){}; 
+	pass_type(T _x): x(_x){}; 
 	T x; 
 }; 
 
