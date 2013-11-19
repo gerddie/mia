@@ -80,7 +80,11 @@ TFluidReg::TFluidReg(const TFluidRegParams& params,TLinEqnSolver *_solver, const
 	my(params.My),
 	Start(0,0,0),
 	End(params.source->get_size()),
+	u(nullptr), 
+	delta(1.0),           // step size
+	mismatch(numeric_limits<float>::max()), 
 	matter_threshold(params.matter_threshold),
+	B(nullptr), 
 	solver(_solver),
 	initialStepsize(params.InitialStepsize),
 	ipf(_ipf)
