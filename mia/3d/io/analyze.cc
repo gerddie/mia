@@ -444,6 +444,17 @@ CAnalyze3DImageIOPlugin::PData CAnalyze3DImageIOPlugin::do_load(const string&  f
 	// create output list
 	PData result(new C3DImageVector());
 
+	int voffset = static_cast<int>(hdr.dime.vox_offset); 
+
+
+	// Coverty will complain about an untrusted value. 
+	// This is no problem, because if voffset is off the scale, the 
+	// data reading will fail and the plug-in will throw. 
+	if (voffset > 0) 
+		if (!fseek(data_file, voffset, SEEK_CUR)) 
+			throw create_exception<runtime_error>("Analyze: unable seek in data file '", 
+							      data_file_name, "':", strerror(errno) );
+	
         // read data
 	while (num_img > 0) {
 		--num_img;
@@ -463,10 +474,10 @@ CAnalyze3DImageIOPlugin::PData CAnalyze3DImageIOPlugin::do_load(const string&  f
 			unflipped = true;
 			orientation = ior_unknown;
 		}
-		if (hdr.dime.vox_offset > 0) {
-			vector<char> junk(hdr.dime.vox_offset); 
-			if (fread(&junk[0], 1, hdr.dime.vox_offset, data_file) != hdr.dime.vox_offset) 
-				throw runtime_error(string("Analyze: unable to read from:") + data_file_name);  
+		if (voffset < 0) {
+			if (!fseek(data_file, -voffset, SEEK_CUR)) 
+				throw create_exception<runtime_error>("Analyze: unable seek in data file '", 
+							      data_file_name, "':", strerror(errno) );
 		}
 		C3DImage *img = unflipped ?
 			read_image<false>(size, hdr.dime.datatype , data_file)
