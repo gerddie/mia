@@ -35,8 +35,8 @@
 
 #include <miaconfig.h>
 #include <mia/core/factory.hh>
-#include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
+#include <mia/internal/main.hh>
 
 NS_MIA_BEGIN 
 
@@ -64,7 +64,7 @@ const mia::SProgramDescription description = {
 };
 
 int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
+do_main( int argc, char* argv[] )
 {
 	setenv("MIA_PLUGIN_TESTPATH", MIA_BUILD_ROOT "/plugintest/" PLUGIN_INSTALL_PATH,1);
 #ifdef WIN32
@@ -76,3 +76,5 @@ main( int argc, char* argv[] )
 	mia::cvdebug() << "Initialize test ...\n"; 
 	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
+
+MIA_MAIN(do_main); 
