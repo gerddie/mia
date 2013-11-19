@@ -97,7 +97,9 @@ CSegment2d::CSegment2d(bool bg_correct, int ncc,
 	_M_nClasses(ncc), 
 	_M_bg_correct(bg_correct), 
 	_M_class_centers(icc),
-	_M_k(k)
+	_M_k(k), 
+	_M_minh(0), 
+	_M_maxh(0)
 {
 }	
 
