@@ -162,6 +162,8 @@ FCorrelationAccumulator::FCorrelationAccumulator(const C2DBounds & _size):
 	sxy_vertical(_size),
 	sx(_size),
 	size(_size),
+	corr_hor(nullptr), 
+	corr_ver(nullptr), 
 	len(0)
 {
 }
