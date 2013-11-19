@@ -168,7 +168,8 @@ CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl():
 	LV_idx(-1), 
 	Perfusion_idx(-1), 
 	Baseline_idx(-1), 
-	max_freq_energy(0)
+	max_freq_energy(0), 
+	max_slope_length_diff(0)
 {
 }
 
@@ -176,8 +177,8 @@ CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl():
 CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl(const CFFTSlopeClassifier::Columns& series, float breath_rate, bool /*mean_stripped*/):
 	Perfusion_idx(-1),
 	Baseline_idx(-1), 
-	max_freq_energy(0.0)
-
+	max_freq_energy(0.0), 
+	max_slope_length_diff(0)
 {
 	size_t n = series.size();
 	vector<statmap> stats(n);
