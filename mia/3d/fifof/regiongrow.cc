@@ -41,7 +41,8 @@ C2DRegiongrowFifoFilter::C2DRegiongrowFifoFilter(const CProbabilityVector probma
 	m_low(low),
 	m_seed(seed),
 	m_class(cls),
-	m_depth(depth)
+	m_depth(depth), 
+	m_slice_emls(0)
 {
 	m_shape = C3DShapePluginHandler::instance().produce("6n");
 }
