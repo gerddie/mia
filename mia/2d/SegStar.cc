@@ -31,7 +31,8 @@
 NS_MIA_BEGIN
 using namespace std;
 
-CSegStar::CSegStar()
+CSegStar::CSegStar():
+	m_radius(0.0)
 {
 }
 
