@@ -68,6 +68,13 @@ C2DSolveCG::C2DSolveCG (C2DFImage& w1, C2DFImage& f1, C2DFImage& gain_image, dou
 	m_scale2(m_count),
 	m_border(m_count),
 
+	m_r1rho1(0.0), 
+	m_r2rho2(0.0),
+	m_normr0(0.0),
+	m_q(0.0), 
+	m_e(0.0),
+	m_sprod(0.0),
+
 	m_min_res(m_res),
 	m_relres(r_res)
 
