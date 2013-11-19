@@ -160,7 +160,8 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 
 CAnalyze3DImageIOPlugin::CAnalyze3DImageIOPlugin():
 	C3DImageIOPlugin("analyze"),
-	m_type_table(analyze_type_table)
+	m_type_table(analyze_type_table), 
+	m_swap_endian(false)
 {
 //	add_supported_type(it_bit);
 	add_supported_type(it_ubyte);
