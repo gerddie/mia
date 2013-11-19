@@ -36,7 +36,13 @@ template <typename T, bool value>
 struct __dispatch_filter {
 	static T apply(const T2DImage<T>& data, int cx, int cy, int hw) {
 		double result = 0.0; 
-		int n = 0; 
+		int n = 0;
+		// 
+		// Coverty complains about this: 1128688, 1128687 
+		// 
+		// hw >= 0, cy >= 0 && cy < data.get_size().y
+		// therefore n>=1 
+		// 
 		for (int y = cy - hw; y <= cy + hw; ++y) {
 			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {
@@ -55,6 +61,9 @@ struct __dispatch_filter<T, true> {
 	static T apply(const T2DImage<T>& data, int cx, int cy, int  hw) {
 		double result = 0.0; 
 		int n = 0; 
+		// 
+		// see above. Coverty  1128688, 1128687
+		// 
 		for (int y = cy - hw; y <= cy + hw; ++y) {
 			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {

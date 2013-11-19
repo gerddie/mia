@@ -374,6 +374,21 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 		}
 	}
 
+	if ((info_header.width < 1) || (info_header.height < 1))
+		throw create_exception<runtime_error>("CBMP2DImageIO::load: Image has unsupported dimensions", 
+						      " width=", info_header.width, ", height=", 
+						      info_header.height);
+	
+  
+	// this is actually a non-sense test but it should silence the Coverty warning about 
+	// the tainted variables. 
+	size_t h = info_header.height; 
+	size_t w = info_header.width; 
+	if (h > numeric_limits<int>::max() || w > numeric_limits<int>::max()) 
+		throw create_exception<runtime_error>("CBMP2DImageIO::load: Image has too big", 
+						      " width=", info_header.width, ", height=", 
+						      info_header.height);
+	
 	PData result = PData(new C2DImageVector());
 
 

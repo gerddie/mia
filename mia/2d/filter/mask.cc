@@ -115,7 +115,8 @@ C2DMask::result_type C2DMask::operator () (const T2DImage<T>& data) const
 	P2DImage image = (*in_image_list)[0];
 
 	if (image->get_pixel_type() == it_bit) {
-		const C2DBitImage *mask = dynamic_cast<const C2DBitImage*>(image.get());
+		// use static cast because type is already tested. 
+		const C2DBitImage *mask = static_cast<const C2DBitImage*>(image.get());
 		C2DMaskDispatch m(mask, m_fill, m_inverse, true);
 		return m(data);
 	} else {

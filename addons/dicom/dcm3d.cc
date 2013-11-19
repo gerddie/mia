@@ -76,9 +76,13 @@ typedef map<PAttribute, CImageSeries, attr_less> CAquisitions;
 
 struct C3DImageCreator: public TFilter<bool> {
 	C3DImageCreator(size_t nz): m_nz(nz),
+				    m_z(0),
+				    m_slice_pos(0.0), 
 				    m_delta_z(0.0), 
-				    m_has_slice_location(false){
-	};
+				    m_has_slice_location(false)
+		
+		{
+		};
 
 	template <typename T>
 	bool operator() ( const T2DImage<T>& image);
@@ -286,7 +290,9 @@ struct CSliceSaver: public TFilter<bool>
 };
 
 CSliceSaver::CSliceSaver(const string& fname):
-	m_location(0)
+	m_location(0), 
+	m_series(0), 
+	m_slice(0)
 {
 	// filename split the
 	bfs::path fullname(fname);
