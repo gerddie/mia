@@ -30,7 +30,8 @@
 NS_MIA_BEGIN
 
 C3DTransformation::C3DTransformation(const C3DInterpolatorFactory& ipf):
-	Transformation<C3DImage, C3DInterpolatorFactory>(ipf)
+	Transformation<C3DImage, C3DInterpolatorFactory>(ipf), 
+	m_debug(false)
 {
 
 }
