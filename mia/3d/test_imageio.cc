@@ -81,7 +81,7 @@ bool init_unit_test_suite( )
 
 NS_MIA_USE; 
 int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
+do_main( int argc, char* argv[] )
 {
 
 #ifdef WIN32
@@ -94,3 +94,6 @@ main( int argc, char* argv[] )
 	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }
 
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main);
