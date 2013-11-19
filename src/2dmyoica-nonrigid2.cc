@@ -283,7 +283,7 @@ int do_main( int argc, char *argv[] )
 	bool do_continue=true; 
 	bool lastpass = false; 
 
-	while (do_continue){
+	while (do_continue || lastpass){
 		++current_pass; 
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
 		transformations = 
@@ -310,7 +310,9 @@ int do_main( int argc, char *argv[] )
 		references_float = ica2.get_references(); 
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
-		do_continue =  (!pass || current_pass < pass) && ica2.has_movement(); 
+
+		const bool can_one_more_pass = !pass || current_pass < pass; 
+		do_continue = can_one_more_pass && ica2.has_movement(); 
 		if (!do_continue && !save_crop_feature.empty()) {
 			stringstream cfile; 
 			cfile << save_crop_feature << "-final.txt"; 
@@ -321,7 +323,7 @@ int do_main( int argc, char *argv[] )
 		}
 		
 		// run one more pass if the limit is not reached and no movement identified
-		lastpass = (!do_continue && (!pass || current_pass < pass)); 
+		lastpass = (!do_continue && can_one_more_pass); 
 
 	}
 
