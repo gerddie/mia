@@ -326,7 +326,8 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixtureMixe
 
 
 struct TransformSplineFixtureFieldNonuniform {
-	TransformSplineFixtureFieldNonuniform()
+	TransformSplineFixtureFieldNonuniform():
+		range(1.0)
 	{
 
 	}
