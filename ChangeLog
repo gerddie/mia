@@ -1,3 +1,28 @@
+
+2.0.12
+
+  Fixes for tracked bugs:
+
+  * #49:  Parallize the 3D scale filter
+  * #125: Make slicelocation and slicespacing non-obligatory
+  * #127: Correct documentation and output to refers to 2D data.
+  * #128: Add program to convert multi-record 2D image to 3D image
+
+  Partial fixes:
+
+  * #126: (partially) add override for do_get_preferred_suffix()
+  * #129: (partial) move optional plug-ins that depend on external
+          libraries to /addons
+
+  Additional fixes:
+
+  * Fix 147 issues reported by Coverty http://scan.coverity.com
+  * Dissmiss 37 issues reported by Coverty als intentional or false positive
+
+  * wavelet slope statistics will now throw an exception if the slope is too short
+  * set the C++11 flag correctly in UNIX
+  * Correct strides when writing to the 2D output tensor field.
+
 2.0.11
 
   Fixes of tracked bugs:
