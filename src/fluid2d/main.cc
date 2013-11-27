@@ -54,7 +54,7 @@ const SProgramDescription g_description = {
 }; 
 
 inline void register_level(const C2DImage& ModelScale, const C2DImage& RefScale, C2DFVectorfield& Shift,
-			   float regrid_thresh,float epsilon, int level, bool elast, float lambda, float mu,
+			   float regrid_thresh,float epsilon, int level, bool elast, float mu, float lambda, 
 			   C2DInterpolatorFactory& ipfactory)
 {
 	FCopy2DImageToFloatRepn converter;

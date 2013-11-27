@@ -85,7 +85,10 @@ C2DAnisoDiff::C2DAnisoDiff(int maxiter, float epsilon, float k, FEdgeStopping ed
 	m_k(k),
 	m_edge_stop(edge_stop),
 	m_neighbourhood(neighbourhood),
-	m_histogramfeeder(0,256,256)
+	m_histogramfeeder(0,256,256), 
+	m_sigma_e(0.0), 
+	m_gamma(0.0), 
+	m_sigma(0.0)
 {
 	if (m_neighbourhood != 4 && m_neighbourhood != 8) {
 		stringstream errmsg;

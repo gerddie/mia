@@ -45,6 +45,7 @@ void H5Handle::set_parent(const H5Handle& parent)
 
 #define H5Destructor(TYPE, CALL)					\
 	struct TYPE : public TSingleReferencedObject<hid_t>::Destructor {				\
+		TYPE(){};						\
 		virtual void operator ()(hid_t& handle)const {		\
 			herr_t err = CALL(handle);			\
 			if (err != 0) {					\

@@ -28,7 +28,7 @@ IF(WITH_OpenEXR)
   
   
   IF( EXR_LIBRARIES AND EXR_INCLUDE_DIRS )
-    
+    DEFINE_PROPERTY(GLOBAL PROPERTY HAVE_OPENEXR_PROP BRIEF_DOCS "yeah" FULL_DOCS "yeah")
     SET(image2dio_path ${PLUGIN_INSTALL_PATH}/2dimage/io)
     SET(image3dio_path ${PLUGIN_INSTALL_PATH}/3dimage/io)
     SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/2dvf/io)

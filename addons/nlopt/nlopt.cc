@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/core/minimizer/nlopt.hh>
+#include <addons/nlopt/nlopt.hh>
 #include <stdexcept>
 
 NS_BEGIN(nlopt)

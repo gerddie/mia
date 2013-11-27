@@ -146,12 +146,22 @@ float CSlopeStatistics::get_energy() const
 CSlopeStatisticsImpl::CSlopeStatisticsImpl(const vector<float>& series, int index):
 	m_series(series),
 	m_curve_length_valid(false),
+	m_curve_length(0.0), 
 	m_range_valid(false),
 	m_perfusion_peak_valid(false),
+	m_range(0.0), 
+	m_mean_freq(0.0), 
+	m_energy(0.0), 
 	m_mean_freq_valid(false), 
 	m_start_movement(-1), 
 	m_gradient_peak_valid(false), 
 	m_wt_valid(false), 
+	m_wt_peak_coefficient(0),
+	m_wt_mean_wt_level(0),
+	m_wt_energy(0),
+	m_energy_pos(CSlopeStatistics::ecp_none), 
+	m_energy_time_mean(0), 
+	m_maximum_gradient_from_zero(0), 
 	m_index(index)
 {
 }
@@ -479,6 +489,10 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 		  [](double x) { return fabs(x);}); 
 	
 	int levels = log2(wt_transformed.size()); 
+	if (levels < 2) 
+		throw create_exception<invalid_argument>("CSlopeStatistics::evaluate_wt: Series size", wt_transformed.size(), 
+							 "too short for a sensible evaluation"); 
+
 	int ncoeffs = 1; 
 	m_wt_peak_coefficient = 0.0; 
 	auto c = wt_transformed.begin() + 1; 

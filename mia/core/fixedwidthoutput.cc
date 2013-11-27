@@ -102,7 +102,7 @@ void CFixedWidthOutput::write(const std::string& text)
 			size_t endpos = m_pos; 
 			
 			// search end of next word 
-			while (*hs != *es && !isspace(*hs)) {
+			while (hs != es && !isspace(*hs)) {
 				++endpos;
 				++hs; 
 			}

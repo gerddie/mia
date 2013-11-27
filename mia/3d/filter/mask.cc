@@ -95,7 +95,8 @@ C3DMask::result_type C3DMask::operator () (const T3DImage<T>& data) const
 	P3DImage image = (*in_image_list)[0];
 
 	if (image->get_pixel_type() == it_bit) {
-		const C3DBitImage *mask = dynamic_cast<const C3DBitImage*>(image.get());
+		// use static cast because type is already tested. 
+		const C3DBitImage *mask = static_cast<const C3DBitImage*>(image.get());
 		C3DMaskDispatch m(mask, true);
 		return m(data);
 	} else {

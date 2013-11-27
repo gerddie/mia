@@ -70,7 +70,8 @@ CGaussNoiseGenerator::CGaussNoiseGenerator(unsigned int seed, double mu, double 
 	CNoiseGenerator(seed),
 	m_mu(mu),
 	m_sigma( sigma ),
-	m_use_last(false)
+	m_use_last(false), 
+	m_y2(0.0)
 {
 }
 

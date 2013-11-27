@@ -49,13 +49,14 @@ const SProgramDescription g_description = {
 	{pdi_description, "This program runs the non-rigid registration of an image series "
 	 "by first registering an already aligned subset of the images to one reference, "
 	 "and then by registering the remaining images by using synthetic references. "
-	 "The is a 3D version of G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
-	 "Quasiperiodicity in Motion Correction of Free-Breathing,\" "
+	 "The is a 3D version of G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, "
+	 "\"Exploiting Quasiperiodicity in Motion Correction of Free-Breathing,\" "
 	 "IEEE Transactions on Medical Imaging, 29(8), 2010."}, 
-	{pdi_example_descr, "Register the image series given by images imageXXXX.v by optimizing a spline based "
-	 "transformation with a coefficient rate of 16 pixel ,skipping two images at the "
-	 "beginning and using normalized gradient fields as initial cost measure "
-	 "and SSD as final measure. Penalize the transformation by using divcurl with aweight of 2.0. "
+	{pdi_example_descr, "Register the image series given by images imageXXXX.v by "
+	 "optimizing a spline based transformation with a coefficient rate of 16 pixel, "
+	 "skipping two ""images at the beginning and using normalized gradient fields "
+	 "as initial cost measure and SSD as final measure. Penalize the transformation "
+	 "by using divcurl with aweight of 2.0. "
 	 "As optimizer an nlopt based newton method is used."}, 
 	{pdi_example_code, "mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2"
 	 "-F spline:rate=16,penalty=[divcurl:weight=2] -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd "
@@ -80,7 +81,8 @@ struct FAddWeighted: public TFilter<P3DImage> {
 	P3DImage operator() (const T3DImage<T>& a, const T3DImage<S>& b) const
 	{
 		if (a.get_size() != b.get_size()) {
-			throw invalid_argument("input images cann not be combined because they differ in size");
+			throw invalid_argument("input images cann not be "
+					       "combined because they differ in size");
 		}
 		T3DImage<T> *result = new T3DImage<T>(a.get_size(), a);
 		auto r = result->begin();
@@ -124,13 +126,14 @@ public:
 	};
 
 	C3DMyocardPeriodicRegistration(const RegistrationParams& params); 
-	vector<P3DTransformation> run(C3DImageSeries& images); 
+	vector<P3DTransformation> run(C3DImageSeries& images, size_t preskip, size_t postskip); 
 	size_t get_ref_idx()const; 
 
 private: 
 	vector<size_t>  get_high_contrast_candidates(const C3DImageSeries& images, 
 						     size_t startidx, size_t endidx); 
-	vector<size_t> get_prealigned_subset(const C3DImageSeries& images);  
+	vector<size_t> get_prealigned_subset(const C3DImageSeries& images, 
+					     size_t preskip, size_t postskip);  
 	void run_initial_pass(C3DImageSeries& images, 
 			      vector<P3DTransformation>& transforms, 
 			      const vector<size_t>& subset); 
@@ -160,8 +163,9 @@ public:
 	}
 };
 
-vector<size_t>  C3DMyocardPeriodicRegistration::get_high_contrast_candidates(const C3DImageSeries& images, 
-									     size_t startidx, size_t endidx)
+vector<size_t>  
+C3DMyocardPeriodicRegistration::get_high_contrast_candidates(const C3DImageSeries& images, 
+							     size_t startidx, size_t endidx)
 {
 	CStatsEvaluator sev; 
 	priority_queue<IdxVariation> q; 
@@ -182,11 +186,14 @@ vector<size_t>  C3DMyocardPeriodicRegistration::get_high_contrast_candidates(con
 	return result; 
 }
 
-vector<size_t> C3DMyocardPeriodicRegistration::get_prealigned_subset(const C3DImageSeries& images) 
+vector<size_t> C3DMyocardPeriodicRegistration::get_prealigned_subset(const C3DImageSeries& images, 
+								     size_t preskip, size_t postskip) 
 {
+	assert(postskip < images.size()); 
+	assert(preskip < images.size() - postskip); 
+	
 	cvmsg() << "estimate prealigned subset ...\n"; 
-	vector<size_t> candidates = get_high_contrast_candidates(images, 20, images.size()-2); 
-	assert(!candidates.empty()); 
+	vector<size_t> candidates = get_high_contrast_candidates(images, preskip, images.size()-2); 
 
 	C3DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0]); 
 	m_ref = candidates[0]; 
@@ -232,9 +239,11 @@ void C3DMyocardPeriodicRegistration::run_final_pass(C3DImageSeries& images,
 						    vector<P3DTransformation>& transforms, 
 						    const vector<size_t>& subset)
 {
+	assert(!subset.empty()); 
+	
 	cvmsg() << "run final registration pass ...\n"; 
 	C3DFullCostList costs; 
-	// create costs
+
 	costs.push(m_params.pass2_cost); 
 	
 	C3DNonrigidRegister nr(costs, 
@@ -250,16 +259,17 @@ void C3DMyocardPeriodicRegistration::run_final_pass(C3DImageSeries& images,
 		if (i == *low_index)
 			continue; 
 		
-		if (i == *high_index) {
-			++low_index; 
-			++high_index; 
-			if (high_index != subset.end())
-				continue;
-		}
-
+		
 		// the last images may be registered using SSD without interpolating references 
 		P3DImage ref; 
 		if (high_index != subset.end()) {
+
+			if (i == *high_index) {
+				++low_index; 
+				++high_index; 
+				continue;
+			}
+
 			float w = float(*high_index - i)/(*high_index - *low_index);  
 			FAddWeighted lerp(w);
 			
@@ -271,7 +281,7 @@ void C3DMyocardPeriodicRegistration::run_final_pass(C3DImageSeries& images,
 				cvmsg() << "Save reference to " << refname.str() << "\n"; 
 			}
 		}else
-			ref = images[*low_index]; 
+			ref = images[*low_index];	
 
 		cvmsg() << "Register image " << i << "\n"; 		
 		P3DTransformation transform = nr.run(images[i], ref);
@@ -286,10 +296,10 @@ C3DMyocardPeriodicRegistration::C3DMyocardPeriodicRegistration(const Registratio
 {
 }
 
-vector<P3DTransformation> C3DMyocardPeriodicRegistration::run(C3DImageSeries& images)
+vector<P3DTransformation> C3DMyocardPeriodicRegistration::run(C3DImageSeries& images, size_t preskip, size_t postskip)
 {
 	vector<P3DTransformation> transforms(images.size()); 
-	vector<size_t> subset = get_prealigned_subset(images); 
+	vector<size_t> subset = get_prealigned_subset(images, preskip, postskip); 
 	run_initial_pass(images, transforms, subset); 
 	run_final_pass(images, transforms, subset); 
 	return transforms; 
@@ -321,13 +331,16 @@ int do_main( int argc, char *argv[] )
 	string reference_index_file; 
 
 	size_t skip = 0; 
-	
+	size_t preskip = 20; 
+	size_t postskip	= 2; 
+
 	C3DMyocardPeriodicRegistration::RegistrationParams params;
 
 	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO");
-	options.add(make_opt( in_filename, "in-file", 'i', "input images following the naming pattern nameXXXX.ext", 
+	options.add(make_opt( in_filename, "in-file", 'i', 
+			      "input images following the naming pattern nameXXXX.ext", 
 			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
 			      "file name base for registered files given as C-format string", 
@@ -339,28 +352,36 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nPreconditions & Preprocessing"); 
 	options.add(make_opt(skip, "skip", 'k', 
 				   "Skip images at the begin of the series")); 
+
+	options.add(make_opt(preskip, "preskip", 0, 
+			     "Skip images at the beginning+skip of the series when searching for high contrats image"));
+	options.add(make_opt(postskip, "postskip", 0, 
+			     "Skip images at the end of the series when searching for high contrats image"));
+
 	options.add(make_opt(params.max_candidates, "max-candidates", 0, 
 				   "maximum number of candidates for global reference image")); 
-	options.add(make_opt(params.series_select_cost, "image:cost=[ngf:eval=ds]", "cost-series", 'S',
-				   "Const function to use for the analysis of the series")); 
+	options.add(make_opt(params.series_select_cost, "image:cost=[ngf:eval=ds]", 
+			     "cost-series", 'S',
+			     "Const function to use for the analysis of the series")); 
 	options.add(make_opt(reference_index_file, "ref-idx", 0, 
-				   "save reference index number to this file"));  
+			     "save reference index number to this file"));  
 
 
 	options.set_group("\nRegistration"); 
 
 
-	options.add(make_opt( params.minimizer, "gsl:opt=gd,step=0.01", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( params.minimizer, "gsl:opt=gd,step=0.01", "optimizer", 'O', 
+			      "Optimizer used for minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
-
+	
 	options.add(make_opt( params.transform_creator, "spline", "transForm", 'f', 
 				    "transformation type"));
 
 	options.add(make_opt(params.pass1_cost, "image:cost=[ngf:eval=ds]", "cost-subset", '1', 
-				   "Cost function for registration during the subset registration")); 
+			     "Cost function for registration during the subset registration")); 
 
 	options.add(make_opt(params.pass2_cost, "image:cost=ssd", "cost-final", '2', 
-				   "Cost function for registration during the final registration")); 
+			     "Cost function for registration during the final registration")); 
 	
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
@@ -370,7 +391,9 @@ int do_main( int argc, char *argv[] )
 	size_t end_filenum  = 0;
 	size_t format_width = 0;
 
-	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
+	string src_basename = 
+		get_filename_pattern_and_range(in_filename, start_filenum, 
+					       end_filenum, format_width);
 
 	C3DImageSeries in_images; 
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
@@ -384,14 +407,22 @@ int do_main( int argc, char *argv[] )
 	}
 
 	if (skip >= in_images.size()) {
-		throw create_exception<invalid_argument>( "Try to skip ",  skip, " images, but input set has only ", 
-						in_images.size(), " images.");  
+		throw create_exception<invalid_argument>( "Try to skip ",  skip, 
+							  " images, but input set has only ", 
+							  in_images.size(), " images.");  
 	}
 
 	C3DImageSeries series(in_images.begin() + skip, in_images.end()); 
+	if (preskip > series.size() - 2) 
+		throw create_exception<invalid_argument>( "Try to skip ", preskip, " images th the beginning of a series ", 
+							  series.size(), " of relevant images."); 
+	if (postskip  >= series.size() - preskip)
+		throw create_exception<invalid_argument>( "Try to skip ", postskip, " images at the end of a series ", 
+							  series.size(), " of relevant images"); 
+	
 
 	C3DMyocardPeriodicRegistration mpr(params); 
-	vector<P3DTransformation> transforms = mpr.run(series);
+	vector<P3DTransformation> transforms = mpr.run(series, preskip, postskip);
 
 	if (!reference_index_file.empty()) {
 		ofstream refidxfile(reference_index_file.c_str(), ios_base::out );

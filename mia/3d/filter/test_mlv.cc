@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 								sum2 += val * val;
 								++n;
 							}
-					float m = mu(x,y,z) = sum / n;
+					float m = mu(x,y,z) = (n > 0) ? sum / n : 0.0f;
 					sigma(x,y,z) = (n > 1) ? (sum2 - n * m * m) / (n - 1) : 0.0f;
 				}
 

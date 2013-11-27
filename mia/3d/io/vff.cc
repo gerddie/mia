@@ -52,6 +52,13 @@ struct SHeader {
 	float m_max;
 	float m_elementsize;
 	C3DFVector m_spacing;
+	SHeader():m_valid(false), 
+		  m_pixel_type(it_unknown), 
+		  m_rank(0), 
+		  m_min(0), 
+		  m_max(0), 
+		  m_elementsize(0){
+	}
 };
 
 typedef bool (*FDecode)(istream& is, SHeader& header);
@@ -173,6 +180,7 @@ CVFF3DImageIO::CVFF3DImageIO():
 	add_supported_type(it_sshort);
 	add_supported_type(it_ubyte);
 	add_suffix(".vff");
+	add_suffix(".VFF");
 }
 
 
@@ -263,8 +271,8 @@ void handle_endian(Iterator b, Iterator e)
 			++b;
 		}
 		break;
-		cvdebug() << "Endian correct 64 bit data\n";
 	case 8:
+		cvdebug() << "Endian correct 64 bit data\n";
 		while (b != e) {
 
 			shuffle s;
@@ -322,7 +330,8 @@ CVFF3DImageIO::PData CVFF3DImageIO::do_load(string const&  filename)const
 			*end = 0;
 
 			if (!store_info(buffer, split, header)) {
-				throw invalid_argument(string("vff-load:Read component '") + string(split)  + string("' failed"));
+				throw invalid_argument(string("vff-load:Read component '") 
+						       + string(split)  + string("' failed"));
 			}
 		}else{
 			if (buffer[0] != 0xC)
@@ -356,7 +365,7 @@ CVFF3DImageIO::PData CVFF3DImageIO::do_load(string const&  filename)const
 		}
 	}break;
 	default:
-		assert(!"input format not implemented");
+		throw invalid_argument(string("vff-load: input format not implemented"));
 	}
 
 	if (result->size() > 0)

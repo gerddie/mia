@@ -33,7 +33,7 @@ NS_MIA_BEGIN
  */
 class EXPORT_3D C3DCamera {
 public: 
-	C3DCamera() = default;
+	C3DCamera(); 
 
 	/**
 	   Constructor 

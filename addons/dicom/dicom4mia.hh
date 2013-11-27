@@ -63,7 +63,7 @@ public:
 
 	std::string get_attribute(const std::string& name, bool required)const;
 	C2DFVector get_pixel_size() const;
-	C3DFVector get_voxel_size() const;
+	C3DFVector get_voxel_size(bool warn_no_z) const;
 
 	P2DImage get_image() const;
 

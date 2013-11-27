@@ -97,7 +97,18 @@ std::string TIOPluginHandler<I>::get_preferred_suffix(const std::string& type) c
 	TRACE_FUNCTION; 
 	auto plugin = this->plugin(type.c_str());
 	if ( !plugin ) {
-		throw create_exception<std::invalid_argument>("Plug-in '", type, "' not available"); 
+		// this may be a file suffix in itself, check if theres is a plug-in 
+		
+		const auto* iface = preferred_plugin_ptr(type); 
+		if (!iface) {
+			throw create_exception<std::runtime_error>("'", type, "' neither constitues an available plug-in "
+								      "nor a known file suffix, impossible to deduct a proper file suffix.", 
+								      "Available plug-ins are '", this->get_plugin_names(), "' with known file suffixes '", 
+								      get_supported_suffixes()); 
+		}
+		// if a valid suffix was given don't change it.
+		return type; 
+		
 	}
 	return plugin->get_preferred_suffix(); 
 }

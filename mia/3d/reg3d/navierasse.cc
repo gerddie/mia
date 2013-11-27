@@ -73,7 +73,7 @@ private:
 //	float  solve_at(const C3DFVector& b, v4sf *x, const v4sf *param)const;
 	float m_mu;
 	float m_lambda;
-	float m_a1,m_a, m_b, m_c, m_a_b, m_b_4;
+	float m_a, m_c, m_a_b, m_b_4;
 //	float m_omega;
 	float m_epsilon;
 	size_t m_max_iter;

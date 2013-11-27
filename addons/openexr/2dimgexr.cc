@@ -102,11 +102,10 @@ CEXR2DImageIOPlugin::PData  CEXR2DImageIOPlugin::do_load(const string& filename)
 		file.readPixels (dw.min.y, dw.max.y);
 		return result;
 	}
-	catch (...) {
-		return CEXR2DImageIOPlugin::PData();
+	catch (const std::exception& x) {
+		// should add an debug message 
+		cvwarn() << "OpenXER: failed reading image from '"<< filename<< "':" << x.what() << "\n"; 
 	}
-
-
 	return CEXR2DImageIOPlugin::PData();
 }
 

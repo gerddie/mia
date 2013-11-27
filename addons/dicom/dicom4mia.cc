@@ -121,6 +121,10 @@ struct CDicomReaderData {
 
 
 	C2DFVector getPixelSize();
+
+	C2DFVector getImagePixelSpacing(); 
+
+
 };
 
 
@@ -169,10 +173,14 @@ C2DFVector CDicomReader::get_pixel_size() const
 	return impl->getPixelSize();
 }
 
-C3DFVector CDicomReader::get_voxel_size() const
+C3DFVector CDicomReader::get_voxel_size(bool warn) const
 {
 	auto size2d = impl->getPixelSize();
-	auto thinkness = impl->getFloat64(DCM_SpacingBetweenSlices, true,0); 
+	auto thinkness = impl->getFloat64(DCM_SpacingBetweenSlices, false,0); 
+	if (thinkness <= 0.0 && warn) 
+		cvwarn() << "DICOM: 3D multiframe image doesn't provide a spacing between slices, most likely "
+			 << "the input file does not constitute a volume"; 
+
 	return C3DFVector(size2d.x, size2d.y, thinkness); 
 }
 
@@ -239,7 +247,7 @@ P3DImage CDicomReader::load_image3d()const
 	// get pixel data
 	impl->getPixelData(result->begin(), result->size());
 
-	result->set_voxel_size(this->get_voxel_size());
+	result->set_voxel_size(this->get_voxel_size(true));
 
 
 	const SLookupInit *attr_table = lookup_init;
@@ -462,12 +470,41 @@ void CDicomReaderData::getPixelData(I out_begin, size_t size)
 	getPixelData_LittleEndianExplicitTransfer(out_begin, size);
 }
 
+C2DFVector CDicomReaderData::getImagePixelSpacing()
+{
+	OFString help;
+	OFCondition success = dcm.getDataset()->findAndGetOFString(DCM_ImagerPixelSpacing, help, 0);
+	if (success.bad()) {
+		throw create_exception<runtime_error>( "Neither 'PixelSpacing' nor 'ImagerPixelSpacing' found!"
+						       " As a workaround to can add either of them by using 'dcmodify'");
+	}
+	C2DFVector result;
+
+	istringstream swidth(help.data());
+	swidth >> result.x;
+
+	success = dcm.getDataset()->findAndGetOFString(DCM_ImagerPixelSpacing, help, 1);
+	if (success.bad()) {
+		throw create_exception<runtime_error>( "Second value in 'ImagerPixelSpacing' not found!"
+						       " As a workaround to can add either of them by using 'dcmodify'");
+	}
+	istringstream sheight(help.data());
+	sheight >> result.y;
+
+	cvwarn() << "The image contained no 'PixelSpacing' tag, only 'ImagerPixelSpacing' that corresponds to the " 
+		 << "detector pixel spacing. If you can not assume that the rays are parallel, then your object "
+		 << "pixel spacing might have to be scaled."; 
+
+	return result;
+	
+}
+
 C2DFVector CDicomReaderData::getPixelSize()
 {
 	OFString help;
 	OFCondition success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 0);
 	if (success.bad()) {
-		throw create_exception<runtime_error>( "Required attribute 'PixelSpacing' not found");
+		return getImagePixelSpacing(); 
 	}
 	C2DFVector result;
 

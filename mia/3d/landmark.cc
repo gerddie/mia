@@ -28,14 +28,16 @@ using namespace std;
 
 C3DLandmark::C3DLandmark(const string& _name):
 	m_name(_name), 
-	m_has_location(false) 
+	m_has_location(false), 
+	m_isovalue(0.0)
 {
 }
 
 C3DLandmark::C3DLandmark(const std::string& name, const C3DFVector& location):
 	m_name(name),
 	m_has_location(true), 
-	m_location(location)
+	m_location(location), 
+	m_isovalue(0.0)
 {
 }
 

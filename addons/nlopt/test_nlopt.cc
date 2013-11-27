@@ -19,7 +19,7 @@
  */
 
 #include <mia/internal/autotest.hh>
-#include <mia/core/minimizer/nlopt.hh>
+#include <addons/nlopt/nlopt.hh>
 using namespace mia;
 using namespace nlopt; 
 

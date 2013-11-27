@@ -75,11 +75,7 @@ private:
 	virtual void post_set_reference(const mia::C3DImage& ref); 
 
 	mia::C3DFVectorfield m_ng_ref;
-	bool m_jump_levels_valid;
-	float m_cost_baseline;
-
 	PEvaluator m_evaluator;
-	float m_intensity_scale;
 };
 
 class C3DNFGImageCostPlugin: public mia::C3DImageCostPlugin {

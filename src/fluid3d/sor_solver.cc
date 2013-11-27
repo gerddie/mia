@@ -34,7 +34,8 @@ using namespace mia;
 
 TSORSolver::TSORSolver(int _max_steps, float _rel_res, float _abs_res,
 		       float mu, float lambda):
-	TFluidHomogenSolver(_max_steps,_rel_res, _abs_res,mu,lambda)
+	TFluidHomogenSolver(_max_steps,_rel_res, _abs_res,mu,lambda), 
+	d_xy(0)
 {
 }
 

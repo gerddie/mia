@@ -63,8 +63,9 @@ BOOST_AUTO_TEST_CASE( test_load_series )
 	test_image_list2.push_back(create_test_image(1,1,"proto3"));
 	
 
-	C2DImageIOPluginHandler::instance().save("test0.@", test_image_list1); 
-	C2DImageIOPluginHandler::instance().save("test1.@", test_image_list2); 
+	BOOST_REQUIRE(C2DImageIOPluginHandler::instance().save("test0.@", test_image_list1)); 
+	BOOST_REQUIRE(C2DImageIOPluginHandler::instance().save("test1.@", test_image_list2)); 
+
 	vector<string> filenames = {"test0.@","test1.@"}; 
 		
 	auto images = load_image_series(filenames); 

@@ -31,9 +31,12 @@ const char* fft2d_kernel_data::data_descr = "fft2d";
 
 CFFT2DKernel::CFFT2DKernel():
 	m_size(0,0),
-	m_cbuffer(NULL),
-	m_fbuffer(NULL),
-	m_scale(1.0)
+	m_cbuffer(nullptr),
+	m_fbuffer(nullptr),
+	m_scale(1.0), 
+	m_forward_plan(nullptr), 
+	m_backward_plan(nullptr), 
+	m_realsize_x(0)
 {
 }
 

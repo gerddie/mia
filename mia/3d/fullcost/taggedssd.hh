@@ -57,8 +57,6 @@ class EXPORT C3DTaggedSSDCost : public mia::C3DFullCost {
 	
 	mia::P3DImage m_src_scaled[3]; 
 	mia::P3DImage m_ref_scaled[3];
-
-	bool m_debug;
 }; 
 
 NS_END

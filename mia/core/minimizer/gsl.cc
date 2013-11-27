@@ -51,6 +51,12 @@ CGSLFDFMinimizer::CGSLFDFMinimizer(const gsl_multimin_fdfminimizer_type *ot,
 	m_start_step(start_step)
 {
 	add(property_gradient); 
+
+	m_func.n = 0; 
+	m_func.f = nullptr; 
+	m_func.df = nullptr; 
+	m_func.fdf = nullptr; 
+	m_func.params = nullptr;
 	
 }
 
@@ -159,6 +165,9 @@ CGSLFMinimizer::CGSLFMinimizer(const gsl_multimin_fminimizer_type *ot,
 	m_start_step(start_step), 
 	m_step_init(NULL)
 {
+	m_func.n = 0; 
+	m_func.f = nullptr; 
+	m_func.params = nullptr;
 }
 
 CGSLFMinimizer::~CGSLFMinimizer()

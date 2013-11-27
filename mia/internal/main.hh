@@ -24,31 +24,31 @@
 #include <mia/core/msgstream.hh>
 
 
-#define MIA_MAIN(callback) \
-	int main( int argc, char *argv[] ) \
-	{					 \
-	        try {				 \
-		      auto verb = getenv("MIA_INITIAL_VERBOSITY");      \
+#define MIA_MAIN(callback)						\
+	int main( int argc, char *argv[] )				\
+	{								\
+	        try {							\
+			auto verb = getenv("MIA_INITIAL_VERBOSITY");	\
 		      if (verb) {                                       \
-                            auto level = g_verbose_dict.get_value(verb);\
-			    vstream::instance().set_verbosity(level);   \
+			      auto level = mia::g_verbose_dict.get_value(verb); \
+			      mia::vstream::instance().set_verbosity(level); \
                       }                                                 \
-  	              return callback(argc, argv);                       \
+  	              return callback(argc, argv);			\
 	        }                                                       \
 		catch (const std::runtime_error &e){			\
-			 std::cerr << argv[0] << " runtime error: " << e.what() << endl; \
- 	        }                                                                    \
- 	        catch (const std::invalid_argument &e){                              \
-		        std::cerr << argv[0] << " invalid argument: " << e.what() << endl;\
-	        }                                                                    \
- 	        catch (const std::logic_error &e){                                   \
-		        std::cerr << argv[0] << " logic error: " << e.what() << endl;\
-	        }                                                                    \
-	        catch (const std::exception& e){			             \
-		        std::cerr << argv[0] << " error: " << e.what() << endl;      \
-	        }                                                                    \
-	        catch (...){                                                         \
-		       std::cerr << argv[0] << " unknown exception" << endl;         \
-	}                                                                            \
-	return EXIT_FAILURE;                                                         \
-}
+			std::cerr << argv[0] << " runtime error: " << e.what() << std::endl; \
+ 	        }							\
+ 	        catch (const std::invalid_argument &e){			\
+		        std::cerr << argv[0] << " invalid argument: " << e.what() << std::endl;	\
+	        }							\
+ 	        catch (const std::logic_error &e){			\
+		        std::cerr << argv[0] << " logic error: " << e.what() << std::endl; \
+	        }							\
+	        catch (const std::exception& e){			\
+		        std::cerr << argv[0] << " error: " << e.what() << std::endl; \
+	        }							\
+	        catch (...){						\
+			std::cerr << argv[0] << " unknown exception" << std::endl; \
+		}							\
+		return EXIT_FAILURE;					\
+	}

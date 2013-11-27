@@ -559,8 +559,12 @@ struct dispatch_attr_string<std::vector<T> > {
 	static std::vector<T> string2val(const std::string& str) {
 		size_t s;
 		std::istringstream svalue(str);
+		std::vector<T> v; 
 		svalue >> s;
-		std::vector<T> v(s);
+		if (s > v.max_size())
+			throw create_exception<std::runtime_error>("string2val: try to create a vector of size ", 
+								   s, " but support only size ", v.max_size()); 
+		v.resize(s);
 		for (size_t i = 0; i < s; ++i)
 			svalue >> v[i];
 		if (svalue.fail()) {
@@ -645,13 +649,9 @@ template <>
 struct dispatch_attr_string<CAttributeMap> {
 	static std::string val2string(const CAttributeMap& /*value*/) {
 		throw std::invalid_argument("Conversion of a CAttributeMap to a string not implemented");
-		// avoid warnings ...
-		return std::string("");
 	}
 	static CAttributeMap string2val(const std::string& /*str*/) {
 		throw std::invalid_argument("Conversion of a string to a CAttributeMap not implemented");
-                // avoid warnings ...
-		return CAttributeMap();
 	}
 };
 

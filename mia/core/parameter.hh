@@ -237,7 +237,7 @@ public:
 	   \param descr a description of the parameter
 	   \param required set if this parameter must be set by the end user 
 	 */
-	CDictParameter(T& value, const TDictMap<T> dict, const char *descr, bool required = false);
+	CDictParameter(T& value, const TDictMap<T>& dict, const char *descr, bool required = false);
 protected:
 	/**
 	   the implementation of the description-function
@@ -511,7 +511,7 @@ struct __dispatch_param_translate<const char *> {
 /// @endcond 
 
 template <typename T>
-CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr, bool required):
+CDictParameter<T>::CDictParameter(T& value, const TDictMap<T>& dict, const char *descr, bool required):
 	CParameter("dict", required, descr),
 	m_value(value),
 	m_default_value(value),

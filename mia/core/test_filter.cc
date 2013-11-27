@@ -50,7 +50,8 @@ private:
 
 template <class T>
 struct TestPixelType : public TestPixelTypeBase {
-	TestPixelType():TestPixelTypeBase((EPixelType)pixel_type<T>::value)
+	TestPixelType():TestPixelTypeBase((EPixelType)pixel_type<T>::value), 
+			value(T())
 	{
 	}
 

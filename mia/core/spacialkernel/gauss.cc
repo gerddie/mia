@@ -117,8 +117,9 @@ std::vector<double> C1DGaussFilterKernel::do_apply(const std::vector<double>& da
 	}
 
 	// filter at right boundary
-	for (int i = 0; i < get_fsize() && pos >= 0 && trgt != data.end(); ++i, --pos, ++trgt) {
-
+	for (int i = 0; i < get_fsize() && pos >= 0 && trgt != result.end() &&
+		     start != data.end();   ++i, --pos, ++trgt, ++start) {
+		
 		C1DFoldingKernel::const_iterator  ik = begin();
 		double  ht = 0.0;
 
@@ -132,8 +133,6 @@ std::vector<double> C1DGaussFilterKernel::do_apply(const std::vector<double>& da
 		}
 
 		*trgt = ht;
-
-		++start;
 	}
 	return result;
 }

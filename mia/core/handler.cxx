@@ -265,11 +265,11 @@ typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plu
 	auto p = m_plugins.find(plugin); 
 	if (p == m_plugins.end()) {
 		std::stringstream msg; 
-		msg << "Plugin '" << plugin << "' not found in '" 
-		    << I::PlugType::type_descr << "/" <<  I::PlugData::data_descr << "'\n"
+		cvdebug() << "Plugin '" << plugin << "' not found in '" 
+		    <<  I::PlugData::data_descr << "/" << I::PlugType::type_descr << "'\n"
 		    << " With search path\n"
 		    << "    '" << get_plugin_root(); 
-		throw std::invalid_argument(msg.str()); 
+		return nullptr; 
 	}
 	return p->second; 
 }

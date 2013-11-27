@@ -96,6 +96,7 @@ CInria3DImageIOPlugin::CInria3DImageIOPlugin():
 	add_supported_type(it_float);
 	add_supported_type(it_double);
 	add_suffix(".inr");
+	add_suffix(".INR");
 }
 
 

@@ -78,26 +78,25 @@ struct TransformSplineFixtureConst: public TransformSplineFixtureFieldBase {
 	virtual float fx(float x, float y);
 	virtual float fy(float x, float y);
 private: 
-	float m_fx; 
-	float m_fy; 
+	C2DFVector m_f; 
 };
 
 void TransformSplineFixtureConst::prepare(int dsize, float range, EInterpolation type, float fx, float fy)
 {
-	m_fx = fx; 
-	m_fy = fy; 
+	m_f.x = fx; 
+	m_f.y = fy; 
 
 	init(dsize, range, type); 
 }
 
 float TransformSplineFixtureConst::fx(float , float )
 {
-	return m_fx; 
+	return m_f.x; 
 }
 
 float TransformSplineFixtureConst::fy(float , float )
 {
-	return m_fy; 
+	return m_f.y; 
 }
 
 
