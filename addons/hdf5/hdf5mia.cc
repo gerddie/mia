@@ -409,7 +409,7 @@ H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_i
 
 	if (can_gzip()) {
 		auto dcpl = H5Property::create (H5P_DATASET_CREATE);
-		auto status = H5Pset_deflate (dcpl, 9);
+		auto status =  H5Pset_deflate (dcpl, 9);
 		// we compress the whole data in one chunk
 		auto chunk_size = space.get_size(); 
 		status = H5Pset_chunk (dcpl, chunk_size.size(), &chunk_size[0]);
