@@ -197,7 +197,7 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 
 	PTransformation transform;
 
-	// convert the images to float ans scale to range [-1,1]
+	// convert the images to float ans scale to a mean=0, sigma=1 intensity distribution
 	// this should be replaced by some kind of general pre-filter plug-in 
 	FScaleFilterCreator<dim> fc; 
 	auto tofloat_converter = ::mia::filter(fc, *src, *ref); 
