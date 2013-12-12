@@ -59,6 +59,7 @@ DEFEXE(2dmultiimagevar    mia2d )
 DEFEXE(2dimagefullstats   mia2d )
 DEFEXE(2dbinarycombine    mia2d )
 DEFEXE(2dtransformation-to-strain mia2d)
+DEFEXE(2dimageseries-maximum-intensity-projection mia2d) 
 
 DEFCHKEXE(2dlerp mia2d )
 
@@ -83,6 +84,7 @@ DEFEXE(2dgroundtruthreg       mia2dmyocardperf )
 DEFEXE(2dseries2sets          mia2dmyocardperf )
 DEFEXE(2dseries-segdistance   mia2dmyocardperf )
 DEFEXE(2dseries-mincorr       mia2dmyocardperf )
+
 DEFEXE(2dseries-sectionmask   mia2dmyocardperf )
 DEFEXE(2dmyoseries-dice       mia2dmyocardperf )
 DEFEXE(2dmyoseries-compdice   mia2dmyocardperf )
