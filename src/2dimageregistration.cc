@@ -71,6 +71,8 @@ int do_main( int argc, char *argv[] )
 
 	
 	auto cost_descrs = options.get_remaining(); 
+	if (cost_descrs.empty())
+		throw runtime_error("No registration criterion given");
 
 	C2DFullCostList costs; 
 	for (auto i = cost_descrs.begin(); i != cost_descrs.end(); ++i)
