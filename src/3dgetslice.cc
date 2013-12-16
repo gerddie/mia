@@ -98,11 +98,12 @@ struct __dispatch<T, dir_yz> {
 template <EDirection s_dir>
 class TGetter : public TFilter<bool> {
 public:
-	TGetter(size_t start, size_t n, const string& fname, const string& type):
+	TGetter(size_t start, size_t n, const string& fname, const string& type, int digits):
 		m_start(start),
 		m_n(n),
 		m_fname(fname),
-		m_type(type)
+		m_type(type), 
+		m_digits(digits)
 	{
 	}
 
@@ -115,7 +116,7 @@ public:
 		for(size_t i = m_start; i < end; ++i) {
 			P2DImage pimage(new  T2DImage<T>(__dispatch<T, s_dir>::get_slice(i, image)));
 			stringstream out_name;
-			out_name << m_fname << setw(4) << setfill('0') << i << "." << m_type;
+			out_name << m_fname << setw(m_digits) << setfill('0') << i << "." << m_type;
 			retval &= save_image(out_name.str(), pimage);
 		}
 		return retval;
@@ -125,6 +126,7 @@ private:
 	size_t m_n;
 	string m_fname;
 	string m_type;
+	int m_digits; 
 };
 
 int do_main( int argc, char *argv[] )
@@ -136,6 +138,7 @@ int do_main( int argc, char *argv[] )
 	size_t start_slice = 0;
 	size_t slice_number = 0;
 	EDirection direction = dir_xy;
+	int digits = 4; 
 
 	const auto& imageio2d = C2DImageIOPluginHandler::instance();
 
@@ -149,6 +152,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( out_type, imageio2d.get_set(), "type", 't', "output file type"));
 	options.add(make_opt( start_slice, "start", 's',"start slice number"));
 	options.add(make_opt( slice_number, "number", 'n', "number of slices (all=0)"));
+	options.add(make_opt( digits, "ndigits", 0, "minimum number of digits of the file name numbers"));
+
 	options.add(make_opt( direction, GDirectionmap, "dir", 'd', 
 			      "slice direction (xy=axial, xz=coronal, yz=saggital)"));
 
@@ -166,17 +171,17 @@ int do_main( int argc, char *argv[] )
 		switch (direction) {
 		case dir_xy:
 			result = mia::filter(TGetter<dir_xy>(start_slice, slice_number, 
-							     out_filename, out_suffix), 
+							     out_filename, out_suffix, digits), 
 					     *in_image);
 			break;
 		case dir_xz:
 			result = mia::filter(TGetter<dir_xz>(start_slice, slice_number, 
-							     out_filename, out_suffix), 
+							     out_filename, out_suffix, digits), 
 					     *in_image);
 			break;
 		case dir_yz:
 			result = mia::filter(TGetter<dir_yz>(start_slice, slice_number, 
-							     out_filename, out_suffix), 
+							     out_filename, out_suffix, digits), 
 					     *in_image);
 			break;
 		default:
