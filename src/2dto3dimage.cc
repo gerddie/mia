@@ -79,7 +79,7 @@ int do_main( int argc, char *argv[] )
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
 		cvmsg() << new_line << "Read: " << i <<" out of "<< "[" << start_filenum<< "," << end_filenum << "]" ;
-                auto in_image = load_image2d(in_filename);
+                auto in_image = load_image2d(src_name);
                 ic.add(*in_image); 
 	}
 	cvmsg() << "\n";
