@@ -88,8 +88,8 @@ void C2DLabelStackFilter::grow( int x, int y, C2DBitImage& input, unsigned short
 
 void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 {
-	C3DBitImage::iterator ii = input.begin();
-	C3DUSImage::iterator usi = m_out_buffer.begin(); 
+	auto ii = input.begin();
+	auto usi = m_out_buffer.begin(); 
 	
 	for (size_t y = 0; y < input.get_size().y; ++y) 
 		for (size_t x = 0; x < input.get_size().x; ++x, ++usi, ++ii) {
@@ -112,7 +112,7 @@ void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 void C2DLabelStackFilter::label(C2DBitImage& input)
 {
 	// first grow all regions that are already labeled from the last slice
-	C3DUSImage::iterator usi = m_out_buffer.begin(); 
+	auto usi = m_out_buffer.begin(); 
 	for (size_t y = 0; y < input.get_size().y; ++y) 
 		for (size_t x = 0; x < input.get_size().x; ++x, ++usi) {
 			if ( *usi )
@@ -132,9 +132,9 @@ void C2DLabelStackFilter::new_label(C2DBitImage& input)
 void  C2DLabelStackFilter::re_label(C2DBitImage& input)
 {
 	
-	C3DUSImage::iterator usi = m_out_buffer.begin(); 
-	C3DUSImage::iterator use = m_out_buffer.end(); 
-	C2DBitImage::iterator ii = input.begin(); 
+	auto usi = m_out_buffer.begin(); 
+	auto use = m_out_buffer.end(); 
+	auto ii = input.begin(); 
 
 	// maintain old labeling for new slice, and clean the input at 
 	// labeled positions
