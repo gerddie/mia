@@ -203,7 +203,7 @@ void PluginMapFixture<Handler>::test_suffix_from_name_or_suffix(const Expectmap&
 	const auto& io = Handler::instance(); 
 	for_each(map.begin(), map.end(), 
 		[&io](const pair<string, string>& p) {
-			 cvdebug() << "Test '" << p.first << "\n"; 
+			 cvdebug() << "Test '" << p.first << "'\n"; 
 			 BOOST_CHECK_EQUAL(io.get_preferred_suffix(p.first), p.second); 
 		 });
 
