@@ -272,7 +272,8 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& pa
 	cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
 
 	auto factory = this->plugin(factory_name.c_str());
-	DEBUG_ASSERT_RELEASE_THROW(factory, "A plug-in was not found but 'this->plugin' did not throw");
+	if (!factory) 
+		throw create_exception<std::invalid_argument>("Unable to find plugin for '", factory_name.c_str(), "'");
 	return factory->create(param_list.begin()->second,params.c_str());
 
 }

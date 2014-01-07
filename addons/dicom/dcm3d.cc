@@ -290,9 +290,9 @@ struct CSliceSaver: public TFilter<bool>
 };
 
 CSliceSaver::CSliceSaver(const string& fname):
-	m_location(0), 
 	m_series(0), 
-	m_slice(0)
+	m_slice(0),
+	m_location(0)
 {
 	// filename split the
 	bfs::path fullname(fname);

@@ -287,6 +287,58 @@ static typename F::result_type accumulate(F& f, const B& data)
 	}
 }
 
+template <typename F, typename INOUT, typename IN>
+static typename F::result_type _combine_inplace(const F& f, INOUT& inout, const IN& in)
+{
+	typedef typename Binder<IN>::Derived D;
+	switch (in.get_pixel_type()) {
+	case it_bit:   return f(inout, DC(typename D::Dbool, in));
+	case it_sbyte: return f(inout, DC(typename D::Dsc, in));
+	case it_ubyte: return f(inout, DC(typename D::Duc, in));
+	case it_sshort:return f(inout, DC(typename D::Dss, in));
+	case it_ushort:return f(inout, DC(typename D::Dus, in));
+	case it_sint:  return f(inout, DC(typename D::Dsi, in));
+	case it_uint:	 return f(inout, DC(typename D::Dui, in));
+#ifdef LONG_64BIT
+	case it_slong: return f(inout, DC(typename D::Dsl, in));
+	case it_ulong: return f(inout, DC(typename D::Dul, in));
+#endif
+	case it_float: return f(inout, DC(typename D::Dfloat, in));
+	case it_double:return f(inout, DC(typename D::Ddouble, in));
+	default:
+		assert(!"unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
+	}
+}
+
+template <typename F, typename INOUT, typename IN>
+static typename F::result_type combine_inplace(const F& f, INOUT& inout, const IN& in)
+{
+	typedef typename Binder<INOUT
+>::Derived D;
+	switch (inout.get_pixel_type()) {
+	case it_bit:   return _combine_inplace(f, DV(typename D::Dbool, inout), in);
+	case it_sbyte: return _combine_inplace(f, DV(typename D::Dsc, inout), in);
+	case it_ubyte: return _combine_inplace(f, DV(typename D::Duc, inout), in);
+	case it_sshort:return _combine_inplace(f, DV(typename D::Dss, inout), in);
+	case it_ushort:return _combine_inplace(f, DV(typename D::Dus, inout), in);
+	case it_sint:  return _combine_inplace(f, DV(typename D::Dsi, inout), in);
+	case it_uint:  return _combine_inplace(f, DV(typename D::Dui, inout), in);
+#ifdef LONG_64BIT
+	case it_slong: return _combine_inplace(f, DV(typename D::Dsl, inout), in);
+	case it_ulong: return _combine_inplace(f, DV(typename D::Dul, inout), in);
+#endif
+	case it_float: return _combine_inplace(f, DV(typename D::Dfloat, inout), in);
+	case it_double:return _combine_inplace(f, DV(typename D::Ddouble, inout), in);
+	default:
+		assert(!"unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
+	}
+
+	
+}
+
+
 /**
    \ingroup filtering
 

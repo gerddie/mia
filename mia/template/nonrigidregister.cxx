@@ -197,7 +197,7 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 
 	PTransformation transform;
 
-	// convert the images to float ans scale to range [-1,1]
+	// convert the images to float ans scale to a mean=0, sigma=1 intensity distribution
 	// this should be replaced by some kind of general pre-filter plug-in 
 	FScaleFilterCreator<dim> fc; 
 	auto tofloat_converter = ::mia::filter(fc, *src, *ref); 
@@ -240,14 +240,16 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 
 		int scale_factor = 1 << shift; 
 		Size local_size = global_size / scale_factor; 
-
+		
+		cvinfo() << "scale_factor = " << scale_factor << " from shift " << shift 
+			 << ", global size = " << global_size << "\n"; 
 
 		if (transform) {
-			cvinfo() << "Upscale transform\n"; 
+			cvinfo() << "Upscale transform to " << local_size << " \n"; 
 			transform = transform->upscale(local_size);
 			cvinfo() << "done\n"; 
 		}else{
-			cvinfo() << "Create transform\n"; 
+			cvinfo() << "Create transform with size " << local_size << "\n"; 
 			transform = m_transform_creator->create(local_size);
 			cvinfo() << "done\n"; 
 		}
