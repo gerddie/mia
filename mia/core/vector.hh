@@ -241,7 +241,7 @@ std::ostream&  operator << (std::ostream& os, const Vector<T>& v)
 {
         os << "["; 
         for(auto i: v) 
-                os << *i << ", "; 
+                os << i << ", "; 
         os << "]"; 
         return os; 
 }

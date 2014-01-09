@@ -30,6 +30,8 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
+PrepareTestPluginPath plugin_path_init; 
+
 class TestTimeStep : public C2DRegTimeStep {
 private:
 

@@ -33,7 +33,7 @@ using namespace boost;
 
 namespace bmpl=boost::mpl;
 
-CSplineKernelTestPath init_splinekernel_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct TestIntegral2DFixture {
 

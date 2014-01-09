@@ -33,9 +33,7 @@ NS_MIA_USE
 namespace bfs=::boost::filesystem; 
 using namespace std; 
 
-C2DFullCostPluginHandlerTestPath fullcost_path_init; 
-C2DTransformCreatorHandlerTestPath transform_path_init;
-
+PrepareTestPluginPath plugin_path_init; 
 
 BOOST_AUTO_TEST_CASE (test_image_spline_gradinet ) 
 {

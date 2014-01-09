@@ -30,12 +30,15 @@
 
 namespace bfs=boost::filesystem;
 
+
 NS_MIA_USE
 using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace xmlpp;
 
+
+PrepareTestPluginPath plugin_path_init; 
 
 const char *testpoint_init  =
 	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><point y=\"20\" x=\"10\"/></test>\n";

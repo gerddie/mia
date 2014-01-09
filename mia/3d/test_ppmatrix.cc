@@ -23,7 +23,7 @@
 
 NS_MIA_USE;
 
-CSplineKernelTestPath splinekernel_init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct TransformSplineFixtureFieldBase {
 	TransformSplineFixtureFieldBase()

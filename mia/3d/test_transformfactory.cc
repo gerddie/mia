@@ -31,7 +31,7 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-CSplineKernelTestPath splinekernel_init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct HandlerTestFixture {
 	HandlerTestFixture();

@@ -30,7 +30,7 @@ using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem; 
 
-C2DImageIOPluginHandlerTestPath test_imageio_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 static P2DImage create_test_image(int acquisition, int instance, const string& protocol) 
 {

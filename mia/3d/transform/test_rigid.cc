@@ -31,8 +31,7 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-
-CSplineKernelTestPath kernel_test_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct ipfFixture {
 	ipfFixture():

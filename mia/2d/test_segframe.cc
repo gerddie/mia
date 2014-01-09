@@ -34,9 +34,7 @@ using namespace ::boost::unit_test;
 using namespace xmlpp;
 namespace bfs=boost::filesystem;
 
-C2DImageIOPluginHandlerTestPath test_imageio2d_path; 
-C2DTransformCreatorHandlerTestPath test_transform2d_creator_path; 
-
+PrepareTestPluginPath plugin_path_init; 
 
 extern const char *testframe_init;
 extern const char *testframe_init2;

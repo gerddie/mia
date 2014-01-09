@@ -33,7 +33,7 @@ struct ImagefullcostFixture {
 	
 }; 
 
-CSplineKernelTestPath splinekernel_init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 {

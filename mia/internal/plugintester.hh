@@ -66,7 +66,6 @@ const mia::SProgramDescription description = {
 int BOOST_TEST_CALL_DECL
 do_main( int argc, char* argv[] )
 {
-	setenv("MIA_PLUGIN_TESTPATH", MIA_BUILD_ROOT "/plugintest/" PLUGIN_INSTALL_PATH,1);
 #ifdef WIN32
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );

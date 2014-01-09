@@ -30,7 +30,7 @@
 using namespace transform_2dimage_filter; 
 using namespace mia; 
 
-C2DTransformCreatorHandlerTestPath transformhandler_init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct TransformFixture {
 

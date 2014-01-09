@@ -26,8 +26,7 @@ using namespace mia;
 
 namespace bfs=boost::filesystem;
 
-CSplineKernelTestPath spline_kernel_path_init; 
-
+PrepareTestPluginPath plugin_path_init; 
 
 class SegPointSplineTransformFixture {
 protected: 

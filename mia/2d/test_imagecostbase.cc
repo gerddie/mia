@@ -24,6 +24,8 @@
 #include <mia/2d/imagecostbase.hh>
 #include <mia/2d/transformmock.hh>
 
+PrepareTestPluginPath plugin_path_init; 
+
 struct C2DTestImageCost: public C2DImageCostBase {
 	C2DTestImageCost(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key,
 			 P2DInterpolatorFactory ipf,

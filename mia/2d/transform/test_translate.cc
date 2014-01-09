@@ -26,7 +26,7 @@
 NS_MIA_USE
 using namespace std; 
 
-CSplineKernelTestPath init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct TranslateTransformFixture {
 

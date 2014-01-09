@@ -26,7 +26,7 @@
 NS_MIA_USE
 using namespace std; 
 
-CSplineKernelTestPath splinekernel_init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct ipfFixture {
 	ipfFixture():

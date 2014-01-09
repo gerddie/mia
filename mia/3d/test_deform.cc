@@ -30,7 +30,7 @@ using namespace std;
 using namespace ::boost;
 using namespace boost::unit_test;
 
-CSplineKernelTestPath splinekernel_init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct DeformFixture {
 	DeformFixture();

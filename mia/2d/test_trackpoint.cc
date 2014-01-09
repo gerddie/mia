@@ -26,9 +26,7 @@
 using namespace std; 
 using namespace mia; 
 
-C2DTransformCreatorHandlerTestPath test_creator_path; 
-
-
+PrepareTestPluginPath plugin_path_init; 
 const char test_input[] = 
 	"1;12;10;5;some text\n"
 	"2;13;7;5;other text\n"

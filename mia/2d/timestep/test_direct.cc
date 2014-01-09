@@ -25,7 +25,7 @@
 NS_USE(direct_timestep_2d);
 NS_MIA_USE;
 
-CSplineKernelTestPath kernel_test_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 class C2DDummyTransformation: public C2DTransformMock {
 

@@ -27,7 +27,7 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace scale_2dimage_filter;
 
-CSplineKernelTestPath init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 BOOST_AUTO_TEST_CASE( test_downscale )
 {

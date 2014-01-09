@@ -26,7 +26,7 @@
 
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
-CSplineKernelTestPath splinekernel_init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 BOOST_AUTO_TEST_CASE( test_divcurl_cost ) 
 {

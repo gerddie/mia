@@ -22,6 +22,8 @@
 #include <mia/internal/autotest.hh>
 #include <mia/2d/register.hh>
 
+PrepareTestPluginPath plugin_path_init; 
+
 struct AffineRegistrationFixture {
 
 	AffineRegistrationFixture(); 

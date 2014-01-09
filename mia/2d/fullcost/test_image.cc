@@ -28,36 +28,14 @@
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
 
+PrepareTestPluginPath plugin_path_init; 
+
 struct ImagefullcostFixture {
 	ImagefullcostFixture(); 
 
 	P2DInterpolatorFactory ipf; 
 	P2DTransformationFactory tff; 
 }; 
-
-
-CSplineKernelTestPath init_splinekernel_path; 
-
-struct InitSplinekernelTestPath {
-	InitSplinekernelTestPath() {
-		CPathNameArray cost_plugpath;
-		cost_plugpath.push_back(bfs::path("../cost"));
-		C2DImageCostPluginHandler::set_search_path(cost_plugpath);
-		
-		CPathNameArray filter_plugpath;
-		filter_plugpath.push_back(bfs::path("../filter"));
-		C2DFilterPluginHandler::set_search_path(filter_plugpath);
-		
-		CPathNameArray io_plugpath;
-		io_plugpath.push_back(bfs::path("../io"));
-		C2DImageIOPluginHandler::set_search_path(io_plugpath);
-		
-	}
-}; 
-
-C2DTransformCreatorHandlerTestPath tfc_test_path; 
-
-InitSplinekernelTestPath init_path; 
 
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture ) 
 {

@@ -34,7 +34,7 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-CSplineKernelTestPath init_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct TransformSplineFixture {
 	TransformSplineFixture():

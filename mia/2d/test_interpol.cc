@@ -40,7 +40,7 @@ using namespace boost;
 
 namespace bmpl=boost::mpl;
 
-CSplineKernelTestPath init_splinekernel_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 template <class Data2D, class Interpolator>
 void test_interpolator(const Data2D& data, const Interpolator& src)

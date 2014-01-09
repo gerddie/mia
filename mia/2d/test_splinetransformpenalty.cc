@@ -24,6 +24,8 @@
 
 NS_MIA_USE; 
 
+PrepareTestPluginPath plugin_path_init; 
+
 class C2DSplinePenaltyMock: public C2DSplineTransformPenalty {
 public: 
 	

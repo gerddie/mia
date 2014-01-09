@@ -29,7 +29,8 @@
 
 NS_MIA_USE
 namespace bfs=::boost::filesystem; 
-CSplineKernelTestPath splinekernel_init_path; 
+
+PrepareTestPluginPath plugin_path_init; 
 
 class C3DFullCostMock: public C3DFullCost {
 public: 

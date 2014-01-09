@@ -39,7 +39,7 @@ using namespace std;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
-CSplineBoundaryConditionTestPath bc_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct Scaler1DFixture  {
 	Scaler1DFixture(); 
