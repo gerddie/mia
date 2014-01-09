@@ -26,6 +26,7 @@
 #include <memory>
 #include <cstring>
 #include <cassert>
+#include <ostream>
 
 NS_MIA_BEGIN
 
@@ -233,6 +234,17 @@ private:
 	std::shared_ptr<T> m_data; 
 	const T *m_cdata; 
 }; 
+
+
+template <typename T> 
+std::ostream&  operator << (std::ostream& os, const Vector<T>& v) 
+{
+        os << "["; 
+        for(auto i: v) 
+                os << *i << ", "; 
+        os << "]"; 
+        return os; 
+}
 
 
 /** 
