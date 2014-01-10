@@ -234,7 +234,7 @@ T3DMatrix<T>::T3DMatrix(const T3DVector< T >& x, const T3DVector< T >& y, const 
 template <typename T> 
 void T3DMatrix<T>::print( std::ostream& os) const
 {
-	os << "<" << this->x << ", " << this->y << ", " << this->z << " >"; 
+	os << "<" << this->x << "; " << this->y << "; " << this->z << " >"; 
 }
 
 template <typename T> 
