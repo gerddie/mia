@@ -57,9 +57,10 @@ TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 	std::string fsuffix = __bfs_get_extension(fpath); 
 	if (!fsuffix.empty()) {
 		if (m_compress_sfx.find(fsuffix) != m_compress_sfx.end()) {
+			cvdebug() << "Got compression suffix '" << fsuffix << "\n"; 
 			// remove the last extension and get the one before
 			bfs::path help(fpath.stem()); 
-			fsuffix = __bfs_get_extension(fpath); 
+			fsuffix = __bfs_get_extension(help); 
 		}
 	}else 
 		fsuffix = fname; 
@@ -123,7 +124,7 @@ TIOPluginHandler<I>::preferred_plugin(const std::string& fname) const
 	auto fsuffix = __bfs_get_extension(fpath); 
 	if (m_compress_sfx.find(fsuffix) != m_compress_sfx.end()) {
 		bfs::path  help(fpath.stem()); 
-		fsuffix = __bfs_get_extension(fpath); 
+		fsuffix = __bfs_get_extension(help); 
 	}
 	cvdebug() << "Got suffix '" << fsuffix << "'\n"; 
 	auto p = m_suffixmap.find(fsuffix);
