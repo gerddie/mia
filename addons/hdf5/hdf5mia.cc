@@ -47,9 +47,11 @@ void H5Handle::set_parent(const H5Handle& parent)
 	struct TYPE : public TSingleReferencedObject<hid_t>::Destructor {				\
 		TYPE(){};						\
 		virtual void operator ()(hid_t& handle)const {		\
-			herr_t err = CALL(handle);			\
-			if (err != 0) {					\
-				throw std::runtime_error(#TYPE ": error closing handle."); \
+			if (handle >= 0) {				\
+				herr_t err = CALL(handle);		\
+				if (err != 0) {				\
+					throw std::runtime_error(#TYPE ": error closing handle."); \
+				}					\
 			}						\
 		}							\
 	};								\
@@ -178,16 +180,12 @@ H5File::H5File(hid_t id):
 
 H5File H5File::create(const char *name, unsigned flags, hid_t  creation_prop, hid_t access_prop)
 {
-	auto id = H5Fcreate(name, flags, creation_prop, access_prop); 
-	check_id(id, "H5File", "Create", name);
-	return H5File(id); 
+	return H5File(H5Fcreate(name, flags, creation_prop, access_prop)); 
 }
 	
 H5File H5File::open(const char *name, unsigned flags, hid_t access_prop)
 {
-	auto id = H5Fopen(name, flags, access_prop); 
-	check_id(id, "H5File", "Open", name);
-	return H5File(id);
+	return H5File(H5Fopen(name, flags, access_prop)); 
 }
 
 
