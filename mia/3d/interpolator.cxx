@@ -20,6 +20,10 @@
 
 #include <cmath>
 
+#include <mia/core/threadedmsg.hh>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
 NS_MIA_BEGIN
 
 template <class T>
@@ -117,38 +121,44 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 	int cachYSize = image.get_size().y;
 	int cachZSize = image.get_size().z;
 	
-	{
+
+	auto filter_x = [this, cachXSize, cachYSize, poles](const tbb::blocked_range<size_t>& range_z) {
 		coeff_vector buffer(cachXSize);
-		for (int z = 0; z < cachZSize; z++){
+		for (auto z = range_z.begin(); z != range_z.end() ; ++z){
 			for (int y = 0; y < cachYSize; y++) {
 				m_coeff.get_data_line_x(y,z,buffer);
 				m_xbc->filter_line(buffer, poles);
 				m_coeff.put_data_line_x(y,z,buffer);
 			}
 		}
-	}
+	};
+	parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_x); 
 	
-	{
+	
+	auto filter_y = [this, cachXSize, cachYSize, poles](const tbb::blocked_range<size_t>& range_z) {
 		coeff_vector buffer(cachYSize);
-		for (int z = 0; z < cachZSize; z++){
+		for (auto z = range_z.begin(); z  != range_z.end() ; ++z){
 			for (int x = 0; x < cachXSize; x++) {
 				m_coeff.get_data_line_y(x,z,buffer);
 				m_ybc->filter_line(buffer, poles);
 				m_coeff.put_data_line_y(x,z,buffer);
 			}
 		}
-	}
+	};
+	parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_y); 
 	
-	{
+
+	auto filter_z = [this, cachXSize, cachZSize, poles](const tbb::blocked_range<size_t>& range_y) {
 		coeff_vector buffer(cachZSize);
-		for (int y = 0; y < cachYSize; y++){
+		for (auto y = range_y.begin(); y  != range_y.end() ; ++y){
 			for (int x = 0; x < cachXSize; x++) {
 				m_coeff.get_data_line_z(x,y,buffer);
 				m_zbc->filter_line(buffer, poles);
 				m_coeff.put_data_line_z(x,y,buffer);
 			}
 		}
-	}
+	};
+	parallel_for(tbb::blocked_range<size_t>(0, cachYSize, 1), filter_z); 
 
 }
 
@@ -207,7 +217,8 @@ struct add_3d<T3DDatafield< T >, 1> {
 		       const CSplineKernel::SCache& yc,
 		       const CSplineKernel::SCache& zc) 
 		{
-			return coeff(xc.index[0], yc.index[0], zc.index[0] ) ; 
+			return xc.weights[0] *  yc.weights[0] * zc.weights[0] * 
+				coeff(xc.index[0], yc.index[0], zc.index[0] ) ; 
 		}
 };
 
