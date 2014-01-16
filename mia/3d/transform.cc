@@ -302,9 +302,10 @@ void F3DTransformer<T>::operator() ( const tbb::blocked_range<int>& range ) cons
 	CThreadMsgStream thread_stream;
 	auto cache = interp.create_cache(); 
 	
-	auto r = result.begin_at(0,0,range.begin()); 
 	C3DBounds begin(0,0,range.begin()); 
 	C3DBounds end(result.get_size().x,result.get_size().y, range.end());
+
+	auto r = result.begin_at(0,0,range.begin()); 
 	
 	cvdebug() << "range = " << begin << " - " << end << "\n"; 
 
