@@ -262,6 +262,8 @@ protected:
 	void add_pole(double x);
 
 private:
+	int get_start_idx(double x) const; 
+
 	/**
 	   Helper function to fill the array index with consecutive values starting with i 
 	 */
