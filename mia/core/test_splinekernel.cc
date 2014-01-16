@@ -79,6 +79,35 @@ BOOST_FIXTURE_TEST_CASE( test_mirrored_big, TestSplineCacheFixture )
 	
 }
 
+BOOST_AUTO_TEST_CASE( test_zero_cache_outside_never_flat ) 
+{
+	auto bc = produce_spline_boundary_condition("zero"); 
+	bc->set_width(10); 
+
+	CBSplineKernelMock skm; 
+	
+	CSplineKernel::SCache cache(skm.size(), *bc, true);
+	skm.get_cached(9, cache);
+	
+	cvdebug() << "cache {" 
+		  << "  x = " <<  cache.x 
+		  << "  start_idx = " << cache.start_idx
+		  << "  is_flat = " << cache.is_flat
+		  << "  index = " << cache.index
+		  << "\n"; 
+
+	skm.get_cached(9, cache);
+	BOOST_CHECK_EQUAL(cache.weights[0], 0); 
+	BOOST_CHECK_EQUAL(cache.weights[1], 1); 
+	BOOST_CHECK_EQUAL(cache.weights[2], 0); 
+
+	BOOST_CHECK_EQUAL(cache.index[0], 8); 
+	BOOST_CHECK_EQUAL(cache.index[1], 9); 
+	BOOST_CHECK_EQUAL(cache.index[2], 0); 
+	
+}
+
+
 CBSplineKernelMock::CBSplineKernelMock():
 	CSplineKernel(3, 0, ip_bspline3)
 {
