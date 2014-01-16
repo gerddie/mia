@@ -267,7 +267,7 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x, CWeightCache& 
 		m_kernel->get_cached(x.y, cache.y);
 	
 	if (x.z != cache.z.x) 
-		m_kernel->get_cached(x.z, cache.z);	
+		m_kernel->get_cached(x.z, cache.z);
 	
 	U result = U();
 	// now we give the compiler a chance to optimize based on kernel size and data type.  
@@ -294,6 +294,7 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x, CWeightCache& 
 template <typename T>
 T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 {
+	CScopedLock lock(m_cache_lock);
 	typedef typename TCoeff3D::value_type U; 
 	
 	// x will usually be the fastest changing index, therefore, it is of no use to use the cache 
