@@ -9,7 +9,7 @@
   Additional fixes:
 
   * 2dimageregistration: Exit if no cost functions are given
-  * 3dgetimage: add support for setting the minimum number of 
+  * 3dgetimage: add support for setting the minimum number of
 	        digits in the output file names.
   * factoryplugins: throw error if a factory plugin is not found
   * make the basic interpolator operator in 3D thread save
