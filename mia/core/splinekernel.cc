@@ -123,8 +123,19 @@ void CSplineKernel::get_cached(double x, SCache& cache)const
 {
 	int start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
 	cache.x = x; 
-	if (start_idx == cache.start_idx) 
+
+	// here we need an additional field that stores whether the 
+	// indices crossed a boundary 
+	
+	// start index is same and inside the image, we can keep the new weights 
+	// only zero-boundary conditions must check if weights were changed 
+	// for ABI compatibility we check only the range here, later it should go as
+	// virtual function into boundary_condition
+	if (start_idx == cache.start_idx && // !cache.boundary_condition.is_zero() 
+	    start_idx >= 0 && 
+	    cache.start_idx <=  cache.index_limit ) 
 		return; 
+	
 	cache.start_idx = start_idx; 
 	cache.is_flat = false; 
 	fill_index(start_idx, cache.index); 
@@ -235,6 +246,11 @@ int CSplineKernel::get_start_idx_and_value_weights(double x, VWeight& weights) c
 	const int result = fastfloor(x + m_shift);
 	get_weights(x - result, weights); 
 	return result - (int)m_half_degree; 
+}
+
+int CSplineKernel::get_start_idx(double x) const
+{
+	return fastfloor(x + m_shift) - (int)m_half_degree;
 }
 
 int CSplineKernel::get_start_idx_and_derivative_weights(double x, VWeight& weights) const
