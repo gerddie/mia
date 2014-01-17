@@ -129,7 +129,9 @@ void CSplineKernel::get_cached(double x, SCache& cache)const
 	
 	// start index is same and inside the image, we can keep the new weights 
 	// only zero-boundary conditions must check if weights were changed 
-	if (start_idx == cache.start_idx && // cache.boundary_condition.is_zero() 
+	// for ABI compatibility we check only the range here, later it should go as
+	// virtual function into boundary_condition
+	if (start_idx == cache.start_idx && // !cache.boundary_condition.is_zero() 
 	    start_idx >= 0 && 
 	    cache.start_idx <=  cache.index_limit ) 
 		return; 
