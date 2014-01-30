@@ -75,7 +75,7 @@ public:
 private: 
         class TheObject {
         public: 
-                TheObject(T data, const Destructor& d = empty_destructor); 
+                TheObject(T data, const TSingleReferencedObject::Destructor& d); 
                 ~TheObject();
                 void add_ref(); 
                 bool del_ref();
