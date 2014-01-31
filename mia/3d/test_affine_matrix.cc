@@ -607,24 +607,23 @@ BOOST_AUTO_TEST_CASE( test_shear_centered )
 	const auto& data = m.data();
 
 	BOOST_CHECK_CLOSE(data[0], 1.0f, 0.01);
-	BOOST_CHECK_CLOSE(data[4], 0.2f, 1e-5f);
-	BOOST_CHECK_SMALL(data[8], 1e-5f); 
-	BOOST_CHECK_SMALL(data[12], 1e-5f); 
-
-
 	BOOST_CHECK_SMALL(data[1], 1e-5f);
-	BOOST_CHECK_CLOSE(data[5], 1.0f, 0.01);
-	BOOST_CHECK_CLOSE(data[9], 0.3f, 1e-5f);
-	BOOST_CHECK_SMALL(data[13], 1e-5f);
-
 	BOOST_CHECK_CLOSE(data[2], 0.4f, 1e-5f);
-	BOOST_CHECK_SMALL(data[6], 1e-5f);
-	BOOST_CHECK_CLOSE(data[10], 1.0f, 0.01);
-	BOOST_CHECK_SMALL(data[14], 1e-5f);
+	BOOST_CHECK_SMALL(data[3], 1e-5f);
 
-	BOOST_CHECK_CLOSE(data[3], -0.6, 1e-4f); 
-	BOOST_CHECK_CLOSE(data[7], -1.2, 1e-4f); 
-	BOOST_CHECK_CLOSE(data[11],-0.8, 1e-4f); 
+	BOOST_CHECK_CLOSE(data[4], 0.2f, 1e-5f);
+	BOOST_CHECK_CLOSE(data[5], 1.0f, 0.01);
+	BOOST_CHECK_SMALL(data[6], 1e-5f);
+	BOOST_CHECK_SMALL(data[7], 1e-5f);
+
+	BOOST_CHECK_SMALL(data[8], 1e-5f); 
+	BOOST_CHECK_CLOSE(data[9], 0.3f, 1e-5f);
+	BOOST_CHECK_CLOSE(data[10], 1.0f, 0.01);
+	BOOST_CHECK_SMALL(data[11], 1e-5f); 
+
+	BOOST_CHECK_CLOSE(data[12], -0.6, 1e-4f); 
+	BOOST_CHECK_CLOSE(data[13], -1.2, 1e-4f); 
+	BOOST_CHECK_CLOSE(data[14],-0.8, 1e-4f); 
 	BOOST_CHECK_EQUAL(data[15], 1.0f);
 
 	auto cc = m * center; 

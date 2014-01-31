@@ -157,5 +157,7 @@ private:
 CAffinTransformMatrix operator * (const CAffinTransformMatrix& lhs, const CAffinTransformMatrix& rhs); 
 
 
+
+
 NS_MIA_END
 #endif 
