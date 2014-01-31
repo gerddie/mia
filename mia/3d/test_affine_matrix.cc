@@ -626,6 +626,13 @@ BOOST_AUTO_TEST_CASE( test_shear_centered )
 	BOOST_CHECK_CLOSE(data[7], -1.2, 1e-4f); 
 	BOOST_CHECK_CLOSE(data[11],-0.8, 1e-4f); 
 	BOOST_CHECK_EQUAL(data[15], 1.0f);
+
+	auto cc = m * center; 
+
+	BOOST_CHECK_CLOSE(cc.x, center.x, 1e-4f); 
+	BOOST_CHECK_CLOSE(cc.y, center.y, 1e-4f); 
+	BOOST_CHECK_CLOSE(cc.z, center.z, 1e-4f); 
+	
 }
 
 BOOST_AUTO_TEST_CASE( test_transform_centered ) 
