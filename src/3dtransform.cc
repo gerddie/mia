@@ -76,14 +76,11 @@ int do_main(int argc, char **argv)
 	auto transformation = transio.load(trans_filename);
 	auto source = imageio.load(src_filename);
 
-	if (!source || source->size() < 1) {
-		cerr << "no image found in " << src_filename << "\n";
-		return EXIT_FAILURE;
-	}
+	if (!source || source->size() < 1)
+		throw create_exception<runtime_error>("No image found in '", src_filename, ",");
 
 	if (!transformation) {
-		cerr << "no vector field found in " << trans_filename << "\n";
-		return EXIT_FAILURE;
+		throw create_exception<runtime_error>("No transformation found in '", trans_filename, "'");
 	}
 
 	if (!interpolator_kernel.empty()) { 

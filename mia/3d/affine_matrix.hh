@@ -90,6 +90,15 @@ public:
 	*/
         void scale(const C3DFVector& scale, const C3DFVector& center = C3DFVector::_0); 
 
+
+	/**
+	   multiply the current matrix by a shearing matrix centered at the given location
+	   \param shear sharing factors along the three axis
+	   \param center of the scaling 
+
+	*/
+        void shear(const C3DFVector& shear, const C3DFVector& center = C3DFVector::_0); 
+
 	/**
 	   multiply the current matrix by a translation matrix
 	   \param shift the translation 
@@ -146,6 +155,8 @@ private:
    Multiply two affine matrices
  */
 CAffinTransformMatrix operator * (const CAffinTransformMatrix& lhs, const CAffinTransformMatrix& rhs); 
+
+
 
 
 NS_MIA_END

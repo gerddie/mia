@@ -19,7 +19,7 @@
  */
 
 #ifndef mia_2d_rgbimageio_hh
-#define mia_2drgbimageio_hh
+#define mia_2d_rgbimageio_hh
 
 #include <vector>
 #include <mia/2d/defines2d.hh>
