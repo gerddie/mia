@@ -86,12 +86,6 @@ public:
 	virtual C3DFVector operator () (const C3DFVector& x) const;
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
 	C3DFVector transform(const C3DFVector& x)const;
-	virtual float divergence() const;
-	virtual float curl() const;
-	float grad_divergence() const;
-	float grad_curl() const;
-	double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
-	double get_divcurl_cost(double wd, double wr) const; 
 private:
 	virtual C3DTransformation *do_clone() const;
 	void evaluate_matrix() const;

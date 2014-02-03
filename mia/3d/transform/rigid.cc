@@ -174,40 +174,6 @@ void C3DRigidTransformation::set_parameters(const CDoubleVector& params)
 	m_matrix_valid = false;
 }
 
-float C3DRigidTransformation::divergence() const
-{
-	return 0.0;
-}
-
-float C3DRigidTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-
-float C3DRigidTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-
-float C3DRigidTransformation::curl() const
-{
-	// this is not right
-	return 0.0;
-}
-
-double C3DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, CDoubleVector& /*gradient*/) const
-{
-	return 0.0; 
-}
-
-double C3DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
-{
-	return 0.0; 
-}
-
-
 const C3DBounds& C3DRigidTransformation::get_size() const
 {
 	return m_size;

@@ -1098,29 +1098,6 @@ struct TransformSplineFixtureMixed: public TransformSplineFixtureFieldBase2 {
 	double graddiv2(double x, double y, double z)const;
 };
 
-BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4, TransformSplineFixtureMixed )
-{
-	init(10, 4);
-
-
-	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
-	const double testcurl = testdiv / 4.0; 
-
-	double divval = transform->get_divcurl_cost(1.0, 0.0);
-	BOOST_CHECK_CLOSE( divval, testdiv, 0.1); 	
-
-	
-	double graddivcurl = transform->get_divcurl_cost(1.0, 1.0);
-	BOOST_CHECK_CLOSE( graddivcurl, testdiv + testcurl, 0.1); 	
-	
-
-	double gradcurl = transform->get_divcurl_cost(0.0, 1.0);
-	BOOST_CHECK_CLOSE( gradcurl, testcurl, 0.1); 	
-
-	cvinfo() << "divval  / testdiv= " << divval  / testdiv << "\n"; 
-	cvinfo() << "gradcurl / testcurl = " << gradcurl / testcurl << "\n"; 
-}
-
 double TransformSplineFixtureMixed::fx(double x, double y, double z)const 
 {
 	return x * exp(-x*x-y*y-z*z);

@@ -1020,42 +1020,6 @@ bool C3DSplineTransformation::do_has_energy_penalty() const
 	return m_penalty.operator bool(); 
 }
 
-double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
-{
-	TRACE_FUNCTION;
-//	FUNCTION_NOT_TESTED;
-	reinit(); 
-
-	// create PP matrices or adapt size 
-	if (!m_divcurl_matrix) 
-		m_divcurl_matrix.reset(new C3DPPDivcurlMatrix(m_coefficients.get_size(), 
-							       C3DFVector(m_range), 
-							       *m_kernel, wd, wr)); 
-	else 
-		m_divcurl_matrix->reset(m_coefficients.get_size(), C3DFVector(m_range), 
-					 *m_kernel, wd, wr); 
-	
-	
-	return m_divcurl_matrix->evaluate(m_coefficients, gradient); 
-}
-
-double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
-{
-	TRACE_FUNCTION;
-
-	reinit(); 
-	// create PP matrices or adapt size 
-	if (!m_divcurl_matrix) 
-		m_divcurl_matrix.reset(new C3DPPDivcurlMatrix(m_coefficients.get_size(), C3DFVector(m_range), 
-							       *m_kernel, wd, wr)); 
-	else 
-		m_divcurl_matrix->reset(m_coefficients.get_size(), C3DFVector(m_range), 
-					 *m_kernel, wd, wr); 
-	
-
-	return *m_divcurl_matrix * m_coefficients; 
-}
-
 
 class C3DSplinebigTransformCreator: public C3DTransformCreator {
 public:

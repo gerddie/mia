@@ -16,7 +16,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(fullcost image divcurl taggedssd)
+SET(fullcost image taggedssd)
 PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dimage" "fullcost" "${fullcost}" mia3d TESTLIBS
   mia3dtest
   )

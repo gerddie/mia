@@ -93,8 +93,6 @@ public:
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
 	virtual C3DFVector operator () (const C3DFVector& x) const;
 
-	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
-	virtual double get_divcurl_cost(double wd, double wr) const; 
 
 	C3DFVector on_grid(const mia::C3DBounds& x) const; 
 
@@ -129,7 +127,6 @@ private:
 	mutable C3DFVector m_inv_scale;
 	mutable bool m_scales_valid;
 
-	mutable std::shared_ptr<C3DPPDivcurlMatrix> m_divcurl_matrix; 
 	mutable std::vector<std::vector<double> > m_x_weights; 
 	mutable std::vector<int> m_x_indices; 
 	mutable std::vector<std::vector<double> > m_y_weights; 

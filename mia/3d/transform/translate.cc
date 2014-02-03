@@ -226,37 +226,6 @@ C3DFVector C3DTranslateTransformation::transform(const C3DFVector& x)const
 	return x + m_transform;
 }
 
-float C3DTranslateTransformation::divergence() const
-{
-	return 0.0;
-}
-
-float C3DTranslateTransformation::curl() const
-{
-	return 0.0;
-}
-
-float C3DTranslateTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-float C3DTranslateTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-double C3DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, 
-						    CDoubleVector& /*gradient*/) const
-{
-	return 0.0;
-}
-
-double C3DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
-{
-	return 0.0;
-}
-
 
 class C3DTranslateTransformCreator: public C3DTransformCreator {
 public: 

@@ -146,40 +146,6 @@ void C3DRotationTransformation::set_parameters(const CDoubleVector& params)
 	m_matrix_valid = false;
 }
 
-float C3DRotationTransformation::divergence() const
-{
-	return 0.0;
-}
-
-float C3DRotationTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-
-float C3DRotationTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-
-float C3DRotationTransformation::curl() const
-{
-	// this is not right
-	return 0.0;
-}
-
-double C3DRotationTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, CDoubleVector& /*gradient*/) const
-{
-	return 0.0; 
-}
-
-double C3DRotationTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
-{
-	return 0.0; 
-}
-
-
 const C3DBounds& C3DRotationTransformation::get_size() const
 {
 	return m_size;
