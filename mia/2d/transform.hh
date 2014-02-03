@@ -204,6 +204,10 @@ public:
 		/// @returns the pointer version of the current value of the transformation 
 		const C2DFVector  *operator ->() const;
 
+		const C2DBounds& pos() const; 
+
+		const C2DBounds& get_size() const; 
+
 		/** Print the current position and value to an output stream 
 		    \param os 
 		*/
@@ -349,25 +353,6 @@ public:
 	 */
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const = 0;
 
-
-	/**
-	   Evaluate the grad div ^2 + grad rot ^2 value and its gradient for the 
-	   transformtion 
-	   \param wd weight of the divergence
-	   \param wr weight of the rotation 
-	   \param[out] gradient vector to hold the resulting gradient 
-	   \returns cost function value 
-	 */
-	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const = 0; 
-
-	/**
-	   Evaluate the grad div ^2 + grad rot ^2 value for the transformtion 
-	   \param wd weight of the divergence
-	   \param wr weight of the rotation 
-	   \returns cost function value 
-	 */
-
-	virtual double get_divcurl_cost(double wd, double wr) const = 0; 
 
 	/**
 	   If applicaple the transformation model is refined (e.g. splines 

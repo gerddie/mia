@@ -79,12 +79,6 @@ public:
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	C2DFVector transform(const C2DFVector& x)const;
-	virtual float divergence() const;
-	virtual float curl() const;
-	float grad_divergence() const;
-	float grad_curl() const;
-	double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
-	double get_divcurl_cost(double wd, double wr) const; 
 private:
 	void initialize(); 
 	virtual C2DTransformation *do_clone() const;

@@ -131,39 +131,6 @@ void C2DRotationTransformation::set_parameters(const CDoubleVector& params)
 	m_matrix_valid = false;
 }
 
-float C2DRotationTransformation::divergence() const
-{
-	return 0.0;
-}
-
-float C2DRotationTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-
-float C2DRotationTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-
-float C2DRotationTransformation::curl() const
-{
-	// this is not right
-	return m_rotation;
-}
-
-double C2DRotationTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, CDoubleVector& /*gradient*/) const
-{
-	return 0.0; 
-}
-
-double C2DRotationTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
-{
-	return 0.0; 
-}
-
 
 const C2DBounds& C2DRotationTransformation::get_size() const
 {

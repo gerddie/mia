@@ -214,6 +214,19 @@ const C2DFVector  *C2DTransformation::const_iterator::operator ->() const
 	return &m_holder->get_value(); 
 }
 
+const C2DBounds& C2DTransformation::const_iterator::pos() const
+{
+	assert(m_holder); 
+	return m_holder->get_pos(); 
+}
+
+const C2DBounds& C2DTransformation::const_iterator::get_size() const
+{
+	assert(m_holder); 
+	return m_holder->get_size(); 
+}
+
+
 bool C2DTransformation::refine()
 {
 	return false; 

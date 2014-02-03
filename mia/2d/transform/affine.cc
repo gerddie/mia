@@ -163,39 +163,6 @@ void C2DAffineTransformation::set_parameters(const CDoubleVector& params)
 
 }
 
-double C2DAffineTransformation::get_divcurl_cost(double, double, CDoubleVector&) const
-{
-	return 0.0; 
-}
-
-double C2DAffineTransformation::get_divcurl_cost(double, double) const
-{
-	return 0.0; 
-}
-
-
-float C2DAffineTransformation::divergence() const
-{
-	return m_t[0] + m_t[1] + m_t[3] + m_t[4] - 2.0f;
-}
-
-float C2DAffineTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-
-float C2DAffineTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-
-float C2DAffineTransformation::curl() const
-{
-	return m_t[1] + m_t[4] - m_t[0] - m_t[3];
-}
-
 const C2DBounds& C2DAffineTransformation::get_size() const
 {
 	return m_size;

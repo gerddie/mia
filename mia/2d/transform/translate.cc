@@ -196,37 +196,6 @@ C2DFVector C2DTranslateTransformation::transform(const C2DFVector& x)const
 	return x + m_transform;
 }
 
-float C2DTranslateTransformation::divergence() const
-{
-	return 0.0;
-}
-
-float C2DTranslateTransformation::curl() const
-{
-	return 0.0;
-}
-
-float C2DTranslateTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-float C2DTranslateTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-double C2DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, 
-						    CDoubleVector& /*gradient*/) const
-{
-	return 0.0;
-}
-
-double C2DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
-{
-	return 0.0;
-}
-
 
 class C2DTranslateTransformCreator: public C2DTransformCreator {
 public: 

@@ -88,8 +88,6 @@ public:
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 
-	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
-	virtual double get_divcurl_cost(double wd, double wr) const; 
 
 	C2DFVector on_grid(const mia::C2DBounds& x) const; 
 
@@ -121,7 +119,6 @@ private:
 	C2DFVector m_inv_scale;
 	bool m_interpolator_valid;
 	//mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  m_interpolator;
-	mutable std::shared_ptr<C2DPPDivcurlMatrix > m_divcurl_matrix; 
 	std::vector<std::vector<double> > m_x_weights; 
 	std::vector<int> m_x_indices; 
 	std::vector<std::vector<double> > m_y_weights; 
