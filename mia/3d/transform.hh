@@ -163,6 +163,14 @@ public:
 		/// return pointer to current value of the transformation 
 		const C3DFVector  *operator ->() const;
 
+		/// return the current position in 3D space 
+ 		const C3DBounds& pos()const; 
+
+
+		/// @returns the size of the supported domain 
+		const C3DBounds& get_size()const; 
+		
+
 	private: 
 		std::unique_ptr<iterator_impl> m_holder;
 
