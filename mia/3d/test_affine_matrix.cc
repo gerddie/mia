@@ -605,8 +605,9 @@ BOOST_AUTO_TEST_CASE( test_shear_at_zero )
 
 BOOST_AUTO_TEST_CASE( test_zero_shear_centered ) 
 {
-	CAffinTransformMatrix m; 
-	m.shear(C3DFVector::_0, C3DFVector(2,3,4));
+	CAffinTransformMatrix m;
+	C3DFVector center(2,3,4); 
+	m.shear(C3DFVector::_0, center);
 
 	const auto& data = m.data();
 
@@ -630,6 +631,13 @@ BOOST_AUTO_TEST_CASE( test_zero_shear_centered )
 	BOOST_CHECK_SMALL(data[7], 1e-5f); 
 	BOOST_CHECK_SMALL(data[11], 1e-5f); 
 	BOOST_CHECK_EQUAL(data[15], 1.0f);
+
+	auto vt = m * center; 
+
+	BOOST_CHECK_CLOSE(vt.x, center.x, 0.01);
+	BOOST_CHECK_CLOSE(vt.y, center.y, 0.01);
+	BOOST_CHECK_CLOSE(vt.z, center.z, 0.01);
+	
 }
 
 
@@ -667,6 +675,7 @@ BOOST_AUTO_TEST_CASE( test_shear_centered )
 	BOOST_CHECK_CLOSE(cc.x, center.x, 1e-4f); 
 	BOOST_CHECK_CLOSE(cc.y, center.y, 1e-4f); 
 	BOOST_CHECK_CLOSE(cc.z, center.z, 1e-4f); 
+
 	
 }
 

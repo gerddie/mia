@@ -352,15 +352,21 @@ void CAffinTransformMatrix::shear(const C3DFVector& shear, const C3DFVector& ori
 	if (origin != C3DFVector::_0) {
 		help[12] += -(m_matrix[6] * shear.x + m_matrix[2]) * origin.z 
 			-(m_matrix[5] * shear.x + m_matrix[1]) * origin.y 
-			-(m_matrix[4] * shear.x + m_matrix[0]) * origin.x + m_matrix[7] * shear.x + origin.x; 
+			-(m_matrix[4] * shear.x + m_matrix[0]) * origin.x + m_matrix[13] * shear.x + origin.x; 
 		
 		help[13] += -(m_matrix[10] * shear.y + m_matrix[6]) * origin.z
 			- (m_matrix[9] * shear.y + m_matrix[5]) * origin.y
-			- (m_matrix[8] * shear.y + m_matrix[4]) * origin.x + m_matrix[11] * shear.y + origin.y; 
+			- (m_matrix[8] * shear.y + m_matrix[4]) * origin.x + m_matrix[14] * shear.y + origin.y; 
 		
 		help[14] += - (m_matrix[2] * shear.z + m_matrix[10]) * origin.z
 			- (m_matrix[1] * shear.z + m_matrix[9]) * origin.y
-			- (m_matrix[0] * shear.z + m_matrix[8]) *origin.x + m_matrix[3] * shear.z + origin.z;
+			- (m_matrix[0] * shear.z + m_matrix[8]) *origin.x + m_matrix[12] * shear.z + origin.z;
+	}else{
+		help[12] += m_matrix[13] * shear.x; 
+		
+		help[13] += m_matrix[14] * shear.y; 
+		
+		help[14] += m_matrix[12] * shear.z;
 	}
 	swap(m_matrix, help); 
 }
