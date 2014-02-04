@@ -35,6 +35,42 @@ BOOST_AUTO_TEST_CASE( test_identity )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_identity_reset ) 
+{
+        CAffinTransformMatrix identity; 
+
+	// fill matrix with some values
+	identity.rotate_z(2, C3DFVector(1,2,3)); 
+	identity.rotate_y(1, C3DFVector(1,23,3)); 
+	identity.translate(C3DFVector(1,2,3)); 
+	
+	identity.identity(); 
+	
+	const auto& data = identity.data(); 
+	BOOST_CHECK_EQUAL(data[0], 1.0f); 
+	BOOST_CHECK_EQUAL(data[1], 0.0f); 
+	BOOST_CHECK_EQUAL(data[2], 0.0f); 
+	BOOST_CHECK_EQUAL(data[3], 0.0f); 
+
+	BOOST_CHECK_EQUAL(data[4], 0.0f); 
+	BOOST_CHECK_EQUAL(data[5], 1.0f); 
+	BOOST_CHECK_EQUAL(data[6], 0.0f); 
+	BOOST_CHECK_EQUAL(data[7], 0.0f); 
+
+	BOOST_CHECK_EQUAL(data[ 8], 0.0f); 
+	BOOST_CHECK_EQUAL(data[ 9], 0.0f); 
+	BOOST_CHECK_EQUAL(data[10], 1.0f); 
+	BOOST_CHECK_EQUAL(data[11], 0.0f); 
+
+	BOOST_CHECK_EQUAL(data[12], 0.0f); 
+	BOOST_CHECK_EQUAL(data[13], 0.0f); 
+	BOOST_CHECK_EQUAL(data[14], 0.0f); 
+	BOOST_CHECK_EQUAL(data[15], 1.0f); 
+
+
+}
+
+
 BOOST_AUTO_TEST_CASE( test_simple_inverse ) 
 {
 	
