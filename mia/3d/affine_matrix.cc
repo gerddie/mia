@@ -257,6 +257,7 @@ void CAffinTransformMatrix::translate(const C3DFVector& shift)
 
 void CAffinTransformMatrix::identity()
 {
+	fill(m_matrix.begin(), m_matrix.end(), 0.0f); 
         m_matrix[0] = m_matrix[5] = m_matrix[10] = m_matrix[15] = 1.0f; 
 }
 
