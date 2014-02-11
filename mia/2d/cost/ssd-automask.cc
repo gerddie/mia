@@ -19,28 +19,33 @@
  */
 
 #include <mia/2d/cost.hh>
-#include <mia/core/splinekernel.hh>
-#include <mia/internal/autotest.hh>
 
-NS_MIA_USE
-namespace bfs=::boost::filesystem; 
-using namespace boost::unit_test;
+#define NS ssdautomask_2dimage_cost
+#include <mia/2d/cost/ssd-automask.hh>
+#include <mia/template/ssd-automask.cxx>
 
-PrepareTestPluginPath plugin_path_init; 
+NS_BEGIN(NS)
 
-BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
+
+NS_MIA_USE;
+using namespace std;
+using namespace boost;
+
+
+template class TSSDAutomaskCost<C2DImageCost>;
+
+
+const string C2DSSDAutomaskCostPlugin::do_get_descr()const
 {
-	CPathNameArray searchpath; 
-	
-	searchpath.push_back(bfs::path("cost")); 
-
-	C2DImageCostPluginHandler::set_search_path(searchpath); 
-	
-	const auto& handler = C2DImageCostPluginHandler::instance(); 
-
-	BOOST_CHECK_EQUAL(handler.size(), 5u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "lsd mi ngf ssd ssd-automask "); 
+	return "2D image cost: sum of squared differences, with automasking based on given thresholds";
 }
 
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C2DSSDAutomaskCostPlugin();
+}
+
+
+NS_END
 
 

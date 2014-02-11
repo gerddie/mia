@@ -18,6 +18,7 @@
 
 SET(cost3d
 	   ssd
+           ssd-automask
 	   ngf
 	   mi 
 )
