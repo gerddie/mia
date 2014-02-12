@@ -51,6 +51,10 @@ CFile::CFile(const string& filename, bool from_stdio, bool write):
 	}else if (suffix == string(".bz2")) {
 		m_is_pipe = true;
 		pipe = (write ? string("bzip2 >") : string("bzcat ")) + filename.c_str();
+	}else if (suffix == string(".xz")) {
+		m_is_pipe = true;
+		pipe = (write ? string("xz >") : string("xzcat ")) + filename.c_str();
+
 	}else if (suffix == string(".Z")) {
 		m_is_pipe = true;
 		pipe = (write ? string("compress >") : string("zcat ")) + filename.c_str();
