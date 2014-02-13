@@ -22,6 +22,7 @@ SET(filters3dNew
   combiner
   convert 
   crop 
+  distance
   downscale 
   gradnorm
   growmask
