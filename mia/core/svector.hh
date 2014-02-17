@@ -18,12 +18,17 @@
  *
  */
 
+#ifndef mia_core_svector_hh
+#define mia_core_svector_hh
+
 #include <istream>
 #include <ostream>
+#include <sstream>
 #include <vector>
 #include <stdexcept>
 
 #include <mia/core/errormacro.hh>
+#include <mia/core/typedescr.hh>
 
 NS_MIA_BEGIN
 
@@ -36,15 +41,45 @@ std::ostream&  operator << (std::ostream& os, const std::vector<T>& v)
 }
 
 template <typename T> 
+struct __dispatch_translate {
+	static bool apply(const std::string& str, T& v){
+		char c; 
+		std::istringstream s(str); 
+		s >> v;
+		while (!s.eof() && s.peek() == ' ') 
+			s >> c; 
+		return s.eof(); 
+	}
+}; 
+
+template <> 
+struct __dispatch_translate<std::string> {
+	static bool apply(const std::string& s, std::string& str){
+		str = s; 
+		return true; 
+	}
+}; 
+
+
+template <typename T> 
 std::istream&  operator >> (std::istream& is, std::vector<T>& v)
 {
-	vector<T> values; 
-	T token; 
-	while(std::getline(is, token, ','))
-		values.push_back(token); 
-		
+	std::vector<T> values; 
+	std::string token; 
+	T val; 
+	
+	while(std::getline(is, token, ',')) {
+		if (__dispatch_translate<T>::apply(token, val))
+			values.push_back(val); 
+		else {
+			throw create_exception<std::invalid_argument>("Reading vector: value, '", token, 
+								      "' could not be translate to ", 
+								      mia::__type_descr<T>::value);
+		}
+	}
+	
 	if (!v.empty() && v.size() != values.size()) {
-			throw create_exception<invalid_argument>("Reading vector: expected ", 
+			throw create_exception<std::invalid_argument>("Reading vector: expected ", 
 								 v.size(), " values, but got ", values.size()); 
 	}
 	v.swap(values); 
@@ -53,3 +88,6 @@ std::istream&  operator >> (std::istream& is, std::vector<T>& v)
 
 
 NS_MIA_END
+
+#endif 
+
