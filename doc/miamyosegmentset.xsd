@@ -3,7 +3,7 @@
      This is the scheme describing the storing of 
      manual segmentations of the myocardial perfusion series. 
      
-     Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+     Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
      
      This program is free software; you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -36,6 +36,13 @@
   <xs:attribute name="open" type="xs:boolean"/>
   
   <!-- complex elements -->
+
+  <!-- The 2D point used for the lines  
+       Attributes:
+       x,y: coordinates 
+       size: reported size of the touch event. When using a mouse 
+             or a stylus this will should be set to zero. 
+  --> 
   <xs:element name="point">
     <xs:complexType>
       <xs:attribute ref="x" use="required"/>
@@ -43,7 +50,20 @@
       <xs:attribute ref="size"/>
     </xs:complexType>
   </xs:element>
-  
+
+  <!-- The star describing a simple approximation of the myocardium and 
+       its separation into equal sized parts. 
+       
+       Attributes: 
+       x,y: coordinates of the center 
+       r: radius of the enclosing circle
+       
+       Elements are:
+       3 points that define directions of six rays starting from the circle center, three 
+       rays in the directions indicated by the points and three in the opposite direction.
+       Of importance is te first ray as its intersection with the circle is set to indicate 
+       the location of the RV-LV insertion point. 
+  --> 
   <xs:element name="star">
     <xs:complexType>
       <xs:sequence>
@@ -54,7 +74,18 @@
       <xs:attribute ref="r" use="required"/>
     </xs:complexType>
   </xs:element>
-  
+
+  <!--
+      A segmented image area. 
+      
+      Attributes: 
+      color: the line color 
+      open: true if the line is not closed, false if the line is closed. 
+      
+      Elements: 
+      points that define the line. depending on the attribute "open" the last point 
+      should or not should be connected to the first point when interpreting the line 
+  -->  
   <xs:element name="section">
     <xs:complexType>
       <xs:sequence>
@@ -64,7 +95,25 @@
       <xs:attribute ref="open"/>
     </xs:complexType>
   </xs:element>
-  
+
+  <!--
+      A frame in a series of 2D images including its segmentation. 
+      
+      Attributes: 
+      image: the name of the corresponding image file 
+      quality: a subjective image quality rating
+      brightness: brightness adjustment used for better visualization of the image 
+      contrast; contrast  adjustment used for better visualization of the image 
+      
+      Elements: 
+      star: the circle defined above describing the an approximation of the LV endocardium. 
+      section: an abitraty number of segmented components. If two sections overlap, or
+      one section is completely enclosed by another, then the proper approach to interpret the 
+      segmentation is to combine the enclosed area by the XOR operation to obtain the full segmentation.
+      
+      Todo: 
+      An interpretation attribute should probably be added to make the segmentations usable for other data. 
+  -->
   <xs:element name="frame">
     <xs:complexType>
       <xs:sequence>
@@ -77,19 +126,35 @@
       <xs:attribute ref="contrast"/>
     </xs:complexType>
   </xs:element>
-
+  <!-- An element to indicate the right ventricle peak enhancement frame in a perfusion series 
+       
+       Attributes: 
+       value: the index of the frame (0 = first frame) 
+  -->   
   <xs:element name="RVpeak">
     <xs:complexType>
       <xs:attribute ref="value"/>
     </xs:complexType>
   </xs:element>
-  
+
+  <!-- An element to indicate the left ventricle peak enhancement frame in a perfusion series 
+       
+       Attributes: 
+       value: the index of the frame (0 = first frame) 
+  -->   
   <xs:element name="LVpeak">
     <xs:complexType>
       <xs:attribute ref="value"/>
     </xs:complexType>
   </xs:element>
-  
+
+  <!-- A description of the set 
+       
+       Elements: 
+       RVpeak: see above 
+       LVpeak: see above 
+       PreferedRef: preferred reference frame for perfusion analysis
+  -->   
   <xs:element name="description">
     <xs:complexType>
       <xs:sequence>
@@ -100,6 +165,15 @@
     </xs:complexType>
   </xs:element>
   
+  <!-- The complete series 
+       
+       Attributes: 
+       version: available for future reference
+       
+       Elements: 
+       description: see above 
+       frame:  an abitrary number of segmentation frames
+  -->
   <xs:element name="workset">
     <xs:complexType>
       <xs:sequence>
