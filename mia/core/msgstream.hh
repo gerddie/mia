@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <boost/call_traits.hpp>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
+#include <mia/core/svector.hh>
 
 NS_MIA_BEGIN
 
@@ -36,16 +37,6 @@ NS_MIA_BEGIN
 #define VSTREAM_DOMAIN "**"
 #endif
 
-
-template <typename T> 
-std::ostream&  operator << (std::ostream& os, const std::vector<T>& v) 
-{
-	os << "["; 
-	for(auto x: v)
-		os << x << ", "; 
-	os << "]"; 
-	return os; 
-}
 
 /**
    \ingroup logging
