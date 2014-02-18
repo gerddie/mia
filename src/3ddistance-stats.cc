@@ -33,7 +33,10 @@ const SProgramDescription g_description = {
         {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
 	{pdi_short, "Evaluate distance statistics for two labeled images."}, 
 	{pdi_description, "This program is used to evaluate the distance between equally labelled "
-         "areas in two images."}, 
+         "areas in two images. The output file is a csv file containing the distances for "
+         "each labeled coordinate in the test image in the following form:\n"
+         "\n"
+         "  label,n-samples,distance,distance,...\n"}, 
 	{pdi_example_descr, "Evaluate the distances for each label availabe in image.v to the "
          "corresponding labels in the image reference.v ans store the result "
          "a coma separated list of values, i.e. distances.csv."}, 
@@ -51,15 +54,10 @@ unsigned short translate_label( unsigned short l, const CLabelMap& map)
         throw create_exception<runtime_error>("unmapped label '", l, "' encountered"); 
 }
 
-class CDistanceResult: public vector<float> {
-public: 
-        void add(float value); 
-}; 
 
-void CDistanceResult::add(float value)
-{
-        push_back(value);
-}
+
+typedef vector<float> CDistanceResult; 
+
 
 typedef map<unsigned short, CDistanceResult> CDistanceResultMap; 
 
@@ -175,7 +173,8 @@ int do_main( int argc, char *argv[] )
 
         options.add(make_opt( label_translate_filename, "label-map", 'l', "optional mapping of label numbers"));
 
-        options.add(make_opt( out_filename, "out-file", 'o', "output file name to write the statistics to"));
+        options.add(make_opt( out_filename, "out-file", 'o', "output file name to write the distances to. "
+                              "The output file is a csv file, containing distances listed for each label."));
         
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -197,7 +196,6 @@ int do_main( int argc, char *argv[] )
         ofstream outf(out_filename); 
         if (outf.bad())
                 throw create_exception<runtime_error>("Error opening file '", out_filename, "' for writing"); 
-        outf << "Label, number of samples, sample, sample, ...\n"; 
         
         for (auto i : result)
                 outf << i.first << "," << i.second.size() << "," << i.second << "\n";
