@@ -36,7 +36,20 @@ const SProgramDescription g_description = {
          "areas in two images. The output file is a csv file containing the distances for "
          "each labeled coordinate in the test image in the following form:\n"
          "\n"
-         "  label,n-samples,distance,distance,...\n"}, 
+         "  label,n-samples,distance,distance,...\n"
+	 "\nA simple R program to get some per label statistics from this data would look like\n\n"
+	 "    args <- commandArgs(TRUE)\n"
+	 "    data <- read.csv(args[1], header=FALSE)\n"
+         "    for ( i in 1:dim(data)[1] )  {\n"
+	 "        line <- data[i,]\n"
+	 "        label <- as.integer(line[1])\n"
+	 "        end_range <- 2 + as.numeric(line[2])\n"
+	 "        s <- as.numeric(line[3:end_range])\n"
+	 "        result <- sprintf(\"%d %8.4f %8.4f %8.4f %8.4f\\n\"\n"
+	 "            label, mean(s), sqrt(var(s)),  median(s), max(s))\n"
+	 "        cat(result)\n"
+	 "    }\n\n"
+	}, 
 	{pdi_example_descr, "Evaluate the distances for each label availabe in image.v to the "
          "corresponding labels in the image reference.v ans store the result "
          "a coma separated list of values, i.e. distances.csv."}, 
