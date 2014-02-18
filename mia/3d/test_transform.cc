@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,7 @@
 NS_MIA_USE; 
 namespace bfs=boost::filesystem;
 
-CSplineKernelTestPath spline_test_path; 
-
+PrepareTestPluginPath plugin_path_init; 
 
 class Cost3DMock {
 public: 

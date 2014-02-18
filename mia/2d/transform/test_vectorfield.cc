@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ using namespace std;
 using namespace ::boost;
 using namespace boost::unit_test;
 
-CSplineKernelTestPath kernel_path_init; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct GridTransformFixture {
 	GridTransformFixture():
@@ -649,185 +649,6 @@ BOOST_FIXTURE_TEST_CASE( DivGradFixture_selftest, DivGradFixture )
 	
 	
 }
-
-BOOST_FIXTURE_TEST_CASE( test_grid_derivatives, DivGradFixture ) 
-{
-	const int x = 120; 
-	const int y = 131; 
-	
-	BOOST_CHECK_CLOSE(field.dddgx_xxx(x,y), dddgx_xxx(x,y), 0.5); 
-	BOOST_CHECK_CLOSE(field.dddgy_yyy(x,y), dddgy_yyy(x,y), 0.5); 
-	
-	C2DFVector ddd_xx = field.ddg_xx(x, y); 
-	BOOST_CHECK_CLOSE(ddd_xx.x, ddgx_xx(x,y), 0.5); 
-	BOOST_CHECK_CLOSE(ddd_xx.y, ddgy_xx(x,y), 0.5); 
-
-	C2DFVector ddd_xxy = field.dddg_xxy(x, y); 
-	
-	BOOST_CHECK_CLOSE(ddd_xxy.x, dddgx_xxy(x,y), 0.5); 
-	BOOST_CHECK_CLOSE(ddd_xxy.y, dddgy_xxy(x,y), 0.5); 
-
-	C2DFVector ddd_yy = field.ddg_yy(x, y); 
-	BOOST_CHECK_CLOSE(ddd_yy.x, ddgx_yy(x,y), 0.5); 
-	BOOST_CHECK_CLOSE(ddd_yy.y, ddgy_yy(x,y), 0.5); 
-
-	C2DFVector ddd_yyx = field.dddg_yyx(x, y); 
-	
-	BOOST_CHECK_CLOSE(ddd_yyx.x, dddgx_yyx(x,y), 0.5); 
-	BOOST_CHECK_CLOSE(ddd_yyx.y, dddgy_yyx(x,y), 0.5); 
-
-	C2DFVector dd_xy = field.ddg_xy(x, y); 
-	BOOST_CHECK_CLOSE(dd_xy.x, ddgx_xy(x,y), 0.5); 
-	BOOST_CHECK_CLOSE(dd_xy.y, ddgy_xy(x,y), 0.5); 
-	
-
-}
-
-///\todo gradient of grid-divcurl needs testing too
-BOOST_FIXTURE_TEST_CASE( test_grid_div_value, DivGradFixture )
-{
-
-	CDoubleVector gradient(field.degrees_of_freedom(), true); 
-	double divcurlcost =  field.get_divcurl_cost(1.0, 0.0, gradient); 
-	BOOST_CHECK_CLOSE(corr*corr*divcurlcost, 6 * M_PI, 0.2); 
-
-	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
-	BOOST_CHECK_CLOSE(1.0 + curlcost, 1.0, 1); 
-
-
-	// strange that it would multiply by the range ... 
-	double divcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
-	BOOST_CHECK_CLOSE(corr*corr*divcost, 6 * M_PI, 0.2); 
-
-}
-
-BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_at, DivGradFixture )
-{
-	float s2 = scale * scale; 
-	float fx = scale * (140-dsize); 
-	float fy = scale * (132-dsize); 
-	float x2y2 = fx * fx + fy * fy; 
-	float e2x2y2 = exp(-2 * x2y2);
-	
-	float help = -32 * s2 * s2 * scale * ( x2y2 - 2) * ( 2 * x2y2 * x2y2  - 7 * x2y2 + 2) * e2x2y2;
-	float dx = fx * help; 
-	float dy = fy * help; 
-	C2DFVector g = field.get_graddiv_at(140, 132); 
-	BOOST_CHECK_CLOSE(g.x, dx, 0.4); 
-	BOOST_CHECK_CLOSE(g.y, dy, 0.4); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_full, DivGradFixture )
-{
-	CDoubleVector gradient(field.degrees_of_freedom(), true); 
-	field.get_divcurl_cost(1.0, 0.0, gradient); 
-
-
-	auto ig = gradient.begin() + 4*(size.x + 1); 
-	for (int y = 2; y < (int)size.y-2; ++y, ig += 8) 
-		for (int x = 2; x < (int)size.x-2; ++x, ig+=2) {
-			float fx = scale * (x-dsize); 
-			float fy = scale * (y-dsize); 
-			float x2y2 = fx * fx + fy * fy; 
-			float e2x2y2 = exp(-2 * x2y2);
-
-			float help = -32 * scale2 * scale2 * scale * ( x2y2 - 2) * 
-				( 2 * x2y2 * x2y2  - 7 * x2y2 + 2) * e2x2y2;
-			float dx = fx * help; 
-			float dy = fy * help; 
-			cvdebug() << x << ", " << y << ":" << ig[0] << ", " << ig[1] << "\n"; 
-			if (abs(dx) > 1e-5 || abs(ig[0]) > 1e-5)
-				BOOST_CHECK_CLOSE(ig[0], dx, 0.3); 
-			if (abs(dy) > 1e-5 || abs(ig[1]) > 1e-5) 
-				BOOST_CHECK_CLOSE(ig[1], dy, 0.3); 
-		}
-	
-}
-
-///\todo gradient of grid-divcurl needs testing too
-BOOST_AUTO_TEST_CASE( test_grid_curl )
-{
-	const int dsize = 128; 
-	const float  range = 4.0; 
-	C2DBounds size(2*dsize + 1, 2*dsize + 1); 
-	float scale = range / dsize; 
-	float corr = dsize /range; 
-
-	cvinfo() << size << "\n"; 
-
-	C2DGridTransformation field(size, C2DInterpolatorFactory("bspline:d=1", "mirror")); 
-	
-	auto i = field.field_begin(); 
-	for (int y = 0; y < (int)size.y; ++y) 
-		for (int x = 0; x < (int)size.x; ++x, ++i) {
-			float fx = scale * (x-dsize); 
-			float fy = scale * (y-dsize); 
-			float help = exp(-fx * fx - fy * fy); ; 
-			i->x = fy * help; 
-			i->y = -fx * help; 
-
-		}
-	
-	CDoubleVector gradient(field.degrees_of_freedom()); 
-	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
-	BOOST_CHECK_CLOSE(corr * corr * curlcost, 6 * M_PI, 0.2); 
-
-
-	double divcurlcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
-	BOOST_CHECK_CLOSE(corr * corr * divcurlcost, 6 * M_PI, 0.2); 
-
-	double divcost =  field.get_divcurl_cost(1.0, 0.0, gradient); 
-	BOOST_CHECK_CLOSE(1.0 + corr * corr * divcost, 1.0, 1); 
-
-	// gradient needs testing too!!!
-}
-
-BOOST_FIXTURE_TEST_CASE( test_grid_curl_derivative_at, CurlGradFixture )
-{
-	float s2 = scale * scale; 
-	float fx = scale * (140-dsize); 
-	float fy = scale * (132-dsize); 
-	float x2y2 = fx * fx + fy * fy; 
-	float e2x2y2 = exp(-2 * x2y2);
-	
-	float help = -32 * s2 * s2 * scale * ( x2y2 - 2) * ( x2y2 * (2 * x2y2  - 7 ) + 2) * e2x2y2;
-	float dx = fx * help; 
-	float dy = fy * help; 
-	C2DFVector g = field.get_gradcurl_at(140, 132); 
-	BOOST_CHECK_CLOSE(g.x, dx, 0.4); 
-	BOOST_CHECK_CLOSE(g.y, dy, 0.4); 
-	
-}
-
-BOOST_FIXTURE_TEST_CASE( test_grid_curl_gradient_full, CurlGradFixture )
-{
-	CDoubleVector gradient(field.degrees_of_freedom(), true); 
-	field.get_divcurl_cost(1.0, 0.0, gradient); 
-
-	
-
-	auto ig = gradient.begin() + 4*(size.x + 1); 
-	for (int y = 2; y < (int)size.y-2; ++y, ig += 8) 
-		for (int x = 2; x < (int)size.x-2; ++x, ig+=2) {
-			float fx = scale * (x-dsize); 
-			float fy = scale * (y-dsize); 
-			float x2y2 = fx * fx + fy * fy; 
-			float e2x2y2 = exp(-2 * x2y2);
-
-
-			float help = -32 * scale2 * scale2 * scale * 
-				( x2y2 - 2) * ( x2y2 * (2 * x2y2  - 7 ) + 2) * e2x2y2;
-			float dx = fx * help; 
-			float dy = fy * help; 
-			cvdebug() << x << ", " << y << ":" << ig[0] << ", " << ig[1] << "\n"; 
-			if (abs(dx) > 1e-5 || abs(ig[0]) > 1e-5)
-				BOOST_CHECK_CLOSE(ig[0], dx, 0.3); 
-			if (abs(dy) > 1e-5 || abs(ig[1]) > 1e-5) 
-				BOOST_CHECK_CLOSE(ig[1], dy, 0.3); 
-		}
-	
-}
-
 
 
 float GridTransformFixture::fx(float x, float y)

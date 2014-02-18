@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,19 @@
  *
  */
 
-#ifndef mia_2d_divcurl_hh
-#define mia_2d_divcurl_hh
+#include <mia/3d/cost.hh>
+
+#define NS ssdautomask_3dimage_cost
+#include <mia/template/ssd-automask.hh>
+
+NS_BEGIN(NS);
 
 
-#include <mia/2d/fullcost.hh>
-#include <mia/template/divcurl.hh>
+typedef TSSDAutomaskCost<mia::C3DImageCost> C3DSSDAutomaskCost;
 
+class C3DSSDAutomaskCostPlugin: public TSSDAutomaskCostPlugin<mia::C3DImageCostPlugin, C3DSSDAutomaskCost> {
+private:
+	virtual const std::string do_get_descr()const;
+};
 
-NS_MIA_BEGIN
-typedef TDivcurlFullCostPlugin<C2DTransformation> C2DDivCurlFullCostPlugin; 
-typedef TDivCurlFullCost<C2DTransformation> C2DDivCurlFullCost; 
-NS_MIA_END
-
-#endif
+NS_END

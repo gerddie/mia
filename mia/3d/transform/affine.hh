@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,14 +80,6 @@ public:
 	virtual C3DFVector operator () (const C3DFVector& x) const;
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
 	C3DFVector transform(const C3DFVector& x)const;
-
-	// these should go away 
-	virtual float divergence() const;
-	virtual float curl() const;
-	float grad_divergence() const;
-	float grad_curl() const;
-	double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
-	double get_divcurl_cost(double wd, double wr) const; 
 private:
 	virtual C3DTransformation *do_clone() const;
 	C3DAffineTransformation(const C3DAffineTransformation& other);

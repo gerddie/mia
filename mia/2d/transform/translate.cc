@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -194,37 +194,6 @@ float C2DTranslateTransformation::get_jacobian(const C2DFVectorfield& /*v*/, flo
 C2DFVector C2DTranslateTransformation::transform(const C2DFVector& x)const
 {
 	return x + m_transform;
-}
-
-float C2DTranslateTransformation::divergence() const
-{
-	return 0.0;
-}
-
-float C2DTranslateTransformation::curl() const
-{
-	return 0.0;
-}
-
-float C2DTranslateTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-float C2DTranslateTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-double C2DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, 
-						    CDoubleVector& /*gradient*/) const
-{
-	return 0.0;
-}
-
-double C2DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
-{
-	return 0.0;
 }
 
 

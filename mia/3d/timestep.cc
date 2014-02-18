@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,6 @@ C3DRegTimeStepPlugin::C3DRegTimeStepPlugin(const char *name):
 	m_min(0.1),
 	m_max(2.0)
 {
-	typedef CParamList::PParameter PParameter;
 	add_parameter("min", new CFloatParameter(m_min, 0.001, std::numeric_limits<float>::max(),
 							   false, "minimum time step allowed"));
 	add_parameter("max", new CFloatParameter(m_max, 0.002, std::numeric_limits<float>::max(),

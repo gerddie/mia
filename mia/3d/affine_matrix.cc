@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -257,6 +257,7 @@ void CAffinTransformMatrix::translate(const C3DFVector& shift)
 
 void CAffinTransformMatrix::identity()
 {
+	fill(m_matrix.begin(), m_matrix.end(), 0.0f); 
         m_matrix[0] = m_matrix[5] = m_matrix[10] = m_matrix[15] = 1.0f; 
 }
 
@@ -332,6 +333,47 @@ const CAffinTransformMatrix CAffinTransformMatrix::inverse() const
 	return result; 
 }
 
+void CAffinTransformMatrix::shear(const C3DFVector& shear, const C3DFVector& origin)
+{
+	vector<float> help(m_matrix); 
+	
+	help[ 0] += m_matrix[ 1] * shear.x; 
+	help[ 4] += m_matrix[ 5] * shear.x; 
+	help[ 8] += m_matrix[ 9] * shear.x; 
+
+	help[ 1] += m_matrix[ 2] * shear.y; 
+	help[ 5] += m_matrix[ 6] * shear.y; 
+	help[ 9] += m_matrix[10] * shear.y; 
+
+	help[ 2] += m_matrix[ 0] * shear.z; 
+	help[ 6] += m_matrix[ 4] * shear.z; 
+	help[10] += m_matrix[ 8] * shear.z; 
+
+	help[12] += m_matrix[13] * shear.x; 
+	help[13] += m_matrix[14] * shear.y; 
+	help[14] += m_matrix[12] * shear.z;
+
+	if (origin != C3DFVector::_0) {
+                help[12] += origin.x
+			-(m_matrix[9]*shear.x + m_matrix[8])*origin.z
+                        -(m_matrix[5]*shear.x + m_matrix[4])*origin.y
+                        -(m_matrix[1]*shear.x + m_matrix[0])*origin.x; 
+
+		help[13] += origin.y 
+			-(m_matrix[10]*shear.y + m_matrix[9]) * origin.z
+			-(m_matrix[ 6]*shear.y + m_matrix[5]) * origin.y
+			-(m_matrix[ 2]*shear.y + m_matrix[1]) * origin.x; 
+			
+		
+		help[14] += origin.z 
+			-(m_matrix[8]*shear.z + m_matrix[10])*origin.z
+			-(m_matrix[4]*shear.z + m_matrix[ 6])*origin.y
+			-(m_matrix[0]*shear.z + m_matrix[ 2])*origin.x;
+	}
+	swap(m_matrix, help); 
+}
+
+
 
 C3DFVector CAffinTransformMatrix::operator * (const C3DFVector& x) const
 {
@@ -340,6 +382,7 @@ C3DFVector CAffinTransformMatrix::operator * (const C3DFVector& x) const
 		m_matrix[1] * x.x + m_matrix[5] * x.y + m_matrix[9] * x.z + m_matrix[13], 
 		m_matrix[2] * x.x + m_matrix[6] * x.y + m_matrix[10] * x.z + m_matrix[14]); 
 }
+
 
 CAffinTransformMatrix operator * (const CAffinTransformMatrix& lhs, const CAffinTransformMatrix& rhs)
 {

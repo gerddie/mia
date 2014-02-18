@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ include(CheckCXXSourceCompiles)
 SET(VENDOR "Gert Wollny")
 SET(PACKAGE_NAME "mia")
 SET(MAJOR_VERSION 2)
-SET(MINOR_VERSION 0)
-SET(MICRO_VERSION 11)
+SET(MINOR_VERSION 1)
+SET(MICRO_VERSION 0)
 SET(INTERFACE_AGE 0)
 SET(BINARY_AGE    0)
 
@@ -88,7 +88,6 @@ IF(UNIX)
   ENDIF(HAS_GNU_CXX11_FLAG)
   
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${CXX_11_FLAG}")
-#  SET(CMAKE_REQUIRED_FLAGS "${CXX_11_FLAG}")
 ENDIF(UNIX)
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
@@ -267,6 +266,11 @@ ENDIF(CMAKE_USE_PTHREADS_INIT)
 PKG_CHECK_MODULES(GSL REQUIRED gsl)
 INCLUDE_DIRECTORIES(${GSL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
+
+
+PKG_CHECK_MODULES(EIGEN3 REQUIRED eigen3)
+INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIRS})
+LINK_DIRECTORIES(${EIGEN3_LIBRARY_DIRS})
 
 
 ################################################################################

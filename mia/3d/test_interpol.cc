@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 
 #include <mia/3d/interpolator.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/threadedmsg.hh>
 
 NS_MIA_USE
 using namespace std;
@@ -197,6 +198,45 @@ struct FParallelInterpolator {
 }; 
 
 
+struct FParallelInterpolator2 {
+	T3DDatafield<float>& output; 
+	const T3DConvoluteInterpolator<float>& src; 
+	const C3DFVector& shift; 
+	const T3DDatafield<float>& test_data; 
+	
+	FParallelInterpolator2(T3DDatafield<float>& _output, 
+			       const T3DConvoluteInterpolator<float>& _src, 
+			       const C3DFVector& _shift, 
+			       const T3DDatafield<float>& _test_data
+			       
+		):
+		output(_output), 
+		src(_src), 
+		shift(_shift), 
+		test_data(_test_data)
+		{
+		}
+
+	void operator()( const tbb::blocked_range<int>& range ) const {
+		CThreadMsgStream thread_stream;
+		auto cache = src.create_cache(); 
+		for (auto z = range.begin(); z != range.end(); ++z)
+			for (size_t y = 0; y < output.get_size().y; ++y)
+				for (size_t x = 0; x < output.get_size().x; ++x) {
+					C3DFVector loc(x,y,z);
+					output(x,y,z) = src(loc + shift, cache);
+					cvmsg() << loc << " weights:" 
+						<< " x = " << cache.x.weights << cache.x.index
+						<< " y = " << cache.y.weights << cache.y.index 
+						<< " z = " << cache.z.weights << cache.z.index
+						<< " res= " << output(x,y,z)
+						<< " test= " << test_data(x,y,z)
+						<< "\n"; 
+				}
+		
+	}
+}; 
+
 static void test_parallel_interpolator() 
 {
 	T3DDatafield<float> data(C3DBounds(10, 12, 11));
@@ -220,6 +260,44 @@ static void test_parallel_interpolator()
 				BOOST_CHECK_CLOSE(output(x,y,z), data(x,y,z), 0.01); 
 	
 }
+
+
+static void test_parallel_interpolator_zerofill_shifted() 
+{
+	C3DFVector shift(1,2,3); 
+
+	T3DDatafield<float> data(C3DBounds(9, 8, 7));
+	T3DDatafield<float> test_data(C3DBounds(9, 8, 7));
+	auto kernel = produce_spline_kernel(bspline0); 
+	auto bc = produce_spline_boundary_condition("zero"); 
+	
+	auto i = data.begin();
+	for (size_t z = 0; z < data.get_size().z; ++z)
+		for (size_t y = 0; y < data.get_size().y; ++y)
+			for (size_t x = 0; x < data.get_size().x; ++x, ++i) {
+				*i = x + 10 * y + 100 * z;
+				if (x >= 1 && y >= 2 && z >= 3) 
+					test_data(x - 1, y - 2, z - 3) = *i; 
+			}
+
+	T3DConvoluteInterpolator<float>  src(data, kernel, *bc, *bc, *bc);
+	
+	T3DDatafield<float> output(data.get_size());
+	FParallelInterpolator2 worker(output, src, shift, test_data); 
+	
+	tbb::parallel_for(tbb::blocked_range<int>( 0, data.get_size().z), worker);
+	for (size_t z = 0; z < data.get_size().z; ++z)
+		for (size_t y = 0; y < data.get_size().y; ++y)
+			for (size_t x = 0; x < data.get_size().x; ++x) {
+				if (output(x,y,z) != test_data(x,y,z)) {
+					cvfail() << "FAIL:" << x<< "," << y << "," << z << ": "
+						  << output(x,y,z) << " vs "<< test_data(x,y,z) << "\n"; 
+				}
+				BOOST_CHECK_CLOSE(output(x,y,z), test_data(x,y,z), 0.01); 
+			}
+	
+}
+
 
 
 static double omoms3(double x)
@@ -335,5 +413,7 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 
 	suite->add( BOOST_TEST_CASE( (&test_external_cache_interpolator))); 
 	suite->add( BOOST_TEST_CASE( (&test_parallel_interpolator))); 
+
+	suite->add( BOOST_TEST_CASE( (&test_parallel_interpolator_zerofill_shifted))); 
 
 }

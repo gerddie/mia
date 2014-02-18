@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,10 +47,14 @@ CFile::CFile(const string& filename, bool from_stdio, bool write):
 	string pipe;
 	if (suffix == string(".gz")) {
 		m_is_pipe = true;
-		pipe = (write ? string("gzip >") : string("cat ")) + filename.c_str() + string("| zcat ");
+		pipe = (write ? string("gzip >") : string("zcat ")) + filename.c_str();
 	}else if (suffix == string(".bz2")) {
 		m_is_pipe = true;
 		pipe = (write ? string("bzip2 >") : string("bzcat ")) + filename.c_str();
+	}else if (suffix == string(".xz")) {
+		m_is_pipe = true;
+		pipe = (write ? string("xz >") : string("xzcat ")) + filename.c_str();
+
 	}else if (suffix == string(".Z")) {
 		m_is_pipe = true;
 		pipe = (write ? string("compress >") : string("zcat ")) + filename.c_str();

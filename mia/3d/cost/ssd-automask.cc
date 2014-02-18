@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +18,34 @@
  *
  */
 
-#include <limits>
-#include <algorithm>
-#include <mia/2d/fullcost/divcurl.hh>
+#include <mia/3d/cost.hh>
 
-#include <mia/template/divcurl.cxx>
-NS_MIA_BEGIN
+#define NS ssdautomask_3dimage_cost
+#include <mia/3d/cost/ssd-automask.hh>
+#include <mia/template/ssd-automask.cxx>
 
-template class TDivcurlFullCostPlugin<C2DTransformation>; 
-template class  TDivCurlFullCost<C2DTransformation>; 
+NS_BEGIN(NS)
+
+
+NS_MIA_USE;
+using namespace std;
+using namespace boost;
+
+
+template class TSSDAutomaskCost<C3DImageCost>;
+
+
+const string C3DSSDAutomaskCostPlugin::do_get_descr()const
+{
+	return "3D image cost: sum of squared differences, with automasking based on given thresholds";
+}
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DDivCurlFullCostPlugin();
+	return new C3DSSDAutomaskCostPlugin();
 }
 
-NS_MIA_END
 
+NS_END
 
 

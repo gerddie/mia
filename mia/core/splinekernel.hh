@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -262,6 +262,8 @@ protected:
 	void add_pole(double x);
 
 private:
+	int get_start_idx(double x) const; 
+
 	/**
 	   Helper function to fill the array index with consecutive values starting with i 
 	 */

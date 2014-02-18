@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,39 +161,6 @@ void C2DAffineTransformation::set_parameters(const CDoubleVector& params)
 	assert(degrees_of_freedom() == params.size());
 	copy(params.begin(), params.end(), m_t.begin());
 
-}
-
-double C2DAffineTransformation::get_divcurl_cost(double, double, CDoubleVector&) const
-{
-	return 0.0; 
-}
-
-double C2DAffineTransformation::get_divcurl_cost(double, double) const
-{
-	return 0.0; 
-}
-
-
-float C2DAffineTransformation::divergence() const
-{
-	return m_t[0] + m_t[1] + m_t[3] + m_t[4] - 2.0f;
-}
-
-float C2DAffineTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-
-float C2DAffineTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-
-float C2DAffineTransformation::curl() const
-{
-	return m_t[1] + m_t[4] - m_t[0] - m_t[3];
 }
 
 const C2DBounds& C2DAffineTransformation::get_size() const

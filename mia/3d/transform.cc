@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,6 +234,18 @@ const C3DFVector  *C3DTransformation::const_iterator::operator ->() const
 	return &m_holder->get_value(); 
 }
 
+const C3DBounds& C3DTransformation::const_iterator::pos() const
+{
+	assert(m_holder); 
+	return m_holder->get_pos(); 
+}
+
+const C3DBounds& C3DTransformation::const_iterator::get_size()const
+{
+	assert(m_holder); 
+	return m_holder->get_size(); 
+}
+
 bool C3DTransformation::refine()
 {
 	return false; 
@@ -302,9 +314,10 @@ void F3DTransformer<T>::operator() ( const tbb::blocked_range<int>& range ) cons
 	CThreadMsgStream thread_stream;
 	auto cache = interp.create_cache(); 
 	
-	auto r = result.begin_at(0,0,range.begin()); 
 	C3DBounds begin(0,0,range.begin()); 
 	C3DBounds end(result.get_size().x,result.get_size().y, range.end());
+
+	auto r = result.begin_at(0,0,range.begin()); 
 	
 	cvdebug() << "range = " << begin << " - " << end << "\n"; 
 

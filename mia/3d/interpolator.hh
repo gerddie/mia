@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <mia/core/splinekernel.hh>
 #include <mia/core/boundary_conditions.hh>
 #include <mia/3d/image.hh>
-
+#include <tbb/mutex.h>
 
 NS_MIA_BEGIN
 
@@ -154,7 +154,8 @@ private:
 
 	T m_min;
 	T m_max;
-
+	
+	mutable tbb::mutex m_cache_lock; 
  	mutable CSplineKernel::SCache m_x_cache; 
 	mutable CSplineKernel::SCache m_y_cache; 
 	mutable CSplineKernel::SCache m_z_cache; 

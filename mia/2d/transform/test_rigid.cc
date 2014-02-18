@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-CSplineKernelTestPath kernel_test_path; 
+PrepareTestPluginPath plugin_path_init; 
 
 struct TranslateTransFixture {
 	TranslateTransFixture():size(60, 80),
@@ -211,16 +211,6 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_clone, TranslateTransFixture )
 		++ic;
 		++io;
 	}
-}
-
-BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_curl, RotateTransFixture )
-{
-	BOOST_CHECK_CLOSE(rtrans.grad_curl()+ 1.0, 1.0, 0.1);
-}
-
-BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_divergence, RotateTransFixture )
-{
-	BOOST_CHECK_CLOSE(rtrans.grad_divergence() + 1.0, 1.0, 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(derivative_RotateTransFixture, RotateTransFixture)

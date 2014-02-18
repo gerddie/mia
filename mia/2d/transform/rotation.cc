@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,39 +129,6 @@ void C2DRotationTransformation::set_parameters(const CDoubleVector& params)
 	assert(degrees_of_freedom() == params.size());
 	m_rotation = params[0];
 	m_matrix_valid = false;
-}
-
-float C2DRotationTransformation::divergence() const
-{
-	return 0.0;
-}
-
-float C2DRotationTransformation::grad_divergence() const
-{
-	return 0.0;
-}
-
-
-float C2DRotationTransformation::grad_curl() const
-{
-	return 0.0;
-}
-
-
-float C2DRotationTransformation::curl() const
-{
-	// this is not right
-	return m_rotation;
-}
-
-double C2DRotationTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, CDoubleVector& /*gradient*/) const
-{
-	return 0.0; 
-}
-
-double C2DRotationTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
-{
-	return 0.0; 
 }
 
 

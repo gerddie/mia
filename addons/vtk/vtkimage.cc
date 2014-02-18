@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,8 +97,7 @@ C3DImage *read_image(const C3DBounds& size, void *scalars)
 {
 	cvdebug() << "VTK/MetaIO read image of type " <<  __type_descr<T>::value << "\n"; 
 
-	typedef typename __vtk_data_array<T>::type myDataArray; 
-	
+
 	const T *my_scalars = reinterpret_cast<const T *>(scalars); 
 	if (!my_scalars) 
 		throw create_exception<logic_error>("CVtk3DImageIOPlugin::load: input image scalar type bogus"); 

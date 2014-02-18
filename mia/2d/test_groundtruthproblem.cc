@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ const size_t N = 5;
 const C2DBounds slice_size(3,3);
 const size_t psize = 5 * 9;
 
+PrepareTestPluginPath plugin_path_init; 
 
 struct GroundTruthAccess: public GroundTruthProblem {
 	GroundTruthAccess(const CDoubleVector& left_side,

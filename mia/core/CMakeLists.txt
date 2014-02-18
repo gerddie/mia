@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -310,6 +310,7 @@ NEW_TEST(slopestatistics miacore)
 NEW_TEST(sparse_solver miacore)
 NEW_TEST(splinekernel miacore)
 NEW_TEST(splineparzenmi miacore)
+NEW_TEST(streamvector miacore)
 NEW_TEST(statistics miacore)
 NEW_TEST(threadedmsg miacore)
 NEW_TEST(tools miacore)

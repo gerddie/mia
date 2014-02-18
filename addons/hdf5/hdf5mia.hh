@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -239,8 +239,8 @@ struct Mia_to_h5_types<std::vector<T>>  {
 template <typename Image> 
 typename Image::Pointer read_image(typename Image::dimsize_type& size, const H5Dataset& dataset)
 {
-	typedef typename Image::dimsize_type Bounds; 
-	typedef typename Image::value_type value_type; 
+//	typedef typename Image::dimsize_type Bounds; 
+//	typedef typename Image::value_type value_type; 
 
 	Image *result = new Image(size); 
 	typename Image::Pointer presult(result); 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,13 @@ public:
 	*/
 	std::shared_ptr<D> operator () (const D& input) const; 
 
+	/** Apply the transformation to the input data 
+	    \param input 
+	    \param ipf_override overide the image interpolator 
+	    \returns a shared pointer to the transformed input data
+	*/
+	std::shared_ptr<D> operator () (const D& input, const I& ipf_override) const; 
+	
 	/**
 	   Set the interpolator factory 
 	   \param ipf the new interpolator factory 
@@ -137,6 +144,12 @@ template <typename D, typename I>
 const I& Transformation<D, I>::get_interpolator_factory() const
 {
 	return m_ipf;
+}
+
+template <typename D, typename I>
+std::shared_ptr<D> Transformation<D,I>::operator () (const D& input, const I& ipf_override) const
+{
+	return do_transform(input, ipf_override); 
 }
 
 template <typename D, typename I>

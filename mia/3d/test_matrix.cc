@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,21 +106,19 @@ void FixtureMatrixTest::run(const C3DFMatrix& m, const C3DFVector& test_values,
 	BOOST_CHECK_CLOSE(eval.y, test_values.y, 0.1); 
 	BOOST_CHECK_CLOSE(eval.z, test_values.z, 0.1); 
 	
-	C3DFVector vec; 
-	BOOST_CHECK_EQUAL(m.get_eigenvector(eval.x,vec), 0); 
+	C3DFVector vec =  m.get_eigenvector(0); 
 	
 	BOOST_CHECK_CLOSE(vec.x, ev1.x, 0.1); 
 	BOOST_CHECK_CLOSE(vec.y, ev1.y, 0.1); 
 	BOOST_CHECK_CLOSE(vec.z, ev1.z, 0.1); 
 
-
-	BOOST_CHECK_EQUAL(m.get_eigenvector(eval.y,vec), 0); 
+	vec =  m.get_eigenvector(1); 
 	
 	BOOST_CHECK_CLOSE(vec.x, ev2.x, 0.1); 
 	BOOST_CHECK_CLOSE(vec.y, ev2.y, 0.1); 
 	BOOST_CHECK_CLOSE(vec.z, ev2.z, 0.1); 
 
-	BOOST_CHECK_EQUAL(m.get_eigenvector(eval.z,vec), 0); 
+	vec =  m.get_eigenvector(2); 
 	
 	BOOST_CHECK_CLOSE(vec.x, ev3.x, 0.1); 
 	BOOST_CHECK_CLOSE(vec.y, ev3.y, 0.1); 

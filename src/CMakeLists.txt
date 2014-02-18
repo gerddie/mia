@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@ DEFEXE(2dmultiimagevar    mia2d )
 DEFEXE(2dimagefullstats   mia2d )
 DEFEXE(2dbinarycombine    mia2d )
 DEFEXE(2dtransformation-to-strain mia2d)
+DEFEXE(2dimageseries-maximum-intensity-projection mia2d) 
 
 DEFCHKEXE(2dlerp mia2d )
 
@@ -83,6 +84,7 @@ DEFEXE(2dgroundtruthreg       mia2dmyocardperf )
 DEFEXE(2dseries2sets          mia2dmyocardperf )
 DEFEXE(2dseries-segdistance   mia2dmyocardperf )
 DEFEXE(2dseries-mincorr       mia2dmyocardperf )
+
 DEFEXE(2dseries-sectionmask   mia2dmyocardperf )
 DEFEXE(2dmyoseries-dice       mia2dmyocardperf )
 DEFEXE(2dmyoseries-compdice   mia2dmyocardperf )
@@ -133,7 +135,8 @@ DEFEXE(3dmaskseeded       mia3d )
 DEFEXE(3dfield2norm       mia3d )
 DEFEXE(3dimageselect      mia3d )
 DEFEXE(3dbrainextractT1   mia3d )
-DEFEXE(3dbinarycombine   mia3d )
+DEFEXE(3dbinarycombine    mia3d )
+DEFEXE(3ddistance-stats   mia3d )
 DEFEXE(3dimageaddattributes  mia3d )
 DEFEXE(3dvectorfieldcreate  mia3d )
 DEFEXE(3dserial-nonrigid  mia3d )

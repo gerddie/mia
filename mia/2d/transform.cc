@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -213,6 +213,19 @@ const C2DFVector  *C2DTransformation::const_iterator::operator ->() const
 	assert(m_holder); 
 	return &m_holder->get_value(); 
 }
+
+const C2DBounds& C2DTransformation::const_iterator::pos() const
+{
+	assert(m_holder); 
+	return m_holder->get_pos(); 
+}
+
+const C2DBounds& C2DTransformation::const_iterator::get_size() const
+{
+	assert(m_holder); 
+	return m_holder->get_size(); 
+}
+
 
 bool C2DTransformation::refine()
 {

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,7 @@ using namespace ::boost::unit_test;
 using namespace xmlpp;
 namespace bfs=boost::filesystem;
 
-C2DImageIOPluginHandlerTestPath test_imageio2d_path; 
-C2DTransformCreatorHandlerTestPath test_transform2d_creator_path; 
-
+PrepareTestPluginPath plugin_path_init; 
 
 extern const char *testframe_init;
 extern const char *testframe_init2;

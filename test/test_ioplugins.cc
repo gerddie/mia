@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,7 +203,7 @@ void PluginMapFixture<Handler>::test_suffix_from_name_or_suffix(const Expectmap&
 	const auto& io = Handler::instance(); 
 	for_each(map.begin(), map.end(), 
 		[&io](const pair<string, string>& p) {
-			 cvdebug() << "Test '" << p.first << "\n"; 
+			 cvdebug() << "Test '" << p.first << "'\n"; 
 			 BOOST_CHECK_EQUAL(io.get_preferred_suffix(p.first), p.second); 
 		 });
 

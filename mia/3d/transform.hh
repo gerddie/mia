@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,6 +162,14 @@ public:
 
 		/// return pointer to current value of the transformation 
 		const C3DFVector  *operator ->() const;
+
+		/// return the current position in 3D space 
+ 		const C3DBounds& pos()const; 
+
+
+		/// @returns the size of the supported domain 
+		const C3DBounds& get_size()const; 
+		
 
 	private: 
 		std::unique_ptr<iterator_impl> m_holder;
@@ -328,30 +336,11 @@ public:
 	 */
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const = 0;
 
-
 	/**
-	   Evaluate the grad div ^2 + grad rot ^2 value and its gradient for the 
-	   transformtion 
-	   @param wd weight of the divergence
-	   @param wr weight of the rotation 
-	   \param[out] gradient vector to hold the resulting gradient 
-	   @returns cost function value 
-	 */
-	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const = 0; 
-
-	/**
-	   Evaluate the grad div ^2 + grad rot ^2 value for the transformtion 
-	   @param wd weight of the divergence
-	   @param wr weight of the rotation 
-	   @returns cost function value 
-	 */
-
-	virtual double get_divcurl_cost(double wd, double wr) const = 0; 
-
-	/**
-	   If applicaple the transformation model is refined (e.g. splines 
-	   are converted to a denser coefficient distribution. 
-	   @returns \a true if refinement was applied, and \a false otherwise
+	   Increase the number of coefficients along the axis according to the 
+	   maximum given by the c-rate. This is the complemantary step to upscaling the 
+	   transformation. 
+	   \returns true if an actual refinment was done. 
 	 */
 	virtual bool refine(); 
 

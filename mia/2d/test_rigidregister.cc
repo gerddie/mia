@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ using namespace mia;
 using namespace std; 
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath g_prepare_pluginpath; 
+PrepareTestPluginPath plugin_path_init; 
 
 class RigidRegisterFixture  {
 protected: 

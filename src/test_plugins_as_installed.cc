@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,26 +35,27 @@ struct PluginTestFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_C3DFullCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "divcurl", "image", "taggedssd"}; 
+	set<string> test_data = { "image", "taggedssd"}; 
 
 	test(C3DFullCostPluginHandler::instance().get_set(), test_data); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_C3DImageCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "ngf", "mi", "ssd"};
+	set<string> test_data = { "ngf", "mi", "ssd", "ssd-automask"};
 	test(C3DImageCostPluginHandler::instance().get_set(), test_data); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", 
+		"binarize", "bandpass", "combiner", "convert","close", "crop", "dilate", "distance", "downscale", 
 		"erode", "gauss", "gradnorm", "growmask", "invert", "isovoxel", "kmeans",  
-		"label", "load", "mask", "median", "mlv", "open",  "reorient", "resize",
+		"label", "load", "mask", "median", "mlv", "open",  "resize",
 		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", 
 		"transform", "ws" 
 	}; 
+	
 	test(C3DFilterPluginHandler::instance().get_set(), test_data); 
 }
 
@@ -216,7 +217,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DVFIOPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DFullCostPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"image", "divcurl"
+		"image"
 	}; 
 	
 	test(C2DFullCostPluginHandler::instance().get_set(), test_data); 
@@ -225,7 +226,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFullCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DImageCostPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data =  {
-		"lsd", "ssd", "mi", "ngf"
+		"lsd", "ssd", "mi", "ngf", "ssd-automask"
 	}; 
 	test(C2DImageCostPluginHandler::instance().get_set(), test_data); 
 }
@@ -256,7 +257,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DShapePluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"adaptmed", "admean", "aniso", "bandpass", "binarize", 
+		"adaptmed", "admean", "aniso", "bandpass", "binarize", "combiner",
 		"convert", "close", "crop", "dilate", "distance", 
 		"downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "load", "mask", "mean", "median", "mlv", 

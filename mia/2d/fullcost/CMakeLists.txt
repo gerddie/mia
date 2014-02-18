@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,5 +16,5 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(fullcost image divcurl)
+SET(fullcost image)
 PLUGINGROUP_WITH_TEST_AND_PREFIX2("2dimage" "fullcost" "${fullcost}" mia2dtest )

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,6 +90,15 @@ public:
 	*/
         void scale(const C3DFVector& scale, const C3DFVector& center = C3DFVector::_0); 
 
+
+	/**
+	   multiply the current matrix by a shearing matrix centered at the given location
+	   \param shear sharing factors along the three axis
+	   \param center of the scaling 
+
+	*/
+        void shear(const C3DFVector& shear, const C3DFVector& center = C3DFVector::_0); 
+
 	/**
 	   multiply the current matrix by a translation matrix
 	   \param shift the translation 
@@ -146,6 +155,8 @@ private:
    Multiply two affine matrices
  */
 CAffinTransformMatrix operator * (const CAffinTransformMatrix& lhs, const CAffinTransformMatrix& rhs); 
+
+
 
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ SET(filters3dNew
   combiner
   convert 
   crop 
+  distance
   downscale 
   gradnorm
   growmask

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -685,24 +685,6 @@ bool TAttribute<T>::do_is_less(const CAttribute& other) const
 
 	return strcmp(typedescr(), other.typedescr()) < 0;
 }
-
-#if 0
-template <typename T>
-TVAttribute<T>::TVAttribute(const std::vector<T>& value):
-	TAttribute<std::vector<T> >(value)
-{
-}
-
-template <typename T>
-bool TVAttribute<T>::do_is_equal(const CAttribute& other) const
-{
-	const TVAttribute<T>* o = dynamic_cast<const TVAttribute<T> *>(&other);
-	if (!o)
-		return false;
-	return o->get_value().size() == this->get_value().size() &&
-		std::equal(this->get_value().begin(), this->get_value().end(), o->get_value().begin());
-};
-#endif
 
 template <typename T>
 void TTranslator<T>::register_for(const std::string& key)

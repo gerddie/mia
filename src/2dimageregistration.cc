@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2013 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,8 @@ int do_main( int argc, char *argv[] )
 
 	
 	auto cost_descrs = options.get_remaining(); 
+	if (cost_descrs.empty())
+		throw runtime_error("No registration criterion given");
 
 	C2DFullCostList costs; 
 	for (auto i = cost_descrs.begin(); i != cost_descrs.end(); ++i)
