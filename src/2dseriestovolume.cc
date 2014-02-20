@@ -69,7 +69,7 @@ int do_main(int argc, char *argv[])
 		return EXIT_SUCCESS; 
 
 
-	CSegSetWithImages src_segset(src_filename, false); 
+	CSegSetWithImages src_segset(src_filename, true); 
 	const auto& src_frames = src_segset.get_images();
 
 	if (skip >= src_frames.size())
