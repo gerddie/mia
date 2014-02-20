@@ -41,12 +41,13 @@ IF (USE_VISTAIO)
 
     PLUGIN_WITH_TEST_AND_PREFIX2("2dimage" "io" 2dvistaio "${DEPS2D}")
     PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" 3dvistaio  "${DEPS3D}")
-    
+
+   
     PLUGIN_WITH_PREFIX2("2dvf" "io" 2dvfvistaio "${DEPS2D}")
     PLUGIN_WITH_PREFIX2("3dvf" "io" 3dvfvistaio "${DEPS3D}")
     PLUGIN_WITH_PREFIX2("mesh" "io" vistamesh "${DEPSMESH}")
     PLUGIN_WITH_PREFIX2("2dtransform" "io" 2dtrans "${DEPS2D}")
-    PLUGIN_WITH_PREFIX2("3dtransform" "io" 3dtrans "${DEPS3D}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dtransform" "io" 3dtrans "${DEPS3D}")
     
   
     ADD_EXECUTABLE(test-vista4mia  test_vista4mia.cc)
