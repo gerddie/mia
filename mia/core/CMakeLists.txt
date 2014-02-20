@@ -161,6 +161,7 @@ SET(MIACORE_HEADER_BASE
   sqmin.hh
   statistics.hh
   streamredir.hh
+  svector.hh
   testplugin.hh
   threadedmsg.hh
   tools.hh
