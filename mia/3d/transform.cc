@@ -276,11 +276,26 @@ struct F3DTransform : public TFilter<P3DImage> {
 		
 		auto *timage = new T3DImage<T>(m_trans.get_size(), image);
 		P3DImage result(timage);
+		
+		if (m_trans.has_attribute(C3DTransformation::input_spacing_attr) && 
+		    m_trans.has_attribute(C3DTransformation::output_spacing_attr)) {
+			C3DFVector in_voxel = m_trans.get_attribute_as<C3DFVector>(C3DTransformation::input_spacing_attr);
+			C3DFVector out_voxel = m_trans.get_attribute_as<C3DFVector>(C3DTransformation::output_spacing_attr);
+			if (image.get_voxel_size() != in_voxel) {
+				cvwarn() << "C3DTransform: your input image voxel spacing [" 
+					 << image.get_voxel_size() << "] differs from voxel spacing, this transformation expects [" 
+					 << in_voxel << "], output voxel spacing not reliable\n"; 
+			}
+			timage->set_voxel_size(out_voxel); 
+		}
 
 		std::unique_ptr<T3DConvoluteInterpolator<T> > interp(m_ipf.create(image.data()));
 
 		F3DTransformer<T> worker(m_trans, *interp, *timage); 
 		tbb::parallel_for(tbb::blocked_range<int>( 0, timage->get_size().z), worker);
+
+		// if the transformation provides a forced output pixel spacing, 
+		// set it here 
 		return result;
 	}
 private:

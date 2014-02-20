@@ -35,9 +35,19 @@ typedef TIOPlugin<C3DTransformation> C3DTransformationIO;
 
 /**
    \ingroup io
+   \brief The non-singleton plug-in handler for 3D transformations 
+*/
+
+
+class C3DTransformIOPluginHandlerImpl: public TIOPluginHandler<C3DTransformationIO> {
+protected:  
+	C3DTransformIOPluginHandlerImpl(); 
+};
+/**
+   \ingroup io
    \brief Plug-in handler for the transformation IO plug-ins 
 */
-typedef THandlerSingleton< TIOPluginHandler<C3DTransformationIO> > C3DTransformationIOPluginHandler;
+typedef THandlerSingleton< C3DTransformIOPluginHandlerImpl > C3DTransformationIOPluginHandler;
 
 /**
    \ingroup io

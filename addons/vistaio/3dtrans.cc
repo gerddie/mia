@@ -41,8 +41,6 @@ C3DVistaTransformationIO::C3DVistaTransformationIO():
 {
 	add_suffix(".v3dt");
 	add_suffix(".v");
-	TTranslator<C3DFVector>::register_for("pixel-spacing");
-	TTranslator<C3DFVector>::register_for("forced-output-pixel-spacing");
 }
 
 std::string C3DVistaTransformationIO::do_get_preferred_suffix() const

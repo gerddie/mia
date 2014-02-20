@@ -28,13 +28,20 @@
 
 NS_MIA_BEGIN
 
+C3DTransformIOPluginHandlerImpl::C3DTransformIOPluginHandlerImpl()
+{
+	TTranslator<C3DFVector>::register_for(C3DTransformation::input_spacing_attr);
+	TTranslator<C3DFVector>::register_for(C3DTransformation::output_spacing_attr);
+
+}
+
 template <> const char *  const 
 	TPluginHandler<C3DTransformationIO>::m_help =  
        "These plug-ins implement support for loading and saving 3D transformations to various file types.";
 
 
 template class TIOPlugin<C3DTransformation>;
-template class THandlerSingleton<TIOPluginHandler<C3DTransformationIO> >;
+template class THandlerSingleton<C3DTransformIOPluginHandlerImpl>;
 template class TIOPluginHandler<C3DTransformationIO>;
 template class TPluginHandler<C3DTransformationIO>;
 

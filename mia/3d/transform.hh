@@ -348,6 +348,18 @@ public:
 	   Enable some additional debugging.  
 	 */
 	void set_debug(); 
+
+	/* Attributes */
+	/**
+	   This attribute defines the voxel spacing of the input data of this transform. 
+	 */
+	static constexpr const char *input_spacing_attr = "in-voxel-spacing"; 
+
+	/**
+	   This attribute defines the output voxel spacing of this transform. 
+	 */
+	static constexpr const char *output_spacing_attr = "out-voxel-spacing"; 
+
 protected: 
 	/// @returns information about the debug state 
 	bool get_debug()const; 

@@ -30,6 +30,8 @@ C3DTransformCreatorHandlerTestPath factory_test_path;
 
 BOOST_AUTO_TEST_CASE(test_simple_io) 
 {
+	C3DTransformationIOPluginHandler::instance(); 
+
         C3DBounds size(4,5,6); 
         auto tf =  produce_3dtransform_factory("affine");
         auto t = tf->create(size); 
@@ -43,8 +45,8 @@ BOOST_AUTO_TEST_CASE(test_simple_io)
         t->set_parameters(params); 
         
         t->set_attribute("string_attr", "string"); 
-        t->set_attribute("pixel-spacing", PAttribute(new TAttribute<C3DFVector>(C3DFVector(2,3,4)))); 
-        t->set_attribute("forced-output-pixel-spacing", PAttribute(new TAttribute<C3DFVector>(C3DFVector(1.1f,1,2)))); 
+        t->set_attribute(C3DTransformation::input_spacing_attr, PAttribute(new TAttribute<C3DFVector>(C3DFVector(2,3,4)))); 
+        t->set_attribute(C3DTransformation::output_spacing_attr, PAttribute(new TAttribute<C3DFVector>(C3DFVector(1.1f,1,2)))); 
         
         C3DVistaTransformationIO io; 
         
@@ -63,14 +65,14 @@ BOOST_AUTO_TEST_CASE(test_simple_io)
         }
         
         BOOST_REQUIRE(t_loaded->has_attribute("string_attr")); 
-        BOOST_REQUIRE(t_loaded->has_attribute("pixel-spacing"));
-        BOOST_REQUIRE(t_loaded->has_attribute("forced-output-pixel-spacing"));
+        BOOST_REQUIRE(t_loaded->has_attribute(C3DTransformation::output_spacing_attr));
+        BOOST_REQUIRE(t_loaded->has_attribute(C3DTransformation::input_spacing_attr));
         
         BOOST_CHECK_EQUAL(t_loaded->get_attribute_as<string>("string_attr"), "string"); 
 
-        BOOST_CHECK_EQUAL(t_loaded->get_attribute_as<C3DFVector>("pixel-spacing"), C3DFVector(2,3,4)); 
+        BOOST_CHECK_EQUAL(t_loaded->get_attribute_as<C3DFVector>(C3DTransformation::input_spacing_attr), C3DFVector(2,3,4)); 
 
-        BOOST_CHECK_EQUAL(t_loaded->get_attribute_as<C3DFVector>("forced-output-pixel-spacing"), C3DFVector(1.1f,1,2)); 
+        BOOST_CHECK_EQUAL(t_loaded->get_attribute_as<C3DFVector>(C3DTransformation::output_spacing_attr), C3DFVector(1.1f,1,2)); 
         
 }
 
