@@ -46,5 +46,3 @@ template class TIOPluginHandler<C3DTransformationIO>;
 template class TPluginHandler<C3DTransformationIO>;
 
 NS_MIA_END
-
-
