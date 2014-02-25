@@ -228,7 +228,7 @@ template <>
 void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& name, const char * value)
 {
 	cvdebug() << "add attribute (instance) " << name << " of type 'const char*' and value '" << value << "'\n";
-	attributes[name] = PAttribute(new TAttribute<string>(value));
+	attributes[name] = CStringAttrTranslatorMap::instance().to_attr(name, value);
 }
 
 
