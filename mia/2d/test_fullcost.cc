@@ -196,8 +196,8 @@ private:
 BOOST_AUTO_TEST_CASE( test_load_plugins ) 
 {	
 	const C2DFullCostPluginHandler::Instance& handler = PrepareFullcostTests::instance().fullcost_handler(); 
-	BOOST_CHECK_EQUAL(handler.size(), 2u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "divcurl image ");
+	BOOST_CHECK_EQUAL(handler.size(), 1u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "image ");
 }
 
 #if 0 
