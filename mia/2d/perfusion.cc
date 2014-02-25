@@ -100,6 +100,14 @@ void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
 	impl->m_max_iterations = maxiter; 
 }
 
+void C2DPerfusionAnalysis::set_min_movement_frequency(float min_freq) 
+{
+	assert(impl); 
+	impl->m_cls.set_min_movement_frequency(min_freq); 
+}
+
+
+
 void C2DPerfusionAnalysis::set_approach(size_t approach)
 {
 	assert(impl); 

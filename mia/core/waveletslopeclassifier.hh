@@ -98,6 +98,13 @@ public:
 
 	/** @returns the general result of the identification */
 	EAnalysisResult result() const; 
+
+	/**
+	   Set the minimum mean frequency (in breath per heart beat) that decides whether a slope is 
+	   considered to be periodic 
+	   \param min_freq The new minimum frequency, a value < 0.0 disables the test (this is the default) 
+	*/
+	void set_min_movement_frequency(float min_freq); 
 	
 private:
 	struct CWaveletSlopeClassifierImpl *impl;
