@@ -49,6 +49,7 @@ struct CWaveletSlopeClassifierImpl {
 	bool free_breathing; 
 	float max_movment_energy; 
 	size_t n_movement_components; 
+	float m_min_movement_frequency; 
 	
 	CWaveletSlopeClassifier::EAnalysisResult result; 
 
@@ -75,6 +76,13 @@ CWaveletSlopeClassifier::CWaveletSlopeClassifier():
 	impl(new CWaveletSlopeClassifierImpl())
 {
 }
+
+void CWaveletSlopeClassifier::set_min_movement_frequency(float min_freq) 
+{
+	assert(impl); 
+	impl->m_min_movement_frequency = min_freq; 
+}
+
 		     
 CWaveletSlopeClassifier& CWaveletSlopeClassifier::operator =(const CWaveletSlopeClassifier& other)
 {
@@ -156,7 +164,8 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl():
 	free_breathing(false), 
 	max_movment_energy(0.0), 
 	n_movement_components(0), 
-	result(CWaveletSlopeClassifier::wsc_fail)
+	result(CWaveletSlopeClassifier::wsc_fail), 
+	m_min_movement_frequency(-1)
 {
 }
 
@@ -171,7 +180,8 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	free_breathing(false), 
 	max_movment_energy(0.0), 
 	n_movement_components(0), 
-	result(CWaveletSlopeClassifier::wsc_fail)
+	result(CWaveletSlopeClassifier::wsc_fail), 
+	m_min_movement_frequency(-1)
 {
 	vector<PSlopeStatistics> vstats; 
 	for (unsigned int i = 0; i < series.size(); ++i)
@@ -242,6 +252,10 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 		is_high_freq[i] = (low_freq < high_freq);
 
+		// second test (if requested: is the actual frequency higher than the assumed limit) 
+		if (!is_high_freq[i] && m_min_movement_frequency > 0.0f){
+			is_high_freq[i] = vstats[i]->get_mean_frequency() > m_min_movement_frequency; 
+		}
 		if (is_high_freq[i]) {
 			if (vstats[i]->get_mean_energy_position() == CSlopeStatistics::ecp_begin) {
 				cvinfo() << "c=" << i << ":override motion because we assume it's RV enhacement\n";
