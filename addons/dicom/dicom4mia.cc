@@ -70,12 +70,24 @@ const SLookupInit lookup_init[] = {
 	{IDStudyID, DCM_StudyID, false, tr_no, NULL},
 	{IDImageType, DCM_ImageType, false, tr_no, NULL},
 	{IDSliceLocation, DCM_SliceLocation, false, tr_no, NULL},
+	{IDSliceThickness, DCM_SliceThickness, false, tr_no, NULL},
 	{IDPatientOrientation, DCM_PatientOrientation, false, tr_no, NULL},
 	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, tr_no, NULL},
 	{IDSOPClassUID, DCM_SOPClassUID, false, tr_no, NULL},
 	{IDProtocolName, DCM_ProtocolName, false, tr_no, NULL},
 	{IDTestValue, DcmTagKey(), false, tr_no, NULL},
 	{IDPatientPosition, DCM_PatientPosition, false, tr_no, NULL}, 
+	{IDAcquisitionTime, DCM_AcquisitionTime, false, tr_no, NULL}, 
+
+	{IDPositionerPrimaryAngle, DCM_PositionerPrimaryAngle, false, tr_no, NULL}, 
+	{IDPositionerSecondaryAngle, DCM_PositionerSecondaryAngle, false, tr_no, NULL}, 
+	{IDImagerPixelSpacing, DCM_ImagerPixelSpacing, false, tr_no, NULL},
+	{IDDistanceSourceToDetector, DCM_DistanceSourceToDetector, false, tr_no, NULL},
+	{IDDistanceSourceToPatient, DCM_DistanceSourceToPatient, false, tr_no, NULL},
+	{IDPixelIntensityRelationship, DCM_PixelIntensityRelationship, false, tr_no, NULL},
+	{IDPositionerPrimaryAngleIncrement, DCM_PositionerPrimaryAngleIncrement, false, tr_no, NULL},
+	{IDPositionerSecondaryAngleIncrement, DCM_PositionerSecondaryAngleIncrement, false, tr_no, NULL},
+	
 	{NULL, DcmTagKey(), false, tr_no, NULL}
 };
 
@@ -722,5 +734,18 @@ EXPORT_DICOM const char * IDTestValue = "TestValue";
 EXPORT_DICOM const char * IDTransferSyntaxUID = "TransferSyntaxUID";
 EXPORT_DICOM const char * IDSOPClassUID = "SOPClassUID";
 
+
+EXPORT_DICOM const char * IDAcquisitionTime = "AcquisitionTime";
+
+EXPORT_DICOM const char * IDPositionerPrimaryAngle = "PositionerPrimaryAngle"; 
+EXPORT_DICOM const char * IDPositionerSecondaryAngle = "PositionerSecondaryAngle"; 
+EXPORT_DICOM const char * IDImagerPixelSpacing = "ImagerPixelSpacing"; 
+EXPORT_DICOM const char * IDDistanceSourceToDetector = "DistanceSourceToDetector"; 
+EXPORT_DICOM const char * IDDistanceSourceToPatient = "DistanceSourceToPatient"; 
+EXPORT_DICOM const char * IDPixelIntensityRelationship = "PixelIntensityRelationship"; 
+
+EXPORT_DICOM const char * IDPositionerPrimaryAngleIncrement = "PositionerPrimaryAngleIncrement"; 
+EXPORT_DICOM const char * IDPositionerSecondaryAngleIncrement = "PositionerSecondaryAngleIncrement"; 
+EXPORT_DICOM const char * IDSliceThickness = "SliceThickness"; 
 
 NS_MIA_END

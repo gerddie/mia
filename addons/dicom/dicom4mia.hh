@@ -40,7 +40,16 @@ extern EXPORT_DICOM const char * IDSeriesDescription;
 extern EXPORT_DICOM const char * IDSamplesPerPixel;
 extern EXPORT_DICOM const char * IDTestValue;
 extern EXPORT_DICOM const char * IDSOPClassUID;
-
+extern EXPORT_DICOM const char * IDAcquisitionTime;
+extern EXPORT_DICOM const char * IDPositionerPrimaryAngle; 
+extern EXPORT_DICOM const char * IDPositionerSecondaryAngle; 
+extern EXPORT_DICOM const char * IDImagerPixelSpacing; 
+extern EXPORT_DICOM const char * IDDistanceSourceToDetector; 
+extern EXPORT_DICOM const char * IDDistanceSourceToPatient; 
+extern EXPORT_DICOM const char * IDPixelIntensityRelationship;
+extern EXPORT_DICOM const char * IDPositionerPrimaryAngleIncrement; 
+extern EXPORT_DICOM const char * IDPositionerSecondaryAngleIncrement; 
+extern EXPORT_DICOM const char * IDSliceThickness; 
 
 class EXPORT_DICOM CDicomReader {
 public:
