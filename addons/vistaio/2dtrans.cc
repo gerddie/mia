@@ -90,8 +90,13 @@ P2DTransformation C2DVistaTransformationIO::do_load(const std::string& fname) co
 	{
 		auto creator = mia::C2DTransformCreatorHandler::instance().produce(init_string);  
 		auto t = creator->create(C2DBounds(sx, sy)); 
+
+		VistaIOAttrList attributes = nullptr; 
+		if (VistaIOGetAttr (vlist, "attributes", NULL, VistaIOAttrListRepn, &attributes) == VistaIOAttrFound) {
+			copy_attr_list(*t, attributes);
+		}
+
 		auto params = t->get_parameters(); 
-		
 		if ((long)params.size() != VistaIOImageNPixels(blob)){
 			errmsg << fname << ":Bogus input, expected number of parameters differs from provided one"; 
 			goto fail; 
@@ -125,6 +130,10 @@ bool C2DVistaTransformationIO::do_save(const std::string& fname, const C2DTransf
 	VistaIOSetAttr (vlist, "size_y", NULL, VistaIOLongRepn, data.get_size().y); 
 	VistaIOSetAttr (vlist, "init-string", NULL, VistaIOStringRepn, data.get_creator_string().c_str()); 
 	VistaIOSetAttr (vlist, "parameters", NULL, VistaIOImageRepn, out_field);
+	VistaIOAttrList attributes = VistaIOCreateAttrList();
+	copy_attr_list(attributes, data);
+	VistaIOSetAttr (vlist, "attributes", NULL, VistaIOAttrListRepn, attributes);
+
 
 	bool result = VistaIOWriteFile(f,vlist);
 	VistaIODestroyAttrList(vlist);

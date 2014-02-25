@@ -24,25 +24,16 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/transformio.hh>
 #include <mia/3d/transformfactory.hh>
 
 #include <vistaio/vista4mia.hh>
+
+#include <vistaio/3dtrans.hh>
 
 NS_BEGIN(vista_3dtrans_io)
 
 NS_MIA_USE
 using namespace std; 
-
-class C3DVistaTransformationIO: public C3DTransformationIO {
-public: 	
-	C3DVistaTransformationIO(); 
-private: 
-	virtual PData do_load(const std::string& fname) const;
-	virtual bool do_save(const std::string& fname, const C3DTransformation& data) const;
-	const string do_get_descr() const;
-	std::string do_get_preferred_suffix() const; 
-}; 
 
 
 C3DVistaTransformationIO::C3DVistaTransformationIO():
@@ -50,7 +41,6 @@ C3DVistaTransformationIO::C3DVistaTransformationIO():
 {
 	add_suffix(".v3dt");
 	add_suffix(".v");
-
 }
 
 std::string C3DVistaTransformationIO::do_get_preferred_suffix() const
@@ -95,6 +85,7 @@ P3DTransformation C3DVistaTransformationIO::do_load(const std::string& fname) co
 		goto fail; 
 	}
 	
+	
 	// get the data from the image 
 	if (VistaIOPixelRepn(blob) != VistaIODoubleRepn) {
 		errmsg << fname << ":Bogus input, parameters not if type double"; 
@@ -104,6 +95,12 @@ P3DTransformation C3DVistaTransformationIO::do_load(const std::string& fname) co
 	{
 		auto creator = mia::C3DTransformCreatorHandler::instance().produce(init_string);  
 		auto t = creator->create(C3DBounds(sx, sy, sz)); 
+
+		VistaIOAttrList attributes = nullptr; 
+		if (VistaIOGetAttr (vlist, "attributes", NULL, VistaIOAttrListRepn, &attributes) == VistaIOAttrFound) {
+			copy_attr_list(*t, attributes);
+		}
+		
 		auto params = t->get_parameters(); 
 		
 		if ((long)params.size() != VistaIOImageNPixels(blob)){
@@ -141,7 +138,11 @@ bool C3DVistaTransformationIO::do_save(const std::string& fname, const C3DTransf
 	VistaIOSetAttr (vlist, "size_z", NULL, VistaIOLongRepn, data.get_size().z); 
 	VistaIOSetAttr (vlist, "init-string", NULL, VistaIOStringRepn, data.get_creator_string().c_str()); 
 	VistaIOSetAttr (vlist, "parameters", NULL, VistaIOImageRepn, out_field);
-
+	
+	VistaIOAttrList attributes = VistaIOCreateAttrList();
+	copy_attr_list(attributes, data);
+	VistaIOSetAttr (vlist, "attributes", NULL, VistaIOAttrListRepn, attributes);
+	
 	bool result = VistaIOWriteFile(f,vlist);
 	VistaIODestroyAttrList(vlist);
 

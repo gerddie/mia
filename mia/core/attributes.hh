@@ -308,6 +308,15 @@ public:
 	 */
 	void set_attribute(const std::string& key, const std::string& value);
 
+        /**
+	   Set an attribute, generic version.  
+	   \tparam T type of the attribute value to be set 
+	   \param key
+	   \param value
+	 */
+	template <typename T> 
+	void set_attribute(const std::string& key, const T& value);
+	
 	/// returns the requested attribute as string, returns an empty string if attribute doesn't exist
 	const std::string get_attribute_as_string(const std::string& key)const;
 
@@ -531,6 +540,7 @@ int TAttribute<T>::type_id() const
    A trait to translate between a string and a value  
    \remark this should replace the parameter translation methods 
 */
+
 template <typename T>
 struct dispatch_attr_string {
 	static std::string val2string(const typename ::boost::reference_wrapper<T>::type value) {
@@ -656,6 +666,13 @@ struct dispatch_attr_string<CAttributeMap> {
 };
 
 /// @endcond
+
+template <typename T> 
+void CAttributedData::set_attribute(const std::string& key, const T& value)
+{
+	add_attribute(*m_attr, key, value); 
+}
+
 
 template <typename T>
 std::string TAttribute<T>::do_as_string() const
