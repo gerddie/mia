@@ -435,13 +435,33 @@ string CDicomReaderData::getAttribute(const string& key, bool required, const ch
 
 void CDicomReaderData::add_attribute(CAttributedData& image, const char *key, ETagRequirement  required, const char *default_value)
 {
-	string value = getAttribute(key, required == tr_yes);
-	if (!value.empty())
-		image.set_attribute(key, value);
-	else if (required == tr_yes_defaulted) 
-		image.set_attribute(key, string(default_value));
+	if ( (key == IDAcquisitionTime) || !strcmp(key, IDAcquisitionTime)) {
+		// get an OFTime 
+		DcmElement *time_element = 0; 
+		OFCondition success = dcm.getDataset()->findAndGetElement(, time_element);
+		if (success.good()) {
+			DcmTime *dcm_time = dynamic_cast<DcmTime *>(time_element); 
+			if (dcm_time) {
+				OFTime of_time; 
+				success = dcm_time->getOFTime(of_time); 
+				if (success.good()) {
+					image.set_attribute(key, of_time.getTimeInSeconds());
+				}else{
+					cverr() << "Dicomreader: unable to read time from OFTime element\n"; 
+				}
+			}else{
+				cverr() << "Dicomreader: '" << key "' was not a DcmTime as expected\n";
+			}
+		}
+	}else {
+		string value = getAttribute(key, required == tr_yes);
+		if (!value.empty()) {
+			image.set_attribute(key, value);
+		}
+		else if (required == tr_yes_defaulted) 
+			image.set_attribute(key, string(default_value));
+	}
 }
-
 
 template <typename I>
 void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(I out_begin, size_t size)
@@ -608,8 +628,18 @@ CDicomWriterData::CDicomWriterData(const C2DImage& image)
 	setSize(image.get_size());
 	setPixelSpacing(image.get_pixel_size());
 
-	for(auto i = image.begin_attributes(); i != image.end_attributes(); ++i)
-		setValueStringIfKeyExists(*i);
+	for(auto i = image.begin_attributes(); i != image.end_attributes(); ++i) {
+		if (i->first == string(IDAcquisitionTime)) {
+			// special case reverse handling from above
+			double  time = image.get_attribute_as<double>(IDAcquisitionTime); 
+			OFTime of_time; 
+			of_time.setTimeInSeconds(time); 
+			DcmTime *dcm_time = new DcmTime(DCM_AcquisitionTime); 
+			dcm_time->setOFTime(of_time); 
+			dcm.getDataSet()->insert( dcm_time);
+		} else {
+			setValueStringIfKeyExists(*i);
+	}
 
 	if (!image.has_attribute(IDMediaStorageSOPClassUID))
 		setValueString(IDMediaStorageSOPClassUID, "1.2.840.10008.5.1.4.1.1.4");
