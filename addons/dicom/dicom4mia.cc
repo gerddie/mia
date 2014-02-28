@@ -77,7 +77,7 @@ const SLookupInit lookup_init[] = {
 	{IDProtocolName, DCM_ProtocolName, false, tr_no, NULL},
 	{IDTestValue, DcmTagKey(), false, tr_no, NULL},
 	{IDPatientPosition, DCM_PatientPosition, false, tr_no, NULL}, 
-	{IDAcquisitionTime, DCM_AcquisitionTime, false, tr_no, NULL}, 
+//	{IDAcquisitionTime, DCM_AcquisitionTime, false, tr_no, NULL}, 
 
 	{IDPositionerPrimaryAngle, DCM_PositionerPrimaryAngle, false, tr_no, NULL}, 
 	{IDPositionerSecondaryAngle, DCM_PositionerSecondaryAngle, false, tr_no, NULL}, 
@@ -131,6 +131,7 @@ struct CDicomReaderData {
 	template <typename I>
 	void getPixelData_LittleEndianExplicitTransfer(I out_begin, size_t size);
 
+	void getAcquisitionTimeIfAvailable(CAttributedData& image); 
 
 	C2DFVector getPixelSize();
 
@@ -228,8 +229,11 @@ P2DImage CDicomReader::load_image()const
 
 	// get pixel data
 	impl->getPixelData(result->begin(), result->size());
+	impl->getAcquisitionTimeIfAvailable(*result); 
 
 	result->set_pixel_size(get_pixel_size());
+
+	// see if the AquisitionTime 
 
 
 	const SLookupInit *attr_table = lookup_init;
@@ -389,6 +393,29 @@ float CDicomReaderData::getFloat32(const DcmTagKey &tagKey, bool required, float
 	return value;
 }
 
+void CDicomReaderData::getAcquisitionTimeIfAvailable(CAttributedData& image)
+{
+	DcmElement *element; 
+	OFCondition success = dcm.getDataset()->findAndGetElement(DCM_AcquisitionTime, element); 
+	
+	if (!success.good()) 
+		return; 
+
+	DcmTime *dcm_time  = dynamic_cast<DcmTime *>(element); 
+	if (!dcm_time) {
+		cverr() << "CDicomReader: Element with tag "<<IDAcquisitionTime<< " not a DcmTime as expected\n"; 
+		return; 
+	}
+	
+	OFTime of_time; 
+	success = dcm_time->getOFTime(of_time); 
+	if (!success.good()) {
+		cverr() << "CDicomReader: Could not retrive OFTime string from DcmTime Element\n";
+		return; 
+	}
+	image.set_attribute(IDAcquisitionTime, of_time.getTimeInSeconds()); 
+}						
+
 float CDicomReaderData::getFloat64(const DcmTagKey &tagKey, bool required, double default_value)
 {
 	Float64 value = default_value;
@@ -435,32 +462,12 @@ string CDicomReaderData::getAttribute(const string& key, bool required, const ch
 
 void CDicomReaderData::add_attribute(CAttributedData& image, const char *key, ETagRequirement  required, const char *default_value)
 {
-	if ( (key == IDAcquisitionTime) || !strcmp(key, IDAcquisitionTime)) {
-		// get an OFTime 
-		DcmElement *time_element = 0; 
-		OFCondition success = dcm.getDataset()->findAndGetElement(, time_element);
-		if (success.good()) {
-			DcmTime *dcm_time = dynamic_cast<DcmTime *>(time_element); 
-			if (dcm_time) {
-				OFTime of_time; 
-				success = dcm_time->getOFTime(of_time); 
-				if (success.good()) {
-					image.set_attribute(key, of_time.getTimeInSeconds());
-				}else{
-					cverr() << "Dicomreader: unable to read time from OFTime element\n"; 
-				}
-			}else{
-				cverr() << "Dicomreader: '" << key "' was not a DcmTime as expected\n";
-			}
-		}
-	}else {
-		string value = getAttribute(key, required == tr_yes);
-		if (!value.empty()) {
-			image.set_attribute(key, value);
-		}
-		else if (required == tr_yes_defaulted) 
-			image.set_attribute(key, string(default_value));
+	string value = getAttribute(key, required == tr_yes);
+	if (!value.empty()) {
+		image.set_attribute(key, value);
 	}
+	else if (required == tr_yes_defaulted) 
+		image.set_attribute(key, string(default_value));
 }
 
 template <typename I>
@@ -563,6 +570,7 @@ private:
 	void setValueString(const DcmTagKey& key, const string& value, bool meta);
 	void setSize(const C2DBounds& size);
 	void setPixelSpacing(const C2DFVector& value);
+	void setAcquisitionTime(double time_seconds); 
 	void setValueStringIfKeyExists(const CAttributeMap::value_type& value);
 	friend struct CDicomImageSaver;
 };
@@ -627,18 +635,15 @@ CDicomWriterData::CDicomWriterData(const C2DImage& image)
 	setValueUint16(DCM_SamplesPerPixel, 1);
 	setSize(image.get_size());
 	setPixelSpacing(image.get_pixel_size());
+	
+	// special treatment for the acquistion time
+	if (image.has_attribute(IDAcquisitionTime)) {
+		const double time = image.get_attribute_as<double>(IDAcquisitionTime); 
+		setAcquisitionTime(time); 
+	}
 
 	for(auto i = image.begin_attributes(); i != image.end_attributes(); ++i) {
-		if (i->first == string(IDAcquisitionTime)) {
-			// special case reverse handling from above
-			double  time = image.get_attribute_as<double>(IDAcquisitionTime); 
-			OFTime of_time; 
-			of_time.setTimeInSeconds(time); 
-			DcmTime *dcm_time = new DcmTime(DCM_AcquisitionTime); 
-			dcm_time->setOFTime(of_time); 
-			dcm.getDataSet()->insert( dcm_time);
-		} else {
-			setValueStringIfKeyExists(*i);
+		setValueStringIfKeyExists(*i);
 	}
 
 	if (!image.has_attribute(IDMediaStorageSOPClassUID))
@@ -683,6 +688,16 @@ void CDicomWriterData::setPixelSpacing(const C2DFVector& value)
 	pixelspacing << value.x << "\\" << value.y;
 	setValueString(DCM_PixelSpacing, pixelspacing.str(), false);
 }
+
+void CDicomWriterData::setAcquisitionTime(double time_seconds)
+{
+	OFTime of_time; 
+	of_time.setTimeInSeconds(time_seconds); 
+	DcmTime *dcm_time = new DcmTime(DCM_AcquisitionTime); 
+	dcm_time->setOFTime(of_time); 
+	dcm.getDataset()->insert(dcm_time, OFTrue); 
+}
+
 
 void CDicomWriterData::setValueStringIfKeyExists(const CAttributeMap::value_type& value)
 {

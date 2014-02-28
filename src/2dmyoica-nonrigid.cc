@@ -152,6 +152,19 @@ void save_references(const string& save_ref, int current_pass, int skip_images, 
 	}
 }
 
+float get_relative_min_breathing_frequency(const C2DImageSeries& images, int skip, float min_breathing_frequency)
+{
+	if (min_breathing_frequency <= 0) 
+		return -1; 
+	int n_heartbeats = images.size() - skip; 
+	auto image_begin =  images[skip]; 
+	auto image_end = images[images.size() - 1]; 
+
+	if (image_begin->has_attribute("AcquisitionTime") && image_end->has_attribute("AcquisitionTime")) {
+		
+	}
+}
+
 int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
@@ -189,6 +202,8 @@ int do_main( int argc, char *argv[] )
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
 		segmethod=C2DPerfusionAnalysis::bs_features; 
+
+	float min_breathing_frequency = -1.0f; 
 
 	size_t current_pass = 0; 
 	size_t pass = 5; 
@@ -247,13 +262,17 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
-
+	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'B', 
+			     "minimal man frequency a mixing curve can have to be considered to stem from brething")); 
+	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries input_images = input_set.get_images(); 
+
+	float rel_min_bf = get_relative_min_breathing_frequency(input_images,  skip_images, min_breathing_frequency); 
 	
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
