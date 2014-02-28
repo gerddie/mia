@@ -164,8 +164,8 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl():
 	free_breathing(false), 
 	max_movment_energy(0.0), 
 	n_movement_components(0), 
-	result(CWaveletSlopeClassifier::wsc_fail), 
-	m_min_movement_frequency(-1)
+	m_min_movement_frequency(-1), 
+	result(CWaveletSlopeClassifier::wsc_fail)
 {
 }
 
@@ -180,8 +180,9 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	free_breathing(false), 
 	max_movment_energy(0.0), 
 	n_movement_components(0), 
-	result(CWaveletSlopeClassifier::wsc_fail), 
-	m_min_movement_frequency(-1)
+	m_min_movement_frequency(-1), 
+	result(CWaveletSlopeClassifier::wsc_fail)
+
 {
 	vector<PSlopeStatistics> vstats; 
 	for (unsigned int i = 0; i < series.size(); ++i)
