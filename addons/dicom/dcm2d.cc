@@ -40,6 +40,7 @@ CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
 	add_supported_type(it_ushort);
 
 	TTranslator<float>::register_for("SliceLocation");
+	TTranslator<float>::register_for("AcquisitionTime"); 
 	TTranslator<int>::register_for("SeriesNumber");
 	TTranslator<int>::register_for("AcquisitionNumber");
 	TTranslator<int>::register_for("InstanceNumber");

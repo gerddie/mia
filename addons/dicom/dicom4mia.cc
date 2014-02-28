@@ -725,27 +725,4 @@ CDicomReader EXPORT_DICOM ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writ
 	return CDicomReader(new CDicomReaderData(writer.impl->dcm));
 }
 
-EXPORT_DICOM const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID";
-EXPORT_DICOM const char * IDStudyDescription = "StudyDescription";
-EXPORT_DICOM const char * IDSamplesPerPixel = "IDSamplesPerPixel";
-EXPORT_DICOM const char * IDSeriesDescription = "SeriesDescription";
-
-EXPORT_DICOM const char * IDTestValue = "TestValue";
-EXPORT_DICOM const char * IDTransferSyntaxUID = "TransferSyntaxUID";
-EXPORT_DICOM const char * IDSOPClassUID = "SOPClassUID";
-
-
-EXPORT_DICOM const char * IDAcquisitionTime = "AcquisitionTime";
-
-EXPORT_DICOM const char * IDPositionerPrimaryAngle = "PositionerPrimaryAngle"; 
-EXPORT_DICOM const char * IDPositionerSecondaryAngle = "PositionerSecondaryAngle"; 
-EXPORT_DICOM const char * IDImagerPixelSpacing = "ImagerPixelSpacing"; 
-EXPORT_DICOM const char * IDDistanceSourceToDetector = "DistanceSourceToDetector"; 
-EXPORT_DICOM const char * IDDistanceSourceToPatient = "DistanceSourceToPatient"; 
-EXPORT_DICOM const char * IDPixelIntensityRelationship = "PixelIntensityRelationship"; 
-
-EXPORT_DICOM const char * IDPositionerPrimaryAngleIncrement = "PositionerPrimaryAngleIncrement"; 
-EXPORT_DICOM const char * IDPositionerSecondaryAngleIncrement = "PositionerSecondaryAngleIncrement"; 
-EXPORT_DICOM const char * IDSliceThickness = "SliceThickness"; 
-
 NS_MIA_END
