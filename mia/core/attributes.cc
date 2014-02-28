@@ -128,6 +128,11 @@ void CAttributedData::set_attribute(const std::string& name, const std::string& 
 	set_attribute(name, attr);
 }
 
+void CAttributedData::set_attribute(const std::string& key, const char* value)
+{
+	set_attribute(key, string(value)); 
+}
+
 const string CAttributedData::get_attribute_as_string(const std::string& name)const
 {
 	CAttributeMap::const_iterator i = m_attr->find(name);
@@ -222,13 +227,6 @@ bool operator == (const CAttributeMap& am, const CAttributeMap& bm)
 bool EXPORT_CORE operator == (const CAttributedData& a, const CAttributedData& b)
 {
 	return  *a.m_attr == *b.m_attr;
-}
-
-template <>
-void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& name, const char * value)
-{
-	cvdebug() << "add attribute (instance) " << name << " of type 'const char*' and value '" << value << "'\n";
-	attributes[name] = CStringAttrTranslatorMap::instance().to_attr(name, value);
 }
 
 

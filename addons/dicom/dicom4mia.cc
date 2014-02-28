@@ -21,6 +21,8 @@
 #include <mia/core/errormacro.hh>
 #include <map>
 #include <algorithm>
+#include <cassert>
+#include <iomanip>
 
 #include <dicom/dicom4mia.hh>
 
@@ -639,6 +641,7 @@ CDicomWriterData::CDicomWriterData(const C2DImage& image)
 	// special treatment for the acquistion time
 	if (image.has_attribute(IDAcquisitionTime)) {
 		const double time = image.get_attribute_as<double>(IDAcquisitionTime); 
+		cvdebug() << "CDicomWriterData: save" << IDAcquisitionTime << ": " << time << "s\n"; 
 		setAcquisitionTime(time); 
 	}
 
@@ -693,6 +696,7 @@ void CDicomWriterData::setAcquisitionTime(double time_seconds)
 {
 	OFTime of_time; 
 	of_time.setTimeInSeconds(time_seconds); 
+
 	DcmTime *dcm_time = new DcmTime(DCM_AcquisitionTime); 
 	dcm_time->setOFTime(of_time); 
 	dcm.getDataset()->insert(dcm_time, OFTrue); 

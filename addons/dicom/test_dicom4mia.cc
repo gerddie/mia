@@ -67,9 +67,10 @@ BOOST_AUTO_TEST_CASE(test_read_dicom_attributes)
 	BOOST_CHECK_EQUAL(reader.get_attribute(IDMediaStorageSOPClassUID, true),"1.2.840.10008.5.1.4.1.1.4");
 	BOOST_CHECK_EQUAL(reader.get_attribute(IDSmallestImagePixelValue, true),"7");
 	BOOST_CHECK_EQUAL(reader.get_attribute(IDLargestImagePixelValue, true),"1548");
-
 	BOOST_CHECK_EQUAL(reader.get_pixel_size(), C2DFVector(1.484375,1.484375));
 
+	auto pimage = reader.get_image(); 
+	BOOST_CHECK_EQUAL(pimage->get_attribute_as<double>(IDAcquisitionTime), 32742.072496); 
 }
 
 struct DicomFixture {
@@ -94,6 +95,7 @@ struct DicomFixture {
 
 		const TAttribute<T>& pattr = dynamic_cast<const TAttribute<T>&>(*attr);
 		T attr_val = pattr;
+		cvdebug() << "Attribute value = " << attr_val <<  "\n"; 
 		BOOST_CHECK_EQUAL(attr_val, value);
 	}
 
@@ -127,6 +129,8 @@ BOOST_FIXTURE_TEST_CASE(test_read_dicom_pixels, DicomFixture)
 	check_attribute(*image, IDImageType, "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
 	check_attribute(*image, IDSliceLocation, 15.088232007086f);
 	check_attribute(*image, IDMediaStorageSOPClassUID,"1.2.840.10008.5.1.4.1.1.4");
+	
+	check_attribute<double>(*image, IDAcquisitionTime,32742.072496);
 
 	const C2DUSImage& img = dynamic_cast<const C2DUSImage&>(*image);
 
@@ -172,6 +176,7 @@ BOOST_FIXTURE_TEST_CASE(test_create_dicom, DicomFixture)
 	image.set_attribute(IDSmallestImagePixelValue, "10");
 	image.set_attribute(IDLargestImagePixelValue, "2000");
 	image.set_attribute(IDProtocolName, "My Protocol");
+	image.set_attribute(IDAcquisitionTime, "12312.121");
 
 	CDicomWriter writer(image);
 
@@ -190,6 +195,7 @@ DicomFixture::DicomFixture()
 	TTranslator<int>::register_for(IDSeriesNumber);
 	TTranslator<int>::register_for(IDAcquisitionNumber);
 	TTranslator<int>::register_for(IDInstanceNumber);
+	TTranslator<double>::register_for(IDAcquisitionTime); 
 }
 
 void DicomFixture::check_attribute(const C2DImage& image, const char *name, const char *value)
