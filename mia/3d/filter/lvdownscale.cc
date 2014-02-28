@@ -148,5 +148,11 @@ const string C3DLVDownscaleFilterPlugin::do_get_descr()const
 }
 
 
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C3DLVDownscaleFilterPlugin();
+}
+
+
 NS_END
 
