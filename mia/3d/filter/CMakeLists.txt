@@ -30,6 +30,7 @@ SET(filters3dNew
   kmeans 
   label
   load
+  lvdownscale
   mask
   median 
   mlv 
