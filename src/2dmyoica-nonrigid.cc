@@ -31,6 +31,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
 #include <mia/core/bfsv23dispatch.hh>
+#include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/imageio.hh>
@@ -160,9 +161,18 @@ float get_relative_min_breathing_frequency(const C2DImageSeries& images, int ski
 	auto image_begin =  images[skip]; 
 	auto image_end = images[images.size() - 1]; 
 
-	if (image_begin->has_attribute("AcquisitionTime") && image_end->has_attribute("AcquisitionTime")) {
-		
-	}
+	if (image_begin->has_attribute("AcquisitionTime") && image_end->has_attribute(IDAcquisitionTime)) {
+		double aq_time = image_end->get_attribute_as<double>(IDAcquisitionTime) - 
+			image_begin->get_attribute_as<double>(IDAcquisitionTime);
+		if (aq_time < 0) 
+			throw create_exception<runtime_error>("Got non-postive aquisition time range ", aq_time, 
+							      ", can't handle this");  
+							      
+		double heart_rate = 60 * n_heartbeats / aq_time; 
+		cvmsg() << "Read a heartbeat rate of " << heart_rate << " beats/min\n";
+		return min_breathing_frequency / heart_rate; 
+	}else 
+		return -1; 
 }
 
 int do_main( int argc, char *argv[] )
@@ -263,8 +273,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
 	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'B', 
-			     "minimal man frequency a mixing curve can have to be considered to stem from brething")); 
-	
+			     "minimal mean frequency a mixing curve can have to be considered to stem from brething. "
+			     "A healthy rest breating rate is 12 per minute. A negative value disables the test.")); 
+ 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
@@ -284,6 +295,9 @@ int do_main( int argc, char *argv[] )
 	unique_ptr<C2DPerfusionAnalysis> ica(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
 	if (max_ica_iterations) 
 		ica->set_max_ica_iterations(max_ica_iterations); 
+
+	if (rel_min_bf > 0) 
+		ica->set_min_movement_frequency(rel_min_bf); 
 
 	ica->set_approach(FICA_APPROACH_DEFL); 
 	if (!ica->run(series)) {
