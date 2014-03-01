@@ -509,7 +509,9 @@ retry:
 	
 	C2DFVector physical_distance2d = m_image_attributes.get_pixel_size() * delta_center; 
 	float physical_distance = physical_distance2d.norm(); 
-	if ( physical_distance < 3.0) {
+
+	cvinfo() << "LV-RV center distance = " << physical_distance << "\n";
+	if ( physical_distance < 30.0) {
 		cvwarn() << "Distance between LV and RV centers < 3cm, assuming bad segmentation\n"; 
 		return P2DFilter();		
 	}
@@ -597,7 +599,9 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 	
 	C2DFVector physical_distance2d = m_image_attributes.get_pixel_size() * delta_center; 
 	float physical_distance = physical_distance2d.norm(); 
-	if ( physical_distance < 3.0) {
+	cvinfo() << "LV-RV center distance = " << physical_distance << "\n";
+
+	if ( physical_distance < 30.0) {
 		cvwarn() << "Distance between LV and RV centers < 3cm, assuming bad segmentation\n"; 
 		return P2DFilter();		
 	}
