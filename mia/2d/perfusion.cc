@@ -67,7 +67,7 @@ struct C2DPerfusionAnalysisImpl {
 	size_t m_length; 
 	int m_ica_approach; 
 	bool m_use_guess_model; 
-	CAttributedData m_image_attributes; 
+	C2DFImage m_image_attributes; 
 	float m_min_movement_frequency;  
 };
 
@@ -505,7 +505,18 @@ retry:
 	cvinfo() << "RV center = " << RV_center << "\n";
 	cvinfo() << "LV center = " << LV_center << "\n";
 
-	float r = LV_mask_amplify * (LV_center - RV_center).norm();
+	C2DFVector delta_center = LV_center - RV_center; 
+	
+	C2DFVector physical_distance2d = m_image_attributes.get_pixel_size() * delta_center; 
+	float physical_distance = physical_distance2d.norm(); 
+	if ( physical_distance < 3.0) {
+		cvwarn() << "Distance between LV and RV centers < 3cm, assuming bad segmentation\n"; 
+		return P2DFilter();		
+	}
+	
+
+
+	float r = LV_mask_amplify * delta_center.norm();
 	cvinfo() << "r = " << r << "\n";
 	stringstream mask_lv;
 	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r));
@@ -581,6 +592,16 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 
 	cvinfo() << "RV center = " << RV_center << "\n";
 	cvinfo() << "LV center = " << LV_center << "\n";
+
+	C2DFVector delta_center = LV_center - RV_center; 
+	
+	C2DFVector physical_distance2d = m_image_attributes.get_pixel_size() * delta_center; 
+	float physical_distance = physical_distance2d.norm(); 
+	if ( physical_distance < 3.0) {
+		cvwarn() << "Distance between LV and RV centers < 3cm, assuming bad segmentation\n"; 
+		return P2DFilter();		
+	}
+
 
 	float r = LV_mask_amplify * (LV_center - RV_center).norm();
 	cvinfo() << "r = " << r << "\n";
