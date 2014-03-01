@@ -68,6 +68,7 @@ struct C2DPerfusionAnalysisImpl {
 	int m_ica_approach; 
 	bool m_use_guess_model; 
 	CAttributedData m_image_attributes; 
+	float m_min_movement_frequency;  
 };
 
 
@@ -103,7 +104,7 @@ void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
 void C2DPerfusionAnalysis::set_min_movement_frequency(float min_freq) 
 {
 	assert(impl); 
-	impl->m_cls.set_min_movement_frequency(min_freq); 
+	impl->m_min_movement_frequency = min_freq; 
 }
 
 
@@ -157,7 +158,8 @@ C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components,
 	m_max_iterations(0),
 	m_length(0), 
 	m_ica_approach(FICA_APPROACH_DEFL), 
-	m_use_guess_model(false)
+	m_use_guess_model(false), 
+	m_min_movement_frequency(-1)
 {
 }
 
@@ -283,7 +285,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		if (!ica->run(m_components, m_meanstrip, m_normalize, guess) && 
 		    (m_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
-		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), false);
+		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), false, m_min_movement_frequency);
 		if (m_cls.result() != CWaveletSlopeClassifier::wsc_fail)
 			has_one = true;
 	} else {
@@ -299,7 +301,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 				continue; 
 			}
 
-			CWaveletSlopeClassifier cls(l_ica->get_mixing_curves(), false);
+			CWaveletSlopeClassifier cls(l_ica->get_mixing_curves(), false, m_min_movement_frequency);
 			size_t movement_components  = cls.get_number_of_movement_components();
 			if (cls.result() == CWaveletSlopeClassifier::wsc_fail) {
 				// save this since we can still process without bounding box creation 
