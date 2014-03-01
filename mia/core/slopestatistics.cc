@@ -64,6 +64,7 @@ struct CSlopeStatisticsImpl {
 	int get_index() const; 
 	std::pair<size_t, float>  get_gradient_peak(int start_movement) const; 
 	float get_level_change(size_t center) const; 
+	int get_max_frequency_slot() const; 
 private:
 
 	void evaluate_curve_length() const;
@@ -87,6 +88,8 @@ private:
 	mutable int m_start_movement;
 	mutable bool m_gradient_peak_valid;
 	mutable bool m_wt_valid;
+	mutable int m_max_freq_slot; 
+
 
 	mutable pair<size_t, float>  m_first_peak;
 	mutable pair<size_t, float>  m_gradient_peak;
@@ -272,10 +275,23 @@ float CSlopeStatisticsImpl::get_positive_time_mean() const
 }
 
 
+int CSlopeStatistics::get_max_frequency_slot() const
+{
+	assert(impl); 
+	return impl->get_max_frequency_slot(); 
+}
 
+int CSlopeStatisticsImpl::get_max_frequency_slot() const
+{
+	if (!m_mean_freq_valid)
+		evaluate_frequency(); 
+	return m_max_freq_slot; 
+}
 
 void CSlopeStatisticsImpl::evaluate_frequency() const
 {
+	float max_slot_energy = 0.0; 
+	m_max_freq_slot = 0; 
 	m_mean_freq = 0.0;
 	m_energy = 0.0;
 	CFFT1D_R2C fft(m_series.size());
@@ -287,6 +303,10 @@ void CSlopeStatisticsImpl::evaluate_frequency() const
 		float snorm = sqrt(n);
 		m_mean_freq += k * snorm;
 		m_energy += snorm;
+		if (max_slot_energy < snorm) {
+			max_slot_energy = snorm; 
+			m_max_freq_slot = k; 
+		}
 	}
 	m_mean_freq /= m_energy;
 	m_mean_freq_valid = true;

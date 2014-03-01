@@ -206,7 +206,7 @@ float get_relative_min_breathing_frequency(const C2DImageSeries& images, int ski
 							      
 		double heart_rate = 60 * n_heartbeats / aq_time; 
 		cvmsg() << "Read a heartbeat rate of " << heart_rate << " beats/min\n";
-		return min_breathing_frequency / heart_rate; 
+		return heart_rate / min_breathing_frequency; 
 	}else 
 		return -1; 
 }
@@ -362,7 +362,7 @@ int do_main( int argc, char *argv[] )
 			input_set.set_LV_peak(ica->get_LV_peak_time() + skip_images);
 	}
 
-	bool segentation_possible = ica->get_RV_idx() > 0 && ica->get_LV_idx() >= 0; 
+	bool segentation_possible = ica->get_RV_idx() >= 0 && ica->get_LV_idx() >= 0; 
 	if (!save_crop_feature.empty() && segentation_possible)
 		ica->save_feature_images(save_crop_feature);
 	

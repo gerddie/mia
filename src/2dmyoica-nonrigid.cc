@@ -170,7 +170,7 @@ float get_relative_min_breathing_frequency(const C2DImageSeries& images, int ski
 							      
 		double heart_rate = 60 * n_heartbeats / aq_time; 
 		cvmsg() << "Read a heartbeat rate of " << heart_rate << " beats/min\n";
-		return min_breathing_frequency / heart_rate; 
+		return heart_rate / min_breathing_frequency; 
 	}else 
 		return -1; 
 }

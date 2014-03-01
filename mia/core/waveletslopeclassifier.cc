@@ -218,6 +218,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	int min_range_idx = -1; 
 	float min_range  = numeric_limits<float>::max(); 
 
+	bool got_movement = false; 
 	vector<bool> is_high_freq(series.size()); 
 	for (size_t i = 0; i < series.size(); ++i) {
 		auto e = vstats[i]->get_level_coefficient_sums(); 
@@ -243,23 +244,31 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 		is_high_freq[i] = (low_freq < high_freq);
 
-		// second test (if requested: is the actual frequency higher than the assumed limit) 
-		if (!is_high_freq[i] && min_freq > 0.0f){
-			is_high_freq[i] = vstats[i]->get_mean_frequency() > min_freq; 
-			if (is_high_freq[i])
-				cvinfo() << "Slope " << i << " << detected as movement based on mean frequency " << vstats[i]->get_mean_frequency() << "\n"; 
-			else 
-				cvinfo() << "Slope " << i << " << rejected as movement based on mean frequency " << vstats[i]->get_mean_frequency() << "\n"; 
-
-		}
 		if (is_high_freq[i]) {
 			if (vstats[i]->get_mean_energy_position() == CSlopeStatistics::ecp_begin) {
 				cvinfo() << "c=" << i << ":override motion because we assume it's RV enhacement\n";
 				is_high_freq[i] = false; 
 			}
 		}
+		got_movement |= is_high_freq[i]; 
 	}
-
+	
+	// got no movement, try with frequency analysis 
+	if (!got_movement && min_freq > 0.0f) {
+		for (size_t i = 0; i < series.size(); ++i) {
+			is_high_freq[i] = vstats[i]->get_mean_frequency() > min_freq; 
+			if (is_high_freq[i]) {
+				if (vstats[i]->get_mean_energy_position() == CSlopeStatistics::ecp_begin) {
+					cvinfo() << "c=" << i << ":override motion because we assume it's RV enhacement\n";
+					is_high_freq[i] = false; 
+				}
+				cvinfo() << "Slope " << i << " << detected as movement based on mean frequency slot " << vstats[i]->get_mean_frequency() << "\n"; 
+			}else 
+				cvinfo() << "Slope " << i << " << rejected as movement based on mean frequency slot " << vstats[i]->get_mean_frequency() << "\n"; 
+		}
+	}
+	
+	
 
 	// if the mean is stripped, the baseline vanishes 
 	if (mean_stripped) {
