@@ -270,6 +270,7 @@ CVtk3DImageIOPlugin::CVtk3DImageIOPlugin():
 	C3DImageIOPlugin("vtk")
 {
 	// indicate support for all pixel types available (only scalar types are possible)
+	add_supported_type(it_bit);
 	add_supported_type(it_sbyte);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_sshort);
