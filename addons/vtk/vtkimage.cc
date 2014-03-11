@@ -197,9 +197,7 @@ struct __dispatch_convert<T, __true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<T>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type " << __type_descr<T>::value << "\n"; 
-		output->SetScalarType(__vtk_data_array<T>::value); 
-		output->SetNumberOfScalarComponents(1); 
-		output->AllocateScalars(); 
+		output->AllocateScalars(__vtk_data_array<T>::value, 1); 
 		T *out_ptr =  reinterpret_cast<T*>(output->GetScalarPointer()); 
 		copy(input.begin(), input.end(), out_ptr); 
 	}
@@ -210,9 +208,8 @@ struct __dispatch_convert<bool, __true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<bool>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type bool\n"; 
-		output->SetScalarType(__vtk_data_array<bool>::value); 
-		output->SetNumberOfScalarComponents(1); 
-		output->AllocateScalars(); 
+
+		output->AllocateScalars(__vtk_data_array<bool>::value, 1); 
 		unsigned char *out_ptr =  reinterpret_cast<unsigned char *>(output->GetScalarPointer()); 
 		
 		auto i = input.begin();
@@ -333,7 +330,7 @@ bool CVtk3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 	
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkDataSetWriter>::New(); 
-	writer->SetInput(outimage); 
+	writer->SetInputData(outimage); 
 	writer->SetFileTypeToBinary();
 	writer->SetFileName(fname.c_str()); 
 	writer->Write();
@@ -406,7 +403,7 @@ bool CVtkXML3DImageIOPlugin::do_save(const string& fname, const Data& data) cons
 	
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkXMLImageDataWriter>::New(); 
-	writer->SetInput(outimage); 
+	writer->SetInputData(outimage); 
 	writer->SetFileName(fname.c_str()); 
 	writer->Write();
 
@@ -485,7 +482,7 @@ bool CMhd3DImageIOPlugin::do_save(const std::string& fname, const Data& data) co
 
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkMetaImageWriter>::New(); 
-	writer->SetInput(outimage); 
+	writer->SetInputData(outimage); 
 	writer->SetFileName(fname.c_str()); 
 	// seems that compression is broken for (un)signed char. 
 	writer->SetCompression(false); 
