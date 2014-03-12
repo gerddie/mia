@@ -108,6 +108,10 @@ void T2DConvoluteInterpolator<T>::prefilter(const T2DDatafield<T>& image)
 
 
 	min_max<typename T2DDatafield<T>::const_iterator >::get(image.begin(), image.end(), m_min, m_max);
+	// always allow a zero value 
+	if (T() < m_min) 
+		m_min = T(); 
+
 	
 	// copy the data
 	__dispatch_copy<T2DDatafield<T>, TCoeff2D >::apply(image, m_coeff); 

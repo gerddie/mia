@@ -275,7 +275,7 @@ static void test_parallel_interpolator_zerofill_shifted()
 	for (size_t z = 0; z < data.get_size().z; ++z)
 		for (size_t y = 0; y < data.get_size().y; ++y)
 			for (size_t x = 0; x < data.get_size().x; ++x, ++i) {
-				*i = x + 10 * y + 100 * z;
+				*i = x + 10 * y + 100 * z + 2;
 				if (x >= 1 && y >= 2 && z >= 3) 
 					test_data(x - 1, y - 2, z - 3) = *i; 
 			}

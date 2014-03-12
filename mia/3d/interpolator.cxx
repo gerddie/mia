@@ -110,6 +110,10 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 	m_z_cache.reset(); 
 
 	min_max_3d<T>::get(image, &m_min, &m_max);
+	// we always allow that a pixel is set to zero
+	if (T() < m_min) 
+		m_min = T(); 
+
 	std::copy(image.begin(), image.end(), m_coeff.begin());
 
 
