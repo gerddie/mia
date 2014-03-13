@@ -293,7 +293,11 @@ bool CVtkMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh) co
 	auto writer = vtkSmartPointer<vtkPolyDataWriter>::New();
 	writer->SetFileName(filename.c_str());
 	writer->SetFileTypeToBinary(); 
+#if  VTK_MAJOR_VERSION < 6 
 	writer->SetInput(data); 
+#else 
+	writer->SetInputData(data); 
+#endif 
 	return writer->Write(); 
 }
 
