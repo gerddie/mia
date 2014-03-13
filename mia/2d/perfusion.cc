@@ -67,7 +67,8 @@ struct C2DPerfusionAnalysisImpl {
 	size_t m_length; 
 	int m_ica_approach; 
 	bool m_use_guess_model; 
-	CAttributedData m_image_attributes; 
+	C2DFImage m_image_attributes; 
+	float m_min_movement_frequency;  
 };
 
 
@@ -99,6 +100,14 @@ void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
 	assert(impl); 
 	impl->m_max_iterations = maxiter; 
 }
+
+void C2DPerfusionAnalysis::set_min_movement_frequency(float min_freq) 
+{
+	assert(impl); 
+	impl->m_min_movement_frequency = min_freq; 
+}
+
+
 
 void C2DPerfusionAnalysis::set_approach(size_t approach)
 {
@@ -149,7 +158,8 @@ C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components,
 	m_max_iterations(0),
 	m_length(0), 
 	m_ica_approach(FICA_APPROACH_DEFL), 
-	m_use_guess_model(false)
+	m_use_guess_model(false), 
+	m_min_movement_frequency(-1)
 {
 }
 
@@ -275,7 +285,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		if (!ica->run(m_components, m_meanstrip, m_normalize, guess) && 
 		    (m_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
-		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), false);
+		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), false, m_min_movement_frequency);
 		if (m_cls.result() != CWaveletSlopeClassifier::wsc_fail)
 			has_one = true;
 	} else {
@@ -291,7 +301,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 				continue; 
 			}
 
-			CWaveletSlopeClassifier cls(l_ica->get_mixing_curves(), false);
+			CWaveletSlopeClassifier cls(l_ica->get_mixing_curves(), false, m_min_movement_frequency);
 			size_t movement_components  = cls.get_number_of_movement_components();
 			if (cls.result() == CWaveletSlopeClassifier::wsc_fail) {
 				// save this since we can still process without bounding box creation 
@@ -495,7 +505,20 @@ retry:
 	cvinfo() << "RV center = " << RV_center << "\n";
 	cvinfo() << "LV center = " << LV_center << "\n";
 
-	float r = LV_mask_amplify * (LV_center - RV_center).norm();
+	C2DFVector delta_center = LV_center - RV_center; 
+	
+	C2DFVector physical_distance2d = m_image_attributes.get_pixel_size() * delta_center; 
+	float physical_distance = physical_distance2d.norm(); 
+
+	cvinfo() << "LV-RV center distance = " << physical_distance << "\n";
+	if ( physical_distance < 30.0) {
+		cvwarn() << "Distance between LV and RV centers < 3cm, assuming bad segmentation\n"; 
+		return P2DFilter();		
+	}
+	
+
+
+	float r = LV_mask_amplify * delta_center.norm();
 	cvinfo() << "r = " << r << "\n";
 	stringstream mask_lv;
 	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r));
@@ -571,6 +594,18 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 
 	cvinfo() << "RV center = " << RV_center << "\n";
 	cvinfo() << "LV center = " << LV_center << "\n";
+
+	C2DFVector delta_center = LV_center - RV_center; 
+	
+	C2DFVector physical_distance2d = m_image_attributes.get_pixel_size() * delta_center; 
+	float physical_distance = physical_distance2d.norm(); 
+	cvinfo() << "LV-RV center distance = " << physical_distance << "\n";
+
+	if ( physical_distance < 30.0) {
+		cvwarn() << "Distance between LV and RV centers < 3cm, assuming bad segmentation\n"; 
+		return P2DFilter();		
+	}
+
 
 	float r = LV_mask_amplify * (LV_center - RV_center).norm();
 	cvinfo() << "r = " << r << "\n";

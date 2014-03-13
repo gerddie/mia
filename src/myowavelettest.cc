@@ -111,7 +111,7 @@ int do_main( int argc, char *argv[] )
 			      , i , " has " , table[i].size() , " rows"); 
 		}
 
-	CWaveletSlopeClassifier classifier(table, false);
+	CWaveletSlopeClassifier classifier(table, false, -1);
 	
 	switch (classifier.result()) {
 	case CWaveletSlopeClassifier::wsc_fail: 

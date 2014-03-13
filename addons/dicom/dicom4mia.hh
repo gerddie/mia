@@ -22,6 +22,7 @@
 #define dicom4mia_hh
 
 #include <mia/core/attributes.hh>
+#include <mia/core/attribute_names.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/image.hh>
 #include <mia/3d/image.hh>
@@ -33,14 +34,6 @@
 #endif
 
 NS_MIA_BEGIN
-
-extern EXPORT_DICOM const char * IDMediaStorageSOPClassUID;
-extern EXPORT_DICOM const char * IDStudyDescription;
-extern EXPORT_DICOM const char * IDSeriesDescription;
-extern EXPORT_DICOM const char * IDSamplesPerPixel;
-extern EXPORT_DICOM const char * IDTestValue;
-extern EXPORT_DICOM const char * IDSOPClassUID;
-
 
 class EXPORT_DICOM CDicomReader {
 public:

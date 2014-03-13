@@ -308,6 +308,7 @@ public:
 	 */
 	void set_attribute(const std::string& key, const std::string& value);
 
+
         /**
 	   Set an attribute, generic version.  
 	   \tparam T type of the attribute value to be set 
@@ -316,6 +317,16 @@ public:
 	 */
 	template <typename T> 
 	void set_attribute(const std::string& key, const T& value);
+
+	/**
+	   Set an attribute using one of the defined translators
+	   \param key
+	   \param value
+	 */
+	void set_attribute(const std::string& key, const char* value);
+
+
+
 	
 	/// returns the requested attribute as string, returns an empty string if attribute doesn't exist
 	const std::string get_attribute_as_string(const std::string& key)const;
@@ -461,16 +472,15 @@ void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key
 	attributes[key] = PAttribute(new TAttribute<T>(value));
 }
 
-/**
-   \ingroup basic 
-   convenience function to set an string attribute from a C-string in an attribute map:
-   \tparam type of the attribute value to be added
-   \param attributes map to set the value in
-   \param key
-   \param value
- */
 template <>
-void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key, const char * value);
+inline void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key, const char *value)
+{
+	attributes[key] =  CStringAttrTranslatorMap::instance().to_attr(key, value);
+	cvdebug() << "add_attribute '"  << key
+		  << "' to '" << value << "' of type '"
+		  << attributes[key]->typedescr() << "'\n";
+}
+
 
 
 /** 

@@ -144,7 +144,13 @@ void CSegSet::read(const xmlpp::Document& node)
 	auto e = frames.end();
 
 	while (i != e) {
-		m_frames.push_back(CSegFrame(**i, m_version));
+		try {
+			m_frames.push_back(CSegFrame(**i, m_version));
+		}
+		catch (invalid_argument& x) {
+			throw create_exception<invalid_argument>("Segset: Error reading frame ", distance(frames.begin(), i), 
+								 ":", x.what());  
+		}
 		++i;
 	}
 

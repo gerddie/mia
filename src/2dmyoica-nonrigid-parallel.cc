@@ -31,6 +31,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
 #include <mia/core/bfsv23dispatch.hh>
+#include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/imageio.hh>
@@ -188,6 +189,29 @@ void save_references(const string& save_ref, int current_pass, int skip_images, 
 	}
 }
 
+float get_relative_min_breathing_frequency(const C2DImageSeries& images, int skip, float min_breathing_frequency)
+{
+	if (min_breathing_frequency <= 0) 
+		return -1; 
+	int n_heartbeats = images.size() - skip; 
+	auto image_begin =  images[skip]; 
+	auto image_end = images[images.size() - 1]; 
+
+	if (image_begin->has_attribute("AcquisitionTime") && image_end->has_attribute(IDAcquisitionTime)) {
+		double aq_time = image_end->get_attribute_as<double>(IDAcquisitionTime) - 
+			image_begin->get_attribute_as<double>(IDAcquisitionTime);
+		if (aq_time < 0) 
+			throw create_exception<runtime_error>("Got non-postive aquisition time range ", aq_time, 
+							      ", can't handle this");  
+							      
+		double heart_rate = 60 * n_heartbeats / aq_time; 
+		cvmsg() << "Read a heartbeat rate of " << heart_rate << " beats/min\n";
+		return heart_rate / min_breathing_frequency; 
+	}else 
+		return -1; 
+}
+
+
 int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
@@ -224,6 +248,8 @@ int do_main( int argc, char *argv[] )
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
 		segmethod=C2DPerfusionAnalysis::bs_features; 
+
+	float min_breathing_frequency = -1.0f; 
 
 	size_t current_pass = 0; 
 	size_t pass = 3; 
@@ -287,6 +313,10 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
+	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'B', 
+			     "minimal mean frequency a mixing curve can have to be considered to stem from brething. "
+			     "A healthy rest breating rate is 12 per minute. A negative value disables the test.")); 
+
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
@@ -296,6 +326,8 @@ int do_main( int argc, char *argv[] )
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries input_images = input_set.get_images(); 
+
+	float rel_min_bf = get_relative_min_breathing_frequency(input_images,  skip_images, min_breathing_frequency); 
 	
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
@@ -307,6 +339,10 @@ int do_main( int argc, char *argv[] )
 	unique_ptr<C2DPerfusionAnalysis> ica(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
 	if (max_ica_iterations) 
 		ica->set_max_ica_iterations(max_ica_iterations); 
+
+	if (rel_min_bf > 0) 
+		ica->set_min_movement_frequency(rel_min_bf); 
+
 
 	ica->set_approach(FICA_APPROACH_DEFL); 
 	if (!ica->run(series)) {
@@ -326,7 +362,8 @@ int do_main( int argc, char *argv[] )
 			input_set.set_LV_peak(ica->get_LV_peak_time() + skip_images);
 	}
 
-	if (!save_crop_feature.empty())
+	bool segentation_possible = ica->get_RV_idx() >= 0 && ica->get_LV_idx() >= 0; 
+	if (!save_crop_feature.empty() && segentation_possible)
 		ica->save_feature_images(save_crop_feature);
 	
 	
@@ -336,15 +373,14 @@ int do_main( int argc, char *argv[] )
 	transform(references_float.begin(), references_float.end(), references.begin(), 
 		  FWrapStaticDataInSharedPointer<C2DImage>()); 
 
-	// crop if requested
-	if (box_scale) {
+	// crop if requested && possible
+	if (box_scale  && segentation_possible) {
 		segment_and_crop_input(input_set, *ica, box_scale, segmethod, references, save_crop_feature); 
 		input_images = input_set.get_images(); 
 	}else if (!save_crop_feature.empty()) {
 		stringstream cfile; 
-		cfile << save_crop_feature << "-coeff.txt"; 
+		cfile << save_crop_feature << ".txt"; 
 		ica->save_coefs(cfile.str()); 
-		
 	}
 
 	// save cropped images if requested

@@ -130,6 +130,15 @@ public:
 	int get_LV_idx() const; 
 
 
+	/**
+	   Set the minimum mean frequency (in breath per heart beat) that decides whether a slope is 
+	   considered to be periodic. 
+	   \param min_freq The new minimum frequency, a value < 0.0 disables the test (this is the default) 
+	   \remark this values is simply passed through to the wavelet slope classifier 
+	 */
+	void set_min_movement_frequency(float min_freq); 
+
+
         /**
 	   \returns the perfusion enhancement IC index of -1 if it could not be identified
 	*/

@@ -56,8 +56,9 @@ public:
 	   Initialize the classifier with the given curves and the information whether the means were stripped 
 	   @param m matrix of curves 
 	   @param mean_stripped
+	   @param min_freq minimum breatjing frequency to consider movement, set to <0 to diable this test 
 	 */
-	CWaveletSlopeClassifier(const Columns& m, bool mean_stripped);
+	CWaveletSlopeClassifier(const Columns& m, bool mean_stripped, float min_freq);
 
 	/** copy constructor */
 	CWaveletSlopeClassifier(const CWaveletSlopeClassifier& other);
@@ -98,7 +99,7 @@ public:
 
 	/** @returns the general result of the identification */
 	EAnalysisResult result() const; 
-	
+
 private:
 	struct CWaveletSlopeClassifierImpl *impl;
 };

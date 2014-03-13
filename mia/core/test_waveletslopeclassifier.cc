@@ -61,7 +61,7 @@ void SlopeClassifierFixture::run(size_t length, size_t components, const float *
 		for (size_t c = 0; c < components; ++c, ++i)
 			columns[c][r]  = *i;
 
-	CWaveletSlopeClassifier c(columns, mean_stripped);
+	CWaveletSlopeClassifier c(columns, mean_stripped, -1);
 	check_equal(c.get_movement_idx(), result.periodic_idx, "periodic index"); 
 	check_equal(c.get_RV_idx(), result.RV_idx, "RV index");
 	

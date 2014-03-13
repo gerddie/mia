@@ -18,6 +18,7 @@
 
 SET(MIACORE_SRC_BASE 
   attributes.cc 
+  attribute_names.cc 
   boundary_conditions.cc
   callback.cc 
   cost.cc 
@@ -84,6 +85,7 @@ SET(MIACORE_SRC_BASE
 
 SET(MIACORE_HEADER_BASE
   attributes.hh
+  attribute_names.hh 
   attributetype.hh
   boundary_conditions.hh
   bfsv23dispatch.hh
