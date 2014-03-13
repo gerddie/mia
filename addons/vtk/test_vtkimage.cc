@@ -235,3 +235,49 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_mhd_write_read, T, type_mhd )
 
 
 
+
+BOOST_AUTO_TEST_CASE( test_simple_write_read_bool ) 
+{
+        C3DBounds size(2,3,4);
+	C3DBitImage *image = new C3DBitImage(size); 
+        P3DImage pimage(image); 
+
+	C3DFVector voxel(2.0,3.0,4.0); 
+        auto iv = image->begin(); 
+	auto ev = image->end();
+        int i = 0; 
+
+	while (iv != ev)
+		*iv++ = i++ & 1;
+	pimage->set_voxel_size(voxel); 
+
+	CVtk3DImageIOPlugin io; 
+        CVtk3DImageIOPlugin::Data images;
+        images.push_back(pimage); 
+
+	stringstream filename; 
+	filename << "testimage-" << __type_descr<bool>::value << ".vtk"; 
+
+	cvdebug() << "test with " << filename.str() << "\n"; 
+
+	BOOST_REQUIRE(io.save(filename.str(), images)); 
+	
+	auto loaded = io.load(filename.str()); 
+	BOOST_REQUIRE(loaded); 
+	
+	BOOST_REQUIRE(loaded->size() == 1u); 
+        const auto& ploaded = dynamic_cast<const C3DBitImage&>(*(*loaded)[0]); 	
+	iv = image->begin(); 
+
+
+	auto il = ploaded.begin(); 
+	
+	while (iv != ev) {
+		BOOST_CHECK_EQUAL(*il, *iv); 
+		++iv; 
+		++il; 
+	}
+
+	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel); 
+//        unlink(filename.str().c_str()); 
+}

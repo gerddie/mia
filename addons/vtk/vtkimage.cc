@@ -93,21 +93,50 @@ VTK_ARRAY_TRANSLATE(double, vtkDoubleArray, VTK_DOUBLE);
 
 
 template <typename T> 
-C3DImage *read_image(const C3DBounds& size, void *scalars) 
-{
-	cvdebug() << "VTK/MetaIO read image of type " <<  __type_descr<T>::value << "\n"; 
+struct read_image {
+	static C3DImage *apply(const C3DBounds& size, void *scalars)  {
+		cvdebug() << "VTK/MetaIO read image of type " <<  __type_descr<T>::value << "\n"; 
+		
+		
+		const T *my_scalars = reinterpret_cast<const T *>(scalars); 
+		if (!my_scalars) 
+			throw create_exception<logic_error>("CVtk3DImageIOPlugin::load: input image scalar type bogus"); 
+		
+		T3DImage<T> *result = new  T3DImage<T>(size); 
+		copy(my_scalars, my_scalars + result->size(), result->begin()); 
+		
+		
+		return result; 
+	}
+}; 
 
-
-	const T *my_scalars = reinterpret_cast<const T *>(scalars); 
-	if (!my_scalars) 
-		throw create_exception<logic_error>("CVtk3DImageIOPlugin::load: input image scalar type bogus"); 
-	
-	T3DImage<T> *result = new  T3DImage<T>(size); 
-	copy(my_scalars, my_scalars + result->size(), result->begin()); 
-
-
-	return result; 
-}
+template <> 
+struct read_image<bool> {
+	static C3DImage *apply(const C3DBounds& size, void *scalars)  {
+		cvdebug() << "VTK/MetaIO read image of type " <<  __type_descr<bool>::value << "\n"; 
+		
+		
+		const unsigned char *my_scalars = reinterpret_cast<const unsigned char *>(scalars); 
+		if (!my_scalars) 
+			throw create_exception<logic_error>("CVtk3DImageIOPlugin::load: input image scalar type bogus"); 
+		
+		T3DImage<bool> *result = new  T3DImage<bool>(size); 
+		
+		
+		auto i = result->begin();
+		auto e = result->end();
+			
+		while (i != e) {
+			unsigned char obyte = *my_scalars++;
+			unsigned char mask = 0x80;
+			for (int pos = 0; pos < 8 && i != e; ++i, ++pos, mask >>= 1) {
+				if (obyte & mask) 
+					*i = true; 
+			}
+		}
+		return result; 
+	}
+}; 
 
 static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname) 
 {
@@ -129,19 +158,19 @@ static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname)
 
 	C3DImage *result_image = nullptr; 
 	switch 	 (vtk_image->GetScalarType()) {
-	case VTK_BIT:            result_image=read_image<bool>(size, array); break; 
-	case VTK_SIGNED_CHAR:    result_image=read_image<signed char>(size, array); break; 
-	case VTK_UNSIGNED_CHAR:  result_image=read_image<unsigned char>(size, array); break; 
-	case VTK_SHORT:          result_image=read_image<signed short>(size, array); break; 
-	case VTK_UNSIGNED_SHORT: result_image=read_image<unsigned short>(size, array); break; 
-	case VTK_INT:            result_image=read_image<signed int>(size, array); break;  
-	case VTK_UNSIGNED_INT:   result_image=read_image<unsigned int>(size, array); break; 
+	case VTK_BIT:            result_image=read_image<bool>::apply(size, array); break; 
+	case VTK_SIGNED_CHAR:    result_image=read_image<signed char>::apply(size, array); break; 
+	case VTK_UNSIGNED_CHAR:  result_image=read_image<unsigned char>::apply(size, array); break; 
+	case VTK_SHORT:          result_image=read_image<signed short>::apply(size, array); break; 
+	case VTK_UNSIGNED_SHORT: result_image=read_image<unsigned short>::apply(size, array); break; 
+	case VTK_INT:            result_image=read_image<signed int>::apply(size, array); break;  
+	case VTK_UNSIGNED_INT:   result_image=read_image<unsigned int>::apply(size, array); break; 
 #ifdef LONG_64BIT
-	case VTK_LONG:           result_image=read_image<signed long>(size, array); break; 
-	case VTK_UNSIGNED_LONG:  result_image=read_image<unsigned long>(size, array); break; 
+	case VTK_LONG:           result_image=read_image<signed long>::apply(size, array); break; 
+	case VTK_UNSIGNED_LONG:  result_image=read_image<unsigned long>::apply(size, array); break; 
 #endif 
-	case VTK_FLOAT:          result_image=read_image<float>(size, array); break; 
-	case VTK_DOUBLE:         result_image=read_image<double>(size, array); break;  
+	case VTK_FLOAT:          result_image=read_image<float>::apply(size, array); break; 
+	case VTK_DOUBLE:         result_image=read_image<double>::apply(size, array); break;  
 	default:
 		throw create_exception<invalid_argument>("3D Vtk/MetaImageIO load (", fname ,"): "
 							 "data type ", vtk_image->GetScalarTypeAsString(), 
@@ -168,11 +197,42 @@ struct __dispatch_convert<T, __true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<T>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type " << __type_descr<T>::value << "\n"; 
-		output->SetScalarType(__vtk_data_array<T>::value); 
-		output->SetNumberOfScalarComponents(1); 
-		output->AllocateScalars(); 
+		output->AllocateScalars(__vtk_data_array<T>::value, 1); 
 		T *out_ptr =  reinterpret_cast<T*>(output->GetScalarPointer()); 
 		copy(input.begin(), input.end(), out_ptr); 
+	}
+}; 
+
+template <> 
+struct __dispatch_convert<bool, __true_type> {
+	static void  apply (vtkImageData *output, const T3DImage<bool>& input)  {
+		
+		cvdebug() << "Input is an image of pixel type bool\n"; 
+
+		output->AllocateScalars(__vtk_data_array<bool>::value, 1); 
+		unsigned char *out_ptr =  reinterpret_cast<unsigned char *>(output->GetScalarPointer()); 
+		
+		auto i = input.begin();
+		auto e = input.end();
+		int pos = 0; 
+		unsigned char mask = 0x80;
+		unsigned char obyte = 0;
+		while (i != e) {
+			if (*i) 
+				obyte |= mask; 
+			++pos; 
+			mask >>= 1; 
+			if (pos == 8) {
+				*out_ptr++ = obyte; 
+				obyte = 0; 
+				mask = 0x80;
+				pos = 0; 
+			}
+			++i; 
+		}
+		if ( pos > 0) {
+			*out_ptr = obyte; 
+		}
 	}
 }; 
 
@@ -210,6 +270,7 @@ CVtk3DImageIOPlugin::CVtk3DImageIOPlugin():
 	C3DImageIOPlugin("vtk")
 {
 	// indicate support for all pixel types available (only scalar types are possible)
+	add_supported_type(it_bit);
 	add_supported_type(it_sbyte);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_sshort);
@@ -270,7 +331,7 @@ bool CVtk3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 	
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkDataSetWriter>::New(); 
-	writer->SetInput(outimage); 
+	writer->SetInputData(outimage); 
 	writer->SetFileTypeToBinary();
 	writer->SetFileName(fname.c_str()); 
 	writer->Write();
@@ -343,7 +404,7 @@ bool CVtkXML3DImageIOPlugin::do_save(const string& fname, const Data& data) cons
 	
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkXMLImageDataWriter>::New(); 
-	writer->SetInput(outimage); 
+	writer->SetInputData(outimage); 
 	writer->SetFileName(fname.c_str()); 
 	writer->Write();
 
@@ -422,7 +483,7 @@ bool CMhd3DImageIOPlugin::do_save(const std::string& fname, const Data& data) co
 
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkMetaImageWriter>::New(); 
-	writer->SetInput(outimage); 
+	writer->SetInputData(outimage); 
 	writer->SetFileName(fname.c_str()); 
 	// seems that compression is broken for (un)signed char. 
 	writer->SetCompression(false); 

@@ -110,17 +110,17 @@ struct analyze_dsr
 #pragma pack()
 
 /* Acceptable values for datatype */
-#define DT_NONE                      0
-#define DT_UNKNOWN                   0
-#define DT_BINARY                    1
-#define DT_UNSIGNED_CHAR             2
-#define DT_SIGNED_SHORT              4
-#define DT_SIGNED_INT                8
-#define DT_FLOAT                     16
-#define DT_COMPLEX                   32
-#define DT_DOUBLE                    64
-#define DT_RGB                       128
-#define DT_ALL                       255
+#define DTA_NONE                      0
+#define DTA_UNKNOWN                   0
+#define DTA_BINARY                    1
+#define DTA_UNSIGNED_CHAR             2
+#define DTA_SIGNED_SHORT              4
+#define DTA_SIGNED_INT                8
+#define DTA_FLOAT                     16
+#define DTA_COMPLEX                   32
+#define DTA_DOUBLE                    64
+#define DTA_RGB                       128
+#define DTA_ALL                       255
 
 enum EAnaOrientation {
 	ao_transverse_unflipped = 0,
@@ -312,12 +312,12 @@ C3DImage *CAnalyze3DImageIOPlugin::read_image(const C3DBounds& size, short datat
 		cvwarn() << "Got an RGB indicator but I will ignore it\n";
 
 	switch (datatype & 0xFF) {
-//	case DT_BINARY       :return do_read_image<bool>::apply(size, data_file, m_swap_endian);
-	case DT_UNSIGNED_CHAR:return do_read_image<unsigned char>::apply(size, data_file, m_swap_endian);
-	case DT_SIGNED_SHORT :return do_read_image<signed short>::apply(size, data_file, m_swap_endian);
-	case DT_SIGNED_INT   :return do_read_image<signed int>::apply(size, data_file, m_swap_endian);
-	case DT_FLOAT        :return do_read_image<float>::apply(size, data_file, m_swap_endian);
-	case DT_DOUBLE       :return do_read_image<double>::apply(size, data_file, m_swap_endian);
+//	case DTA_BINARY       :return do_read_image<bool>::apply(size, data_file, m_swap_endian);
+	case DTA_UNSIGNED_CHAR:return do_read_image<unsigned char>::apply(size, data_file, m_swap_endian);
+	case DTA_SIGNED_SHORT :return do_read_image<signed short>::apply(size, data_file, m_swap_endian);
+	case DTA_SIGNED_INT   :return do_read_image<signed int>::apply(size, data_file, m_swap_endian);
+	case DTA_FLOAT        :return do_read_image<float>::apply(size, data_file, m_swap_endian);
+	case DTA_DOUBLE       :return do_read_image<double>::apply(size, data_file, m_swap_endian);
 	default:
 		stringstream msg;
 		msg << "Analyze: unsupported image type:" << datatype;
@@ -330,27 +330,27 @@ void set_typeinfo(analyze_image_dimension& dime, EPixelType pixel_type)
 {
 	switch (pixel_type) {
 	case it_ubyte:
-		dime.datatype = DT_UNSIGNED_CHAR;
+		dime.datatype = DTA_UNSIGNED_CHAR;
 		dime.bitpix   = 8;
 		break;
 
 	case it_sshort:
-		dime.datatype = DT_SIGNED_SHORT;
+		dime.datatype = DTA_SIGNED_SHORT;
 		dime.bitpix   = 16;
 		break;
 
 	case it_sint:
-		dime.datatype = DT_SIGNED_INT;
+		dime.datatype = DTA_SIGNED_INT;
 		dime.bitpix   = 32;
 		break;
 
 	case it_float:
-		dime.datatype = DT_FLOAT;
+		dime.datatype = DTA_FLOAT;
 		dime.bitpix   = 32;
 		break;
 
 	case it_double:
-		dime.datatype = DT_DOUBLE;
+		dime.datatype = DTA_DOUBLE;
 		dime.bitpix   = 64;
 		break;
 

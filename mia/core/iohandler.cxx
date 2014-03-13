@@ -42,6 +42,7 @@ void TIOPluginHandler<I>::do_initialise()
 		i->second->add_suffixes(m_suffixmap);
 	
 	m_compress_sfx.insert(".Z"); 
+	m_compress_sfx.insert(".xz"); 
 	m_compress_sfx.insert(".gz"); 
 	m_compress_sfx.insert(".bz2"); 
 }

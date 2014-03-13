@@ -25,14 +25,30 @@ NS_BEGIN( transform_3dimage_filter)
 
 NS_MIA_USE; 
 
-C3DTransform::C3DTransform(const std::string& name):
-	m_name(name)
+C3DTransform::C3DTransform(const std::string& name, const std::string& kernel, const std::string& bc):
+m_name(name), 
+	m_kernel(kernel), 
+	m_bc(bc)
 {
 }
 
 mia::P3DImage C3DTransform::do_filter(const mia::C3DImage& image) const
 {
         auto transform = load_transform<P3DTransformation>(m_name); 
+	if (!m_kernel.empty()) {
+		if (m_bc.empty()) {
+			cvdebug() << "Override interpolator with kernel="
+				  << m_kernel << " and mirror boundary conditions\n"; 
+			C3DInterpolatorFactory ipf(m_kernel, "mirror");
+			transform->set_interpolator_factory(ipf); 
+		}else{
+			cvdebug() << "Override interpolator with kernel="
+				  << m_kernel << " and "<< m_bc << " boundary conditions\n"; 
+			C3DInterpolatorFactory ipf(m_kernel, m_bc);
+			transform->set_interpolator_factory(ipf); 
+		}
+	}
+	
         return (*transform)(image); 
 	
 }
@@ -43,11 +59,20 @@ C3DTransformFilterPluginFactory::C3DTransformFilterPluginFactory():
 	add_parameter("file", new CStringParameter(m_filename, true,
 						   "Name of the file containing the transformation.", 
 						   &C3DTransformationIOPluginHandler::instance()));
+
+	add_parameter("imgkernel", new CStringParameter(m_interpolator_kernel, false, 
+							"override image interpolator kernel"));
+	add_parameter("imgboundary", new CStringParameter(m_interpolator_bc, false, 
+							  "override image interpolation boundary conditions")); 
+ 
+
 }
 
 mia::C3DFilter *C3DTransformFilterPluginFactory::do_create()const
 {
-	return new C3DTransform(m_filename); 
+	
+
+	return new C3DTransform(m_filename, m_interpolator_kernel, m_interpolator_bc); 
 }
 
 const std::string C3DTransformFilterPluginFactory::do_get_descr()const

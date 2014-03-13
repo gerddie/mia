@@ -217,11 +217,11 @@ PTriangleMesh CVtkMeshIO::do_load(string const &  filename) const
 	
 	auto reader = vtkSmartPointer<vtkPolyDataReader>::New();
 	reader->SetFileName(filename.c_str());
+	reader->Update(); 
 	auto mesh = reader->GetOutput(); 
 	if (!mesh)
 		return PTriangleMesh(); 
 
-	mesh->Update(); 
 	
 	auto vertices = read_vertices(*mesh); 
 	auto triangles = read_triangles(*vertices, *mesh); 
@@ -293,7 +293,7 @@ bool CVtkMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh) co
 	auto writer = vtkSmartPointer<vtkPolyDataWriter>::New();
 	writer->SetFileName(filename.c_str());
 	writer->SetFileTypeToBinary(); 
-	writer->SetInput(data); 
+	writer->SetInputData(data); 
 	return writer->Write(); 
 }
 
