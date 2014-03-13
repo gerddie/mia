@@ -104,8 +104,13 @@ bool CVtk3DVFIOPlugin::do_save(const string& fname, const C3DIOVectorfield& data
 	outfield->SetOrigin(0,0,0); 
 	outfield->SetSpacing(1.0, 1.0, 1.0); 
 	outfield->SetDimensions(data.get_size().x, data.get_size().y, data.get_size().z); 
-
+#if  VTK_MAJOR_VERSION < 6 
+	outfield->SetScalarType(VTK_FLOAT); 
+	outfield->SetNumberOfScalarComponents(3);
+	outfield->AllocateScalars(); 
+#else 
 	outfield->AllocateScalars(VTK_FLOAT, 3); 
+#endif 
 	
 	float *out_ptr =  reinterpret_cast<float*>(outfield->GetScalarPointer()); 
 	copy(&data[0].x, &data[0].x + data.size() * 3, out_ptr); 
@@ -113,7 +118,11 @@ bool CVtk3DVFIOPlugin::do_save(const string& fname, const C3DIOVectorfield& data
 	auto writer = vtkSmartPointer<vtkStructuredPointsWriter>::New(); 
 	writer->SetFileName(fname.c_str()); 
 	writer->SetFileTypeToBinary();
+#if  VTK_MAJOR_VERSION < 6 
+	writer->SetInput(outfield); 
+#else 
 	writer->SetInputData(outfield); 
+#endif 
 	return writer->Write();
 }
 
