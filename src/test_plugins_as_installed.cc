@@ -51,7 +51,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 	set<string> test_data = {
 		"binarize", "bandpass", "combiner", "convert","close", "crop", "dilate", "distance", "downscale", 
 		"erode", "gauss", "gradnorm", "growmask", "invert", "isovoxel", "kmeans",  
-		"label", "load", "mask", "median", "mlv", "open",  "resize",
+		"label", "load", "lvdownscale", "mask", "median", "mlv", "open",  "resize",
 		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", 
 		"transform", "ws" 
 	}; 

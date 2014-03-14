@@ -71,6 +71,10 @@ public:
 	/// \returns the mean of the norms of the positive terms of the FFT of this curve
 	float get_mean_frequency() const;
 
+	/// \returns the index of the maximum frequency energy  slot
+	int get_max_frequency_slot() const;
+
+
 	/// \returns the sum of the mean of the norms of the positive terms of the FFT of this curve
 	float get_energy() const; 
 	

@@ -55,16 +55,16 @@ struct CWaveletSlopeClassifierImpl {
 	typedef vector<float>::const_iterator position;
 	typedef pair<position, position> extrems;
 	typedef pair<size_t, size_t> extrems_pos;
-	CWaveletSlopeClassifierImpl(const CWaveletSlopeClassifier::Columns& series, bool mean_stripped);
+	CWaveletSlopeClassifierImpl(const CWaveletSlopeClassifier::Columns& series, bool mean_stripped, float min_freq);
 	CWaveletSlopeClassifierImpl(); 
 };
 
 
-CWaveletSlopeClassifier::CWaveletSlopeClassifier(const CWaveletSlopeClassifier::Columns& m, bool mean_stripped)
+CWaveletSlopeClassifier::CWaveletSlopeClassifier(const CWaveletSlopeClassifier::Columns& m, bool mean_stripped, float min_freq)
 {
 	if (m.size() < 3)
 		throw invalid_argument("CWaveletSlopeClassifier: require at least 3 curves");
-	impl = new CWaveletSlopeClassifierImpl(m, mean_stripped);
+	impl = new CWaveletSlopeClassifierImpl(m, mean_stripped, min_freq);
 }
 
 CWaveletSlopeClassifier::CWaveletSlopeClassifier(const CWaveletSlopeClassifier& other):
@@ -75,7 +75,7 @@ CWaveletSlopeClassifier::CWaveletSlopeClassifier():
 	impl(new CWaveletSlopeClassifierImpl())
 {
 }
-		     
+	     
 CWaveletSlopeClassifier& CWaveletSlopeClassifier::operator =(const CWaveletSlopeClassifier& other)
 {
 	if (this != &other) {
@@ -160,7 +160,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl():
 {
 }
 
-CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClassifier::Columns& series, bool mean_stripped):
+CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClassifier::Columns& series, bool mean_stripped, float min_freq):
 	RV_peak(-1), 
 	LV_peak(-1), 
 	RV_idx(-1), 
@@ -172,6 +172,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	max_movment_energy(0.0), 
 	n_movement_components(0), 
 	result(CWaveletSlopeClassifier::wsc_fail)
+
 {
 	vector<PSlopeStatistics> vstats; 
 	for (unsigned int i = 0; i < series.size(); ++i)
@@ -217,6 +218,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	int min_range_idx = -1; 
 	float min_range  = numeric_limits<float>::max(); 
 
+	bool got_movement = false; 
 	vector<bool> is_high_freq(series.size()); 
 	for (size_t i = 0; i < series.size(); ++i) {
 		auto e = vstats[i]->get_level_coefficient_sums(); 
@@ -248,8 +250,25 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 				is_high_freq[i] = false; 
 			}
 		}
+		got_movement |= is_high_freq[i]; 
 	}
-
+	
+	// got no movement, try with frequency analysis 
+	if (!got_movement && min_freq > 0.0f) {
+		for (size_t i = 0; i < series.size(); ++i) {
+			is_high_freq[i] = vstats[i]->get_mean_frequency() > min_freq; 
+			if (is_high_freq[i]) {
+				if (vstats[i]->get_mean_energy_position() == CSlopeStatistics::ecp_begin) {
+					cvinfo() << "c=" << i << ":override motion because we assume it's RV enhacement\n";
+					is_high_freq[i] = false; 
+				}
+				cvinfo() << "Slope " << i << " << detected as movement based on mean frequency slot " << vstats[i]->get_mean_frequency() << "\n"; 
+			}else 
+				cvinfo() << "Slope " << i << " << rejected as movement based on mean frequency slot " << vstats[i]->get_mean_frequency() << "\n"; 
+		}
+	}
+	
+	
 
 	// if the mean is stripped, the baseline vanishes 
 	if (mean_stripped) {

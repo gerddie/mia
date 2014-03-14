@@ -110,8 +110,12 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( org_filename, "original", 'o', "original segmentation set", CCmdOption::required));
 	options.add(make_opt( reg_filename, "registered", 'g', "registered segmentation set", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "images to skip at the begin of the series, if (k < 0) use RV peak of the registered set if set")); 
-	options.add(make_opt( reference, "reference", 'r', "reference frame for automatic curve extraction. If it is set to -1, the LV peak "
-			      "found in the registered set will be used. if this value is also -1 (i.e. not identified), the lastframe will be used.")); 
+	options.add(make_opt( reference, "reference", 'r', "reference frame for automatic curve extraction. "
+			      "Negative values can be used to indicate specific values (if given in the segmentation set):\n"
+			      "   -3: Middle of the series\n"
+			      "   -2: prefererred reference\n"
+			      "   -1: LV peak\n" 
+			      "if any of the above is not available or the value is < -3, use the last frame of the series.")); 
 	options.add(make_opt( curves_filename, "curves", 'c', "region average value curves, "
 			      "The output files each comprises a table in plain-text format that contains three columns "
 			      "for each section of the LV myocardium: The first column contains the values obtained by "
@@ -143,16 +147,18 @@ int do_main( int argc, char *argv[] )
 	auto original_frames = original.get_frames(); 
 	auto registered_frames = registered.get_frames(); 
 	
+	if (reference == -3)
+		reference = (registered.get_frames().size() - skip) / 2;
 
-	if (reference == -1) {
+	if (reference == -2)
 		reference = registered.get_preferred_reference(); 
-		if (reference == -1) {
-			reference = registered.get_LV_peak(); 
-			if (reference == -1)
-				reference = registered.get_frames().size() - 1;
-		}
-	}
 	
+	if (reference == -1) 
+		reference = registered.get_LV_peak(); 
+	
+	if (reference < 0)
+		reference = registered.get_frames().size() - 1;
+
 	if (original_frames.size() != registered_frames.size()) 
 		throw create_exception<invalid_argument>( "original and reference series must have same size"); 
 	if (reference < skip || reference >= static_cast<long>(original_frames.size()))

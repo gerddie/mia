@@ -76,7 +76,7 @@ struct __vtk_data_array {
 
 
 VTK_ARRAY_TRANSLATE(bool, vtkBitArray, VTK_BIT); 
-VTK_ARRAY_TRANSLATE(signed char, vtkSignedCharArray, VTK_SIGNED_CHAR); 
+ VTK_ARRAY_TRANSLATE(signed char, vtkSignedCharArray, VTK_SIGNED_CHAR); 
 VTK_ARRAY_TRANSLATE(unsigned char, vtkUnsignedCharArray, VTK_UNSIGNED_CHAR); 
 VTK_ARRAY_TRANSLATE(signed short, vtkShortArray, VTK_SHORT); 
 VTK_ARRAY_TRANSLATE(unsigned short, vtkUnsignedShortArray, VTK_UNSIGNED_SHORT); 
@@ -197,7 +197,13 @@ struct __dispatch_convert<T, __true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<T>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type " << __type_descr<T>::value << "\n"; 
+#if  VTK_MAJOR_VERSION < 6 
+		output->SetScalarType(__vtk_data_array<T>::value); 
+		output->SetNumberOfScalarComponents(1);
+		output->AllocateScalars(); 
+#else 
 		output->AllocateScalars(__vtk_data_array<T>::value, 1); 
+#endif 
 		T *out_ptr =  reinterpret_cast<T*>(output->GetScalarPointer()); 
 		copy(input.begin(), input.end(), out_ptr); 
 	}
@@ -208,8 +214,13 @@ struct __dispatch_convert<bool, __true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<bool>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type bool\n"; 
-
+#if  VTK_MAJOR_VERSION < 6 
+		output->SetScalarType(__vtk_data_array<bool>::value); 
+		output->SetNumberOfScalarComponents(1);
+		output->AllocateScalars(); 
+#else 
 		output->AllocateScalars(__vtk_data_array<bool>::value, 1); 
+#endif 
 		unsigned char *out_ptr =  reinterpret_cast<unsigned char *>(output->GetScalarPointer()); 
 		
 		auto i = input.begin();
@@ -331,7 +342,11 @@ bool CVtk3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 	
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkDataSetWriter>::New(); 
+#if  VTK_MAJOR_VERSION < 6 
+	writer->SetInput(outimage); 
+#else 
 	writer->SetInputData(outimage); 
+#endif 
 	writer->SetFileTypeToBinary();
 	writer->SetFileName(fname.c_str()); 
 	writer->Write();
@@ -404,7 +419,11 @@ bool CVtkXML3DImageIOPlugin::do_save(const string& fname, const Data& data) cons
 	
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkXMLImageDataWriter>::New(); 
+#if  VTK_MAJOR_VERSION == 5 
+	writer->SetInput(outimage); 
+#else 
 	writer->SetInputData(outimage); 
+#endif 
 	writer->SetFileName(fname.c_str()); 
 	writer->Write();
 
@@ -483,8 +502,13 @@ bool CMhd3DImageIOPlugin::do_save(const std::string& fname, const Data& data) co
 
 	// add writing of the image
 	auto writer = vtkSmartPointer<vtkMetaImageWriter>::New(); 
+#if  VTK_MAJOR_VERSION < 6 
+	writer->SetInput(outimage); 
+#else 
 	writer->SetInputData(outimage); 
+#endif 
 	writer->SetFileName(fname.c_str()); 
+
 	// seems that compression is broken for (un)signed char. 
 	writer->SetCompression(false); 
 	writer->Write();
