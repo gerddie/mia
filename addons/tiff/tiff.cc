@@ -263,16 +263,24 @@ CTiff2DImageIO::PData CTiff2DImageIO::do_load(string const& filename)const
 
 	do {
 
-		TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
+		if (!TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height)){
+			throw create_exception<runtime_error>("TIFF: No image height found in '", filename, "'"); 
+		}
 		cvdebug() << "TIFFTAG_IMAGELENGTH:" << height << "\n";
 
-		TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
+		if (!TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width)){
+			throw create_exception<runtime_error>("TIFF: No image width found in '", filename, "'"); 
+		}
 		cvdebug() << "TIFFTAG_IMAGEWIDTH:" << width << "\n";
 
-		TIFFGetField(tif,TIFFTAG_BITSPERSAMPLE, &bbs);
+		    if (!TIFFGetField(tif,TIFFTAG_BITSPERSAMPLE, &bbs)){
+			throw create_exception<runtime_error>("TIFF: Bits per samples not given in '", filename, "'"); 
+		}
 		cvdebug() << "TIFFTAG_BITSPERSAMPLE:" << bbs << "\n";
 
-		TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &spp);
+		if (!TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &spp)) {
+			throw create_exception<runtime_error>("TIFF: Samples per pixel not given in '", filename, "'"); 
+		}
 		cvdebug() << "TIFFTAG_SAMPLESPERPIXEL:" << spp << "\n";
 
 		TIFFGetField(tif, TIFFTAG_XRESOLUTION, &resolution.x);
