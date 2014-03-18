@@ -19,6 +19,12 @@
  */
 
 
+/*
+  The test result numbes were created with libreoffice' calc program 4.1.5.3 
+  testhelpers/3d-mean-variance-test.ods
+*/
+
+
 #include <mia/internal/plugintester.hh>
 #include <mia/3d/filter/mean.hh>
 #include <mia/3d/imagetest.hh>
@@ -96,6 +102,7 @@ BOOST_AUTO_TEST_CASE( test_variance_from_plugin_real)
 		4, 2, 4,  2, 4, 1,  5, 2, 2,  3, 3, 1,  
 		1, 2, 3,  2, 3, 1,  2, 3, 2,  4, 3, 1
 	}; 
+
 
 	float test_data[72] = {
 		0.6461538669, 0.8842581575, 0.9418553707, 0.9541867709, 1.1381303158, 1.2430416439, 
