@@ -32,6 +32,7 @@ SET(filters3dNew
   load
   lvdownscale
   mask
+  mean 
   median 
   mlv 
   morphological 
