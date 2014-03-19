@@ -43,7 +43,7 @@ class T3DImageCombiner: public mia::C3DImageCombiner {
 
 #define COMBINE_OP(NAME, op) \
 	template <typename A, typename B>	\
-	struct __Combine##NAME {					\
+	struct __Combine##NAME {				\
 		typedef decltype(*(A*)0 op *(B*)0) return_type; \
 		static return_type apply(A a, B b) {		\
 			return a op b;				\
@@ -62,7 +62,29 @@ class T3DImageCombiner: public mia::C3DImageCombiner {
 COMBINE_OP(Add,   +)
 COMBINE_OP(Sub,   -)
 COMBINE_OP(Times, *)
-COMBINE_OP(Div,   /)
+
+
+template <typename A, typename B>				
+struct __CombineDiv {				
+	typedef decltype(*(A*)0 / *(B*)0) return_type; 
+	static return_type apply(A a, B b) {
+		if (b == 0) {
+			if (a == 0) 
+				return return_type(); 
+			mia::cvwarn() << "Error: division by zero, retain numerator value\n"; 
+			return a; 
+		}
+		return a / b;				
+	}
+};						
+
+class CombineDiv {
+public:									
+	template <typename A, typename B>
+	typename __CombineDiv<A,B>::return_type operator ()(A a, B b)const {
+		return __CombineDiv<A,B>::apply(a,b);
+	}
+};									\
 
 
 template <typename A, typename B>
@@ -72,6 +94,8 @@ struct __CombineAbsDiff {
 			return static_cast<double>(a) > static_cast<double>(b) ? (a - b) : (b - a); 
 		}
 };						
+
+typedef T3DImageCombiner<CombineDiv> C3DDivImageCombiner;
 
 class CombineAbsDiff {							
 public:									
