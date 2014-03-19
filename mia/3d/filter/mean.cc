@@ -20,6 +20,7 @@
 
 #include <limits>
 #include <mia/3d/filter/mean.hh>
+#include <mia/core/utils.hh>
 
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
@@ -28,11 +29,32 @@
 NS_BEGIN(mean_3dimage_filter)
 using namespace mia; 
 using std::unique_ptr; 
-
+using std::pair;
+using std::make_pair; 
 
 C3DMeanFilter::C3DMeanFilter(int hwidth):
       m_hwidth(hwidth)
 {
+}
+
+inline pair<C3DBounds, C3DBounds> prepare_range(const C3DBounds& size, int cx, int cy, int cz, int hw) 
+{
+	int zb = cz - hw;
+	if (zb < 0) zb = 0; 
+	unsigned ze = cz + hw + 1; 
+	if (ze > size.z) ze = size.z; 
+	
+	int yb = cy - hw;
+	if (yb < 0) yb = 0; 
+	unsigned ye = cy + hw + 1; 
+	if (ye > size.y) ye = size.y; 
+	
+	int xb = cx - hw;
+	if (xb < 0) xb = 0; 
+	unsigned xe = cx + hw + 1; 
+	if (xe > size.x) xe = size.x; 
+	
+	return make_pair(C3DBounds(xb,yb,zb), C3DBounds(xe,ye,ze)); 
 }
 
 
@@ -47,19 +69,16 @@ struct __dispatch_filter {
 		// hw >= 1, cy >= 0 && cy < data.get_size().y
 		// therefore n>=8
 		// 
-		for (int z = cz - hw; z <= cz + hw; ++z) {
-                        if ( z >= 0 && z < (int)data.get_size().z) 
-                                for (int y = cy - hw; y <= cy + hw; ++y) {
-                                        if ( y >= 0 && y < (int)data.get_size().y) 
-                                                for (int x = cx - hw; x <= cx + hw; ++x) {
-                                                        if ( x >= 0 && x < (int)data.get_size().x) {
-                                                                result += data(x,y,z); 
-                                                                ++n; 
-                                                        }
-                                                }
-                                }
+		auto range = prepare_range(data.get_size(), cx, cy, cz, hw); 
+		auto rb = data.begin_range(range.first,range.second); 
+		auto re = data.end_range(range.first,range.second); 
+		
+		while (rb != re) {
+			result += *rb; 
+			++rb;
+			++n; 
 		}
-		return static_cast<T>(rint(result/n)); 
+		return mia_round_clamped<T>(rint(result/n)); 
 	}
 }; 
 
@@ -71,17 +90,14 @@ struct __dispatch_filter<T, true> {
 		// 
 		// see above. Coverty  1128688, 1128687
 		// 
-		for (int z = cz - hw; z <= cz + hw; ++z) {
-                        if ( z >= 0 && z < (int)data.get_size().z) 
-                                for (int y = cy - hw; y <= cy + hw; ++y) {
-                                        if ( y >= 0 && y < (int)data.get_size().y) 
-                                                for (int x = cx - hw; x <= cx + hw; ++x) {
-                                                        if ( x >= 0 && x < (int)data.get_size().x) {
-                                                                result += data(x,y,z); 
-                                                                ++n; 
-                                                        }
-                                                }
-                                }
+		auto range = prepare_range(data.get_size(), cx, cy, cz, hw); 
+		auto rb = data.begin_range(range.first,range.second); 
+		auto re = data.end_range(range.first,range.second); 
+		
+		while (rb != re) {
+			result += *rb; 
+			++rb; 
+			++n; 
 		}
 		return static_cast<T>(result/n); 
 	}
@@ -93,17 +109,16 @@ template <>
 struct __dispatch_filter<bool, false> {
 	static bool apply(const T3DImage<bool>& data, int cx, int cy, int cz, int hw, int MIA_PARAM_UNUSED(freedom)) {
 		int balance = 0; 
-		for (int z = cz - hw; z <= cz + hw; ++z) {
-                        if ( z >= 0 && z < (int)data.get_size().z) 
-                                for (int y = cy - hw; y <= cy + hw; ++y) {
-                                        if ( y >= 0 && y < (int)data.get_size().y) 
-                                                for (int x = cx - hw; x <= cx + hw; ++x) {
-                                                        if ( x >= 0 && x < (int)data.get_size().x) {
-                                                                balance += data(x,y,z) ? 1 : -1; 
-                                                        }
-                                                }
-                                }
-                }
+		
+		auto range = prepare_range(data.get_size(), cx, cy, cz, hw); 
+		auto rb = data.begin_range(range.first,range.second); 
+		auto re = data.end_range(range.first,range.second); 
+		
+		while (rb != re) {
+			balance += *rb  ? 1 : -1; 
+			++rb; 
+		}
+
 		return (balance > 0) ? true : 
 			((balance < 0) ? false : data(cx,cy,cz)); 
 	}
