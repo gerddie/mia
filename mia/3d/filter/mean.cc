@@ -212,6 +212,7 @@ P3DImage C3DVarianceFilter::operator () (const mia::T3DImage<T>& data) const
 
 mia::P3DImage C3DVarianceFilter::operator () (const mia::C3DBitImage& data) const
 {
+	cvwarn() << "This filter does not really evaluate the pixel wise variance\n";  
         C3DFImage fimage(data.get_size(), data); 
         copy(data.begin(), data.end(), fimage.begin()); 
         return this->operator()(fimage);
