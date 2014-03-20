@@ -18,69 +18,40 @@
  *
  */
 
-#ifndef mia_3d_filter_mean_hh
-#define mia_3d_filter_mean_hh
+#ifndef mia_3d_filter_msnormaliter_hh
+#define mia_3d_filter_msnormaliter_hh
 
 #include <mia/3d/filter.hh>
 
-NS_BEGIN(mean_3dimage_filter)
+NS_BEGIN(msnormalizer_3dimage_filter)
+ 
+int n_elements( int i, int n, int w); 
 
-class C3DMeanFilter: public mia::C3DFilter {
+class C3DMSNormalizerFilter: public mia::C3DFilter {
 public:
-	C3DMeanFilter(int hwidth);
-
-	template <class T>
-	mia::T3DImage<T> *apply(const mia::T3DImage<T>& data) const ;
-
-
-	template <class T>
-	mia::P3DImage operator () (const mia::T3DImage<T>& data) const ;
-private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	int m_hwidth;
-};
-
-
-
-class C3DMeanFilterPlugin: public mia::C3DFilterPlugin {
-public:
-	C3DMeanFilterPlugin();
-private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string  do_get_descr() const;
-	int m_hw;
-};
-
-
-class C3DVarianceFilter: public mia::C3DFilter {
-public:
-	C3DVarianceFilter(int hwidth);
-
+	C3DMSNormalizerFilter(int hwidth);
+        
 	template <class T>
 	mia::P3DImage operator () (const mia::T3DImage<T>& data) const;
-
-	mia::P3DImage operator () (const mia::C3DBitImage& data) const;
-
+        
 private:
+
+        template <class T>
+        void  add(mia::C3DFImage& mean, mia::C3DFImage& variance, const mia::T3DImage<T>& data, 
+                  const mia::C3DBounds& bi, const mia::C3DBounds& bo, const mia::C3DBounds& ei) const; 
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 	int m_hwidth;
-        C3DMeanFilter m_mean; 
 };
 
-
-
-class C3DVarianceFilterPlugin: public mia::C3DFilterPlugin {
+class C3DMSNormalizerFilterPlugin: public mia::C3DFilterPlugin {
 public:
-	C3DVarianceFilterPlugin();
+	C3DMSNormalizerFilterPlugin();
 private:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string  do_get_descr() const;
 	int m_hw;
 };
-
-
-
 
 NS_END
 
-#endif
+#endif 

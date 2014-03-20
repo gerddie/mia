@@ -36,6 +36,7 @@ SET(filters3dNew
   median 
   mlv 
   morphological 
+  msnormalizer
 #  reorient 
   resize
   scale
