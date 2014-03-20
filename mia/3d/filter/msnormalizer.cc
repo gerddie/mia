@@ -58,20 +58,23 @@ void  C3DMSNormalizerFilter::add(C3DFImage& mean, C3DFImage& variance, const mia
 {
 
         int x_length = ei.x - bi.x; 
+	int z_length = ei.z - bi.z; 
         vector <float> in_buffer(x_length);
 
-        
-        for(unsigned z = bi.z, oz = 0; z != ei.z; ++z, ++oz)
+	
+
+
+        for(unsigned z = 0; z < z_length; ++z)
                 for(unsigned y = bi.y, oy = 0; y != ei.y; ++y, ++oy) {
 			
-			auto in_start = data.begin_at(bi.x,y,z); 
+			auto in_start = data.begin_at(bi.x,y,bi.z + z); 
                         copy(in_start, in_start + x_length, in_buffer.begin());
                         
-                        cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &mean(bo.x, bo.y + oy, bo.z + oz), 1);
+                        cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &mean(bo.x, bo.y + oy, bo.z + z), 1);
 			
                         transform(in_buffer.begin(), in_buffer.end(), 
                                   in_buffer.begin(), [](float x){ return x*x;});
-			cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &variance(bo.x,bo.y + oy, bo.z + oz), 1); 
+			cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &variance(bo.x,bo.y + oy, bo.z + z), 1); 
                 }
 }
 
