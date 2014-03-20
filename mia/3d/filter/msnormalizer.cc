@@ -18,6 +18,9 @@
  *
  */
 
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
 #include <mia/3d/filter/msnormalizer.hh>
 extern "C" {
 #include <cblas.h>
@@ -58,24 +61,27 @@ void  C3DMSNormalizerFilter::add(C3DFImage& mean, C3DFImage& variance, const mia
 {
 
         int x_length = ei.x - bi.x; 
-	int z_length = ei.z - bi.z; 
-        vector <float> in_buffer(x_length);
-
 	
+	auto sum_slice = [&data, &mean, &variance, bi, bo, ei, x_length](const tbb::blocked_range<int>& range) {
+		
+		vector <float> in_buffer(x_length);
+		for(auto z = range.begin(); z != range.end(); ++z)
+			for(unsigned y = bi.y, oy = 0; y != ei.y; ++y, ++oy) {
+				
+				auto in_start = data.begin_at(bi.x,y,bi.z + z); 
+				copy(in_start, in_start + x_length, in_buffer.begin());
+				
+				cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &mean(bo.x, bo.y + oy, bo.z + z), 1);
+				
+				transform(in_buffer.begin(), in_buffer.end(), 
+					  in_buffer.begin(), [](float x){ return x*x;});
+				cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &variance(bo.x,bo.y + oy, bo.z + z), 1); 
+			}
+	}; 
+
+	parallel_for(tbb::blocked_range<int>(0, ei.z - bi.z, 1), sum_slice);
 
 
-        for(unsigned z = 0; z < z_length; ++z)
-                for(unsigned y = bi.y, oy = 0; y != ei.y; ++y, ++oy) {
-			
-			auto in_start = data.begin_at(bi.x,y,bi.z + z); 
-                        copy(in_start, in_start + x_length, in_buffer.begin());
-                        
-                        cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &mean(bo.x, bo.y + oy, bo.z + z), 1);
-			
-                        transform(in_buffer.begin(), in_buffer.end(), 
-                                  in_buffer.begin(), [](float x){ return x*x;});
-			cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &variance(bo.x,bo.y + oy, bo.z + z), 1); 
-                }
 }
 
 template <class T>
@@ -105,25 +111,28 @@ mia::P3DImage C3DMSNormalizerFilter::operator () (const mia::T3DImage<T>& data) 
                 }
         }
 
-        auto im = mean->begin(); 
-        auto iv = variance.begin();
-        auto ii = data.begin(); 
 	
-        for (unsigned z = 0; z != data.get_size().z; ++z) {
-		const int nz = n_elements(z, data.get_size().z, m_hwidth); 
-                for (unsigned y = 0; y != data.get_size().y; ++y) {
-			const int ny = n_elements(y, data.get_size().y, m_hwidth); 
-                        for (unsigned x = 0; x != data.get_size().x; ++x, ++im, ++iv, ++ii) {
-				const int nx = n_elements(x, data.get_size().x, m_hwidth); 
-				int n = nx * ny * nz; 
-				float mean = *im / n;
-				float var = (n > 1.0) ? (*iv - *im * mean) / (n - 1.0f) : 0.0f;
-				cvdebug() << x << "," << y <<"," << z << ": " << n << ", "<< *im << "(" << *iv << ") "
-					  << var << "\n"; 
-				*im = var > 0 ? (*ii - mean) / sqrt(var) : 0.0f; 
+	auto evaluate_result = [data, this, &mean, &variance](const tbb::blocked_range<unsigned>& range) {
+		for (auto z = range.begin(); z != range.end(); ++z) {
+			auto im = mean->begin_at(0,0,z); 
+			auto iv = variance.begin_at(0,0,z);
+			auto ii = data.begin_at(0,0,z); 
+			
+			const int nz = n_elements(z, data.get_size().z, m_hwidth); 
+			for (unsigned y = 0; y != data.get_size().y; ++y) {
+				const int ny = n_elements(y, data.get_size().y, m_hwidth); 
+				for (unsigned x = 0; x != data.get_size().x; ++x, ++im, ++iv, ++ii) {
+					const int nx = n_elements(x, data.get_size().x, m_hwidth); 
+					int n = nx * ny * nz; 
+					float mean = *im / n;
+					float var = (n > 1.0) ? (*iv - *im * mean) / (n - 1.0f) : 0.0f;
+					*im = var > 0 ? (*ii - mean) / sqrt(var) : 0.0f; 
+				}
 			}
 		}
-	}
+	}; 
+	
+	parallel_for(tbb::blocked_range<unsigned>(0, data.get_size().z, 1), evaluate_result);
 	
         return P3DImage(mean); 
 }
