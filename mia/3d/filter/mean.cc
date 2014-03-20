@@ -21,6 +21,8 @@
 #include <limits>
 #include <mia/3d/filter/mean.hh>
 #include <mia/core/utils.hh>
+#include <mia/core/threadedmsg.hh>
+
 
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>

@@ -22,6 +22,8 @@
 #include <tbb/blocked_range.h>
 
 #include <mia/3d/filter/msnormalizer.hh>
+#include <mia/core/threadedmsg.hh>
+
 extern "C" {
 #include <cblas.h>
 }
@@ -63,9 +65,8 @@ void  C3DMSNormalizerFilter::add(C3DFImage& mean, C3DFImage& variance, const mia
         int x_length = ei.x - bi.x; 
 	
 	auto sum_slice = [&data, &mean, &variance, bi, bo, ei, x_length](const tbb::blocked_range<int>& range) {
-		
 		vector <float> in_buffer(x_length);
-		for(auto z = range.begin(); z != range.end(); ++z)
+		for(auto z = range.begin(); z != range.end(); ++z) {
 			for(unsigned y = bi.y, oy = 0; y != ei.y; ++y, ++oy) {
 				
 				auto in_start = data.begin_at(bi.x,y,bi.z + z); 
@@ -77,6 +78,7 @@ void  C3DMSNormalizerFilter::add(C3DFImage& mean, C3DFImage& variance, const mia
 					  in_buffer.begin(), [](float x){ return x*x;});
 				cblas_saxpy(x_length, 1.0f, &in_buffer[0],  1, &variance(bo.x,bo.y + oy, bo.z + z), 1); 
 			}
+		}
 	}; 
 
 	parallel_for(tbb::blocked_range<int>(0, ei.z - bi.z, 1), sum_slice);
@@ -95,6 +97,7 @@ mia::P3DImage C3DMSNormalizerFilter::operator () (const mia::T3DImage<T>& data) 
 
         // evaluate sum 
         for (int z = -m_hwidth; z <= m_hwidth; ++z) {
+		cvmsg() << "Run filter block  " << z + m_hwidth << " of " << 2*m_hwidth+1 << "\n"; 
                 auto z_range = get_range(z, data.get_size().z);
                 bo.z = z >= 0 ? 0 : -z;  
                 for (int y = -m_hwidth; y <= m_hwidth; ++y) {
@@ -113,7 +116,9 @@ mia::P3DImage C3DMSNormalizerFilter::operator () (const mia::T3DImage<T>& data) 
 
 	
 	auto evaluate_result = [data, this, &mean, &variance](const tbb::blocked_range<unsigned>& range) {
+		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end(); ++z) {
+			cvmsg() << "Evaluate slice " << z << "\n"; 
 			auto im = mean->begin_at(0,0,z); 
 			auto iv = variance.begin_at(0,0,z);
 			auto ii = data.begin_at(0,0,z); 
