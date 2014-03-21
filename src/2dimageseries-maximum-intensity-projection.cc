@@ -75,7 +75,7 @@ int do_main( int argc, char *argv[] )
 	const auto& image2dio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOption::required, &image2dio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOptionFlags::required_output, &image2dio));
 
 	if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 

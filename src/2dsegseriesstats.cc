@@ -107,8 +107,11 @@ int do_main( int argc, char *argv[] )
 	int reference = -1; 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( org_filename, "original", 'o', "original segmentation set", CCmdOption::required));
-	options.add(make_opt( reg_filename, "registered", 'g', "registered segmentation set", CCmdOption::required));
+	options.add(make_opt( org_filename, "original", 'o', "original segmentation set", 
+			      CCmdOptionFlags::required_input));
+	options.add(make_opt( reg_filename, "registered", 'g', "registered segmentation set", 
+			      CCmdOptionFlags::required_input));
+	
 	options.add(make_opt( skip, "skip", 'k', "images to skip at the begin of the series, if (k < 0) use RV peak of the registered set if set")); 
 	options.add(make_opt( reference, "reference", 'r', "reference frame for automatic curve extraction. "
 			      "Negative values can be used to indicate specific values (if given in the segmentation set):\n"

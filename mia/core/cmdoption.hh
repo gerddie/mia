@@ -24,7 +24,7 @@
 #include <string>
 #include <memory>
 #include <iostream>
-#include <mia/core/defines.hh>
+#include <mia/core/cmdoptionflags.hh>
 #include <mia/core/handlerbase.hh>
 #include <libxml++/libxml++.h>
 
@@ -49,12 +49,7 @@ typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 */
 class EXPORT_CORE CCmdOption  {
 public:
-
-	/// readability constant to show that an option is not required 
-	static const bool not_required; 
 	
-	/// readability constant to show that an option is required 
-	static const bool required; 
 	
         /** The constructor
 	    \param short_opt the short option character 
@@ -64,7 +59,11 @@ public:
 	    \param required set to true if the option must be set by the user 
         */
 	CCmdOption(char short_opt, const char *long_opt, const char *long_help, 
-		   const char *short_help, bool required);
+		   const char *short_help, bool required)__attribute__((deprecated));
+
+	CCmdOption(char short_opt, const char *long_opt, const char *long_help, 
+		   const char *short_help, CCmdOptionFlags flags);
+	
 
         /// ensure virtual destruction
 	virtual ~CCmdOption();
@@ -164,7 +163,7 @@ private:
 	const char *m_long_opt;
 	const char *m_long_help;
 	const char *m_short_help;
-	bool m_flags;
+	CCmdOptionFlags  m_flags;
 };
 
 /// a shared pointer definition of the Option

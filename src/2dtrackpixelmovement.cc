@@ -63,11 +63,11 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', "input point set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output point set", CCmdOption::required)); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input point set", CCmdOptionFlags::required_input));
+	options.add(make_opt( out_filename, "out-file", 'o', "output point set", CCmdOptionFlags::required_output)); 
 
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation describing the monitored change", 
-			      CCmdOption::required, &transfio)); 
+			      CCmdOptionFlags::required_input, &transfio)); 
 
         options.set_group("\nParameters"); 
         options.add(make_opt( time_step, "time-step", 'T', 

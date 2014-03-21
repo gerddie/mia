@@ -73,7 +73,7 @@ int do_main( int argc, char *argv[] )
 	size_t reference = 20; 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( org_filename, "input", 'i', "original segmentation set", CCmdOption::required));
+	options.add(make_opt( org_filename, "input", 'i', "original segmentation set", CCmdOptionFlags::required_input));
 	options.add(make_opt( skip, "skip", 'k', "images to skip atthe bgin of the series")); 
 	options.add(make_opt( reference, "reference", 'r', "reference image")); 
 	

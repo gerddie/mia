@@ -53,8 +53,9 @@ int do_main(int argc, char **argv)
 	string out_filename;
 
 	options.add(make_opt( trans_filename, "in-file", 'i', "input transformation", 
-			      CCmdOption::required, &C2DTransformationIOPluginHandler::instance()));
-	options.add(make_opt( out_filename, "out-file", 'o', "output Green's strain tensor", CCmdOption::required));
+			      CCmdOptionFlags::required_input, &C2DTransformationIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out-file", 'o', "output Green's strain tensor", 
+			      CCmdOptionFlags::required_output));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

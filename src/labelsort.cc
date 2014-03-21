@@ -60,9 +60,9 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram", 
-			      CCmdOption::required)); 
+			      CCmdOptionFlags::required_input)); 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities", 
-			      CCmdOption::required)); 
+			      CCmdOptionFlags::required_output)); 
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

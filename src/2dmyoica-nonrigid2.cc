@@ -174,21 +174,22 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
+			      "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-				    "output perfusion data set", CCmdOption::required));
+			      "output perfusion data set", CCmdOptionFlags::required_output));
 	options.add(make_opt( registered_filebase, "registered", 'r', 
-				    "file name base for registered fiels")); 
+			      "file name base for registered fiels")); 
 	
 	options.add(make_opt( cropped_filename, "save-cropped", 0, 
-				    "save cropped set to this file")); 
+			      "save cropped set to this file")); 
 	options.add(make_opt( save_crop_feature, "save-feature", 0, 
-				    "save segmentation feature images"
-				    " and initial ICA mixing matrix")); 
-
+			      "save segmentation feature images"
+			      " and initial ICA mixing matrix")); 
+	
 	
 	options.set_group("\nRegistration"); 
-	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization", 
+			      CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
 				    " gets divided by --c-rate-divider with every pass"));

@@ -779,7 +779,7 @@ CHistoryRecord CCmdOptionList::get_values() const
 }
 
 CHelpOption::CHelpOption(Callback *cb, char short_opt, const char *long_opt, const char *long_help):
-	CCmdOption(short_opt, long_opt, long_help, NULL, false), 
+	CCmdOption(short_opt, long_opt, long_help, NULL, CCmdOptionFlags::none), 
 	m_callback(cb)
 {
 }
@@ -817,7 +817,7 @@ void CHelpOption::do_write_value(std::ostream& /*os*/) const
 CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt, 
 			       const char *long_opt, const char *long_help, 
 			       const char *short_help, 
-			       bool flags):
+			       CCmdOptionFlags flags):
 	CCmdOption(short_opt, long_opt, long_help,short_help, flags),
 	m_value(val),
 	m_map(map)
@@ -853,7 +853,7 @@ size_t CCmdFlagOption::do_get_needed_args() const
 
 PCmdOption EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt, 
 				char short_opt,const char *long_help, 
-				const char *short_help, bool flags)
+				const char *short_help, CCmdOptionFlags flags)
 {
 	return PCmdOption(new CCmdFlagOption(value, map, short_opt, long_opt,
                           long_help, short_help, flags ));
@@ -867,10 +867,10 @@ PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt,
 }
 
 PCmdOption EXPORT_CORE make_opt(std::string& value, const char *long_opt, char short_opt, const char *long_help, 
-				bool required, const CPluginHandlerBase *plugin_hint)
+				CCmdOptionFlags flags, const CPluginHandlerBase *plugin_hint)
 {
 	return PCmdOption(new CCmdStringOption(value, short_opt, long_opt, long_help, 
-					       required, plugin_hint)); 
+					       flags, plugin_hint)); 
 }
 
 PCmdOption EXPORT_CORE make_opt(bool& value, const char *long_opt, char short_opt, const char *help)

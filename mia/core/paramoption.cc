@@ -27,7 +27,7 @@ using std::ostringstream;
 CParamOption::CParamOption(char short_opt, const char *long_opt, CParameter *param):
 	CCmdOption(short_opt, long_opt, "", 
 		   long_opt, 
-		   param->required_set() ? CCmdOption::required : CCmdOption::not_required), 
+		   param->required_set() ? CCmdOptionFlags::required : CCmdOptionFlags::none), 
 	m_param(param)
 {
 	

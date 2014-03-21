@@ -96,9 +96,9 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input class file, should contain multiple images "
 			      "with tissue class probabilities", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o', "output class label image", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_output, &imageio));
 
 	options.add(make_opt( label_offset, "label-offset", 'l', "label offset"));
 

@@ -88,13 +88,13 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_general_help);
 	options.add(make_opt( blue_filename, "blue", 'b', "input image for blue channel", 
-			      CCmdOption::not_required, &imageio));
+			      CCmdOptionFlags::input, &imageio));
 	options.add(make_opt( green_filename, "green", 'g', "input image for green channel", 
-			      CCmdOption::not_required, &imageio));
+			      CCmdOptionFlags::input, &imageio));
 	options.add(make_opt( red_filename, "red", 'r', "input image for red channel", 
-			      CCmdOption::not_required, &imageio));
+			      CCmdOptionFlags::input, &imageio));
 
-	options.add(make_opt( out_filename, "out-file", 'o', "combined output image", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "combined output image", CCmdOptionFlags::required_input, &imageio));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS;

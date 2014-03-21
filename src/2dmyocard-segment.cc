@@ -426,10 +426,12 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", 
+			      CCmdOptionFlags::required_input));
 	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", 
-			      CCmdOption::required, &imageio));
-	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base")); 
+			      CCmdOptionFlags::required_output, &imageio));
+	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base", 
+			      CCmdOptionFlags::output)); 
 
 	options.set_group("ICA");
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation testing 4 and 5"));

@@ -72,8 +72,8 @@ int do_main( int argc, char *argv[] )
 	size_t skip = 2; 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( org_filename, "first", '1', "first segmentation set", CCmdOption::required));
-	options.add(make_opt( ref_filename, "second", '2', "second segmentation set", CCmdOption::required));
+	options.add(make_opt( org_filename, "first", '1', "first segmentation set", CCmdOptionFlags::required_input));
+	options.add(make_opt( ref_filename, "second", '2', "second segmentation set", CCmdOptionFlags::required_input));
 	options.add(make_opt( skip, "skip", 'k', "images to skip atthe begin of the series")); 
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

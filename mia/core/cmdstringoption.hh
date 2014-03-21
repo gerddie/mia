@@ -44,12 +44,12 @@ class EXPORT_CORE CCmdStringOption : public CCmdOption {
 	   \param short_opt the one letter command line option 
 	   \param long_opt the long command line option 
 	   \param long_help the full help string that describes the option completely 
-	   \param required  set to true if the parameter must be given by the user 
+	   \param flags CCmdOptionFlags for this option 
 	   \param plugin_hint if the string will later be used to create an object by using plug-in then pass 
 	   a pointer to the corresponding plug-in handler to give a hint the help system about this connection.
 	 */
 	CCmdStringOption(std::string& value, char short_opt, const char *long_opt, const char *long_help, 
-			 bool required, const CPluginHandlerBase *plugin_hint);
+			 CCmdOptionFlags flags, const CPluginHandlerBase *plugin_hint);
  private: 
 	bool do_set_value(const char *str_value);
 	void do_write_value(std::ostream& os) const;

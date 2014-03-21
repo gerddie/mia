@@ -111,13 +111,13 @@ int do_main(int argc, char *argv[])
 	
 	options.set_group("File-IO"); 
 	options.add(make_opt( src_filename, "in-image", 'i', "input (model) image to be registered", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out", 'o', "output vector field", 
-			      CCmdOption::not_required, &C2DVFIOPluginHandler::instance()));
+			      CCmdOptionFlags::output, &C2DVFIOPluginHandler::instance()));
 	options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image", 
-			      CCmdOption::not_required, &imageio));
+			      CCmdOptionFlags::output, &imageio));
 
 	options.set_group("Registration parameters"); 
 	options.add(make_opt( grid_start, "mgstart", 'm', "multigrid start size"));
@@ -128,7 +128,9 @@ int do_main(int argc, char *argv[])
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
+	if (out_filename.empty() && def_filename.empty()) {
+		throw invalid_argument("At least one output file must be given"); 
+	}
 
 
 	P2DImage Model = load_image<P2DImage>(src_filename);

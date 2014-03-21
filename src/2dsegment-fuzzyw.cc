@@ -355,14 +355,14 @@ int do_main(int argc, char *argv[])
 	
 	CCmdOptionList opts(g_description);
 	opts.set_group("File I/O"); 
-	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOption::required , &image2dio)); 
+	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOptionFlags::required_input , &image2dio)); 
 	opts.add(make_opt( cls_filename, "cls-file", 'c', "class probability images, the image type must "
-			   "support multiple images and floating point values", CCmdOption::required, &image2dio )); 
-	opts.add(make_opt( out_filename, "out-file", 'o', "B-field corrected image", CCmdOption::not_required , &image2dio)); 
+			   "support multiple images and floating point values", CCmdOptionFlags::output, &image2dio )); 
+	opts.add(make_opt( out_filename, "out-file", 'o', "B-field corrected image", CCmdOptionFlags::output , &image2dio)); 
 	opts.add(make_opt( gain_filename, "gain-log-file", 'g', "Logarithmic gain field, the image type must "
-			   "support floating point values",CCmdOption::not_required , &image2dio)); 
+			   "support floating point values",  CCmdOptionFlags::output , &image2dio)); 
 	
-	opts.set_group("Segmentation");
+	opts.set_group("Segmentation parameters");
 	opts.add(make_opt( n_classes, "no-of-classes", 'n', "number of classes to segment"));
 	opts.add(make_opt( params.class_centres, "class-centres", 'C', "initial class centers"));
 	opts.add(make_opt( params.neighbourhood_filter, "shmean:shape=8n", "neighborhood", 'N', "neighborhood filter for B-field correction"));
@@ -375,7 +375,10 @@ int do_main(int argc, char *argv[])
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
+	
+	if (cls_filename.empty() && out_filename.empty() && gain_filename.empty()) {
+		throw invalid_argument("Not a single output given, processing makes no sense");  
+	}
 
 	auto in_image = load_image2d(in_filename);	
 	

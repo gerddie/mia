@@ -54,16 +54,19 @@ int do_main( int argc, char *argv[] )
 	const auto& imageio = C2DImageIOPluginHandler::instance(); 
 
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required, &imageio));
-	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required, &imageio));
-	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required, &imageio));
+	
+	options.set_group("File-IO"); 
+	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOptionFlags::output, &imageio));
 	options.add(make_opt( trans_filename, "trans", 't', "output transformation", 
-			      CCmdOption::required, &C2DTransformationIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_output, &C2DTransformationIOPluginHandler::instance()));
+
+	options.set_group("Parameters"); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( refinement_minimizer, "", "refiner", 'R',
 			      "optimizer used for refinement after the main optimizer was called"));
-	
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)

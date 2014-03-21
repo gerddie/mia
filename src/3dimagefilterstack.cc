@@ -69,10 +69,11 @@ int do_main( int argc, char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required, &imageio));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name base, numbers are added accorfing to the input file pattern, and "
-			      "the file  extension is added according to the 'type' option.", CCmdOption::required, &imageio));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name base, numbers are added accorfing to the input "
+			      "file pattern, and the file  extension is added according to the 'type' option.", 
+			      CCmdOptionFlags::required, &imageio));
+	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOptionFlags::required));
 	
 	options.add(make_help_opt( "help-plugins", 0,
 				   "give some help about the filter plugins", 

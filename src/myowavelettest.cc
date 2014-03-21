@@ -65,7 +65,8 @@ int do_main( int argc, char *argv[] )
 
 
 	options.set_group("File-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', "input data set", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input data set", 
+			      CCmdOptionFlags::required_input));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 

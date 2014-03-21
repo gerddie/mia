@@ -107,12 +107,14 @@ int do_main( int argc, char *argv[] )
 
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input data set", CCmdOption::required));
+			      "input data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-			      "output data set", CCmdOption::required));
-
+			      "output data set", CCmdOptionFlags::required_output));
+	
 	options.add(make_opt(out2_filenamebase, "save-wave", 's', 
-			     "base name of the output files that will store the wavelet coefficients as matrix")); 
+			     "base name of the output files that will store the wavelet coefficients as matrix", 
+			     CCmdOptionFlags::output
+			    )); 
 
 	options.set_group("Wavelet"); 
 	options.add(make_opt( wt_type, g_wavelet_dict, "wavelet", 'w', "wavelet to be used"));

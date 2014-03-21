@@ -54,8 +54,10 @@ int do_main( int argc, char *argv[] )
 	const C3DImageIOPluginHandler::Instance& image3dio = C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be combined", CCmdOption::required, &image2dio));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required, &image3dio));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be combined", 
+			      CCmdOptionFlags::required_input, &image2dio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", 
+			      CCmdOptionFlags::required_output, &image3dio));
 
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

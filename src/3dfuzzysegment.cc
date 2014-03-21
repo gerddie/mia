@@ -66,24 +66,22 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be segmenetd", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
+	
 	options.add(make_opt( cls_filename, "cls-file", 'c', "output class probability images. Note, the "
 			      "used file format must support multible images (best is to use vista)", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::output, &imageio));
 	options.add(make_opt( out_filename, "b0-file", 'o', "image corrected for intensity non-uniformity", 
-			      CCmdOption::not_required , &imageio));
+			      CCmdOptionFlags::output , &imageio));
 	options.add(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
 	options.add(make_opt( residuum, "residuum", 'r', "relative residuum"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-	// required options (anything that has no default value)
-	if ( in_filename.empty() )
-		throw runtime_error("'--in-file'  ('i') option required\n");
-	if ( in_filename.empty() )
-		throw runtime_error("'--cls-file' ('c') option required\n");
 
+	if (cls_filename.empty() && out_filename.empty())
+		throw runtime_error("Not a single output file given"); 
 
 
 	C3DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);

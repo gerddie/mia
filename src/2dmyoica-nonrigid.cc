@@ -222,54 +222,55 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
+				    "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-				    "output perfusion data set", CCmdOption::required));
+				    "output perfusion data set", CCmdOptionFlags::required_output));
 	options.add(make_opt( registered_filebase, "registered", 'r', 
 				    "file name base for registered fiels")); 
 	
 	options.add(make_opt( cropped_filename, "save-cropped", 0, 
-				    "save cropped set to this file")); 
+			      "save cropped set to this file")); 
 	options.add(make_opt( save_crop_feature, "save-feature", 0, "save the features images resulting from the ICA and "
 			      "some intermediate images used for the RV-LV segmentation with the given file name base to PNG files. "
 			      "Also save the coefficients of the initial best and the final IC mixing matrix.")); 
-
+	
 	options.add(make_opt( save_ref_filename, "save-refs", 0, 
-				    "save synthetic reference images")); 
+			      "save synthetic reference images")); 
 	options.add(make_opt( save_reg_filename, "save-regs", 0, 
-				    "save intermediate registered images")); 
-
-
+			      "save intermediate registered images")); 
+	
+	
 	
 	options.set_group("Registration"); 
-	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization", 
+			      CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
 	options.add(make_opt( refinement_minimizer, "", "refiner", 'R',
 			      "optimizer used for refinement after the main optimizer was called"));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
-				    "start coefficinet rate in spines,"
-				    " gets divided by --c-rate-divider with every pass"));
+			      "start coefficinet rate in spines,"
+			      " gets divided by --c-rate-divider with every pass"));
 	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 
-				    "cofficient rate divider for each pass"));
+			      "cofficient rate divider for each pass"));
 	options.add(make_opt( divcurlweight, "start-divcurl", 'd',
-				    "start divcurl weight, gets divided by"
-				    " --divcurl-divider with every pass")); 
+			      "start divcurl weight, gets divided by"
+			      " --divcurl-divider with every pass")); 
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
-				    "divcurl weight scaling with each new pass")); 
+			      "divcurl weight scaling with each new pass")); 
 	options.add(make_opt( imagecost, "image:weight=1,cost=ssd", "imagecost", 'w', "image cost")); 
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
-
+	
 	options.set_group("ICA"); 
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
-				    "don't strip the mean from the mixing curves"));
+			      "don't strip the mean from the mixing curves"));
 	options.add(make_opt( box_scale, "segscale", 's', 
-				    "segment and scale the crop box around the LV (0=no segmentation)"));
+			      "segment and scale the crop box around the LV (0=no segmentation)"));
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
-				    "e.g. because as they are of other modalities")); 
+			      "e.g. because as they are of other modalities")); 
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
-
+	
 	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
 	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'B', 

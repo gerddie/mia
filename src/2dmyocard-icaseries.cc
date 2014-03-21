@@ -87,7 +87,7 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( reference_filename, "references", 'r', "File name base for the reference images. "
 			      "Image type and numbering scheme are taken from the input images.")); 
 	options.add(make_opt( cropped_filename, "save-cropped", 'c', "save cropped set of the original set to this file, "

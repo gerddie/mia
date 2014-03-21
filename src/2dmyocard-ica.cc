@@ -364,7 +364,7 @@ int do_main( int argc, char *argv[] )
 	
 	CCmdOptionList options(g_description); 
 	options.add(make_opt( src_name, "in-base", 'i', "input file name ofolloing pattern nameXXXX.ext X=numbers" , 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file"));
 	options.add(make_opt( out_name, "out-base", 'o', "output file name base"));
 

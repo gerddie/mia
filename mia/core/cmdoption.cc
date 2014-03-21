@@ -30,16 +30,13 @@ using std::invalid_argument;
 
 NS_MIA_BEGIN
 
-const bool CCmdOption::not_required = false; 
-const bool CCmdOption::required = true; 
-
 CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
 		       const char *long_help, const char *short_help, bool required):
 	m_short_opt(short_opt), 
 	m_long_opt(long_opt),
 	m_long_help(long_help), 
 	m_short_help(short_help),
-	m_flags(required)
+	m_flags(required ? CCmdOptionFlags::required : CCmdOptionFlags::none)
 {
 	TRACE_FUNCTION; 
 	cvdebug() << "Create option '" << long_opt << "'\n"; 
@@ -47,6 +44,22 @@ CCmdOption::CCmdOption(char short_opt, const char *long_opt,
         assert(long_help);
 
 }
+
+CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
+		       const char *long_help, const char *short_help, CCmdOptionFlags flags):
+	m_short_opt(short_opt), 
+	m_long_opt(long_opt),
+	m_long_help(long_help), 
+	m_short_help(short_help),
+	m_flags(flags)
+{
+	TRACE_FUNCTION; 
+	cvdebug() << "Create option '" << long_opt << "'\n"; 
+        assert(long_opt);
+        assert(long_help);
+
+}
+
 
 CCmdOption::~CCmdOption()
 {
@@ -109,12 +122,12 @@ const char *CCmdOption::get_long_option() const
 
 void CCmdOption::clear_required()
 {
-	m_flags = false; 
+	m_flags -= CCmdOptionFlags::required; 
 }
 
 bool CCmdOption::is_required() const
 {
-	return m_flags; 
+	return (m_flags & CCmdOptionFlags::required) == CCmdOptionFlags::required; 
 }
 
 void CCmdOption::get_opt_help(std::ostream& os) const

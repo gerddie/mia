@@ -101,7 +101,7 @@ int do_main( int argc, char *argv[] )
 	
 	CCmdOptionList options(g_general_help);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image to be analyzed", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
 	options.add(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
 	

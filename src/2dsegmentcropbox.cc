@@ -79,11 +79,11 @@ int do_main(int argc, char *argv[])
 	float  enlarge_boundary = 5;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
 	options.add(make_opt( override_src_imagepath, "override-imagepath", 'p',
 			      "Instead of using the path of the image files as given in the "
 			      "segmentation set, assume the files are located in the current directory"));
-	options.add(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOptionFlags::required_output));
 	options.add(make_opt( image_name, "cropped-base", 'c', "Base name for the cropped image files, the file "
 			      "type and numbering will be based on the input image file type and numbering."));
 	options.add(make_opt( enlarge_boundary, "enlarge", 'e',

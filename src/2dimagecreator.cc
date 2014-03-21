@@ -52,10 +52,10 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( size, "size", 's', "size of the object"));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
-	options.add(make_opt( creator, "", "object", 'j', "object to be created", CCmdOption::required));
+	options.add(make_opt( creator, "", "object", 'j', "object to be created", CCmdOptionFlags::required));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 

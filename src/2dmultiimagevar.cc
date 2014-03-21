@@ -92,7 +92,8 @@ int do_main( int argc, char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image ", 
+			      CCmdOptionFlags::required_output, &imageio));
 
 	if (options.parse(argc, argv, "image", &imageio) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

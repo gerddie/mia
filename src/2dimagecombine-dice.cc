@@ -88,8 +88,10 @@ int do_main( int argc, char *argv[] )
 	string in_filename2;
 	
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename1, "in-file-1", '1', "input image 1", CCmdOption::required, &imageio)); 
-	options.add(make_opt( in_filename2, "in-file-2", '2', "input image 1", CCmdOption::required, &imageio)); 
+	options.add(make_opt( in_filename1, "in-file-1", '1', "input image 1", 
+			      CCmdOptionFlags::required_input, &imageio)); 
+	options.add(make_opt( in_filename2, "in-file-2", '2', "input image 2", 
+			      CCmdOptionFlags::required_input, &imageio)); 
 
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

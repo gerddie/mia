@@ -471,10 +471,13 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	options.set_group("File IO"); 
 	options.add(make_opt( src_filename, "in-file", 'i', 
-					"input image(s) that contain the source pixel mask", CCmdOption::required)); 
+			      "input image(s) that contain the source pixel mask", 
+			      CCmdOptionFlags::required_input)); 
 	options.add(make_opt( ref_filename, "ref-file", 'r', 
-					"reference mask to evaluate the distance from", CCmdOption::required)); 
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required)); 
+			      "reference mask to evaluate the distance from", 
+			      CCmdOptionFlags::required_input)); 
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", 
+			      CCmdOptionFlags::required_output)); 
 	
 	options.set_group("Test"); 
 	options.add(make_opt( self_test, "self-test", 0,"run a self test" ));

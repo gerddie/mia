@@ -50,10 +50,10 @@ int do_main(int argc, char **argv)
 	string vf_filename;
 	PSplineKernel interpolator_kernel;
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required, &imageio));
-	options.add(make_opt( out_filename, "out-file", 'o', "transformed  image", CCmdOption::required, &imageio));
+	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "transformed  image", CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( vf_filename, "transformation", 't', "transformation vector field", 
-			      CCmdOption::required, &C2DVFIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_input, &C2DVFIOPluginHandler::instance()));
 	options.add(make_opt( interpolator_kernel ,"bspline:d=3", "interpolator", 'p', "image interpolator kernel"));
 
 

@@ -103,8 +103,8 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file with curves", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOptionFlags::required_input));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file with curves", CCmdOptionFlags::required_output));
 
 	options.set_group("ICA");
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));

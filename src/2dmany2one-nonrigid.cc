@@ -139,10 +139,10 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
+			      "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
-				    "file name for registered images, numbering and pattern are deducted from the input data")); 
-	
+			      "file name for registered images, numbering and pattern are deducted from the input data", 
+			      CCmdOptionFlags::required)); 
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));

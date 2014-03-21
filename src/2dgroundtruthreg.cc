@@ -152,8 +152,8 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.set_group("\nFile-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOptionFlags::required_input));
+	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOptionFlags::required_output));
 	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered files")); 
 
 	options.set_group("\nPreconditions"); 
@@ -162,11 +162,11 @@ int do_main( int argc, char *argv[] )
 
 	options.set_group("\nPseudo-Ground-Thruth"); 
 	options.add(make_opt( pgt_params.alpha, "alpha", 'A', "spacial neighborhood penalty weight", 
-				    CCmdOption::required));
+				    CCmdOptionFlags::required));
 	options.add(make_opt( pgt_params.beta, "beta", 'B', "temporal second derivative penalty weight", 
-				    CCmdOption::required));
+				    CCmdOptionFlags::required));
 	options.add(make_opt( pgt_params.rho_thresh, "rho_thresh", 'R', 
-				    "crorrelation threshhold for neighborhood analysis", CCmdOption::required));
+				    "crorrelation threshhold for neighborhood analysis", CCmdOptionFlags::required));
 
 
 	

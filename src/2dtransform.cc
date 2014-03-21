@@ -53,10 +53,10 @@ int do_main(int argc, char **argv)
 
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required, &imageio));
-	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOption::required, &imageio));
+	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation file name", 
-			      CCmdOption::required, &C2DTransformationIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_input, &C2DTransformationIOPluginHandler::instance()));
 
 	options.add(make_opt( interpolator_kernel, "interpolator", 'p', "override the interpolator provided by the transformation"));
 	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided by the transformation."

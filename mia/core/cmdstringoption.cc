@@ -28,12 +28,12 @@ NS_MIA_BEGIN
 using std::string; 
 
 CCmdStringOption::CCmdStringOption(std::string& value, char short_opt, const char *long_opt, 
-				   const char *long_help, bool required, const CPluginHandlerBase *plugin_hint):
-	CCmdOption(short_opt, long_opt, long_help, long_opt, required), 
+				   const char *long_help,  CCmdOptionFlags flags, const CPluginHandlerBase *plugin_hint):
+	CCmdOption(short_opt, long_opt, long_help, long_opt, flags), 
 	m_value(value), 
 	m_plugin_hint(plugin_hint)
 {
-	if (!value.empty() && required) 
+	if (!value.empty() && has_flag(flags, CCmdOptionFlags::required) ) 
 		cvwarn() << "CCmdStringOption:option '" << long_opt << "' has a default value '"
 			 << value
 			 <<"' but is also marked as required. This doesn't make mzúch sense."; 

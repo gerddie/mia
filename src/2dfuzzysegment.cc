@@ -64,16 +64,18 @@ int do_main( int argc, char *argv[] )
 
 
 	CCmdOptionList options(g_description);
+	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i',
-			      "input image(s) to be segmenetd", CCmdOption::required, &imageio));
+			      "input image(s) to be segmenetd", CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( cls_filename, "cls-file", 'c',
 			      "output class probability images (floating point values and multi-image)", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::output, &imageio));
 	options.add(make_opt( out_filename, "b0-file", 'o', "image corrected for intensity non-uniformity", 
-			      CCmdOption::not_required, &imageio ));
+			      CCmdOptionFlags::output, &imageio ));
 	options.add(make_opt( gain_filename, "gain-file", 'g', "gain field (floating point valued)", 
-			      CCmdOption::required, &imageio ));
+			      CCmdOptionFlags::output, &imageio ));
 
+	options.set_group("Parameters"); 
 	options.add(make_opt( noOfClasses, "no-of-classes", 'n',
 			      "number of classes"));
 	options.add(make_opt( params.residuum, "residuum", 'r', "relative residuum"));

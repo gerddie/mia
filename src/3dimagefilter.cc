@@ -54,9 +54,9 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_output, &imageio));
 	options.add(make_help_opt( "help-plugins", 0, "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
 

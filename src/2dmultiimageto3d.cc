@@ -52,14 +52,14 @@ int do_main( int argc, char *argv[])
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input images", CCmdOption::required, &imageio2d));
+				    "input images", CCmdOptionFlags::required_input, &imageio2d));
 	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image", CCmdOption::required, &imageio3d));
+				    "output image", CCmdOptionFlags::required_output, &imageio3d));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-
+	
 	// read image
 	C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio2d.load(in_filename);
 	if (!in_image_list)

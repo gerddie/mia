@@ -57,8 +57,8 @@ int do_main(int argc, char *argv[])
 	int skip = 0; 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "reference segmentation set", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "reference segmentation set", CCmdOptionFlags::required_input));
 	options.add(make_opt( skip, "skip", 'k', "skip images at the beginning"));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

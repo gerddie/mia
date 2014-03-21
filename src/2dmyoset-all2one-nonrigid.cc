@@ -141,9 +141,9 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
+				    "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-				    "output perfusion data set", CCmdOption::required));
+				    "output perfusion data set", CCmdOptionFlags::required_output));
 	options.add(make_opt( registered_filebase, "out-filebase", 0, "file name basae for registered files, file "
 			      "type is deducted from the image file type in the input data set.")); 
 

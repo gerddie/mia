@@ -72,10 +72,13 @@ int do_main(int argc, char *argv[])
 	size_t skip = 2;
 
 	C2DFVector shift;
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", 
+			      CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "input segmentation set", 
+			      CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( shift_filename, "image-file", 'g', "output image filename base"));
 
 	options.add(make_opt(shift, "shift", 'S', "shift of segmentation"));

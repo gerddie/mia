@@ -114,7 +114,7 @@ public:
 	    \param flags support options like required 
         */
 	TCmdOption(T& val, char short_opt, const char *long_opt, const char *long_help,
-                   const char *short_help, bool flags = false);
+                   const char *short_help, CCmdOptionFlags flags = CCmdOptionFlags::none);
 
 private:
 	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
@@ -144,7 +144,8 @@ public:
 	    the option is really set
 	*/
 	CCmdFlagOption(int& val, const CFlagString& map, char short_opt, const char *long_opt,
-                       const char *long_help, const char *short_help, bool flags = false);
+                       const char *long_help, const char *short_help, 
+		       CCmdOptionFlags flags  = CCmdOptionFlags::none);
 private:
 	virtual bool do_set_value(const char *str_value);
 	virtual size_t do_get_needed_args() const;
@@ -534,7 +535,8 @@ struct __dispatch_opt<std::string> {
 //
 template <typename T>
 TCmdOption<T>::TCmdOption(T& val, char short_opt, const char *long_opt, 
-			  const char *long_help, const char *short_help, bool flags):
+			  const char *long_help, const char *short_help, 
+			  CCmdOptionFlags flags):
         CCmdOption(short_opt, long_opt, long_help, short_help, flags),
         m_value(val)
 {
@@ -591,9 +593,10 @@ const std::string TCmdOption<T>::do_get_value_as_string() const
 */
 template <typename T>
 PCmdOption make_opt(T& value, const char *long_opt, char short_opt, 
-		    const char *help, bool flags = false)
+		    const char *help, CCmdOptionFlags flags = CCmdOptionFlags::none)
 {
-	return PCmdOption(new CParamOption( short_opt, long_opt, new CTParameter<T>(value, flags, help))); 
+	bool required = has_flag(flags, CCmdOptionFlags::required); 
+	return PCmdOption(new CParamOption( short_opt, long_opt, new CTParameter<T>(value, required, help))); 
 }
 
 /**
@@ -615,10 +618,11 @@ PCmdOption make_opt(T& value, const char *long_opt, char short_opt,
 */
 template <typename T, typename Tmin, typename Tmax>
 PCmdOption make_opt(T& value, Tmin min, Tmax max,  const char *long_opt, char short_opt, 
-		    const char *help, bool flags = false)
+		    const char *help, CCmdOptionFlags flags = CCmdOptionFlags::none)
 {
+	bool required = has_flag(flags, CCmdOptionFlags::required); 
 	return PCmdOption(new CParamOption( short_opt, long_opt, 
-					    new TRangeParameter<T>(value, min, max, flags, help)));
+					    new TRangeParameter<T>(value, min, max, required, help)));
 }
 
 /**
@@ -633,17 +637,17 @@ PCmdOption make_opt(T& value, Tmin min, Tmax max,  const char *long_opt, char sh
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help help string (must not be NULL)
-   \param required  set to true if the option is required to be set 
+   \param flags option flags indicating whether the option is required 
    \remark be aware that localization of the decimal separator of floating point values is not supported, 
    it is always the full stop ".". 
 */
 
 template <typename T>
 PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt, 
-		    const char *help, bool required = false)
+		    const char *help, CCmdOptionFlags flags = CCmdOptionFlags::none)
 {
 	return PCmdOption(new TCmdOption<std::vector<T> >(value, short_opt, long_opt, help, 
-							  long_opt, required ));
+							  long_opt, flags ));
 }
 
 /**
@@ -704,7 +708,7 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map,
 PCmdOption   make_opt(int& value, const CFlagString& map, const char *long_opt,
 				 char short_opt, const char *long_help, 
 				 const char *short_help, 
-				 bool flags = false);
+				 CCmdOptionFlags flags = CCmdOptionFlags::none);
 
 
 /**
@@ -717,13 +721,13 @@ PCmdOption   make_opt(int& value, const CFlagString& map, const char *long_opt,
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param long_help long help string (must not be NULL)
-   \param required set to true if the option is required to be set 
+   \param flags add flags like whether the optionis required to be set 
    \param plugin_hint if the string will later be used to create an object by using plug-in then pass 
 	   a pointer to the corresponding plug-in handler to give a hint the help system about this connection.
    \returns the option warped into a \a boost::shared_ptr
  */
 PCmdOption  make_opt(std::string& value, const char *long_opt, char short_opt, const char *long_help, 
-				bool required = false, const CPluginHandlerBase *plugin_hint = NULL); 
+		     CCmdOptionFlags flags = CCmdOptionFlags::none, const CPluginHandlerBase *plugin_hint = NULL); 
 
 
 
@@ -739,15 +743,16 @@ PCmdOption  make_opt(std::string& value, const char *long_opt, char short_opt, c
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help long help string (must not be NULL)
-   \param required set  true if the optionis required to be set 
+   \param flags option flags indicating whether the option is required 
    \returns the option warped into a \a boost::shared_ptr
  */
 template <typename T> 
 PCmdOption  make_opt(T& value, const std::set<T>& valid_set,
-                                const char *long_opt, char short_opt, 
-				const char *help, 
-				bool required = false)
+		     const char *long_opt, char short_opt, 
+		     const char *help, 
+		     CCmdOptionFlags flags = CCmdOptionFlags::none)
 {
+	bool required = has_flag(flags, CCmdOptionFlags::required);
 	return PCmdOption(new CParamOption( short_opt, long_opt, 
 					    new  CSetParameter<T>(value, valid_set, help, required))); 
 }
@@ -767,15 +772,17 @@ PCmdOption  make_opt(T& value, const std::set<T>& valid_set,
    \param long_opt long option name
    \param short_opt short option char, set to 0 of none givn
    \param help the help string for thie option
-   \param required set  true if the optionis required to be set 
+   \param flags indicates whether theoption is required 
    \remark although passing in an initialized pointer and and empty default_value would act like the the initializer string 
    was used for the pointer, it is better to pass an empty shared pointer in order to avoid unnecessary initializations 
    of the pointer is later overwritten.
 */
 template <typename T>
 PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *default_value, const char *long_opt, 
-		    char short_opt,  const char *help, bool required = false)
+		    char short_opt,  const char *help,  
+		    CCmdOptionFlags flags = CCmdOptionFlags::none)
 {
+	bool required = has_flag(flags, CCmdOptionFlags::required);
 	typedef typename FactoryTrait<T>::type F;  
 	return PCmdOption(new CParamOption( short_opt, long_opt, 
 					    new TFactoryParameter<F>(value, default_value, required, help))); 
@@ -794,15 +801,16 @@ PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *default_valu
    \param long_opt long option name
    \param short_opt short option char, set to 0 of none givn
    \param help the help string for thie option
-   \param required set  true if the optionis required to be set 
+   \param flags option flags indicating whether the option is required 
    \remark although passing in an initialized pointer and and empty default_value would act like the the initializer string 
    was used for the pointer, it is better to pass an empty shared pointer in order to avoid unnecessary initializations 
    of the pointer is later overwritten.
 */
 template <typename T>
 PCmdOption make_opt(typename std::unique_ptr<T>& value, const char *default_value, const char *long_opt, 
-		    char short_opt,  const char *help, bool required = false)
+		    char short_opt,  const char *help, CCmdOptionFlags flags = CCmdOptionFlags::none)
 {
+	bool required = has_flag(flags, CCmdOptionFlags::required);
 	typedef typename FactoryTrait<T>::type F;  
 	return PCmdOption(new CParamOption( short_opt, long_opt, 
 					    new TFactoryParameter<F>(value, default_value, required, help))); 

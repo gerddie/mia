@@ -53,11 +53,11 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in1_filename, "in-file-1", '1', 
-			      "first input image to be combined", CCmdOption::required, &imageio));
+			      "first input image to be combined", CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( in2_filename, "in-file-2", '2', 
-				    "second input image to be combined", CCmdOption::required, &imageio));
+			      "second input image to be combined", CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", CCmdOption::required, &imageio));
+			      "output image(s) that have been filtered", CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( combiner, "absdiff", "operation", 'p', "operation to be applied"));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 

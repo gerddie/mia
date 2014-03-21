@@ -259,29 +259,31 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
+			      "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-				    "output perfusion data set", CCmdOption::required));
+			      "output perfusion data set", CCmdOptionFlags::required_output));
 	options.add(make_opt( registered_filebase, "registered", 'r', 
 			      "File name base for the registered images. Image type and numbering "
 			      "scheme are taken from the input images as given in the input data set.")); 
 	
 	options.add(make_opt( cropped_filename, "save-cropped", 0, 
 			      "save cropped set to this file, the image files will use the stem of the "
-			      "name as file name base")); 
+			      "name as file name base", CCmdOptionFlags::output)); 
 	options.add(make_opt( save_crop_feature, "save-feature", 0, 
-			      "save segmentation feature images and initial ICA mixing matrix")); 
+			      "save segmentation feature images and initial ICA mixing matrix", CCmdOptionFlags::output)); 
 	
 	options.add(make_opt( save_ref_filename, "save-refs", 0, 
-			      "for each registration pass save the reference images to files with the given name base")); 
+			      "for each registration pass save the reference images to files with the given name base", 
+			      CCmdOptionFlags::output
+			    )); 
 	options.add(make_opt( save_reg_filename, "save-regs", 0, 
-			      "for each registration pass save intermediate registered images")); 
+			      "for each registration pass save intermediate registered images", CCmdOptionFlags::output)); 
 
 
 	
 	options.set_group("Registration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization.", CCmdOption::not_required, 
-			      &CMinimizerPluginHandler::instance()));
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization.", 
+			      CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
 				    " gets divided by --c-rate-divider with every pass."));
@@ -296,7 +298,7 @@ int do_main( int argc, char *argv[] )
 	// why do I allow to set this parameter, it should always be image:cost=ssd  
 	options.add(make_opt( imagecost, "imagecost", 'w',
 			      "image cost, do not specify the src and ref parameters, these will be set by the program.",
-			      CCmdOption::not_required, &C2DFullCostPluginHandler::instance())); 
+			      CCmdOptionFlags::none, &C2DFullCostPluginHandler::instance())); 
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
@@ -312,11 +314,11 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
 
 	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
-				   "Segmentation method")); 
+			     "Segmentation method")); 
 	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'B', 
 			     "minimal mean frequency a mixing curve can have to be considered to stem from brething. "
 			     "A healthy rest breating rate is 12 per minute. A negative value disables the test.")); 
-
+	
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 

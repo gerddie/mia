@@ -139,14 +139,14 @@ int do_main(int argc, char **argv)
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	options.add(make_opt( src1_filename, "first", '1', "first input image ", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( src2_filename, "second", '2', "second input image ", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( positions, "positions", 'p', 
-				    "image series positions (first, target, second)", 
-			      CCmdOption::required));
+			      "image series positions (first, target, second)", 
+			      CCmdOptionFlags::required));
 	options.add(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

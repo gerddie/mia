@@ -443,9 +443,9 @@ int do_main(int argc, char *argv[])
 	const auto& image2dio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList opts(g_description);
-	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOption::required, &image2dio )); 
+	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOptionFlags::required_input, &image2dio )); 
 	opts.add(make_opt( cls_filename, "out-file", 'o', "class probability images, the image type "
-			   "must support multiple images and floating point values", CCmdOption::required, &image2dio )); 
+			   "must support multiple images and floating point values", CCmdOptionFlags::required_output, &image2dio )); 
 	opts.add(make_opt( n_classes, "no-of-classes", 'a', "number of classes"));
 	opts.add(make_opt( bg_correct, "bias-correct", 'b', "apply bias field correction"));
 	opts.add(make_opt( initial_class_centres, "class-centres", 'c', "initial class centers"));

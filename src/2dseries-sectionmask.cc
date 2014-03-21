@@ -65,9 +65,9 @@ int do_main(int argc, char *argv[])
 	size_t frame = 0; 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
 	options.add(make_opt( out_filename, "out-file", 'o', "output image containing the mask", 
-			      CCmdOption::required, &C2DImageIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_output, &C2DImageIOPluginHandler::instance()));
 	options.add(make_opt( frame, "frame", 'f', "Frame number for which to extract the mask"));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

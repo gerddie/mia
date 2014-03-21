@@ -335,8 +335,8 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("\nFile-IO");
-	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOptionFlags::required_input));
+	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOptionFlags::required_output));
 	options.add(make_opt( registered_filebase, "registered", 'r', 
 				    "file name base for registered fiels")); 
 	options.add(make_opt(params.save_ref,"save-references", 0, 

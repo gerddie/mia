@@ -377,8 +377,10 @@ int do_main(int argc, char *argv[])
 
 	CCmdOptionList options(g_description);
 
-	options.add(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram", CCmdOption::required)); 
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities", CCmdOption::required)); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram", 
+			      CCmdOptionFlags::required_input)); 
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities", 
+			      CCmdOptionFlags::required_output)); 
 	
 	options.add(make_opt( nclasses, "nclasses", 'n', "number of classes to partition into")); 
 	options.add(make_opt( max_iter, "max-iter", 'm', "maximum number of iterations")); 

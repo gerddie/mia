@@ -142,9 +142,9 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_general_help);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image", 
-			      CCmdOption::required, &imageio)); 
+			      CCmdOptionFlags::required_input, &imageio)); 
 	options.add(make_opt( dist_filename, "distance-file", 'd', "distance field image (floating point)", 
-			      CCmdOption::required, &imageio)); 
+			      CCmdOptionFlags::required_output, &imageio)); 
 	options.add(make_opt( scale, "scale", 's', "distance scaling factor")); 
 	options.add(make_opt( method, combine_option, "method", 'm', "distance measuring method")); 
 	
