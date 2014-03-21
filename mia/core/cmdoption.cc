@@ -22,6 +22,7 @@
 #include <stdexcept>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdoption.hh>
+#include <mia/core/tools.hh>
 
 using std::ostream; 
 using std::string; 
@@ -219,6 +220,35 @@ void CCmdOption::do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)
 		       "don't add the same long option twice");
 		lm[get_long_option()] = this;
 	}
+}
+
+void CCmdOption::add_option_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const
+{
+	TRACE_FUNCTION;
+	auto option = parent.add_child("option"); 
+	option->set_attribute("short", to_string<char>(get_short_option()));
+	option->set_attribute("long", get_long_option());
+	option->set_attribute("required", to_string<bool>(is_required())); 
+	option->set_attribute("default", get_value_as_string()); 
+	
+	auto flagstring = get_flag_string(); 
+	if (!flagstring.empty()) {
+		auto flags = option->add_child("flags"); 
+		flags->set_child_text(flagstring);
+	}
+	option->set_child_text(get_long_help_xml(*option, handler_map));
+}
+
+string CCmdOption::get_flag_string()const 
+{
+	ostringstream ss; 
+	if (has_flag(m_flags, CCmdOptionFlags::input))
+		ss << "input "; 
+	if (has_flag(m_flags, CCmdOptionFlags::output))
+		ss << "output "; 
+	if (has_flag(m_flags, CCmdOptionFlags::required))
+		ss << "required ";
+	return ss.str(); 
 }
 
 void CCmdOption::post_set()
