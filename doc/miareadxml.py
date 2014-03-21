@@ -17,6 +17,7 @@
 #
 
 
+import string
 from lxml import etree
 import re
 
@@ -35,6 +36,8 @@ xmlns = "{%s}" % xml_namespace
 #                tag required: 1 if required argument 
 #                tag default: default option value
 #                text: help 
+#          flags
+#                test; flags 
 #       dict          
 #  Example       text: example descripton 
 #    Code        text: example text without program name 
@@ -81,7 +84,15 @@ class CTextNode:
             raise ValueError("expected '%s' got '%s'" % (expect, node.tag))
 
         self.entry = node.tag
-        self.text  = node.text 
+        self.flags = []
+        self.text  = ""
+        if node.text is not None:
+            self.text = self.text + node.text
+
+        for child in node.iter("flags"):
+            self.flags = self.flags + string.split(child.text)
+            if child.tail is not None:
+                self.text = self.text + child.tail
 
 class COption(CTextNode):
     def __init__(self, node):
@@ -97,10 +108,13 @@ class COption(CTextNode):
         if len(self.short) > 0:
             short = "\-" + self.short
         else:
-            short = "  "; 
+            short = "  ";
 
-        if self.required:
-            print ".IP \"%s \-\-%s=(required)\""% (short, self.long)
+        if len(self.flags) > 0:
+            flagstring = self.flags[0]
+            for f in self.flags[1:]:
+                flagstring = flagstring + ',' + f
+            print ".IP \"%s \-\-%s=(%s)\""% (short, self.long, flagstring)
         else:
             if not self.type == "bool":
                 print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
@@ -119,8 +133,12 @@ class COption(CTextNode):
         if len(self.short) > 0: 
             termtext = termtext + self.short + ", -"
         termtext = termtext + "-" + self.long
-        if self.required: 
-            termtext = termtext + "=(required)"
+
+        if len(self.flags) > 0:
+            termtext = termtext + "=(" + self.flags[0]
+            for f in self.flags[1:]:
+                termtext = termtext + ',' + f
+            termtext = termtext + ")"
         elif self.type != "bool":
             termtext = termtext + "="
             if len(self.default)>0:

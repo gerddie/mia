@@ -301,12 +301,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 			if (opt.get_long_option() == string("help-xml")) 
 				continue; 
 			
-			Element* option = group->add_child("option"); 
-			option->set_attribute("short", to_string<char>(opt.get_short_option()));
-			option->set_attribute("long", opt.get_long_option());
-			option->set_attribute("required", to_string<bool>(opt.is_required())); 
-			option->set_attribute("default", opt.get_value_as_string()); 
-			option->set_child_text(opt.get_long_help_xml(*option, handler_help_map));
+			opt.add_option_xml(*group, handler_help_map); 
 			
 			if (opt.is_required()) {
 				if (opt.get_short_option())

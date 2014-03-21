@@ -133,6 +133,14 @@ public:
 	    complex initialization like done for factory based command line parameters 
 	 */
 	void post_set(); 
+
+	/**
+	   Adds the option description to the given parent node and adds
+	   used plug-in handlers to the helper map
+	   \param[in,out] parent the parent xml node to which to add documentation 
+	   \param[in,out] handler_map the map of possibely recoursively called plug-in handlers 
+	*/
+	void add_option_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const;
 protected:
 
 	/// clear the "required" flag 
@@ -144,6 +152,7 @@ protected:
 	*/
 	virtual void do_get_long_help(std::ostream& os) const;
 private:
+	std::string get_flag_string() const; 
 	const char *get_short_help() const;
 
 	virtual void do_add_option(CShortoptionMap& sm, CLongoptionMap& lm);
