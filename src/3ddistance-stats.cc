@@ -180,11 +180,12 @@ int do_main( int argc, char *argv[] )
 
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-labels", 'i', "input label image", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( ref_filename, "ref-labels", 'r', "reference label image",
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 
-        options.add(make_opt( label_translate_filename, "label-map", 'l', "optional mapping of label numbers"));
+        options.add(make_opt( label_translate_filename, "label-map", 'l', "optional mapping of label numbers", 
+			    CCmdOptionFlags::input));
 
         options.add(make_opt( out_filename, "out-file", 'o', "output file name to write the distances to. "
                               "The output file is a csv file, containing distances listed for each label."));

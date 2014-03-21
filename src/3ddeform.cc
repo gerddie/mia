@@ -54,7 +54,7 @@ int do_main(int argc, char **argv)
 	const auto& vfioh = C3DVFIOPluginHandler::instance();
 
 	options.add(make_opt( src_filename, "in-image", 'i', "input image", CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( out_filename, "out-image", 'o', "transformed image", CCmdOption_Flags::required_output, &imageio));
+	options.add(make_opt( out_filename, "out-image", 'o', "transformed image", CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( vf_filename, "transformation", 't', "transformation vector field", 
 			      CCmdOptionFlags::required_input, &vfioh));
 	options.add(make_opt( interpolator_kernel, "bspline:d=3", "interpolator", 'p', "image interpolator kernel"));

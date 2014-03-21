@@ -51,9 +51,9 @@ int do_main( int argc, char *argv[])
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-			      "input images", CCmdOption::required, &imageio));
+			      "input images", CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image", CCmdOption::required, &imageio));
+				    "output image", CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( num, "number", 'n',  "image number to be selected"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

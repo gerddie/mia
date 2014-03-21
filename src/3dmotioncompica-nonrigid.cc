@@ -195,10 +195,10 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input images of consecutively numbered filed (nameXXXX.ext)", 
-			      CCmdOption::required, &image3dio));
+			      CCmdOptionFlags::required_input, &image3dio));
 	options.add(make_opt( registered_filebase, "out-file", 'o', "output image name (as C format string including a %04d "
 			      "in order to define the file numbering)", 
-			      CCmdOption::required, &image3dio));
+			      CCmdOptionFlags::required_output, &image3dio));
 	
 	options.add(make_opt( save_ref_filename, "save-refs", 0, "save reference images, the given string is used as file name base"
 			      ", the number pattern follows the input images, and the output format is always 'vista'")); 
@@ -208,8 +208,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( save_features, "save-features", 0, "save feature images as PNG")); 
 
 	options.set_group("Registration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization", 
-			      CCmdOption::not_required, &CMinimizerPluginHandler::instance()));
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 			      "start coefficinet rate in spines,"
 			      " gets divided by --c-rate-divider with every pass"));
@@ -220,7 +219,7 @@ int do_main( int argc, char *argv[] )
 			      " --divcurl-divider with every pass")); 
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 			      "divcurl weight scaling with each new pass")); 
-	options.add(make_opt( imagecost, "imagecost", 'w', "image cost", CCmdOption::not_required, &C3DFullCostPluginHandler::instance())); 
+	options.add(make_opt( imagecost, "imagecost", 'w', "image cost")); 
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 

@@ -94,9 +94,9 @@ int do_main( int argc, char *argv[] )
 	const auto& imageio = C2DImageIOPluginHandler::instance(); 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-mesh", 'i', "input mesh", CCmdOption::required, &meshio));
-	options.add(make_opt( ref_filename, "ref-mask", 'r', "reference binary mask", CCmdOption::required, &imageio));
-	options.add(make_opt( out_filename, "out-mesh", 'o', "output mesh", CCmdOption::required, &meshio));
+	options.add(make_opt( src_filename, "in-mesh", 'i', "input mesh", CCmdOptionFlags::required_input, &meshio));
+	options.add(make_opt( ref_filename, "ref-mask", 'r', "reference binary mask", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-mesh", 'o', "output mesh", CCmdOptionFlags::required_output, &meshio));
 	
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

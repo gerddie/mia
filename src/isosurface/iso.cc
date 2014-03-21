@@ -72,8 +72,8 @@ int do_main (int argc, char * argv[])
 
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
-	options.add(make_opt(  in_filename, "in-image", 'i', "input image", CCmdOption::required, &imageio )); 
-	options.add(make_opt(  out_filename, "out-image", 'o', "output mesh", CCmdOption::required, &meshio )); 
+	options.add(make_opt(  in_filename, "in-image", 'i', "input image", CCmdOptionFlags::required_input, &imageio )); 
+	options.add(make_opt(  out_filename, "out-image", 'o', "output mesh", CCmdOptionFlags::required_output, &meshio )); 
 
 	options.set_group("Image options"); 
 	options.add(make_opt(  iso_value, "iso-value", 's', "iso-value of iso surface to be extracted")); 

@@ -120,13 +120,13 @@ int do_main(int argc, char *argv[])
 	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 	options.set_group("File-IO"); 
-	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required, &imageio ));
-	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required, &imageio ));
+	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOptionFlags::required_input, &imageio ));
+	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOptionFlags::required_input, &imageio ));
 	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", 
-			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_output, &C3DTransformationIOPluginHandler::instance()));
 
 	options.add(make_opt(deformed_filename, "deformed-image", 'd', "save deformed image", 
-			     CCmdOption::not_required, &imageio)); 
+			     CCmdOptionFlags::output, &imageio)); 
 
 
 	options.set_group("Registration parameters"); 

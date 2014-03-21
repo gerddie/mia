@@ -48,7 +48,7 @@ int do_main( int argc, char *argv[] )
 	
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
-			      CCmdOption::required, &imageio3d));
+			      CCmdOptionFlags::required_input, &imageio3d));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

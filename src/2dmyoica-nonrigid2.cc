@@ -188,8 +188,7 @@ int do_main( int argc, char *argv[] )
 	
 	
 	options.set_group("\nRegistration"); 
-	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization", 
-			      CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
+	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
 				    " gets divided by --c-rate-divider with every pass"));

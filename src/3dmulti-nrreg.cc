@@ -59,7 +59,7 @@ int do_main(int argc, char **argv)
 	float epsilon = 0.01;
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", 
-			      CCmdOption::required));
+			      CCmdOptionFlags::required_output));
 	options.add(make_opt( regmodel, "regmodel", 'm', "registration model"));
 	options.add(make_opt( timestep, "timestep", 't', "time setp"));
 	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size"));

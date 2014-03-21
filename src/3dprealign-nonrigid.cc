@@ -341,10 +341,10 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nFile-IO");
 	options.add(make_opt( in_filename, "in-file", 'i', 
 			      "input images following the naming pattern nameXXXX.ext", 
-			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_input, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
 			      "file name base for registered files given as C-format string", 
-			      CCmdOption::required, &C3DImageIOPluginHandler::instance())); 
+			      CCmdOptionFlags::required_output, &C3DImageIOPluginHandler::instance())); 
 	options.add(make_opt(params.save_ref,"save-references", 0, 
 				   "Save synthetic references to files refXXXX.v")); 
 

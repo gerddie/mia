@@ -45,8 +45,8 @@ int do_main(int argc, char **argv)
 
 	const auto& vfio =C3DVFIOPluginHandler::instance(); 
 
-	options.add(make_opt( vf1_filename, "in-file-1", '1', "input vector field 1", CCmdOption::required, &vfio));
-	options.add(make_opt( vf2_filename, "in-file-2", '2', "input vector field 2", CCmdOption::required, &vfio));
+	options.add(make_opt( vf1_filename, "in-file-1", '1', "input vector field 1", CCmdOptionFlags::required_input, &vfio));
+	options.add(make_opt( vf2_filename, "in-file-2", '2', "input vector field 2", CCmdOptionFlags::required_input, &vfio));
 	options.add(make_opt( delta, "delta", 'd', "Maximum difference between vector to be ignored"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

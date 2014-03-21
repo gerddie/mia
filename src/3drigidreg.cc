@@ -62,11 +62,17 @@ int do_main( int argc, char *argv[] )
 	size_t mg_levels = 3;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
-	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
-	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
+	options.set_group("File I/O"); 
+	options.add(make_opt( src_filename, "in", 'i', "test image", 
+			      CCmdOptionFlags::required_input, &C3DImageIOPluginHandler::instance()));
+	options.add(make_opt( ref_filename, "ref", 'r', "reference image", 
+			      CCmdOptionFlags::required_input, &C3DImageIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out", 'o', "registered output image", 
+			      CCmdOptionFlags::required_output, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( trans_filename, "trans", 't', "transformation output file name", 
-			      CCmdOption::not_required, &C3DTransformationIOPluginHandler::instance() ));
+			      CCmdOptionFlags::output, &C3DTransformationIOPluginHandler::instance() ));
+
+	
 	options.add(make_opt( cost_function, "ssd", "cost", 'c', "cost function")); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multigrid levels"));
 	options.add(make_opt( minimizer, "gsl:opt=simplex,step=1.0", "optimizer", 'O', "Optimizer used for minimization"));

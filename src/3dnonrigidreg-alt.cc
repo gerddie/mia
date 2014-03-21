@@ -62,7 +62,7 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( trans_filename, "out-transform", 'o', "output transformation", 
-			      CCmdOption::required, &transform3dio));
+			      CCmdOptionFlags::required_output, &transform3dio));
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "spline:rate=10", "transForm", 'f', "transformation type"));

@@ -49,8 +49,8 @@ int do_main( int argc, char *argv[] )
 	const auto& meshio = CMeshIOPluginHandler::instance(); 
 
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename, "in-file", 'i', "input mesh to be filtered", CCmdOption::required, &meshio));
-	options.add(make_opt( out_filename, "out-file", 'o', "output mesh that have been filtered", CCmdOption::required, &meshio));
+	options.add(make_opt( in_filename, "in-file", 'i', "input mesh to be filtered", CCmdOptionFlags::required_input, &meshio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output mesh that have been filtered", CCmdOptionFlags::required_output, &meshio));
 	options.set_group(g_help_optiongroup); 
 	options.add(make_help_opt( "help-filters", 0,
 				   "give some help about the filter plugins", 

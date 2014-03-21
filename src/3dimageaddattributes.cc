@@ -57,11 +57,11 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) with the added attributes", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( attr_image, "attr", 'a', "2D image providing the attributes", 
-			      CCmdOption::required, &image2dio));
+			      CCmdOptionFlags::required_input, &image2dio));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

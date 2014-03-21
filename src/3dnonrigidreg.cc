@@ -60,13 +60,13 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	options.set_group("IO"); 
 	options.add(make_opt( src_filename, "in", 'i', "test image", 
-			      CCmdOption::required, &image3dio));
+			      CCmdOptionFlags::required_input, &image3dio));
 	options.add(make_opt( ref_filename, "ref", 'r', "reference image", 
-			      CCmdOption::required, &image3dio));
+			      CCmdOptionFlags::required_input, &image3dio));
 	options.add(make_opt( out_filename, "out", 'o', "registered output image", 
-			      CCmdOption::required, &image3dio));
+			      CCmdOptionFlags::required_output, &image3dio));
 	options.add(make_opt( trans_filename, "trans", 't', "output transformation", 
-			      CCmdOption::not_required, &transform3dio));
+			      CCmdOptionFlags::output, &transform3dio));
 	
 	options.set_group("Registration"); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));

@@ -55,8 +55,8 @@ int do_main(int argc, char **argv)
         
 	const auto& lmxio = C3DLandmarklistIOPluginHandler::instance();
 
-	options.add(make_opt( src1_filename, "in-file-1", 'i', "input landmark set 1", CCmdOption::required, &lmxio));
-	options.add(make_opt( src2_filename, "in-file-2", 'o', "input landmark set 2", CCmdOption::required, &lmxio));
+	options.add(make_opt( src1_filename, "in-file-1", 'i', "input landmark set 1", CCmdOptionFlags::required_input, &lmxio));
+	options.add(make_opt( src2_filename, "in-file-2", 'o', "input landmark set 2", CCmdOptionFlags::required_input, &lmxio));
 
 
         if (options.parse(argc, argv) != CCmdOptionList::hr_no)

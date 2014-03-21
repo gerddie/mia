@@ -59,9 +59,9 @@ int do_main(int argc, char **argv)
 	const auto& imageio = C3DImageIOPluginHandler::instance();
 	const auto& transio = C3DTransformationIOPluginHandler::instance(); 
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required, &imageio));
-	options.add(make_opt( out_filename, "out-file", 'o', "transformed image", CCmdOption::required, &imageio));
-	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", CCmdOption::required, &transio));
+	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "transformed image", CCmdOptionFlags::required_output, &imageio));
+	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", CCmdOptionFlags::required_input, &transio));
 	options.add(make_opt( interpolator_kernel, "interpolator", 'p', 
 			      "override the interpolator provided by the transformation"));
 	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided "

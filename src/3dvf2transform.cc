@@ -54,9 +54,9 @@ int do_main(int argc, char **argv)
 	PSplineBoundaryCondition image_boundary; 
 
 	options.add(make_opt( src_filename, "in-file", 'i', "input transformation ", 
-			      CCmdOption::required, &C3DVFIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_input, &C3DVFIOPluginHandler::instance()));
 	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", 
-			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_output, &C3DTransformationIOPluginHandler::instance()));
 
 	options.add(make_opt( image_interpolator, "bspline:d=3", "imgkernel", 'k', "image interpolator kernel which is "
 			      "used when the transformation is applied to an image"));

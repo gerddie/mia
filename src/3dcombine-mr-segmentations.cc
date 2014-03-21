@@ -50,11 +50,11 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input probability images. The number of "
 			      "mask images must correspond to the number of probability images given here.", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_input, &imageio));
 
 	
 	options.add(make_opt( out_filename, "out-file", 'o', "output image that contains the labeling.", 
-			      CCmdOption::required, &imageio));
+			      CCmdOptionFlags::required_output, &imageio));
 
 	if (options.parse(argc, argv, "masks", &imageio) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

@@ -163,12 +163,12 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', 
 			      "input point set, if this parameter is given a sparse evaluation "
 			      "of the quantity will be done, otherwise the quantity is evalutated "
-			      "for each grid point of the transformation range."));
+			      "for each grid point of the transformation range.", CCmdOptionFlags::input));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-			      "output strains file, for a format description see above.", CCmdOption::required)); 
+			      "output strains file, for a format description see above.", CCmdOptionFlags::required_output)); 
 	
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation of which the quantity will be evaluated.", 
-			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance())); 
+			      CCmdOptionFlags::required_input, &C3DTransformationIOPluginHandler::instance())); 
 
 	options.set_group("\nParameters"); 
 	options.add(make_opt( quantity, tqmap, "quantity", 'q', 

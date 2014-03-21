@@ -139,14 +139,12 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", 			      
-			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_input, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( registered_filebase, "out-file", 'o', "file name for registered files", 
-			      CCmdOption::not_required, &C3DImageIOPluginHandler::instance())); 
+			      CCmdOptionFlags::output, &C3DImageIOPluginHandler::instance())); 
 	
 	options.set_group("\nRegistration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization", 
-			      CCmdOption::not_required, &CMinimizerPluginHandler::instance()
-			    ));
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 

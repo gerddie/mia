@@ -134,7 +134,7 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for the vector field", 
-			      CCmdOption::required, &C3DVFIOPluginHandler::instance()));
+			      CCmdOptionFlags::required_output, &C3DVFIOPluginHandler::instance()));
 	options.add(make_opt( Size, "size", 's', "size of the vector field"));
 	options.add(make_opt( fieldtype, "ftype", 'y', "vector field type")); 
 	options.add(make_opt( funfactor, "fun", 'f', "just some parameter to vary the field ;-)")); 

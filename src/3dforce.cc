@@ -73,9 +73,9 @@ int do_main(int argc, char **argv)
 
 	const auto& imageio = C3DImageIOPluginHandler::instance();
 
-	options.add(make_opt( src_filename, "src-file", 'i', "input image", CCmdOption::required, &imageio));
-	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required, &imageio));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "output force norm image", CCmdOption::required, &imageio));
+	options.add(make_opt( src_filename, "src-file", 'i', "input image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "output force norm image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( cost, "ssd", "cost", 'c', "cost function to use"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

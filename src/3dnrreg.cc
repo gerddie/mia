@@ -60,10 +60,10 @@ int do_main(int argc, char **argv)
 
 	const C3DImageCostPluginHandler::Instance&  icph = C3DImageCostPluginHandler::instance();
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image (floating image)", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
-	options.add(make_opt( def_filename, "def-file", 'd', "deformed inpout image"));
+	options.add(make_opt( src_filename, "in-file", 'i', "input image (floating image)", CCmdOptionFlags::required_input));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image", CCmdOptionFlags::required_input));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOptionFlags::required_output));
+	options.add(make_opt( def_filename, "def-file", 'd', "deformed output image", CCmdOptionFlags::output));
 	options.add(make_opt( regmodel, "regmodel", 'm', "registration model"));
 	options.add(make_opt( timestep, "timestep", 't', "time setp"));
 	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size"));
