@@ -56,7 +56,7 @@ mia::P2DImage C2DTee::do_filter(mia::P2DImage image) const
 C2DTeeFilterPluginFactory::C2DTeeFilterPluginFactory(): 
 	C2DFilterPlugin("tee")
 {
-	add_parameter("file", new CStringParameter(m_filename, true,
+	add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_output,
 						   "name of the output file to save the image too.", 
 						   &C2DImageIOPluginHandler::instance()));
 }

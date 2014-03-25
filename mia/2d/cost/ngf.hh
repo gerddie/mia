@@ -106,12 +106,15 @@ private:
 
 class C2DNFGImageCostPlugin: public mia::C2DImageCostPlugin {
 public:
+	enum ESubTypes {st_unknown, st_delta, st_delta_scalar, st_scalar, st_cross};
+
 	C2DNFGImageCostPlugin();
 private:
+
 	virtual mia::C2DImageCost *do_create()const;
 
 	const std::string do_get_descr()const;
-	std::string m_kernel;
+	ESubTypes m_kernel;
 };
 
 NS_END

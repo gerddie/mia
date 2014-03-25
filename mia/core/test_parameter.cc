@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_params )
 
 	CIntParameter   param_int(int_val, -2, 5, true, "an integer value");
 	CFloatParameter param_float(float_val, -10, 200, true, "a float value");
-	CStringParameter param_string(string_val, true, "a string value");
+	CStringParameter param_string(string_val, CCmdOptionFlags::required, "a string value");
 	CBoolParameter   param_bool(bool_val, false, "a bool value");
 
 	BOOST_CHECK_THROW( CIntParameter(int_val, 5, -2, false, "impossible"), std::invalid_argument);

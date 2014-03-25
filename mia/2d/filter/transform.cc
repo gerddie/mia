@@ -40,7 +40,7 @@ mia::P2DImage C2DTransform::do_filter(const mia::C2DImage& image) const
 C2DTransformFilterPluginFactory::C2DTransformFilterPluginFactory(): 
 	C2DFilterPlugin("transform")
 {
-	add_parameter("file", new CStringParameter(m_filename, true,
+	add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_input,
 						   "Name of the file containing the transformation.", 
 						   &C2DTransformationIOPluginHandler::instance()));
 }

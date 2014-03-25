@@ -160,7 +160,7 @@ C2DRGGStackFilterFactory::C2DRGGStackFilterFactory():
 	m_depth(5), 
 	m_gradient_thresh(4.0)
 {
-	add_parameter("map", new CStringParameter(m_seed_map, true, "class probability map"));
+	add_parameter("map", new CStringParameter(m_seed_map, CCmdOptionFlags::required_input, "class probability map"));
 	add_parameter("st", new CFloatParameter(m_seed_thresh, 0.0, 1.0, 
 					      false, "seed probability threshhold"));
 	add_parameter("depth", new CIntParameter(m_depth, 1, 30, 

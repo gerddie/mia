@@ -27,13 +27,13 @@ using namespace std;
 
 C3DImageFullCost::C3DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
-				   const std::string& cost, 
+				   P3DImageCost cost, 
 				   double weight, 
 				   bool debug):
 	C3DFullCost(weight), 
 	m_src_key(C3DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C3DImageIOPluginHandler::instance().load_to_pool(ref)), 
-	m_cost_kernel(C3DImageCostPluginHandler::instance().produce(cost)), 
+	m_cost_kernel(cost), 
 	m_debug(debug)
 {
 	assert(m_cost_kernel); 
@@ -148,7 +148,7 @@ private:
 	const std::string do_get_descr() const;
 	std::string m_src_name;
 	std::string m_ref_name;
-	std::string m_cost_kernel;
+	P3DImageCost m_cost_kernel;
 	bool m_debug; 
 }; 
 
@@ -156,12 +156,11 @@ C3DImageFullCostPlugin::C3DImageFullCostPlugin():
 	C3DFullCostPlugin("image"), 
 	m_src_name("src.@"), 
 	m_ref_name("ref.@"), 
-	m_cost_kernel("ssd"), 
 	m_debug(false)
 {
-	add_parameter("src", new CStringParameter(m_src_name, false, "Study image", &C3DImageIOPluginHandler::instance()));
-	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image", &C3DImageIOPluginHandler::instance()));
-	add_parameter("cost", new CStringParameter(m_cost_kernel, false, "Cost function kernel"));
+	add_parameter("src", new CStringParameter(m_src_name, CCmdOptionFlags::input, "Study image", &C3DImageIOPluginHandler::instance()));
+	add_parameter("ref", new CStringParameter(m_ref_name, CCmdOptionFlags::input, "Reference image", &C3DImageIOPluginHandler::instance()));
+	add_parameter("cost", make_param(m_cost_kernel, "ssd", false, "Cost function kernel"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 

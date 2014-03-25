@@ -183,38 +183,41 @@ double C3DNFGImageCost::do_evaluate_force(const mia::C3DImage& a,
 	return 0.5 * sum;
 }
 
+const TDictMap<C3DNFGImageCostPlugin::ESubTypes>::Table lut[] = {
+	{"ds", C3DNFGImageCostPlugin::st_delta_scalar, "square of scaled difference"},
+	{"dot", C3DNFGImageCostPlugin::st_scalar, "scalar product kernel"},
+	{"cross", C3DNFGImageCostPlugin::st_cross, "cross product kernel"},
+	{0, C3DNFGImageCostPlugin::st_unknown, ""}
+};
+const TDictMap<C3DNFGImageCostPlugin::ESubTypes> subtypemap(lut);
+
 C3DNFGImageCostPlugin::C3DNFGImageCostPlugin():
 	C3DImageCostPlugin("ngf"),
-	m_kernel("ds")
+	m_kernel(st_delta_scalar)
 {
 	TRACE("C3DNFGImageCostPlugin::C3DNFGImageCostPlugin()");
+
+
+
 	add_parameter("eval",
-		      new CStringParameter(m_kernel, false, "plugin subtype (sq, ds,dot,cross)"));
+		      new CDictParameter<ESubTypes>(m_kernel, subtypemap, "plugin subtype (sq, ds,dot,cross)"));
 
 }
 
-enum ESubTypes {st_unknown, st_delta_scalar, st_scalar, st_cross};
 
 C3DImageCost *C3DNFGImageCostPlugin::do_create()const
 {
 	TRACE("C3DNFGImageCostPlugin::do_create");
 
-	const TDictMap<ESubTypes>::Table lut[] = {
-		{"ds", st_delta_scalar, "square of scaled difference"},
-		{"dot", st_scalar, "scalar product kernel"},
-		{"cross", st_cross, "cross product kernel"},
-		{0, st_unknown, ""}
-	};
-	const TDictMap<ESubTypes> subtypemap(lut);
 
 	PEvaluator eval;
-	switch (subtypemap.get_value(m_kernel.c_str())) {
+	switch (m_kernel) {
 	case st_delta_scalar: eval.reset(new FDeltaScalar()); break;
 	case st_scalar: eval.reset(new FScalar()); break;
 	case st_cross: eval.reset(new FCross()); break;
 	default:
 		throw invalid_argument(string("C3DNFGImageCostPlugin: unknown cost sub-type '")
-				       +m_kernel+"'");
+				       +subtypemap.get_name(m_kernel)+"'");
 	}
 	return new C3DNFGImageCost(eval);
 }

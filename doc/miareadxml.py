@@ -268,6 +268,12 @@ class CParam:
         self.default = node.get("default")
         self.required = int(node.get("required")) 
         self.text = node.text
+        self.flags = []
+
+        for child in node.iter("flags"):
+            self.flags = self.flags + string.split(child.text)
+            if child.tail is not None:
+                self.text = self.text + child.tail
 
         m = re.search('[,=:]', self.default) 
             # if there is a ',' in the text make clean that it needs to be escaped  
@@ -277,7 +283,13 @@ class CParam:
     def print_man(self):
         print ".I"
         print self.name
-        if self.required:
+        if len(self.flags) > 0:
+            termtext = "=(" + self.flags[0]
+            for f in self.flags[1:]:
+                termtext = termtext + ',' + f
+            termtext = termtext + ", %s)"
+            print termtext % (self.type)
+        elif self.required:
             print "= (required, %s) " % (self.type)
         else:
             print "= %s (%s) " % (escape_dash(self.default), self.type)
@@ -296,7 +308,12 @@ class CParam:
         e = etree.SubElement(row, "entry", align="center", valign="top")
         e.text = self.type
         e = etree.SubElement(row, "entry", align="center", valign="top")
-        if self.required: 
+        if len(self.flags) > 0:
+            e.text = "(" + self.flags[0]
+            for f in self.flags[1:]:
+                e.text = e.text + ',' + f
+            e.text = e.text + ')'
+        elif self.required: 
             e.text = "(required)"
         else:
             e.text = self.default

@@ -86,7 +86,7 @@ TImageCombinerFilterPlugin<Image>::TImageCombinerFilterPlugin():
 {
         typedef typename IOHandler_of<Image>::type IOHandler; 
         this->add_parameter("op", make_param(m_combiner, "",  true, "Image combiner to be applied to the images")); 
-        this->add_parameter("image", new CStringParameter(m_other_image, true, "second image that is needed in the combiner", 
+        this->add_parameter("image", new CStringParameter(m_other_image, CCmdOptionFlags::required_input, "second image that is needed in the combiner", 
                                                           &IOHandler::instance())); 
         this->add_parameter("reverse", new CBoolParameter(m_reverse, false, "reverse the order in which the images passed to the combiner")); 
 }

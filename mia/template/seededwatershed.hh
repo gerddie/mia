@@ -291,7 +291,7 @@ TSeededWSFilterPlugin<dim>::TSeededWSFilterPlugin():
 	m_with_borders(false), 
 	m_input_is_gradient(false)
 {
-	this->add_parameter("seed", new CStringParameter(m_seed_image_file, true, 
+	this->add_parameter("seed", new CStringParameter(m_seed_image_file, CCmdOptionFlags::required_input, 
 						   "seed input image containing the lables for the initial regions"));
 	this->add_parameter("n", make_param(m_neighborhood, "sphere:r=1", false, "Neighborhood for watershead region growing")); 
 	this->add_parameter("mark", new CBoolParameter(m_with_borders, false, "Mark the segmented watersheds with a special gray scale value")); 

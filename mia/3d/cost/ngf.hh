@@ -80,12 +80,13 @@ private:
 
 class C3DNFGImageCostPlugin: public mia::C3DImageCostPlugin {
 public:
+	enum ESubTypes {st_unknown, st_delta_scalar, st_scalar, st_cross};
 	C3DNFGImageCostPlugin();
 private:
 	virtual mia::C3DImageCost *do_create()const;
 
 	const std::string do_get_descr()const;
-	std::string m_kernel;
+	ESubTypes m_kernel;
 };
 
 

@@ -56,14 +56,17 @@ mia::P3DImage C3DTransform::do_filter(const mia::C3DImage& image) const
 C3DTransformFilterPluginFactory::C3DTransformFilterPluginFactory(): 
 	C3DFilterPlugin("transform")
 {
-	add_parameter("file", new CStringParameter(m_filename, true,
+	add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_input,
 						   "Name of the file containing the transformation.", 
 						   &C3DTransformationIOPluginHandler::instance()));
 
-	add_parameter("imgkernel", new CStringParameter(m_interpolator_kernel, false, 
-							"override image interpolator kernel"));
-	add_parameter("imgboundary", new CStringParameter(m_interpolator_bc, false, 
-							  "override image interpolation boundary conditions")); 
+	
+	add_parameter("imgkernel", new CStringParameter(m_interpolator_kernel, CCmdOptionFlags::none, 
+							"override image interpolator kernel", 
+							&CSplineKernelPluginHandler::instance()));
+	add_parameter("imgboundary", new CStringParameter(m_interpolator_bc, CCmdOptionFlags::none, 
+							  "override image interpolation boundary conditions", 
+							  &CSplineBoundaryConditionPluginHandler::instance())); 
  
 
 }

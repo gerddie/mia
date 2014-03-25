@@ -147,7 +147,7 @@ C3DMorphFilterFactory::C3DMorphFilterFactory(const char *name):
 	m_hint("black")
 {
 	add_parameter("shape", make_param(m_shape, "sphere:r=2", false, "structuring element"));
-	add_parameter("hint", new CStringParameter(m_hint, false, "a hint at the main image content (black|white)"));
+	add_parameter("hint", new CStringParameter(m_hint, CCmdOptionFlags::none, "a hint at the main image content (black|white)"));
 }
 
 

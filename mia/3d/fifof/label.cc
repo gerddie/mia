@@ -269,7 +269,7 @@ C2DLabelFifoFilterPlugin::C2DLabelFifoFilterPlugin():
 {
 	add_parameter("n", make_param(m_neighbourhood, "4n", false, 
 				      "2D neighbourhood shape to define connectedness"));
-	add_parameter("map", new CStringParameter(m_mapfile, true, 
+	add_parameter("map", new CStringParameter(m_mapfile, CCmdOptionFlags::required_input, 
 						  "Mapfile to save label numbers that are joined"));
 }
 

@@ -188,7 +188,7 @@ C2DRegiongrowFifoFilterPlugin::C2DRegiongrowFifoFilterPlugin():
 	m_class(2),
 	m_depth(10)
 {
-	add_parameter("map", new CStringParameter(m_map, true, "seed class map"));
+	add_parameter("map", new CStringParameter(m_map, CCmdOptionFlags::required_input, "seed class map"));
 	add_parameter("low", new CFloatParameter(m_low, .0f, 1.0f, false,
 						 "low threshold for acceptance probability"));
 	add_parameter("seed", new CFloatParameter(m_seed, .0f, 1.0f, false,

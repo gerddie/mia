@@ -102,7 +102,7 @@ CDownscale::result_type CDownscale::do_filter(const C3DImage& image) const
 
 C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 	C3DFilterPlugin("downscale"),
-	m_b(1,1,1),
+	m_b(1,1,1), 
 	m_filter("gauss")
 {
 	add_parameter("bx", new CUIntParameter(m_b.x, 1,
@@ -119,10 +119,11 @@ C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 
 	add_parameter("b", new C3DBoundsParameter(m_b, false, "blocksize"));
 
-	add_parameter("kernel", new CStringParameter(m_filter, false,
-						     "smoothing filter kernel to be applied "
-						     "(filter width is determined based on the scaling factor)", 
-						     &C1DSpacialKernelPluginHandler::instance()));
+
+	add_parameter("kernel", new CStringParameter(m_filter, CCmdOptionFlags::none, 
+						     "smoothing filter kernel to be applied, the "
+						     "size of the filter is estimated based on the blocksize.", 
+						     &C1DSpacialKernelPluginHandler::instance())); 
 }
 
 C3DFilter *C3DDownscaleFilterPlugin::do_create()const

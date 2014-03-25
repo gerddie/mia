@@ -134,8 +134,9 @@ C2DMaskImageFilterFactory::C2DMaskImageFilterFactory():
 	m_fill(C2DMask::f_min), 
 	m_inverse(false)
 {
-	add_parameter("input", new CStringParameter(m_mask_filename, true, "second input image file name", 
-			      &C2DImageIOPluginHandler::instance()));
+	add_parameter("input", new CStringParameter(m_mask_filename, CCmdOptionFlags::required_input, 
+						    "second input image file name", 
+						    &C2DImageIOPluginHandler::instance()));
 	add_parameter("fill", new CDictParameter<C2DMask::EFill>(m_fill, TDictMap<C2DMask::EFill>( FillStyleTable), 
 								 "fill style for pixels outside of the mask"));
 	add_parameter("inverse", new CBoolParameter(m_inverse, false, "set to true to use the inverse of the mask for masking"));
