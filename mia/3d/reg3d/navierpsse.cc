@@ -514,7 +514,6 @@ C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 	m_epsilon(0.0001),
 	m_maxiter(40)
 {
-	typedef CParamList::PParameter PParameter;
 	add_parameter("mu", new CFloatParameter(m_mu, 0.0, numeric_limits<float>::max(),
 							   false, "isotropic compliance"));
 	add_parameter("lambda", new CFloatParameter(m_lambda, 0.0, numeric_limits<float>::max(),

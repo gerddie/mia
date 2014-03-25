@@ -39,7 +39,7 @@ mia::P2DImage C2DLoad::do_filter(const mia::C2DImage& MIA_PARAM_UNUSED(image)) c
 C2DLoadFilterPluginFactory::C2DLoadFilterPluginFactory(): 
 	C2DFilterPlugin("load")
 {
-	add_parameter("file", new CStringParameter(m_filename, true,
+	add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_input,
 						   "name of the input file to load from.", 
 						   &C2DImageIOPluginHandler::instance()));
 }

@@ -128,15 +128,14 @@ std::string CParameter::get_default_value() const
 	return do_get_default_value(); 
 }
 
-
-CStringParameter::CStringParameter(std::string& value, bool required, const char *descr, 
+CStringParameter::CStringParameter(std::string& value,CCmdOptionFlags flags , const char *descr, 
 				   const CPluginHandlerBase *plugin_hint):
-	CParameter(__type_descr<std::string>::value, required, descr),
+	CParameter(__type_descr<std::string>::value, has_flag(flags, CCmdOptionFlags::required), descr),
 	m_value(value), 
 	m_default_value(value), 
+	m_flags(flags), 
 	m_plugin_hint(plugin_hint)
 {
-	
 }
 
 void CStringParameter::do_reset()
@@ -174,6 +173,18 @@ void CStringParameter::do_get_help_xml(xmlpp::Element& self) const
 		auto dict = self.add_child(type); 
 		dict->set_attribute("name", m_plugin_hint->get_descriptor());
 		self.set_attribute("type", type); 
+	}
+	if (m_flags != CCmdOptionFlags::none) {
+		auto flags = self.add_child("flags");
+		
+		ostringstream ss; 
+		if (has_flag(m_flags, CCmdOptionFlags::input))
+			ss << "input "; 
+		if (has_flag(m_flags, CCmdOptionFlags::output))
+			ss << "output "; 
+		if (has_flag(m_flags, CCmdOptionFlags::required))
+			ss << "required ";
+		flags->set_child_text(ss.str());
 	}
 }
 

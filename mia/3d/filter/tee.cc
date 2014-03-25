@@ -56,7 +56,7 @@ mia::P3DImage C3DTee::do_filter(mia::P3DImage image) const
 C3DTeeFilterPluginFactory::C3DTeeFilterPluginFactory(): 
 	C3DFilterPlugin("tee")
 {
-	add_parameter("file", new CStringParameter(m_filename, true,
+	add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_output,
 						   "name of the output file to save the image too.", 
 						   &C3DImageIOPluginHandler::instance()));
 }

@@ -50,7 +50,8 @@ void try_parsing_and_setting(const char *options, const params& expect)
 	pm["kill"] =  CParamList::PParameter(new CBoolParameter(read.kill, false, "a bool value"));
 	pm["min"] =   CParamList::PParameter(new CFloatParameter(read.min, -100, 20, true, "a float value"));
 	pm["max"] =   CParamList::PParameter(new CFloatParameter(read.max, -10, 200, true, "a float value"));
-	pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, true, "a string value"));
+	pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, CCmdOptionFlags::required,
+								  "a string value"));
 	pm["n"] =     CParamList::PParameter(new CIntParameter(read.n, -200, 100, true, "an int value"));
 
 	CComplexOptionParser cpo(options);
@@ -73,7 +74,7 @@ void try_parsing_and_setting(const char *options, const params& expect, params r
 	pm["kill"] =  CParamList::PParameter(new CBoolParameter(read.kill, false, "a bool value"));
 	pm["min"] =   CParamList::PParameter(new CFloatParameter(read.min, -100, 20, false, "a float value"));
 	pm["max"] =   CParamList::PParameter(new CFloatParameter(read.max, -10, 200, false, "a float value"));
-	pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, false, "a string value"));
+	pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, CCmdOptionFlags::none, "a string value"));
 	pm["n"] =     CParamList::PParameter(new CIntParameter(read.n, -200, 100, false, "an int value"));
 
 	CComplexOptionParser cpo(options);
@@ -155,7 +156,7 @@ BOOST_AUTO_TEST_CASE( test_reset )
 		pm["kill"] =  CParamList::PParameter(new CBoolParameter(read.kill, false, "a bool value"));
 		pm["min"] =   CParamList::PParameter(new CFloatParameter(read.min, -100, 20, false, "a float value"));
 		pm["max"] =   CParamList::PParameter(new CFloatParameter(read.max, -10, 200, false, "a float value"));
-		pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, false, "a string value"));
+		pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, CCmdOptionFlags::none, "a string value"));
 		pm["n"] =     CParamList::PParameter(new CIntParameter(read.n, -200, 100, false, "an int value"));
 		
 		CComplexOptionParser cpo("plugin:kill=0,min=1.1,nana=ping,max=3.1,n=1");

@@ -32,7 +32,7 @@ class EXPORT C3DImageFullCost : public C3DFullCost {
 public: 
 	C3DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
-			 const std::string& cost, 
+			 P3DImageCost cost, 
 			 double weight, 
 			 bool debug); 
 private: 

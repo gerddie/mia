@@ -220,40 +220,42 @@ double C2DNFGImageCost::do_evaluate_force(const mia::C2DImage& a,
 	return 0.5 * sum / ng_a.size();
 }
 
+const TDictMap<C2DNFGImageCostPlugin::ESubTypes>::Table lut[] = {
+	{"sq", C2DNFGImageCostPlugin::st_delta, "square of difference"},
+	{"ds", C2DNFGImageCostPlugin::st_delta_scalar, "square of scaled difference"},
+	{"dot", C2DNFGImageCostPlugin::st_scalar, "scalar product kernel"},
+	{"cross", C2DNFGImageCostPlugin::st_cross, "cross product kernel"},
+	{0, C2DNFGImageCostPlugin::st_unknown, ""}
+	};
+const TDictMap<C2DNFGImageCostPlugin::ESubTypes> subtypemap(lut);
+
+
 C2DNFGImageCostPlugin::C2DNFGImageCostPlugin():
 	C2DImageCostPlugin("ngf"),
-	m_kernel("ds")
+	m_kernel(st_delta_scalar)
 {
+
+	
 	TRACE("C2DNFGImageCostPlugin::C2DNFGImageCostPlugin()");
-	add_parameter("eval",
-		      new CStringParameter(m_kernel, false, "plugin subtype (sq, ds,dot,cross)"));
+	add_parameter("eval", new CDictParameter<ESubTypes>(m_kernel, subtypemap, "plugin subtype"));
 
 }
 
-enum ESubTypes {st_unknown, st_delta, st_delta_scalar, st_scalar, st_cross};
 
 C2DImageCost *C2DNFGImageCostPlugin::do_create()const
 {
 	TRACE("C2DNFGImageCostPlugin::do_create");
 
-	const TDictMap<ESubTypes>::Table lut[] = {
-		{"sq", st_delta, "square of difference"},
-		{"ds", st_delta_scalar, "square of scaled difference"},
-		{"dot", st_scalar, "scalar product kernel"},
-		{"cross", st_cross, "cross product kernel"},
-		{0, st_unknown, ""}
-	};
-	const TDictMap<ESubTypes> subtypemap(lut);
 
 	PEvaluator eval;
-	switch (subtypemap.get_value(m_kernel.c_str())) {
+	switch (m_kernel) {
 	case st_delta: eval.reset(new CCostEvaluatorSQDelta()); break;
 	case st_delta_scalar: eval.reset(new CCostEvaluatorDeltaScalar()); break;
 	case st_scalar: eval.reset(new CCostEvaluatorScalar()); break;
 	case st_cross: eval.reset(new CCostEvaluatorCross()); break;
 	default:
 		throw invalid_argument(string("C2DNFGImageCostPlugin: unknown cost sub-type '")
-				       +m_kernel+"'");
+				       +subtypemap.get_name(m_kernel)+"'");
 	}
 	return new C2DNFGImageCost(eval);
 }

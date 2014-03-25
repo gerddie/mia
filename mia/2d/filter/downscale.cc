@@ -98,7 +98,7 @@ CDownscale::result_type CDownscale::do_filter(const C2DImage& image) const
 
 C2DDownscaleFilterPlugin::C2DDownscaleFilterPlugin():
 	C2DFilterPlugin("downscale"),
-	m_b(1,1),
+	m_b(1,1), 
 	m_filter("gauss")
 {
 	add_parameter("bx", new CUIntParameter(m_b.x, 1,
@@ -111,10 +111,10 @@ C2DDownscaleFilterPlugin::C2DDownscaleFilterPlugin():
 
 	add_parameter("b", new C2DBoundsParameter(m_b, false, "blocksize"));
 
-	add_parameter("kernel", new CStringParameter(m_filter, false,
+	add_parameter("kernel", new CStringParameter(m_filter, CCmdOptionFlags::none, 
 						     "smoothing filter kernel to be applied, the "
 						     "size of the filter is estimated based on the blocksize.", 
-						     &C1DSpacialKernelPluginHandler::instance()));
+						     &C1DSpacialKernelPluginHandler::instance())); 
 }
 
 C2DFilter *C2DDownscaleFilterPlugin::do_create()const

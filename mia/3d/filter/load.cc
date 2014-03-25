@@ -39,7 +39,7 @@ mia::P3DImage C3DLoad::do_filter(const mia::C3DImage& MIA_PARAM_UNUSED(image)) c
 C3DLoadFilterPluginFactory::C3DLoadFilterPluginFactory(): 
 	C3DFilterPlugin("load")
 {
-	add_parameter("file", new CStringParameter(m_filename, true,
+	add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_input,
 						   "name of the input file to load from.", 
 						   &C3DImageIOPluginHandler::instance()));
 }

@@ -30,7 +30,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/handlerbase.hh>
 #include <mia/core/factory_trait.hh>
-
+#include <mia/core/cmdoptionflags.hh>
 
 namespace xmlpp {
 	class Element; 
@@ -396,8 +396,8 @@ private:
 /// an string parameter
 class EXPORT_CORE CStringParameter: public  CParameter {
 public: 
-	CStringParameter(std::string& value, bool required, const char *descr, 
-			 const CPluginHandlerBase *plugin_hint = NULL); 
+	CStringParameter(std::string& value, CCmdOptionFlags flags, const char *descr, 
+			 const CPluginHandlerBase *plugin_hint = nullptr); 
 
 private: 
 	virtual void do_reset();
@@ -412,6 +412,7 @@ private:
 
 	std::string& m_value;
 	std::string m_default_value; 
+	CCmdOptionFlags m_flags; 
 	const CPluginHandlerBase *m_plugin_hint; 
 }; 
 

@@ -72,7 +72,7 @@ typename C2DLabelMapFilter::result_type C2DLabelMapFilter::operator () (const Da
 C2DLabelMapFilterPlugin::C2DLabelMapFilterPlugin():
 	C2DFilterPlugin("labelmap")
 {
-	add_parameter("map", new CStringParameter(m_map, true, "Label mapping file")) ;
+	add_parameter("map", new CStringParameter(m_map, CCmdOptionFlags::required_input, "Label mapping file")) ;
 }
 
 
