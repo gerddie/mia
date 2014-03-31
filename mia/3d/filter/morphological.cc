@@ -23,6 +23,11 @@
 #include <boost/static_assert.hpp>
 #include <mia/3d/filter/morphological.hh>
 
+#include <mia/core/threadedmsg.hh>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
+
 NS_BEGIN(morph_3dimage_filter)
 
 NS_MIA_USE
@@ -43,28 +48,32 @@ struct __dispatch_dilate {
 	static T3DImage<T> *apply(const T3DImage<T>& image, const C3DShape& shape, bool /*black*/) {
 		const C3DBounds& size = image.get_size();
 
-		T3DImage<T> *result = new T3DImage<T>(image);
-
-		typename T3DImage<T>::const_iterator src_i = image.begin();
-		typename T3DImage<T>::iterator res_i = result->begin();
-
-		for (size_t z = 0; z < size.z; ++z)
-			for (size_t y = 0; y < size.y; ++y)
-				for (size_t x = 0; x < size.x; ++x,  ++src_i, ++res_i) {
-
-					C3DShape::const_iterator sb = shape.begin();
-					C3DShape::const_iterator se = shape.end();
-
-					while (sb != se) {
-						C3DBounds nl(x + sb->x, y + sb->y, z + sb->z);
-						if (nl < size) {
-							T val = image(nl);
-							if (*res_i < val )
-								*res_i = val;
+		T3DImage<T> *result = new T3DImage<T>(size, image);
+		copy(image.begin(), image.end(), result->begin()); 
+		
+		auto run_slice = [&size, &image, &shape, &result](const tbb::blocked_range<size_t>& range) {
+			for (auto z = range.begin(); z != range.end(); ++z){
+				auto src_i = image.begin_at(0,0,z);
+				auto res_i = result->begin_at(0,0,z);
+				for (size_t y = 0; y < size.y; ++y)
+					for (size_t x = 0; x < size.x; ++x,  ++src_i, ++res_i) {
+						auto sb = shape.begin();
+						auto  se = shape.end();
+						
+						while (sb != se) {
+							C3DBounds nl(x + sb->x, y + sb->y, z + sb->z);
+							if (nl < size) {
+								T val = image(nl);
+								if (*res_i < val )
+									*res_i = val;
+							}
+							++sb;
+							
 						}
-						++sb;
 					}
-				}
+			}
+		};
+		tbb::parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), run_slice); 
 		return result;
 	}
 };
@@ -187,28 +196,31 @@ struct __dispatch_erode {
 	static T3DImage<T> *apply(const T3DImage<T>& image, const C3DShape& shape, bool /*black*/) {
 		const C3DBounds size = image.get_size();
 
-		T3DImage<T> *result = new T3DImage<T>(image);
-
-		typename T3DImage<T>::const_iterator src_i = image.begin();
-		typename T3DImage<T>::iterator res_i = result->begin();
-
-		for (size_t z = 0; z < size.z; ++z)
-			for (size_t y = 0; y < size.y; ++y)
-				for (size_t x = 0; x < size.x; ++x,  ++src_i, ++res_i) {
-
-					C3DShape::const_iterator sb = shape.begin();
-					C3DShape::const_iterator se = shape.end();
-
-					while (sb != se) {
-						C3DBounds nl(x + sb->x, y + sb->y, z + sb->z);
-						if (nl < size) {
-							T val = image(nl);
-							if (*res_i > val )
-								*res_i = val;
+		T3DImage<T> *result = new T3DImage<T>(size, image);
+		copy(image.begin(), image.end(), result->begin()); 
+		
+		auto run_slice = [&size, &image, &shape, &result](const tbb::blocked_range<size_t>& range) {
+			for (auto z = range.begin(); z != range.end(); ++z){
+				auto src_i = image.begin_at(0,0,z);
+				auto res_i = result->begin_at(0,0,z);
+				for (size_t y = 0; y < size.y; ++y)
+					for (size_t x = 0; x < size.x; ++x,  ++src_i, ++res_i) {
+						auto  sb = shape.begin();
+						auto  se = shape.end();
+						
+						while (sb != se) {
+							C3DBounds nl(x + sb->x, y + sb->y, z + sb->z);
+							if (nl < size) {
+								T val = image(nl);
+								if (*res_i > val )
+									*res_i = val;
+							}
+							++sb;
 						}
-						++sb;
 					}
-				}
+			}
+		}; 
+		tbb::parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), run_slice); 
 		return result;
 	}
 };
