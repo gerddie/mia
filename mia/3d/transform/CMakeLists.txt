@@ -16,7 +16,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(transforms affine raffine rigid rotation spline translate vectorfield) 
+SET(transforms affine axisrot raffine rigid rotation spline translate vectorfield) 
 PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dimage" "transform" "${transforms}" 
   "${MIA3DLIBS}"
   )
