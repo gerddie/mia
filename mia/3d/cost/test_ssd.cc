@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( test_SSD_3D_norm )
 	std::shared_ptr<C3DImage > src(fsrc);
 	std::shared_ptr<C3DImage > ref(fref);
 
-	C3DSSDCost cost(true);
+	C3DSSDCost cost(true, 0.0f);
 	cost.set_reference(*ref); 
 	BOOST_CHECK_CLOSE(cost.value(*src),  0.5 * 367.0 / 27.0, 0.1);
 
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_SSD_3D )
 	std::shared_ptr<C3DImage > src(fsrc);
 	std::shared_ptr<C3DImage > ref(fref);
 
-	C3DSSDCost cost(false);
+	C3DSSDCost cost(false, 0.0f);
 	cost.set_reference(*ref); 
 	BOOST_CHECK_CLOSE(cost.value(*src),  0.5 * 367.0, 0.1);
 

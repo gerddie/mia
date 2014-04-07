@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_SSD_2D )
 	P2DImage src(new C2DFImage(C2DBounds(4,4), src_data ));
 	P2DImage ref(new C2DFImage(C2DBounds(4,4), ref_data ));
 
-	C2DSSDCost cost(true);
+	C2DSSDCost cost(true, 0.0f);
 	cost.set_reference(*ref); 
 	double cost_value = cost.value(*src);
 	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0 / 16.0, 0.1);
