@@ -250,7 +250,7 @@ void CNLOptFDFMinimizer::do_set_problem()
 
 	if (m_options.max_boundary != HUGE_VAL) {
 		cvinfo() << "Set higher boundary to " << m_options.max_boundary << "\n"; 
-		nlopt_set_lower_bounds1(m_opt, m_options.max_boundary); 
+		nlopt_set_upper_bounds1(m_opt, m_options.max_boundary); 
 	}
 	
 	if (m_options.step > 0.0)
