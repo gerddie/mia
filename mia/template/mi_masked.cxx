@@ -21,32 +21,14 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
-#include <mia/core/splineparzenmi.hh>
+
 #include <mia/core/property_flags.hh>
 
 #include <numeric>
 #include <limits>
 
+
 NS_BEGIN(NS)
-
-///  @cond DOC_PLUGINS 
-
-template <typename T> 
-class TMIMaskedImageCost: public T {
-public: 	
-	typedef typename T::Data Data; 
-	typedef typename T::Mask Mask; 
-	typedef typename T::Force Force; 
-
-	TMIMaskedImageCost(size_t fbins, mia::PSplineKernel fkernel, size_t rbins, mia::PSplineKernel rkernel, double cut); 
-private: 
-	virtual double do_value(const Data& a, const Data& b, const Mask& m) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, const Mask& m, Force& force) const; 
-	virtual void post_set_reference(const Data& ref); 
-	mutable mia::CSplineParzenMI m_parzen_mi; 
-
-};
-
 
 template <typename Mask>
 struct FEvalMI : public mia::TFilter<double> {
@@ -58,7 +40,7 @@ struct FEvalMI : public mia::TFilter<double> {
 
 	template <typename  T, typename  R>
 	FEvalMI::result_type operator () (const T& a, const R& b) const {
-		m_parzen_mi.fill_masked(a.begin(), a.end(), b.begin(), b.end(), m_mask.begin(), m_mask.end()); 
+		m_parzen_mi.fill(a.begin(), a.end(), b.begin(), b.end(), m_mask.begin(), m_mask.end()); 
 		return  m_parzen_mi.value(); 
 	}
 	mia::CSplineParzenMI& m_parzen_mi; 
@@ -78,7 +60,7 @@ TMIMaskedImageCost<T>::TMIMaskedImageCost(size_t rbins, mia::PSplineKernel rkern
 template <typename T> 
 double TMIMaskedImageCost<T>::do_value(const Data& a, const Data& b, const Mask& m) const
 {
-	FEvalMI essd(m_parzen_mi, m); 
+	FEvalMI<Mask> essd(m_parzen_mi, m); 
 	return filter(essd, a, b); 
 }
 
@@ -91,14 +73,14 @@ struct FEvalForce: public mia::TFilter<float> {
 		{
 		}
 	template <typename T, typename R> 
-	float operator ()( const T& a, const R& b, const Mask& m) const {
+	float operator ()( const T& a, const R& b) const {
 		Force gradient = get_gradient(a); 
-		m_parzen_mi.fill_masked(a.begin(), a.end(), 
-					b.begin(), b.end(), 
-					m.begin(), m.end()); 
+		m_parzen_mi.fill(a.begin(), a.end(), 
+				 b.begin(), b.end(), 
+				 m_mask.begin(), m_mask.end()); 
 		auto ai = a.begin();
 		auto bi = b.begin();
-		auto mi = m.begin();
+		auto mi = m_mask.begin();
 	
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi, ++mi) {
 			if (*mi) {
@@ -124,7 +106,7 @@ double TMIMaskedImageCost<T>::do_evaluate_force(const Data& a, const Data& b, co
 	assert(a.get_size() == b.get_size()); 
 	assert(a.get_size() == m.get_size()); 
 	assert(a.get_size() == force.get_size()); 
-	FEvalForce<Force> ef(force, m_parzen_mi, m); 
+	FEvalForce<Force, Mask> ef(force, m_parzen_mi, m); 
 	return filter(ef, a, b); 
 }
 
@@ -134,29 +116,6 @@ void TMIMaskedImageCost<T>::post_set_reference(const Data& MIA_PARAM_UNUSED(ref)
 	m_parzen_mi.reset(); 
 }
 
-/**
-   This is the plug-in declaration - the actual plugin needs to define the 
-   cost plugin type and the data type (this could be unified) 
-   do_test and do_get_descr need to be implemented 
-*/
-template <typename CP, typename C> 
-class TMIMaskedImageCostPlugin: public CP {
-public: 
-	TMIMaskedImageCostPlugin();
-	C *do_create()const;
-private: 
-	const std::string do_get_descr() const; 
-	unsigned int m_rbins;  
-	unsigned int m_mbins;  
-	mia::PSplineKernel m_mkernel; 
-	mia::PSplineKernel m_rkernel;
-	float m_histogram_cut; 
-};
-
-
-/**
-   This plugin will alwasy be "ssd" 
-*/
 template <typename CP, typename C> 
 TMIMaskedImageCostPlugin<CP,C>::TMIMaskedImageCostPlugin():
 	CP("mi"), 
@@ -199,5 +158,4 @@ const std::string TMIMaskedImageCostPlugin<CP,C>::do_get_descr() const
 	
 }
 
-///  @endcond
 NS_END
