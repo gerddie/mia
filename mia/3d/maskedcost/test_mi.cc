@@ -57,9 +57,17 @@ BOOST_FIXTURE_TEST_CASE( test_MI_3D_self, MIFixture )
 	
 	BOOST_CHECK_CLOSE(cost->evaluate_force(*ref, mask, force), 1.0 * test_cost_value, 0.1);
 	
+	BOOST_CHECK_EQUAL(force(0,0,0).x, 0.0f);
+	BOOST_CHECK_EQUAL(force(0,0,0).y, 0.0f);
+	BOOST_CHECK_EQUAL(force(0,0,0).z, 0.0f);
+
+	BOOST_CHECK_EQUAL(force(1,1,1).x, 0.0f);
+	BOOST_CHECK_EQUAL(force(1,1,1).y, 0.0f);
+	BOOST_CHECK_EQUAL(force(1,1,1).z, 0.0f);
+
 	BOOST_CHECK_EQUAL(force(2,2,2).x, 0.0f);
 	BOOST_CHECK_EQUAL(force(2,2,2).y, 0.0f);
-	BOOST_CHECK_EQUAL(force(2,2,2).y, 0.0f);
+	BOOST_CHECK_EQUAL(force(2,2,2).z, 0.0f);
 	
 }
 
@@ -94,7 +102,7 @@ MIFixture::MIFixture():
 {
 	const float src_data[64] = {           /*   0  1  2  3  4  5  6  7  8  9     */    
 		1, 1, 2, 2, 2, 3, 4, 4,        /*1                                 0 */
-		4, 4, 3, 3, 2, 2, 2, 1,        /*2     1  2  1  1     1            7 */
+		4, 4, 3, 3, 2, 2, 2, 1,        /*2     1  2  1  1     1            6 */
 		2, 2, 3, 4, 5, 6, 7, 8,        /*3        1  2     1  1  1  1      7 */
 		8, 7, 2, 8, 3, 4, 2, 2,        /*4     1     1  1     2  1  1      7 */ 
 		3, 1, 3, 4, 5, 6, 7, 8,        /*5     1     2  1        2  1      7 */
