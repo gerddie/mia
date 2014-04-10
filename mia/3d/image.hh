@@ -25,7 +25,7 @@
 #include <mia/3d/orientation.hh>
 #include <mia/2d/image.hh>
 
-#include <mia/core/attributes.hh>
+#include <mia/3d/valueattributetranslator.hh>
 #include <mia/core/pixeltype.hh>
 #include <mia/core/filter.hh>
 
@@ -453,85 +453,6 @@ struct Binder<C3DImage> {
 };
 
 /// @endcond
-
-/**
-   @ingroup basic 
-   @brief a translater for 3D vectors to and from a std::string
-*/
-template <typename T>
-class EXPORT_3D C3DValueAttributeTranslator: public CAttrTranslator {
-public:
-	static  void register_for(const std::string& key);
-private:
-	PAttribute do_from_string(const std::string& value) const;
-};
-
-/**
-   This class is a hack to work around the vista voxel size stringyfied  value. 
-   Normaly one would write "x,y,z" but in vista it is "x y z", which means a different 
-   translator is needed as compared to a T3DVector. 
-   For everything else the T3DVector interpretation is used (based on type_id); 
-   
-
-   @ingroup basic 
-   @brief a 3D vector value used in attributes 
-   @tparam T the data type of the vector elements 
-*/
-template <typename T>
-class EXPORT_3D C3DValueAttribute : public CAttribute {
-public:
-
-	/**
-	   Constructor to initialize the attribute by using a 3D Vector value 
-	   @param value 
-	 */
-	C3DValueAttribute(const T3DVector<T>& value);
-	
-	/// \returns the value of the attribute as 3D vector 
-	operator T3DVector<T>()const;
-
-	/**
-	   Obtain a run-time unique type description of the value type 
-	   @returns the typeid of the T3DVector<T>
-	 */
-	const char *typedescr() const	{
-		return typeid(T3DVector<T>).name();
-	}
-	
-	// 
-	int type_id() const {
-		return 	 attribute_type<T3DVector<T>>::value; 
-	}
-private:
-	std::string do_as_string() const;
-	bool do_is_equal(const CAttribute& other) const;
-	bool do_is_less(const CAttribute& other) const;
-	T3DVector<T> m_value;
-};
-
-/**
-   @ingroup basic 
-   @brief a 3D floating point vector used for the voxel size attribute 
-*/
-typedef C3DValueAttribute<float> CVoxelAttribute;
-
-/**
-   @ingroup basic 
-   @brief attribute translator for a 3D floating point vector used for the voxel size
-*/
-typedef C3DValueAttributeTranslator<float> CVoxelAttributeTranslator;
-
-/**
-   @ingroup basic 
-   @brief a 3D integer vector
-*/
-typedef C3DValueAttribute<int> C3DIntAttribute;
-
-/**
-   @ingroup basic 
-   @brief attribute translator for a 3D integer vector
-*/
-typedef C3DValueAttributeTranslator<int> C3DIntAttributeTranslator;
 
 NS_MIA_END
 

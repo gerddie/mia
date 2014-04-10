@@ -74,7 +74,6 @@ SET(MIA3D_HEADERS
   affine_matrix.hh
   2dimagefifofilter.hh
   datafield.hh datafield.cxx
-  vectorfield.hh
   image.hh
   filter.hh
   imageio.hh
@@ -124,6 +123,8 @@ SET(MIA3D_HEADERS
   transformio.hh
   transformmock.hh
   ${ITPP_HEADER}
+  valueattributetranslator.hh
+  vectorfield.hh
   )
 
 SET(MIA3DTEST_SRC

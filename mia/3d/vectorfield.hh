@@ -21,7 +21,7 @@
 #ifndef mia_3d_3dvectorfield_hh
 #define mia_3d_3dvectorfield_hh
 
-#include <mia/core/attributes.hh>
+#include <mia/3d/valueattributetranslator.hh>
 #include <mia/3d/datafield.hh>
 
 NS_MIA_BEGIN
@@ -36,7 +36,11 @@ NS_MIA_BEGIN
 template <typename T>
 class T3DVectorfield: public T3DDatafield<T>, public CAttributedData {
 public:
-	T3DVectorfield(){};
+	T3DVectorfield()  = default;
+	T3DVectorfield(const T3DVectorfield<T>& org) = default; 
+	
+	
+
 	T3DVectorfield(const C3DBounds& size):
 		T3DDatafield<T>(size) {};
 
@@ -50,6 +54,27 @@ public:
 		T3DDatafield<T>(size),
 		CAttributedData(data)
 	{
+	}
+
+	C3DFVector get_voxel_size() const {
+		const PAttribute attr = get_attribute("voxel");
+		if (!attr) {
+			cvinfo() << "T3DVectorfield<T>::get_voxel_size(): "
+				"voxel size not defined, default to <1,1,1>\n";
+			return C3DFVector(1,1,1);
+		}
+
+		const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
+		if (!vs){
+			cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size wrong type, "
+				"default to <1,1,1>\n";
+			return C3DFVector(1,1,1);
+		}
+		return *vs;
+	}
+
+	void set_voxel_size(const C3DFVector& voxel){
+		set_attribute("voxel", PAttribute(new CVoxelAttribute(voxel)));
 	}
 
 };

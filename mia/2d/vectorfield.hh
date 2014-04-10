@@ -57,6 +57,26 @@ public:
 		CAttributedData(data)
 	{
 	}
+
+	C2DFVector get_pixel_size() const {
+		const PAttribute attr = get_attribute("pixel");
+		if (!attr) {
+			cvinfo() << "C2DImage::get_pixel_size(): pixel size not defined\n";
+			return C2DFVector(1,1);
+		}
+		
+		const TAttribute<C2DFVector> * vs = dynamic_cast<TAttribute<C2DFVector> *>(attr.get());
+		if (!vs){
+			cvinfo() << "C2DImage::get_pixel_size(): pixel size wrong type\n";
+			return C2DFVector(1,1);
+		}
+		return *vs;
+	}
+
+	void set_pixel_size(const C2DFVector& pixel){
+		set_attribute("pixel", PAttribute(new TAttribute<C2DFVector>(pixel)));
+	}
+
 };
 
 /// 2D vector field to store single precicion 2D vectors 
