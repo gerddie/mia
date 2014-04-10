@@ -76,6 +76,25 @@ public:
 
 
 	/**
+	   Fill the histogram structures and caches by using a mask 
+	   @tparam MovIterator forward iterator type for moving image 
+	   @tparam RefIterator forward iterator type for reference image 
+	   @param mov_begin begin of moving image range 
+	   @param mov_end end of moving image range 
+	   @param ref_begin begin of reference image range 
+	   @param ref_end end of reference image range 
+	   @param mask_begin begin of mask image range 
+	   @param mask_end end of mask image range 
+	   
+	 */
+
+	template <typename MovIterator, typename RefIterator, typename MaskIterator>
+		void fill(MovIterator mov_begin, MovIterator mov_end, 
+			  RefIterator ref_begin, RefIterator ref_end, 
+			  MaskIterator mask_begin, MaskIterator mask_end);
+	
+
+	/**
 	   @returns the value of the mutual information that is maximized if the 
 	   given input images are equal. 
 	 */
@@ -142,6 +161,13 @@ private:
 	
 	template <typename Iterator>
 	std::pair<double,double> get_reduced_range(Iterator begin, Iterator end)const; 
+
+	template <typename DataIterator, typename MaskIterator>
+        std::pair<double,double> 
+		get_reduced_range_masked(DataIterator dbegin, 
+					 DataIterator dend, 
+					 MaskIterator mbegin)const; 
+		
 };   
 
 template <typename MovIterator, typename RefIterator>
@@ -216,6 +242,85 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 	evaluate_log_cache(); 
 }
 
+
+template <typename MovIterator, typename RefIterator, typename MaskIterator>
+void CSplineParzenMI::fill(MovIterator mov_begin, MovIterator mov_end, 
+			   RefIterator ref_begin, RefIterator ref_end, 
+			   MaskIterator mask_begin, MaskIterator mask_end)
+{
+	std::fill(m_joined_histogram.begin(), m_joined_histogram.end(), 0.0); 
+
+	assert(mov_begin != mov_end); 
+	assert(ref_begin != ref_end); 
+	
+	// no mask 
+	if (mask_begin == mask_end) 
+		fill(mov_begin, mov_end, ref_begin, ref_end); 
+	
+	if (m_mov_max < m_mov_min) {
+		// (re)evaluate the ranges 
+		
+		auto mov_range = get_reduced_range_masked(mov_begin, mov_end, mask_begin); 
+		if (mov_range.second  ==  mov_range.first) 
+			throw std::invalid_argument("relevant moving image intensity range is zero"); 
+		m_mov_min = mov_range.first; 
+		m_mov_max = mov_range.second;
+		m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
+		cvdebug() << "Mov Range = [" << m_mov_min << ", " << m_mov_max << "]\n"; 
+	}
+
+
+	if (m_ref_max < m_ref_min) {
+
+		auto ref_range = get_reduced_range_masked(ref_begin, ref_end, mask_begin); 
+		if (ref_range.second  ==  ref_range.first) 
+			throw std::invalid_argument("relevant reference image intensity range is zero"); 
+		
+		m_ref_min = ref_range.first; 
+		m_ref_max = ref_range.second; 
+		m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
+		cvdebug() << "Ref Range = [" << m_ref_min << ", " << m_ref_max << "]\n"; 
+	}
+
+       
+	std::vector<double> mweights(m_mov_kernel->size()); 
+        std::vector<double> rweights(m_ref_kernel->size()); 
+	
+	size_t N = 0;         
+	while (ref_begin != ref_end && mov_begin != mov_end) {
+
+		if (*mask_begin) {
+			const double mov = scale_moving(*mov_begin); 
+			const double ref = scale_reference(*ref_begin); 
+			
+			const int mov_start = m_mov_kernel->get_start_idx_and_value_weights(mov, mweights) + m_mov_border; 
+			const int ref_start = m_ref_kernel->get_start_idx_and_value_weights(ref, rweights) + m_ref_border;  
+			
+			for (size_t r = 0; r < m_ref_kernel->size(); ++r) {
+				auto inbeg = m_joined_histogram.begin() + 
+					m_mov_real_bins * (ref_start + r) + mov_start; 
+				double rw = rweights[r]; 
+				std::transform(mweights.begin(), mweights.end(), inbeg, inbeg, 
+					       [rw](double mw, double jhvalue){ return mw * rw + jhvalue;});
+			}
+			
+			++N; 
+		}
+		++mask_begin; 
+		++mov_begin; 
+		++ref_begin; 
+	}
+
+	cvdebug() << "CSplineParzenMI::fill: counted " << N << " pixels\n"; 
+	// normalize joined histogram 
+	const double nscale = 1.0/N; 
+	transform(m_joined_histogram.begin(), m_joined_histogram.end(), m_joined_histogram.begin(), 
+		  [&nscale](double jhvalue){return jhvalue * nscale;}); 
+	
+	evaluate_histograms();  
+	evaluate_log_cache(); 
+}
+
 template <typename Iterator>
 std::pair<double,double> CSplineParzenMI::get_reduced_range(Iterator begin, Iterator end)const
 {
@@ -227,7 +332,58 @@ std::pair<double,double> CSplineParzenMI::get_reduced_range(Iterator begin, Iter
 	cvinfo() << "CSplineParzenMI: reduce range by "<< m_cut_histogram
 		<<"% from [" << *range.first << ", " << *range.second 
 		<< "] to [" << reduced_range.first << ", " << reduced_range.second << "]\n"; 
-	return std::pair<double,double>(reduced_range.first, reduced_range.second); 
+	return std::make_pair(reduced_range.first, reduced_range.second); 
+       
+}
+
+template <typename DataIterator, typename MaskIterator>
+std::pair<double,double> 
+CSplineParzenMI::get_reduced_range_masked(DataIterator dbegin, 
+					  DataIterator dend, 
+					  MaskIterator mbegin)const
+{
+	auto ib = dbegin; 
+	auto im = mbegin; 
+	
+	while (! *im++ && ib != dend) 
+		++ib; 
+	
+	if (ib == dend) 
+		throw std::runtime_error("CSplineParzenMI: empty mask"); 
+	
+	double range_max = *ib; 
+	double range_min = *ib; 
+	++ib; ++im; 
+	
+	while (ib != dend)  {
+		if (*im) {
+			if (*ib < range_min) 
+				range_min = *ib; 
+			if (*ib > range_max) 
+				range_max = *ib; 
+		}
+		++ib; 
+		++im; 
+	}
+	
+	
+	typedef THistogramFeeder<typename DataIterator::value_type> Feeder; 
+	THistogram<Feeder> h(Feeder(range_min, range_max, 4096));
+
+	ib = dbegin; 
+	im = mbegin; 
+	while (ib != dend)  {
+		if (*im)
+			h.push(*ib); 
+		++ib; 
+		++im; 
+	}
+
+	auto reduced_range = h.get_reduced_range(m_cut_histogram); 
+	cvinfo() << "CSplineParzenMI: reduce range by "<< m_cut_histogram
+		 << "% from [" << range_min << ", " << range_max
+		 << "] to [" << reduced_range.first << ", " << reduced_range.second << "]\n"; 
+	return std::make_pair(reduced_range.first, reduced_range.second); 
        
 }
 

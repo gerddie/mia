@@ -17,6 +17,8 @@
  * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
+#ifndef mia_core_refholder_hh
+#define mia_core_refholder_hh
 
 #include <mia/core/defines.hh>
 #include <memory> 
@@ -56,3 +58,5 @@ private:
 }; 
 
 NS_MIA_END
+
+#endif 

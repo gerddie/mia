@@ -295,8 +295,3 @@ BOOST_FIXTURE_TEST_CASE( test_MI_76_13, CSplineParzenMIFixture )
 	double test_grad = dm(13, 76 ); 
 	BOOST_CHECK_CLOSE(grad, test_grad, 0.1); 
 }
-
-
-
-
-
