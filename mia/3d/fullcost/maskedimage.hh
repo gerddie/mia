@@ -66,8 +66,8 @@ private:
 
         P3DImage m_src_scaled; 
 	P3DImage m_ref_scaled;
-	P3DImage m_src_mask_bit; 
-	P3DImage m_ref_mask_bit; 
+	P3DImage m_src_mask_scaled; 
+	P3DImage m_ref_mask_scaled; 
 
 	C3DBitImage *m_ref_mask_scaled_bit;
 

@@ -18,6 +18,7 @@
 
 SET(maskedcost3d
   mi 
+  ssd
 )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dimage" "maskedcost" "${maskedcost3d}" 
