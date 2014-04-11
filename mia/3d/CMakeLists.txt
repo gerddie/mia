@@ -49,7 +49,7 @@ SET(MIA3D_SRC
   landmark.cc
   landmarklist.cc
   landmarklistio.cc
-  masked_cost.cc
+  maskedcost.cc
   model.cc
   multicost.cc
   nfg.cc 
@@ -101,7 +101,7 @@ SET(MIA3D_HEADERS
   landmark.hh
   landmarklist.hh
   landmarklistio.hh
-  masked_cost.hh
+  maskedcost.hh
   matrix.hh
   model.hh
   multicost.hh

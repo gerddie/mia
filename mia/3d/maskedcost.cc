@@ -20,7 +20,7 @@
 
 #include <mia/core/export_handler.hh>
 
-#include <mia/3d/masked_cost.hh>
+#include <mia/3d/maskedcost.hh>
 #include <mia/template/masked_cost.cxx>
 #include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>

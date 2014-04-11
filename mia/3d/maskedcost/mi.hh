@@ -21,7 +21,7 @@
 #ifndef mia_3d_cost_mi_hh
 #define mia_3d_cost_mi_hh
 
-#include <mia/3d/masked_cost.hh>
+#include <mia/3d/maskedcost.hh>
 
 #define NS mia_3dcost_mi_masked
 #include <mia/template/mi_masked.hh>
