@@ -152,7 +152,7 @@ struct FEvalForce: public mia::TFilter<float> {
 			}
 			if ( n > 0) {
 				float  scale = 1.0f / n; 
-				transform(gradient.begin(), gradient.end(), gradient.begin(),
+				transform(m_force.begin(), m_force.end(), m_force.begin(),
 					  [scale](const typename Force::value_type&  x){return scale * x;}); 
 				return 0.5 * cost  *scale;
 			}else{
