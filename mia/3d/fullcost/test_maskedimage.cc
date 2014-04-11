@@ -30,15 +30,15 @@ namespace bfs=::boost::filesystem;
 
 PrepareTestPluginPath plugin_path_init; 
 
-BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
+BOOST_AUTO_TEST_CASE( test_imagefullcost_2)
 {
 
 	// create two images 
 	const unsigned char src_data[64] = {
-		0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,
- 		0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,
- 		0, 0, 0, 0,  0,255,255,0,  0,255,255,0,   0, 0, 0, 0,
-		0, 0, 0, 0,   0,255, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0
+		0, 0, 0, 0,   0,  0,  0, 0,  0,  0,  0, 0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   0,  0,  0, 0,  0,  0,  0, 0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   0,255,255, 0,  0,255,255, 0,   0, 0, 0, 0,
+		0, 0, 0, 0,   0,255,  0, 0,  0,  0,  0, 0,   0, 0, 0, 0
 
 	};
 	const unsigned char ref_data[64] = {
@@ -70,7 +70,9 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C3DMaskedImageFullCost cost("src.@", "ref.@","src-mask.@", "ref-mask.@" ,C3DImageCostPluginHandler::instance().produce("ssd"), 1.0); 
+        assert("at least one mask must be provided"); 
+	C3DMaskedImageFullCost cost("src.@", "ref.@","src-mask.@", "ref-mask.@" ,
+                                    C3DMaskedImageCostPluginHandler::instance().produce("ssd"), 1.0); 
 	cost.reinit(); 
 	cost.set_size(size);
 	

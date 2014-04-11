@@ -35,13 +35,14 @@ public:
                                const std::string& src_mask, 
                                const std::string& ref_mask,
                                P3DMaskedImageCost cost, 
-                               double weight, 
-                               bool debug); 
+                               double weight); 
 private: 
 	double do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const;
 	void do_set_size(); 
 
 	static P3DImage get_from_pool(const C3DImageDataKey& key); 
+        
+        P3DImage get_combined_mask(const C3DTransformation *t, C3DBitImage **combined_mask) const __attribute__((warn_unused_result)); 
 
 	bool do_has(const char *property) const; 
 	double do_value(const C3DTransformation& t) const; 
@@ -60,7 +61,6 @@ private:
 	P3DImage m_ref; 
 	P3DImage m_src_mask; 
 	P3DImage m_ref_mask; 
-	C3DBitImage *m_src_mask_bit; 
 	C3DBitImage *m_ref_mask_bit; 
 
 

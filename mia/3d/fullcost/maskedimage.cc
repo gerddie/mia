@@ -29,22 +29,21 @@ C3DMaskedImageFullCost::C3DMaskedImageFullCost(const std::string& src,
 				   const std::string& ref, 
                                    const std::string& src_mask, 
 				   const std::string& ref_mask, 
-				   P3DImageCost cost, 
+				   P3DMaskedImageCost cost, 
 				   double weight):
 	C3DFullCost(weight), 
-	m_src_key(C3DMaskedImageIOPluginHandler::instance().load_to_pool(src)), 
-	m_ref_key(C3DMaskedImageIOPluginHandler::instance().load_to_pool(ref)),
-        m_src_mask_bit(nullptr), 
+	m_src_key(C3DImageIOPluginHandler::instance().load_to_pool(src)), 
+	m_ref_key(C3DImageIOPluginHandler::instance().load_to_pool(ref)),
         m_ref_mask_bit(nullptr), 
 	m_cost_kernel(cost)
 {
 	assert(m_cost_kernel); 
 
         if (!src_mask.empty()) 
-                m_src_mask_key = C3DMaskedImageIOPluginHandler::instance().load_to_pool(src_mask); 
+                m_src_mask_key = C3DImageIOPluginHandler::instance().load_to_pool(src_mask); 
         
         if (!ref_mask.empty()) 
-                m_ref_mask_key = C3DMaskedImageIOPluginHandler::instance().load_to_pool(ref_mask); 
+                m_ref_mask_key = C3DImageIOPluginHandler::instance().load_to_pool(ref_mask); 
 
         if (src_mask.empty() && ref_mask.empty()) {
                 throw invalid_argument("C3DMaskedImageFullCost: No masks give, you should used "
@@ -57,12 +56,59 @@ bool C3DMaskedImageFullCost::do_has(const char *property) const
 	return m_cost_kernel->has(property); 
 }
 
+/* 
+   This functions combines the moving and the fixed masks to a singular mask for cost function evaluation. 
+   - if no transformation is given then the original masks will be or-combined. In this case 
+     the masks must be of the same size. 
+   - if a transformation is given then the moving mask is transformed and then combined with 
+     the reference image mask 
+*/
+P3DImage C3DMaskedImageFullCost::get_combined_mask(const C3DTransformation *t, C3DBitImage **combined_mask) const 
+{
+        P3DImage temp_mask; 
+        *combined_mask = m_ref_mask_scaled_bit; 
+        if (m_src_mask_scaled) {
+                temp_mask = t ? (*t)(*m_src_mask_scaled): 
+                        temp_mask = m_src_mask_scaled->clone(); 
+
+                *combined_mask = static_cast<C3DBitImage *>(temp_mask.get());
+                assert(*combined_mask); 
+                
+                if (m_ref_mask_scaled_bit) {
+                        if ( (*combined_mask)->get_size() != m_ref_mask_scaled_bit->get_size()){
+                                assert(!t && "Bug: The transformation should have created a mask of "
+                                       "the same size like the reference image mask"); 
+                                
+                                throw create_exception<invalid_argument>
+                                        ("C3DMaskedImageFullCost: the masks to be combined are "
+                                         "of different size: moving=[", (*combined_mask)->get_size(), 
+                                         "], reference=[", m_ref_mask_scaled_bit->get_size(), "]");
+                        }
+
+                        // A parameter should define how the masks are combined 
+                        transform((*combined_mask)->begin(), (*combined_mask)->end(),
+                                  m_ref_mask_scaled_bit->begin(), (*combined_mask)->begin(),
+                                  [](bool a, bool b){ return a || b;});
+                        
+                        // here a penalty could be added e.g. to ensure that the moving mask is 
+                        // always inside the fixed mask. However, it is difficult to evaluate a 
+                        // force for this.
+                }
+        }
+        return temp_mask; 
+}
+
 double C3DMaskedImageFullCost::do_value(const C3DTransformation& t) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src_scaled  && "Hint: call 'reinit()' before calling value(transform)"); 
+	assert(m_src_scaled  && "Bug: you must call 'reinit()' before calling value(transform)"); 
 	P3DImage temp  = t(*m_src_scaled);
-	const double result = m_cost_kernel->value(*temp); 
+        
+        C3DBitImage *temp_mask_bit = nullptr;
+        P3DImage temp_mask  = get_combined_mask(&t, &temp_mask_bit);
+        assert(temp_mask_bit); 
+        
+	const double result = m_cost_kernel->value(*temp, *temp_mask_bit); 
 	cvdebug() << "C3DMaskedImageFullCost::value = " << result << "\n"; 
 	return result; 
 }
@@ -70,8 +116,13 @@ double C3DMaskedImageFullCost::do_value(const C3DTransformation& t) const
 double C3DMaskedImageFullCost::do_value() const
 {
 	TRACE_FUNCTION; 
-	assert(m_src_scaled  && "Hint: call 'reinit()' before calling value()"); 
-	const double result = m_cost_kernel->value(*m_src_scaled); 
+	assert(m_src_scaled  && "Bug: you must call 'reinit()' before calling value()"); 
+
+        C3DBitImage *temp_mask_bit = nullptr;
+        P3DImage temp_mask  = get_combined_mask(nullptr, &temp_mask_bit);
+        assert(temp_mask_bit); 
+
+	const double result = m_cost_kernel->value(*m_src_scaled, *temp_mask_bit); 
 	cvdebug() << "C3DMaskedImageFullCost::value = " << result << "\n"; 
 	return result; 
 }
@@ -80,37 +131,17 @@ double C3DMaskedImageFullCost::do_value() const
 double C3DMaskedImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src_scaled  && "Hint: call 'reinit()' before calling evaluate()"); 
+	assert(m_src_scaled  && "Bug: you must call 'reinit()' before calling evauate(...)"); 
 	
 	P3DImage temp  = t(*m_src_scaled);
-        
-        P3DImage temp_mask; 
-        
-        C3DBitImage *temp_mask_bit = m_ref_mask_scaled_bit; 
-        
-        if (m_src_mask_scaled) {
-                temp_mask = t(*m_src_mask_scaled); 
-                temp_mask_bit = static_cast<C3DBitImage *>(temp_mask.get());
-                
-                if (m_ref_mask_scaled_bit) {
-                        // A parameter should define how the masks are combined 
-                        transform(temp_mask_bit.begin(), temp_mask_bit.end(), 
-                                  m_ref_mask_scaled_bit.begin(), temp_mask_bit.begin(), 
-                                  [](bool a, bool b){ return a || b;}); 
 
-                        // here a penalty could be added to ensure, e.g. that the moving mask is 
-                        // always inside the fixed mask. However, it is difficult to evaluate a 
-                        // force for this.
-                        
-                }
-        }
+        C3DBitImage *temp_mask_bit = nullptr;
+        P3DImage temp_mask  = get_combined_mask(&t, &temp_mask_bit);
         assert(temp_mask_bit); 
         
 	C3DFVectorfield force(get_current_size()); 
- 	m_cost_kernel->evaluate_force(*temp, *temp_mask_bit, force); 
+ 	double result = m_cost_kernel->evaluate_force(*temp, *temp_mask_bit, force); 
 	t.translate(force, gradient); 
-	double result = m_cost_kernel->value(*temp); 
-	cvdebug() << "Image cost =" << result << "\n"; 
 	return result; 
 	
 }
@@ -134,16 +165,16 @@ void C3DMaskedImageFullCost::do_set_size()
 		m_ref_scaled = scaler->filter(*m_ref);
 		m_cost_kernel->set_reference(*m_ref_scaled); 
 
-                if (m_src_mask_bit != nullptr)  {
+                if (m_src_mask)  {
                     m_src_mask_scaled  = scaler->filter(*m_src_mask);
-                    m_src_mask_scaled_bit = static_cast<C3DBitImage*>(m_src_mask_scaled);  
                 }
 
-                if (m_ref_mask_bit != nullptr)  {
+                if (m_ref_mask)  {
                     m_ref_mask_scaled  = scaler->filter(*m_ref_mask);
-                    m_ref_mask_scaled_bit = static_cast<C3DBitImage*>(m_ref_mask_scaled);  
+                    m_ref_mask_scaled_bit = static_cast<C3DBitImage*>(m_ref_mask_scaled.get());  
                 }
-                assert (m_ref_mask_scaled_bit || m_src_mask_scaled_bit); 
+                assert ((m_src_mask_scaled || m_ref_mask_scaled) && 
+                        "Bug: At this point at least one mask should be available"); 
 	}
 }
 
@@ -165,25 +196,27 @@ void C3DMaskedImageFullCost::do_reinit()
 	m_src_scaled = m_src = get_from_pool(m_src_key);
 	m_ref_scaled = m_ref = get_from_pool(m_ref_key);
 
-        if (m_src_mask_key.valid()) {
+        if (m_src_mask_key.key_is_valid()) {
                 m_src_mask = get_from_pool(m_src_mask_key);
                 if (m_src->get_size() != m_src_mask->get_size()) {
                         throw create_exception<runtime_error>("C3DMaskedImageFullCost: moving image has size [", 
-                                                              m_src->get_size(), "], but corresponding mask is of size ["
+                                                              m_src->get_size(), "], but corresponding mask is of size [", 
                                                               m_src_mask->get_size(), "]"); 
                 }
-                m_src_mask_scaled_bit = m_src_mask_bit = dynamic_cast<C3DBitImage *>(m_src_mask.get()); 
-                if (!m_src_mask_scaled_bit)  {
+                
+                if (m_src_mask->get_pixel_type() != it_bit) {
+                        // one could also add a binarize filter here, but  it's better to force 
+                        // the user to set the pixel type correctly 
                         throw create_exception<invalid_argument>("C3DMaskedImageFullCost: moving mask image "
                                                                  "must be binary"); 
                 }
         }
 
-        if (m_ref_mask_key.valid()) {
-                m_ref_masked = get_from_pool(m_ref_mask_key);
+        if (m_ref_mask_key.key_is_valid()) {
+                m_ref_mask = get_from_pool(m_ref_mask_key);
                 if (m_ref->get_size() != m_ref_mask->get_size()) {
                         throw create_exception<runtime_error>("C3DMaskedImageFullCost: reference image has size [", 
-                                                              m_src->get_size(), "], but corresponding mask is of size ["
+                                                              m_src->get_size(), "], but corresponding mask is of size [",
                                                               m_src_mask->get_size(), "]"); 
                 }
                 m_ref_mask_scaled_bit = m_ref_mask_bit = dynamic_cast<C3DBitImage *>(m_ref_mask.get());
@@ -208,9 +241,9 @@ void C3DMaskedImageFullCost::do_reinit()
 	m_cost_kernel->set_reference(*m_ref_scaled); 
 }
 
-P3DImage C3DMaskedImageFullCost::get_from_pool(const C3DMaskedImageDataKey& key)
+P3DImage C3DMaskedImageFullCost::get_from_pool(const C3DImageDataKey& key)
 {
-	C3DMaskedImageIOPlugin::PData in_image_list = key.get();
+	C3DImageIOPlugin::PData in_image_list = key.get();
 		
 	if (!in_image_list || in_image_list->empty())
 		throw invalid_argument("C3DMaskedImageFullCost: no image available in data pool");
@@ -231,14 +264,13 @@ private:
 	std::string m_src_mask_name;
 	std::string m_ref_mask_name;
 
-	P3DImageCost m_cost_kernel;
+	P3DMaskedImageCost m_cost_kernel;
 }; 
 
 C3DMaskedImageFullCostPlugin::C3DMaskedImageFullCostPlugin():
 	C3DFullCostPlugin("image"), 
 	m_src_name("src.@"), 
-	m_ref_name("ref.@"), 
-        m_debug(false)
+	m_ref_name("ref.@")
 {
 	add_parameter("src", new CStringParameter(m_src_name, CCmdOptionFlags::input, "Study image", &C3DImageIOPluginHandler::instance()));
 	add_parameter("ref", new CStringParameter(m_ref_name, CCmdOptionFlags::input, "Reference image", &C3DImageIOPluginHandler::instance()));
@@ -268,7 +300,7 @@ const std::string C3DMaskedImageFullCostPlugin::do_get_descr() const
 	return "Generalized masked image similarity cost function that also handles multi-resolution processing. "
                 "The provided masks should be densly filled regions in multi-resolution procesing because "
                 "otherwise the mask information may get lost when downscaling the image. " 
-                "The reference mask and the transformed mask of the study image are combined by binary AND. 
+                "The reference mask and the transformed mask of the study image are combined by binary AND. "
 		"The actual similarity measure is given es extra parameter.";
 }
 
