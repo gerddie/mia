@@ -93,13 +93,15 @@ double C3DMaskedImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVe
                 temp_mask_bit = static_cast<C3DBitImage *>(temp_mask.get());
                 
                 if (m_ref_mask_scaled_bit) {
+                        // A parameter should define how the masks are combined 
                         transform(temp_mask_bit.begin(), temp_mask_bit.end(), 
                                   m_ref_mask_scaled_bit.begin(), temp_mask_bit.begin(), 
-                                  [](bool a, bool b){ return a && b;}); 
+                                  [](bool a, bool b){ return a || b;}); 
 
                         // here a penalty could be added to ensure, e.g. that the moving mask is 
                         // always inside the fixed mask. However, it is difficult to evaluate a 
                         // force for this.
+                        
                 }
         }
         assert(temp_mask_bit); 

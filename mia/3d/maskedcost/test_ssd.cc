@@ -40,6 +40,8 @@ protected:
 	C3DBitImage mask; 
 	C3DFVectorfield grad; 
 	unique_ptr<C3DSSDMaskedImageCost> cost; 
+
+	double test_cost_pair; 
 }; 
 
 
@@ -56,19 +58,30 @@ BOOST_FIXTURE_TEST_CASE( test_SSD_3D_self, SSDFixture )
 	
 	BOOST_CHECK_CLOSE(cost->evaluate_force(*ref, mask, force), 1.0 * test_cost_value, 0.1);
 	
-	BOOST_CHECK_EQUAL(force(0,0,0).x, 0.0f);
-	BOOST_CHECK_EQUAL(force(0,0,0).y, 0.0f);
-	BOOST_CHECK_EQUAL(force(0,0,0).z, 0.0f);
-
-	BOOST_CHECK_EQUAL(force(1,1,1).x, 0.0f);
-	BOOST_CHECK_EQUAL(force(1,1,1).y, 0.0f);
-	BOOST_CHECK_EQUAL(force(1,1,1).z, 0.0f);
-
-	BOOST_CHECK_EQUAL(force(2,2,2).x, 0.0f);
-	BOOST_CHECK_EQUAL(force(2,2,2).y, 0.0f);
-	BOOST_CHECK_EQUAL(force(2,2,2).z, 0.0f);
-	
+	for(auto g : force) {
+		BOOST_CHECK_EQUAL(g, C3DFVector(0,0,0));
+	}
 }
+
+BOOST_FIXTURE_TEST_CASE( test_SSD_3D_pair, SSDFixture )
+{
+	cost->set_reference(*ref);
+	
+	double cost_value = cost->value(*src, mask);
+	BOOST_CHECK_CLOSE(cost_value, test_cost_pair, 0.1);
+
+	C3DFVectorfield force(C3DBounds(4,4,4));
+	
+	BOOST_CHECK_CLOSE(cost->evaluate_force(*src, mask, force), test_cost_pair, 0.1);
+
+	for(auto iforce = force.begin(), iexpect = grad.begin(); iforce != force.end(); 
+	    ++iforce, ++iexpect) {
+		BOOST_CHECK_CLOSE(iforce->x, iexpect->x, 0.1);
+		BOOST_CHECK_CLOSE(iforce->y, iexpect->y, 0.1);
+		BOOST_CHECK_CLOSE(iforce->z, iexpect->z, 0.1);
+	} 
+}
+
 
 SSDFixture::SSDFixture():
 	size(4,4,4),
@@ -112,13 +125,30 @@ SSDFixture::SSDFixture():
 	
 
 	copy(mask_data, mask_data + 64, mask.begin()); 
-	src.reset(new C3DFImage(size, src_data ));
-	ref.reset(new C3DFImage(size, ref_data ));
+	auto src_f = new C3DFImage(size, src_data ); 
+	src.reset(src_f);
+	auto ref_f = new C3DFImage(size, ref_data ); 
+	ref.reset(ref_f);
 	
 
+	grad = get_gradient(*src_f); 
+
 	auto ig = grad.begin(); 
-	for (int i = 0; i < 64; ++i, ++ig) {
-		assert(0); 
+	auto is = src_f->begin(); 
+	auto ir = ref_f->begin(); 
+	auto im = mask.begin(); 
+	auto em = mask.end(); 
+
+	test_cost_pair = 0.0; 
+	while(im != em) {
+		double delta = (*is - *ir); 
+		*ig *= *im * delta / 64.0; 
+		if (*im) 
+			test_cost_pair += delta * delta; 
+
+		++ig; ++is; ++ir; ++im; 
 	}
+	test_cost_pair /= 128.0; 
+	
 	cost.reset(new 	C3DSSDMaskedImageCost); 
 }

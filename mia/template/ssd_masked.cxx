@@ -48,13 +48,12 @@ struct FEvalSSD : public mia::TFilter<double> {
 		auto ib = b.begin(); 
 		auto ie = a.end(); 
 		auto im = m_mask.begin(); 
-		long n = 0; 
+		const long n = a.size(); 
 		double sum = 0.0; 
 		while (ia != ie) {
 			if (*im) {
 				double d = (double)*ia - (double)*ib; 
 				sum += d*d; 
-				++n; 
 			}
 			++ia; ++ib; ++im; 
 		}
@@ -96,18 +95,17 @@ struct FEvalForce: public mia::TFilter<float> {
 		auto im = m_mask.begin(); 
 		auto gi = gradient.begin(); 
 
-		long n = 0;
+		long n = a.size();
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi, ++fi, ++gi, ++im) {
 			if (*im) {
 				float delta = float(*ai) - float(*bi); 
 				*fi = *gi * delta;
 				cost += delta * delta; 
-				++n; 
 			}
 		}
 		if ( n > 0) {
 			float  scale = 1.0f / n; 
-			transform(gradient.begin(), gradient.end(), gradient.begin(),
+			transform(m_force.begin(), m_force.end(), m_force.begin(),
 				  [scale](const typename Force::value_type&  x){return scale * x;}); 
 			return 0.5 * cost  *scale;
 		}else{
