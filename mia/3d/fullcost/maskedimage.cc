@@ -268,7 +268,7 @@ private:
 }; 
 
 C3DMaskedImageFullCostPlugin::C3DMaskedImageFullCostPlugin():
-	C3DFullCostPlugin("image"), 
+	C3DFullCostPlugin("maskedimage"), 
 	m_src_name("src.@"), 
 	m_ref_name("ref.@")
 {
