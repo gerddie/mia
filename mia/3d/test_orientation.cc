@@ -63,3 +63,52 @@ BOOST_AUTO_TEST_CASE( test_orientation_attribute )
 	BOOST_CHECK_EQUAL(orient, ior_axial);
 }
 
+struct OrientationTestFixture {
+	void check_transform(const C3DOrientationAndPosition& op, const vector<double>& expect); 
+	void check_inv_transform(const C3DOrientationAndPosition& op, const vector<double>& expect); 
+private: 
+	void check(const CDoubleVector& params, const vector<double>& expect); 
+	
+}; 
+
+BOOST_FIXTURE_TEST_CASE(test_scale_x, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector(2.0, 1, 1), 
+				     C3DFVector::_0, Quaternion::_1);
+
+	vector<double> expect = {
+		2.0, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+}
+
+
+
+
+void OrientationTestFixture::check_transform(const C3DOrientationAndPosition& op, const vector<double>& expect)
+{
+	CDoubleVector params(12); 
+	op.get_transform_parameters(params); 
+	check(params, expect); 
+}
+
+void OrientationTestFixture::check_inv_transform(const C3DOrientationAndPosition& op, const vector<double>& expect)
+{
+	CDoubleVector params(12); 
+	op.get_inverse_transform_parameters(params); 
+	check(params, expect); 
+}
+
+void OrientationTestFixture::check(const CDoubleVector& params, const vector<double>& expect)
+{
+	for (int i = 0; i < 12; ++i) {
+		cvdebug() << "[" << i << "]=" <<  params[i] << ", expect " << expect[i] << "\n"; 
+		if (expect[i] == 0.0) {
+			BOOST_CHECK_SMALL(params[i], 1e-5); 
+		}else{
+			BOOST_CHECK_CLOSE(params[i], expect[0], 1e-5);
+		}
+	}
+}

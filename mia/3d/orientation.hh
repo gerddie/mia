@@ -105,9 +105,19 @@ public:
 
 	bool operator < (const C3DOrientationAndPosition& other) const; 
 	
-	E3DImageOrientation get_axis_orientation() const; 
 
 	void print(std::ostream& os) const; 
+
+	E3DImageOrientation get_axis_orientation() const; 
+
+        /// \returns the voxel scale 
+        const mia::C3DFVector& get_scale() const; 
+
+        /// \returns the origin in physical coordinates 
+        const mia::C3DFVector& get_origin()const; 
+
+        /// \returns the rotation of the object 
+        const mia::Quaternion& get_rotation()const;
 
 private:
 	

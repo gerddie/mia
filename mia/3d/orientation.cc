@@ -171,6 +171,24 @@ E3DImageOrientation C3DOrientationAndPosition::get_axis_orientation() const
 }
 
 
+
+const mia::C3DFVector& C3DOrientationAndPosition::get_scale() const
+{
+	return m_scale; 
+}
+
+
+const mia::C3DFVector& C3DOrientationAndPosition::get_origin() const
+{
+	return m_origin; 
+}
+
+const mia::Quaternion& C3DOrientationAndPosition::get_rotation() const
+{
+	return m_rotation; 
+}
+
+
 EXPORT_3D  std::ostream& operator << (std::ostream& os, E3DImageOrientation orient)
 {
 	os << g_image_orientation_map.get_name(orient); 
