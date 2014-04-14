@@ -84,7 +84,31 @@ BOOST_FIXTURE_TEST_CASE(test_scale_x, OrientationTestFixture)
 	};
 }
 
+BOOST_FIXTURE_TEST_CASE(test_scale_y, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector(1.0, 2.0, 1), 
+				     C3DFVector::_0, Quaternion::_1);
 
+	vector<double> expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 2.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+}
+
+BOOST_FIXTURE_TEST_CASE(test_scale_z, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector(1.0, 1.0, 2.0), 
+				     C3DFVector::_0, Quaternion::_1);
+
+	vector<double> expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 2.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+}
 
 
 void OrientationTestFixture::check_transform(const C3DOrientationAndPosition& op, const vector<double>& expect)
