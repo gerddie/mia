@@ -312,11 +312,6 @@ size_t C3DMyocardPeriodicRegistration::get_ref_idx()const
 
 
 C3DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
-	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1")), 
-	pass1_cost(C3DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")), 
-	pass2_cost(C3DFullCostPluginHandler::instance().produce("image:cost=ssd")), 
-	series_select_cost(C3DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")),
-	transform_creator(C3DTransformCreatorHandler::instance().produce("spline")),
 	mg_levels(3),
 	max_candidates(20), 
 	save_ref(false)
