@@ -33,6 +33,7 @@ NS_MIA_BEGIN
    \brief a class to implement a quaternion
    
    This class implements some operations of a quaternion. 
+   The rotation is implemented as clockwise/left-handed rotation. 
 
 */
 
