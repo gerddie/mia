@@ -31,7 +31,8 @@ using namespace boost;
 
 using namespace boost::unit_test;
 
-static void run_test_read(const string& id, E3DImageOrientation test_orient, const string& expect)
+static void run_test_read(const string& id, E3DImageOrientation test_orient, 
+			  const string& expect)
 {
 	E3DImageOrientation orient;
 	istringstream is(id);
@@ -73,8 +74,8 @@ private:
 
 BOOST_FIXTURE_TEST_CASE(test_scale_x, OrientationTestFixture) 
 {
-	C3DOrientationAndPosition op(ior_default, C3DFVector(2.0, 1, 1), 
-				     C3DFVector::_0, Quaternion::_1);
+	C3DOrientationAndPosition op(ior_default, C3DFVector::_0, C3DFVector(2.0, 1, 1), 
+				     Quaternion::_1);
 
 	vector<double> expect = {
 		2.0, 0.0, 0.0, 0.0, 
@@ -82,12 +83,14 @@ BOOST_FIXTURE_TEST_CASE(test_scale_x, OrientationTestFixture)
 		0.0, 0.0, 1.0, 0.0, 
 		0.0, 0.0, 0.0, 1.0, 
 	};
+
+	check_transform(op, expect); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_scale_y, OrientationTestFixture) 
 {
-	C3DOrientationAndPosition op(ior_default, C3DFVector(1.0, 2.0, 1), 
-				     C3DFVector::_0, Quaternion::_1);
+	C3DOrientationAndPosition op(ior_default, C3DFVector::_0, C3DFVector(1.0, 2.0, 1), 
+				     Quaternion::_1);
 
 	vector<double> expect = {
 		1.0, 0.0, 0.0, 0.0, 
@@ -95,12 +98,13 @@ BOOST_FIXTURE_TEST_CASE(test_scale_y, OrientationTestFixture)
 		0.0, 0.0, 1.0, 0.0, 
 		0.0, 0.0, 0.0, 1.0, 
 	};
+	check_transform(op, expect); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_scale_z, OrientationTestFixture) 
 {
-	C3DOrientationAndPosition op(ior_default, C3DFVector(1.0, 1.0, 2.0), 
-				     C3DFVector::_0, Quaternion::_1);
+	C3DOrientationAndPosition op(ior_default, C3DFVector::_0, C3DFVector(1.0, 1.0, 2.0), 
+				     Quaternion::_1);
 
 	vector<double> expect = {
 		1.0, 0.0, 0.0, 0.0, 
@@ -108,31 +112,32 @@ BOOST_FIXTURE_TEST_CASE(test_scale_z, OrientationTestFixture)
 		0.0, 0.0, 2.0, 0.0, 
 		0.0, 0.0, 0.0, 1.0, 
 	};
+	check_transform(op, expect); 
 }
 
 
 void OrientationTestFixture::check_transform(const C3DOrientationAndPosition& op, const vector<double>& expect)
 {
-	CDoubleVector params(12); 
+	CDoubleVector params(16); 
 	op.get_transform_parameters(params); 
 	check(params, expect); 
 }
 
 void OrientationTestFixture::check_inv_transform(const C3DOrientationAndPosition& op, const vector<double>& expect)
 {
-	CDoubleVector params(12); 
+	CDoubleVector params(16); 
 	op.get_inverse_transform_parameters(params); 
 	check(params, expect); 
 }
 
 void OrientationTestFixture::check(const CDoubleVector& params, const vector<double>& expect)
 {
-	for (int i = 0; i < 12; ++i) {
+	for (int i = 0; i < 16; ++i) {
 		cvdebug() << "[" << i << "]=" <<  params[i] << ", expect " << expect[i] << "\n"; 
 		if (expect[i] == 0.0) {
 			BOOST_CHECK_SMALL(params[i], 1e-5); 
 		}else{
-			BOOST_CHECK_CLOSE(params[i], expect[0], 1e-5);
+			BOOST_CHECK_CLOSE(params[i], expect[i], 1e-5);
 		}
 	}
 }
