@@ -85,7 +85,44 @@ BOOST_FIXTURE_TEST_CASE(test_scale_x, OrientationTestFixture)
 	};
 
 	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		0.5, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+	
 }
+
+
+BOOST_FIXTURE_TEST_CASE(test_shift_x, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector(3.0,0,0), C3DFVector::_1, 
+				     Quaternion::_1);
+
+	vector<double> expect = {
+		1.0, 0.0, 0.0, 3.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+
+	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		1.0, 0.0, 0.0,-3.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+	
+}
+
 
 BOOST_FIXTURE_TEST_CASE(test_scale_y, OrientationTestFixture) 
 {
@@ -99,6 +136,40 @@ BOOST_FIXTURE_TEST_CASE(test_scale_y, OrientationTestFixture)
 		0.0, 0.0, 0.0, 1.0, 
 	};
 	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 0.5, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+
+}
+
+BOOST_FIXTURE_TEST_CASE(test_shift_y, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default,  C3DFVector(0.0, 2.0, 0), C3DFVector::_1,
+				     Quaternion::_1);
+
+	vector<double> expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0, 2.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0,-2.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+
 }
 
 BOOST_FIXTURE_TEST_CASE(test_scale_z, OrientationTestFixture) 
@@ -113,6 +184,40 @@ BOOST_FIXTURE_TEST_CASE(test_scale_z, OrientationTestFixture)
 		0.0, 0.0, 0.0, 1.0, 
 	};
 	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 0.5, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+
+}
+
+BOOST_FIXTURE_TEST_CASE(test_shift_z, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector(0.0, 0.0, 7.0), C3DFVector::_1, 
+				     Quaternion::_1);
+
+	vector<double> expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 7.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0,-7.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+
 }
 
 
