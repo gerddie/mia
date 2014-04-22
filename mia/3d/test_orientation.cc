@@ -296,6 +296,55 @@ BOOST_FIXTURE_TEST_CASE(test_rot_z, OrientationTestFixture)
 }
 
 
+
+// this is the left handed rotation 
+BOOST_FIXTURE_TEST_CASE(test_rot_xyz, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector::_0, C3DFVector::_1, 
+				     Quaternion(C3DDVector(M_PI / 6.0, M_PI / 3.0, 3 * M_PI/4.0)));
+
+	double cos_psi = -sqrt(2.0) / 2.0; 
+	double sin_psi = sqrt(2.0) / 2.0; 
+
+	double cos_theta = 0.5; 
+	double sin_theta = sqrt(3)/2.0; 
+
+	double cos_phi = sqrt(3)/2.0; 
+	double sin_phi = 0.5; 
+
+	double a11 = cos_theta * cos_psi; 
+	double a12 = - cos_phi * sin_psi + sin_phi * sin_theta * cos_psi; 
+	double a13 = sin_phi * sin_psi + cos_phi * sin_theta * cos_psi; 
+	
+	double a21 = cos_theta * sin_psi; 
+	double a22 = cos_phi * cos_psi + sin_phi * sin_theta * sin_psi; 
+	double a23 = - sin_phi * cos_psi + cos_phi * sin_theta * sin_psi; 
+	
+	double a31 = - sin_theta; 
+	double a32 = sin_phi * cos_theta;
+	double a33 = cos_phi * cos_theta;
+
+
+	vector<double> expect = {
+		a11, a12, a13, 0.0, 
+		a21, a22, a23, 0.0, 
+		a31, a32, a33, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+
+	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0,-1.0, 0.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+//	check_inv_transform(op, inv_expect); 
+}
+
+
 void OrientationTestFixture::check_transform(const C3DOrientationAndPosition& op, const vector<double>& expect)
 {
 	CDoubleVector params(16); 

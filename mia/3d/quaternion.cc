@@ -109,14 +109,13 @@ Quaternion::Quaternion(const C3DDVector& rot):
 {
 	double cos_phi, sin_phi, cos_psi, sin_psi, cos_theta, sin_theta; 
 	sincos(0.5 * rot.x, &sin_phi,   &cos_phi); 
-	sincos(0.5 * rot.y, &sin_psi,   &cos_psi); 
-	sincos(0.5 * rot.z, &sin_theta, &cos_theta); 
+	sincos(0.5 * rot.y, &sin_theta, &cos_theta); 
+	sincos(0.5 * rot.z, &sin_psi,   &cos_psi); 
 
-
-	m_w   = cos_phi * cos_psi* cos_theta + sin_phi * sin_psi * sin_theta;  
-	m_v.x = sin_phi * cos_psi* cos_theta - cos_phi * sin_psi * sin_theta;  
-	m_v.y = cos_phi * sin_psi* cos_theta + sin_phi * cos_psi * sin_theta;  
-	m_v.z = cos_phi * cos_psi* sin_theta - sin_phi * sin_psi * cos_theta; 
+	m_w   = cos_phi * cos_theta * cos_psi + sin_phi * sin_theta * sin_psi;  
+	m_v.x = sin_phi * cos_theta * cos_psi - cos_phi * sin_theta * sin_psi;  
+	m_v.y = cos_phi * sin_theta * cos_psi + sin_phi * cos_theta * sin_psi; 
+	m_v.z = cos_phi * cos_theta * sin_psi - sin_phi * sin_theta * cos_psi;  
 
 }
 
