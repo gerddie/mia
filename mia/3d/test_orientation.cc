@@ -123,6 +123,30 @@ BOOST_FIXTURE_TEST_CASE(test_shift_x, OrientationTestFixture)
 	
 }
 
+BOOST_FIXTURE_TEST_CASE(test_rot_x, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector::_0, C3DFVector::_1, 
+				     Quaternion(C3DDVector(0.5 * M_PI, 0, 0)));
+
+	vector<double> expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 0.0,-1.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+
+	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 0.0, 1.0, 0.0, 
+		0.0,-1.0, 0.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+}
+
 
 BOOST_FIXTURE_TEST_CASE(test_scale_y, OrientationTestFixture) 
 {
@@ -172,6 +196,32 @@ BOOST_FIXTURE_TEST_CASE(test_shift_y, OrientationTestFixture)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(test_rot_y, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector::_0, C3DFVector::_1, 
+				     Quaternion(C3DDVector(0, 0.5 * M_PI, 0)));
+
+	vector<double> expect = {
+		0.0, 0.0, 1.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+	       -1.0, 0.0, 0.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+
+	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		0.0, 0.0,-1.0, 0.0, 
+		0.0, 1.0, 0.0, 0.0, 
+		1.0, 0.0, 0.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+	
+}
+
+
 BOOST_FIXTURE_TEST_CASE(test_scale_z, OrientationTestFixture) 
 {
 	C3DOrientationAndPosition op(ior_default, C3DFVector::_0, C3DFVector(1.0, 1.0, 2.0), 
@@ -218,6 +268,31 @@ BOOST_FIXTURE_TEST_CASE(test_shift_z, OrientationTestFixture)
 	
 	check_inv_transform(op, inv_expect); 
 
+}
+
+BOOST_FIXTURE_TEST_CASE(test_rot_z, OrientationTestFixture) 
+{
+	C3DOrientationAndPosition op(ior_default, C3DFVector::_0, C3DFVector::_1, 
+				     Quaternion(C3DDVector(0, 0, 0.5 * M_PI)));
+
+	vector<double> expect = {
+		0.0,-1.0, 0.0, 0.0, 
+		1.0, 0.0, 0.0, 0.0, 
+	        0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+
+	check_transform(op, expect); 
+
+	vector<double> inv_expect = {
+		0.0, 1.0, 0.0, 0.0, 
+	       -1.0, 0.0, 0.0, 0.0, 
+	        0.0, 0.0, 1.0, 0.0, 
+		0.0, 0.0, 0.0, 1.0, 
+	};
+	
+	check_inv_transform(op, inv_expect); 
+	
 }
 
 
