@@ -54,7 +54,7 @@ C3DOrientationAndPosition::C3DOrientationAndPosition(E3DImageOrientation axis,
 
 void C3DOrientationAndPosition::get_transform_parameters(CDoubleVector& params) const
 {
-	assert(params.size() == 12); 
+	assert(params.size() == 16); 
 
 	const C3DFMatrix& axis_switch = get_axis_switch_matrix(); 
 	const C3DFMatrix rot = m_rotation.get_rotation_matrix(); 
@@ -88,7 +88,7 @@ void C3DOrientationAndPosition::get_transform_parameters(CDoubleVector& params) 
 
 void C3DOrientationAndPosition::get_inverse_transform_parameters(CDoubleVector& params) const
 {
-	assert(params.size() == 12);
+	assert(params.size() == 16);
 	const C3DFMatrix& axis_switch = get_axis_switch_matrix(); 
 	const C3DFMatrix rot = m_rotation.get_rotation_matrix().transposed(); 
 	const C3DFMatrix scale(C3DFVector(1.0/m_scale.x, 0, 0), 
