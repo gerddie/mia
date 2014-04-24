@@ -27,6 +27,8 @@
 #include <cassert>
 #include <ostream>
 #include <boost/call_traits.hpp>
+#include <boost/ref.hpp>
+#include <miaconfig.h>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
 
@@ -182,16 +184,39 @@ inline bool vstream::shows(Level l)const
 }
 
 
-#ifdef NDEBUG
+class EXPORT_CORE CTrace {
+public:
+	CTrace(const char *domain):
+		m_domain(domain),
+		m_fill(m_depth, ' ')  {
+		vstream::instance() << vstream::ml_trace
+				    << m_fill << "enter " << m_domain  << "\n";
+		++m_depth;
+	};
+	~CTrace() {
+		vstream::instance() << vstream::ml_trace
+				    << m_fill << "leave " << m_domain  << "\n";
+		--m_depth;
+	}
+private:
+	const char *m_domain;
+	std::string m_fill;
+	// should be thread local, or at least protected by a mutex
+	static __thread size_t m_depth;
+};
+
+
+#ifndef ENABLE_DEBUG_MESSAGES
 #define TRACE(DOMAIN)
 #define TRACE_FUNCTION
 #define FUNCTION_NOT_TESTED
-class CDebugSink {
+class CDebugSink  {
 public:
 	template <class T>
-	CDebugSink& operator << (const T /*val*/) {
+	CDebugSink& operator << (const T& MIA_PARAM_UNUSED(val)) {
 		return *this;
 	}
+
 	CDebugSink & operator<<(std::ostream& (* /*f*/)(std::ostream&)) {
 		return *this;
 	}
@@ -216,26 +241,6 @@ inline vstream& cvdebug()
 	return vstream::instance();
 }
 
-class EXPORT_CORE CTrace {
-public:
-	CTrace(const char *domain):
-		m_domain(domain),
-		m_fill(m_depth, ' ')  {
-		vstream::instance() << vstream::ml_trace
-				    << m_fill << "enter " << m_domain  << "\n";
-		++m_depth;
-	};
-	~CTrace() {
-		vstream::instance() << vstream::ml_trace
-				    << m_fill << "leave " << m_domain  << "\n";
-		--m_depth;
-	}
-private:
-	const char *m_domain;
-	std::string m_fill;
-	// should be thread local, or at least protected by a mutex
-	static __thread size_t m_depth;
-};
 
 /// a macro to trace scopes in a debug built
 #define TRACE(DOMAIN) ::mia::CTrace _xxx_trace(DOMAIN)
