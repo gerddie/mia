@@ -70,9 +70,8 @@ public:
 	
 	template <typename T, typename R> 
 	float operator () ( const T& mov, const R& ref) const {
-
-		auto evaluate_local_cost = [this, &mov, &ref](const tbb::blocked_range<size_t>& range, float result) {
-			
+		auto evaluate_local_cost = [this, &mov, &ref](const tbb::blocked_range<size_t>& range, const pair<float, int>& result) -> pair<float, int> {
+			CThreadMsgStream msks; 
 			float lresult = 0.0; 
 			int count = 0; 
 			const int max_length = 2 * m_hw +1; 
@@ -126,20 +125,21 @@ public:
 							}
 							float suma2_sumb2 = suma2 * sumb2;
 							if (suma2_sumb2 > 1e-5) {
-								
 								lresult += sumab * sumab / suma2_sumb2; 
 								++count;
+								cvdebug() << "v=" << lresult
+									  << ", c=" << count << ", n=" << n << "\n"; 
 							}
 						}
 					}
 			}
-			if (count > 0) 
-				return result + lresult / count; 
-			else 
-                        return result; 
+			return make_pair(result.first + lresult, result.second + count); 
 		};
-		return parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), 0.0, evaluate_local_cost, 
-				       [](double x, double y){return x+y;});	
+		
+		pair<float,int> init{0, 0}; 
+		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), init, evaluate_local_cost, 
+					 [](const pair<float,int>& x, const pair<float,int>& y){return make_pair(x.first + y.first, x.second + y.second);});	
+		return r.second > 0 ? - r.first / r.second : 0.0; 
 	}
 }; 
 
@@ -232,14 +232,15 @@ public:
                                                         
 								lresult += sumab * sumab / suma2_sumb2; 
 								++count;
-                                                        
-								*iforce = static_cast<float>(2.0 * sumab / suma2_sumb2 * ( *iref -  sumab / suma2 * *imov)) * *ig; 
+								const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
+												      ( sumab / suma2 * *imov - *iref ));
+								*iforce = scale * *ig; 
 							}
 						}
 					}
 			}
 			if (count > 0) 
-				return result + lresult / count; 
+				return result - lresult / count; 
 			else 
 				return result; 
 		};
