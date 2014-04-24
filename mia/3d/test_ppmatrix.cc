@@ -26,10 +26,12 @@ NS_MIA_USE;
 PrepareTestPluginPath plugin_path_init; 
 
 struct TransformSplineFixtureFieldBase {
-	TransformSplineFixtureFieldBase()
-	{
-
-	}
+	TransformSplineFixtureFieldBase():
+		range(1.0), 
+		graddiv2sum(0.0)
+		{
+		}
+	
 	void init(int dsize, double r, EInterpolation type) {
 		ipf.reset(create_3dinterpolation_factory(type, bc_mirror_on_bounds));
 		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
@@ -326,7 +328,8 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixtureMixe
 
 
 struct TransformSplineFixtureFieldNonuniform {
-	TransformSplineFixtureFieldNonuniform()
+	TransformSplineFixtureFieldNonuniform():
+		range(1.0)
 	{
 
 	}
