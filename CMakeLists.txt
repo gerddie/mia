@@ -63,6 +63,7 @@ SET(LIBRARY_VERSION_INFO "${MIA_CURRENT}.${MIA_AGE}.${MIA_REVISION}")
 OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are availabe" FALSE)
 OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" TRUE)
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
+OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
 
 INCLUDE(GNUInstallDirs)
 
