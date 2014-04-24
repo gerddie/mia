@@ -18,35 +18,15 @@
  *
  */
 
-#ifndef mia_3d_cost_lncc_hh
-#define mia_3d_cost_lncc_hh
 
-#include <mia/internal/autotest.hh>
-#include <mia/3d/maskedcost.hh>
+#include <mia/internal/plugintester.hh>
+#include <mia/3d/maskedcost/lncc.hh>
 
-#define NS mia_3dcost_lncc_masked
-
-NS_BEGIN(NS)
-
-class CLNCC3DImageCost: public mia::C3DMaskedImageCost {
-public: 	
-	typedef mia::C3DMaskedImageCost::Data Data; 
-	typedef mia::C3DMaskedImageCost::Force Force; 
-	typedef mia::C3DMaskedImageCost::Mask Mask; 
-
-	CLNCC3DImageCost(int hw);
-private: 
-	virtual double do_value(const Data& a, const Data& b, const Mask& m) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, const Mask& m, Force& force) const; 
-	virtual void post_set_reference(const Data& ref); 
-
-        C3DFImage m_ref_variation; 
-        C3DFImage m_ref_mean; 
-        C3DFImage m_ref_n;
-
-};
+using namespace NS; 
+using namespace mia; 
 
 
-#endif 
+
+
 
 

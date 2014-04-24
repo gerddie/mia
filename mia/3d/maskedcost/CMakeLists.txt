@@ -17,6 +17,7 @@
 #
 
 SET(maskedcost3d
+  lncc
   mi 
   ssd
 )

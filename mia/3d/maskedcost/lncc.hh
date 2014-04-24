@@ -18,8 +18,12 @@
  *
  */
 
-#include <mia/3d/maskedcost/lncc.hh>
+#ifndef mia_3d_maskedcost_lncc_hh
+#define mia_3d_maskedcost_lncc_hh
 
+#include <mia/3d/maskedcost.hh>
+
+#define NS mia_3d_maskedlncc
 
 NS_BEGIN(NS)
 
@@ -44,11 +48,9 @@ public:
 	mia::C3DMaskedImageCost *do_create() const;
 private: 
 	const std::string do_get_descr() const; 
-        int m_hw; 
+        unsigned int m_hw; 
 };
 
 NS_END
 
-
-
-
+#endif 

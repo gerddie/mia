@@ -18,21 +18,27 @@
  *
  */
 
+#include <mia/3d/maskedcost/lncc.hh>
 
+#include <mia/core/threadedmsg.hh>
+#include <tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
+
+
+NS_BEGIN(NS)
+
+using namespace mia; 
+using std::vector; 
+using std::pair; 
+using std::make_pair; 
 
 CLNCC3DImageCost::CLNCC3DImageCost(int hw):
 m_hwidth(hw)
 {
 }
 
-double CLNCC3DImageCost::do_value(const Data& a, const Data& b, const Mask& m) const
-{
-        
-}
-
 inline pair<C3DBounds, C3DBounds> prepare_range(const C3DBounds& size, int cx, int cy, int cz, int hw) 
 {
-
 	int zb = cz - hw;
 	if (zb < 0) zb = 0; 
 	unsigned ze = cz + hw + 1; 
@@ -52,91 +58,233 @@ inline pair<C3DBounds, C3DBounds> prepare_range(const C3DBounds& size, int cx, i
 }
 
 
+
+class FEvalCost : public TFilter<float> {
+	int m_hw;
+	const C3DBitImage& m_mask; 
+public:
+	FEvalCost(int hw, const C3DBitImage& mask):
+		m_hw(hw), 
+		m_mask(mask)
+		{}
+	
+	template <typename T, typename R> 
+	float operator () ( const T& mov, const R& ref) const {
+
+		auto evaluate_local_cost = [this, &mov, &ref](const tbb::blocked_range<size_t>& range, float result) {
+			
+			float lresult = 0.0; 
+			int count = 0; 
+			const int max_length = 2 * m_hw +1; 
+			vector<float> a_buffer( max_length * max_length * max_length); 
+			vector<float> b_buffer( max_length * max_length * max_length); 
+			
+			for (auto z = range.begin(); z != range.end(); ++z) {
+				auto imask  = m_mask.begin_at(0,0,z);
+			
+				for (size_t y = 0; y < mov.get_size().y; ++y)
+					for (size_t x = 0; x < mov.get_size().x; ++x, ++imask) {
+						if (!*imask) 
+							continue; 
+						
+						auto c_block = prepare_range(mov.get_size(), x, y, z, m_hw); 
+						auto ia = mov.begin_range(c_block.first,c_block.second); 
+						auto ea = mov.end_range(c_block.first,c_block.second); 
+						auto ib = ref.begin_range(c_block.first,c_block.second); 
+						auto im = m_mask.begin_range(c_block.first,c_block.second); 
+						
+
+						float suma = 0.0; 
+						float sumb = 0.0; 
+						float suma2 = 0.0; 
+						float sumb2 = 0.0; 
+						float sumab = 0.0; 
+						long n = 0; 
+						
+						// make a local copy 
+						while (ia != ea) {
+							if (*im) {
+								a_buffer[n] = *ia; 
+								b_buffer[n] = *ib; 
+								suma += *ia;
+								sumb += *ib;
+								++n;
+							}
+							++ia; ++ib; ++im; 
+						}
+						if (n > 1) {
+							const float mean_a = suma/n; 
+							const float mean_b = sumb/n;
+							
+							// strip mean and evaluate cross correlation 
+							for (int i = 0; i < n; ++i) {
+								const float a_ = a_buffer[i] - mean_a; 
+								suma2 += a_ * a_; 
+								const float b_ = b_buffer[i] - mean_b; 
+								sumb2 += b_ * b_; 
+								sumab += a_ * b_; 
+							}
+							float suma2_sumb2 = suma2 * sumb2;
+							if (suma2_sumb2 > 1e-5) {
+								
+								lresult += sumab * sumab / suma2_sumb2; 
+								++count;
+							}
+						}
+					}
+			}
+			if (count > 0) 
+				return result + lresult / count; 
+			else 
+                        return result; 
+		};
+		return parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), 0.0, evaluate_local_cost, 
+				       [](double x, double y){return x+y;});	
+	}
+}; 
+
+
+double CLNCC3DImageCost::do_value(const Data& a, const Data& b, const Mask& m) const
+{
+	FEvalCost ecost(m_hwidth, m); 
+	return mia::filter(ecost, a, b); 
+}
+
+
+class FEvalCostForce : public TFilter<float> {
+	int m_hw;
+	const C3DBitImage& m_mask; 
+	C3DFVectorfield& m_force; 
+public: 
+	FEvalCostForce(int hw, const C3DBitImage& mask, C3DFVectorfield& force):
+		m_hw(hw), 
+		m_mask(mask), 
+		m_force(force)
+		{}
+	
+	template <typename T, typename R> 
+	float operator () ( const T& mov, const R& ref) const {
+		
+		auto ag = get_gradient(mov); 
+
+		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const tbb::blocked_range<size_t>& range, float result) {
+			
+			float lresult = 0.0; 
+			int count = 0; 
+			const int max_length = 2 * m_hw + 1;
+			vector<float> a_buffer( max_length * max_length * max_length); 
+			vector<float> b_buffer( max_length * max_length * max_length); 
+
+			for (auto z = range.begin(); z != range.end(); ++z) {
+                        
+				auto iforce = m_force.begin_at(0,0,z);
+				auto imask = m_mask.begin_at(0,0,z);
+				auto ig = ag.begin_at(0,0,z);
+				auto imov = mov.begin_at(0,0,z);
+				auto iref = ref.begin_at(0,0,z);
+                        
+				for (size_t y = 0; y < mov.get_size().y; ++y)
+					for (size_t x = 0; x < mov.get_size().x; ++x, ++iforce, ++imask, ++ig, ++iref, ++imov) {
+						if (!*imask) 
+							continue; 
+                                        
+						auto c_block = prepare_range(mov.get_size(), x, y, z, m_hw); 
+						auto ia = mov.begin_range(c_block.first,c_block.second); 
+						auto ea = mov.end_range(c_block.first,c_block.second); 
+						auto ib = ref.begin_range(c_block.first,c_block.second); 
+						auto im = m_mask.begin_range(c_block.first,c_block.second); 
+                                        
+
+						float suma = 0.0; 
+						float sumb = 0.0; 
+						float suma2 = 0.0; 
+						float sumb2 = 0.0; 
+						float sumab = 0.0; 
+						long n = 0; 
+						
+						// make a local copy 
+						while (ia != ea) {
+							if (*im) {
+								a_buffer[n] = *ia; 
+								b_buffer[n] = *ib; 
+								suma += *ia;
+								sumb += *ib;
+								++n;
+							}
+							++ia; ++ib; ++im; 
+						}
+						if (n > 1) {
+							const float mean_a = suma/n; 
+							const float mean_b = sumb/n;
+							
+							// strip mean and evaluate cross correlation 
+							for (int i = 0; i < n; ++i) {
+								const float a_ = a_buffer[i] - mean_a; 
+								suma2 += a_ * a_; 
+								const float b_ = b_buffer[i] - mean_b; 
+								sumb2 += b_ * b_; 
+								sumab += a_ * b_; 
+							}
+							
+							float suma2_sumb2 = suma2 * sumb2;
+							
+							if (suma2_sumb2 > 1e-5) {
+                                                        
+								lresult += sumab * sumab / suma2_sumb2; 
+								++count;
+                                                        
+								*iforce = static_cast<float>(2.0 * sumab / suma2_sumb2 * ( *iref -  sumab / suma2 * *imov)) * *ig; 
+							}
+						}
+					}
+			}
+			if (count > 0) 
+				return result + lresult / count; 
+			else 
+				return result; 
+		};
+		
+		return parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), 0.0, 
+				       evaluate_local_cost_force, [](double x, double y){return x+y;});
+		
+	}
+	
+};
+
 double CLNCC3DImageCost::do_evaluate_force(const Data& a, const Data& b, const Mask& m, Force& force) const
 {
-        const int hw = m_hwidth; 
-        
-        auto ag = get_gradient(a); 
-
-        auto evaluate_local_cost = [hw, &a, &b, &m, &force, &ag](const tbb::blocked_range<size_t>& range, float result) {
-                float lresult = 0.0; 
-                const int count = 0; 
-                const int max_length = 2 * hw +1; 
-                vector<float> a_buffer( max_length * max_length * max_length); 
-                vector<float> b_buffer( max_length * max_length * max_length); 
-
-                for (auto z = range.begin(); z != range.end(); ++z) {
-                        
-                        auto iforce = force.begin_at(0,0,z);
-                        auto imask = force.begin_at(0,0,z);
-                        auto ig = ag.begin_at(0,0,z);
-                        auto ifixed = b.begin_at(0,0,z);
-                        
-                        for (size_t y = 0; y < data.get_size().y; ++y)
-                                for (size_t x = 0; x < data.get_size().x; ++x, ++iforce, ++imask, ++ig, ++ifixed) {
-                                        if (!*imask) 
-                                                continue; 
-                                        
-                                        auto c_block = prepare_range(a.get_size(), x, y, z, hw); 
-                                        auto ia = a.begin_range(c_block.first,c_block.second); 
-                                        auto ea = a.end_range(c_block.first,c_block.second); 
-                                        auto ib = b.begin_range(c_block.first,c_block.second); 
-                                        auto im = m.begin_range(c_block.first,c_block.second); 
-                                        
-
-                                        float suma = 0.0; 
-                                        float sumb = 0.0; 
-                                        float suma2 = 0.0; 
-                                        float sumb2 = 0.0; 
-                                        float sumab = 0.0; 
-                                        long n = 0; 
-                                        
-                                        // make a local copy 
-                                        while (ia != ea) {
-                                                if (*im) {
-                                                        a_buffer[n] = *ia; 
-                                                        b_buffer[n] = *ib; 
-                                                        suma += *ia;
-                                                        sumb += *ib;
-                                                        ++n;
-                                                }
-                                                ++ia; ++ib; ++im; 
-                                        }
-                                        if (n > 1) {
-                                                const float mean_a = suma/n; 
-                                                const float mean_b = sumb/n;
-                                                
-                                                // strip mean and evaluate cross correlation 
-                                                for (int i = 0; i < n; ++i) {
-                                                        const float a_ = a_buffer[i] - mean_a; 
-                                                        suma2 += a_ * a_; 
-                                                        const float b_ = b_buffer[i] - mean_b; 
-                                                        sumb2 += b_ * b_; 
-                                                        sumab += a_ * b_; 
-                                                }
-                                        
-                                                float suma2_sumb2 = suma2 * sumb2;
-
-                                                if (suma2_sumb2 > 1e-5) {
-                                                        
-                                                        lresult += sumab * sumab / suma2_sumb2; 
-                                                        ++count;
-                                                        
-                                                        *iforce = static_cast<float>(2.0 * sumab / suma2_sumb2 * ( *ib -  sumab / suma2 * *ia)) * *ig; 
-                                                }
-                                        }
-                                }
-                }
-                if (count > 0) 
-                        return result + lresult / count; 
-                else 
-                        return result; 
-        };
-        
-        return parallel_reduce(tbb::blocked_range<size_t>(0, a.get_size().z, 1), run_slice, 0.0);
+	FEvalCostForce ecostforce(m_hwidth, m, force); 
+	return mia::filter(ecostforce, a, b); 
 }
 
 
 void CLNCC3DImageCost::post_set_reference(const Data& ref)
 {
 }
+
+
+CLNCC3DImageCostPlugin::CLNCC3DImageCostPlugin():
+C3DMaskedImageCostPlugin("lncc"), 
+	m_hw(5)
+{
+	this->add_parameter("w", new CUIntParameter(m_hw, 1, 256, false, 
+						    "half width of the window used for evaluating the localized cross correlation")); 
+}
+
+C3DMaskedImageCost *CLNCC3DImageCostPlugin::do_create() const
+{
+	return new CLNCC3DImageCost(m_hw);
+}
+
+const std::string CLNCC3DImageCostPlugin::do_get_descr() const
+{
+	return "local normalized cross correlation with masking support."; 
+}
+
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new CLNCC3DImageCostPlugin();
+}
+
+NS_END
