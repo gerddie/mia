@@ -125,6 +125,8 @@ public:
 							}
 							float suma2_sumb2 = suma2 * sumb2;
 							if (suma2_sumb2 > 1e-5) {
+								cvdebug() << x << y << z 
+									  << ": Sab=" << sumab << ", Sa2=" << suma2 << ", Sb2=" << sumb2 << "\n"; 
 								lresult += sumab * sumab / suma2_sumb2; 
 								++count;
 								cvdebug() << "v=" << lresult
@@ -139,6 +141,7 @@ public:
 		pair<float,int> init{0, 0}; 
 		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), init, evaluate_local_cost, 
 					 [](const pair<float,int>& x, const pair<float,int>& y){return make_pair(x.first + y.first, x.second + y.second);});	
+		cvdebug() << "result={" << r.first << " /  " <<  r.second << "\n"; 
 		return r.second > 0 ? - r.first / r.second : 0.0; 
 	}
 }; 
@@ -233,7 +236,7 @@ public:
 								lresult += sumab * sumab / suma2_sumb2; 
 								++count;
 								const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
-												      ( sumab / suma2 * *imov - *iref ));
+												      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
 								*iforce = scale * *ig; 
 							}
 						}
