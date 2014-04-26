@@ -114,7 +114,11 @@ public:
 						if (n > 1) {
 							const float mean_a = suma/n; 
 							const float mean_b = sumb/n;
-							
+							cvdebug() << "A=["; 
+							for (int i = 0; i < n; ++i) 
+								cverb << a_buffer[i] << ", "; 
+							cverb << "\n"; 
+
 							// strip mean and evaluate cross correlation 
 							for (int i = 0; i < n; ++i) {
 								const float a_ = a_buffer[i] - mean_a; 
@@ -125,8 +129,10 @@ public:
 							}
 							float suma2_sumb2 = suma2 * sumb2;
 							if (suma2_sumb2 > 1e-5) {
-								cvdebug() << x << y << z 
-									  << ": Sab=" << sumab << ", Sa2=" << suma2 << ", Sb2=" << sumb2 << "\n"; 
+								cvdebug() << z << y << x 
+									  << ": Sab=" << sumab << ", Sa2=" << suma2 << ", Sb2=" << sumb2 
+									  << ", n=" << n << ", meanA=" << mean_a << ", mean_b=" << mean_b 
+									  << "\n"; 
 								lresult += sumab * sumab / suma2_sumb2; 
 								++count;
 								cvdebug() << "v=" << lresult
