@@ -173,10 +173,10 @@ public:
 	
 	template <typename T, typename R> 
 	float operator () ( const T& mov, const R& ref) const {
-		
+		CThreadMsgStream msks; 		
 		auto ag = get_gradient(mov); 
-
-		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const tbb::blocked_range<size_t>& range, float result) {
+		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const tbb::blocked_range<size_t>& range, 
+									 const pair<float, int>& result) -> pair<float, int> {
 			
 			float lresult = 0.0; 
 			int count = 0; 
@@ -243,20 +243,24 @@ public:
 								++count;
 								const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
 												      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
+								cvdebug() << z << y << x 
+									  << ": sumab=" << sumab << ", suma2=" << suma2
+									  << ", mean-a" << mean_a << ", mean_b = " << mean_b 
+									  << ", scale=" << scale << "\n";  
 								*iforce = scale * *ig; 
 							}
 						}
 					}
 			}
-			if (count > 0) 
-				return result - lresult / count; 
-			else 
-				return result; 
+			return make_pair(result.first + lresult, result.second + count); 
 		};
+		pair<float,int> init{0, 0}; 		
+		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), init, evaluate_local_cost_force, 
+					 [](const pair<float,int>& x, const pair<float,int>& y){
+						 return make_pair(x.first + y.first, x.second + y.second);
+					 });
 		
-		return parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), 0.0, 
-				       evaluate_local_cost_force, [](double x, double y){return x+y;});
-		
+		return r.second > 0 ? - r.first / r.second : 0.0; 
 	}
 	
 };
