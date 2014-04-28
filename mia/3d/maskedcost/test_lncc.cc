@@ -100,6 +100,18 @@ BOOST_AUTO_TEST_CASE( test_masked_lncc_1 )
         auto v = lncc->value(src_f, mask); 
         BOOST_CHECK_CLOSE(v, -0.1206397729, 0.1); 
         
+	C3DFVectorfield zero_force(size); 
+	v = lncc->evaluate_force(ref_f, mask, zero_force); 
+	BOOST_CHECK_CLOSE(v, -1, 0.1);
+
+	for (auto iv = zero_force.begin(); iv != zero_force.end();  ++iv) {
+		BOOST_CHECK_SMALL(iv->x, 1e-8f); 
+		BOOST_CHECK_SMALL(iv->y, 1e-8f); 
+		BOOST_CHECK_SMALL(iv->z, 1e-8f); 
+	}
+	
+	
+
 
 	C3DFVectorfield force(size); 
 
@@ -179,10 +191,4 @@ BOOST_AUTO_TEST_CASE( test_masked_lncc_1 )
 		BOOST_CHECK_CLOSE(iv->y, *igy, 0.1); 
 		BOOST_CHECK_CLOSE(iv->z, *igz, 0.1); 
 	}
-	
-
-
 }
-
-
-
