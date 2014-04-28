@@ -35,6 +35,7 @@ C3DMaskedImageFullCost::C3DMaskedImageFullCost(const std::string& src,
 	m_src_key(C3DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C3DImageIOPluginHandler::instance().load_to_pool(ref)),
         m_ref_mask_bit(nullptr), 
+	m_ref_mask_scaled_bit(nullptr), 
 	m_cost_kernel(cost)
 {
 	assert(m_cost_kernel); 
@@ -68,6 +69,7 @@ P3DImage C3DMaskedImageFullCost::get_combined_mask(const C3DTransformation *t, C
         P3DImage temp_mask; 
         *combined_mask = m_ref_mask_scaled_bit; 
         if (m_src_mask_scaled) {
+		cvdebug() << "Maskedimage: Start with moving mask\n"; 
                 temp_mask = t ? (*t)(*m_src_mask_scaled): 
                         temp_mask = m_src_mask_scaled->clone(); 
 
@@ -75,6 +77,7 @@ P3DImage C3DMaskedImageFullCost::get_combined_mask(const C3DTransformation *t, C
                 assert(*combined_mask); 
                 
                 if (m_ref_mask_scaled_bit) {
+			cvdebug() << "Maskedimage: Combine with reference mask\n"; 
                         if ( (*combined_mask)->get_size() != m_ref_mask_scaled_bit->get_size()){
                                 assert(!t && "Bug: The transformation should have created a mask of "
                                        "the same size like the reference image mask"); 
@@ -94,7 +97,8 @@ P3DImage C3DMaskedImageFullCost::get_combined_mask(const C3DTransformation *t, C
                         // always inside the fixed mask. However, it is difficult to evaluate a 
                         // force for this.
                 }
-        }
+        }else
+		cvdebug() << "Maskedimage: Only have reference mask\n"; 
         return temp_mask; 
 }
 
@@ -207,9 +211,11 @@ void C3DMaskedImageFullCost::do_reinit()
                 if (m_src_mask->get_pixel_type() != it_bit) {
                         // one could also add a binarize filter here, but  it's better to force 
                         // the user to set the pixel type correctly 
-                        throw create_exception<invalid_argument>("C3DMaskedImageFullCost: moving mask image "
-                                                                 "must be binary"); 
+                        throw create_exception<invalid_argument>("C3DMaskedImageFullCost: moving mask image ", 
+								 m_src_mask_key.get_key(), 
+                                                                 " must be binary"); 
                 }
+		m_src_mask_scaled = m_src_mask; 
         }
 
         if (m_ref_mask_key.key_is_valid()) {
