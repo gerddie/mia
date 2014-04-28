@@ -173,11 +173,11 @@ public:
 	
 	template <typename T, typename R> 
 	float operator () ( const T& mov, const R& ref) const {
-		CThreadMsgStream msks; 		
 		auto ag = get_gradient(mov); 
 		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const tbb::blocked_range<size_t>& range, 
 									 const pair<float, int>& result) -> pair<float, int> {
 			
+			CThreadMsgStream msks; 		
 			float lresult = 0.0; 
 			int count = 0; 
 			const int max_length = 2 * m_hw + 1;
