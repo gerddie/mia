@@ -148,11 +148,36 @@ BOOST_AUTO_TEST_CASE( test_masked_lncc_1 )
 		0,0,0,0
 	}; 
 	
+	float gradz[] = {
+		0,0,0,0,
+		0,0,0,0,
+		0,0,0,0,
+		0,0,0,0,
+		
+		0,0,0,0.003136997,
+		0.002078355,0.0001225077,-0.0003726295,-0.0022727478,
+		0,0,0.0021445316,0.0035616063,
+		0.0282984061,0.0018003944,0,0.0004336735,
+		
+		0,0,0,0,
+		0,0.023826268,0.0645050124,-0.0293649178,
+		0,-0.0032574205,-0.0256304233,0.0046683347,
+		-0.0065214016,-0.0003276447,0,-0.0010597761,
+		
+		0,0,0,0,
+		0,0,0,0,
+		0,0,0,0,
+		0,0,0,0
+		
+	}; 
+
 	auto igx = gradx; 
 	auto igy = grady; 
-	for (auto iv = force.begin(); iv != force.end();  ++iv, ++igx, ++igy) {
+	auto igz = gradz; 
+	for (auto iv = force.begin(); iv != force.end();  ++iv, ++igx, ++igy, ++igz) {
 		BOOST_CHECK_CLOSE(iv->x, *igx, 0.1); 
 		BOOST_CHECK_CLOSE(iv->y, *igy, 0.1); 
+		BOOST_CHECK_CLOSE(iv->z, *igz, 0.1); 
 	}
 	
 
