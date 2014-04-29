@@ -72,10 +72,7 @@ public:
 			CThreadMsgStream msks; 
 			float lresult = 0.0; 
 			int count = 0; 
-			const int max_length = 2 * m_hw +1; 
-			vector<float> a_buffer( max_length * max_length * max_length); 
-			vector<float> b_buffer( max_length * max_length * max_length); 
-			
+		
 			for (auto z = range.begin(); z != range.end(); ++z) {
 				for (size_t y = 0; y < mov.get_size().y; ++y)
 					for (size_t x = 0; x < mov.get_size().x; ++x) {
@@ -84,37 +81,35 @@ public:
 						auto ia = mov.begin_range(c_block.first,c_block.second); 
 						auto ea = mov.end_range(c_block.first,c_block.second); 
 						auto ib = ref.begin_range(c_block.first,c_block.second); 
-					
-
-						float suma = 0.0; 
-						float sumb = 0.0; 
-						float suma2 = 0.0; 
-						float sumb2 = 0.0; 
-						float sumab = 0.0; 
-						long n = 0; 
 						
-						// make a local copy 
-						while (ia != ea) {
-							a_buffer[n] = *ia; 
-							b_buffer[n] = *ib; 
-							suma += *ia;
-							sumb += *ib;
-							++n;
-							++ia; ++ib; 
-						}
+						auto delta_size = c_block.second - c_block.first; 
+						auto n = delta_size.product(); 
+						
 						if (n > 1) {
-							const float mean_a = suma/n; 
-							const float mean_b = sumb/n;
 							
-							// strip mean and evaluate cross correlation 
-							for (int i = 0; i < n; ++i) {
-								const float a_ = a_buffer[i] - mean_a; 
-								suma2 += a_ * a_; 
-								const float b_ = b_buffer[i] - mean_b; 
-								sumb2 += b_ * b_; 
-								sumab += a_ * b_; 
+							double suma = 0.0; 
+							double sumb = 0.0; 
+							double suma2 = 0.0; 
+							double sumb2 = 0.0; 
+							double sumab = 0.0; 
+							
+							// make a local copy 
+							while (ia != ea) {
+								suma += *ia;
+								sumb += *ib;
+								suma2 += *ia * *ia; 
+								sumb2 += *ib * *ib; 
+								sumab += *ia * *ib; 
+								++ia; ++ib; 
 							}
-							float suma2_sumb2 = suma2 * sumb2;
+
+							const double mean_a = suma/n; 
+							const double mean_b = sumb/n;
+							sumab -= n * mean_a * mean_b; 
+							suma2 -= n * mean_a * mean_a; 
+							sumb2 -= n * mean_b * mean_b; 
+							
+							double suma2_sumb2 = suma2 * sumb2;
 							if (suma2_sumb2 > 1e-5) {
 								lresult += sumab * sumab / suma2_sumb2; 
 								++count;
@@ -160,10 +155,6 @@ public:
 			CThreadMsgStream msks; 		
 			float lresult = 0.0; 
 			int count = 0; 
-			const int max_length = 2 * m_hw + 1;
-			vector<float> a_buffer( max_length * max_length * max_length); 
-			vector<float> b_buffer( max_length * max_length * max_length); 
-
 			for (auto z = range.begin(); z != range.end(); ++z) {
                         
 				auto iforce = m_force.begin_at(0,0,z);
@@ -177,41 +168,37 @@ public:
 						auto ia = mov.begin_range(c_block.first,c_block.second); 
 						auto ea = mov.end_range(c_block.first,c_block.second); 
 						auto ib = ref.begin_range(c_block.first,c_block.second); 
-                                        
-
-						float suma = 0.0; 
-						float sumb = 0.0; 
-						float suma2 = 0.0; 
-						float sumb2 = 0.0; 
-						float sumab = 0.0; 
-						long n = 0; 
 						
-						// make a local copy 
-						while (ia != ea) {
-							a_buffer[n] = *ia; 
-							b_buffer[n] = *ib; 
-							suma += *ia;
-							sumb += *ib;
-							++n;
-							++ia; ++ib; 
-						}
+						auto delta_size = c_block.second - c_block.first; 
+						auto n = delta_size.product(); 
+						
 						if (n > 1) {
-							const float mean_a = suma/n; 
-							const float mean_b = sumb/n;
+							double suma = 0.0; 
+							double sumb = 0.0; 
+							double suma2 = 0.0; 
+							double sumb2 = 0.0; 
+							double sumab = 0.0; 
 							
-							// strip mean and evaluate cross correlation 
-							for (int i = 0; i < n; ++i) {
-								const float a_ = a_buffer[i] - mean_a; 
-								suma2 += a_ * a_; 
-								const float b_ = b_buffer[i] - mean_b; 
-								sumb2 += b_ * b_; 
-								sumab += a_ * b_; 
+							while (ia != ea) {
+								suma += *ia;
+								sumb += *ib;
+								suma2 += *ia * *ia; 
+								sumb2 += *ib * *ib; 
+								sumab += *ia * *ib; 
+								++ia; ++ib; 
 							}
-							
-							float suma2_sumb2 = suma2 * sumb2;
+						
+							const double mean_a = suma/n; 
+							const double mean_b = sumb/n;
+
+							sumab -= n * mean_a * mean_b; 
+							suma2 -= n * mean_a * mean_a; 
+							sumb2 -= n * mean_b * mean_b; 
+
+							double suma2_sumb2 = suma2 * sumb2;
 							
 							if (suma2_sumb2 > 1e-5) {
-                                                        
+								
 								lresult += sumab * sumab / suma2_sumb2; 
 								++count;
 								const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
