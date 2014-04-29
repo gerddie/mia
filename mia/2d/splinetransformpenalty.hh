@@ -46,7 +46,8 @@ public:
 	
 	/**
 	   Constructor that sets the weight of the penalty term 
-	   \param weight 
+	   @param weight 
+	   @param normalize 
 	 */
 	C2DSplineTransformPenalty(double weight, bool normalize); 
 

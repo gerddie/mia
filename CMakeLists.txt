@@ -453,7 +453,7 @@ ENDIF(PYTHONINTERP_FOUND)
 # 
 
 DEFINE_PLUGIN_NAMES( 1d  "spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
-DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dsplinepenalty  "transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dstack  "filter" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
