@@ -107,6 +107,7 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost_src_mask)
 	cost.reinit(); 
 	cvdebug() << "set size cost\n"; 
 	cost.set_size(size);
+
 	
 	C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror")); 
 	
