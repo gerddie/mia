@@ -29,7 +29,7 @@ PrepareTestPluginPath plugin_path_init;
 class C2DSplinePenaltyMock: public C2DSplineTransformPenalty {
 public: 
 	
-	C2DSplinePenaltyMock(double weight); 
+	C2DSplinePenaltyMock(double weight, bool normalize); 
 	
 private: 
 	void do_initialize(); 
@@ -46,7 +46,7 @@ private:
 
 BOOST_AUTO_TEST_CASE( weight_1_1_1_1p5_2p9_bspline3 )
 {
-	C2DSplinePenaltyMock penalty(1.0); 
+	C2DSplinePenaltyMock penalty(1.0, false); 
 	C2DBounds size(1,1); 
 	penalty.initialize(size, C2DFVector(1.5,2.9), produce_spline_kernel("bspline:d=2"));
 
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( weight_1_1_1_1p5_2p9_bspline3 )
 
 BOOST_AUTO_TEST_CASE( weight_0p5_1_1_1p5_2p9_bspline3 )
 {
-	C2DSplinePenaltyMock penalty(0.5); 
+	C2DSplinePenaltyMock penalty(0.5, false); 
 	C2DBounds size(1,1); 
 	penalty.initialize(size, C2DFVector(1.5,2.9), produce_spline_kernel("bspline:d=2"));
 
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( weight_0p5_1_1_1p5_2p9_bspline3 )
 
 BOOST_AUTO_TEST_CASE( weight_0p5_2_3_2_3_bspline3 )
 {
-	C2DSplinePenaltyMock penalty(0.5); 
+	C2DSplinePenaltyMock penalty(0.5, false); 
 	C2DBounds size(2,3); 
 	penalty.initialize(size, C2DFVector(2,3), produce_spline_kernel("bspline:d=2"));
 
@@ -159,8 +159,8 @@ BOOST_AUTO_TEST_CASE( weight_0p5_2_3_2_3_bspline3 )
 	BOOST_CHECK_CLOSE(grad[11], 1.0, 0.1); 	
 }
 
-C2DSplinePenaltyMock::C2DSplinePenaltyMock(double weight):
-C2DSplineTransformPenalty(weight)
+C2DSplinePenaltyMock::C2DSplinePenaltyMock(double weight, bool normalize):
+C2DSplineTransformPenalty(weight,normalize)
 {
 }
 
@@ -206,7 +206,7 @@ double C2DSplinePenaltyMock::do_value_and_gradient(const C2DFVectorfield&  coeff
 
 C2DSplineTransformPenalty *C2DSplinePenaltyMock::do_clone() const
 {
-	C2DSplineTransformPenalty *result =  new C2DSplinePenaltyMock(get_weight());
+	C2DSplineTransformPenalty *result =  new C2DSplinePenaltyMock(get_weight(), get_normalize());
 	result->initialize(get_size(), get_range(), get_kernel()); 
 	return result; 
 }
