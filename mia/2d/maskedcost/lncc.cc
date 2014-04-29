@@ -264,11 +264,6 @@ double CLNCC2DImageCost::do_evaluate_force(const Data& a, const Data& b, const M
 }
 
 
-void CLNCC2DImageCost::post_set_reference(const Data& ref)
-{
-}
-
-
 CLNCC2DImageCostPlugin::CLNCC2DImageCostPlugin():
 C2DMaskedImageCostPlugin("lncc"), 
      m_hw(5)
