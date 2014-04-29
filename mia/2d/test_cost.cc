@@ -38,8 +38,8 @@ BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
 	
 	const auto& handler = C2DImageCostPluginHandler::instance(); 
 
-	BOOST_CHECK_EQUAL(handler.size(), 5u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "lsd mi ngf ssd ssd-automask "); 
+	BOOST_CHECK_EQUAL(handler.size(), 6u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "lncc lsd mi ngf ssd ssd-automask "); 
 }
 
 
