@@ -24,8 +24,8 @@ NS_BEGIN(divcurl_splinepenalty)
 
 NS_MIA_USE
 
-C3DDivcurlSplinePenalty::C3DDivcurlSplinePenalty(double weight, double div_weight, double curl_weight):
-	C3DSplineTransformPenalty(weight), 
+C3DDivcurlSplinePenalty::C3DDivcurlSplinePenalty(double weight, bool normalize, double div_weight, double curl_weight):
+	C3DSplineTransformPenalty(weight, normalize), 
 	m_div_weight(div_weight), 
 	m_curl_weight(curl_weight)
 {
@@ -56,7 +56,7 @@ double C3DDivcurlSplinePenalty::do_value_and_gradient(const C3DFVectorfield&  co
 C3DSplineTransformPenalty *C3DDivcurlSplinePenalty::do_clone() const
 {
 	C3DSplineTransformPenalty *result =  
-		new C3DDivcurlSplinePenalty(get_weight(), m_div_weight, m_curl_weight);
+		new C3DDivcurlSplinePenalty(get_weight(), get_normalize(), m_div_weight, m_curl_weight);
 	if (get_kernel()) 
 		result->initialize(get_size(), get_range(), get_kernel()); 
 	return result; 
@@ -79,9 +79,9 @@ const std::string C3DDivcurlSplinePenaltyPlugin::do_get_descr() const
 	return "divcurl penalty on the transformation"; 
 }
 
-C3DDivcurlSplinePenaltyPlugin::Product *C3DDivcurlSplinePenaltyPlugin::do_create(float weight) const
+C3DDivcurlSplinePenaltyPlugin::Product *C3DDivcurlSplinePenaltyPlugin::do_create(float weight, bool normalize) const
 {
-	return new C3DDivcurlSplinePenalty(weight, m_div_weight, m_curl_weight); 
+	return new C3DDivcurlSplinePenalty(weight, normalize, m_div_weight, m_curl_weight); 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

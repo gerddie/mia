@@ -30,8 +30,9 @@ using namespace std;
 const char *C3DSplineTransformPenalty::data_descr = "3dtransform";
 const char *C3DSplineTransformPenalty::type_descr = "splinepenalty"; 
 
-C3DSplineTransformPenalty::C3DSplineTransformPenalty(double weight):
-m_weight(weight)
+C3DSplineTransformPenalty::C3DSplineTransformPenalty(double weight, bool normalize):
+        m_weight(weight), 
+	m_normalize(normalize)
 {
 }
 
@@ -83,7 +84,12 @@ PSplineKernel C3DSplineTransformPenalty::get_kernel() const
 
 double C3DSplineTransformPenalty::get_weight() const
 {
-	return m_weight; 
+	return m_normalize ? m_weight / m_range.product() : m_weight; 
+}
+
+bool C3DSplineTransformPenalty::get_normalize() const
+{
+	return m_normalize; 
 }
 
 C3DSplineTransformPenalty *C3DSplineTransformPenalty::clone() const
@@ -99,15 +105,19 @@ C3DSplineTransformPenaltyPluginHandler::ProductPtr produce_3d_spline_transform_p
 
 C3DSplineTransformPenaltyPlugin::C3DSplineTransformPenaltyPlugin(char const * const  name):
 	TFactory<C3DSplineTransformPenalty>(name), 
-	m_weight(1.0)
+	m_weight(1.0), 
+	m_normalize(false)
 {
 	add_parameter("weight", new CFloatParameter(m_weight, 0.0f, std::numeric_limits<float>::max(), 
 						    false, "weight of penalty energy"));
+	add_parameter("norm", new CBoolParameter(m_normalize, false, "Set to 1 if the penalty should be normalized " 
+						 "with respect to the image size")); 
+	
 }
 
 C3DSplineTransformPenaltyPlugin::Product *C3DSplineTransformPenaltyPlugin::do_create() const
 {
-	return do_create(m_weight); 
+	return do_create(m_weight, m_normalize);
 }
 
 

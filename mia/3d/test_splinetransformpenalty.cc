@@ -27,7 +27,7 @@ NS_MIA_USE;
 class C3DSplinePenaltyMock: public C3DSplineTransformPenalty {
 public: 
 	
-	C3DSplinePenaltyMock(double weight); 
+	C3DSplinePenaltyMock(double weight, bool normalize); 
 	
 private: 
 	void do_initialize(); 
@@ -44,7 +44,7 @@ private:
 
 BOOST_AUTO_TEST_CASE( weight_1_1_1_1p5_2p9_bspline3 )
 {
-	C3DSplinePenaltyMock penalty(1.0); 
+	C3DSplinePenaltyMock penalty(1.0, false); 
 	C3DBounds size(1,1,1); 
 	penalty.initialize(size, C3DFVector(1.5,2.9, 2.0), produce_spline_kernel("bspline:d=2"));
 
@@ -70,10 +70,38 @@ BOOST_AUTO_TEST_CASE( weight_1_1_1_1p5_2p9_bspline3 )
 	
 }
 
+BOOST_AUTO_TEST_CASE( weight_2_2_2_1p5_2p9_bspline3_normalize )
+{
+	C3DSplinePenaltyMock penalty(1.0, true); 
+	C3DBounds size(2,2,2); 
+	penalty.initialize(size, C3DFVector(1.5,2.9, 2.0), produce_spline_kernel("bspline:d=2"));
+
+	C3DFVectorfield coef(size); 
+	coef(0,0,0) = C3DFVector(1.0/1.5,1.0/2.9, 1.0/2.0); 
+	
+	BOOST_CHECK_CLOSE(penalty.value(coef), 3.0 / 8.0, 0.1); 
+
+	CDoubleVector grad(3); 
+	BOOST_CHECK_CLOSE(penalty.value_and_gradient(coef, grad), 3.0 / 8.0, 0.1); 
+
+	BOOST_CHECK_CLOSE(grad[0], 1.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[1], 1.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[2], 1.0 / 8.0, 0.1); 
+
+	std::unique_ptr<C3DSplineTransformPenalty> penalty2(penalty.clone()); 
+	
+	BOOST_CHECK_CLOSE(penalty2->value(coef), 3.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(penalty2->value_and_gradient(coef, grad), 3.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[0], 1.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[1], 1.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[2], 1.0 / 8.0, 0.1); 
+	
+}
+
 
 BOOST_AUTO_TEST_CASE( weight_0p5_1_1_1p5_2p9_bspline3 )
 {
-	C3DSplinePenaltyMock penalty(0.5); 
+	C3DSplinePenaltyMock penalty(0.5, false); 
 	C3DBounds size(1,1,1); 
 	penalty.initialize(size, C3DFVector(1.5,2.9, 2.0), produce_spline_kernel("bspline:d=2"));
 
@@ -100,7 +128,7 @@ BOOST_AUTO_TEST_CASE( weight_0p5_1_1_1p5_2p9_bspline3 )
 
 BOOST_AUTO_TEST_CASE( weight_0p5_2_3_2_3_bspline3 )
 {
-	C3DSplinePenaltyMock penalty(0.5); 
+	C3DSplinePenaltyMock penalty(0.5, false); 
 	C3DBounds size(2,3,1); 
 	penalty.initialize(size, C3DFVector(2,3,1), produce_spline_kernel("bspline:d=2"));
 
@@ -173,8 +201,8 @@ BOOST_AUTO_TEST_CASE( weight_0p5_2_3_2_3_bspline3 )
 
 }
 
-C3DSplinePenaltyMock::C3DSplinePenaltyMock(double weight):
-C3DSplineTransformPenalty(weight)
+C3DSplinePenaltyMock::C3DSplinePenaltyMock(double weight, bool normalize):
+C3DSplineTransformPenalty(weight, normalize)
 {
 }
 
@@ -225,7 +253,7 @@ double C3DSplinePenaltyMock::do_value_and_gradient(const C3DFVectorfield&  coeff
 
 C3DSplineTransformPenalty *C3DSplinePenaltyMock::do_clone() const
 {
-	C3DSplineTransformPenalty *result =  new C3DSplinePenaltyMock(get_weight());
+	C3DSplineTransformPenalty *result =  new C3DSplinePenaltyMock(get_weight(), get_normalize());
 	result->initialize(get_size(), get_range(), get_kernel()); 
 	return result; 
 }

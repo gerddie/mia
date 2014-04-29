@@ -26,7 +26,7 @@ NS_BEGIN(divcurl_splinepenalty)
 class C3DDivcurlSplinePenalty: public mia::C3DSplineTransformPenalty {
 public: 
 	
-	C3DDivcurlSplinePenalty(double weight, double div_weight, double curl_weight);
+	C3DDivcurlSplinePenalty(double weight, bool normalize, double div_weight, double curl_weight);
 	
 private: 
 	void do_initialize(); 
@@ -51,7 +51,7 @@ public:
 	
 private: 
 	virtual const std::string do_get_descr() const;
-	virtual Product *do_create(float weight) const __attribute__((warn_unused_result));
+	virtual Product *do_create(float weight, bool normalize) const __attribute__((warn_unused_result));
 	float m_div_weight; 
 	float m_curl_weight; 
 
