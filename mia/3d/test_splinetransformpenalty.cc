@@ -74,27 +74,27 @@ BOOST_AUTO_TEST_CASE( weight_2_2_2_1p5_2p9_bspline3_normalize )
 {
 	C3DSplinePenaltyMock penalty(1.0, true); 
 	C3DBounds size(2,2,2); 
-	penalty.initialize(size, C3DFVector(1.5,2.9, 2.0), produce_spline_kernel("bspline:d=2"));
+	penalty.initialize(size, C3DFVector(2.0, 2.0, 2.0), produce_spline_kernel("bspline:d=2"));
 
 	C3DFVectorfield coef(size); 
-	coef(0,0,0) = C3DFVector(1.0/1.5,1.0/2.9, 1.0/2.0); 
+	coef(0,0,0) = C3DFVector(1.0/2.0,1.0, 1.0/4.0); 
 	
-	BOOST_CHECK_CLOSE(penalty.value(coef), 3.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(penalty.value(coef), 1.75/ 8.0, 0.1); 
 
-	CDoubleVector grad(3); 
-	BOOST_CHECK_CLOSE(penalty.value_and_gradient(coef, grad), 3.0 / 8.0, 0.1); 
+	CDoubleVector grad(24); 
+	BOOST_CHECK_CLOSE(penalty.value_and_gradient(coef, grad), 1.75 / 8.0, 0.1); 
 
-	BOOST_CHECK_CLOSE(grad[0], 1.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[0], 0.5 / 8.0, 0.1); 
 	BOOST_CHECK_CLOSE(grad[1], 1.0 / 8.0, 0.1); 
-	BOOST_CHECK_CLOSE(grad[2], 1.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[2], 0.25 / 8.0, 0.1); 
 
 	std::unique_ptr<C3DSplineTransformPenalty> penalty2(penalty.clone()); 
 	
-	BOOST_CHECK_CLOSE(penalty2->value(coef), 3.0 / 8.0, 0.1); 
-	BOOST_CHECK_CLOSE(penalty2->value_and_gradient(coef, grad), 3.0 / 8.0, 0.1); 
-	BOOST_CHECK_CLOSE(grad[0], 1.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(penalty2->value(coef), 1.75 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(penalty2->value_and_gradient(coef, grad), 1.75 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[0], 0.5 / 8.0, 0.1); 
 	BOOST_CHECK_CLOSE(grad[1], 1.0 / 8.0, 0.1); 
-	BOOST_CHECK_CLOSE(grad[2], 1.0 / 8.0, 0.1); 
+	BOOST_CHECK_CLOSE(grad[2], 0.25 / 8.0, 0.1); 
 	
 }
 

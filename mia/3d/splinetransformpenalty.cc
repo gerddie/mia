@@ -52,7 +52,8 @@ void C3DSplineTransformPenalty::initialize(const C3DBounds& size, const C3DFVect
 double C3DSplineTransformPenalty::value(const C3DFVectorfield&  coefficients) const
 {
 	assert(coefficients.get_size() == get_size()); 
-	return m_weight * do_value(coefficients); 
+	const double w = m_normalize ? get_weight() / m_range.product() : m_weight; 
+	return w * do_value(coefficients); 
 }
 
 
@@ -60,10 +61,11 @@ double C3DSplineTransformPenalty::value_and_gradient(const C3DFVectorfield&  coe
 {
 	assert(coefficients.get_size() == get_size()); 
 	assert(coefficients.size() * 3 == gradient.size()); 
+	const double w = m_normalize ? get_weight() / m_range.product() : m_weight; 
 
-	double value =  m_weight * do_value_and_gradient(coefficients, gradient); 
+	double value =  w * do_value_and_gradient(coefficients, gradient); 
 	transform(gradient.begin(), gradient.end(), gradient.begin(), 
-		  [this](double x) { return - m_weight * x;}); 
+		  [w](double x) { return - w * x;}); 
 	return value; 
 }
 
@@ -84,7 +86,7 @@ PSplineKernel C3DSplineTransformPenalty::get_kernel() const
 
 double C3DSplineTransformPenalty::get_weight() const
 {
-	return m_normalize ? m_weight / m_range.product() : m_weight; 
+	return m_weight; 
 }
 
 bool C3DSplineTransformPenalty::get_normalize() const
