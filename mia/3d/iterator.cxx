@@ -59,7 +59,6 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 	m_iterator(iterator), 
 	m_boundary(eb_none)
 {
-	cvdebug() << "m_boundary=" << m_boundary << "\n"; 
 	m_ystride = (m_size.y - (m_end.y - m_begin.y))*m_size.x; 
 	if (m_pos.x == 0)
 		m_boundary |= eb_xlow; 
@@ -75,8 +74,6 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 		m_boundary |= eb_zlow; 
 	if (m_pos.z == size.z - 1)
 		m_boundary |= eb_zhigh; 
-	cvdebug() << "m_boundary=" << m_boundary << "\n"; 
-	
 }
 
 

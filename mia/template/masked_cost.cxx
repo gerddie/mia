@@ -18,15 +18,38 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
-
-#include <mia/core/cost.hh>
 #include <mia/template/masked_cost.hh>
 
 NS_MIA_BEGIN
 
-const char *cost_type::type_descr = "cost";
-const char *masked_cost_type::type_descr = "maskedcost";
+template <typename T, typename M, typename V>
+TMaskedCost<T,M,V>::~TMaskedCost()
+{
+
+}
+
+template <typename T, typename M, typename V>
+double TMaskedCost<T,M,V>::value(const T& a, const M& mask) const
+{
+	return do_value(a, *m_reference, mask); 
+}
+
+template <typename T, typename M, typename V>
+double TMaskedCost<T,M,V>::evaluate_force(const T& a, const M& mask, V& force) const
+{
+	return do_evaluate_force(a,  *m_reference, mask, force); 
+}
+
+template <typename T, typename M, typename V>
+void TMaskedCost<T,M,V>::set_reference(const T& ref)
+{
+	m_reference.reset(new RData(ref));
+	post_set_reference(ref); 
+}
+
+template <typename T, typename M, typename V>
+void TMaskedCost<T,M,V>::post_set_reference(const T& /*ref*/)
+{
+}
 
 NS_MIA_END
-

@@ -18,15 +18,21 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
+#include <mia/3d/maskedcost/mi.hh>
+#include <mia/template/mi_masked.cxx>
 
-#include <mia/core/cost.hh>
-#include <mia/template/masked_cost.hh>
+NS_BEGIN(NS)
 
-NS_MIA_BEGIN
+NS_MIA_USE;
+using namespace std;
+using namespace boost;
 
-const char *cost_type::type_descr = "cost";
-const char *masked_cost_type::type_descr = "maskedcost";
+template class TMIMaskedImageCost<mia::C3DMaskedImageCost>;
+template class TMIMaskedImageCostPlugin<mia::C3DMaskedImageCostPlugin, mia::C3DMaskedImageCost>; 
 
-NS_MIA_END
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C3DMIMaskedCostPlugin();
+}
 
+NS_END

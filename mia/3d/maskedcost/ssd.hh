@@ -18,15 +18,20 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
+#ifndef mia_3d_maskedcost_ssd_hh
+#define mia_3d_maskedcost_ssd_hh
 
-#include <mia/core/cost.hh>
-#include <mia/template/masked_cost.hh>
+#include <mia/3d/maskedcost.hh>
 
-NS_MIA_BEGIN
+#define NS mia_3dcost_ssd_masked
+#include <mia/template/ssd_masked.hh>
 
-const char *cost_type::type_descr = "cost";
-const char *masked_cost_type::type_descr = "maskedcost";
+NS_BEGIN(NS)
 
-NS_MIA_END
+typedef TSSDMaskedImageCost<mia::C3DMaskedImageCost> C3DSSDMaskedImageCost;
+typedef TSSDMaskedImageCostPlugin<mia::C3DMaskedImageCostPlugin, mia::C3DMaskedImageCost> C3DSSDMaskedCostPlugin; 
 
+NS_END
+
+
+#endif

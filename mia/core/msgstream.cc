@@ -25,7 +25,7 @@
 NS_MIA_BEGIN
 
 const TDictMap<vstream::Level>::Table verbose_dict[] = {
-#ifndef NDEBUG
+#ifdef ENABLE_DEBUG_MESSAGES
 	{"trace", vstream::ml_trace, "Function call trace"},
 	{"debug", vstream::ml_debug, "Debug output"},
 #endif
@@ -110,10 +110,7 @@ void set_verbose(bool verbose)
 	vstream::instance().set_verbosity(verbose ? vstream::ml_message : vstream::ml_error);
 }
 
-#ifndef NDEBUG
 __thread size_t CTrace::m_depth = 0;
-#endif
-
 __thread std::ostream* vstream::m_output;
 __thread vstream::Level vstream::m_message_level = vstream::ml_fatal; 
 

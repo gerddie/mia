@@ -72,6 +72,8 @@ public:
 	   \returns true if the key is valid 
 	*/
 	bool key_is_valid() const; 
+
+	const std::string& get_key() const;
 private:
 	std::string m_key;
 }; 
@@ -105,6 +107,12 @@ template <typename T>
 bool TDelayedParameter<T>::key_is_valid() const
 {
 	return !m_key.empty(); 
+}
+
+template <typename T>
+const std::string& TDelayedParameter<T>::get_key() const
+{
+	return m_key; 
 }
 
 NS_MIA_END

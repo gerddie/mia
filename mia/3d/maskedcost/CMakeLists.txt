@@ -16,43 +16,19 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(MIA_TEMPLATES
-bandpass.cxx
-bandpass.hh
-binarize.cxx
-binarize.hh
-combiner.hh
-combiner_filter.hh
-convert.cxx
-convert.hh
-cvd_io_trait.hh
-dimtrait.hh
-divcurl.cxx
-divcurl.hh
-filter_chain.hh
-fullcost.cxx
-fullcost.hh
-invert.cxx
-invert.hh
-lsd.hh
-masked_cost.hh
-masked_cost.cxx
-mi.hh
-mi_masked.hh
-multicost.cxx
-multicost.hh
-nonrigidregister.cxx
-nonrigidregister.hh
-normalize.hh
-seededwatershed.hh
-similarity_profile.cxx
-similarity_profile.hh
-ssd.hh
-transformfactory.cxx
-transformfactory.hh
-trackpoint.hh
-trackpoint.cxx
-watershed.hh)
+SET(maskedcost3d
+  lncc
+  mi 
+  ssd
+)
 
-INSTALL(FILES ${MIA_TEMPLATES} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/template)
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("3dimage" "maskedcost" "${maskedcost3d}" 
+  "${MIA3DLIBS}" )
+
+
+#SET(fatcost3d fatngf fatssd) 
+
+#PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-fatcost "${fatcost3d}" 
+#  "${MIA3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dimage/fatcost"
+#  )
 
