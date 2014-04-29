@@ -71,6 +71,34 @@ BOOST_AUTO_TEST_CASE( weight_1_1_1_1p5_2p9_bspline3 )
 }
 
 
+BOOST_AUTO_TEST_CASE( weight_1_2_2_1p5_2p9_bspline3 )
+{
+	C2DSplinePenaltyMock penalty(1.0, true); 
+	C2DBounds size(2,2); 
+	penalty.initialize(size, C2DFVector(2.0,2.0), produce_spline_kernel("bspline:d=2"));
+
+	C2DFVectorfield coef(size); 
+	coef(0,0) = C2DFVector(2.0,.5); 
+	
+	BOOST_CHECK_CLOSE(penalty.value(coef), .625, 0.1); 
+
+	CDoubleVector grad(8); 
+	BOOST_CHECK_CLOSE(penalty.value_and_gradient(coef, grad), .625, 0.1); 
+
+	BOOST_CHECK_CLOSE(grad[0], .5, 0.1); 
+	BOOST_CHECK_CLOSE(grad[1], .125, 0.1); 
+
+	std::unique_ptr<C2DSplineTransformPenalty> penalty2(penalty.clone()); 
+	
+	BOOST_CHECK_CLOSE(penalty2->value(coef), .625, 0.1); 
+	BOOST_CHECK_CLOSE(penalty2->value_and_gradient(coef, grad), .625, 0.1); 
+	BOOST_CHECK_CLOSE(grad[0], .5, 0.1); 
+	BOOST_CHECK_CLOSE(grad[1], .125, 0.1); 
+	
+}
+
+
+
 BOOST_AUTO_TEST_CASE( weight_0p5_1_1_1p5_2p9_bspline3 )
 {
 	C2DSplinePenaltyMock penalty(0.5, false); 
