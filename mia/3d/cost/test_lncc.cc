@@ -98,9 +98,6 @@ BOOST_AUTO_TEST_CASE( test_lncc_1 )
 		BOOST_CHECK_SMALL(iv->z, 1e-8f); 
 	}
 	
-	
-
-
 	C3DFVectorfield force(size); 
 
 	v = lncc->evaluate_force(src_f, force); 
