@@ -22,6 +22,7 @@
 #include <config.h>
 #endif
 
+#include <cmath> 
 #include <mia/2d/fuzzyClusterSolverSOR.hh>
 #include <mia/core/msgstream.hh>
 
@@ -56,7 +57,7 @@ void C2DFuzzyClusterSolver::solve(const C2DFImage& force, C2DFImage& gain)
 			
 			for(size_t x = 2; x < size.x - 2; ++x, ++igain, ++iforce, ++iweight) {
 				float d = *iweight + lambda; 
-				if ( fabs(d) < 1e-8) 
+				if ( fabsf(d) < 1e-8) 
 					continue; 
 
 				float m1 = igain[-dx] + igain[-1] + igain[1] + igain[dx];  
@@ -67,7 +68,7 @@ void C2DFuzzyClusterSolver::solve(const C2DFImage& force, C2DFImage& gain)
 				float h = m_lambda1 * m1 + 
 					m_lambda2 * (8 * m1 - 2 * m2 - m3); 
 				float r = omega * (d * *igain - h - *iforce) / d; 
-				norm += fabs(r); 
+				norm += fabsf(r); 
 				*igain -= r; 
 				
 			}
