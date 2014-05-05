@@ -29,6 +29,7 @@
 #include <mia/3d/creator.hh>
 #include <mia/3d/fullcost.hh>
 #include <mia/3d/interpolator.hh>
+#include <mia/3d/maskedcost.hh>
 #include <mia/3d/model.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/transformio.hh>
@@ -37,6 +38,7 @@
 #include <mia/3d/stackdisttrans.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/shape.hh>
+#include <mia/3d/splinetransformpenalty.hh>
 
 
 #endif
