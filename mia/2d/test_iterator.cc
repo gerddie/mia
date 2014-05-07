@@ -115,19 +115,19 @@ BOOST_AUTO_TEST_CASE (test_iterator_boundaries)
 	C2DBounds start(0,0);
 	T2DDatafield<int> test(size); 
 	
-	fill(test.begin(), test.end(), C2DFDatafield::range_iterator::eb_none); 
+	fill(test.begin(), test.end(), C2DFDatafield::range_iterator_with_boundary_flag::eb_none); 
 	
 	for (unsigned int  y = 0; y < size.y; ++y) {
-		test(0,y) |= C2DFDatafield::range_iterator::eb_xlow; 
-		test(size.x - 1,y) |= C2DFDatafield::range_iterator::eb_xhigh;
+		test(0,y) |= C2DFDatafield::range_iterator_with_boundary_flag::eb_xlow; 
+		test(size.x - 1,y) |= C2DFDatafield::range_iterator_with_boundary_flag::eb_xhigh;
 	}
 	
 	for (unsigned int  x = 0; x < size.x; ++x) {
-		test(x,0) |= C2DFDatafield::range_iterator::eb_ylow; 
-		test(x, size.y-1) |= C2DFDatafield::range_iterator::eb_yhigh;
+		test(x,0) |= C2DFDatafield::range_iterator_with_boundary_flag::eb_ylow; 
+		test(x, size.y-1) |= C2DFDatafield::range_iterator_with_boundary_flag::eb_yhigh;
 	}
-	auto ifield = field.begin_range(C2DBounds(0,0), size); 
-	auto efield = field.end_range(C2DBounds(0,0), size); 
+	auto ifield = field.begin_range(C2DBounds(0,0), size).with_boundary_flag(); 
+	auto efield = field.end_range(C2DBounds(0,0), size).with_boundary_flag(); 
 	auto itest = test.begin(); 
 	
 	for (;ifield != efield; ++ifield, ++itest) {
@@ -140,16 +140,20 @@ BOOST_AUTO_TEST_CASE (test_iterator_some_boundaries)
 	C2DBounds size(7,5); 
 	C2DFDatafield field(size);
 
-	auto ifield = field.begin_range(C2DBounds(1,1), size - C2DBounds(0,1)); 
-	auto efield = field.end_range(C2DBounds(1,1), size - C2DBounds(0,1)); 
+	auto ifield = field.begin_range(C2DBounds(1,1), size - C2DBounds(0,1)).with_boundary_flag(); 
+	auto efield = field.end_range(C2DBounds(1,1), size - C2DBounds(0,1)).with_boundary_flag(); 
 	
 	for (;ifield != efield; ++ifield) {
 		cvdebug() <<ifield.pos()<< " : " << ifield.get_boundary_flags() << "\n"; 
-		BOOST_CHECK_EQUAL(ifield.pos().x == 0, bool(ifield.get_boundary_flags() & C2DFDatafield::range_iterator::eb_xlow)); 
-		BOOST_CHECK_EQUAL(ifield.pos().y == 0, bool(ifield.get_boundary_flags() & C2DFDatafield::range_iterator::eb_ylow)); 
+		BOOST_CHECK_EQUAL(ifield.pos().x == 0, bool(ifield.get_boundary_flags() & 
+							    C2DFDatafield::range_iterator_with_boundary_flag::eb_xlow)); 
+		BOOST_CHECK_EQUAL(ifield.pos().y == 0, bool(ifield.get_boundary_flags() & 
+							    C2DFDatafield::range_iterator_with_boundary_flag::eb_ylow)); 
 		
-		BOOST_CHECK_EQUAL(ifield.pos().x == 6, bool(ifield.get_boundary_flags() & C2DFDatafield::range_iterator::eb_xhigh)); 
-		BOOST_CHECK_EQUAL(ifield.pos().y == 4, bool(ifield.get_boundary_flags() & C2DFDatafield::range_iterator::eb_yhigh)); 
+		BOOST_CHECK_EQUAL(ifield.pos().x == 6, bool(ifield.get_boundary_flags() & 
+							    C2DFDatafield::range_iterator_with_boundary_flag::eb_xhigh)); 
+		BOOST_CHECK_EQUAL(ifield.pos().y == 4, bool(ifield.get_boundary_flags() & 
+							    C2DFDatafield::range_iterator_with_boundary_flag::eb_yhigh)); 
 	}
 }
 
@@ -160,8 +164,8 @@ BOOST_AUTO_TEST_CASE (test_iterator_no_boundaries)
 
 	C2DBounds start(1,1);
 	
-	auto ifield = field.begin_range(C2DBounds(1,1), size - C2DBounds::_1); 
-	auto efield = field.end_range(C2DBounds(1,1), size - C2DBounds::_1); 
+	auto ifield = field.begin_range(C2DBounds(1,1), size - C2DBounds::_1).with_boundary_flag(); 
+	auto efield = field.end_range(C2DBounds(1,1), size - C2DBounds::_1).with_boundary_flag(); 
 	
 	for (;ifield != efield; ++ifield) {
 		BOOST_CHECK_EQUAL(ifield.get_boundary_flags(), 0); 

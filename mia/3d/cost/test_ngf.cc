@@ -45,7 +45,8 @@ BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_dot, C3DFVectorfieldFixture )
 	BOOST_CHECK_CLOSE( scalar.cost(field(0,0,0), field(1,1,1)), - 26.0f*26.0f, 0.01f); 
 	
 	double cost = 0.0; 
-	auto grad = scalar.grad(3, 9, field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)), field(0,0,0), cost); 
+	FEvaluator::field_range_iterator ifield = field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)).with_boundary_flag(); 
+	auto grad = scalar.grad(3, 9, ifield,  field(0,0,0), cost); 
 
 	BOOST_CHECK_CLOSE( cost, - 26.0f* 26.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.x, 13.0f * 19.0f, 0.01f); 
@@ -64,7 +65,8 @@ BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_cross, C3DFVectorfieldFixture )
 	BOOST_CHECK_CLOSE( costfunct.cost(field(0,0,0), field(1,1,1)),10.0f, 0.01f); 
 	
 	double cost = 0.0; 
-	auto grad = costfunct.grad(3, 9, field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)), field(0,0,0), cost); 
+	FEvaluator::field_range_iterator ifield = field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)).with_boundary_flag(); 
+	auto grad = costfunct.grad(3, 9, ifield, field(0,0,0), cost); 
 
 	BOOST_CHECK_CLOSE( cost, 10.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.x, 9.0f, 0.01f); 
@@ -83,7 +85,7 @@ BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_delta_scalar, C3DFVectorfieldFixture
 	BOOST_CHECK_CLOSE( costfunct.cost(field(1,1,1),field(0,0,0)), 2*5.3330572096f, 0.01f); 
 	
 	double cost = 0.0; 
-	auto ifield = field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)); 
+	FEvaluator::field_range_iterator ifield = field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)).with_boundary_flag(); 
 	cvdebug() << "ifield:boundary=" << ifield.get_boundary_flags() << "\n"; 
 	auto grad = costfunct.grad(3, 9, ifield, field(0,0,0), cost); 
 
@@ -147,17 +149,17 @@ public:
 		return 1.0; 
 	}
 	
-	C3DFVector grad(int /*nx*/, int /*nxy*/, C3DFVectorfield::const_range_iterator irsrc,
+	C3DFVector grad(int /*nx*/, int /*nxy*/, field_range_iterator& irsrc,
 			const C3DFVector& /*ref*/, double& cost) const {
 		cost += 1; 
 		C3DFVector result; 
-		if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_x))
+		if (! (irsrc.get_boundary_flags() & field_range_iterator::eb_x))
 			result.x = 1;
 		
-		if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_y))
+		if (! (irsrc.get_boundary_flags() & field_range_iterator::eb_y))
 			result.y = 2;
 		
-		if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_z))
+		if (! (irsrc.get_boundary_flags() & field_range_iterator::eb_z))
 			result.z = 3; 
 		
 		return result; 

@@ -39,7 +39,7 @@ NS_MIA_BEGIN
  */
 
 template <typename I> 
-class range2d_iterator: public std::forward_iterator_tag {
+class range2d_iterator_with_boundary_flag: public std::forward_iterator_tag {
 public: 
 	/// data type reference 
 	typedef typename I::reference reference; 
@@ -66,6 +66,158 @@ public:
 	}; 
 	
 
+	
+	/** standard constructor */
+	range2d_iterator_with_boundary_flag(); 
+
+	/**
+	   Full constructor of the range iterator 
+	   @param pos iterator position to initialize the iterator with 
+	   @param size size of the original data field 
+	   @param start start of the iterator range 
+	   @param end end of the iterator range 
+	   @param iterator the iterator of the underlying 2D data structure 
+	*/
+	range2d_iterator_with_boundary_flag(const C2DBounds& pos, const C2DBounds& size, 
+			 const C2DBounds& start, const C2DBounds& end, I iterator);
+	
+	/**
+	   End iterator, can't be dereferenced  
+	   This iterator is only there to define the end position of the range_iterator. 
+	   \param pos end position to set this iterator to. 
+	 */
+	range2d_iterator_with_boundary_flag(const C2DBounds& pos);
+
+	/// assignment operator 
+	range2d_iterator_with_boundary_flag<I>& operator = (const range2d_iterator_with_boundary_flag<I>& other); 
+	
+	/// copy constructore 
+	range2d_iterator_with_boundary_flag(const range2d_iterator_with_boundary_flag<I>& other); 
+
+	/// friend iterator type because we may want to copy a iterator to a const_iterator. 
+	template <typename AI> 
+	friend class range2d_iterator_with_boundary_flag; 
+	
+	/**
+	   Constructor to construct the iterator  from one that is based on another 
+	   iterator type. The usual idea is that a iterator may be converted  into it's const variant. 
+	   \tparam AI the other iterator type. Iterator type I must be copy-constructable from 
+	   type AI 
+	   \param other 
+	 */
+	template <typename AI>
+	range2d_iterator_with_boundary_flag(const range2d_iterator_with_boundary_flag<AI>& other); 
+
+
+	/**
+	   Assignment operator from another type of iterator 
+	   \tparam AI other iterator type. The assignment I b = a; with a of type AI must be defined.
+	   \param other 
+	 */
+	template <typename AI>
+	range2d_iterator_with_boundary_flag<I>& operator = (const range2d_iterator_with_boundary_flag<AI>& other); 
+
+	
+	/// prefix increment 
+	range2d_iterator_with_boundary_flag<I>& operator ++(); 
+	/// postfix increment 
+	range2d_iterator_with_boundary_flag<I> operator ++(int); 
+	
+	/// @returns current value the iterator points to 
+	reference  operator *() const;
+	
+	/// @returns pointer to the current value the iterator points to 
+	pointer    operator ->() const;
+
+	/** \returns the current position within the 2D grid with respect to the 
+	    full size of the grid. 
+	 */
+	const C2DBounds& pos() const; 
+
+	/// @cond NOFRIENDDOC
+	template <typename T> friend
+	bool operator == (const range2d_iterator_with_boundary_flag<T>& left, 
+			  const range2d_iterator_with_boundary_flag<T>& right); 
+
+	template <typename T> friend
+	bool operator != (const range2d_iterator_with_boundary_flag<T>& left, 
+			  const range2d_iterator_with_boundary_flag<T>& right); 
+	/// @endcond 
+
+	/**
+	   Return the internal iterator
+	 */
+	internal_iterator get_point(); 
+
+	/// \returns the flags describing whether the iterator is on a domain boundary. 
+	int get_boundary_flags() const; 
+
+private: 
+
+	void increment_y(); 
+	void increment_z(); 
+
+	C2DBounds m_pos; 
+	C2DBounds m_size; 
+	C2DBounds m_begin; 
+	C2DBounds m_end; 
+	int m_xstride; 
+	I m_iterator; 
+	int m_boundary; 
+}; 
+
+
+
+template <typename I> 
+template <typename AI>
+range2d_iterator_with_boundary_flag<I>& range2d_iterator_with_boundary_flag<I>::operator = (const range2d_iterator_with_boundary_flag<AI>& other)
+{
+	m_pos = other.m_pos; 
+	m_size = other.m_size;  
+	m_begin = other.m_begin; 
+	m_end = other.m_end; 
+	m_iterator = other.m_iterator; 
+	m_xstride = other.m_xstride; 
+	m_boundary = other.m_boundary; 
+	return *this; 
+}
+
+template <typename I> 
+template <typename AI>
+range2d_iterator_with_boundary_flag<I>::range2d_iterator_with_boundary_flag(const range2d_iterator_with_boundary_flag<AI>& other):
+	m_pos(other.m_pos), 
+	m_size(other.m_size), 
+	m_begin(other.m_begin), 
+	m_end(other.m_end), 
+	m_xstride(other.m_xstride),
+	m_iterator(other.m_iterator), 
+	m_boundary(other.m_boundary)
+{
+}	
+
+template <typename T> 
+bool operator == (const range2d_iterator_with_boundary_flag<T>& left, const range2d_iterator_with_boundary_flag<T>& right)
+{
+	return left.m_pos == right.m_pos; 
+}
+
+template <typename T> 
+bool operator != (const range2d_iterator_with_boundary_flag<T>& left, const range2d_iterator_with_boundary_flag<T>& right)
+{
+	return left.m_pos != right.m_pos; 
+}
+
+
+template <typename I> 
+class range2d_iterator: public std::forward_iterator_tag {
+public: 
+	/// data type reference 
+	typedef typename I::reference reference; 
+	/// data type pointer  
+	typedef typename I::pointer pointer; 
+	/// data type for the real iterator in the background 
+	typedef I internal_iterator; 
+	
 	
 	/** standard constructor */
 	range2d_iterator(); 
@@ -144,9 +296,8 @@ public:
 	 */
 	internal_iterator get_point(); 
 
-	/// \returns the flags describing whether the iterator is on a domain boundary. 
-	int get_boundary_flags() const; 
-
+	
+	range2d_iterator_with_boundary_flag<I> with_boundary_flag() const; 
 private: 
 
 	void increment_y(); 
@@ -158,7 +309,6 @@ private:
 	C2DBounds m_end; 
 	int m_xstride; 
 	I m_iterator; 
-	int m_boundary; 
 }; 
 
 
@@ -173,7 +323,6 @@ range2d_iterator<I>& range2d_iterator<I>::operator = (const range2d_iterator<AI>
 	m_end = other.m_end; 
 	m_iterator = other.m_iterator; 
 	m_xstride = other.m_xstride; 
-	m_boundary = other.m_boundary; 
 	return *this; 
 }
 
@@ -185,10 +334,11 @@ range2d_iterator<I>::range2d_iterator(const range2d_iterator<AI>& other):
 	m_begin(other.m_begin), 
 	m_end(other.m_end), 
 	m_xstride(other.m_xstride),
-	m_iterator(other.m_iterator), 
-	m_boundary(other.m_boundary)
+	m_iterator(other.m_iterator)
 {
 }	
+
+
 
 
 /**

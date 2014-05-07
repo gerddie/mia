@@ -27,7 +27,10 @@ NS_MIA_BEGIN
 #define INSTANCIATE(TYPE) \
 	template class  EXPORT_2D T2DDatafield<TYPE>;			\
 	template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>;
+	template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>; \
+	template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
+	template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::const_iterator>;
+
 
 
 INSTANCIATE(float); 

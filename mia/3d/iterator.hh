@@ -25,12 +25,13 @@
 
 NS_MIA_BEGIN
 
+
+
 /**
    @ingroup basic 
-   \brief a 3D iterator that knows its position in the 3D grid ans supports iterating over 
-   sub-ranges 
+   \brief a 3D iterator that knows its position in the 3D grid, has a flag indicating 
+     whether it is on a boundary, and supports iterating over  sub-ranges 
    
-
    Iterator to iterate over a sub-range of 3D data that is given on a grid. 
    Two iterators are considered to be equal, if their positions are equal.  
    \tparam the internal iterator that is used to iterate of the original 
@@ -39,7 +40,7 @@ NS_MIA_BEGIN
  */
 
 template <typename I> 
-class range3d_iterator: public std::forward_iterator_tag {
+class range3d_iterator_with_boundary_flag: public std::forward_iterator_tag {
 public: 
 	/// data type reference 
 	typedef typename I::reference reference; 
@@ -71,6 +72,126 @@ public:
 
 	
 	/** standard constructor */
+	range3d_iterator_with_boundary_flag(); 
+
+	/**
+	   Full constructor of the range iterator 
+	   @param pos iterator position to initialize the iterator with 
+	   @param size size of the original data field 
+	   @param start start of the iterator range 
+	   @param end end of the iterator range 
+	   @param iterator the iterator of the underlying 3D data structure 
+	*/
+	range3d_iterator_with_boundary_flag(const C3DBounds& pos, const C3DBounds& size, 
+			 const C3DBounds& start, const C3DBounds& end, I iterator);
+	
+	/**
+	   End iterator, can't be dereferenced  
+	   This iterator is only there to define the end position of the range_iterator. 
+	   \param pos end position to set this iterator to. 
+	 */
+	range3d_iterator_with_boundary_flag(const C3DBounds& pos);
+
+	/// assignment operator 
+	range3d_iterator_with_boundary_flag<I>& operator = (const range3d_iterator_with_boundary_flag<I>& other); 
+	
+	/// copy constructore 
+	range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<I>& other); 
+
+	/// friend iterator type because we may want to copy a iterator to a const_iterator. 
+	template <typename AI> 
+	friend class range3d_iterator_with_boundary_flag; 
+
+
+	/**
+	   Constructor to construct the iterator  from one that is based on another 
+	   iterator type. The usual idea is that a iterator may be converted  into it's const variant. 
+	   \tparam AI the other iterator type. Iterator type I must be copy-constructable from 
+	   type AI 
+	   \param other 
+	 */
+	template <typename AI>
+	range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<AI>& other); 
+
+	/**
+	   Assignment operator from another type of iterator 
+	   \tparam AI other iterator type. The assignment I b = a; with a of type AI must be defined.
+	   \param other 
+	 */
+	template <typename AI>
+	range3d_iterator_with_boundary_flag<I>& operator = (const range3d_iterator_with_boundary_flag<AI>& other); 
+
+	
+	/// prefix increment 
+	range3d_iterator_with_boundary_flag<I>& operator ++(); 
+	/// postfix increment 
+	range3d_iterator_with_boundary_flag<I> operator ++(int); 
+	
+	/// @returns current value the iterator points to 
+	reference  operator *() const;
+	
+	/// @returns pointer to the current value the iterator points to 
+	pointer    operator ->() const;
+
+	/** \returns the current position within the 3D grid with respect to the 
+	    full size of the grid. 
+	 */
+	const C3DBounds& pos() const; 
+
+	/// @cond NOFRIENDDOC
+	template <typename T> friend
+	bool operator == (const range3d_iterator_with_boundary_flag<T>& left, const range3d_iterator_with_boundary_flag<T>& right); 
+	/// @endcond 
+
+	/**
+	   Return the internal iterator
+	 */
+	internal_iterator get_point(); 
+
+	/// \returns the flags describing whether the iterator is on a domain boundary. 
+	int get_boundary_flags() const; 
+
+private: 
+
+	void increment_y(); 
+	void increment_z(); 
+
+	C3DBounds m_pos; 
+	C3DBounds m_size; 
+	C3DBounds m_begin; 
+	C3DBounds m_end; 
+	int m_xstride; 
+	int m_ystride; 
+	I m_iterator; 
+	int m_boundary; 
+}; 
+
+
+
+/**
+   @ingroup basic 
+   \brief a 3D iterator that knows its position in the 3D grid ans supports iterating over 
+   sub-ranges 
+   
+   Iterator to iterate over a sub-range of 3D data that is given on a grid. 
+   Two iterators are considered to be equal, if their positions are equal.  
+   \tparam the internal iterator that is used to iterate of the original 
+   grid without skipping. 
+   
+ */
+
+template <typename I> 
+class range3d_iterator: public std::forward_iterator_tag {
+public: 
+	/// data type reference 
+	typedef typename I::reference reference; 
+	/// data type pointer  
+	typedef typename I::pointer pointer; 
+	/// data type for the real iterator in the background 
+	typedef I internal_iterator; 
+	
+	
+	/** standard constructor */
 	range3d_iterator(); 
 
 	/**
@@ -100,6 +221,11 @@ public:
 	/// friend iterator type because we may want to copy a iterator to a const_iterator. 
 	template <typename AI> 
 	friend class range3d_iterator; 
+
+	/// friend iterator type because we may want to copy a iterator to a const_iterator. 
+	template <typename AI> 
+	friend class range3d_iterator_with_boundary_flag; 
+
 	
 	/**
 	   Constructor to construct the iterator  from one that is based on another 
@@ -143,12 +269,15 @@ public:
 	/// @endcond 
 
 	/**
-	   Return the internal iterator
+	   \return the internal iterator
 	 */
 	internal_iterator get_point(); 
 
-	/// \returns the flags describing whether the iterator is on a domain boundary. 
-	int get_boundary_flags() const; 
+	/**
+	   \returns the same iterator but with boundary checks and flags. 
+	*/
+	range3d_iterator_with_boundary_flag<I> with_boundary_flag() const;
+
 
 private: 
 
@@ -162,7 +291,6 @@ private:
 	int m_xstride; 
 	int m_ystride; 
 	I m_iterator; 
-	int m_boundary; 
 }; 
 
 
@@ -178,7 +306,6 @@ range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<AI>
 	m_iterator = other.m_iterator; 
 	m_xstride = other.m_xstride; 
 	m_ystride = other.m_ystride; 
-	m_boundary = other.m_boundary; 
 	return *this; 
 }
 
@@ -191,8 +318,7 @@ range3d_iterator<I>::range3d_iterator(const range3d_iterator<AI>& other):
 	m_end(other.m_end), 
 	m_xstride(other.m_xstride),
 	m_ystride(other.m_ystride),
-	m_iterator(other.m_iterator), 
-	m_boundary(other.m_boundary)
+	m_iterator(other.m_iterator)
 {
 }	
 
@@ -218,6 +344,64 @@ bool operator == (const range3d_iterator<I>& left, const range3d_iterator<I>& ri
  */
 template <typename I> 
 bool operator != (const range3d_iterator<I>& a, const range3d_iterator<I>& b)
+{
+	return !(a == b); 
+}
+
+
+
+
+
+template <typename I> 
+template <typename AI>
+range3d_iterator_with_boundary_flag<I>& range3d_iterator_with_boundary_flag<I>::operator = (const range3d_iterator_with_boundary_flag<AI>& other)
+{
+	m_pos = other.m_pos; 
+	m_size = other.m_size;  
+	m_begin = other.m_begin; 
+	m_end = other.m_end; 
+	m_iterator = other.m_iterator; 
+	m_xstride = other.m_xstride; 
+	m_ystride = other.m_ystride; 
+	m_boundary = other.m_boundary; 
+	return *this; 
+}
+
+template <typename I> 
+template <typename AI>
+range3d_iterator_with_boundary_flag<I>::range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<AI>& other):
+	m_pos(other.m_pos), 
+	m_size(other.m_size), 
+	m_begin(other.m_begin), 
+	m_end(other.m_end), 
+	m_xstride(other.m_xstride),
+	m_ystride(other.m_ystride),
+	m_iterator(other.m_iterator), 
+	m_boundary(other.m_boundary)
+{
+}	
+
+/**
+   Compare two range iterators. There equivalence is only decided based on the grid position. 
+ */
+
+template <typename I> 
+bool operator == (const range3d_iterator_with_boundary_flag<I>& left, const range3d_iterator_with_boundary_flag<I>& right)
+{
+	// we really want these two to the same range 
+//	assert(left.m_size == right.m_size);
+//	assert(left.m_begin == right.m_begin);
+//	assert(left.m_end == right.m_end);
+
+	return left.m_pos == right.m_pos; 
+
+}
+
+/**
+   Compare two range iterators. There equivalence is only decided based on the grid position. 
+ */
+template <typename I> 
+bool operator != (const range3d_iterator_with_boundary_flag<I>& a, const range3d_iterator_with_boundary_flag<I>& b)
 {
 	return !(a == b); 
 }

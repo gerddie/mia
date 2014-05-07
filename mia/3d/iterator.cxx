@@ -31,8 +31,7 @@ range3d_iterator<I>::range3d_iterator():
 	m_begin(0,0,0), 
 	m_end(0,0,0), 
 	m_xstride(0),
-	m_ystride(0), 
-	m_boundary(eb_none)
+	m_ystride(0)
 {
 }
 
@@ -43,8 +42,7 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos):
 	m_begin(0,0,0), 
 	m_end(0,0,0), 
 	m_xstride(0),
-	m_ystride(0), 
-	m_boundary(eb_none)
+	m_ystride(0)
 {
 }
 
@@ -56,24 +54,9 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 	m_begin(begin), 
 	m_end(end),
 	m_xstride(m_size.x - (m_end.x - m_begin.x)),
-	m_iterator(iterator), 
-	m_boundary(eb_none)
+	m_iterator(iterator)
 {
 	m_ystride = (m_size.y - (m_end.y - m_begin.y))*m_size.x; 
-	if (m_pos.x == 0)
-		m_boundary |= eb_xlow; 
-	if (m_pos.x == size.x - 1)
-		m_boundary |= eb_xhigh; 
-	
-	if (m_pos.y == 0)
-		m_boundary |= eb_ylow; 
-	if (m_pos.y == size.y - 1)
-		m_boundary |= eb_yhigh; 
-
-	if (m_pos.z == 0)
-		m_boundary |= eb_zlow; 
-	if (m_pos.z == size.z - 1)
-		m_boundary |= eb_zhigh; 
 }
 
 
@@ -87,7 +70,6 @@ range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<I>&
 	m_iterator = other.m_iterator; 
 	m_xstride = other.m_xstride; 
 	m_ystride = other.m_ystride;
-	m_boundary = other.m_boundary; 
 	return *this; 
 }
 
@@ -101,8 +83,7 @@ range3d_iterator<I>::range3d_iterator(const range3d_iterator<I>& other):
 	m_end(other.m_end), 
 	m_xstride(other.m_xstride),
 	m_ystride(other.m_ystride),
-	m_iterator(other.m_iterator), 
-	m_boundary(other.m_boundary)
+	m_iterator(other.m_iterator)
 {
 }	
 
@@ -113,13 +94,9 @@ range3d_iterator<I>& range3d_iterator<I>::operator ++()
 	
 	++m_pos.x;
 	++m_iterator; 
-	m_boundary &= ~eb_x;
 	if (m_pos.x == m_end.x) {
 		increment_y(); 
-		if (m_pos.x == 0) 
-			m_boundary |= eb_xlow;
-	}else if (m_pos.x == m_size.x - 1)
-		m_boundary |= eb_xhigh; 
+	}
 	
 	return *this; 
 }
@@ -130,14 +107,10 @@ void range3d_iterator<I>::increment_y()
 	if (m_pos.y < m_end.y) {
 		m_pos.x = m_begin.x; 
 		++m_pos.y; 
-		m_boundary &= ~eb_y;
 		std::advance(m_iterator, m_xstride);
 		if (m_pos.y == m_end.y) {
 			increment_z();
-			if (m_pos.y == 0) 
-				m_boundary |= eb_ylow; 
-		} else if (m_pos.y == m_size.y - 1)
-			m_boundary |= eb_yhigh; 
+		}
 	} 
 }
 
@@ -147,13 +120,9 @@ void range3d_iterator<I>::increment_z()
 	if (m_pos.z < m_end.z - 1) {
 		m_pos.y = m_begin.y; 
 		++m_pos.z; 
-		m_boundary &= ~eb_zlow; 
 		std::advance(m_iterator, m_ystride);
-		if (m_pos.z == m_size.z - 1)
-			m_boundary |= eb_zhigh; 
 	}else if (m_pos.z == m_end.z - 1) {
 		m_pos = m_end; 
-
 	}
 }
 
@@ -214,7 +183,181 @@ const C3DBounds& range3d_iterator<I>::pos() const
 }
 
 template <typename I> 
-int range3d_iterator<I>::get_boundary_flags() const
+range3d_iterator_with_boundary_flag<I> range3d_iterator<I>::with_boundary_flag() const
+{
+	return 	range3d_iterator_with_boundary_flag<I>(m_pos, m_size, m_begin, m_end, m_iterator);
+}
+
+template <typename I> 
+range3d_iterator_with_boundary_flag<I>::range3d_iterator_with_boundary_flag():
+	m_pos(0,0,0), 
+	m_size(0,0,0), 
+	m_begin(0,0,0), 
+	m_end(0,0,0), 
+	m_xstride(0),
+	m_ystride(0), 
+	m_boundary(eb_none)
+{
+}
+
+template <typename I> 
+range3d_iterator_with_boundary_flag<I>::range3d_iterator_with_boundary_flag(const C3DBounds& pos):
+	m_pos(pos), 
+	m_size(0,0,0), 
+	m_begin(0,0,0), 
+	m_end(0,0,0), 
+	m_xstride(0),
+	m_ystride(0), 
+	m_boundary(eb_none)
+{
+}
+
+template <typename I> 
+range3d_iterator_with_boundary_flag<I>::range3d_iterator_with_boundary_flag(const C3DBounds& pos, const C3DBounds& size, 
+				      const C3DBounds& begin, const C3DBounds& end, I iterator):
+	m_pos(pos), 
+	m_size(size), 
+	m_begin(begin), 
+	m_end(end),
+	m_xstride(m_size.x - (m_end.x - m_begin.x)),
+	m_iterator(iterator), 
+	m_boundary(eb_none)
+{
+	m_ystride = (m_size.y - (m_end.y - m_begin.y))*m_size.x; 
+	if (m_pos.x == 0)
+		m_boundary |= eb_xlow; 
+	if (m_pos.x == size.x - 1)
+		m_boundary |= eb_xhigh; 
+	
+	if (m_pos.y == 0)
+		m_boundary |= eb_ylow; 
+	if (m_pos.y == size.y - 1)
+		m_boundary |= eb_yhigh; 
+
+	if (m_pos.z == 0)
+		m_boundary |= eb_zlow; 
+	if (m_pos.z == size.z - 1)
+		m_boundary |= eb_zhigh; 
+}
+
+
+template <typename I> 
+range3d_iterator_with_boundary_flag<I>& range3d_iterator_with_boundary_flag<I>::operator = (const range3d_iterator_with_boundary_flag<I>& other)
+{
+	m_pos = other.m_pos; 
+	m_size = other.m_size;  
+	m_begin = other.m_begin; 
+	m_end = other.m_end; 
+	m_iterator = other.m_iterator; 
+	m_xstride = other.m_xstride; 
+	m_ystride = other.m_ystride;
+	m_boundary = other.m_boundary; 
+	return *this; 
+}
+
+
+
+template <typename I> 
+range3d_iterator_with_boundary_flag<I>::range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<I>& other):
+	m_pos(other.m_pos), 
+	m_size(other.m_size), 
+	m_begin(other.m_begin), 
+	m_end(other.m_end), 
+	m_xstride(other.m_xstride),
+	m_ystride(other.m_ystride),
+	m_iterator(other.m_iterator), 
+	m_boundary(other.m_boundary)
+{
+}	
+
+template <typename I> 
+range3d_iterator_with_boundary_flag<I>& range3d_iterator_with_boundary_flag<I>::operator ++()
+{
+	DEBUG_ASSERT_RELEASE_THROW(m_pos.x < m_end.x, "range3d_iterator_with_boundary_flag: trying to increment past end");
+	
+	++m_pos.x;
+	++m_iterator; 
+	m_boundary &= ~eb_x;
+	
+	if (m_pos.x == m_end.x) {
+		increment_y(); 
+		if (m_pos.x == 0) 
+			m_boundary |= eb_xlow;
+	}
+	if (m_pos.x == m_size.x - 1)
+		m_boundary |= eb_xhigh; 
+	
+	return *this; 
+}
+
+template <typename I> 
+void range3d_iterator_with_boundary_flag<I>::increment_y()
+{
+	if (m_pos.y < m_end.y) {
+		m_pos.x = m_begin.x; 
+		++m_pos.y; 
+		m_boundary &= ~eb_y;
+		std::advance(m_iterator, m_xstride);
+		if (m_pos.y == m_end.y) {
+			increment_z();
+			if (m_pos.y == 0) 
+				m_boundary |= eb_ylow; 
+		} 
+		if (m_pos.y == m_size.y - 1)
+			m_boundary |= eb_yhigh; 
+	} 
+}
+
+template <typename I> 
+void range3d_iterator_with_boundary_flag<I>::increment_z()
+{
+	if (m_pos.z < m_end.z - 1) {
+		m_pos.y = m_begin.y; 
+		++m_pos.z; 
+		m_boundary &= ~eb_zlow; 
+		std::advance(m_iterator, m_ystride);
+		if (m_pos.z == m_size.z - 1)
+			m_boundary |= eb_zhigh; 
+	}else if (m_pos.z == m_end.z - 1) {
+		m_pos = m_end; 
+	}
+}
+
+template <typename I> 
+typename range3d_iterator_with_boundary_flag<I>::internal_iterator 
+range3d_iterator_with_boundary_flag<I>::get_point()
+{
+	return m_iterator; 
+}
+
+template <typename I> 
+range3d_iterator_with_boundary_flag<I> range3d_iterator_with_boundary_flag<I>::operator ++(int)
+{
+	range3d_iterator_with_boundary_flag result(*this); 
+	++(*this); 
+	return result; 
+}
+
+template <typename I> 
+typename range3d_iterator_with_boundary_flag<I>::reference range3d_iterator_with_boundary_flag<I>::operator *() const
+{
+	return *m_iterator; 
+}
+
+template <typename I> 
+typename range3d_iterator_with_boundary_flag<I>::pointer range3d_iterator_with_boundary_flag<I>::operator ->() const
+{
+	return __iterator3d_dispatch_operator_for_bool<internal_iterator>::apply(m_iterator);
+}
+
+template <typename I> 
+const C3DBounds& range3d_iterator_with_boundary_flag<I>::pos() const
+{
+	return m_pos; 
+}
+
+template <typename I> 
+int range3d_iterator_with_boundary_flag<I>::get_boundary_flags() const
 {
 	return m_boundary; 
 }
