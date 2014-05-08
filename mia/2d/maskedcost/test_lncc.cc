@@ -99,7 +99,14 @@ BOOST_AUTO_TEST_CASE( test_masked_lncc_1 )
 	auto igx = gradx; 
 	auto igy = grady; 
 	for (auto iv = force.begin(); iv != force.end();  ++iv, ++igx, ++igy) {
-		BOOST_CHECK_CLOSE(iv->x, *igx, 0.1); 
-		BOOST_CHECK_CLOSE(iv->y, *igy, 0.1); 
+		if (*igx == 0.0) 
+			BOOST_CHECK_SMALL(iv->x, 1e-8f); 
+		else 
+			BOOST_CHECK_CLOSE(iv->x, - *igx, 0.1); 
+
+		if (*igy == 0.0) 
+			BOOST_CHECK_SMALL(iv->y, 1e-8f); 
+		else 
+			BOOST_CHECK_CLOSE(iv->y, - *igy, 0.1); 
 	}
 }

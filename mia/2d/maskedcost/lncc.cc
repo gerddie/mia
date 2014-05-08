@@ -239,7 +239,7 @@ public:
 								  << ": sumab=" << sumab << ", suma2=" << suma2
 								  << ", mean-a" << mean_a << ", mean_b = " << mean_b 
 								  << ", scale=" << scale << "\n";  
-							*iforce = scale * *ig; 
+							*iforce = - scale * *ig; 
 						}
 					}
 				}

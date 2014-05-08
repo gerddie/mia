@@ -196,7 +196,7 @@ public:
 							++count;
 							const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
 											      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
-							*iforce = scale * *ig; 
+							*iforce = - scale * *ig; 
 						}
 					}
 				}

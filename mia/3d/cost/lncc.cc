@@ -203,7 +203,7 @@ public:
 								++count;
 								const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
 												      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
-								*iforce = scale * *ig; 
+								*iforce = - scale * *ig; 
 							}
 						}
 					}
@@ -225,11 +225,6 @@ double CLNCC3DImageCost::do_evaluate_force(const Data& a, const Data& b, Force& 
 {
 	FEvalCostForce ecostforce(m_hwidth, force); 
 	return mia::filter(ecostforce, a, b); 
-}
-
-
-void CLNCC3DImageCost::post_set_reference(const Data& ref)
-{
 }
 
 

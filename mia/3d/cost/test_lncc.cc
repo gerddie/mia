@@ -173,16 +173,16 @@ BOOST_AUTO_TEST_CASE( test_lncc_1 )
 		if (*igx == 0.0) 
 			BOOST_CHECK_SMALL(iv->x, 1e-8f); 
 		else 
-			BOOST_CHECK_CLOSE(iv->x, *igx, 0.1); 
+			BOOST_CHECK_CLOSE(iv->x, - *igx, 0.1); 
 
 		if (*igy == 0.0) 
 			BOOST_CHECK_SMALL(iv->y, 1e-8f); 
 		else 
-			BOOST_CHECK_CLOSE(iv->y, *igy, 0.1); 
+			BOOST_CHECK_CLOSE(iv->y, - *igy, 0.1); 
 		
 		if (*igz == 0.0)
 			BOOST_CHECK_SMALL(iv->z, 1e-8f); 
 		else 	
-			BOOST_CHECK_CLOSE(iv->z, *igz, 0.1); 
+			BOOST_CHECK_CLOSE(iv->z, - *igz, 0.1); 
 	}
 }
