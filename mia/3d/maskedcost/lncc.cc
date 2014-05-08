@@ -87,12 +87,7 @@ public:
 							continue; 
 						
 						auto c_block = prepare_range(mov.get_size(), x, y, z, m_hw); 
-						auto ia = mov.begin_range(c_block.first,c_block.second); 
-						auto ea = mov.end_range(c_block.first,c_block.second); 
-						auto ib = ref.begin_range(c_block.first,c_block.second); 
-						auto im = m_mask.begin_range(c_block.first,c_block.second); 
 						
-
 						float suma = 0.0; 
 						float sumb = 0.0; 
 						float suma2 = 0.0; 
@@ -100,16 +95,23 @@ public:
 						float sumab = 0.0; 
 						long n = 0; 
 						
-						// make a local copy 
-						while (ia != ea) {
-							if (*im) {
-								a_buffer[n] = *ia; 
-								b_buffer[n] = *ib; 
-								suma += *ia;
-								sumb += *ib;
-								++n;
+						for (unsigned iz = c_block.first.z; iz < c_block.second.z; ++iz) {
+							for (unsigned iy = c_block.first.y; iy < c_block.second.y; ++iy) {
+								auto ia = mov.begin_at(0,iy,iz); 
+								auto ib = ref.begin_at(0, iy, iz); 
+								auto im = m_mask.begin_at(0, iy, iz); 
+								for (unsigned ix = c_block.first.x; ix < c_block.second.x; ++ix) {
+									
+									// make a local copy 
+									if (im[ix]) {
+										a_buffer[n] = ia[ix]; 
+										b_buffer[n] = ib[ix]; 
+										suma += ia[ix];
+										sumb += ib[ix];
+										++n;
+									}
+								}
 							}
-							++ia; ++ib; ++im; 
 						}
 						if (n > 1) {
 							const float mean_a = suma/n; 
@@ -118,7 +120,7 @@ public:
 							for (int i = 0; i < n; ++i) 
 								cverb << a_buffer[i] << ", "; 
 							cverb << "\n"; 
-
+							
 							// strip mean and evaluate cross correlation 
 							for (int i = 0; i < n; ++i) {
 								const float a_ = a_buffer[i] - mean_a; 
@@ -198,12 +200,7 @@ public:
 							continue; 
                                         
 						auto c_block = prepare_range(mov.get_size(), x, y, z, m_hw); 
-						auto ia = mov.begin_range(c_block.first,c_block.second); 
-						auto ea = mov.end_range(c_block.first,c_block.second); 
-						auto ib = ref.begin_range(c_block.first,c_block.second); 
-						auto im = m_mask.begin_range(c_block.first,c_block.second); 
-                                        
-
+						
 						float suma = 0.0; 
 						float sumb = 0.0; 
 						float suma2 = 0.0; 
@@ -211,17 +208,24 @@ public:
 						float sumab = 0.0; 
 						long n = 0; 
 						
-						// make a local copy 
-						while (ia != ea) {
-							if (*im) {
-								a_buffer[n] = *ia; 
-								b_buffer[n] = *ib; 
-								suma += *ia;
-								sumb += *ib;
-								++n;
+						for (unsigned iz = c_block.first.z; iz < c_block.second.z; ++iz) {
+							for (unsigned iy = c_block.first.y; iy < c_block.second.y; ++iy) {
+								auto ia = mov.begin_at(0,iy,iz); 
+								auto ib = ref.begin_at(0, iy, iz); 
+								auto im = m_mask.begin_at(0, iy, iz); 
+								for (unsigned ix = c_block.first.x; ix < c_block.second.x; ++ix) {
+									// make a local copy 
+									if (im[ix]) {
+										a_buffer[n] = ia[ix]; 
+										b_buffer[n] = ib[ix]; 
+										suma += ia[ix];
+										sumb += ib[ix];
+										++n;
+									}
+								}
 							}
-							++ia; ++ib; ++im; 
 						}
+						
 						if (n > 1) {
 							const float mean_a = suma/n; 
 							const float mean_b = sumb/n;
