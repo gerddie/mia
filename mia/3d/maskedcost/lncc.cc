@@ -264,6 +264,83 @@ public:
                                         
 						auto c_block = prepare_range(mov.get_size(), x, y, z, m_hw); 
 						
+#ifdef __SSE2__
+
+						v2df sum = {0.0, 0.0}; 
+						v2df sum2 = {0.0, 0.0}; 
+						double sumab = 0.0; 
+						double n = 0; 
+
+						for (unsigned iz = c_block.first.z; iz < c_block.second.z; ++iz) {
+							for (unsigned iy = c_block.first.y; iy < c_block.second.y; ++iy) {
+								auto ia = mov.begin_at(0,iy,iz); 
+								auto ib = ref.begin_at(0, iy, iz); 
+								auto im = m_mask.begin_at(0, iy, iz); 
+								for (unsigned ix = c_block.first.x; ix < c_block.second.x; ++ix) {
+									
+									// make a local copy 
+									if (im[ix]) {
+										v2df val = {static_cast<double>(ia[ix]), static_cast<double>(ib[ix])}; 
+										v2df sq = val * val;	
+										
+										sum += val; 
+										sum2 +=  sq; 
+										
+										sumab += ia[ix] * ib[ix]; 
+										
+										n += 1.0; 
+									}
+								}
+							}
+						}
+
+						if (n > 1.0) {
+							double __attribute__((aligned(16))) help[2]; 
+
+							v2df nn = {n ,n };
+							v2df mean = sum / nn; 
+							
+
+								
+							v2df delta = sum * mean; 
+							
+							sum2 -= delta; 
+							
+							v2df ms2_a = _mm_unpacklo_pd(mean, sum2); 
+							v2df ms2_b = _mm_unpackhi_pd(mean, sum2); 
+
+							v2df prod = ms2_a * ms2_b;  // {mean_a*mean_b, sum2_a * sum2_b)
+							
+							
+							_mm_store_pd(help, prod); 
+							
+							sumab -= help[0] * n; 
+
+							if (help[1] > 1e-5) {
+								v2df v_mean = {static_cast<double>(*imov), static_cast<double>(*iref)}; 
+								v_mean -= mean; 
+								double __attribute__((aligned(16))) v_delta[2]; 
+								_mm_store_pd(v_delta, v_mean);
+								
+								double suma2; 
+								_mm_storel_pd(&suma2, sum2); 
+								
+								
+								lresult += sumab * sumab / help[1]; 
+								++count;
+
+								const auto scale = static_cast<float>(2.0 * sumab / help[1] * 
+												      ( sumab / suma2 * v_delta[0] - v_delta[1] ));
+								cvdebug() << z << y << x 
+									  << ": sumab=" << sumab << ", suma2=" << suma2
+									  << ", scale=" << scale << "\n";  
+								*iforce = scale * *ig; 
+							}
+						}
+						
+#else 
+
+
 						float suma = 0.0; 
 						float sumb = 0.0; 
 						float suma2 = 0.0; 
@@ -317,6 +394,7 @@ public:
 								*iforce = scale * *ig; 
 							}
 						}
+#endif
 					}
 			}
 			return make_pair(result.first + lresult, result.second + count); 
