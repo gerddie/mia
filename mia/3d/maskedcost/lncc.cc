@@ -107,17 +107,11 @@ public:
 									
 									// make a local copy 
 									if (im[ix]) {
-										double __attribute__((aligned(16))) vals[2]; 
-										vals[0] = ia[ix]; 
-										vals[1] = ib[ix]; 
-										v2df val =  _mm_load_pd(vals); 
+										v2df val = {static_cast<double>(ia[ix]), static_cast<double>(ib[ix])}; 
 										v2df sq = val * val;	
-										
 										sum += val; 
 										sum2 +=  sq; 
-										
 										sumab += ia[ix] * ib[ix]; 
-										
 										n += 1.0; 
 									}
 								}
@@ -127,9 +121,7 @@ public:
 						if (n > 1.0) {
 							v2df nn = {n ,n };
 							v2df mean = sum / nn; 
-							
 							v2df delta = sum * mean; 
-							
 							sum2 -= delta; 
 							
 							v2df ms2_a = _mm_unpacklo_pd(mean, sum2); 
