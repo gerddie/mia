@@ -57,6 +57,9 @@ inline pair<C3DBounds, C3DBounds> prepare_range(const C3DBounds& size, int cx, i
 	return make_pair(C3DBounds(xb,yb,zb), C3DBounds(xe,ye,ze)); 
 }
 
+#ifdef __SSE2__
+typedef double v2df __attribute__ ((vector_size (16)));
+#endif
 
 
 class FEvalCost : public TFilter<float> {
@@ -88,6 +91,64 @@ public:
 						
 						auto c_block = prepare_range(mov.get_size(), x, y, z, m_hw); 
 						
+#ifdef __SSE2__
+
+						v2df sum = {0.0, 0.0}; 
+						v2df sum2 = {0.0, 0.0}; 
+						double sumab = 0.0; 
+						double n = 0; 
+
+						for (unsigned iz = c_block.first.z; iz < c_block.second.z; ++iz) {
+							for (unsigned iy = c_block.first.y; iy < c_block.second.y; ++iy) {
+								auto ia = mov.begin_at(0,iy,iz); 
+								auto ib = ref.begin_at(0, iy, iz); 
+								auto im = m_mask.begin_at(0, iy, iz); 
+								for (unsigned ix = c_block.first.x; ix < c_block.second.x; ++ix) {
+									
+									// make a local copy 
+									if (im[ix]) {
+										double __attribute__((aligned(16))) vals[2]; 
+										vals[0] = ia[ix]; 
+										vals[1] = ib[ix]; 
+										v2df val =  _mm_load_pd(vals); 
+										v2df sq = val * val;	
+										
+										sum += val; 
+										sum2 +=  sq; 
+										
+										sumab += ia[ix] * ib[ix]; 
+										
+										n += 1.0; 
+									}
+								}
+							}
+						}
+
+						if (n > 1.0) {
+							v2df nn = {n ,n };
+							v2df mean = sum / nn; 
+							
+							v2df delta = sum * mean; 
+							
+							sum2 -= delta; 
+							
+							v2df ms2_a = _mm_unpacklo_pd(mean, sum2); 
+							v2df ms2_b = _mm_unpackhi_pd(mean, sum2); 
+
+							v2df prod = ms2_a * ms2_b;  // {mean_a*mean_b, sum2_a * sum2_b)
+							
+							double __attribute__((aligned(16))) help[2]; 
+							_mm_store_pd(help, prod); 
+							
+							sumab -= help[0] * n; 
+
+							if (help[1] > 1e-5) {
+								lresult += sumab * sumab / help[1]; 
+								++count;
+							}
+						}
+						
+#else 
 						float suma = 0.0; 
 						float sumb = 0.0; 
 						float suma2 = 0.0; 
@@ -141,8 +202,10 @@ public:
 									  << ", c=" << count << ", n=" << n << "\n"; 
 							}
 						}
+#endif 
 					}
 			}
+
 			return make_pair(result.first + lresult, result.second + count); 
 		};
 		
