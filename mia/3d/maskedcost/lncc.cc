@@ -92,7 +92,6 @@ public:
 						auto c_block = prepare_range(mov.get_size(), x, y, z, m_hw); 
 						
 #ifdef __SSE2__
-
 						v2df sum = {0.0, 0.0}; 
 						v2df sum2 = {0.0, 0.0}; 
 						double sumab = 0.0; 
@@ -139,7 +138,6 @@ public:
 								++count;
 							}
 						}
-						
 #else 
 						float suma = 0.0; 
 						float sumb = 0.0; 
@@ -326,7 +324,7 @@ public:
 								cvdebug() << z << y << x 
 									  << ": sumab=" << sumab << ", suma2=" << suma2
 									  << ", scale=" << scale << "\n";  
-								*iforce = scale * *ig; 
+								*iforce = -scale * *ig; 
 							}
 						}
 						
