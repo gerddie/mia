@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost_src_mask)
 	BOOST_REQUIRE(save_image("src-mask.@", src_mask)); 
 
         assert("at least one mask must be provided"); 
-	C3DMaskedImageFullCost cost("src.@", "ref.@","src-mask.@", "" ,
+	C3DMaskedImageFullCost cost("src.@", "ref.@","src-mask.@", "" , nullptr, nullptr, 
                                     C3DMaskedImageCostPluginHandler::instance().produce("ssd"), 1.0); 
 
 	cvdebug() << "prepare cost\n"; 
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost_ref_mask)
 	BOOST_REQUIRE(save_image("ref-mask.@", src_mask)); 
 
         assert("at least one mask must be provided"); 
-	C3DMaskedImageFullCost cost("src.@", "ref.@","", "ref-mask.@",
+	C3DMaskedImageFullCost cost("src.@", "ref.@","", "ref-mask.@", nullptr, nullptr, 
                                     C3DMaskedImageCostPluginHandler::instance().produce("ssd"), 1.0); 
 
 	cvdebug() << "prepare cost\n"; 

@@ -26,14 +26,18 @@ NS_MIA_BEGIN
 using namespace std; 
 
 C3DMaskedImageFullCost::C3DMaskedImageFullCost(const std::string& src, 
-				   const std::string& ref, 
-                                   const std::string& src_mask, 
-				   const std::string& ref_mask, 
-				   P3DMaskedImageCost cost, 
-				   double weight):
+					       const std::string& ref, 
+					       const std::string& src_mask, 
+					       const std::string& ref_mask, 
+					       P3DFilter src_mask_prefilter, 
+					       P3DFilter ref_mask_prefilter, 
+					       P3DMaskedImageCost cost, 
+					       double weight):
 	C3DFullCost(weight), 
 	m_src_key(C3DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C3DImageIOPluginHandler::instance().load_to_pool(ref)),
+	m_src_mask_prefilter(src_mask_prefilter), 
+	m_ref_mask_prefilter(ref_mask_prefilter), 
         m_ref_mask_bit(nullptr), 
 	m_ref_mask_scaled_bit(nullptr), 
 	m_cost_kernel(cost)
@@ -202,29 +206,41 @@ void C3DMaskedImageFullCost::do_reinit()
 
         if (m_src_mask_key.key_is_valid()) {
                 m_src_mask = get_from_pool(m_src_mask_key);
+		// prefilter?
+		if (m_src_mask_prefilter) 
+			m_src_mask = m_src_mask_prefilter->filter(*m_src_mask); 
+
                 if (m_src->get_size() != m_src_mask->get_size()) {
                         throw create_exception<runtime_error>("C3DMaskedImageFullCost: moving image has size [", 
                                                               m_src->get_size(), "], but corresponding mask is of size [", 
                                                               m_src_mask->get_size(), "]"); 
                 }
-                
+		
+
+
                 if (m_src_mask->get_pixel_type() != it_bit) {
                         // one could also add a binarize filter here, but  it's better to force 
                         // the user to set the pixel type correctly 
                         throw create_exception<invalid_argument>("C3DMaskedImageFullCost: moving mask image ", 
 								 m_src_mask_key.get_key(), 
-                                                                 " must be binary"); 
+                                                                 " must be binary. You could add a src-mask-filter"
+								 " to convert the mask image."); 
                 }
 		m_src_mask_scaled = m_src_mask; 
         }
 
         if (m_ref_mask_key.key_is_valid()) {
                 m_ref_mask = get_from_pool(m_ref_mask_key);
+		if (m_ref_mask_prefilter) 
+			m_ref_mask = m_src_mask_prefilter->filter(*m_ref_mask); 
+				
                 if (m_ref->get_size() != m_ref_mask->get_size()) {
                         throw create_exception<runtime_error>("C3DMaskedImageFullCost: reference image has size [", 
                                                               m_src->get_size(), "], but corresponding mask is of size [",
                                                               m_src_mask->get_size(), "]"); 
                 }
+
+
                 m_ref_mask_scaled_bit = m_ref_mask_bit = dynamic_cast<C3DBitImage *>(m_ref_mask.get());
                 if (!m_ref_mask_scaled_bit)  {
                         throw create_exception<invalid_argument>("C3DMaskedImageFullCost: reference mask image "
@@ -269,6 +285,8 @@ private:
 	std::string m_ref_name;
 	std::string m_src_mask_name;
 	std::string m_ref_mask_name;
+	P3DFilter m_src_mask_prefilter; 
+	P3DFilter m_ref_mask_prefilter; 
 
 	P3DMaskedImageCost m_cost_kernel;
 }; 
@@ -286,6 +304,11 @@ C3DMaskedImageFullCostPlugin::C3DMaskedImageFullCostPlugin():
 	add_parameter("ref-mask", new CStringParameter(m_ref_mask_name, CCmdOptionFlags::input, 
                                                        "Reference image mask  (binary)", &C3DImageIOPluginHandler::instance()));
 
+	add_parameter("src-mask-filter", make_param(m_src_mask_prefilter, "", false, 
+						    "Filter to prepare the study mask image, the output must be a binary image."));
+	add_parameter("ref-mask-filter", make_param(m_ref_mask_prefilter, "", false, 
+						    "Filter to prepare the reference mask image, the output must be a binary image."));
+
 	add_parameter("cost", make_param(m_cost_kernel, "ssd", false, "Cost function kernel"));
 }
 
@@ -297,7 +320,8 @@ C3DFullCost *C3DMaskedImageFullCostPlugin::do_create(float weight) const
 		  << "' cost=" << m_cost_kernel << "\n";
 
 	return new C3DMaskedImageFullCost(m_src_name, m_ref_name, 
-                                          m_src_mask_name, m_ref_mask_name, 
+                                          m_src_mask_name, m_ref_mask_name,
+					  m_src_mask_prefilter, m_ref_mask_prefilter, 
                                           m_cost_kernel, weight); 
 }
 
@@ -306,6 +330,7 @@ const std::string C3DMaskedImageFullCostPlugin::do_get_descr() const
 	return "Generalized masked image similarity cost function that also handles multi-resolution processing. "
                 "The provided masks should be densly filled regions in multi-resolution procesing because "
                 "otherwise the mask information may get lost when downscaling the image. " 
+		"The mask may be pre-filtered - after pre-filtering the masks must be of bit-type."
                 "The reference mask and the transformed mask of the study image are combined by binary AND. "
 		"The actual similarity measure is given es extra parameter.";
 }

@@ -25,6 +25,7 @@
 #include <mia/3d/fullcost.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/maskedcost.hh>
+#include <mia/3d/filter.hh>
 
 NS_MIA_BEGIN
 
@@ -34,7 +35,9 @@ public:
                                const std::string& ref, 
                                const std::string& src_mask, 
                                const std::string& ref_mask,
-                               P3DMaskedImageCost cost, 
+			       P3DFilter src_mask_prefilter, 
+			       P3DFilter ref_mask_prefilter, 
+			       P3DMaskedImageCost cost, 
                                double weight); 
 private: 
 	double do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const;
@@ -61,11 +64,15 @@ private:
 	P3DImage m_ref; 
 	P3DImage m_src_mask; 
 	P3DImage m_ref_mask; 
-	C3DBitImage *m_ref_mask_bit; 
-
 
         P3DImage m_src_scaled; 
 	P3DImage m_ref_scaled;
+
+        P3DFilter m_src_mask_prefilter; 
+	P3DFilter m_ref_mask_prefilter;
+
+	C3DBitImage *m_ref_mask_bit; 
+
 	P3DImage m_src_mask_scaled; 
 	P3DImage m_ref_mask_scaled; 
 
