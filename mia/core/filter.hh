@@ -109,10 +109,37 @@ public:
 	   \param pimage must be of a type D that has Binder trait defined. 
 	 */ 
 	result_type filter(std::shared_ptr<D> pimage) const;
+
 private:
 	virtual result_type do_filter(const Image& image) const = 0;
 	virtual result_type do_filter(std::shared_ptr<D> image) const;
+
 };
+
+template <class D>
+class EXPORT_HANDLER TDataFilterChained: public TDataFilter<D> {
+	typedef typename TDataFilter<D>::result_type result_type; 
+public: 
+	typedef typename TDataFilter<D>::Pointer Pointer; 
+	
+	void push_back(Pointer f) {
+		m_chain.push_back(f); 
+	}
+private: 
+	virtual result_type do_filter(const D& image) const {
+		assert(m_chain.size() > 0); 
+		
+		cvdebug() << "Run chained filter '" << m_chain[0]->get_init_string() << "'\n"; 
+		result_type result = m_chain[0]->filter(image); 
+		for(auto f = m_chain.begin() + 1; f != m_chain.end(); ++f)  {
+		cvdebug() << "Run chained filter '" << (*f)->get_init_string() << "'\n"; 
+			result = (*f)->filter(*result); 
+		}
+		return result; 
+	}
+	std::vector<Pointer> m_chain; 
+}; 
+
 
 /**
    \ingroup filtering
@@ -134,6 +161,13 @@ public:
 		TFactory<TDataFilter<Image> >(name)
 	{}
 };
+
+template <typename D>
+struct plugin_can_chain<TDataFilterPlugin<D>> {
+	static constexpr bool value = true; 
+	typedef TDataFilterChained<D> Chained; 
+}; 
+
 
 /**
    @cond INTERNAL 

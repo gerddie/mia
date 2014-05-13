@@ -73,3 +73,32 @@ BOOST_AUTO_TEST_CASE(test_run_filters)
 	}
 }
 
+
+BOOST_AUTO_TEST_CASE(test_chain_filters)
+{
+	C2DBounds size(2,2); 
+	const unsigned int   init_data[] = {1, 10, 100, 200}; 
+	const unsigned short test_data[] = {2, 2, 5, 2}; 
+
+	C2DUIImage *int_image = new C2DUIImage(size, init_data); 
+	P2DImage image(int_image); 
+
+	auto allfilters = produce_2dimage_filter("bandpass:min=1,max=150+binarize:min=100,max=200"
+					       "+convert:repn=ushort,map=linear,b=2,a=3"); 
+
+	auto testimg = allfilters->filter(image); 
+
+	BOOST_CHECK_EQUAL(testimg->get_pixel_type(), it_ushort); 
+	auto test_image = dynamic_cast<const C2DUSImage&>(*testimg); 
+	
+	BOOST_CHECK_EQUAL(test_image.get_size(), size); 
+	
+	auto it = test_image.begin(); 
+	auto et = test_image.end(); 
+	auto id = test_data; 
+	while (it != et) {
+		BOOST_CHECK_EQUAL(*it, *id); 
+		++it; ++id; 
+	}
+}
+
