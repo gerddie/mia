@@ -134,7 +134,7 @@ public:
 							sumab -= help[0] * n; 
 
 							if (help[1] > 1e-5) {
-								lresult += sumab * sumab / help[1]; 
+								lresult += 1 - sumab * sumab / help[1]; 
 								++count;
 							}
 						}
@@ -186,7 +186,7 @@ public:
 									  << ": Sab=" << sumab << ", Sa2=" << suma2 << ", Sb2=" << sumb2 
 									  << ", n=" << n << ", meanA=" << mean_a << ", mean_b=" << mean_b 
 									  << "\n"; 
-								lresult += sumab * sumab / suma2_sumb2; 
+								lresult += 1.0 - sumab * sumab / suma2_sumb2; 
 								++count;
 								cvdebug() << "v=" << lresult
 									  << ", c=" << count << ", n=" << n << "\n"; 
@@ -203,7 +203,7 @@ public:
 		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), init, evaluate_local_cost, 
 					 [](const pair<float,int>& x, const pair<float,int>& y){return make_pair(x.first + y.first, x.second + y.second);});	
 		cvdebug() << "result={" << r.first << " /  " <<  r.second << "\n"; 
-		return r.second > 0 ? - r.first / r.second : 0.0; 
+		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
 }; 
 
@@ -316,7 +316,7 @@ public:
 								_mm_storel_pd(&suma2, sum2); 
 								
 								
-								lresult += sumab * sumab / help[1]; 
+								lresult += 1 - sumab * sumab / help[1]; 
 								++count;
 
 								const auto scale = static_cast<float>(2.0 * sumab / help[1] * 
@@ -324,7 +324,7 @@ public:
 								cvdebug() << z << y << x 
 									  << ": sumab=" << sumab << ", suma2=" << suma2
 									  << ", scale=" << scale << "\n";  
-								*iforce = -scale * *ig; 
+								*iforce = - scale * *ig; 
 							}
 						}
 						
@@ -373,7 +373,7 @@ public:
 							
 							if (suma2_sumb2 > 1e-5) {
                                                         
-								lresult += sumab * sumab / suma2_sumb2; 
+								lresult += 1 - sumab * sumab / suma2_sumb2; 
 								++count;
 								const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
 												      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
@@ -381,7 +381,7 @@ public:
 									  << ": sumab=" << sumab << ", suma2=" << suma2
 									  << ", mean-a" << mean_a << ", mean_b = " << mean_b 
 									  << ", scale=" << scale << "\n";  
-								*iforce = scale * *ig; 
+								*iforce = - scale * *ig; 
 							}
 						}
 #endif
@@ -394,8 +394,9 @@ public:
 					 [](const pair<float,int>& x, const pair<float,int>& y){
 						 return make_pair(x.first + y.first, x.second + y.second);
 					 });
-		
-		return r.second > 0 ? - r.first / r.second : 0.0; 
+
+		cvmsg() << "\nLNCC: sum = " << r.first << " from " << r.second << "\n"; 
+		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
 	
 };
