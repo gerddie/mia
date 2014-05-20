@@ -324,7 +324,7 @@ public:
 								cvdebug() << z << y << x 
 									  << ": sumab=" << sumab << ", suma2=" << suma2
 									  << ", scale=" << scale << "\n";  
-								*iforce = - scale * *ig; 
+								*iforce = scale * *ig; 
 							}
 						}
 						
@@ -381,7 +381,7 @@ public:
 									  << ": sumab=" << sumab << ", suma2=" << suma2
 									  << ", mean-a" << mean_a << ", mean_b = " << mean_b 
 									  << ", scale=" << scale << "\n";  
-								*iforce = - scale * *ig; 
+								*iforce = scale * *ig; 
 							}
 						}
 #endif
