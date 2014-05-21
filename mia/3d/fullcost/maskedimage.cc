@@ -95,7 +95,7 @@ P3DImage C3DMaskedImageFullCost::get_combined_mask(const C3DTransformation *t, C
                         // A parameter should define how the masks are combined 
                         transform((*combined_mask)->begin(), (*combined_mask)->end(),
                                   m_ref_mask_scaled_bit->begin(), (*combined_mask)->begin(),
-                                  [](bool a, bool b){ return a || b;});
+                                  [](bool a, bool b){ return a && b;});
                         
                         // here a penalty could be added e.g. to ensure that the moving mask is 
                         // always inside the fixed mask. However, it is difficult to evaluate a 
