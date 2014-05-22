@@ -37,8 +37,6 @@ public:
 private: 
 	virtual double do_value(const Data& a, const Data& b, const Mask& m) const; 
 	virtual double do_evaluate_force(const Data& a, const Data& b, const Mask& m, Force& force) const; 
-	virtual void post_set_reference(const Data& ref); 
-
         int m_hwidth; 
 };
 

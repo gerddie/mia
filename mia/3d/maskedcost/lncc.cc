@@ -395,7 +395,6 @@ public:
 						 return make_pair(x.first + y.first, x.second + y.second);
 					 });
 
-		cvmsg() << "\nLNCC: sum = " << r.first << " from " << r.second << "\n"; 
 		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
 	
@@ -405,11 +404,6 @@ double CLNCC3DImageCost::do_evaluate_force(const Data& a, const Data& b, const M
 {
 	FEvalCostForce ecostforce(m_hwidth, m, force); 
 	return mia::filter(ecostforce, a, b); 
-}
-
-
-void CLNCC3DImageCost::post_set_reference(const Data& ref)
-{
 }
 
 
