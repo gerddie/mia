@@ -177,7 +177,7 @@ BOOST_FIXTURE_TEST_CASE(test_CMeshIOPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_CMinimizerPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"gsl", "gdsq", "nlopt"
+		"gdas", "gsl", "gdsq", "nlopt"
 	}; 
 	test(CMinimizerPluginHandler::instance().get_set(), test_data); 
 }

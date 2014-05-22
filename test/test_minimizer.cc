@@ -73,7 +73,7 @@ const char *minimizer_property = "CMinimizerMock";
 BOOST_AUTO_TEST_CASE( test_load_minimizer_plugins )	
 {
 
-	set<string> test_data = { "gdsq", "gsl"};
+	set<string> test_data = { "gdsq", "gsl", "gdas"};
 
 #ifdef HAVE_NLOPT
        test_data.insert("nlopt"); 
