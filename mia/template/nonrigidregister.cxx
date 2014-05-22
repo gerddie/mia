@@ -428,12 +428,10 @@ double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDo
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 
 
-	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
-
 	cvmsg() << "Cost[fg="<<std::setw(4)<<m_grad_evals 
 		<< ",fe="<<std::setw(4)<<m_func_evals<<"]= with " 
 		<< std::setw(20) << std::setprecision(12) << result 
-		<< " ratio:" << std::setw(20) << std::setprecision(12) << result / m_start_cost <<  endline; 
+		<< " ratio:" << std::setw(20) << std::setprecision(12) << result / m_start_cost <<  "\n"; 
 	return result; 
 }
 
