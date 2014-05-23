@@ -47,6 +47,7 @@ CropFixture::CropFixture():
 			for (size_t x = 0; x < size.x; ++x, ++i) {
 				*i = (x+1 ) * (y +1) * (z+1);
 			}
+	src.set_voxel_size(C3DFVector(2,3,4)); 
 }
 
 void CropFixture::check_result(C3DCrop& f, const C3DBounds& start, C3DBounds rsize)
@@ -63,6 +64,7 @@ void CropFixture::check_result(C3DCrop& f, const C3DBounds& start, C3DBounds rsi
 				BOOST_CHECK_EQUAL(static_cast<size_t>(*i), 
 						  (x+1+start.x ) * (y +1+start.y) * (z+1+start.z));
 			}
+	BOOST_CHECK_EQUAL(result->get_voxel_size(), src.get_voxel_size()); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_crop_inside, CropFixture )
