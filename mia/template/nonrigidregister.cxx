@@ -335,6 +335,7 @@ TNonrigidRegisterImpl<dim>::run() const
 
 		auto x = transform->get_parameters();
 
+		cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
 		m_minimizer->run(x);
 		cvmsg() << "\ndone\n";
 		transform->set_parameters(x);
