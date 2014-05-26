@@ -34,7 +34,6 @@ namespace mia_3dtransform_raffine {
 class EXPORT_3D C3DRotBendTransformation : public mia::C3DTransformation {
 public:
 	C3DRotBendTransformation(const mia::C3DBounds& size, const mia::C3DFVector& orig, 
-				 const mia::C3DFVector& rot_axis, 
 				 const mia::C3DInterpolatorFactory& ipf); 
 	
 	mia::C3DFVector apply(const mia::C3DFVector& x) const;
@@ -90,28 +89,20 @@ private:
 	mia::CDoubleVector m_params;
 	mia::CAffinTransformMatrix m_pre_matrix;
 	mia::CAffinTransformMatrix m_post_matrix;
-	float m_left_bend; 
-	float m_right_bend; 
         mia::C3DFVector m_relative_origin;
         mia::C3DFVector m_rotation_center;
-	mia::C3DFVector m_rotation_axis; 
 	mia::C3DBounds m_size;
-	mia::Quaternion m_y_align_rot; 
-	mia::Quaternion m_y_align_rot_inverse; 
-	bool m_y_align_rot_needed; 
 };
 
 
 class C3DRotBendTransformCreator: public mia::C3DTransformCreator {
 public: 
 	C3DRotBendTransformCreator(const mia::C3DFVector& origin, 
-				   const mia::C3DFVector& rot_axis,
 				   const mia::C3DInterpolatorFactory& ipf); 
 private: 
 	virtual mia::P3DTransformation do_create(const mia::C3DBounds& size, 
 						 const mia::C3DInterpolatorFactory& ipf) const;
 	mia::C3DFVector m_origin; 
-	mia::C3DFVector m_rotation_axis; 
 };
 
 class C3DRotBendTransformCreatorPlugin: public mia::C3DTransformCreatorPlugin {
@@ -121,7 +112,6 @@ public:
 	const std::string do_get_descr() const;
 private:
 	mia::C3DFVector m_origin; 
-	mia::C3DFVector m_rotation_axis; 
 };
 
 

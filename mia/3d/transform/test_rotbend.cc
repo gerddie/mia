@@ -64,27 +64,33 @@ BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation_is_fixed, Axis1Fixture )
         check_transformed_is_same(0, 1.0, m_origin); 
         check_transformed_is_same(1, 1.0, m_origin); 
         check_transformed_is_same(2, 1.0, m_origin); 
+        check_transformed_is_same(3, 1.0, m_origin); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation_origin_plus_minus_axis_is_same, Axis1Fixture )
+BOOST_FIXTURE_TEST_CASE( test_rotbend3d_x_rotation_origin_plus_minus_some_x_is_same, Axis1Fixture )
 {
-        check_transformed_is_same(0, 1.0, m_origin - m_axis);
-        check_transformed_is_same(0, 1.0, m_origin + m_axis); 
+        check_transformed_is_same(0, 1.0, m_origin - C3FFVector(1,0,0));
+        check_transformed_is_same(0, 1.0, m_origin + C3FFVector(1,0,0)); 
 }
 
-
-BOOST_FIXTURE_TEST_CASE( test_rotbend3d_sheary_origin_plus_minus_axis_is_same, Axis1Fixture )
+BOOST_FIXTURE_TEST_CASE( test_rotbend3d_y_rotation_origin_plus_minus_some_y_is_same, Axis1Fixture )
 {
-        check_transformed_is_same(1, 1.0, m_origin - m_axis);
-        check_transformed_is_same(1, 1.0, m_origin + m_axis); 
+        check_transformed_is_same(1, 1.0, m_origin - C3FFVector(0, 1, 0));
+        check_transformed_is_same(1, 1.0, m_origin + C3FFVector(0, 1, 0)); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_rotbend3d_shearz_origin_plus_minus_axis_is_same, Axis1Fixture )
+
+BOOST_FIXTURE_TEST_CASE( test_rotbend3d_shear_left_origin_plus_minus_y_is_same, Axis1Fixture )
 {
-        check_transformed_is_same(2, 1.0, m_origin - m_axis);
-        check_transformed_is_same(2, 1.0, m_origin + m_axis); 
+        check_transformed_is_same(2, 1.0, m_origin - C3FFVector(0, 1, 0));
+        check_transformed_is_same(2, 1.0, m_origin + C3FFVector(0, 1, 0)); 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_rotbend3d_shear_right_origin_plus_minus_y_is_same, Axis1Fixture )
+{
+        check_transformed_is_same(3, 1.0, m_origin - C3FFVector(0, 1, 0));
+        check_transformed_is_same(3, 1.0, m_origin + C3FFVector(0, 1, 0)); 
+}
 
 // the test values are evaluated with octave helper programs 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation, Axis1Fixture )
@@ -92,8 +98,6 @@ BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation, Axis1Fixture )
 	check_transformed_is_expected(0, M_PI/2.0, m_origin +  C3DFVector(-0.5, 0.5, -0.2 ), 
 				      m_origin + C3DFVector(0.3454, 0.08835,  -0.6426));
 }
-
-
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_bend_left, Axis1Fixture )
 {
@@ -143,7 +147,6 @@ BOOST_FIXTURE_TEST_CASE( test_affine3d_ranged_iterator, ipfFixture)
 
 Axis1Fixture::Axis1Fixture():
 m_origin(12,23,32), 
-        m_axis(0.7, 0.9, 0.5), 
         m_size(25, 47, 70), 
         m_transform(m_size, m_origin / C3DFVector(m_size), m_axis, ipf)
 {
@@ -172,33 +175,3 @@ void Axis1Fixture::check_transformed_is_expected(int idx, double param,
 	
 }
 
-#if 0 
-BOOST_FIXTURE_TEST_CASE (test_invers, ipfFixture)
-{
-	C3DBounds size(10,20, 30); 
-	C3DRotbendTransformation trans(size, C3DFVector(5,9.0f,17.5f), ipf); 
-
-	auto params = trans.get_parameters(); 
-	BOOST_REQUIRE(params.size()== 3); 
-
-	const float init_matrix[6] = {1,2,3,4, 2,3}; 
-	const float inv_matrix[6]  = { 
-		-4.0f/13.0f, -2.0f/13.0f,  7.0f/13.0f,   6.0f/13.0f, 
-		 1.0f/13.0f,  7.0f/13.0f, -5.0f/13.0f,  -8.0f/13.0f, 
-		 5.0f/13.0f, -4.0f/13.0f,  1.0f/13.0f, -14.0f/13.0f
-	}; 
-	copy(init_matrix, init_matrix+6, params.begin()); 
-
-	
-	trans.set_parameters(params); 
-	
-	unique_ptr<C3DTransformation> inverse( trans.invert()); 
-	BOOST_CHECK_EQUAL(inverse->get_size(), size);
-
-	params = inverse->get_parameters(); 
-	BOOST_REQUIRE(params.size()== 6); 
-	for(int i = 0; i < 6; ++i) 
-		BOOST_CHECK_CLOSE(params[i], inv_matrix[i], 0.1); 
-	
-}
-#endif 

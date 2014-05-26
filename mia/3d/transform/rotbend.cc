@@ -39,56 +39,28 @@ C3DFVector C3DRotBendTransformation::apply(const C3DFVector& x) const
 
 C3DFVector C3DRotBendTransformation::transform(const C3DFVector& x)const
 {
-	auto y = m_post_matrix.x; 
-
+	auto y = m_pre_matrix * x; 
 
 	if (y.x > 0) {
 		const float distance = get_size().x - m_rotation_axis.x; 
-		y.x += y.x * y.x * m_params[1] / (distance * distance + 1); 
+		y.x += y.x * y.x * m_params[2] / (distance * distance + 1); 
 	} 
 	else if (y.x < 0) {
 		const float distance = m_rotation_axis.x; 
-		y.x += y.x * y.x * m_params[2] / (distance * distance + 1); 
+		y.x += y.x * y.x * m_params[3] / (distance * distance + 1); 
 	}
 
-	return m_matrix * x;
+	return m_post_matrix * y;
 }
 
 C3DRotBendTransformation::C3DRotBendTransformation(const C3DBounds& size, const C3DFVector& orig, 
-						   const C3DFVector& rot_axis, 
 						   const C3DInterpolatorFactory& ipf):
 	C3DTransformation(ipf), 
-        m_params(3), 
+        m_params(4), 
         m_relative_origin(orig), 
 	m_rotation_center(C3DFVector(size) * m_relative_origin), 
-	m_rotation_axis(rot_axis), 
-	m_size(size), 
-	m_y_align_rot_needed(false)
+	m_size(size)
 {
-	cvinfo() << "Transform: center=" << m_rotation_center << " of size=" << m_size << "\n"; 
-	double n = m_rotation_axis.norm(); 
-	if (n == 0.0)
-		throw invalid_argument("C3DRotBendTransformation: rotation axis has zero length"); 
-
-	m_rotation_axis /= n; 
-	
-	// create a pre-post rotation quaternion to get the afs-pfs line into alignment with the 
-	// y axis. 
-
-	// one vector is 0,1,0, the other is m_rotation_axis
-	C3DFVector help_axis(-m_rotation_axis.z, 0, m_rotation_axis.x); 
-	if (help_axis.norm2() > 0.0) {
-		help_axis /= help_axis.norm(); 
-		m_y_align_rot_needed = true; 
-		double angle = acos(m_rotation_axis.y) / 2.0; 
-		double sina, cosa; 
-		sincos(angle, &sina, &cosa); 
-		m_y_align_rot = Quaternion( cosa, sina * help_axis.x, 0, sina * help_axis.z); 
-		cvinfo() << "Align-rotation = " << m_y_align_rot << "\n"; 
-
-		m_y_align_rot_inverse = m_y_align_rot.inverse(); 
-		
-	}
 	m_pre_matrix.identity();
 	m_post_matrix.identity();
 }
@@ -133,17 +105,9 @@ void C3DRotBendTransformation::set_parameters(const CDoubleVector& params)
 	m_post_matrix.identity(); 
 	m_pre_matrix.translate( -1.0f * m_rotation_center); 
 
-	if (m_y_align_rot_needed) {
-		m_pre_matrix.rotate(m_y_align_rot); 
-	}
+	m_pre_matrix.rotate_x(m_params[0]); 
+	m_pre_matrix.rotate_y(m_params[1]); 
 
-	m_pre_matrix.rotate_y(m_params[0]); 
-
-	if (m_y_align_rot_needed) {
-		m_post_matrix.rotate(m_y_align_rot_inverse); 
-	}
-
-	
         m_post_matrix.translate(m_rotation_center); 
 }
 
@@ -154,8 +118,7 @@ const C3DBounds& C3DRotBendTransformation::get_size() const
 
 P3DTransformation C3DRotBendTransformation::do_upscale(const C3DBounds& size) const
 {
-	auto result = new C3DRotBendTransformation(size, m_relative_origin, 
-						   m_rotation_axis, get_interpolator_factory()); 
+	auto result = new C3DRotBendTransformation(size, m_relative_origin, get_interpolator_factory()); 
 	result->set_parameters(m_params); 
 	return P3DTransformation(result);
 }
@@ -340,10 +303,9 @@ P3DTransformation C3DRotBendTransformCreator::do_create(const C3DBounds& size,
 
 
 C3DRotBendTransformCreatorPlugin::C3DRotBendTransformCreatorPlugin():
-	C3DTransformCreatorPlugin("rotbend")
+        C3DTransformCreatorPlugin("rotbend")
 {
 	add_parameter("origin", new C3DFVectorParameter(m_origin, true, "center of the transformation"));
-	add_parameter("axis", new C3DFVectorParameter(m_rotation_axis, true, "rotation axis"));
 }
 
 
@@ -354,9 +316,9 @@ C3DTransformCreator *C3DRotBendTransformCreatorPlugin::do_create(const C3DInterp
 
 const std::string C3DRotBendTransformCreatorPlugin::do_get_descr() const
 {
-	return "Restricted transformation (3 degrees of freedom). "
-		"The transformation is restricted to the rotation around the given "
-		"axis and a bending along the x axis with the bending "
+	return "Restricted transformation (4 degrees of freedom). "
+		"The transformation is restricted to the rotation around the x and y axis "
+		"and a bending along the x axis, independedn in each direction, with the bending "
 		"increasing with the squared distance from the rotation axis."
 		;
 }
