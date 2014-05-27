@@ -91,12 +91,18 @@ BOOST_FIXTURE_TEST_CASE( test_rotbend3d_shear_right_origin_plus_minus_y_is_same,
         check_transformed_is_same(3, 1.0, m_origin + C3DFVector(0, 1, 0)); 
 }
 
-// the test values are evaluated with octave helper programs 
-BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation, Axis1Fixture )
+BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation_y, Axis1Fixture )
 {
 	check_transformed_is_expected(0, M_PI/2.0, m_origin +  C3DFVector(-0.5, 0.5, -0.2 ), 
 				      m_origin + C3DFVector(-0.5, 0.2,  0.5));
 }
+
+BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation_x, Axis1Fixture )
+{
+	check_transformed_is_expected(1, M_PI/2.0, m_origin +  C3DFVector(-0.5, 0.5, -0.2 ), 
+				      m_origin + C3DFVector(0.2, 0.5,  -0.5));
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_bend_left, Axis1Fixture )
 {
