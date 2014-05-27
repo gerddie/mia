@@ -42,12 +42,12 @@ C3DFVector C3DRotBendTransformation::transform(const C3DFVector& x)const
 	auto y = m_pre_matrix * x; 
 
 	if (y.x > 0) {
-		const float distance = get_size().x - m_rotation_axis.x; 
-		y.x += y.x * y.x * m_params[2] / (distance * distance + 1); 
+		const float max_distance = get_size().x - m_rotation_center.x; 
+		y.z += y.x * y.x * m_params[2] / (max_distance * max_distance + 1); 
 	} 
 	else if (y.x < 0) {
-		const float distance = m_rotation_axis.x; 
-		y.x += y.x * y.x * m_params[3] / (distance * distance + 1); 
+		const float max_distance = m_rotation_center.x; 
+		y.z += y.x * y.x * m_params[3] / (max_distance * max_distance + 1); 
 	}
 
 	return m_post_matrix * y;
@@ -137,7 +137,9 @@ C3DFMatrix C3DRotBendTransformation::derivative_at(int /*x*/, int /*y*/, int /*z
 void C3DRotBendTransformation::set_identity()
 {
 	cvdebug() << "set identity\n";
-	m_matrix.identity(); 
+	m_pre_matrix.identity(); 
+	m_post_matrix.identity(); 
+	fill(m_params.begin(), m_params.end(), 0.0); 
 }
 
 float C3DRotBendTransformation::get_max_transform() const
@@ -285,18 +287,16 @@ float C3DRotBendTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 }
 
 C3DRotBendTransformCreator::C3DRotBendTransformCreator(const C3DFVector& origin, 
-						       const C3DFVector& rot_axis, 
 						       const C3DInterpolatorFactory& ipf):
 C3DTransformCreator(ipf), 
-	m_origin(origin), 
-	m_rotation_axis(rot_axis)
+	m_origin(origin)
 {
 }
 
 P3DTransformation C3DRotBendTransformCreator::do_create(const C3DBounds& size, 
 							const C3DInterpolatorFactory& ipf) const
 {
-	return P3DTransformation(new C3DRotBendTransformation(size, m_origin, m_rotation_axis, ipf));
+	return P3DTransformation(new C3DRotBendTransformation(size, m_origin, ipf));
 }
 
 
@@ -311,7 +311,7 @@ C3DRotBendTransformCreatorPlugin::C3DRotBendTransformCreatorPlugin():
 
 C3DTransformCreator *C3DRotBendTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
-	return new C3DRotBendTransformCreator(m_origin, m_rotation_axis, ipf);
+	return new C3DRotBendTransformCreator(m_origin, ipf);
 }
 
 const std::string C3DRotBendTransformCreatorPlugin::do_get_descr() const

@@ -27,7 +27,7 @@
 #include <mia/3d/affine_matrix.hh>
 
 
-namespace mia_3dtransform_raffine {
+namespace mia_3dtransform_rotbend {
 
 
 

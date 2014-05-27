@@ -31,7 +31,7 @@
   Classes and structures that start with two underscores, like __type_descr are traits, or other classes that are used 
   for template meta programming, i.e. the type based dispaching of function class.
 
-  \section naming_sec File names
+  \section naming_sec_files File names
   
   C++ Header files use the suffix ".hh",  C++ implementation files use ".cc". 
   For specific template implementations are only included for explicit template instanciations, the 

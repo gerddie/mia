@@ -52,9 +52,8 @@ struct Axis1Fixture : public ipfFixture {
         void check_transformed_is_expected(int idx, double param, const C3DFVector& v, const C3DFVector& expect); 
 
         C3DFVector m_origin; 
-        C3DFVector m_axis; 
         C3DBounds m_size; 
-        C3DRotbendTransformation m_transform; 
+        C3DRotBendTransformation m_transform; 
 }; 
 
 
@@ -69,27 +68,27 @@ BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation_is_fixed, Axis1Fixture )
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_x_rotation_origin_plus_minus_some_x_is_same, Axis1Fixture )
 {
-        check_transformed_is_same(0, 1.0, m_origin - C3FFVector(1,0,0));
-        check_transformed_is_same(0, 1.0, m_origin + C3FFVector(1,0,0)); 
+        check_transformed_is_same(0, 1.0, m_origin - C3DFVector(1,0,0));
+        check_transformed_is_same(0, 1.0, m_origin + C3DFVector(1,0,0)); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_y_rotation_origin_plus_minus_some_y_is_same, Axis1Fixture )
 {
-        check_transformed_is_same(1, 1.0, m_origin - C3FFVector(0, 1, 0));
-        check_transformed_is_same(1, 1.0, m_origin + C3FFVector(0, 1, 0)); 
+        check_transformed_is_same(1, 1.0, m_origin - C3DFVector(0, 1, 0));
+        check_transformed_is_same(1, 1.0, m_origin + C3DFVector(0, 1, 0)); 
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_shear_left_origin_plus_minus_y_is_same, Axis1Fixture )
 {
-        check_transformed_is_same(2, 1.0, m_origin - C3FFVector(0, 1, 0));
-        check_transformed_is_same(2, 1.0, m_origin + C3FFVector(0, 1, 0)); 
+        check_transformed_is_same(2, 1.0, m_origin - C3DFVector(0, 1, 0));
+        check_transformed_is_same(2, 1.0, m_origin + C3DFVector(0, 1, 0)); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_shear_right_origin_plus_minus_y_is_same, Axis1Fixture )
 {
-        check_transformed_is_same(3, 1.0, m_origin - C3FFVector(0, 1, 0));
-        check_transformed_is_same(3, 1.0, m_origin + C3FFVector(0, 1, 0)); 
+        check_transformed_is_same(3, 1.0, m_origin - C3DFVector(0, 1, 0));
+        check_transformed_is_same(3, 1.0, m_origin + C3DFVector(0, 1, 0)); 
 }
 
 // the test values are evaluated with octave helper programs 
@@ -101,23 +100,22 @@ BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation, Axis1Fixture )
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_bend_left, Axis1Fixture )
 {
-	check_transformed_is_expected(1, 1.0, m_origin +  C3DFVector(-0.5, 0.5, -0.2), 
-				      m_origin + C3DFVector( - 0.678, 0.2712, - 0.3271));
+	check_transformed_is_expected(2, 2.0, m_origin +  C3DFVector(1, 2, -0.2), 
+				      m_origin + C3DFVector(1, 2, -0.2 + 2.0/(13*13+1) ));
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d__bend_right, Axis1Fixture )
 {
-	check_transformed_is_expected(2, 1.0, m_origin +  C3DFVector(-0.5, 0.5, -0.2), 
-				      m_origin + C3DFVector(-0.4131, 0.7663,  -0.8011));
+	check_transformed_is_expected(3, 3.0, m_origin +  C3DFVector(-3, 2, -0.2), 
+				      m_origin + C3DFVector(-3, 2, -0.2 + 27.0 / (12*12+1)));
 }
-
 
 BOOST_FIXTURE_TEST_CASE( test_affine3d_iterator, ipfFixture )
 {
 	C3DBounds size(10,20,15);
 
-	C3DRotbendTransformation t1(size, C3DFVector(5,9.0f,7.5f), C3DFVector(0,1.0f,1.0f), ipf);
-	C3DRotbendTransformation::const_iterator ti = t1.begin();
+	C3DRotBendTransformation t1(size, C3DFVector(5,9.0f,7.5f), ipf);
+	C3DRotBendTransformation::const_iterator ti = t1.begin();
 	
 	for (size_t z = 0; z < size.z; ++z)
 		for (size_t y = 0; y < size.y; ++y)
@@ -133,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE( test_affine3d_ranged_iterator, ipfFixture)
 	C3DBounds size(10,20,30);
 	C3DBounds delta(1,2,3); 
 
-	C3DRotbendTransformation t1(size, C3DFVector(5,9.0f,15.5f), C3DFVector(0,1.0f,1.0f), ipf);
+	C3DRotBendTransformation t1(size, C3DFVector(5,9.0f,15.5f), ipf);
 	auto ti = t1.begin_range(delta, size - delta);
 
 	for (size_t z = delta.z; z < size.z - delta.z; ++z)
@@ -148,7 +146,7 @@ BOOST_FIXTURE_TEST_CASE( test_affine3d_ranged_iterator, ipfFixture)
 Axis1Fixture::Axis1Fixture():
 m_origin(12,23,32), 
         m_size(25, 47, 70), 
-        m_transform(m_size, m_origin / C3DFVector(m_size), m_axis, ipf)
+        m_transform(m_size, m_origin / C3DFVector(m_size), ipf)
 {
 
 }
@@ -163,7 +161,7 @@ void Axis1Fixture::check_transformed_is_expected(int idx, double param,
 						 const C3DFVector& v, const C3DFVector& expect)
 {
         cvdebug() << "Check param[" << idx << "] = " << param << " and v = " << v << "\n";
-	CDoubleVector p(3, true); 
+	CDoubleVector p(4, true); 
         p[idx] = param; 
         m_transform.set_parameters(p); 
 
