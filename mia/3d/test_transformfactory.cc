@@ -52,7 +52,7 @@ BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
 		C3DTransformCreatorHandler::instance();
 	BOOST_CHECK_EQUAL(handler.size(), 9u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
-			  "affine axisrot raffine rigid rotbend rotation spline translate vf ");
+			  "affine axisrot raffine rigid rotation rotbend spline translate vf ");
 }
 
 BOOST_FIXTURE_TEST_CASE(test_translate_creator, HandlerTestFixture)
