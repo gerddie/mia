@@ -448,8 +448,9 @@ C3DRigidTransformCreatorPlugin::C3DRigidTransformCreatorPlugin():
 	C3DTransformCreatorPlugin("rigid"), 
 	m_relative_rot_center(0,0,0)
 {
-	add_parameter("rot-center", make_param(m_relative_rot_center, false, "Relative rotation center, i.e.  <0.5,0.5,0.5> corresponds "
-					       "to the center of the volume"));
+	add_parameter("origin", make_param(m_relative_rot_center, false, 
+					   "Relative rotation center, i.e.  <0.5,0.5,0.5> corresponds "
+					   "to the center of the volume"));
 }
 
 C3DTransformCreator *C3DRigidTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
