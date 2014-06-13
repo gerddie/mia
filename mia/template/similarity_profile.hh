@@ -57,7 +57,7 @@ public:
 	   \param reference
 	 */
 	TSimilarityProfile(PFullCost cost, const ImageSeries& images, 
-			     size_t reference); 
+			   size_t reference, size_t max_delta); 
 	
 	/// copy constructor 
 	TSimilarityProfile(const TSimilarityProfile<dim>& org); 
@@ -74,6 +74,7 @@ public:
 private: 
 	size_t m_skip; 
 	size_t m_reference; 
+	size_t m_max_delta; 
 	mutable float m_peak_freq;
 	mutable bool m_peak_freq_valid; 
 	std::vector<CFFT1D_R2C::Real> m_cost_values; 

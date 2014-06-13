@@ -27,10 +27,11 @@ NS_MIA_BEGIN
 template <int dim>
 TSimilarityProfile<dim>::TSimilarityProfile(PFullCost cost, 
 					    const ImageSeries& images, 
-					    size_t _reference):
+					    size_t _reference, size_t max_delta):
 	m_reference(_reference),
 	m_peak_freq(-1),
-	m_peak_freq_valid(false)
+	m_peak_freq_valid(false), 
+	m_max_delta(max_delta > 0 ? max_delta : images.size())
 {
 	// +-2 makes sure that the implementation of get_periodic_subset works
 	assert(m_reference < images.size() - 2 && m_reference >= 2); 
@@ -96,31 +97,38 @@ std::vector<size_t> TSimilarityProfile<dim>::get_periodic_subset() const
 	cvinfo()  << "Similarity profile["<< m_reference <<"]:" 
 		  << m_cost_values << "\n"; 
 
+	int delta = 0; 
 	while (i > 2) {
 		if (m_cost_values[i] < m_cost_values[i + 1] 
 		    && m_cost_values[i] < m_cost_values[i + 2]
 		    && m_cost_values[i] < m_cost_values[i - 1]
-		    && m_cost_values[i] < m_cost_values[i - 2])  {
+		    && m_cost_values[i] < m_cost_values[i - 2] || delta > m_max_delta)  {
 			result.push_back(i); 
 			i -= 3; 
-		}else
+			delta = 0; 
+		}else {
+			++delta; 
 			--i; 
+		}
 	}
 	result.push_back(0); 
+	delta = 0; 
 		
 	i = m_reference + 1; 
 	while (i < m_cost_values.size() - 2) {
 		if (m_cost_values[i] < m_cost_values[i + 1] 
 		    && m_cost_values[i] < m_cost_values[i + 2]
 		    && m_cost_values[i] < m_cost_values[i - 1]
-		    && m_cost_values[i] < m_cost_values[i - 2]) {
+		    && m_cost_values[i] < m_cost_values[i - 2]  || delta > m_max_delta) {
 			result.push_back(i); 
 			i += 3; 
-		}
-		else
+			delta = 0; 
+		}else {
+			++delta; 
 			++i; 
+		}
 	}
-	// append butlast if better then last 
+	// append the one before the last if better then last 
 	// a the the end of the series the changes in intesnity should 
 	// not be so big 
 	while (i < m_cost_values.size() - 1) {
@@ -133,7 +141,7 @@ std::vector<size_t> TSimilarityProfile<dim>::get_periodic_subset() const
 		else
 			++i; 
 	}
-	// not yet past the end, therefore, we may want t o add the last image
+	// not yet past the end, therefore, we may want to add the last image
 	while (i < m_cost_values.size()) {
 		if (m_cost_values[i] < m_cost_values[i - 1]
 		    && m_cost_values[i] < m_cost_values[i - 2]) {

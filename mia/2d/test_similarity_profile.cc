@@ -42,7 +42,7 @@ struct SimityProfileFixture {
 BOOST_FIXTURE_TEST_CASE (test_C2DSimilarityProfile_ref10, SimityProfileFixture) 
 {
 	
-	C2DSimilarityProfile sp(cost, series, 10); 
+	C2DSimilarityProfile sp(cost, series, 10, 0); 
 	// test value obtained by using octave 
 	BOOST_CHECK_CLOSE(sp.get_peak_frequency(), 108.98704, 0.1);
 	
