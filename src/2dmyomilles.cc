@@ -67,18 +67,60 @@ void save_references(const string& save_ref, int current_pass, int skip_images, 
 }
 
 
+void run_registration_pass(const C2DRigidRegister& rigid_register, C2DImageSeries& input_images, const C2DImageSeries& references, 
+			   CSegSetWithImages::Frames& frames, 
+			   int skip_images, int global_reference) 
+{
+	P2DTransformation align_to_global; 
+	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
+		cvmsg() << "Register 1st pass, frame " << i << "\n"; 
+		
+		if ((int) i == global_reference - skip_images) {
+			align_to_global = rigid_register.run(references[i], input_images[i + skip_images]);
+		}else {
+			P2DTransformation transform = rigid_register.run(input_images[i + skip_images], references[i]);
+			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
+			P2DTransformation inverse(transform->invert()); 
+			frames[i + skip_images].transform(*inverse);
+		}
+	}
+	if (align_to_global) {
+		P2DTransformation inverse(align_to_global->invert()); 
+		for (size_t i = 0; i < input_images.size(); ++i) {
+			input_images[i] = (*inverse)(*input_images[i]);
+			frames[i].transform(*inverse);
+		}
+	}
+}
+
+class FInsertData : public TFilter< P2DImage >  {
+public: 
+	FInsertData(const C2DBounds& start, const C2DBounds& end): 
+		m_start(start), m_end(end){}
+	
+	template <typename T>
+	void operator () ( const T2DImage<T>& a, T2DImage<T>& b) const {
+		copy(a.begin(), a.end(), b.begin_range(m_start,m_end));
+	}
+private: 
+		
+	C2DBounds m_start; 
+	C2DBounds m_end; 
+}; 
+
 int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
 	string in_filename;
 	string out_filename;
-	string registered_filebase("reg");
+	string registered_filebase;
 	string ref_filebase;
 
 	// debug options: save some intermediate steps 
 	string cropped_filename;
 	string save_crop_feature; 
 
+	int global_reference = -1; 
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
 	bool override_src_imagepath = true;
@@ -121,7 +163,10 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( minimizer, "gsl:opt=simplex,step=1.0", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "rigid", "transForm", 'f', "transformation type"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
-
+	options.add(make_opt( global_reference, "reference", 'R', "Global reference all image should be aligned to. If set "
+			      "to a non-negative value, the images will be aligned to this references, and the cropped output image date "
+			      "will be injected into the original images. Leave at -1 if "
+			      "you don't care. In this case all images with be registered to a mean position of the movement")); 
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
 
@@ -154,11 +199,15 @@ int do_main( int argc, char *argv[] )
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries input_images = input_set.get_images(); 
 	
+	C2DImageSeries original_images; 
+	if (global_reference >= 0) 
+		original_images = input_set.get_images(); 
+
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
 		  series.begin(), FCopy2DImageToFloatRepn()); 
-	
+
 	
 	// run ICA
 	C2DPerfusionAnalysis ica(components, normalize, !no_meanstrip); 
@@ -190,10 +239,11 @@ int do_main( int argc, char *argv[] )
 	C2DImageSeries references(references_float.size()); 
 	transform(references_float.begin(), references_float.end(), references.begin(), 
 		  FWrapStaticDataInSharedPointer<C2DImage>() );
-	
+
+	C2DBounds crop_start; 	
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
 	// crop if requested
 	if (box_scale) {
-		C2DBounds crop_start; 
 		auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
 		if (!cropper) {
 			throw create_exception<runtime_error>( "Cropping was requested, but segmentation failed"); 
@@ -205,12 +255,12 @@ int do_main( int argc, char *argv[] )
 		for (auto i = references.begin(); i != references.end(); ++i) 
 			*i = cropper->filter(**i); 
 
-		auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
 		P2DTransformation shift = tr_creator->create(C2DBounds(1,1)); 
 		auto p = shift->get_parameters(); 
 		p[0] = (float)crop_start.x; 
 		p[1] = (float)crop_start.y; 
 		shift->set_parameters(p); 
+
 		
 		input_set.transform(*shift);
 		input_set.set_images(input_images);  
@@ -239,13 +289,8 @@ int do_main( int argc, char *argv[] )
 
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 
-	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
-		cvmsg() << "Register 1st pass, frame " << i << "\n"; 
-		P2DTransformation transform = rigid_register.run(input_images[i + skip_images], references[i]);
-		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
-		P2DTransformation inverse(transform->invert()); 
-		frames[i + skip_images].transform(*inverse);
-	}
+
+	run_registration_pass(rigid_register, input_images, references, frames, skip_images, global_reference); 
 
 	// run the specified number of passes 
 	// break early if ICA fails
@@ -267,15 +312,8 @@ int do_main( int argc, char *argv[] )
 			if (!ref_filebase.empty())
 				save_references(ref_filebase, current_pass, skip_images, references); 
 
+			run_registration_pass(rigid_register, input_images, references, frames, skip_images, global_reference); 
 			
-			for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
-				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
-				P2DTransformation transform = rigid_register.run(input_images[i + skip_images] , 
-										 references[i]); 
-				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
-				P2DTransformation inverse(transform->invert()); 
-				frames[i + skip_images].transform(*inverse);
-			}
 		} else {
 			cvmsg() << "Stopping registration in pass " << current_pass 
 				<< " because ICA didn't return useful results\n"; 
@@ -283,10 +321,32 @@ int do_main( int argc, char *argv[] )
 		}
 	}
 
+	// re-insert the registered sub-images if we have a global reference
+	if (global_reference >= 0 && box_scale) {
+		const FInsertData id(crop_start, crop_start + input_images[0]->get_size()); 
+		transform(original_images.begin(), original_images.end(), input_images.begin(), 
+			  original_images.begin(), 
+			  [&id](P2DImage orig, P2DImage part) {
+				  filter_equal_inplace(id, *part, *orig); 
+				  return orig; 
+			  }); 
+		
+		P2DTransformation shift = tr_creator->create(C2DBounds(1,1)); 
+		auto p = shift->get_parameters(); 
+		p[0] = -(float)crop_start.x; 
+		p[1] = -(float)crop_start.y; 
+		shift->set_parameters(p); 
+		
+		input_set.transform(*shift);
+		input_set.set_images(original_images);  
 
-	input_set.set_images(input_images); 
-	input_set.rename_base(registered_filebase); 
-
+	}else {
+		input_set.set_images(input_images); 
+	}
+	
+	if (!registered_filebase.empty()) 
+		input_set.rename_base(registered_filebase); 
+	
 	input_set.save_images(out_filename); 
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());

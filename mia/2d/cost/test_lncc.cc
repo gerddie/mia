@@ -53,14 +53,14 @@ BOOST_AUTO_TEST_CASE( test_lncc_1 )
 
         
         lncc->set_reference(ref_f); 
-        BOOST_CHECK_CLOSE(lncc->value(ref_f), -1, 0.1);
+        BOOST_CHECK_SMALL(lncc->value(ref_f), 1e-5);
         
         auto v = lncc->value(src_f); 
-        BOOST_CHECK_CLOSE(v, -0.202097048, 0.1); 
+        BOOST_CHECK_CLOSE(v, 1.0-0.202097048, 0.1); 
         
 	C2DFVectorfield zero_force(size); 
 	v = lncc->evaluate_force(ref_f, zero_force); 
-	BOOST_CHECK_CLOSE(v, -1, 0.1);
+	BOOST_CHECK_SMALL(v, 1e-5);
 
 	for (auto iv = zero_force.begin(); iv != zero_force.end();  ++iv) {
 		BOOST_CHECK_SMALL(iv->x, 1e-8f); 
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_lncc_1 )
 	C2DFVectorfield force(size); 
 
 	v = lncc->evaluate_force(src_f, force); 
-	BOOST_CHECK_CLOSE(v, -0.202097048, 0.1); 
+	BOOST_CHECK_CLOSE(v, 1.0-0.202097048, 0.1); 
         
 	
 	float gradx[] = {
@@ -94,12 +94,12 @@ BOOST_AUTO_TEST_CASE( test_lncc_1 )
 		if (*igx == 0.0) 
 			BOOST_CHECK_SMALL(iv->x, 1e-8f); 
 		else 
-			BOOST_CHECK_CLOSE(iv->x, - *igx, 0.1); 
+			BOOST_CHECK_CLOSE(iv->x, *igx, 0.1); 
 
 		if (*igy == 0.0) 
 			BOOST_CHECK_SMALL(iv->y, 1e-8f); 
 		else 
-			BOOST_CHECK_CLOSE(iv->y, - *igy, 0.1); 
+			BOOST_CHECK_CLOSE(iv->y, *igy, 0.1); 
 		
 	}
 }

@@ -16,6 +16,9 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(transforms affine rigid rotation spline translate vectorfield) 
+SET(transforms affine rigid rotation translate) 
 PLUGINGROUP_WITH_TEST_AND_PREFIX2("2dimage" "transform" "${transforms}" "${MIA2DLIBS}")
+
+SET(nonlinear_src spline.cc  vectorfield.cc) 
+PLUGIN_WITH_TEST_MULTISOURCE("nonlinear" "2dimage" "transform" "${nonlinear_src}" "${MIA2DLIBS}") 
 

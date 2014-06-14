@@ -23,7 +23,7 @@
 
 
 #include <iterator>
-#include <mia/2d/transform.hh>
+#include <mia/2d/transformfactory.hh>
 
 
 NS_MIA_BEGIN
@@ -110,6 +110,23 @@ inline C2DFVector C2DGridTransformation::apply(const  C2DFVector& x) const
 }
 
 EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, const C2DGridTransformation& b);
+
+/**
+   Transformation creator 
+ */
+class C2DGridTransformCreator: public C2DTransformCreator {
+public: 
+	C2DGridTransformCreator(const C2DInterpolatorFactory& ipf); 
+private: 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
+};
+
+class C2DGridTransformCreatorPlugin: public C2DTransformCreatorPlugin {
+public:
+	C2DGridTransformCreatorPlugin();
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
+	const std::string do_get_descr() const;
+};
 
 NS_MIA_END
 

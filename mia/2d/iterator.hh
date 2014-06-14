@@ -47,6 +47,8 @@ public:
 	typedef typename I::pointer pointer; 
 	/// data type for the real iterator in the background 
 	typedef I internal_iterator; 
+
+	typedef typename I::value_type value_type; 
 	
 	/**
 	   Enumerate to describe the various positions on the domain boundarys. 
@@ -209,7 +211,8 @@ bool operator != (const range2d_iterator_with_boundary_flag<T>& left, const rang
 
 
 template <typename I> 
-class range2d_iterator: public std::forward_iterator_tag {
+class range2d_iterator: public  std::iterator<std::forward_iterator_tag, typename I::value_type>
+ {
 public: 
 	/// data type reference 
 	typedef typename I::reference reference; 
@@ -217,7 +220,8 @@ public:
 	typedef typename I::pointer pointer; 
 	/// data type for the real iterator in the background 
 	typedef I internal_iterator; 
-	
+
+	typedef typename I::value_type value_type; 
 	
 	/** standard constructor */
 	range2d_iterator(); 

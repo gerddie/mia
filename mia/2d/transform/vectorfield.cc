@@ -21,7 +21,6 @@
 #include <limits>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transform/vectorfield.hh>
-#include <mia/2d/transformfactory.hh>
 #include <mia/2d/vfio.hh>
 
 NS_MIA_BEGIN
@@ -347,16 +346,6 @@ EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, cons
 	return result;
 }
 
-/**
-   Transformation creator 
- */
-class C2DGridTransformCreator: public C2DTransformCreator {
-public: 
-	C2DGridTransformCreator(const C2DInterpolatorFactory& ipf); 
-private: 
-	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
-};
-
 C2DGridTransformCreator::C2DGridTransformCreator(const C2DInterpolatorFactory& ipf):
 	C2DTransformCreator(ipf)
 {
@@ -372,13 +361,6 @@ P2DTransformation C2DGridTransformCreator::do_create(const C2DBounds& size, cons
 /**
    Plugin class to create the creater.  
  */
-class C2DGridTransformCreatorPlugin: public C2DTransformCreatorPlugin {
-public:
-	C2DGridTransformCreatorPlugin();
-	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	const std::string do_get_descr() const;
-};
-
 C2DGridTransformCreatorPlugin::C2DGridTransformCreatorPlugin():
 	C2DTransformCreatorPlugin("vf")
 {
@@ -394,12 +376,6 @@ const std::string C2DGridTransformCreatorPlugin::do_get_descr() const
 	return "This plug-in implements a transformation that defines a translation for "
 		"each point of the grid defining the domain of the transformation.";
 }
-
-extern "C" EXPORT CPluginBase *get_plugin_interface()
-{
-	return new C2DGridTransformCreatorPlugin();
-}
-
 
 
 NS_MIA_END

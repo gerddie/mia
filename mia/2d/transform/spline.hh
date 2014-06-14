@@ -22,7 +22,7 @@
 #define mia_2d_splinetransform_hh
 
 #include <mia/2d/interpolator.hh>
-#include <mia/2d/transform.hh>
+#include <mia/2d/transformfactory.hh>
 #include <mia/2d/splinetransformpenalty.hh>
 #include <mia/2d/ppmatrix.hh>
 
@@ -94,6 +94,7 @@ public:
 
 private:
 	C2DFMatrix do_derivative_at(const C2DFVector& x) const;
+	C2DFVector find_inverse(const C2DBounds& x) const; 
 	
 	typedef std::vector<std::pair<int, std::vector<float> > > CSplineDerivativeRow; 
 	CSplineDerivativeRow get_derivative_row(size_t nin, size_t nout, double scale) const; 
@@ -131,6 +132,20 @@ private:
 
 	P2DSplineTransformPenalty m_penalty; 
 
+};
+
+
+
+class C2DSplineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
+public:
+	C2DSplineTransformCreatorPlugin();
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
+	const std::string do_get_descr() const;
+private:
+	PSplineKernel m_interpolator;
+	float m_rate; 
+	C2DFVector m_rate2d;
+	P2DSplineTransformPenalty m_penalty; 
 };
 
 NS_MIA_END

@@ -25,6 +25,7 @@
 #include <mia/2d/vectorfield.hh>
 #include <mia/2d/datafield.cxx>
 #include <mia/2d/iterator.cxx>
+#include <mia/2d/image.hh>
 
 NS_MIA_USE;
 
@@ -80,6 +81,34 @@ BOOST_AUTO_TEST_CASE (test_fill_all)
 	while (begin != end) {
 		BOOST_CHECK_EQUAL(*begin, C2DFVector(begin.pos())); 
 		++begin; 
+	}
+}
+
+
+BOOST_AUTO_TEST_CASE (test_fill_window) 
+{
+	C2DBounds start(2,3); 
+	C2DBounds size(3,4); 
+	C2DUBImage patch(size);
+	C2DUBImage image(C2DBounds(10,20));
+	
+	unsigned char i = 1; 
+	for (auto k =  patch.begin(); k != patch.end(); ++k, ++i) 
+		*k = i; 
+	
+	
+	copy(patch.begin(), patch.end(), image.begin_range(start, start+size)); 
+	
+
+	i = 1; 
+	auto end = image.end_range(start, start+size); 
+	for (auto k = image.begin_range(start, start+size); k != end; ++k, ++i) 
+		BOOST_CHECK_EQUAL(*k, i); 
+	
+	auto end2 = image.end_range(C2DBounds::_0, image.get_size()); 
+	for (auto k = image.begin_range(C2DBounds::_0, image.get_size()); k != end2; ++k) {
+		if ( k.pos().x < 2 || k.pos().x >= 5 || k.pos().y < 3 || k.pos().y >= 7)
+			     BOOST_CHECK_EQUAL(*k, 0); 
 	}
 }
 

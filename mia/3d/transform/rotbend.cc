@@ -100,6 +100,7 @@ void C3DRotBendTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(degrees_of_freedom() == params.size());
 	copy(params.begin(), params.end(), m_params.begin());
+	cvmsg() <<"Params: "<< m_params << "\n"; 
          
         m_pre_matrix.identity(); 
 	m_post_matrix.identity(); 

@@ -210,14 +210,24 @@ void CCmdOption::do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)
 {
 	TRACE_FUNCTION;
 	if (get_short_option() != 0) {
-		assert(sm.find(get_short_option()) == sm.end() &&
-		       "don't add the same short option twice" );
+		auto so = sm.find(get_short_option()); 
+		if ( so != sm.end()) {
+			cverr() << "Trying to add the short option '" << get_short_option() << "' twice\n"; 
+			if (get_long_option()) {
+				if (so->second) 
+					cverr() << "corresponding long options are '" << get_long_option() 
+						<< "' and '"  << so->second->get_long_option() << "'\n";
+			}
+			assert(0 && "don't add the same short option twice" );
+		}
 		sm[get_short_option()] = this;
 	}
 
 	if (get_long_option() != 0) {
-		assert(lm.find(get_long_option()) == lm.end() &&
-		       "don't add the same long option twice");
+		if (lm.find(get_long_option()) != lm.end()) {
+			cverr() << "Trying to add the long option '" << get_long_option() << "' twice\n"; 
+			assert(0 && "don't add the same long option twice");
+		}
 		lm[get_long_option()] = this;
 	}
 }

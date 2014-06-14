@@ -94,7 +94,7 @@ MACRO(PLUGIN_WITH_TEST plugname file libs)
   CREATE_PLUGIN_COMMON(${plugname} ${file} "${libs}")
   CREATE_PLUGIN_MODULE(${plugname})
   CREATE_PLUGIN_TEST(${plugname} test_${file} TESTLIBS "${PLUGIN_TESTLIBS}")
-ENDMACRO(PLUGIN_WITH_TEST  plugname file libs)
+ENDMACRO(PLUGIN_WITH_TEST plugname file libs)
 
 MACRO(PLUGIN_WITH_TEST_AND_PREFIX_NOINST prefix plugname libs)
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
@@ -167,4 +167,48 @@ MACRO(PLUGINGROUP_WITH_TEST_AND_PREFIX2 type data plugins libs)
   ENDFOREACH(p)
 ENDMACRO(PLUGINGROUP_WITH_TEST_AND_PREFIX2)
 
+
+MACRO(PLUGIN_WITH_TEST_MULTISOURCE name type data src libs) 
+  PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
+  TEST_PREFIX(${type} ${data})
+  SET(install_path ${${type}_${data}_dir})
+  SET(plugname ${${type}_${data}_prefix}-${name})
+
+  # create common library 
+  ADD_LIBRARY(${plugname}-common STATIC ${src})
+  IF(NOT WIN32)
+	set_source_files_properties(${src}  PROPERTIES COMPILE_FLAGS "-fPIC")
+	set_target_properties(${plugname}-common  PROPERTIES COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"') 
+  ENDIF(NOT WIN32)
+  TARGET_LINK_LIBRARIES(${plugname}-common ${libs})
+
+  # create module 
+  ADD_LIBRARY(${plugname} MODULE ${CMAKE_SOURCE_DIR}/mia/core/silence_cmake_missing_source_file_warning.c)
+  SET_TARGET_PROPERTIES(${plugname} PROPERTIES  PREFIX "" SUFFIX ${PLUGSUFFIX})
+  IF(NOT WIN32)
+    SET_TARGET_PROPERTIES(${plugname} PROPERTIES LINK_FLAGS "-Wl,--no-gc-sections -Wl,--undefined,get_plugin_interface")
+  ENDIF(NOT WIN32)
+  TARGET_LINK_LIBRARIES(${plugname} ${plugname}-common)
+  
+  # create tests
+  PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
+
+  add_executable(test-${plugname} test_${name}.cc)
+  IF(NOT WIN32)
+    set_target_properties(test-${plugname} PROPERTIES 
+      COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"' 
+      COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+  ELSE(NOT WIN32)
+    set_target_properties(test-${plugname} PROPERTIES
+      COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+  ENDIF(NOT WIN32)
+  target_link_libraries(test-${plugname} ${plugname}-common)
+  target_link_libraries(test-${plugname} ${BOOST_UNITTEST} "${PLUGIN_TESTLIBS}")
+  add_test(${plugname} test-${plugname})
+  
+  ADD_CUSTOM_TARGET(${plugname}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${plugname}.mia" 
+    ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${type}_${data}_testdir ${plugname})
+  ADD_DEPENDENCIES(plugin_test_links ${plugname}_test_link)
+  INSTALL(TARGETS ${plugname} LIBRARY DESTINATION ${install_path})
+ENDMACRO(PLUGIN_WITH_TEST_MULTISOURCE) 
 
