@@ -36,7 +36,13 @@ NS_MIA_BEGIN
 template <typename T>
 class T3DVectorfield: public T3DDatafield<T>, public CAttributedData {
 public:
-	T3DVectorfield(){};
+	T3DVectorfield()  = default;
+	T3DVectorfield(const T3DVectorfield<T>& org):
+		T3DDatafield<T>(org),
+		CAttributedData(org)
+		{
+		}
+
 	T3DVectorfield(const C3DBounds& size):
 		T3DDatafield<T>(size) {};
 
