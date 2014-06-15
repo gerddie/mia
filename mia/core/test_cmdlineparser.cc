@@ -437,7 +437,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "                          fatal: Report only fatal errors\n"
 			  "     --copyright        print copyright information\n"
 			  "  -h --help             print this help\n"
-			  "     --help-xml         print help formatted as XML\n"
+			  "     --help-xml=NULL    print help formatted as XML\n"
 			  "  -? --usage            print a short help\n"
 			  "     --version          print the version number and exit\n\n"
 			  "Processing               \n"
