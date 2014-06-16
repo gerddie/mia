@@ -24,6 +24,7 @@
 
 NS_MIA_USE; 
 using std::stringstream; 
+using std::string; 
 
 namespace bfs=::boost::filesystem; 
 
@@ -72,6 +73,8 @@ BOOST_AUTO_TEST_CASE(test_transform_io)
 		for (size_t k = 0; k < params.size(); ++k) 
 			params[k] = k + 1; 
 		tr->set_parameters(params);
+
+		tr->set_attribute("string_attr", "string"); 
 		
 		for (size_t i = 0; i < n_io; ++i) {
 			stringstream fname; 
@@ -88,8 +91,11 @@ BOOST_AUTO_TEST_CASE(test_transform_io)
 			BOOST_CHECK_EQUAL(lparams.size(), params.size()); 
 			for (size_t k = 0; k < lparams.size(); ++k) 
 				BOOST_CHECK_EQUAL(lparams[k], k + 1); 
+			
+			BOOST_REQUIRE(t_loaded->has_attribute("string_attr")); 
+			BOOST_CHECK_EQUAL(t_loaded->get_attribute_as<string>("string_attr"), "string"); 
 			unlink( fname.str().c_str()); 
-
+			
 		}
 	}
 }
