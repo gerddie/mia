@@ -236,6 +236,9 @@ void run_nonlinear_registration_passes (CSegSetWithImages& input_set,
                 run_registration_pass(input_set, references,  
                                       skip_images,  minimizer, mg_levels, transform_creator, 
                                       imagecost, global_reference); 
+
+		if (lastpass) 
+			break; 
                 
 		C2DPerfusionAnalysis ica2(components, normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
@@ -251,8 +254,6 @@ void run_nonlinear_registration_passes (CSegSetWithImages& input_set,
 			ica2.set_approach(FICA_APPROACH_SYMM); 
 			ica2.run(series); 
 		}
-		if (lastpass) 
-			break; 
 		
 		divcurlweight /= divcurlweight_divider; 
 		if (c_rate > 1) 
@@ -306,12 +307,13 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
 			ica2.set_approach(FICA_APPROACH_SYMM); 
 			ica2.run(series); 
 		}
-		if (lastpass) 
-			break; 
 		
 		references_float = ica2.get_references(); 
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
+
+		if (lastpass) 
+			break; 
 		
 		cvmsg() << "references_float size:" << references[0]->get_size() << "\n"; 
 		do_continue =  (!max_pass || current_pass < max_pass) && ica2.has_movement(); 
