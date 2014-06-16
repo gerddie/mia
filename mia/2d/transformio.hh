@@ -37,11 +37,23 @@ NS_MIA_BEGIN
 */ 
 typedef TIOPlugin<C2DTransformation> C2DTransformationIO; 
 
+
+/**
+   \ingroup io
+   \brief The non-singleton plug-in handler for 3D transformations 
+*/
+
+
+class C2DTransformIOPluginHandlerImpl: public TIOPluginHandler<C2DTransformationIO> {
+protected:  
+	C2DTransformIOPluginHandlerImpl(); 
+};
+
 /**
    @ingroup io 
    \brief The 2D transformationb plugin handler 
 */
-typedef THandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransformationIOPluginHandler;
+typedef THandlerSingleton< C2DTransformIOPluginHandlerImpl > C2DTransformationIOPluginHandler;
 
 /**
    @ingroup io 

@@ -398,7 +398,8 @@ int do_main( int argc, char *argv[] )
 	C2DImageSeries series(in_images.begin() + skip, in_images.end()); 
 
 	if (params.global_reference >= 0) {
-		if (params.global_reference <= skip || params.global_reference >= in_images.size()) 
+		unsigned gr = params.global_reference; 
+		if (gr <= skip || gr >= in_images.size()) 
 			throw create_exception<invalid_argument>("Invalid global reference ",  params.global_reference, 
 								 " should be in [", skip, ", ",  in_images.size(), ")"); 
 		params.global_reference -= skip; 

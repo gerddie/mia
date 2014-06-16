@@ -18,31 +18,24 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
+#ifndef addons_vistaio_2dtrans_hh
+#define addons_vistaio_2dtrans_hh
 
-#include <mia/core/errormacro.hh>
 #include <mia/2d/transformio.hh>
-#include <mia/core/ioplugin.cxx>
-#include <mia/core/iohandler.cxx>
 
-NS_MIA_BEGIN
+NS_BEGIN(vista_2dtrans_io)
 
-C2DTransformIOPluginHandlerImpl::C2DTransformIOPluginHandlerImpl()
-{
-	TTranslator<C2DFVector>::register_for(C2DTransformation::input_spacing_attr);
-	TTranslator<C2DFVector>::register_for(C2DTransformation::output_spacing_attr);
-}
-
-
-template <> const char *  const 
-	TPluginHandler<C2DTransformationIO>::m_help =  
-       "These plug-ins implement the support for loading and storing 2D transformations to various file types.";
-
-template class TIOPlugin<C2DTransformation>;
-template class THandlerSingleton<C2DTransformIOPluginHandlerImpl>;
-template class TIOPluginHandler<C2DTransformationIO>;
-template class TPluginHandler<C2DTransformationIO>;
-
-NS_MIA_END
+class C2DVistaTransformationIO: public mia::C2DTransformationIO {
+public: 	
+	C2DVistaTransformationIO(); 
+private: 
+	virtual PData do_load(const std::string& fname) const;
+	virtual bool do_save(const std::string& fname, const mia::C2DTransformation& data) const;
+	const std::string do_get_descr() const;
+	std::string do_get_preferred_suffix() const; 
+}; 
 
 
+NS_END
+
+#endif 
