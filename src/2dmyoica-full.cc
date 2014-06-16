@@ -292,6 +292,10 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
                 run_registration_pass(input_set, references,  
                                       skip_images,  minimizer, mg_levels, transform_creator, 
                                       imagecost, global_reference); 
+
+		if (lastpass) 
+			break; 
+			
                 
 		C2DPerfusionAnalysis ica2(components, normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
@@ -312,8 +316,6 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
 
-		if (lastpass) 
-			break; 
 		
 		cvmsg() << "references_float size:" << references[0]->get_size() << "\n"; 
 		do_continue =  (!max_pass || current_pass < max_pass) && ica2.has_movement(); 
@@ -589,16 +591,39 @@ int do_main( int argc, char *argv[] )
                                                 skip_images,  linear_minimizer, linear_transform, 
                                                 mg_levels, max_linear_passes, imagecost, global_reference, rel_min_bf); 
 
-        if (max_nonlinear_passes > 0) 
+        if (max_nonlinear_passes > 0) {
+		// if we come from the linear registration, then the references must be re-generated
+		vector<C2DFImage> references_float; 
+		if (max_linear_passes > 0) {
+			C2DPerfusionAnalysis ica2(components, normalize, !no_meanstrip); 
+			if (max_ica_iterations) 
+				ica2.set_max_ica_iterations(max_ica_iterations); 
+			if (rel_min_bf >= 0)
+				ica2.set_min_movement_frequency(rel_min_bf); 
+			
+			vector<C2DFImage> series(input_set.get_images().size() - skip_images); 
+			transform(input_set.get_images().begin() + skip_images, 
+				  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
+			
+			if (!ica2.run(series)) {
+				ica2.set_approach(FICA_APPROACH_SYMM); 
+				ica2.run(series); 
+			}
+			
+			references_float = ica2.get_references(); 
+			transform(references_float.begin(), references_float.end(), 
+				  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
+			
+		}
                 run_nonlinear_registration_passes (input_set, references,  
                                                    components,  normalize, no_meanstrip, max_ica_iterations, 
                                                    skip_images,  nonlinear_minimizer, 
                                                    mg_levels, c_rate, c_rate_divider, 
                                                    divcurlweight, divcurlweight_divider, 
                                                    max_nonlinear_passes, imagecost, global_reference, rel_min_bf); 
+	}
         
-        
-        // copy the data back to the original images if requested 
+	// copy the data back to the original images if requested 
         	// re-insert the registered sub-images if we have a global reference
 	if (global_reference >= 0 && box_scale) {
 		auto registered_images = input_set.get_images(); 
