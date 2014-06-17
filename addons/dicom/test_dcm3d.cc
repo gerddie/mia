@@ -125,6 +125,7 @@ void DicomSaveLoadFixture::fill_attributes()
 	org_image->set_attribute("ImageType", "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
 	org_image->set_attribute(IDSmallestImagePixelValue,"1");
 	org_image->set_attribute(IDLargestImagePixelValue,"20");
+	org_image->set_attribute(IDPhotometricInterpretation,"MONOCHROME2");
 
 }
 

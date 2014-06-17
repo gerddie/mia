@@ -89,6 +89,7 @@ const SLookupInit lookup_init[] = {
 	{IDPixelIntensityRelationship, DCM_PixelIntensityRelationship, false, tr_no, NULL},
 	{IDPositionerPrimaryAngleIncrement, DCM_PositionerPrimaryAngleIncrement, false, tr_no, NULL},
 	{IDPositionerSecondaryAngleIncrement, DCM_PositionerSecondaryAngleIncrement, false, tr_no, NULL},
+	{IDPhotometricInterpretation, DCM_PhotometricInterpretation, false, tr_yes_defaulted, "MONOCHROME2"},
 	
 	{NULL, DcmTagKey(), false, tr_no, NULL}
 };
@@ -641,7 +642,7 @@ CDicomWriterData::CDicomWriterData(const C2DImage& image)
 	// special treatment for the acquistion time
 	if (image.has_attribute(IDAcquisitionTime)) {
 		const double time = image.get_attribute_as<double>(IDAcquisitionTime); 
-		cvdebug() << "CDicomWriterData: save" << IDAcquisitionTime << ": " << time << "s\n"; 
+		cvdebug() << "CDicomWriterData: save" << IDAcquisitionTime << ": " << setw(10) << setprecision(20) << time << "s\n"; 
 		setAcquisitionTime(time); 
 	}
 
@@ -694,11 +695,20 @@ void CDicomWriterData::setPixelSpacing(const C2DFVector& value)
 
 void CDicomWriterData::setAcquisitionTime(double time_seconds)
 {
+	
 	OFTime of_time; 
 	of_time.setTimeInSeconds(time_seconds); 
 
-	DcmTime *dcm_time = new DcmTime(DCM_AcquisitionTime); 
-	dcm_time->setOFTime(of_time); 
+	DcmTime *dcm_time = new DcmTime(DCM_AcquisitionTime); 	
+	
+	OFString dicomTime; 
+	OFCondition status = DcmTime::getDicomTimeFromOFTime(of_time, dicomTime, OFTrue, OFTrue); 
+	if (!status.good() ) {
+		cvwarn() << "CDicomWriter: error setting acquisition time: " << status.text() << "\n"; 
+		return ;
+	}
+	// well, that is stupid, but DcmTime doesn't support to set the fraction flag in SetOFTime
+	dcm_time->putString (dicomTime.c_str()); 
 	dcm.getDataset()->insert(dcm_time, OFTrue); 
 }
 
