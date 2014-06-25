@@ -3,11 +3,12 @@
   Fixes for tracked bugs:
 
   * #141: add handling of attributes to the transform IO
+  * #126: override the preferred suffix for dicom and vista IO 
 
   Additional changes:
 
   * add a code path for using VTK >= 6.0
-  * correct the compilation with -DNDEBUG with respecht the
+  * correct the compilation with -DNDEBUG with respect to the
     handling of the debug/trace message streams, fixes a problem
     if mia was compiled with -DNDEBUG, but a program linking against
     didn't define this.
