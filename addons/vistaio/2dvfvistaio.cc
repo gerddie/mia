@@ -41,6 +41,7 @@ public:
 private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
+	std::string do_get_preferred_suffix() const; 
 	const string do_get_descr() const;
 };
 
@@ -54,6 +55,12 @@ CVista2DVFIOPlugin::CVista2DVFIOPlugin():
 	add_suffix(".VF");
 
 }
+
+std::string CVista2DVFIOPlugin::do_get_preferred_suffix() const
+{
+	return "vf"; 
+}
+
 
 CVista2DVFIOPlugin::PData  CVista2DVFIOPlugin::do_load(const string& fname) const
 {
