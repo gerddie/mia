@@ -126,7 +126,7 @@ public:
 								  << ": Sab=" << sumab << ", Sa2=" << suma2 << ", Sb2=" << sumb2 
 								  << ", n=" << n << ", meanA=" << mean_a << ", mean_b=" << mean_b 
 								  << "\n"; 
-							lresult += sumab * sumab / suma2_sumb2; 
+							lresult += 1.0 - sumab * sumab / suma2_sumb2; 
 							++count;
 							cvdebug() << "v=" << lresult
 								  << ", c=" << count << ", n=" << n << "\n"; 
@@ -141,7 +141,7 @@ public:
 		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), init, evaluate_local_cost, 
 					 [](const pair<float,int>& x, const pair<float,int>& y){return make_pair(x.first + y.first, x.second + y.second);});	
 		cvdebug() << "result={" << r.first << " /  " <<  r.second << "\n"; 
-		return r.second > 0 ? - r.first / r.second : 0.0; 
+		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
 }; 
 
@@ -231,7 +231,7 @@ public:
 						
 						if (suma2_sumb2 > 1e-5) {
 							
-							lresult += sumab * sumab / suma2_sumb2; 
+							lresult += 1.0 - sumab * sumab / suma2_sumb2; 
 							++count;
 							const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
 											      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
@@ -239,7 +239,7 @@ public:
 								  << ": sumab=" << sumab << ", suma2=" << suma2
 								  << ", mean-a" << mean_a << ", mean_b = " << mean_b 
 								  << ", scale=" << scale << "\n";  
-							*iforce = - scale * *ig; 
+							*iforce = scale * *ig; 
 						}
 					}
 				}
@@ -252,7 +252,7 @@ public:
 						 return make_pair(x.first + y.first, x.second + y.second);
 					 });
 		
-		return r.second > 0 ? - r.first / r.second : 0.0; 
+		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
 	
 };
