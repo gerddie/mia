@@ -111,7 +111,7 @@ public:
 							
 							double suma2_sumb2 = suma2 * sumb2;
 							if (suma2_sumb2 > 1e-5) {
-								lresult += sumab * sumab / suma2_sumb2; 
+								lresult += 1 - sumab * sumab / suma2_sumb2; 
 								++count;
 							}
 						}
@@ -125,7 +125,7 @@ public:
 					 [](const pair<float,int>& x, const pair<float,int>& y){
 						 return make_pair(x.first + y.first, x.second + y.second);
 					 });	
-		return r.second > 0 ? - r.first / r.second : 0.0; 
+		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
 }; 
 
@@ -199,11 +199,11 @@ public:
 							
 							if (suma2_sumb2 > 1e-5) {
 								
-								lresult += sumab * sumab / suma2_sumb2; 
+								lresult += 1 -  sumab * sumab / suma2_sumb2; 
 								++count;
 								const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
 												      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
-								*iforce = - scale * *ig; 
+								*iforce = scale * *ig; 
 							}
 						}
 					}
@@ -216,7 +216,7 @@ public:
 						 return make_pair(x.first + y.first, x.second + y.second);
 					 });
 		
-		return r.second > 0 ? - r.first / r.second : 0.0; 
+		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
 	
 };
