@@ -586,10 +586,11 @@ int do_main( int argc, char *argv[] )
                                                    divcurlweight, divcurlweight_divider, 
                                                    max_nonlinear_passes, imagecost, global_reference); 
         
-        
+	cvmsg() << "Registration finished\n"; 
         // copy the data back to the original images if requested 
         	// re-insert the registered sub-images if we have a global reference
-	if (global_reference >= 0 && box_scale) {
+	if (global_reference >= 0 && box_scale && input_set.get_images()[0]->get_size() != original_images[0]->get_size()) {
+		cvmsg() << "Reinsert registered cropped data into original images\n"; 
 		auto registered_images = input_set.get_images(); 
 		const FInsertData id(crop_start, crop_start + registered_images[0]->get_size()); 
 		transform(original_images.begin(), original_images.end(), registered_images.begin(), 
@@ -610,14 +611,16 @@ int do_main( int argc, char *argv[] )
 		input_set.set_images(original_images);  
 
 	}
-
+	cvmsg() << "Save registered images\n"; 
 	input_set.save_images(out_filename); 
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
 		outfile << outset->write_to_string_formatted();
-	
+	if (!outfile.good()) 
+		cverr() << "Unable to saving output to '" << out_filename << "'\n"; 
+
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 
 }
