@@ -350,7 +350,7 @@ void test(double k, bool auto_k)
 		eval_class_centers[i] = i * cstep;
 	
 	
-	CCMeans cmeans(k, false, 0.00001);
+	CCMeans cmeans(k, 0.00001, false);
 	CProbabilityVector eval_pv = cmeans(histogram, eval_class_centers, false, auto_k);
 	for (size_t i = 0; i < Nc; ++i) {
 		if (fabs(eval_class_centers[i] - Nh * class_centers[i]) > 0.5) {
