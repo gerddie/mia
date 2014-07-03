@@ -21,6 +21,7 @@
 #include <mia/3d/cost/lncc.hh>
 
 #include <mia/core/threadedmsg.hh>
+#include <mia/core/nccsum.hh>
 #include <tbb/parallel_reduce.h>
 #include <tbb/blocked_range.h>
 
@@ -87,33 +88,15 @@ public:
 						
 						if (n > 1) {
 							
-							double suma = 0.0; 
-							double sumb = 0.0; 
-							double suma2 = 0.0; 
-							double sumb2 = 0.0; 
-							double sumab = 0.0; 
+							NCCSums sum; 
 							
-							// make a local copy 
 							while (ia != ea) {
-								suma += *ia;
-								sumb += *ib;
-								suma2 += *ia * *ia; 
-								sumb2 += *ib * *ib; 
-								sumab += *ia * *ib; 
+								sum.add(*ia, *ib); 
 								++ia; ++ib; 
 							}
-
-							const double mean_a = suma/n; 
-							const double mean_b = sumb/n;
-							sumab -= n * mean_a * mean_b; 
-							suma2 -= n * mean_a * mean_a; 
-							sumb2 -= n * mean_b * mean_b; 
 							
-							double suma2_sumb2 = suma2 * sumb2;
-							if (suma2_sumb2 > 1e-5) {
-								lresult += 1 - sumab * sumab / suma2_sumb2; 
-								++count;
-							}
+							lresult += sum.value(); 
+							++count; 
 						}
 					}
 			}
@@ -173,38 +156,19 @@ public:
 						auto n = delta_size.product(); 
 						
 						if (n > 1) {
-							double suma = 0.0; 
-							double sumb = 0.0; 
-							double suma2 = 0.0; 
-							double sumb2 = 0.0; 
-							double sumab = 0.0; 
-							
+
+							NCCSums sum; 
+
 							while (ia != ea) {
-								suma += *ia;
-								sumb += *ib;
-								suma2 += *ia * *ia; 
-								sumb2 += *ib * *ib; 
-								sumab += *ia * *ib; 
+								sum.add(*ia, *ib); 
 								++ia; ++ib; 
 							}
-						
-							const double mean_a = suma/n; 
-							const double mean_b = sumb/n;
-
-							sumab -= n * mean_a * mean_b; 
-							suma2 -= n * mean_a * mean_a; 
-							sumb2 -= n * mean_b * mean_b; 
-
-							double suma2_sumb2 = suma2 * sumb2;
 							
-							if (suma2_sumb2 > 1e-5) {
-								
-								lresult += 1 -  sumab * sumab / suma2_sumb2; 
-								++count;
-								const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
-												      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
-								*iforce = scale * *ig; 
-							}
+							auto res = sum.get_grad_helper(); 
+							lresult += res.first;
+							*iforce = res.second.get_gradient_scale(*imov, *iref) * *ig; 
+							++count; 
+							
 						}
 					}
 			}

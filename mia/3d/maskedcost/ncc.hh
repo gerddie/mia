@@ -18,23 +18,35 @@
  *
  */
 
-#include <mia/2d/cost.hh>
-#include <mia/core/splinekernel.hh>
-#include <mia/internal/autotest.hh>
+#ifndef mia_3d_maskedcost_ncc_hh
+#define mia_3d_maskedcost_ncc_hh
 
-NS_MIA_USE
-namespace bfs=::boost::filesystem; 
-using namespace boost::unit_test;
-using std::set; 
-using std::string; 
+#include <mia/3d/maskedcost.hh>
 
-PrepareTestPluginPath plugin_path_init; 
+#define NS mia_3d_maskedncc
 
-BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
-{
-	set<string> test_data = {"lncc","lsd", "mi", "ngf", "ncc", "ssd", "ssd-automask"}; 
-	test_pluginsets(C2DImageCostPluginHandler::instance().get_set(), test_data); 
-}
+NS_BEGIN(NS)
 
+class CNCC3DImageCost: public mia::C3DMaskedImageCost {
+public: 	
+	typedef mia::C3DMaskedImageCost::Data Data; 
+	typedef mia::C3DMaskedImageCost::Force Force; 
+	typedef mia::C3DMaskedImageCost::Mask Mask; 
 
+	CNCC3DImageCost();
+private: 
+	virtual double do_value(const Data& a, const Data& b, const Mask& m) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, const Mask& m, Force& force) const; 
+};
 
+class CNCC3DImageCostPlugin: public mia::C3DMaskedImageCostPlugin {
+public: 
+	CNCC3DImageCostPlugin();
+	mia::C3DMaskedImageCost *do_create() const;
+private: 
+	const std::string do_get_descr() const; 
+};
+
+NS_END
+
+#endif 

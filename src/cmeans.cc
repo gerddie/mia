@@ -428,7 +428,7 @@ int do_main(int argc, char *argv[])
 		initialise = true; 
 	}
 		
-	CCMeans cmeans(k, even_start, epsilon); 
+	CCMeans cmeans(k, epsilon, even_start); 
 			
 	CProbabilityVector pv = cmeans(histo, class_centers, initialise, auto_k); 
 		

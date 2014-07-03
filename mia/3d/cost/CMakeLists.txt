@@ -21,6 +21,7 @@ SET(cost3d
            ssd-automask
            lncc
 	   ngf
+           ncc 
 	   mi 
 )
 

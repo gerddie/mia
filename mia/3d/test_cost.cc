@@ -49,8 +49,8 @@ static void prepare_plugin_path()
 static void test_3dimage_cost_avail() 
 {
 	const C3DImageCostPluginHandler::Instance& fh = C3DImageCostPluginHandler::instance();
-	BOOST_CHECK(fh.size() == 3); 
-	BOOST_CHECK(fh.get_plugin_names() == "mi ngf ssd ");
+	BOOST_CHECK(fh.size() == 4); 
+	BOOST_CHECK(fh.get_plugin_names() == "mi ncc ngf ssd ");
 }
 
 static void test_3dimage_cost(const C3DImageCostPluginHandler::value_type& i)

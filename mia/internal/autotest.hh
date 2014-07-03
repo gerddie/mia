@@ -48,6 +48,17 @@ const mia::SProgramDescription description = {
 	{mia::pdi_example_code, ""}
 };
 
+void test_pluginsets(const std::set< std::string >& plugins, const std::set<std::string>& test_data) 
+{
+	BOOST_CHECK_EQUAL(plugins.size(), test_data.size()); 
+	for (auto p = plugins.begin(); p != plugins.end(); ++p) {
+		BOOST_CHECK_MESSAGE(test_data.find(*p) != test_data.end(), "unexpected plugin '" << *p << "' found"); 
+	}
+	
+	for (auto p = test_data.begin(); p != test_data.end(); ++p)
+		BOOST_CHECK_MESSAGE(plugins.find(*p) != plugins.end(), "expected plugin '" << *p << "' not found"); 
+}
+
 
 int BOOST_TEST_CALL_DECL
 do_main( int argc, char* argv[] )

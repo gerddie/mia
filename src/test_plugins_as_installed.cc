@@ -42,7 +42,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFullCostPluginHandler,PluginTestFixture)
 
 BOOST_FIXTURE_TEST_CASE(test_C3DImageCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "lncc", "ngf", "mi", "ssd", "ssd-automask"};
+	set<string> test_data = { "lncc", "ncc", "ngf", "mi", "ssd", "ssd-automask"};
 	test(C3DImageCostPluginHandler::instance().get_set(), test_data); 
 }
 
@@ -226,7 +226,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFullCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DImageCostPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data =  {
-		"lncc", "lsd", "ssd", "mi", "ngf", "ssd-automask"
+		"lncc", "ncc", "lsd", "ssd", "mi", "ngf", "ssd-automask"
 	}; 
 	test(C2DImageCostPluginHandler::instance().get_set(), test_data); 
 }

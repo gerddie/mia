@@ -53,6 +53,7 @@ SET(MIACORE_SRC_BASE
   module.cc
   msgstream.cc 
   minimizer.cc
+  nccsum.cc 
   noisegen.cc 
   optionparser.cc 
   optparam.cc 
@@ -138,6 +139,7 @@ SET(MIACORE_HEADER_BASE
   msgstream.hh
   minimizer.hh
   noisegen.hh
+  nccsum.hh
   optionparser.hh
   optparam.hh
   parameter.cxx parameter.hh
@@ -303,6 +305,7 @@ NEW_TEST(iohandler miacore)
 NEW_TEST(kmeans miacore)
 NEW_TEST(labelmap miacore)
 NEW_TEST(meanvar  miacore)
+NEW_TEST(nccsum  miacore)
 NEW_TEST(productcache  miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(scaler1d miacore)

@@ -19,6 +19,7 @@
 SET(maskedcost2d
   lncc
   mi 
+  ncc 
   ssd
 )
 

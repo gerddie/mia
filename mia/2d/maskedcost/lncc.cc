@@ -19,7 +19,7 @@
  */
 
 #include <mia/2d/maskedcost/lncc.hh>
-
+#include <mia/core/nccsum.hh> 
 #include <mia/core/threadedmsg.hh>
 #include <tbb/parallel_reduce.h>
 #include <tbb/blocked_range.h>
@@ -80,58 +80,27 @@ public:
 						continue; 
 					
 					auto c_block = prepare_range(mov.get_size(), x, y, m_hw); 
-					auto ia = mov.begin_range(c_block.first,c_block.second); 
-					auto ea = mov.end_range(c_block.first,c_block.second); 
-					auto ib = ref.begin_range(c_block.first,c_block.second); 
-					auto im = m_mask.begin_range(c_block.first,c_block.second); 
-					
-					
-					float suma = 0.0; 
-					float sumb = 0.0; 
-					float suma2 = 0.0; 
-					float sumb2 = 0.0; 
-					float sumab = 0.0; 
-					long n = 0; 
-					
-					// make a local copy 
-					while (ia != ea) {
-						if (*im) {
-							a_buffer[n] = *ia; 
-							b_buffer[n] = *ib; 
-							suma += *ia;
-							sumb += *ib;
-							++n;
-						}
-						++ia; ++ib; ++im; 
-					}
-					if (n > 1) {
-						const float mean_a = suma/n; 
-						const float mean_b = sumb/n;
-						cvdebug() << "A=["; 
-						for (int i = 0; i < n; ++i) 
-							cverb << a_buffer[i] << ", "; 
-						cverb << "\n"; 
-						
-						// strip mean and evaluate cross correlation 
-						for (int i = 0; i < n; ++i) {
-							const float a_ = a_buffer[i] - mean_a; 
-							suma2 += a_ * a_; 
-							const float b_ = b_buffer[i] - mean_b; 
-							sumb2 += b_ * b_; 
-							sumab += a_ * b_; 
-						}
-						float suma2_sumb2 = suma2 * sumb2;
-						if (suma2_sumb2 > 1e-5) {
-							cvdebug() <<  y << x 
-								  << ": Sab=" << sumab << ", Sa2=" << suma2 << ", Sb2=" << sumb2 
-								  << ", n=" << n << ", meanA=" << mean_a << ", mean_b=" << mean_b 
-								  << "\n"; 
-							lresult += 1.0 - sumab * sumab / suma2_sumb2; 
-							++count;
-							cvdebug() << "v=" << lresult
-								  << ", c=" << count << ", n=" << n << "\n"; 
+
+					NCCSums sum; 
+					for (unsigned iy = c_block.first.y; iy < c_block.second.y; ++iy) {
+						auto ia = mov.begin_at(0,iy); 
+						auto ib = ref.begin_at(0, iy); 
+						auto im = m_mask.begin_at(0, iy); 
+						for (unsigned ix = c_block.first.x; ix < c_block.second.x; ++ix) {
+							
+							// make a local copy 
+							if (im[ix]) {
+								sum.add(ia[ix], ib[ix]);
+							}
 						}
 					}
+					
+					if (sum.has_samples()) {
+						lresult += sum.value(); 
+						++count; 
+					}
+					
+					
 				}
 			}
 			return make_pair(result.first + lresult, result.second + count); 
@@ -190,58 +159,29 @@ public:
 						continue; 
                                         
 					auto c_block = prepare_range(mov.get_size(), x, y, m_hw); 
-					auto ia = mov.begin_range(c_block.first,c_block.second); 
-					auto ea = mov.end_range(c_block.first,c_block.second); 
-					auto ib = ref.begin_range(c_block.first,c_block.second); 
-					auto im = m_mask.begin_range(c_block.first,c_block.second); 
-                                        
 					
-					float suma = 0.0; 
-					float sumb = 0.0; 
-					float suma2 = 0.0; 
-					float sumb2 = 0.0; 
-					float sumab = 0.0; 
-					long n = 0; 
 					
-					// make a local copy 
-					while (ia != ea) {
-						if (*im) {
-							a_buffer[n] = *ia; 
-							b_buffer[n] = *ib; 
-							suma += *ia;
-							sumb += *ib;
-							++n;
-						}
-						++ia; ++ib; ++im; 
-					}
-					if (n > 1) {
-						const float mean_a = suma/n; 
-						const float mean_b = sumb/n;
-						
-						// strip mean and evaluate cross correlation 
-						for (int i = 0; i < n; ++i) {
-							const float a_ = a_buffer[i] - mean_a; 
-							suma2 += a_ * a_; 
-							const float b_ = b_buffer[i] - mean_b; 
-							sumb2 += b_ * b_; 
-							sumab += a_ * b_; 
-						}
-						
-						float suma2_sumb2 = suma2 * sumb2;
-						
-						if (suma2_sumb2 > 1e-5) {
+					NCCSums sum; 
+					for (unsigned iy = c_block.first.y; iy < c_block.second.y; ++iy) {
+						auto ia = mov.begin_at(0,iy); 
+						auto ib = ref.begin_at(0, iy); 
+						auto im = m_mask.begin_at(0, iy); 
+						for (unsigned ix = c_block.first.x; ix < c_block.second.x; ++ix) {
 							
-							lresult += 1.0 - sumab * sumab / suma2_sumb2; 
-							++count;
-							const auto scale = static_cast<float>(2.0 * sumab / suma2_sumb2 * 
-											      ( sumab / suma2 * (*imov-mean_a) - (*iref-mean_b) ));
-							cvdebug() << y << x 
-								  << ": sumab=" << sumab << ", suma2=" << suma2
-								  << ", mean-a" << mean_a << ", mean_b = " << mean_b 
-								  << ", scale=" << scale << "\n";  
-							*iforce = scale * *ig; 
+							// make a local copy 
+							if (im[ix]) {
+								sum.add(ia[ix], ib[ix]);
+							}
 						}
 					}
+					
+					if (sum.has_samples()) {
+						auto res = sum.get_grad_helper(); 
+						lresult += res.first;
+						*iforce = res.second.get_gradient_scale(*imov, *iref) * *ig; 
+						++count; 
+					}
+					
 				}
 			}
 			return make_pair(result.first + lresult, result.second + count); 

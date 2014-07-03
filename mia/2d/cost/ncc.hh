@@ -18,23 +18,34 @@
  *
  */
 
+#ifndef mia_2d_cost_ncc_hh
+#define mia_2d_cost_ncc_hh
+
 #include <mia/2d/cost.hh>
-#include <mia/core/splinekernel.hh>
-#include <mia/internal/autotest.hh>
 
-NS_MIA_USE
-namespace bfs=::boost::filesystem; 
-using namespace boost::unit_test;
-using std::set; 
-using std::string; 
+#define NS mia_2d_ncc
 
-PrepareTestPluginPath plugin_path_init; 
+NS_BEGIN(NS)
 
-BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
-{
-	set<string> test_data = {"lncc","lsd", "mi", "ngf", "ncc", "ssd", "ssd-automask"}; 
-	test_pluginsets(C2DImageCostPluginHandler::instance().get_set(), test_data); 
-}
+class CNCC2DImageCost: public mia::C2DImageCost {
+public: 	
+	typedef mia::C2DImageCost::Data Data; 
+	typedef mia::C2DImageCost::Force Force; 
 
+	CNCC2DImageCost();
+private: 
+	virtual double do_value(const Data& a, const Data& b) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
+};
 
+class CNCC2DImageCostPlugin: public mia::C2DImageCostPlugin {
+public: 
+	CNCC2DImageCostPlugin();
+	mia::C2DImageCost *do_create() const;
+private: 
+	const std::string do_get_descr() const; 
+};
 
+NS_END
+
+#endif 
