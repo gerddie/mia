@@ -25,6 +25,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/version.hpp>
+#include <boost/serialization/map.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <mia/3d/transformfactory.hh>
 
@@ -36,6 +37,13 @@ void save(Archive & ar, const mia::C3DTransformation& t, unsigned int )
 	ar << make_nvp("size_x", t.get_size().x); 
 	ar << make_nvp("size_y", t.get_size().y); 
 	ar << make_nvp("size_z", t.get_size().z); 
+
+	std::map<std::string, std::string> attr; 
+	for (auto i = t.begin_attributes(); i != t.end_attributes(); ++i) {
+		attr.insert(std::make_pair(i->first, i->second->as_string())); 
+	}
+	ar << make_nvp("attributes", attr);
+
 	auto params = t.get_parameters(); 
 	std::vector<double> help(params.size()); 
 	std::copy(params.begin(), params.end(), help.begin()); 
@@ -53,6 +61,10 @@ void load(Archive & ar, mia::P3DTransformation & t, unsigned int )
 	ar >> make_nvp("size_x",size.x); 
 	ar >> make_nvp("size_y",size.y); 
 	ar >> make_nvp("size_z",size.z); 
+
+	std::map<std::string, std::string> attr; 
+	ar >> make_nvp("attributes", attr); 
+
 	ar >> make_nvp("params", help); 
 
 	auto creator = mia::C3DTransformCreatorHandler::instance().produce(init);  
@@ -61,6 +73,11 @@ void load(Archive & ar, mia::P3DTransformation & t, unsigned int )
 	assert(params.size() == help.size()); 
 	std::copy(help.begin(), help.end(), params.begin()); 
 	t->set_parameters(params); 
+
+	for(auto i = attr.begin(); i != attr.end(); ++i) {
+		t->set_attribute(i->first, mia::CStringAttrTranslatorMap::instance().to_attr(i->first, i->second)); 
+	}
+
 }
 
 /*

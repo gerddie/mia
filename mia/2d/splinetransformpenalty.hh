@@ -46,9 +46,10 @@ public:
 	
 	/**
 	   Constructor that sets the weight of the penalty term 
-	   \param weight 
+	   @param weight 
+	   @param normalize 
 	 */
-	C2DSplineTransformPenalty(double weight); 
+	C2DSplineTransformPenalty(double weight, bool normalize); 
 
 	C2DSplineTransformPenalty(const C2DSplineTransformPenalty& org) = delete; 
 	C2DSplineTransformPenalty& operator = (const C2DSplineTransformPenalty& org) = delete; 
@@ -87,8 +88,6 @@ public:
 	double value_and_gradient(const C2DFVectorfield&  coefficients, CDoubleVector& gradient) const;
 
 protected: 
-
-
 	
 	const C2DBounds& get_size() const;
 	
@@ -97,6 +96,8 @@ protected:
 	PSplineKernel get_kernel() const;        
 
 	double get_weight() const; 
+	
+	bool get_normalize() const; 
 
 private:
 
@@ -109,6 +110,7 @@ private:
 	virtual C2DSplineTransformPenalty *do_clone() const  = 0;
 
 	double m_weight; 
+	bool m_normalize; 
 
 	C2DBounds m_size;
 	C2DFVector m_range; 
@@ -123,9 +125,10 @@ public:
 	C2DSplineTransformPenaltyPlugin(char const * const  name); 
 private: 
 	virtual Product *do_create() const __attribute__((warn_unused_result));
-	virtual Product *do_create(float weight) const __attribute__((warn_unused_result)) = 0 ;
+	virtual Product *do_create(float weight, bool normalize) const __attribute__((warn_unused_result)) = 0 ;
 
 	float m_weight; 
+	bool m_normalize; 
 }; 
 
 

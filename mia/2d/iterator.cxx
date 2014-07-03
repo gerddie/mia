@@ -25,7 +25,7 @@
 NS_MIA_BEGIN
 
 template <typename I> 
-range2d_iterator<I>::range2d_iterator():
+range2d_iterator_with_boundary_flag<I>::range2d_iterator_with_boundary_flag():
 	m_pos(0,0), 
 	m_size(0,0), 
 	m_begin(0,0), 
@@ -36,7 +36,7 @@ range2d_iterator<I>::range2d_iterator():
 }
 
 template <typename I> 
-range2d_iterator<I>::range2d_iterator(const C2DBounds& pos):
+range2d_iterator_with_boundary_flag<I>::range2d_iterator_with_boundary_flag(const C2DBounds& pos):
 	m_pos(pos), 
 	m_size(0,0), 
 	m_begin(0,0), 
@@ -47,7 +47,7 @@ range2d_iterator<I>::range2d_iterator(const C2DBounds& pos):
 }
 
 template <typename I> 
-range2d_iterator<I>::range2d_iterator(const C2DBounds& pos, const C2DBounds& size, 
+range2d_iterator_with_boundary_flag<I>::range2d_iterator_with_boundary_flag(const C2DBounds& pos, const C2DBounds& size, 
 				      const C2DBounds& begin, const C2DBounds& end, I iterator):
 	m_pos(pos), 
 	m_size(size), 
@@ -74,7 +74,7 @@ range2d_iterator<I>::range2d_iterator(const C2DBounds& pos, const C2DBounds& siz
 
 
 template <typename I> 
-range2d_iterator<I>& range2d_iterator<I>::operator = (const range2d_iterator<I>& other)
+range2d_iterator_with_boundary_flag<I>& range2d_iterator_with_boundary_flag<I>::operator = (const range2d_iterator_with_boundary_flag<I>& other)
 {
 	m_pos = other.m_pos; 
 	m_size = other.m_size;  
@@ -89,7 +89,7 @@ range2d_iterator<I>& range2d_iterator<I>::operator = (const range2d_iterator<I>&
 
 
 template <typename I> 
-range2d_iterator<I>::range2d_iterator(const range2d_iterator<I>& other):
+range2d_iterator_with_boundary_flag<I>::range2d_iterator_with_boundary_flag(const range2d_iterator_with_boundary_flag<I>& other):
 	m_pos(other.m_pos), 
 	m_size(other.m_size), 
 	m_begin(other.m_begin), 
@@ -101,9 +101,9 @@ range2d_iterator<I>::range2d_iterator(const range2d_iterator<I>& other):
 }	
 
 template <typename I> 
-range2d_iterator<I>& range2d_iterator<I>::operator ++()
+range2d_iterator_with_boundary_flag<I>& range2d_iterator_with_boundary_flag<I>::operator ++()
 {
-	DEBUG_ASSERT_RELEASE_THROW(m_pos.x < m_end.x, "range2d_iterator: trying to increment past end");
+	DEBUG_ASSERT_RELEASE_THROW(m_pos.x < m_end.x, "range2d_iterator_with_boundary_flag: trying to increment past end");
 	
 	++m_pos.x;
 	++m_iterator; 
@@ -119,7 +119,7 @@ range2d_iterator<I>& range2d_iterator<I>::operator ++()
 }
 
 template <typename I> 
-void range2d_iterator<I>::increment_y()
+void range2d_iterator_with_boundary_flag<I>::increment_y()
 {
 	if (m_pos.y < m_end.y - 1) {
 		m_pos.x = m_begin.x; 
@@ -131,6 +131,151 @@ void range2d_iterator<I>::increment_y()
 	}else if (m_pos.y == m_end.y - 1) {
 		m_pos = m_end; 
 
+	}
+}
+
+template <typename I> 
+typename range2d_iterator_with_boundary_flag<I>::internal_iterator 
+range2d_iterator_with_boundary_flag<I>::get_point()
+{
+	return m_iterator; 
+}
+
+template <typename I> 
+range2d_iterator_with_boundary_flag<I> range2d_iterator_with_boundary_flag<I>::operator ++(int)
+{
+	range2d_iterator_with_boundary_flag result(*this); 
+	++(*this); 
+	return result; 
+}
+
+template <typename I> 
+typename range2d_iterator_with_boundary_flag<I>::reference range2d_iterator_with_boundary_flag<I>::operator *() const
+{
+	return *m_iterator; 
+}
+
+template <typename I> 
+struct __iterator2d_dispatch_operator_for_bool {
+	static typename range2d_iterator_with_boundary_flag<I>::pointer 
+	apply(const typename range2d_iterator_with_boundary_flag<I>::internal_iterator& it) {
+		return it.operator->(); 
+	}
+}; 
+
+template <> 
+struct __iterator2d_dispatch_operator_for_bool<std::vector<bool>::iterator> {
+	static std::vector<bool>::iterator::pointer apply(const std::vector<bool>::iterator& ) {
+		throw std::logic_error("You can't use the '->' with a bool 2DDatafield range iterator"); 
+	}
+}; 
+
+template <> 
+struct __iterator2d_dispatch_operator_for_bool<std::vector<bool>::const_iterator> {
+	static std::vector<bool>::const_iterator::pointer apply(const std::vector<bool>::const_iterator& ) {
+		throw std::logic_error("You can't use the '->' with a bool 2DDatafield range iterator"); 
+	}
+}; 
+			
+
+template <typename I> 
+typename range2d_iterator_with_boundary_flag<I>::pointer range2d_iterator_with_boundary_flag<I>::operator ->() const
+{
+	return __iterator2d_dispatch_operator_for_bool<internal_iterator>::apply(m_iterator);
+}
+
+template <typename I> 
+const C2DBounds& range2d_iterator_with_boundary_flag<I>::pos() const
+{
+	return m_pos; 
+}
+
+template <typename I> 
+int range2d_iterator_with_boundary_flag<I>::get_boundary_flags() const
+{
+	return m_boundary; 
+}
+
+template <typename I> 
+range2d_iterator<I>::range2d_iterator():
+	m_pos(0,0), 
+	m_size(0,0), 
+	m_begin(0,0), 
+	m_end(0,0), 
+	m_xstride(0)
+{
+}
+
+template <typename I> 
+range2d_iterator<I>::range2d_iterator(const C2DBounds& pos):
+	m_pos(pos), 
+	m_size(0,0), 
+	m_begin(0,0), 
+	m_end(0,0), 
+	m_xstride(0)
+{
+}
+
+template <typename I> 
+range2d_iterator<I>::range2d_iterator(const C2DBounds& pos, const C2DBounds& size, 
+				      const C2DBounds& begin, const C2DBounds& end, I iterator):
+	m_pos(pos), 
+	m_size(size), 
+	m_begin(begin), 
+	m_end(end),
+	m_xstride(m_size.x - (m_end.x - m_begin.x)),
+	m_iterator(iterator)
+{
+}
+
+
+template <typename I> 
+range2d_iterator<I>& range2d_iterator<I>::operator = (const range2d_iterator<I>& other)
+{
+	m_pos = other.m_pos; 
+	m_size = other.m_size;  
+	m_begin = other.m_begin; 
+	m_end = other.m_end; 
+	m_iterator = other.m_iterator; 
+	m_xstride = other.m_xstride; 
+	return *this; 
+}
+
+
+
+template <typename I> 
+range2d_iterator<I>::range2d_iterator(const range2d_iterator<I>& other):
+	m_pos(other.m_pos), 
+	m_size(other.m_size), 
+	m_begin(other.m_begin), 
+	m_end(other.m_end), 
+	m_xstride(other.m_xstride),
+	m_iterator(other.m_iterator)
+{
+}	
+
+template <typename I> 
+range2d_iterator<I>& range2d_iterator<I>::operator ++()
+{
+	DEBUG_ASSERT_RELEASE_THROW(m_pos.x < m_end.x, "range2d_iterator: trying to increment past end");
+	
+	++m_pos.x;
+	++m_iterator; 
+	if (m_pos.x == m_end.x)
+		increment_y(); 
+	
+	return *this; 
+}
+
+template <typename I> 
+void range2d_iterator<I>::increment_y()
+{
+	if (m_pos.y < m_end.y - 1) {
+		m_pos.x = m_begin.x; 
+		++m_pos.y; 
+		std::advance(m_iterator, m_xstride);
+	} else if (m_pos.y == m_end.y - 1) {
+		m_pos = m_end; 
 	}
 }
 
@@ -155,28 +300,6 @@ typename range2d_iterator<I>::reference range2d_iterator<I>::operator *() const
 	return *m_iterator; 
 }
 
-template <typename I> 
-struct __iterator2d_dispatch_operator_for_bool {
-	static typename range2d_iterator<I>::pointer 
-	apply(const typename range2d_iterator<I>::internal_iterator& it) {
-		return it.operator->(); 
-	}
-}; 
-
-template <> 
-struct __iterator2d_dispatch_operator_for_bool<std::vector<bool>::iterator> {
-	static std::vector<bool>::iterator::pointer apply(const std::vector<bool>::iterator& ) {
-		throw std::logic_error("You can't use the '->' with a bool 2DDatafield range iterator"); 
-	}
-}; 
-
-template <> 
-struct __iterator2d_dispatch_operator_for_bool<std::vector<bool>::const_iterator> {
-	static std::vector<bool>::const_iterator::pointer apply(const std::vector<bool>::const_iterator& ) {
-		throw std::logic_error("You can't use the '->' with a bool 2DDatafield range iterator"); 
-	}
-}; 
-			
 
 template <typename I> 
 typename range2d_iterator<I>::pointer range2d_iterator<I>::operator ->() const
@@ -190,10 +313,11 @@ const C2DBounds& range2d_iterator<I>::pos() const
 	return m_pos; 
 }
 
+
 template <typename I> 
-int range2d_iterator<I>::get_boundary_flags() const
+range2d_iterator_with_boundary_flag<I> range2d_iterator<I>::with_boundary_flag() const
 {
-	return m_boundary; 
+	return range2d_iterator_with_boundary_flag<I>(m_pos, m_size, m_begin, m_end, m_iterator); 
 }
 
 NS_MIA_END

@@ -19,7 +19,6 @@
  */
 
 #include <cmath>
-#include <mia/internal/plugintester.hh>
 
 #include <mia/core/spacial_kernel.hh>
 #include <mia/3d/transform/vectorfield.hh>
@@ -29,8 +28,6 @@ NS_MIA_USE
 using namespace std;
 using namespace ::boost;
 using namespace boost::unit_test;
-
-PrepareTestPluginPath plugin_path_init; 
 
 struct GridTransformFixture {
 	GridTransformFixture():

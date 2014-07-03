@@ -21,10 +21,12 @@
 #include <mia/core/export_handler.hh>
 
 #include <mia/core/cost.hh>
+#include <mia/template/masked_cost.hh>
 
 NS_MIA_BEGIN
 
 const char *cost_type::type_descr = "cost";
+const char *masked_cost_type::type_descr = "maskedcost";
 
 NS_MIA_END
 

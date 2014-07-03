@@ -241,6 +241,16 @@ public:
 
 };
 
+/**
+   Some plug-ins can be chained directly at creation time. 
+   To make the factory aware of this interface, this trait is used. 
+*/
+
+template <typename Plugin> 
+struct plugin_can_chain {
+	static constexpr bool value = false; 
+	typedef void Chained; 
+}; 
 
 NS_MIA_END
 

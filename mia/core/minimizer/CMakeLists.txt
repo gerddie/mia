@@ -22,4 +22,7 @@ PLUGIN_WITH_TEST_AND_PREFIX2("minimizer" "singlecost" gsl "${GSLOPTLIBS}")
 SET(NEEDED_LIBS miacore "${NEEDED_LIBS}")
 PLUGIN_WITH_TEST_AND_PREFIX2("minimizer" "singlecost" gdsq "${NEEDED_LIBS}")
 
+SET(NEEDED_LIBS miacore "${NEEDED_LIBS}")
+PLUGIN_WITH_TEST_AND_PREFIX2("minimizer" "singlecost" gdas "${NEEDED_LIBS}")
+
 

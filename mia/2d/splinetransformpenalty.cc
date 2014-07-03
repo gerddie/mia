@@ -30,8 +30,9 @@ using namespace std;
 const char *C2DSplineTransformPenalty::data_descr = "2dtransform";
 const char *C2DSplineTransformPenalty::type_descr = "splinepenalty"; 
 
-C2DSplineTransformPenalty::C2DSplineTransformPenalty(double weight):
-m_weight(weight)
+C2DSplineTransformPenalty::C2DSplineTransformPenalty(double weight, bool normalize):
+        m_weight(weight), 
+	m_normalize(normalize)
 {
 }
 
@@ -51,7 +52,8 @@ void C2DSplineTransformPenalty::initialize(const C2DBounds& size, const C2DFVect
 double C2DSplineTransformPenalty::value(const C2DFVectorfield&  coefficients) const
 {
 	assert(coefficients.get_size() == get_size()); 
-	return m_weight * do_value(coefficients); 
+	const double w = m_normalize ? m_weight / m_range.product() : m_weight; 
+	return w * do_value(coefficients); 
 }
 
 
@@ -60,9 +62,10 @@ double C2DSplineTransformPenalty::value_and_gradient(const C2DFVectorfield&  coe
 	assert(coefficients.get_size() == get_size()); 
 	assert(coefficients.size() * 2 == gradient.size()); 
 
-	double value =  m_weight * do_value_and_gradient(coefficients, gradient); 
+	const double w = m_normalize ? m_weight / m_range.product() : m_weight; 
+	double value =  w * do_value_and_gradient(coefficients, gradient); 
 	transform(gradient.begin(), gradient.end(), gradient.begin(), 
-		  [this](double x) { return - m_weight * x;}); 
+		  [w](double x) { return - w * x;}); 
 	return value; 
 }
 
@@ -86,6 +89,12 @@ double C2DSplineTransformPenalty::get_weight() const
 	return m_weight; 
 }
 
+bool C2DSplineTransformPenalty::get_normalize() const
+{
+	return m_normalize; 
+}
+
+
 C2DSplineTransformPenalty *C2DSplineTransformPenalty::clone() const
 {
 	return do_clone(); 
@@ -99,15 +108,18 @@ C2DSplineTransformPenaltyPluginHandler::ProductPtr produce_2d_spline_transform_p
 
 C2DSplineTransformPenaltyPlugin::C2DSplineTransformPenaltyPlugin(char const * const  name):
 	TFactory<C2DSplineTransformPenalty>(name), 
-	m_weight(1.0)
+	m_weight(1.0), 
+	m_normalize(false)
 {
 	add_parameter("weight", new CFloatParameter(m_weight, 0.0f, std::numeric_limits<float>::max(), 
 						    false, "weight of penalty energy"));
+	add_parameter("norm", new CBoolParameter(m_normalize, false, "Set to 1 if the penalty should be normalized " 
+						 "with respect to the image size")); 
 }
 
 C2DSplineTransformPenaltyPlugin::Product *C2DSplineTransformPenaltyPlugin::do_create() const
 {
-	return do_create(m_weight); 
+	return do_create(m_weight, m_normalize); 
 }
 
 

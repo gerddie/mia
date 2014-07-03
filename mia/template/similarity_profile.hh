@@ -1,3 +1,4 @@
+
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
@@ -52,12 +53,13 @@ public:
 	/**
 	   Contruct and prepare the similarity profile. Throws an std::invalid_argument exception 
 	   on failure. 
-	   \param cost 
-	   \param images
-	   \param reference
+	   \param cost image similarity to evaluate the similarity series 
+	   \param images the image series 
+	   \param reference the reference to use for evaluating the similarity series 
+	   \param max_delta  the maximum temporal delta for the subset 
 	 */
 	TSimilarityProfile(PFullCost cost, const ImageSeries& images, 
-			     size_t reference); 
+			   size_t reference, size_t max_delta); 
 	
 	/// copy constructor 
 	TSimilarityProfile(const TSimilarityProfile<dim>& org); 
@@ -73,9 +75,10 @@ public:
 	std::vector<size_t> get_periodic_subset() const; 
 private: 
 	size_t m_skip; 
-	size_t m_reference; 
 	mutable float m_peak_freq;
 	mutable bool m_peak_freq_valid; 
+	size_t m_reference; 
+	size_t m_max_delta; 
 	std::vector<CFFT1D_R2C::Real> m_cost_values; 
 }; 
 

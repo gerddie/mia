@@ -20,7 +20,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <mia/internal/autotest.hh>
 
 #include <mia/core/spacial_kernel.hh>
 #include <mia/3d/interpolator.hh>
@@ -1037,7 +1036,9 @@ double Cost3DMock::ref_value(const C3DFVector& x) const
 /////////////////////////////////////
 struct TransformSplineFixtureFieldBase2 : public ipfFixture{
 	TransformSplineFixtureFieldBase2():
-		kernel(produce_spline_kernel("bspline:d=4"))
+		kernel(produce_spline_kernel("bspline:d=4")), 
+		range(1.0), 
+		graddiv2sum(0.0)
 	{
 
 	}

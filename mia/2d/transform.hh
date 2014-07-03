@@ -361,6 +361,18 @@ public:
 	 */
 	virtual bool refine(); 
 
+	/* Attributes */
+	/**
+	   This attribute defines the voxel spacing of the input data of this transform. 
+	 */
+	static constexpr const char *input_spacing_attr = "in-pixel-spacing"; 
+
+	/**
+	   This attribute defines the output voxel spacing of this transform. 
+	 */
+	static constexpr const char *output_spacing_attr = "out-pixel-spacing"; 
+
+
 private: 
 
 	virtual Pointer do_upscale(const C2DBounds& size) const = 0;

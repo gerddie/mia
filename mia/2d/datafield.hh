@@ -71,6 +71,10 @@ public:
 	typedef typename data_array::size_type size_type;
 	typedef range2d_iterator<iterator> range_iterator; 
 	typedef range2d_iterator<const_iterator> const_range_iterator; 
+	typedef range2d_iterator_with_boundary_flag<iterator> range_iterator_with_boundary_flag; 
+	typedef range2d_iterator_with_boundary_flag<const_iterator> const_range_iterator_with_boundary_flag; 
+
+
 
 	typedef C2DBounds dimsize_type;
 	typedef C2DFVector coord_type;

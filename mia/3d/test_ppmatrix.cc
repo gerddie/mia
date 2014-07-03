@@ -26,10 +26,12 @@ NS_MIA_USE;
 PrepareTestPluginPath plugin_path_init; 
 
 struct TransformSplineFixtureFieldBase {
-	TransformSplineFixtureFieldBase()
-	{
-
-	}
+	TransformSplineFixtureFieldBase():
+		range(1.0), 
+		graddiv2sum(0.0)
+		{
+		}
+	
 	void init(int dsize, double r, EInterpolation type) {
 		ipf.reset(create_3dinterpolation_factory(type, bc_mirror_on_bounds));
 		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
@@ -258,7 +260,65 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4, TransformSplineFixtureMixed )
 	cvinfo() << "gradcurl / testcurl = " << gradcurl / testcurl << "\n"; 
 }
 
-#if 1
+
+BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_20_4, TransformSplineFixtureMixed )
+{
+	init(20, 4, ip_bspline4);
+
+	const T3DConvoluteInterpolator<C3DFVector>& interp = 
+		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
+	const double testcurl = testdiv / 4.0; 
+
+	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	double graddiv = div  * coeffs; 
+	BOOST_CHECK_CLOSE( graddiv, testdiv, 0.1); 	
+
+
+	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	double graddivcurl = divcurl  * coeffs; 
+	BOOST_CHECK_CLOSE( graddivcurl, testdiv + testcurl, 0.1); 	
+	
+
+	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	double gradcurl = rot  * coeffs; 
+	BOOST_CHECK_CLOSE( gradcurl, testcurl, 0.1); 	
+
+	cvinfo() << "graddiv  / testdiv= " << graddiv  / testdiv << "\n"; 
+	cvinfo() << "gradcurl / testcurl = " << gradcurl / testcurl << "\n"; 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_20_7, TransformSplineFixtureMixed )
+{
+	init(20, 7, ip_bspline4);
+
+	const T3DConvoluteInterpolator<C3DFVector>& interp = 
+		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
+	const double testcurl = testdiv / 4.0; 
+
+	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	double graddiv = div  * coeffs; 
+	BOOST_CHECK_CLOSE( graddiv, testdiv, 0.1); 	
+
+
+	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	double graddivcurl = divcurl  * coeffs; 
+	BOOST_CHECK_CLOSE( graddivcurl, testdiv + testcurl, 0.1); 	
+	
+
+	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	double gradcurl = rot  * coeffs; 
+	BOOST_CHECK_CLOSE( gradcurl, testcurl, 0.1); 	
+
+	cvinfo() << "graddiv  / testdiv= " << graddiv  / testdiv << "\n"; 
+	cvinfo() << "gradcurl / testcurl = " << gradcurl / testcurl << "\n"; 
+}
+
 BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixtureMixed )
 {
 	init(4, 2, ip_bspline3);
@@ -320,13 +380,11 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixtureMixe
 	
 }
 
-#endif
-
-
 
 
 struct TransformSplineFixtureFieldNonuniform {
-	TransformSplineFixtureFieldNonuniform()
+	TransformSplineFixtureFieldNonuniform():
+		range(1.0)
 	{
 
 	}

@@ -124,7 +124,7 @@ MACRO(CREATE_EXE_DOCU name)
   
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH} 
-    ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+    ./mia-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     COMMAND rm -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
     DEPENDS mia-${name} plugin_test_links )
     

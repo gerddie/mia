@@ -44,6 +44,6 @@ EXPORT_CORE const char * IDPixelIntensityRelationship = "PixelIntensityRelations
 EXPORT_CORE const char * IDPositionerPrimaryAngleIncrement = "PositionerPrimaryAngleIncrement"; 
 EXPORT_CORE const char * IDPositionerSecondaryAngleIncrement = "PositionerSecondaryAngleIncrement"; 
 EXPORT_CORE const char * IDSliceThickness = "SliceThickness"; 
-
+EXPORT_CORE const char * IDPhotometricInterpretation = "PhotometricInterpretation";
 
 NS_MIA_END

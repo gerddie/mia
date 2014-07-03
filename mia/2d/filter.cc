@@ -83,9 +83,14 @@ C2DCombinerPluginHandlerTestPath::C2DCombinerPluginHandlerTestPath()
 
 template<> const  char * const 
 TPluginHandler<C2DFilterPlugin>::m_help = 
-   "These plug-ins provide 2D image filters. Unless otherwise noted, "
-   "they take a gray scale image of abitrary pixel type as input, "
-   "process it and hand it to the next filter in the pipeline." 
+	"These plug-ins provide 2D image filters. Unless otherwise noted, "
+	"they take a gray scale image of abitrary pixel type as input, "
+	"process it and return the result as newly created image. " 
+	"Filters can be chained by specifying more then one filter description "
+	"concated with the '+' sign. for example \n"
+	"   bandpass:min=10,max=20+median:w=3+convert:repn=ushort:map=copy'\n"
+	"will create a filter chain that first runs a bandpass, then a median "
+	"filter and a conversion to unsigned short values by a plain copy."
 ; 
 
 template<> const  char * const 

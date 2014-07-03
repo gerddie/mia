@@ -35,7 +35,10 @@ fullcost.hh
 invert.cxx
 invert.hh
 lsd.hh
+masked_cost.hh
+masked_cost.cxx
 mi.hh
+mi_masked.hh
 multicost.cxx
 multicost.hh
 nonrigidregister.cxx

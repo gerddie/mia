@@ -315,7 +315,7 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 			     "Segmentation method")); 
-	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'B', 
+	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'b', 
 			     "minimal mean frequency a mixing curve can have to be considered to stem from brething. "
 			     "A healthy rest breating rate is 12 per minute. A negative value disables the test.")); 
 	

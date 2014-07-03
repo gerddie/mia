@@ -26,6 +26,7 @@
 #include <cmath>
 #include <sstream>
 #include <mia/3d/transform/spline.hh>
+#include <mia/3d/transform/vectorfield.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/core/index.hh>
@@ -1117,7 +1118,9 @@ const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C3DSplineTransformCreatorPlugin();
+	auto p = new C3DGridTransformCreatorPlugin();
+	p->append_interface(new C3DSplineTransformCreatorPlugin()); 
+	return p; 
 }
 
 NS_MIA_END

@@ -63,6 +63,7 @@ SET(LIBRARY_VERSION_INFO "${MIA_CURRENT}.${MIA_AGE}.${MIA_REVISION}")
 OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are availabe" FALSE)
 OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" TRUE)
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
+OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
 
 INCLUDE(GNUInstallDirs)
 
@@ -452,12 +453,12 @@ ENDIF(PYTHONINTERP_FOUND)
 # 
 
 DEFINE_PLUGIN_NAMES( 1d  "spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
-DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dsplinepenalty  "transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dstack  "filter" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dvf  "io" ${PLUGIN_INSTALL_PATH})
-DEFINE_PLUGIN_NAMES( 3dimage  "combiner;cost;creator;filter;fullcost;io;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dlandmarklist "io"  ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dvf "io"  ${PLUGIN_INSTALL_PATH})

@@ -18,21 +18,35 @@
  *
  */
 
+#ifndef mia_2d_maskedcost_lncc_hh
+#define mia_2d_maskedcost_lncc_hh
 
-#include <mia/3d/imageio.hh>
+#include <mia/2d/cost.hh>
 
-NS_BEGIN(hdf5_3d_io)
+#define NS mia_2d_lncc
 
+NS_BEGIN(NS)
 
+class CLNCC2DImageCost: public mia::C2DImageCost {
+public: 	
+	typedef mia::C2DImageCost::Data Data; 
 
-class CHDF53DImageIOPlugin : public mia::C3DImageIOPlugin {
-public:
-	CHDF53DImageIOPlugin();
-private:
-        PData do_load(const std::string& fname) const;
-	bool do_save(const std::string& fname, const Data& data) const;
-	const std::string do_get_descr() const;
-	std::string do_get_preferred_suffix() const; 
+	CLNCC2DImageCost(int hw);
+private: 
+	virtual double do_value(const Data& a, const Data& b) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
+        int m_hwidth; 
+};
+
+class CLNCC2DImageCostPlugin: public mia::C2DImageCostPlugin {
+public: 
+	CLNCC2DImageCostPlugin();
+	mia::C2DImageCost *do_create() const;
+private: 
+	const std::string do_get_descr() const; 
+        unsigned int m_hw; 
 };
 
 NS_END
+
+#endif 

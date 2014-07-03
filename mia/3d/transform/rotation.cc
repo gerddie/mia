@@ -384,7 +384,8 @@ private:
 C3DRotationTransformCreatorPlugin::C3DRotationTransformCreatorPlugin():
 	C3DTransformCreatorPlugin("rotation")
 {
-	add_parameter("rot-center", make_param(m_relative_rot_center, false, "Relative rotation center, i.e.  <0.5,0.5,0.5> corresponds "
+	add_parameter("origin", make_param(m_relative_rot_center, false, 
+					       "Relative rotation center, i.e.  <0.5,0.5,0.5> corresponds "
 					       "to the center of the volume"));
 
 }

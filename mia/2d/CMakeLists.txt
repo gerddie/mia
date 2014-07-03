@@ -38,6 +38,7 @@ SET(MIA2D_SRC_BASE
   fuzzyClusterSolverCG.cc
   fullcost.cc
   filterchain.cc
+  maskedcost.cc 
   model.cc
 #  modelsolverreg.cc
   morphshape.cc
@@ -121,6 +122,7 @@ SET(MIA2D_HEADERS_BASE
   iterator.hh
   iterator.cxx
   matrix.hh
+  maskedcost.hh 
   model.hh
 #  modelsolverreg.hh
   morphshape.hh
@@ -283,6 +285,7 @@ ADD_SUBDIRECTORY(fft       )
 ADD_SUBDIRECTORY(fullcost  )
 ADD_SUBDIRECTORY(kernel    )
 ADD_SUBDIRECTORY(model     )
+ADD_SUBDIRECTORY(maskedcost)
 ADD_SUBDIRECTORY(rgbio     )
 ADD_SUBDIRECTORY(shapes    )
 #ADD_SUBDIRECTORY(sparseimgsolver )

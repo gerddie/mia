@@ -123,6 +123,8 @@ public:
 		size_t mg_levels; 
 		size_t max_candidates; 
 		bool save_ref; 
+		int global_reference; 
+		size_t max_delta; 
 	};
 
 	C3DMyocardPeriodicRegistration(const RegistrationParams& params); 
@@ -192,15 +194,21 @@ vector<size_t> C3DMyocardPeriodicRegistration::get_prealigned_subset(const C3DIm
 	assert(postskip < images.size()); 
 	assert(preskip < images.size() - postskip); 
 	
-	cvmsg() << "estimate prealigned subset ...\n"; 
-	vector<size_t> candidates = get_high_contrast_candidates(images, preskip, images.size()-2); 
+	vector<size_t> candidates; 
+	if (m_params.global_reference < 0) {
+		cvmsg() << "estimate prealigned subset ...\n"; 
+		candidates = get_high_contrast_candidates(images, preskip, images.size()-2); 
+		assert(!candidates.empty()); 
+	}else
+		candidates.push_back(m_params.global_reference); 
 
-	C3DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0]); 
+
+	C3DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0], m_params.max_delta); 
 	m_ref = candidates[0]; 
 
 	// the skip values should be parameters 
 	for (size_t i = 1; i < candidates.size(); ++i) {
-		C3DSimilarityProfile sp(m_params.series_select_cost, images, candidates[i]); 
+		C3DSimilarityProfile sp(m_params.series_select_cost, images, candidates[i], m_params.max_delta); 
 		if (sp.get_peak_frequency() > best_series.get_peak_frequency()) {
 			m_ref = candidates[i]; 
 			best_series = sp; 
@@ -312,14 +320,11 @@ size_t C3DMyocardPeriodicRegistration::get_ref_idx()const
 
 
 C3DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
-	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1")), 
-	pass1_cost(C3DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")), 
-	pass2_cost(C3DFullCostPluginHandler::instance().produce("image:cost=ssd")), 
-	series_select_cost(C3DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")),
-	transform_creator(C3DTransformCreatorHandler::instance().produce("spline")),
 	mg_levels(3),
 	max_candidates(20), 
-	save_ref(false)
+	save_ref(false), 
+	global_reference(-1), 
+	max_delta(0)
 {
 }
 
@@ -365,6 +370,11 @@ int do_main( int argc, char *argv[] )
 			     "Const function to use for the analysis of the series")); 
 	options.add(make_opt(reference_index_file, "ref-idx", 0, 
 			     "save reference index number to this file"));  
+	options.add(make_opt(params.global_reference, "global-reference", 'R', 
+				   "save reference index number to this file")); 
+	options.add(make_opt(params.max_delta, "max-subset-delta", 'D', 
+			     "Maximum delta between two elements of the prealigned subset")); 
+
 
 
 	options.set_group("\nRegistration"); 

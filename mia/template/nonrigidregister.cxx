@@ -335,6 +335,7 @@ TNonrigidRegisterImpl<dim>::run() const
 
 		auto x = transform->get_parameters();
 
+		cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
 		m_minimizer->run(x);
 		cvmsg() << "\ndone\n";
 		transform->set_parameters(x);
@@ -383,13 +384,12 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 
 	
-	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
 	m_func_evals++; 
 	cvmsg() << "Cost[fg=" << std::setw(4) << m_grad_evals 
 		<< ",fe=" << std::setw(4) << m_func_evals<<"]=" 
 		<< std::setw(20) << std::setprecision(12) << result 
 		<< "ratio:" << std::setw(20) << std::setprecision(12) 
-		<< result / m_start_cost  << endline; 
+		<< result / m_start_cost  << "\n"; 
 	return result; 
 }
 
@@ -429,12 +429,10 @@ double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDo
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 
 
-	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
-
 	cvmsg() << "Cost[fg="<<std::setw(4)<<m_grad_evals 
 		<< ",fe="<<std::setw(4)<<m_func_evals<<"]= with " 
 		<< std::setw(20) << std::setprecision(12) << result 
-		<< " ratio:" << std::setw(20) << std::setprecision(12) << result / m_start_cost <<  endline; 
+		<< " ratio:" << std::setw(20) << std::setprecision(12) << result / m_start_cost <<  "\n"; 
 	return result; 
 }
 

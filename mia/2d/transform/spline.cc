@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <numeric>
 #include <mia/2d/transform/spline.hh>
+#include <mia/2d/transform/vectorfield.hh>
 #include <mia/2d/transformfactory.hh>
 
 
@@ -242,10 +243,30 @@ C2DTransformation *C2DSplineTransformation::do_clone()const
 	return new C2DSplineTransformation(*this);
 }
 
+C2DFVector C2DSplineTransformation::find_inverse(const C2DBounds& x) const 
+{
+	C2DFVector r(x);
+	int niter = 0; 
+	C2DFVector delta = (*this)(r) - r;
+	while (delta.norm2() > 0.000001 && niter++ < 100) {
+		r -= 0.1 * delta; 
+		delta = (*this)(r) - r; 
+	}
+	return r; 
+}
+
 C2DTransformation *C2DSplineTransformation::invert() const
 {
 	assert(0 && "not implemented"); 
-	return new C2DSplineTransformation(*this);
+	C2DGridTransformation *result = new C2DGridTransformation(get_size(), get_interpolator_factory());
+	
+	auto iv = result->field_begin(); 
+	
+	for (unsigned y = 0; y < get_size().y; ++y) 
+		for (unsigned x = 0; x < get_size().x; ++x, ++iv) 
+			*iv = find_inverse(C2DBounds(x,y)); 
+
+	return result;
 }
 
 
@@ -707,20 +728,6 @@ P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size, co
 }
 
 
-
-
-class C2DSplineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
-public:
-	C2DSplineTransformCreatorPlugin();
-	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	const std::string do_get_descr() const;
-private:
-	PSplineKernel m_interpolator;
-	float m_rate; 
-	C2DFVector m_rate2d;
-	P2DSplineTransformPenalty m_penalty; 
-};
-
 C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	C2DTransformCreatorPlugin("spline"),
 	m_rate(10), 
@@ -752,7 +759,10 @@ const std::string C2DSplineTransformCreatorPlugin::do_get_descr() const
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DSplineTransformCreatorPlugin();
+	auto p = new C2DGridTransformCreatorPlugin();
+	p->append_interface(new C2DSplineTransformCreatorPlugin()); 
+	return p; 
+
 }
 
 NS_MIA_END

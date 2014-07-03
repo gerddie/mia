@@ -24,6 +24,7 @@
 #include <cstring>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <map>
 #include <ctype.h>
 #include <stdexcept>
@@ -52,6 +53,7 @@ NS_MIA_BEGIN
 extern char const *get_revision(); 
 
 using std::ostream;
+using std::ofstream;
 using std::ostringstream;
 using std::string;
 using std::invalid_argument; 
@@ -81,7 +83,7 @@ struct CCmdOptionListData {
 	vector<string> remaining;
 
 	bool help;
-	bool help_xml; 
+	string help_xml; 
 	bool usage;
 	bool version; 
 	bool copyright;
@@ -158,7 +160,6 @@ const char *g_basic_copyright2 = " 1999-2014 Leipzig, Germany and Madrid, Spain.
 
 CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	help(false),
-	help_xml(false), 
 	usage(false),
 	version(false), 
 	copyright(false),
@@ -335,8 +336,10 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	Element* cr = nodeRoot->add_child("Author");
 	cr->set_child_text(m_author); 
 
-	*m_log << doc->write_to_string_formatted();
-	*m_log << "\n"; 
+	ofstream xmlfile(help_xml.c_str());  
+	
+	xmlfile << doc->write_to_string_formatted();
+	xmlfile << "\n"; 
 }
 
 /**
@@ -705,7 +708,7 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 	if (m_impl->help) {
 		m_impl->print_help(name_help, has_additional);
 		return hr_help;
-	}else if (m_impl->help_xml) {
+	}else if (!m_impl->help_xml.empty()) {
 		m_impl->print_help_xml(name_help, additional_help);
 		return hr_help_xml;
 	} else if (m_impl->usage) {

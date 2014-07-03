@@ -195,17 +195,25 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 
 	cvdebug() << "Movement coeff weights:" << movement_pos << "\n"; 
-	bool ifree_breathing = ((movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin]) &&
-				(movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]));
-
-	// handle free breathing and series that only end with breath holding in the same way 
-	if  ((!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]))
-		ifree_breathing = true; 
 	
-	if (ifree_breathing) 
+	int skip_idx = 0; 
+	bool ifree_breathing = false; 
+	if (min_freq != 0.0) {
+		((movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin]) &&
+		 (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]));
+		
+		// handle free breathing and series that only end with breath holding in the same way 
+		if  ((!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]))
+			ifree_breathing = true; 
+	}else 
+		skip_idx = 1; 
+	
+
+	if (ifree_breathing) {
 		cvmsg() << "Detected data set with (initial) free breathing.\n"; 
-	else 
+	}else {
 		cvmsg() << "Detected data set with initial breath holding.\n"; 
+	}
 	
 	int low_energy_start_idx = 1; //ifree_breathing ? 0 : 1;
 	
@@ -227,7 +235,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 			  << " end= " << movement_idx - 1
 			  << "\n"; 
 
-		float low_freq = accumulate(e.begin() + low_energy_start_idx, e.begin() + movement_idx, 0.0); 
+		float low_freq = accumulate(e.begin() + low_energy_start_idx, e.begin() + movement_idx-skip_idx, 0.0); 
 		float high_freq = e[movement_idx] + e[movement_idx + 1];
 		
 		if (min_range > vstats[i]->get_range()) {

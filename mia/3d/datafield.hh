@@ -92,6 +92,10 @@ public:
 	typedef typename atomic_data<T>::type atomic_type; 
 	typedef range3d_iterator<iterator> range_iterator; 
 	typedef range3d_iterator<const_iterator> const_range_iterator; 
+
+	typedef range3d_iterator_with_boundary_flag<iterator> range_iterator_with_boundary_flag; 
+	typedef range3d_iterator_with_boundary_flag<const_iterator> const_range_iterator_with_boundary_flag; 
+
 	typedef C3DBounds dimsize_type;
 	/// \endcond 
 

@@ -16,7 +16,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(costplugins2d ssd ssd-automask mi ngf lsd)
+SET(costplugins2d ssd ssd-automask lncc lsd mi ncc ngf)
 PLUGINGROUP_WITH_TEST_AND_PREFIX2(2dimage cost  "${costplugins2d}" "${MIA2DLIBS}")
 
 

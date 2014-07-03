@@ -25,21 +25,15 @@
 NS_MIA_USE
 namespace bfs=::boost::filesystem; 
 using namespace boost::unit_test;
+using std::set; 
+using std::string; 
 
 PrepareTestPluginPath plugin_path_init; 
 
 BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
 {
-	CPathNameArray searchpath; 
-	
-	searchpath.push_back(bfs::path("cost")); 
-
-	C2DImageCostPluginHandler::set_search_path(searchpath); 
-	
-	const auto& handler = C2DImageCostPluginHandler::instance(); 
-
-	BOOST_CHECK_EQUAL(handler.size(), 5u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "lsd mi ngf ssd ssd-automask "); 
+	set<string> test_data = {"lncc","lsd", "mi", "ngf", "ncc", "ssd", "ssd-automask"}; 
+	test_pluginsets(C2DImageCostPluginHandler::instance().get_set(), test_data); 
 }
 
 

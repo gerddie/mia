@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE( test_parsing)
 	option["x1"] = string("value1");
 	option["x2"] = string("value2");
 
-	parts.insert(CValue("alpha", option));
+	parts.push_back(make_pair("alpha", option));
 
 	option.clear();
 
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( test_parsing)
 	option["x3"] = string("v3");
 	option["x4"] = string("v4");
 
-	parts.insert(CValue("beta", option));
+	parts.push_back(make_pair("beta", option));
 
 	option.clear();
 
@@ -92,10 +92,10 @@ BOOST_AUTO_TEST_CASE( test_parsing)
 	option["z3"] = string("value3");
 	option["z4"] = string("v4");
 
-	parts.insert(CValue("alpha", option));
+	parts.push_back(make_pair("alpha", option));
 
 	option.clear();
-	parts.insert(CValue("gamma", option));
+	parts.push_back(make_pair("gamma", option));
 
 	string param = parts2string(parts.begin(), parts.end());
 	CComplexOptionParser scanner(param);
@@ -133,4 +133,33 @@ BOOST_AUTO_TEST_CASE( test_parsing_exponents )
 	auto a = part->second.find("c"); 
 	BOOST_CHECK( a != part->second.end()); 
 	BOOST_CHECK_EQUAL(a->second, "1e+6"); 
+}
+
+BOOST_AUTO_TEST_CASE( test_parsing_chain )
+{
+	const char *paramstr="ssd:c=[1e+6]+mi:b=12,c=3";
+	CComplexOptionParser scanner(paramstr);
+	BOOST_REQUIRE(scanner.size() == 2);
+
+	auto part = scanner.begin();
+
+	BOOST_CHECK_EQUAL(part->first, "ssd");
+	BOOST_CHECK_EQUAL(part->second.size(), 1);
+	auto a = part->second.find("c"); 
+	BOOST_CHECK( a != part->second.end()); 
+	BOOST_CHECK_EQUAL(a->second, "1e+6"); 
+
+	++part; 
+
+	BOOST_CHECK_EQUAL(part->first, "mi");
+	BOOST_CHECK_EQUAL(part->second.size(), 2);
+	a = part->second.find("c"); 
+	BOOST_REQUIRE( a != part->second.end()); 
+	BOOST_CHECK_EQUAL(a->second, "3"); 
+
+
+	a = part->second.find("b"); 
+	BOOST_REQUIRE( a != part->second.end()); 
+	BOOST_CHECK_EQUAL(a->second, "12"); 
+	
 }

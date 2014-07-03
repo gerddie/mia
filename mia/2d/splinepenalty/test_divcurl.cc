@@ -32,7 +32,7 @@ PrepareTestPluginPath plugin_path_init;
 
 BOOST_AUTO_TEST_CASE( test_divcurl_cost ) 
 {
-	C2DDivcurlSplinePenalty  penalty(1.0, 1.0, 1.0); 
+	C2DDivcurlSplinePenalty  penalty(1.0, false, 1.0, 1.0); 
 
 	C2DBounds size(31,31); 
 	C2DFVector range(8,8); 
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost )
 
 BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_weight ) 
 {
-	C2DDivcurlSplinePenalty  penalty(.5, 1.0, 1.0); 
+	C2DDivcurlSplinePenalty  penalty(.5, false, 1.0, 1.0); 
 
 	C2DBounds size(31,31); 
 	C2DFVector range(8,8); 
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_weight )
 
 BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_div_weight ) 
 {
-	C2DDivcurlSplinePenalty  penalty(1.0, 0.5, 1.0); 
+	C2DDivcurlSplinePenalty  penalty(1.0, false, 0.5, 1.0); 
 
 	C2DBounds size(31,31); 
 	C2DFVector range(8,8); 
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_div_weight )
 
 BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_curl_weight ) 
 {
-	C2DDivcurlSplinePenalty  penalty(1.0, 1.0, 0.5); 
+	C2DDivcurlSplinePenalty  penalty(1.0, false, 1.0, 0.5); 
 
 	C2DBounds size(31,31); 
 	C2DFVector range(8,8); 

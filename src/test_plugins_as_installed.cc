@@ -35,14 +35,14 @@ struct PluginTestFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_C3DFullCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "image", "taggedssd"}; 
+	set<string> test_data = { "image", "maskedimage", "taggedssd"}; 
 
 	test(C3DFullCostPluginHandler::instance().get_set(), test_data); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_C3DImageCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "ngf", "mi", "ssd", "ssd-automask"};
+	set<string> test_data = { "lncc", "ncc", "ngf", "mi", "ssd", "ssd-automask"};
 	test(C3DImageCostPluginHandler::instance().get_set(), test_data); 
 }
 
@@ -51,9 +51,9 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 	set<string> test_data = {
 		"binarize", "bandpass", "combiner", "convert","close", "crop", "dilate", "distance", "downscale", 
 		"erode", "gauss", "gradnorm", "growmask", "invert", "isovoxel", "kmeans",  
-		"label", "load", "lvdownscale", "mask", "median", "mlv", "open",  "resize",
+		"label", "load", "lvdownscale", "mask", "mean", "median", "mlv", "msnormalizer", "open",  "resize",
 		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", 
-		"transform", "ws" 
+		"transform", "variance", "ws" 
 	}; 
 	
 	test(C3DFilterPluginHandler::instance().get_set(), test_data); 
@@ -103,7 +103,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageCreatorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DTransformCreatorHandler,PluginTestFixture) 
 {
 	set<string> test_data = { 
-		"affine", "rigid", "spline", "translate", "rotation", "vf"
+		"affine", "axisrot", "raffine", "rigid", "spline", "translate", "rotation", "vf"
 	}; 
 	test(C3DTransformCreatorHandler::instance().get_set(), test_data); 
 }
@@ -177,7 +177,7 @@ BOOST_FIXTURE_TEST_CASE(test_CMeshIOPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_CMinimizerPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"gsl", "gdsq", "nlopt"
+		"gdas", "gsl", "gdsq", "nlopt"
 	}; 
 	test(CMinimizerPluginHandler::instance().get_set(), test_data); 
 }
@@ -217,7 +217,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DVFIOPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DFullCostPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"image"
+		"image", "maskedimage"
 	}; 
 	
 	test(C2DFullCostPluginHandler::instance().get_set(), test_data); 
@@ -226,7 +226,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFullCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DImageCostPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data =  {
-		"lsd", "ssd", "mi", "ngf", "ssd-automask"
+		"lncc", "ncc", "lsd", "ssd", "mi", "ngf", "ssd-automask"
 	}; 
 	test(C2DImageCostPluginHandler::instance().get_set(), test_data); 
 }

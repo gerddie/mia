@@ -46,9 +46,10 @@ public:
 	
 	/**
 	   Constructor that sets the weight of the penalty term 
-	   \param weight 
+	   @param weight 
+    	   @param normalize 
 	 */
-	C3DSplineTransformPenalty(double weight); 
+	C3DSplineTransformPenalty(double weight, bool normalize); 
 
 	C3DSplineTransformPenalty(const C3DSplineTransformPenalty& org) = delete; 
 	C3DSplineTransformPenalty& operator = (const C3DSplineTransformPenalty& org) = delete; 
@@ -98,6 +99,8 @@ protected:
 
 	double get_weight() const; 
 
+	bool get_normalize() const; 
+
 private:
 
  	virtual void do_initialize() = 0; 
@@ -109,6 +112,7 @@ private:
 	virtual C3DSplineTransformPenalty *do_clone() const  = 0;
 
 	double m_weight; 
+	bool m_normalize; 
 
 	C3DBounds m_size;
 	C3DFVector m_range; 
@@ -123,9 +127,10 @@ public:
 	C3DSplineTransformPenaltyPlugin(char const * const  name); 
 private: 
 	virtual Product *do_create() const __attribute__((warn_unused_result));
-	virtual Product *do_create(float weight) const __attribute__((warn_unused_result)) = 0 ;
+	virtual Product *do_create(float weight, bool normalize) const __attribute__((warn_unused_result)) = 0 ;
 
 	float m_weight; 
+	bool m_normalize; 
 }; 
 
 

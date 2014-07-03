@@ -70,7 +70,7 @@ CComplexOptionParser::CComplexOptionParser(const string& param)
 			options.insert(next_option);
 		}
 		cvdebug() << "CComplexOptionParser: add '" << part.first << "'\n";
-		m_Parts.insert(CParts::value_type(part.first, options));
+		m_Parts.push_back(make_pair(part.first, options));
 
 		++i;
 	}

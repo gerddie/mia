@@ -49,6 +49,7 @@ SET(MIA3D_SRC
   landmark.cc
   landmarklist.cc
   landmarklistio.cc
+  maskedcost.cc
   model.cc
   multicost.cc
   nfg.cc 
@@ -100,6 +101,7 @@ SET(MIA3D_HEADERS
   landmark.hh
   landmarklist.hh
   landmarklistio.hh
+  maskedcost.hh
   matrix.hh
   model.hh
   multicost.hh
@@ -234,6 +236,7 @@ ADD_SUBDIRECTORY(filter   )
 ADD_SUBDIRECTORY(fifof    )
 ADD_SUBDIRECTORY(fullcost )
 ADD_SUBDIRECTORY(io       )
+ADD_SUBDIRECTORY(maskedcost )
 ADD_SUBDIRECTORY(reg3d    )
 ADD_SUBDIRECTORY(shapes   )
 ADD_SUBDIRECTORY(splinepenalty  )

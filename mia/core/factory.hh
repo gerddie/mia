@@ -154,6 +154,9 @@ private:
 
 	mutable TProductCache<ProductPtr> m_cache; 
 
+	template <typename Handler, typename Chained, bool chainable> 
+		friend struct create_plugin; 
+
 }; 
 
 /*
@@ -240,6 +243,80 @@ std::string TFactoryPluginHandler<I>::do_get_handler_type_string() const
 {
 	return "factory"; 
 }
+
+template <typename Handler, typename Chained, bool chainable> 
+struct create_plugin {
+	typedef typename Handler::Product Product; 
+	static Product *apply(const Handler& h, const CComplexOptionParser& param_list, const std::string& params) {
+		if (param_list.size() > 1) {
+			throw create_exception<std::invalid_argument>( "Factory " , h.get_descriptor(), 
+								       ": No chaining supported but ", param_list.size(), 
+								       " plugin descriptors were given. "
+								       "If the description contains a '+' sign as part "
+								       "of a parameter you must protect it by enclosing the "
+								       "value in square brackets like this: [1e+6]");
+		}
+		
+		cvdebug() << "TFactoryPluginHandler<P>::produce use '" << param_list.begin()->first << "'\n"; 
+		const std::string& factory_name = param_list.begin()->first; 
+		
+		if (factory_name == plugin_help) {
+			cvdebug() << "print help\n"; 
+			cvmsg() << "\n"; 
+			h.print_help(cverb);
+			return nullptr; 
+		}
+		
+		cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
+		
+		auto factory = h.plugin(factory_name.c_str());
+		if (!factory) 
+			throw create_exception<std::invalid_argument>("Unable to find plugin for '", factory_name.c_str(), "'");
+		return factory->create(param_list.begin()->second,params.c_str());
+	}
+}; 
+
+template <typename Handler, typename ProductChained> 
+struct create_plugin<Handler, ProductChained, true> {
+	typedef typename Handler::Product Product; 
+	
+	static Product *apply(const Handler& h, const CComplexOptionParser& param_list, const std::string& params) {
+		
+		if (param_list.size() == 1) 
+			return create_plugin<Handler, ProductChained, false>::apply(h, param_list, params); 
+
+		ProductChained *result = new ProductChained();
+		try {
+			for (auto ipl = param_list.begin(); ipl != param_list.end(); ++ipl) {
+				
+				const std::string& factory_name = ipl->first; 
+				cvdebug() << "TFactoryPluginHandler<P>::produce use '" << factory_name << "\n"; 
+				
+				if (factory_name == plugin_help) {
+					cvdebug() << "print help\n"; 
+					cvmsg() << "\n"; 
+					h.print_help(cverb);
+					return nullptr; 
+				}
+				
+				auto factory = h.plugin(factory_name.c_str());
+				if (!factory) {
+					throw create_exception<std::invalid_argument>("Unable to find plugin for '", factory_name.c_str(), "'");
+				}
+				
+				auto r = factory->create(ipl->second,params.c_str());
+				result->push_back(typename Product::Pointer(r)); 
+			}
+			result->set_init_string(params.c_str()); 
+		}
+		catch (std::exception& x) {
+			delete result; 
+			throw x; 
+		}
+		return result; 
+	}
+}; 
+
 	
 template <typename  I>
 typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& params)const
@@ -258,24 +335,10 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& pa
 		      "Supported plug-ins are '" , this->get_plugin_names() , "'. " 
 		      "Set description to 'help' for more information."); 
 	}
-		
-	cvdebug() << "TFactoryPluginHandler<P>::produce use '" << param_list.begin()->first << "'\n"; 
-	const std::string& factory_name = param_list.begin()->first; 
-	
-	if (factory_name == plugin_help) {
-		cvdebug() << "print help\n"; 
-		cvmsg() << "\n"; 
-		this->print_help(cverb);
-		return NULL; 
-	}
 
-	cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
-
-	auto factory = this->plugin(factory_name.c_str());
-	if (!factory) 
-		throw create_exception<std::invalid_argument>("Unable to find plugin for '", factory_name.c_str(), "'");
-	return factory->create(param_list.begin()->second,params.c_str());
-
+	return create_plugin<TFactoryPluginHandler<I>, 
+			     typename plugin_can_chain<I>::Chained, 
+			     plugin_can_chain<I>::value>::apply(*this, param_list, params); 
 }
 
 /**     

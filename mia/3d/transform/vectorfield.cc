@@ -443,11 +443,5 @@ const std::string C3DGridTransformCreatorPlugin::do_get_descr() const
 		"each point of the grid defining the domain of the transformation.";
 }
 
-extern "C" EXPORT CPluginBase *get_plugin_interface()
-{
-	return new C3DGridTransformCreatorPlugin();
-}
-
-
 
 NS_MIA_END

@@ -34,19 +34,19 @@ double FEvaluator::operator()(const mia::C3DFVector& src, const mia::C3DFVector&
 	return cost(src, ref); 
 }
 
-C3DFMatrix FEvaluator::get_gradient(C3DFVectorfield::const_range_iterator& irsrc, int nx, int nxy) const
+C3DFMatrix FEvaluator::get_gradient(field_range_iterator& irsrc, int nx, int nxy) const
 {
 	cvdebug() << irsrc.get_boundary_flags() << "\n"; 
 	C3DFMatrix result; 
 	C3DFVectorfield::const_iterator isrc = irsrc.get_point(); 
 	
-	if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_x))
+	if (! (irsrc.get_boundary_flags() & field_range_iterator::eb_x))
 		result.x = 0.5 * (isrc[1] - isrc[-1]); 
 	
-	if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_y))
+	if (! (irsrc.get_boundary_flags() & field_range_iterator::eb_y))
 		result.y = 0.5 * (isrc[nx] - isrc[-nx]); 
 	
-	if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_z))
+	if (! (irsrc.get_boundary_flags() & field_range_iterator::eb_z))
 		result.z = 0.5 * (isrc[nxy] - isrc[-nxy]); 
 
 	cvdebug() << irsrc.get_boundary_flags() << "\n"; 
@@ -63,7 +63,7 @@ double FScalar::cost(const C3DFVector& src, const C3DFVector& ref) const
 
 
 
-C3DFVector  FScalar::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
+C3DFVector  FScalar::grad (int nx, int nxy, field_range_iterator& irsrc,
 			   const C3DFVector& ref, double& cost) const	
 {
 	double d = dot(*irsrc,ref);
@@ -77,7 +77,7 @@ double FCross::cost(const C3DFVector& src, const C3DFVector& ref) const
 	return d.norm2(); 
 }
 
-C3DFVector  FCross::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
+C3DFVector  FCross::grad (int nx, int nxy, field_range_iterator& irsrc,
 	      const C3DFVector& ref, double& cost) const 
 {
 	C3DFVector d = cross(*irsrc, ref);
@@ -114,7 +114,7 @@ double FDeltaScalar::cost (const C3DFVector& src, const C3DFVector& ref) const
 	return dot(dh.delta, dh.delta); 
 }
 
-C3DFVector FDeltaScalar::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
+C3DFVector FDeltaScalar::grad (int nx, int nxy, field_range_iterator& irsrc,
 			     const C3DFVector& ref, double& cost) const
 {
 	DotHelper dh(*irsrc, ref); 
@@ -167,8 +167,9 @@ double C3DNFGImageCost::do_evaluate_force(const mia::C3DImage& a,
 	const int nx = ng_a.get_size().x; 
 	const int nxy = nx * ng_a.get_size().y; 
 	
-	auto ia = ng_a.begin_range(C3DBounds::_0, ng_a.get_size()); 
-	auto ie = ng_a.end_range(C3DBounds::_0, ng_a.get_size()); 
+	auto  ia = ng_a.begin_range(C3DBounds::_0, ng_a.get_size()).with_boundary_flag(); 
+	auto  ie = ng_a.end_range(C3DBounds::_0, ng_a.get_size()).with_boundary_flag(); 
+	
 	auto ib = m_ng_ref.begin_range(C3DBounds::_0, m_ng_ref.get_size()); 
 	auto iforce = force.begin_range(C3DBounds::_0, force.get_size()); 
 

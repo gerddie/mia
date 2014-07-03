@@ -27,12 +27,19 @@
 
 NS_MIA_BEGIN
 
+C2DTransformIOPluginHandlerImpl::C2DTransformIOPluginHandlerImpl()
+{
+	TTranslator<C2DFVector>::register_for(C2DTransformation::input_spacing_attr);
+	TTranslator<C2DFVector>::register_for(C2DTransformation::output_spacing_attr);
+}
+
+
 template <> const char *  const 
 	TPluginHandler<C2DTransformationIO>::m_help =  
        "These plug-ins implement the support for loading and storing 2D transformations to various file types.";
 
 template class TIOPlugin<C2DTransformation>;
-template class THandlerSingleton<TIOPluginHandler<C2DTransformationIO> >;
+template class THandlerSingleton<C2DTransformIOPluginHandlerImpl>;
 template class TIOPluginHandler<C2DTransformationIO>;
 template class TPluginHandler<C2DTransformationIO>;
 

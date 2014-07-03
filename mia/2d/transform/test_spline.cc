@@ -20,7 +20,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <mia/internal/autotest.hh>
 
 #include <mia/core/spacial_kernel.hh>
 #include <mia/2d/interpolator.hh>

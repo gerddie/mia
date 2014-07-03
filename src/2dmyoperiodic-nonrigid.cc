@@ -123,6 +123,8 @@ public:
 		size_t mg_levels; 
 		size_t max_candidates; 
 		bool save_ref; 
+		int global_reference; 
+		size_t max_delta; 
 	};
 
 	C2DMyocardPeriodicRegistration(const RegistrationParams& params); 
@@ -186,16 +188,20 @@ vector<size_t>  C2DMyocardPeriodicRegistration::get_high_contrast_candidates(con
 
 vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DImageSeries& images) 
 {
-	cvmsg() << "estimate prealigned subset ...\n"; 
-	vector<size_t> candidates = get_high_contrast_candidates(images, 20, images.size()-2); 
-	assert(!candidates.empty()); 
+	vector<size_t> candidates; 
+	if (m_params.global_reference < 0) {
+		cvmsg() << "estimate prealigned subset ...\n"; 
+		candidates = get_high_contrast_candidates(images, 20, images.size()-2); 
+		assert(!candidates.empty()); 
+	}else
+		candidates.push_back(m_params.global_reference); 
 
-	C2DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0]); 
+	C2DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0], m_params.max_delta); 
 	m_ref = candidates[0]; 	
 
 	// the skip values should be parameters 
 	for (size_t i = 1; i < candidates.size(); ++i) {
-		C2DSimilarityProfile sp(m_params.series_select_cost, images, candidates[i]); 
+		C2DSimilarityProfile sp(m_params.series_select_cost, images, candidates[i], m_params.max_delta); 
 		if (sp.get_peak_frequency() > best_series.get_peak_frequency()) {
 			m_ref = candidates[i]; 
 			best_series = sp; 
@@ -313,7 +319,9 @@ size_t C2DMyocardPeriodicRegistration::get_ref_idx()const
 C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
 	mg_levels(3),
 	max_candidates(20), 
-	save_ref(false)
+	save_ref(false), 
+	global_reference(-1), 
+	max_delta(0)
 {
 }
 
@@ -326,6 +334,7 @@ int do_main( int argc, char *argv[] )
 	string reference_index_file; 
 
 	size_t skip = 0; 
+
 	
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
@@ -351,14 +360,18 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt(params.series_select_cost, "image:cost=[ngf:eval=ds]", "cost-series", 'S',
 				   "Const function to use for the analysis of the series")); 
 	options.add(make_opt(reference_index_file, "ref-idx", 0, 
-				   "save reference index number to this file"));  
+				   "save reference index number to this file")); 
 
+	options.add(make_opt(params.global_reference, "global-reference", 'R', 
+				   "save reference index number to this file")); 
+	options.add(make_opt(params.max_delta, "max-subset-delta", 'D', 
+			     "Maximum delta between two elements of the prealigned subset")); 
 
 	options.set_group("\nRegistration"); 
 
 
 	options.add(make_opt( params.minimizer, "gsl:opt=gd,step=0.01", "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( params.refinement_minimizer, "", "refiner", 'R', "optimizer used for additional minimization"));
+	options.add(make_opt( params.refinement_minimizer, "", "refiner", 0, "optimizer used for additional minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( params.transform_creator, "spline:rate=16,penalty=[divcurl:weight=0.01]", "transForm", 'f', 
@@ -383,6 +396,14 @@ int do_main( int argc, char *argv[] )
 	}
 
 	C2DImageSeries series(in_images.begin() + skip, in_images.end()); 
+
+	if (params.global_reference >= 0) {
+		unsigned gr = params.global_reference; 
+		if (gr <= skip || gr >= in_images.size()) 
+			throw create_exception<invalid_argument>("Invalid global reference ",  params.global_reference, 
+								 " should be in [", skip, ", ",  in_images.size(), ")"); 
+		params.global_reference -= skip; 
+	}
 
 	C2DMyocardPeriodicRegistration mpr(params); 
 	vector<P2DTransformation> transforms = mpr.run(series);

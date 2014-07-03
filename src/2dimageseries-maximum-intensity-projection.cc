@@ -47,8 +47,8 @@ struct C2DMax : public TFilter<bool> {
 	{
 	}
 
-	template <typename T, typename S>
-	bool operator ()(T2DImage<T>& inout, const T2DImage<S>& image) const 
+	template <typename T>
+	bool operator ()(const T2DImage<T>& image, T2DImage<T>& inout) const 
 	{
 		if (image.get_size() != inout.get_size())
 			throw invalid_argument("Input images differ in size");
@@ -93,13 +93,12 @@ int do_main( int argc, char *argv[] )
 	C2DMax max_op; 
 
         P2DImage result = load_image2d(options.get_remaining()[0]); 
-        
 
 
 	for (auto iname = options.get_remaining().begin() + 1; iname != options.get_remaining().end(); ++iname) {
                 auto image = load_image2d(*iname); 
                 cvmsg() << "Combine image '" << *iname << new_line; 
-                mia::combine_inplace(max_op, *result, *image); 
+                mia::filter_equal_inplace(max_op, *image, *result); 
 	}
 	cvmsg() << "\n";
 

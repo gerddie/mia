@@ -29,21 +29,22 @@ NS_BEGIN(ngf_3dimage_cost)
 
 class FEvaluator {
 public:
+	typedef mia::C3DFVectorfield::const_range_iterator_with_boundary_flag field_range_iterator; 
 	typedef double result_type; 
         virtual ~FEvaluator(){};
 	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const = 0;
-	virtual mia::C3DFVector grad(int nx, int nxy, mia::C3DFVectorfield::const_range_iterator isrc,
+	virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
 				     const mia::C3DFVector& ref, double& cost) const = 0;
 
 	double operator()(const mia::C3DFVector& src, const mia::C3DFVector& ref) const; 
 protected:
-	mia::C3DFMatrix get_gradient(mia::C3DFVectorfield::const_range_iterator& isrc, int nx, int nxy) const; 
+	mia::C3DFMatrix get_gradient(field_range_iterator& isrc, int nx, int nxy) const; 
 };
 
 class FScalar: public FEvaluator {
 public:
 	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const;
-	virtual mia::C3DFVector grad(int nx, int nxy, mia::C3DFVectorfield::const_range_iterator isrc,
+	virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
 				     const mia::C3DFVector& ref, double& cost) const;
 };
 
@@ -51,14 +52,14 @@ class FCross: public FEvaluator {
 public:
 	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const; 
 	
-	virtual mia::C3DFVector grad(int nx, int nxy, mia::C3DFVectorfield::const_range_iterator isrc,
+	virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
 				     const mia::C3DFVector& ref, double& cost) const;
 };
 
 class FDeltaScalar: public FEvaluator {
 public:
 	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const; 
-	virtual mia::C3DFVector grad(int nx, int nxy, mia::C3DFVectorfield::const_range_iterator isrc,
+	virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
 				     const mia::C3DFVector& ref, double& cost) const; 
 };
 
