@@ -66,6 +66,29 @@ void C3DImage::set_orientation(const C3DOrientationAndPosition& orient)
 	set_attribute("orientation", PAttribute(new C3DImageOrientationPositionAttribute(orient))); 
 }
 
+void C3DImage::set_voxel_size(const C3DFVector& voxel)
+{
+	set_attribute("voxel", PAttribute(new CVoxelAttribute(voxel)));
+}
+
+C3DFVector C3DImage::get_voxel_size() const
+{
+	const PAttribute attr = get_attribute("voxel");
+	if (!attr) {
+		cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size not defined, default to <1,1,1>\n";
+		return C3DFVector(1,1,1);
+	}
+
+	const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
+	if (!vs){
+		cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size wrong type, default to <1,1,1>\n";
+		return C3DFVector(1,1,1);
+	}
+
+	return *vs;
+}
+
+
 template <typename T>
 T3DImage<T>::T3DImage(const C3DBounds& size, const T* init_data):
 	C3DImage((EPixelType)pixel_type<T>::value),
@@ -216,30 +239,6 @@ const C3DBounds& T3DImage<T>::get_size() const
 	return m_image.get_size();
 }
 
-template <class T>
-void T3DImage<T>::set_voxel_size(const C3DFVector& voxel)
-{
-	set_attribute("voxel", PAttribute(new CVoxelAttribute(voxel)));
-}
-
-template <class T>
-C3DFVector T3DImage<T>::get_voxel_size() const
-{
-	const PAttribute attr = get_attribute("voxel");
-	if (!attr) {
-		cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size not defined, default to <1,1,1>\n";
-		return C3DFVector(1,1,1);
-	}
-
-	const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
-	if (!vs){
-		cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size wrong type, default to <1,1,1>\n";
-		return C3DFVector(1,1,1);
-	}
-
-	return *vs;
-
-}
 
 struct FGetGradient3D: public TFilter< C3DFVectorfield> {
 	template <typename T>

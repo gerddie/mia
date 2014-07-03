@@ -93,10 +93,10 @@ public:
 
 	///  \returns the voxel size in world units
 
-	virtual C3DFVector get_voxel_size() const = 0;
+	C3DFVector get_voxel_size() const;
 
 	/// set the voxel size on world units
-	virtual void set_voxel_size(const C3DFVector& voxel) = 0;
+	void set_voxel_size(const C3DFVector& voxel);
 
 	///@returns the orientation of the image 
 	C3DOrientationAndPosition get_orientation() const;
@@ -329,12 +329,6 @@ public:
 
 	/// \returns the 3D size of the image
 	virtual const C3DBounds& get_size() const;
-
-	/// \returns the physical voxel size 
-	virtual C3DFVector get_voxel_size() const;
-
-	/// set the voxel size on world units
-	virtual void set_voxel_size(const C3DFVector& voxel);
 
 private:
 	T3DDatafield<T> m_image;
