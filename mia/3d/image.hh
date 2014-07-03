@@ -92,11 +92,17 @@ public:
 	virtual Pointer clone() const = 0;
 
 	///  \returns the voxel size in world units
-
 	C3DFVector get_voxel_size() const;
 
 	/// set the voxel size on world units
 	void set_voxel_size(const C3DFVector& voxel);
+
+
+	///  \returns the origin i.e. world units of the pixel at (0,0,0)
+	C3DFVector get_origin() const;
+
+	/// set the origin i.e. world units  of the pixel at (0,0,0)
+	void set_origin(const C3DFVector& voxel);
 
 	///@returns the orientation of the image 
 	C3DOrientationAndPosition get_orientation() const;

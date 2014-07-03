@@ -76,17 +76,43 @@ C3DFVector C3DImage::get_voxel_size() const
 	const PAttribute attr = get_attribute("voxel");
 	if (!attr) {
 		cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size not defined, default to <1,1,1>\n";
-		return C3DFVector(1,1,1);
+		return C3DFVector::_1;
 	}
 
 	const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
 	if (!vs){
 		cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size wrong type, default to <1,1,1>\n";
-		return C3DFVector(1,1,1);
+		return C3DFVector::_1;
 	}
 
 	return *vs;
 }
+
+
+C3DFVector C3DImage::get_origin() const 
+{
+	const PAttribute attr = get_attribute("origin3d");
+	if (!attr) {
+		cvinfo() << "T3DImage<T>::get_origin(): Origin size not defined, default to <0,0,0>\n";
+		return C3DFVector::_0;
+	}
+
+	const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
+	if (!vs){
+		cvinfo() << "T3DImage<T>::get_origin(): voxel size wrong type, default to <0,0,0>\n";
+		return C3DFVector::_0;
+	}
+
+	return *vs;
+}
+
+
+
+void C3DImage::set_origin(const C3DFVector& voxel) 
+{
+	set_attribute("origin3d", PAttribute(new CVoxelAttribute(voxel)));
+}
+
 
 
 template <typename T>
