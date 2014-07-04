@@ -39,6 +39,8 @@ public:
 
 class C3DQuaternionRotation: public C3DRotation {
 
+public: 
+        C3DQuaternionRotation(const std::string& s); 
         C3DQuaternionRotation(const Quaternion& q); 
         
         virtual C3DDMatrix as_matrix_3x3() const;
@@ -51,7 +53,8 @@ private:
 }; 
 
 class C3DMatrix3x3Rotation: public C3DRotation {
-
+public: 
+        C3DMatrix3x3Rotation(const std::string& s);
         C3DMatrix3x3Rotation(const C3DDMatrix& q); 
         
         virtual C3DDMatrix as_matrix_3x3() const;
