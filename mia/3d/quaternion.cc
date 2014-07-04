@@ -38,7 +38,11 @@ Quaternion::Quaternion():
 {
 }
 
-Quaternion::Quaternion(const C3DFMatrix& m)
+Quaternion::Quaternion(const C3DFMatrix& m):Quaternion(C3DDMatrix(m))
+{
+}
+
+Quaternion::Quaternion(const C3DDMatrix& m)
 {
 	const double m00 = (m.x.x - m.y.y - m.z.z) / 3.0; 
 	const double m01 = (m.y.x + m.x.y) / 3.0; 

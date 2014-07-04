@@ -68,6 +68,14 @@ public:
 	Quaternion(const C3DFMatrix& rot); 
 
 	/**
+	   This constructor creates a quaternion from a 3x3 rotation matrix. 
+	   If mat3x3 is not a true rotation matrix, then this constructor evaluates the 
+	   rotation quaternion that best resembles the matrix transformation.
+	   \param rot
+	*/
+	Quaternion(const C3DDMatrix& rot); 
+
+	/**
 	   Constructor to create a quaternion by directly setting its elements. 
 	 */
 	Quaternion(double w, double  x, double y, double z); 
