@@ -179,7 +179,10 @@ static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname)
 	double sp[3]; 
 	vtk_image->GetSpacing (sp); 
 	result_image->set_voxel_size(C3DFVector(sp[0], sp[1], sp[2])); 
-
+	
+	vtk_image->GetOrigin (sp); 
+	result_image->set_origin(C3DFVector(sp[0], sp[1], sp[2])); 
+	
 	return result_image; 
 }
 
@@ -265,7 +268,9 @@ private:
 static vtkSmartPointer<vtkImageData> image_mia_to_vtk(const C3DImage& mia_image) 
 {
 	auto outimage = vtkSmartPointer<vtkImageData>::New();
-	outimage->SetOrigin(0,0,0); 
+	auto origin = mia_image.get_origin(); 
+
+	outimage->SetOrigin(origin.x,origin.y,origin.z); 
 	auto dx = mia_image.get_voxel_size(); 
 	outimage->SetSpacing(dx.x, dx.y, dx.z); 
 	outimage->SetDimensions(mia_image.get_size().x, mia_image.get_size().y, mia_image.get_size().z); 

@@ -68,6 +68,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
 	while (iv != ev)
 		*iv++ = i++;
 	pimage->set_voxel_size(voxel); 
+	pimage->set_origin(C3DFVector(10,20,30)); 
 
 	CVtk3DImageIOPlugin io; 
         CVtk3DImageIOPlugin::Data images;
@@ -130,6 +131,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_xml_write_read, T, type_xml )
 	C3DFVector voxel(2.0,3.0,4.0); 
 	pimage->set_voxel_size(voxel); 
 
+	pimage->set_origin(C3DFVector(10,20,30)); 
+
 	CVtkXML3DImageIOPlugin io; 
         CVtkXML3DImageIOPlugin::Data images;
         images.push_back(pimage); 
@@ -191,7 +194,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_mhd_write_read, T, type_mhd )
 	C3DFVector voxel(2.0,3.0,4.0); 
 	pimage->set_voxel_size(voxel); 
        
-
+	pimage->set_origin(C3DFVector(10,20,30)); 
+	
 	CMhd3DImageIOPlugin io; 
         CMhd3DImageIOPlugin::Data images;
         images.push_back(pimage); 
