@@ -203,7 +203,7 @@ Quaternion Quaternion::inverse() const
 }
 
 
-const C3DFMatrix Quaternion::get_rotation_matrix() const
+const C3DDMatrix Quaternion::get_rotation_matrix() const
 {
 	const double a2 = m_w   * m_w;
 	const double b2 = m_v.x * m_v.x;
@@ -217,9 +217,9 @@ const C3DFMatrix Quaternion::get_rotation_matrix() const
 	const double cd = 2.0 * m_v.y * m_v.z; 
 	const double ab = 2.0 * m_w * m_v.x; 
 	
-	return C3DFMatrix(C3DFVector(a2 + b2 - c2 - d2, bc - ad, bd + ac), 
-			  C3DFVector(bc + ad, a2 - b2 + c2 - d2, cd - ab), 
-			  C3DFVector(bd - ac, cd + ab, a2 - b2 - c2 + d2));
+	return C3DDMatrix(C3DDVector(a2 + b2 - c2 - d2, bc - ad, bd + ac), 
+			  C3DDVector(bc + ad, a2 - b2 + c2 - d2, cd - ab), 
+			  C3DDVector(bd - ac, cd + ab, a2 - b2 - c2 + d2));
 	
 }
 

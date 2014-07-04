@@ -200,7 +200,7 @@ void CAffinTransformMatrix::transform_centered(const C3DFMatrix& m, const C3DFVe
 
 void CAffinTransformMatrix::rotate(const Quaternion& q, const C3DFVector& center)
 {
-	const auto rot = q.get_rotation_matrix(); 
+	const auto rot = C3DFMatrix(q.get_rotation_matrix()); 
 	const auto shift = center - rot * center; 
 	vector<float> help(16,0.0f); 
 	

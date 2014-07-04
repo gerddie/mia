@@ -132,8 +132,7 @@ public:
 	/// \returns the z- or $x_3$ component of the quaternion 
 	double z() const; 
 
-
-	const C3DFMatrix get_rotation_matrix() const; 
+	const C3DDMatrix get_rotation_matrix() const; 
 
 	static const Quaternion _1; 
 
