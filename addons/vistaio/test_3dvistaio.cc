@@ -50,6 +50,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
 {
         C3DBounds size(2,3,4);
 	T3DImage<T> *image = new T3DImage<T>(size); 
+	image->set_voxel_size(C3DFVector(10,20,30)); 
+	image->set_origin(C3DFVector(20,30,40)); 
+	
         P3DImage pimage(image); 
 
         auto iv = image->begin(); 

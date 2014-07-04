@@ -192,6 +192,7 @@ std::string CVista3DImageIOPlugin::do_get_preferred_suffix() const
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
 	CVoxelAttributeTranslator::register_for("voxel");
+	CVoxelAttributeTranslator::register_for("origin3d");
 	C3DIntAttributeTranslator::register_for("ca");
 	C3DIntAttributeTranslator::register_for("cp");
 	return new CVista3DImageIOPlugin();
