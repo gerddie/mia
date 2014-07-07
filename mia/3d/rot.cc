@@ -37,31 +37,125 @@ static const char * c_rot_identity = "rot-identity";
 static const char * c_rot_mat = "rot-matrix"; 
 static const char * c_rot_quat = "rot-quaternion"; 
 
+
+
+class C3DRotationImpl {
+        
+public: 
+	virtual ~C3DRotationImpl(); 
+	virtual C3DRotationImpl *clone() const  __attribute__((warn_unused_result))= 0 ; 
+        virtual C3DDMatrix as_matrix_3x3() const = 0;
+        virtual Quaternion as_quaternion() const = 0; 
+        virtual std::string as_string() const = 0; 
+        
+        static C3DRotationImpl* from_string(const std::string& s) __attribute__((warn_unused_result));
+}; 
+
+class C3DQuaternionRotation: public C3DRotationImpl {
+
+public: 
+        C3DQuaternionRotation(const std::string& s); 
+        C3DQuaternionRotation(const Quaternion& q); 
+
+	
+	virtual C3DRotationImpl *clone() const  __attribute__((warn_unused_result)); 
+        virtual C3DDMatrix as_matrix_3x3() const;
+        virtual Quaternion as_quaternion() const; 
+        virtual std::string as_string() const; 
+
+private: 
+        Quaternion m_q;
+        
+}; 
+
+class C3DMatrix3x3Rotation: public C3DRotationImpl {
+public: 
+        C3DMatrix3x3Rotation(const std::string& s);
+        C3DMatrix3x3Rotation(const C3DDMatrix& q); 
+        
+	virtual C3DRotationImpl *clone() const  __attribute__((warn_unused_result)); 
+        virtual C3DDMatrix as_matrix_3x3() const;
+        virtual Quaternion as_quaternion() const; 
+        virtual std::string as_string() const; 
+
+private: 
+
+        C3DDMatrix m_matrix;
+}; 
+
+C3DRotation::C3DRotation():impl(nullptr)
+{
+}
+
+C3DRotation::~C3DRotation()
+{
+	delete impl; 
+}
+
+C3DRotation::C3DRotation(const C3DRotation& other)
+{
+	if (other.impl) 
+		impl = other.impl->clone(); 
+	else 
+		impl = nullptr; 
+}
+
+C3DRotation& C3DRotation::operator = (const C3DRotation& other)
+{
+	if (this != &other) {
+		auto old = impl; 
+		if (other.impl) 
+			impl = other.impl->clone(); 
+		else 
+			impl = nullptr;
+		delete old; 
+	}
+	return *this; 
+}
+
+C3DRotation::C3DRotation(const C3DDMatrix& m)
+{
+	impl = new C3DMatrix3x3Rotation(m); 
+}
+
+C3DRotation::C3DRotation(const Quaternion& q)
+{
+	impl = new C3DQuaternionRotation(q); 
+}
+	
+C3DRotation::C3DRotation(const std::string& s)
+{
+	impl = C3DRotationImpl::from_string(s); 
+}
+
 C3DDMatrix C3DRotation::as_matrix_3x3() const
 {
-	return C3DDMatrix::_1; 
+	return impl ? impl->as_matrix_3x3() : C3DDMatrix::_1; 
 }
 
 Quaternion C3DRotation::as_quaternion() const
 {
-	return Quaternion::_1; 
+	return impl ? impl->as_quaternion() : Quaternion::_1; 
 }
 
 string C3DRotation::as_string() const
 {
-	return string(c_rot_identity); 
+	return impl ? impl->as_string() : string(c_rot_identity); 
 }
 
-const C3DRotation C3DRotation::_1;
+const C3DRotation C3DRotation::_1; 
 
+C3DRotationImpl::~C3DRotationImpl()
+{
+}
 
-C3DRotation* C3DRotation::from_string(const std::string& s) 
+C3DRotationImpl* C3DRotationImpl::from_string(const std::string& s) 
 {
         vector<string> tockens; 
         boost::split(tockens, s ,boost::is_any_of("="));
 
 	if ((tockens.size() == 1) && !strcmp(c_rot_identity, tockens[0].c_str()))
-		return new C3DRotation();
+		return nullptr;
 	
         if (tockens.size() != 2) {
                 throw create_exception<invalid_argument>("Unable to read C3DRotation from '", 
@@ -75,6 +169,11 @@ C3DRotation* C3DRotation::from_string(const std::string& s)
                 return new C3DQuaternionRotation(tockens[1]);
 	else
                 throw create_exception<invalid_argument>("Unknown C3DRotation type '", tockens[0], "'"); 
+}
+
+C3DRotationImpl *C3DQuaternionRotation::clone() const 
+{
+	return new C3DQuaternionRotation(*this); 
 }
 
 C3DQuaternionRotation::C3DQuaternionRotation(const std::string& s)
@@ -117,6 +216,11 @@ std::string C3DQuaternionRotation::as_string() const
         ostringstream s; 
         s << c_rot_quat << "=" <<m_q; 
         return s.str(); 
+}
+
+C3DRotationImpl *C3DMatrix3x3Rotation::clone()const 
+{
+	return new C3DMatrix3x3Rotation(*this); 
 }
 
 C3DMatrix3x3Rotation::C3DMatrix3x3Rotation(const std::string& s)

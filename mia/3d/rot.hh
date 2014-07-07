@@ -27,44 +27,26 @@
 NS_MIA_BEGIN
 
 class C3DRotation {
-        
 public: 
-        virtual C3DDMatrix as_matrix_3x3() const;
-        virtual Quaternion as_quaternion() const; 
-        virtual std::string as_string() const; 
-        
-        static C3DRotation* from_string(const std::string& s) __attribute__((warn_unused_result));
+	C3DRotation(); 
+	~C3DRotation();
+	
+	C3DRotation(const C3DRotation& other); 
+	C3DRotation& operator = (const C3DRotation& other); 
+
+	C3DRotation(const C3DDMatrix& m); 
+	C3DRotation(const Quaternion& q); 
+	C3DRotation(const std::string& s); 
+
+	C3DDMatrix as_matrix_3x3() const;
+	Quaternion as_quaternion() const; 
+	std::string as_string() const; 
+
 	static const C3DRotation _1; 
-}; 
-
-class C3DQuaternionRotation: public C3DRotation {
-
-public: 
-        C3DQuaternionRotation(const std::string& s); 
-        C3DQuaternionRotation(const Quaternion& q); 
-        
-        virtual C3DDMatrix as_matrix_3x3() const;
-        virtual Quaternion as_quaternion() const; 
-        virtual std::string as_string() const; 
-
 private: 
-        Quaternion m_q;
-        
+	class C3DRotationImpl *impl;
 }; 
 
-class C3DMatrix3x3Rotation: public C3DRotation {
-public: 
-        C3DMatrix3x3Rotation(const std::string& s);
-        C3DMatrix3x3Rotation(const C3DDMatrix& q); 
-        
-        virtual C3DDMatrix as_matrix_3x3() const;
-        virtual Quaternion as_quaternion() const; 
-        virtual std::string as_string() const; 
-
-private: 
-
-        C3DDMatrix m_matrix;
-}; 
 
 NS_MIA_END
 #endif

@@ -39,51 +39,51 @@ struct RotIdentityTestFixture {
 
 BOOST_FIXTURE_TEST_CASE( test_identity_from_matrix_string, RotIdentityTestFixture) 
 {
-	unique_ptr<C3DRotation>  identity(C3DRotation::from_string("rot-matrix=1,0,0;0,1,0;0,0,1"));
+	C3DRotation  identity("rot-matrix=1,0,0;0,1,0;0,0,1");
 
-	check_matrix(identity->as_matrix_3x3()); 
+	check_matrix(identity.as_matrix_3x3()); 
 	
-	check_quaternion(identity->as_quaternion()); 
+	check_quaternion(identity.as_quaternion()); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_identity_from_quaternion_string, RotIdentityTestFixture) 
 {
-	unique_ptr<C3DRotation>  identity(C3DRotation::from_string("rot-quaternion=1,0,0,0"));
+	C3DRotation  identity("rot-quaternion=1,0,0,0");
 
-	check_matrix(identity->as_matrix_3x3()); 
+	check_matrix(identity.as_matrix_3x3()); 
 	
-	check_quaternion(identity->as_quaternion()); 
+	check_quaternion(identity.as_quaternion()); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_base_from_string, RotIdentityTestFixture) 
 {
-	unique_ptr<C3DRotation>  identity(C3DRotation::from_string("rot-identity"));
-	check_matrix(identity->as_matrix_3x3()); 
-	check_quaternion(identity->as_quaternion()); 
+	C3DRotation  identity("rot-identity");
+	check_matrix(identity.as_matrix_3x3()); 
+	check_quaternion(identity.as_quaternion()); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_matrix_to_from_string, RotIdentityTestFixture) 
 {
 	Quaternion q(0.5,0.5,0.5,0.5); 
-	C3DMatrix3x3Rotation mr(q.get_rotation_matrix()); 
+	C3DRotation mr(q.get_rotation_matrix()); 
 	
-	unique_ptr<C3DRotation>  rmr(C3DRotation::from_string(mr.as_string()));
+	C3DRotation  rmr(mr.as_string());
 
-	check_matrix(rmr->as_matrix_3x3(), mr.as_matrix_3x3()); 
+	check_matrix(rmr.as_matrix_3x3(), mr.as_matrix_3x3()); 
 	
-	check_quaternion(rmr->as_quaternion(), q); 
+	check_quaternion(rmr.as_quaternion(), q); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_quaternion_to_from_string, RotIdentityTestFixture) 
 {
 	Quaternion q(0.5,0.5,0.5,0.5); 
-	C3DQuaternionRotation qr(q); 
+	C3DRotation qr(q); 
 	
-	unique_ptr<C3DRotation>  rqr(C3DRotation::from_string(qr.as_string()));
+	C3DRotation  rqr(qr.as_string());
 
-	check_matrix(rqr->as_matrix_3x3(), qr.as_matrix_3x3()); 
+	check_matrix(rqr.as_matrix_3x3(), qr.as_matrix_3x3()); 
 	
-	check_quaternion(rqr->as_quaternion(), q); 
+	check_quaternion(rqr.as_quaternion(), q); 
 }
 
 
