@@ -21,12 +21,13 @@
 #ifndef mia_3d_rot_hh
 #define mia_3d_rot_hh
 
+#include <mia/core/attributes.hh>
 #include <mia/3d/quaternion.hh>
 #include <mia/3d/matrix.hh>
 
 NS_MIA_BEGIN
 
-class C3DRotation {
+class EXPORT_3D C3DRotation {
 public: 
 	C3DRotation(); 
 	~C3DRotation();
@@ -43,9 +44,34 @@ public:
 	std::string as_string() const; 
 
 	static const C3DRotation _1; 
+
 private: 
 	class C3DRotationImpl *impl;
 }; 
+
+
+
+
+template <>
+struct attribute_type<C3DRotation>  {
+        static const int value = 0x4000;
+}; 
+
+template <>
+struct dispatch_attr_string<C3DRotation> {
+	static std::string val2string(const C3DRotation& value) {
+		return value.as_string();
+	}
+	static C3DRotation string2val(const std::string& str) {
+		return C3DRotation(str); 
+	}
+}; 
+
+
+EXPORT_3D bool operator == (const C3DRotation& lhs, const C3DRotation& rhs); 
+EXPORT_3D bool operator < (const C3DRotation& lhs, const C3DRotation& rhs); 
+
+typedef TAttribute<C3DRotation> C3DRotationAttribute; 
 
 
 NS_MIA_END

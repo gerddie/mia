@@ -277,4 +277,25 @@ std::string C3DMatrix3x3Rotation::as_string() const
         return s.str(); 
 }
 
+EXPORT_3D bool operator == (const C3DRotation& lhs, const C3DRotation& rhs)
+{
+	return lhs.as_quaternion() == rhs.as_quaternion(); 
+}
+
+EXPORT_3D bool operator < (const C3DRotation& lhs, const C3DRotation& rhs) 
+{
+	auto qlhs = lhs.as_quaternion(); 
+	auto qrhs = rhs.as_quaternion(); 
+
+	return qlhs.w() < qrhs.w() || 
+		(qlhs.w() == qrhs.w() && 
+		 (qlhs.z() < qrhs.z() || 
+		  (qlhs.z() == qrhs.z() && 
+		   ( qlhs.y() < qrhs.y() || 
+		     ( qlhs.y() == qrhs.y() && qlhs.x() < qrhs.x()))))); 
+		  
+}
+
+template class EXPORT_3D TAttribute<C3DRotation>; 
+
 NS_MIA_END

@@ -46,6 +46,31 @@ BOOST_FIXTURE_TEST_CASE( test_identity_from_matrix_string, RotIdentityTestFixtur
 	check_quaternion(identity.as_quaternion()); 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_copying_around, RotIdentityTestFixture ) 
+{
+	Quaternion q1(0.5,0.5,0.5,0.5); 
+	Quaternion q2(-0.5,0.5,-0.5,0.5); 
+	
+	C3DRotation  r1(q1);
+	C3DRotation  r2(q2);
+
+	C3DRotation r1c(r1); 
+
+	check_quaternion(r1c.as_quaternion(), q1); 
+	
+	r1c = r2;
+	
+	check_quaternion(r1c.as_quaternion(), q2); 
+	
+	r1 = r1c; 
+	check_quaternion(r1.as_quaternion(), q2);
+
+	r2 = r1c; 
+
+	
+
+}
+
 BOOST_FIXTURE_TEST_CASE( test_identity_from_quaternion_string, RotIdentityTestFixture) 
 {
 	C3DRotation  identity("rot-quaternion=1,0,0,0");

@@ -23,6 +23,8 @@
 
 #include <mia/3d/vectorfield.hh>
 #include <mia/3d/orientation.hh>
+#include <mia/3d/rot.hh>
+
 #include <mia/2d/image.hh>
 
 #include <mia/3d/valueattributetranslator.hh>
@@ -103,6 +105,13 @@ public:
 
 	/// set the origin i.e. world units  of the pixel at (0,0,0)
 	void set_origin(const C3DFVector& voxel);
+	
+
+	///  \returns the rotation about the origin of the image 
+	C3DRotation get_rotation() const;
+
+	/// set the rotation about the origin of the image 
+	void set_rotation(const C3DRotation& voxel);
 
 	///@returns the orientation of the image 
 	C3DOrientationAndPosition get_orientation() const;
