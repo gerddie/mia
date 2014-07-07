@@ -29,9 +29,9 @@ NS_MIA_BEGIN
 class C3DRotation {
         
 public: 
-        virtual C3DDMatrix as_matrix_3x3() const = 0;
-        virtual Quaternion as_quaternion() const = 0; 
-        virtual std::string as_string() const = 0; 
+        virtual C3DDMatrix as_matrix_3x3() const;
+        virtual Quaternion as_quaternion() const; 
+        virtual std::string as_string() const; 
         
         static C3DRotation* from_string(const std::string& s) __attribute__((warn_unused_result));
 

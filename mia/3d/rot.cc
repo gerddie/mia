@@ -33,13 +33,34 @@ using std::ostringstream;
 using std::vector; 
 using std::invalid_argument; 
 
+static const char * c_rot_identity = "rot-identity"; 
 static const char * c_rot_mat = "rot-matrix"; 
 static const char * c_rot_quat = "rot-quaternion"; 
+
+C3DDMatrix C3DRotation::as_matrix_3x3() const
+{
+	return C3DDMatrix::_1; 
+}
+
+Quaternion C3DRotation::as_quaternion() const
+{
+	return Quaternion::_1; 
+}
+
+string C3DRotation::as_string() const
+{
+	return string(c_rot_identity); 
+}
+
 
 C3DRotation* C3DRotation::from_string(const std::string& s) 
 {
         vector<string> tockens; 
         boost::split(tockens, s ,boost::is_any_of("="));
+
+	if ((tockens.size() == 1) && !strcmp(c_rot_identity, tockens[0].c_str()))
+		return new C3DRotation();
+	
         if (tockens.size() != 2) {
                 throw create_exception<invalid_argument>("Unable to read C3DRotation from '", 
                                                          s, "'"); 
@@ -50,7 +71,7 @@ C3DRotation* C3DRotation::from_string(const std::string& s)
                 return new C3DMatrix3x3Rotation(tockens[1]); 
         else if (!strcmp(c_rot_quat, test_tocken))
                 return new C3DQuaternionRotation(tockens[1]);
-        else 
+	else
                 throw create_exception<invalid_argument>("Unknown C3DRotation type '", tockens[0], "'"); 
 }
 

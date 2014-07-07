@@ -55,6 +55,12 @@ BOOST_FIXTURE_TEST_CASE( test_identity_from_quaternion_string, RotIdentityTestFi
 	check_quaternion(identity->as_quaternion()); 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_base_from_string, RotIdentityTestFixture) 
+{
+	unique_ptr<C3DRotation>  identity(C3DRotation::from_string("rot-identity"));
+	check_matrix(identity->as_matrix_3x3()); 
+	check_quaternion(identity->as_quaternion()); 
+}
 
 BOOST_FIXTURE_TEST_CASE( test_matrix_to_from_string, RotIdentityTestFixture) 
 {
