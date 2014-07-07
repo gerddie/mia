@@ -29,17 +29,57 @@ struct RotIdentityTestFixture {
 
 	void check_matrix(const C3DDMatrix& matrix) const; 
 	void check_quaternion(const Quaternion& q) const; 
+
+	void check_matrix(const C3DDMatrix& matrix, const C3DDMatrix& expect) const; 
+	void check_quaternion(const Quaternion& q, const Quaternion& expect) const; 
+
+	void check_small_or_close(double x, double e) const; 
 }; 
 
 
 BOOST_FIXTURE_TEST_CASE( test_identity_from_matrix_string, RotIdentityTestFixture) 
 {
-	unique_ptr<C3DRotation>  identity(C3DRotation::from_string("rot-matrix=1,0,0,0,1,0,0,0,1"));
+	unique_ptr<C3DRotation>  identity(C3DRotation::from_string("rot-matrix=1,0,0;0,1,0;0,0,1"));
 
 	check_matrix(identity->as_matrix_3x3()); 
 	
 	check_quaternion(identity->as_quaternion()); 
 }
+
+BOOST_FIXTURE_TEST_CASE( test_identity_from_quaternion_string, RotIdentityTestFixture) 
+{
+	unique_ptr<C3DRotation>  identity(C3DRotation::from_string("rot-quaternion=1,0,0,0"));
+
+	check_matrix(identity->as_matrix_3x3()); 
+	
+	check_quaternion(identity->as_quaternion()); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_matrix_to_from_string, RotIdentityTestFixture) 
+{
+	Quaternion q(0.5,0.5,0.5,0.5); 
+	C3DMatrix3x3Rotation mr(q.get_rotation_matrix()); 
+	
+	unique_ptr<C3DRotation>  rmr(C3DRotation::from_string(mr.as_string()));
+
+	check_matrix(rmr->as_matrix_3x3(), mr.as_matrix_3x3()); 
+	
+	check_quaternion(rmr->as_quaternion(), q); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_quaternion_to_from_string, RotIdentityTestFixture) 
+{
+	Quaternion q(0.5,0.5,0.5,0.5); 
+	C3DQuaternionRotation qr(q); 
+	
+	unique_ptr<C3DRotation>  rqr(C3DRotation::from_string(qr.as_string()));
+
+	check_matrix(rqr->as_matrix_3x3(), qr.as_matrix_3x3()); 
+	
+	check_quaternion(rqr->as_quaternion(), q); 
+}
+
 
 void RotIdentityTestFixture::check_matrix(const C3DDMatrix& matrix) const
 {
@@ -62,5 +102,37 @@ void RotIdentityTestFixture::check_quaternion(const Quaternion& q) const
 	BOOST_CHECK_SMALL(q.y(), 1e-5); 
 	BOOST_CHECK_SMALL(q.z(), 1e-5); 
 	
+}
+
+void RotIdentityTestFixture::check_small_or_close(double x, double e) const
+{
+	if (e == 0.0) 
+		BOOST_CHECK_SMALL(x, 1e-7); 
+	else 
+		BOOST_CHECK_CLOSE(x, e, 1e-5); 
+}
+
+void RotIdentityTestFixture::check_matrix(const C3DDMatrix& matrix, const C3DDMatrix& expect) const
+{
+	check_small_or_close(matrix.x.x, expect.x.x); 
+	check_small_or_close(matrix.x.y, expect.x.y); 
+	check_small_or_close(matrix.x.z, expect.x.z); 
+
+	check_small_or_close(matrix.z.z, expect.z.z); 
+	check_small_or_close(matrix.y.y, expect.y.y); 
+	check_small_or_close(matrix.y.z, expect.y.z); 
+
+
+	check_small_or_close(matrix.z.x, expect.z.x); 
+	check_small_or_close(matrix.z.y, expect.z.y); 
+	check_small_or_close(matrix.z.z, expect.z.z); 
+}
+
+void RotIdentityTestFixture::check_quaternion(const Quaternion& q, const Quaternion& expect) const
+{
+	check_small_or_close(q.x(), expect.x()); 
+	check_small_or_close(q.y(), expect.y()); 
+	check_small_or_close(q.z(), expect.z()); 
+	check_small_or_close(q.w(), expect.w());
 }
 

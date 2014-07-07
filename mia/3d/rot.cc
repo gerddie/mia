@@ -92,17 +92,38 @@ Quaternion C3DQuaternionRotation::as_quaternion() const
 std::string C3DQuaternionRotation::as_string() const
 {
         ostringstream s; 
-        s << c_rot_quat << m_q; 
+        s << c_rot_quat << "=" <<m_q; 
         return s.str(); 
 }
 
 C3DMatrix3x3Rotation::C3DMatrix3x3Rotation(const std::string& s)
 {
-        istringstream iss(s); 
-        iss >> m_matrix; 
-        if (iss.bad()) {
-                throw create_exception<invalid_argument>("Unable to rotation matrix from '", s, "'");
+        vector<string> tockens; 
+        boost::split(tockens, s ,boost::is_any_of(";"));
+	
+        if (tockens.size() != 3) {
+                throw create_exception<invalid_argument>("Unable to read C3DMatrix3x3Rotation from '", 
+                                                         s, "'"); 
         }
+
+        istringstream iss_x(tockens[0]); 
+        iss_x >> m_matrix.x; 
+        if (iss_x.bad()) {
+                throw create_exception<invalid_argument>("Unable to rotation matrix x row from '", tockens[0], "'");
+        }
+
+        istringstream iss_y(tockens[1]); 
+        iss_y >> m_matrix.y; 
+        if (iss_y.bad()) {
+                throw create_exception<invalid_argument>("Unable to rotation matrix y row from '", tockens[1], "'");
+        }
+
+        istringstream iss_z(tockens[2]); 
+        iss_z >> m_matrix.z; 
+        if (iss_z.bad()) {
+                throw create_exception<invalid_argument>("Unable to rotation matrix z row from '", tockens[2], "'");
+        }
+
 }
 
 C3DMatrix3x3Rotation::C3DMatrix3x3Rotation(const C3DDMatrix& m):
