@@ -34,7 +34,7 @@ public:
         virtual std::string as_string() const; 
         
         static C3DRotation* from_string(const std::string& s) __attribute__((warn_unused_result));
-
+	static const C3DRotation _1; 
 }; 
 
 class C3DQuaternionRotation: public C3DRotation {

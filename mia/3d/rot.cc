@@ -52,6 +52,8 @@ string C3DRotation::as_string() const
 	return string(c_rot_identity); 
 }
 
+const C3DRotation C3DRotation::_1;
+
 
 C3DRotation* C3DRotation::from_string(const std::string& s) 
 {
