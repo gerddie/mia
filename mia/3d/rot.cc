@@ -21,6 +21,7 @@
 #include <iostream>
 #include <sstream> 
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include <mia/3d/rot.hh>
 
@@ -29,16 +30,18 @@ NS_MIA_BEGIN
 using std::string; 
 using std::istringstream; 
 using std::ostringstream; 
+using std::vector; 
+using std::invalid_argument; 
 
 static const char * c_rot_mat = "rot-matrix"; 
 static const char * c_rot_quat = "rot-quaternion"; 
 
-static C3DRotation* C3DRotation::from_string(const std::string& s) 
+C3DRotation* C3DRotation::from_string(const std::string& s) 
 {
         vector<string> tockens; 
         boost::split(tockens, s ,boost::is_any_of("="));
         if (tockens.size() != 2) {
-                throw create_exception<inavlid_argument>("Unable to read C3DRotation from '", 
+                throw create_exception<invalid_argument>("Unable to read C3DRotation from '", 
                                                          s, "'"); 
         }
         
@@ -48,7 +51,7 @@ static C3DRotation* C3DRotation::from_string(const std::string& s)
         else if (!strcmp(c_rot_quat, test_tocken))
                 return new C3DQuaternionRotation(tockens[1]);
         else 
-                throw create_exception<inavlid_argument>("Unknown C3DRotation type '", tockens[0], "'"); 
+                throw create_exception<invalid_argument>("Unknown C3DRotation type '", tockens[0], "'"); 
 }
 
 C3DQuaternionRotation::C3DQuaternionRotation(const std::string& s)
@@ -63,7 +66,7 @@ C3DQuaternionRotation::C3DQuaternionRotation(const std::string& s)
         double v[4]; 
         for (int i = 0; i < 4; ++i) {
                 istringstream iss(tockens[i]); 
-                iss > v[i]; 
+                iss >> v[i]; 
                 if (iss.bad()) 
                         throw create_exception<invalid_argument>("Unable to read quaternions from '", s, "'"); 
         }
@@ -96,8 +99,8 @@ std::string C3DQuaternionRotation::as_string() const
 C3DMatrix3x3Rotation::C3DMatrix3x3Rotation(const std::string& s)
 {
         istringstream iss(s); 
-        s >> m_matrix; 
-        if (s.bad()) {
+        iss >> m_matrix; 
+        if (iss.bad()) {
                 throw create_exception<invalid_argument>("Unable to rotation matrix from '", s, "'");
         }
 }

@@ -63,7 +63,7 @@ public:
 
 private: 
 
-        C3DDMatrix m_q;
+        C3DDMatrix m_matrix;
 }; 
 
 NS_MIA_END

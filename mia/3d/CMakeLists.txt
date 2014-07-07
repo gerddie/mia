@@ -35,15 +35,13 @@ SET(MIA3D_SRC
   critical_point.cc
   2dimagefifofilter.cc
   datafield.cc
-  image.cc
-  vectorfield.cc
-  filter.cc
-  imageio.cc
-  vfio.cc
   distance.cc
+  filter.cc
   fullcost.cc
   fuzzyseg.cc
   fuzzyClusterSolverCG.cc
+  image.cc
+  imageio.cc
   imagecollect.cc
   interpolator.cc
   landmark.cc
@@ -55,19 +53,22 @@ SET(MIA3D_SRC
   nfg.cc 
   nonrigidregister.cc
   orientation.cc
-  quaternion.cc
   ppmatrix.cc 
+  quaternion.cc
   register.cc
   rigidregister.cc
-  timestep.cc
+  rot.cc
+  shape.cc
   similarity_profile.cc
   splinetransformpenalty.cc
+  stackdisttrans.cc
+  timestep.cc
   trackpoint.cc
   transform.cc
   transformfactory.cc
   transformio.cc
-  shape.cc
-  stackdisttrans.cc
+  vectorfield.cc
+  vfio.cc
   ${ITPP_SRC}
   )
 
@@ -113,6 +114,7 @@ SET(MIA3D_HEADERS
   quaternion.hh
   register.hh
   rigidregister.hh
+  rot.hh
   shape.hh 
   similarity_profile.hh
   stackdisttrans.hh
@@ -218,6 +220,7 @@ TEST_3D(similarity_profile similarity_profile)
 TEST_3D(trackpoint similarity_profile)
 TEST_3D(distance distance)
 TEST_3D(imagecollect imagecollect)
+TEST_3D(rot rot)
 TEST_3D(splinetransformpenalty splinetransformpenalty)
 #
 # installation 
