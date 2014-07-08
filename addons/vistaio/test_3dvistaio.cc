@@ -52,6 +52,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
 	T3DImage<T> *image = new T3DImage<T>(size); 
 	image->set_voxel_size(C3DFVector(10,20,30)); 
 	image->set_origin(C3DFVector(20,30,40)); 
+	image->set_rotation(C3DRotation(Quaternion(0.5, 0.1, 0.7, 0.5))); 
 	
         P3DImage pimage(image); 
 

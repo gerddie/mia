@@ -72,7 +72,7 @@ EXPORT_3D bool operator == (const C3DRotation& lhs, const C3DRotation& rhs);
 EXPORT_3D bool operator < (const C3DRotation& lhs, const C3DRotation& rhs); 
 
 typedef TAttribute<C3DRotation> C3DRotationAttribute; 
-
+typedef TTranslator<C3DRotation> C3DRotationAttributeTranslate;
 
 NS_MIA_END
 #endif

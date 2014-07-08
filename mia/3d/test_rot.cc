@@ -67,8 +67,6 @@ BOOST_FIXTURE_TEST_CASE( test_copying_around, RotIdentityTestFixture )
 
 	r2 = r1c; 
 
-	
-
 }
 
 BOOST_FIXTURE_TEST_CASE( test_identity_from_quaternion_string, RotIdentityTestFixture) 

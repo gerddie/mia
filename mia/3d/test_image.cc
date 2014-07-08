@@ -180,6 +180,22 @@ void add_3dimage_tests( boost::unit_test::test_suite* suite)
 }
 
 
+BOOST_AUTO_TEST_CASE( test_rotation_attribute )
+{
+	C3DRotationAttributeTranslate::register_for("rotation3d");
+	string value("rot-quaternion=0.5,0.1,0.5,0.7");
+
+	PAttribute attr = CStringAttrTranslatorMap::instance().to_attr("rotation3d", value);
+	
+	const C3DRotationAttribute& ra = dynamic_cast<C3DRotationAttribute&>(*attr);
+	C3DRotation r = ra; 
+	auto q = r.as_quaternion(); 
+
+	BOOST_CHECK_EQUAL(q.w(), 0.5);
+	BOOST_CHECK_EQUAL(q.x(), 0.1);
+	BOOST_CHECK_EQUAL(q.y(), 0.5);
+	BOOST_CHECK_EQUAL(q.z(), 0.7);
+}
 
 BOOST_AUTO_TEST_CASE( test_voxel_attribute )
 {

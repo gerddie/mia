@@ -193,6 +193,7 @@ extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
 	CVoxelAttributeTranslator::register_for("voxel");
 	CVoxelAttributeTranslator::register_for("origin3d");
+	C3DRotationAttributeTranslate::register_for("rotation3d");
 	C3DIntAttributeTranslator::register_for("ca");
 	C3DIntAttributeTranslator::register_for("cp");
 	return new CVista3DImageIOPlugin();

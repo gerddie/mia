@@ -106,11 +106,31 @@ C3DFVector C3DImage::get_origin() const
 	return *vs;
 }
 
-
-
 void C3DImage::set_origin(const C3DFVector& voxel) 
 {
 	set_attribute("origin3d", PAttribute(new CVoxelAttribute(voxel)));
+}
+
+
+C3DRotation C3DImage::get_rotation() const
+{
+	const PAttribute attr = get_attribute("rotation3d");
+	if (!attr) {
+		cvinfo() << "T3DImage<T>::get_rotation(): Rotation size not defined, default to no rotation\n";
+		return C3DRotation::_1;
+	}
+	
+	const C3DRotationAttribute * vs = dynamic_cast<const C3DRotationAttribute *>(attr.get());
+	if (!vs){
+		cvinfo() << "T3DImage<T>::get_rotation(): Rotation attribute is of wrong type, default to no rotation\n";
+		return C3DRotation::_1;
+	}
+	return *vs;
+}
+
+void C3DImage::set_rotation(const C3DRotation& voxel)
+{
+	set_attribute("rotation3d", PAttribute(new C3DRotationAttribute(voxel)));
 }
 
 
@@ -464,6 +484,5 @@ template class C3DValueAttribute<float>;
 template class  EXPORT_3D C3DValueAttributeTranslator<float>;
 template class  EXPORT_3D C3DValueAttribute<int>;
 template class  EXPORT_3D C3DValueAttributeTranslator<int>;
-
 
 NS_MIA_END
