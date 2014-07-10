@@ -25,6 +25,7 @@
 #include <mia/core/iohandler.cxx>
 #include <mia/core/errormacro.hh>
 #include <mia/core/tools.hh>
+#include <mia/core/attribute_names.hh>
 
 NS_MIA_BEGIN
 
@@ -188,19 +189,6 @@ C2DImageIOPluginHandlerTestPath::C2DImageIOPluginHandlerTestPath()
 	C2DImageIOPluginHandler::set_search_path(searchpath);
 }
 
-EXPORT_2D const char * IDAcquisitionDate =   "AcquisitionDate";
-EXPORT_2D const char * IDImageType =         "ImageType";
-EXPORT_2D const char * IDAcquisitionNumber = "AcquisitionNumber";
-EXPORT_2D const char * IDInstanceNumber =    "InstanceNumber";
-EXPORT_2D const char * IDSliceLocation = "SliceLocation";
-EXPORT_2D const char * IDSeriesNumber = "SeriesNumber";
-EXPORT_2D const char * IDModality =          "Modality";
-EXPORT_2D const char * IDPatientOrientation ="PatientOrientation";
-EXPORT_2D const char * IDPatientPosition = "PatientPosition";
-EXPORT_2D const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
-EXPORT_2D const char * IDLargestImagePixelValue = "LargestImagePixelValue";
-EXPORT_2D const char * IDStudyID = "StudyID";
-EXPORT_2D const char * IDProtocolName = "ProtocolName"; 
 
 template class TIOPlugin<io_2dimage_type>;
 template class THandlerSingleton<C2DImageIOPPH>;

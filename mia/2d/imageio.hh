@@ -174,25 +174,6 @@ C2DImageGroupedSeries EXPORT_2D load_image_series(const std::vector<std::string>
 						  CProgressCallback *cb = NULL); 
 
 
-/**
-   some DICOM tags that may be used 
-   \cond DICOM_TAGS 
- */
-extern EXPORT_2D const char * IDModality;
-extern EXPORT_2D const char * IDPatientOrientation;
-extern EXPORT_2D const char * IDPatientPosition;
-extern EXPORT_2D const char * IDAcquisitionDate;
-extern EXPORT_2D const char * IDAcquisitionNumber;
-extern EXPORT_2D const char * IDImageType;
-extern EXPORT_2D const char * IDInstanceNumber;
-
-extern EXPORT_2D const char * IDSeriesNumber;
-extern EXPORT_2D const char * IDSliceLocation;
-extern EXPORT_2D const char * IDStudyID;
-extern EXPORT_2D const char * IDSmallestImagePixelValue;
-extern EXPORT_2D const char * IDLargestImagePixelValue;
-extern EXPORT_2D const char * IDProtocolName; 
-/// @endcond 
 
 NS_MIA_END
 

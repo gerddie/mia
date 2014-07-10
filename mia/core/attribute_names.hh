@@ -25,6 +25,26 @@
 
 NS_MIA_BEGIN
 
+/**
+   some DICOM tags that may be used 
+   \cond DICOM_TAGS 
+ */
+extern EXPORT_CORE const char * IDModality;
+extern EXPORT_CORE const char * IDPatientOrientation;
+extern EXPORT_CORE const char * IDPatientPosition;
+extern EXPORT_CORE const char * IDAcquisitionDate;
+extern EXPORT_CORE const char * IDAcquisitionNumber;
+extern EXPORT_CORE const char * IDImageType;
+extern EXPORT_CORE const char * IDInstanceNumber;
+
+extern EXPORT_CORE const char * IDSeriesNumber;
+extern EXPORT_CORE const char * IDSliceLocation;
+extern EXPORT_CORE const char * IDStudyID;
+extern EXPORT_CORE const char * IDSmallestImagePixelValue;
+extern EXPORT_CORE const char * IDLargestImagePixelValue;
+extern EXPORT_CORE const char * IDProtocolName; 
+
+
 extern EXPORT_CORE const char * IDMediaStorageSOPClassUID;
 extern EXPORT_CORE const char * IDStudyDescription;
 extern EXPORT_CORE const char * IDSeriesDescription;
@@ -42,6 +62,7 @@ extern EXPORT_CORE const char * IDPositionerPrimaryAngleIncrement;
 extern EXPORT_CORE const char * IDPositionerSecondaryAngleIncrement; 
 extern EXPORT_CORE const char * IDSliceThickness; 
 extern EXPORT_CORE const char * IDPhotometricInterpretation; 
+/// @endcond 
 
 NS_MIA_END
 

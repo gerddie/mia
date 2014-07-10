@@ -22,6 +22,21 @@
 
 NS_MIA_BEGIN
 
+
+EXPORT_CORE const char * IDAcquisitionDate =   "AcquisitionDate";
+EXPORT_CORE const char * IDImageType =         "ImageType";
+EXPORT_CORE const char * IDAcquisitionNumber = "AcquisitionNumber";
+EXPORT_CORE const char * IDInstanceNumber =    "InstanceNumber";
+EXPORT_CORE const char * IDSliceLocation = "SliceLocation";
+EXPORT_CORE const char * IDSeriesNumber = "SeriesNumber";
+EXPORT_CORE const char * IDModality =          "Modality";
+EXPORT_CORE const char * IDPatientOrientation ="PatientOrientation";
+EXPORT_CORE const char * IDPatientPosition = "PatientPosition";
+EXPORT_CORE const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
+EXPORT_CORE const char * IDLargestImagePixelValue = "LargestImagePixelValue";
+EXPORT_CORE const char * IDStudyID = "StudyID";
+EXPORT_CORE const char * IDProtocolName = "ProtocolName"; 
+
 EXPORT_CORE const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID";
 EXPORT_CORE const char * IDStudyDescription = "StudyDescription";
 EXPORT_CORE const char * IDSamplesPerPixel = "IDSamplesPerPixel";

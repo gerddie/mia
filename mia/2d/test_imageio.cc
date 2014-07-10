@@ -21,6 +21,7 @@
 #include <mia/internal/autotest.hh>
 #include <boost/filesystem/path.hpp>
 
+#include <mia/core/attribute_names.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/imageio.hh>
 
