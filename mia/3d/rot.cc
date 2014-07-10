@@ -279,7 +279,11 @@ std::string C3DMatrix3x3Rotation::as_string() const
 
 EXPORT_3D bool operator == (const C3DRotation& lhs, const C3DRotation& rhs)
 {
-	return lhs.as_quaternion() == rhs.as_quaternion(); 
+	// this needs to be done floating point value friendly
+	auto q = lhs.as_quaternion(); 
+	q -= rhs.as_quaternion(); 
+	
+	return (q.norm() < 1e-10); 
 }
 
 EXPORT_3D bool operator < (const C3DRotation& lhs, const C3DRotation& rhs) 

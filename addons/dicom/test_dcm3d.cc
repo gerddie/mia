@@ -113,7 +113,7 @@ void DicomSaveLoadFixture::fill_attributes()
 	org_image->set_attribute(IDSOPClassUID,  "othervalue");
 	org_image->set_voxel_size(C3DFVector(1.45, 2.34, 3));
 	org_image->set_origin(C3DFVector(2.45, 2.0, 3.1));
-	org_image->set_rotation(C3DDMatrix::_1);
+	org_image->set_rotation(Quaternion(0.1, 0.7, 0.5, 0.5).get_rotation_matrix());
 
 
 	org_image->set_attribute("Modality", "MR");
