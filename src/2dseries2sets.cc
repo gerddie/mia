@@ -23,6 +23,7 @@
 #include <libxml++/libxml++.h>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/bfsv23dispatch.hh>
+#include <mia/core/attribute_names.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <boost/filesystem.hpp>
