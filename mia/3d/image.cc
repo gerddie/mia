@@ -99,7 +99,7 @@ C3DFVector C3DImage::get_origin() const
 
 	const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
 	if (!vs){
-		cvinfo() << "T3DImage<T>::get_origin(): voxel size wrong type, default to <0,0,0>\n";
+		cvinfo() << "T3DImage<T>::get_origin(): origin attribute of wrong type, default to <0,0,0>\n";
 		return C3DFVector::_0;
 	}
 
@@ -128,9 +128,9 @@ C3DRotation C3DImage::get_rotation() const
 	return *vs;
 }
 
-void C3DImage::set_rotation(const C3DRotation& voxel)
+void C3DImage::set_rotation(const C3DRotation& rot)
 {
-	set_attribute("rotation3d", PAttribute(new C3DRotationAttribute(voxel)));
+	set_attribute("rotation3d", PAttribute(new C3DRotationAttribute(rot)));
 }
 
 

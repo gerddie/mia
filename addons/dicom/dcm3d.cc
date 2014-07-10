@@ -317,10 +317,16 @@ bool CSliceSaver::operator () ( const T3DImage<T>& image) const
 
 	C3DFVector voxel = image.get_voxel_size();
 	C2DFVector pixel(voxel.x, voxel.y);
-
-
+	
+	auto origin = image.get_origin();
+	auto rotation = image.get_rotation();
+	
 	T2DImage<T> slice = image.get_data_plane_xy(m_slice);
 	slice.set_pixel_size(pixel);
+	slice.set_attribute("rotation3d", PAttribute(new C3DRotationAttribute(rotation)));
+	
+	C3DFVector new_origin = C3DFVector(rotation.as_matrix_3x3() * C3DDVector(0,0,m_slice)) + origin;
+	slice.set_attribute("origin3d", PAttribute(new CVoxelAttribute(new_origin))); 
 
 	slice.set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(m_slice + 1)));
 	slice.set_attribute(IDSliceLocation,  PAttribute(new CFloatAttribute(m_location)));
@@ -329,8 +335,8 @@ bool CSliceSaver::operator () ( const T3DImage<T>& image) const
 	if (!slice.has_attribute(IDSeriesNumber))
 		slice.set_attribute(IDSeriesNumber, PAttribute(new CIntAttribute(m_series + 1)));
 
-	CDicomWriter weiter(slice);
-	return weiter.write(fname.str().c_str());
+	CDicomWriter writer(slice);
+	return writer.write(fname.str().c_str());
 }
 
 bool CDicom3DImageIOPlugin::do_save(const string& fname, const Data& data) const

@@ -216,7 +216,9 @@ bool operator == (const CAttributeMap& am, const CAttributeMap& bm)
 		}
 
 		if (!ai->second->is_equal(*bi->second)) {
-			cvdebug() << "Attribute '"<< ai->first << "' has a different value\n";
+			cvdebug() << "Attribute '"<< ai->first << "' has a different value: '"
+				  << ai->second->as_string() << "', expect '" <<  bi->second->as_string()
+				  << "'\n";
 			return false;
 		}
 

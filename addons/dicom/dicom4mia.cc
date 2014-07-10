@@ -18,11 +18,17 @@
  *
  */
 
+#define VSTREAM_DOMAIN "DCMTK4MIA"
+
 #include <mia/core/errormacro.hh>
 #include <map>
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
+
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
 
 #include <dicom/dicom4mia.hh>
 
@@ -122,7 +128,8 @@ struct CDicomReaderData {
 	Sint32 getSint32(const DcmTagKey &tagKey, bool required, Sint32 default_value = 0);
 	float getFloat32(const DcmTagKey &tagKey, bool required, float default_value = 0);
 	float getFloat64(const DcmTagKey &tagKey, bool required, double default_value = 0);
-
+	bool getFloat64ArrayFromString(const DcmTagKey &tagKey, vector<double>& values, const string& msg);
+	
 	string getAttribute(const string& key, bool required, const char *default_value = "");
 	string getAttribute(const DcmTagKey &tagKey, bool required, const char *default_value = "");
 
@@ -139,7 +146,9 @@ struct CDicomReaderData {
 	C2DFVector getPixelSize();
 
 	C2DFVector getImagePixelSpacing(); 
-
+	
+	C3DDMatrix getImageOrientationPatient(); 
+	C3DFVector getImagePositionPatient(); 
 
 };
 
@@ -235,10 +244,9 @@ P2DImage CDicomReader::load_image()const
 	impl->getAcquisitionTimeIfAvailable(*result); 
 
 	result->set_pixel_size(get_pixel_size());
-
-	// see if the AquisitionTime 
-
-
+	result->set_attribute("rotation3d", PAttribute(new C3DRotationAttribute(this->impl->getImageOrientationPatient()))); 
+	result->set_attribute("origin3d", PAttribute(new CVoxelAttribute(this->impl->getImagePositionPatient())));
+	
 	const SLookupInit *attr_table = lookup_init;
 	while (attr_table->skey) {
 		// copy some attributes
@@ -268,6 +276,8 @@ P3DImage CDicomReader::load_image3d()const
 
 	result->set_voxel_size(this->get_voxel_size(true));
 
+	result->set_rotation(this->impl->getImageOrientationPatient()); 
+	result->set_origin(this->impl->getImagePositionPatient()); 
 
 	const SLookupInit *attr_table = lookup_init;
 	while (attr_table->skey) {
@@ -431,6 +441,62 @@ float CDicomReaderData::getFloat64(const DcmTagKey &tagKey, bool required, doubl
 	return value;
 }
 
+bool CDicomReaderData::getFloat64ArrayFromString(const DcmTagKey &tagKey, vector<double>& values, const string& msg)
+{
+	if (!dcm.getDataset()->tagExistsWithValue(tagKey)) {
+		cvinfo() << msg << " tag empty or not available.\n"; 
+		return false; 
+	}
+	OFString help;
+	OFCondition success = dcm.getDataset()->findAndGetOFStringArray(tagKey, help);	
+	if (success.bad()) {
+		cvinfo() << msg << " available but is not a string.\n";
+		return false; 
+	}
+
+        vector<string> tockens; 
+	string svalues(help.begin(), help.end()); 
+        boost::split(tockens, svalues ,boost::is_any_of("\\"));
+
+	if (tockens.size() != values.size()) {
+		cvwarn() << "Bogus " << msg << " attribute of " << tockens.size() 
+			 << " elements (expect "<< values.size() << ")."; 
+		return false; 
+	}
+	for (unsigned i = 0; i < tockens.size(); ++i) {
+		istringstream iss(tockens[i]); 
+                iss >> values[i]; 
+                if (iss.bad()) {
+                        cvwarn() << "unable to read double value from '" << tockens[i] << "'\n"; 
+			return false;
+		}
+        }
+	return true; 
+
+}
+
+C3DDMatrix CDicomReaderData::getImageOrientationPatient()
+{
+	vector<double> v(6); 
+	
+	if (!getFloat64ArrayFromString(DCM_ImageOrientationPatient, v, "ImageOrientationPatient")) 
+		return C3DDMatrix::_1; 
+	
+	
+	const C3DDVector cx(v[0], v[1], v[2]); 
+	const C3DDVector cy(v[3], v[4], v[5]); 
+	const C3DDVector cz = cross(cx,cy); 
+	
+	return C3DDMatrix(cx, cy, cz); 
+}
+
+C3DFVector CDicomReaderData::getImagePositionPatient()
+{
+	vector<double> v(3); 
+	if (!getFloat64ArrayFromString(DCM_ImagePositionPatient, v, "ImagePositionPatient")) 
+		return C3DFVector::_0; 
+	return C3DFVector(v[0], v[1], v[2]); 
+}
 
 string CDicomReaderData::getAttribute(const DcmTagKey &tagKey, bool required, const char *default_value)
 {
@@ -574,6 +640,7 @@ private:
 	void setSize(const C2DBounds& size);
 	void setPixelSpacing(const C2DFVector& value);
 	void setAcquisitionTime(double time_seconds); 
+	void setFloatArrayAsString(const DcmTagKey& key, const vector<double>& values); 
 	void setValueStringIfKeyExists(const CAttributeMap::value_type& value);
 	friend struct CDicomImageSaver;
 };
@@ -633,6 +700,22 @@ CDicomImageSaver::result_type CDicomImageSaver::operator ()(const T2DImage<T>& i
 	return true;
 }
 
+void CDicomWriterData::setFloatArrayAsString(const DcmTagKey& key, const vector<double>& values)
+{
+	
+	if (values.empty()) {
+		cvwarn() << "Try to set " << key << " from empty array\n"; 
+		return; 
+	}
+
+	ostringstream value_str; 
+	value_str << setw(15)<< values[0]; 
+	for (unsigned i = 1; i < values.size(); ++i) 
+		value_str << '\\' << setw(15)<< values[i];
+	
+	setValueString(key, value_str.str(), false); 
+}
+
 CDicomWriterData::CDicomWriterData(const C2DImage& image)
 {
 	setValueUint16(DCM_SamplesPerPixel, 1);
@@ -649,6 +732,46 @@ CDicomWriterData::CDicomWriterData(const C2DImage& image)
 	for(auto i = image.begin_attributes(); i != image.end_attributes(); ++i) {
 		setValueStringIfKeyExists(*i);
 	}
+
+	auto rot = C3DDMatrix::_1; 
+	// set position and orientation 
+	auto prot_attr = image.get_attribute("rotation3d"); 
+	if (prot_attr) {
+		auto prot_attr_pointer = dynamic_cast<const C3DRotationAttribute*>(prot_attr.get()); 
+		if (prot_attr_pointer) {
+			C3DRotation rot_attr = *prot_attr_pointer; 
+			rot = rot_attr.as_matrix_3x3();
+		}else{
+			cvwarn() << "image has a 'rotation3d' attribute, but not of type C3DRotationAttribute, ignoring\n"; 
+		}
+	}else{
+		cvdebug()  << "image has no 'rotation3d' attribute, default to unity matrix\n"; 
+	}
+	
+	const vector<double> ovalues{rot.x.x, rot.x.y, rot.x.z, rot.y.x, rot.y.y, rot.y.z}; 
+	setFloatArrayAsString(DCM_ImageOrientationPatient, ovalues); 
+	
+	C3DFVector pos = C3DFVector::_0; 
+
+	auto porigin_attr = image.get_attribute("origin3d");
+	if (porigin_attr) {
+		auto porigin_attr_pointer = dynamic_cast<const CVoxelAttribute*>(porigin_attr.get()); 
+		if (porigin_attr_pointer) {
+			pos = *porigin_attr_pointer; 
+		} else {
+			cvwarn() << "image has a 'origin3d' attribute of value '"
+				 << porigin_attr->as_string() 
+				 <<"', not of type CVoxelAttribute ("
+				 << typeid(CVoxelAttribute).name() << ") but "
+				 << typeid(*porigin_attr).name() 
+				 <<" , ignoring\n"; 
+		}
+	}else {
+		cvdebug()  << "image has no 'origin3d' attribute, default to (0,0,0)\n"; 
+	}
+	
+	const vector<double>  pvalues{pos.x, pos.y, pos.z}; 
+	setFloatArrayAsString(DCM_ImagePositionPatient, pvalues); 
 
 	if (!image.has_attribute(IDMediaStorageSOPClassUID))
 		setValueString(IDMediaStorageSOPClassUID, "1.2.840.10008.5.1.4.1.1.4");
