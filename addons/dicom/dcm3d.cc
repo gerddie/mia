@@ -47,6 +47,7 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 	C3DImageIOPlugin("dicom")
 {
 	add_supported_type(it_ushort);
+	add_supported_type(it_sshort);
 
 	TTranslator<float>::register_for("SliceLocation");
 	TTranslator<double>::register_for("AcquisitionTime"); 

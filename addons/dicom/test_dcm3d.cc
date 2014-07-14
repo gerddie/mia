@@ -57,12 +57,13 @@ struct DicomLoaderFixture {
 	CDicom3DImageIOPlugin plugin;
 };
 
+template <typename T> 
 struct DicomSaveLoadFixture : public DicomLoaderFixture {
 	DicomSaveLoadFixture();
 	void fill_attributes();
 
 	C3DBounds size;
-	C3DUSImage *org_image;
+	T3DImage<T> *org_image;
 	P3DImage porg_image;
 };
 
@@ -107,7 +108,8 @@ void DicomLoaderFixture::check_attribute(const C3DImage& image, const char *name
 	BOOST_CHECK_EQUAL(attr_val, svalue);
 }
 
-void DicomSaveLoadFixture::fill_attributes()
+template <typename T> 
+void DicomSaveLoadFixture<T>::fill_attributes()
 {
 	org_image->set_attribute("MediaStorageSOPClassUID",  "somevalue");
 	org_image->set_attribute(IDSOPClassUID,  "othervalue");
@@ -123,7 +125,7 @@ void DicomSaveLoadFixture::fill_attributes()
 	org_image->set_attribute("StudyDescription", "PROST");
 	org_image->set_attribute("AcquisitionDate","20090909");
 	org_image->set_attribute("PatientPosition", "HFP");
-	org_image->set_attribute("StudyID", "888899");
+	org_image->set_attribute("StudyID", typeid(T).name());
 	org_image->set_attribute("ImageType", "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
 	org_image->set_attribute(IDSmallestImagePixelValue,"1");
 	org_image->set_attribute(IDLargestImagePixelValue,"20");
@@ -132,13 +134,13 @@ void DicomSaveLoadFixture::fill_attributes()
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_dicom_save_load, DicomSaveLoadFixture )
+BOOST_FIXTURE_TEST_CASE( test_dicom_us_save_load, DicomSaveLoadFixture<unsigned short> )
 {
 	CDicom3DImageIOPlugin::Data imagelist;
 	imagelist.push_back(porg_image);
-	BOOST_REQUIRE(plugin.save("testsave3d.dcm", imagelist));
+	BOOST_REQUIRE(plugin.save("testsave3d-us.dcm", imagelist));
 
-	CDicom3DImageIOPlugin::PData images = plugin.load("testsave3d0001_0001.dcm");
+	CDicom3DImageIOPlugin::PData images = plugin.load("testsave3d-us0001_0001.dcm");
 	BOOST_REQUIRE(images);
 	BOOST_REQUIRE(images->size() == 1);
 	P3DImage pimage = *images->begin();
@@ -162,15 +164,46 @@ BOOST_FIXTURE_TEST_CASE( test_dicom_save_load, DicomSaveLoadFixture )
 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_dicom_ss_save_load, DicomSaveLoadFixture<signed short> )
+{
+	CDicom3DImageIOPlugin::Data imagelist;
+	imagelist.push_back(porg_image);
+	BOOST_REQUIRE(plugin.save("testsave3d-ss.dcm", imagelist));
 
-DicomSaveLoadFixture::DicomSaveLoadFixture():
+	CDicom3DImageIOPlugin::PData images = plugin.load("testsave3d-ss0001_0001.dcm");
+	BOOST_REQUIRE(images);
+	BOOST_REQUIRE(images->size() == 1);
+	P3DImage pimage = *images->begin();
+	BOOST_REQUIRE(pimage);
+
+	const C3DSSImage& load_image = dynamic_cast<const C3DSSImage&>(*pimage);
+
+	BOOST_CHECK_EQUAL(load_image.get_size(), size);
+
+	if (!equal(load_image.begin(), load_image.end(), org_image->begin()))  {
+		for(size_t z = 0; z < load_image.get_size().z; ++z)
+			for(size_t y = 0; y < load_image.get_size().y; ++y)
+				for(size_t x = 0; x < load_image.get_size().x; ++x) {
+					BOOST_CHECK_EQUAL(load_image(x,y,z),
+							  (*org_image)(x,y,z));
+				}
+	}
+
+	BOOST_CHECK_EQUAL(load_image.get_voxel_size(), org_image->get_voxel_size());
+	BOOST_CHECK(load_image ==  *org_image);
+
+}
+
+
+template <typename T> 
+DicomSaveLoadFixture<T>::DicomSaveLoadFixture():
 	size(4,5,6)
 {
-	org_image = new C3DUSImage(size);
+	org_image = new T3DImage<T>(size);
 	porg_image.reset( org_image );
 
 	short k = 1;
-	for (C3DUSImage::iterator i = org_image->begin(); i != org_image->end(); ++i, ++k)
+	for (auto i = org_image->begin(); i != org_image->end(); ++i, ++k)
 		*i = k;
 	fill_attributes();
 }

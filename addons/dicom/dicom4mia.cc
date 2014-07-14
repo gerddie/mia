@@ -307,10 +307,13 @@ P2DImage CDicomReader::get_image() const
 
 
 	if (bbpa == 16) {
-		if (pixel_signed) 
+		if (pixel_signed) {
+			cvdebug() << "Load signed short\n"; 
 			return load_image<signed short>();
-		else
+		} else {
+			cvdebug() << "Load unsigned short\n"; 
 			return load_image<unsigned short>();
+		}
 	}
 
 	throw create_exception<invalid_argument>( "CDicomReader: '", m_filename, 
@@ -546,18 +549,17 @@ void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(I out_begin, si
 	if (status.bad()) {
 		throw create_exception<runtime_error>( "DICOM: error loading pixel data:", status.text());
 	}
-
 	const Uint16 *values;
 	long unsigned int count;
 	OFCondition cnd = dcm.getDataset()->findAndGetUint16Array(DCM_PixelData, values, &count, false);
 	if (cnd.good()) {
 		if (size != count) {
 			throw create_exception<runtime_error>( "bogus file, expect ", size, " pixels, ", 
-						     "but got data for ", count, " pixels");
+							       "but got data for ", count, " pixels");
 		}
 		copy(values, values+count, out_begin);
 	}else {
-		throw create_exception<runtime_error>( "DICOM: required value PixelData:", status.text());
+		throw create_exception<runtime_error>( "DICOM: required value PixelData:", cnd.text());
 	}
 }
 
@@ -665,6 +667,7 @@ template <typename T>
 struct pixel_trait {
 	enum { AllocSize = 8 * sizeof(T)};
 	enum { UseSize = 8 * sizeof(T)};
+	enum { PixelRepn = 0};
 	enum { supported = 0 };
 	static void copy_pixel_data(DcmDataset& /*dataset*/, const T2DImage<T>& /*image*/) {
 		assert(!"There is no code here");
@@ -675,9 +678,24 @@ template <>
 struct pixel_trait<unsigned short> {
 	enum { AllocSize = 16};
 	enum { UseSize = 16};
+	enum { PixelRepn = 0};
 	enum { supported = 1};
 	static void copy_pixel_data(DcmDataset& dataset, const C2DUSImage& image) {
 		dataset.putAndInsertUint16Array(DCM_PixelData, (const Uint16*)&image(0,0), image.size());
+	}
+};
+
+template <>
+struct pixel_trait<signed short> {
+	enum { AllocSize = 16};
+	enum { UseSize = 16};
+	enum { PixelRepn = 1};
+	enum { supported = 1};
+	static void copy_pixel_data(DcmDataset& dataset, const C2DSSImage& image) {
+		OFCondition cnd = dataset.putAndInsertUint16Array(DCM_PixelData, (const Uint16*)&image(0,0), image.size());
+		if (!cnd.good()) {
+			throw create_exception<runtime_error>( "DICOM: unable to set signed short array to PixelData:", cnd.text());
+		}
 	}
 };
 
@@ -689,7 +707,9 @@ CDicomImageSaver::result_type CDicomImageSaver::operator ()(const T2DImage<T>& i
 
 	parent->setValueUint16(DCM_BitsAllocated, pixel_trait<T>::AllocSize);
 	parent->setValueUint16(DCM_BitsStored, pixel_trait<T>::UseSize);
-
+	parent->setValueUint16(DCM_HighBit, pixel_trait<T>::UseSize - 1);
+	parent->setValueUint16(DCM_PixelRepresentation, pixel_trait<T>::PixelRepn);
+	
 	auto  minmax = minmax_element(image.begin(), image.end());
 
 
@@ -709,9 +729,9 @@ void CDicomWriterData::setFloatArrayAsString(const DcmTagKey& key, const vector<
 	}
 
 	ostringstream value_str; 
-	value_str << setw(15)<< values[0]; 
+	value_str << setprecision(8)<< values[0]; 
 	for (unsigned i = 1; i < values.size(); ++i) 
-		value_str << '\\' << setw(15)<< values[i];
+		value_str << '\\' << setprecision(8)<< values[i];
 	
 	setValueString(key, value_str.str(), false); 
 }

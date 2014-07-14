@@ -120,17 +120,20 @@ BOOST_FIXTURE_TEST_CASE( test_dicom_load, DicomLoaderFixture )
 	BOOST_CHECK_EQUAL(image(128,114), 135);
 }
 
+
+template  <typename T> 
 struct DicomSaveLoadFixture {
 	DicomSaveLoadFixture();
 	CDicom2DImageIOPlugin plugin;
 protected:
 	void fill_attributes();
 	C2DBounds size;
-	C2DUSImage *org_image;
+	T2DImage<T> *org_image;
 	P2DImage porg_image;
 };
 
-void DicomSaveLoadFixture::fill_attributes()
+template  <typename T> 
+void DicomSaveLoadFixture<T>::fill_attributes()
 {
 	org_image->set_attribute(IDMediaStorageSOPClassUID,  "somevalue");
 	org_image->set_attribute(IDSOPClassUID,  "othervalue");
@@ -154,28 +157,54 @@ void DicomSaveLoadFixture::fill_attributes()
 
 }
 
-DicomSaveLoadFixture::DicomSaveLoadFixture():
+template  <typename T> 
+DicomSaveLoadFixture<T>::DicomSaveLoadFixture():
 	size(10,12)
 {
-	org_image = new C2DUSImage(size);
+	org_image = new T2DImage<T>(size);
 	short k = 0;
-	for (C2DUSImage::iterator i = org_image->begin(); i != org_image->end(); ++i, ++k)
+	for (auto i = org_image->begin(); i != org_image->end(); ++i, ++k)
 		*i = k;
 
 	porg_image.reset(org_image);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_dicom_save_load, DicomSaveLoadFixture )
+BOOST_FIXTURE_TEST_CASE( test_dicom_ss_save_load, DicomSaveLoadFixture<signed short> )
 {
 
 	fill_attributes();
 
 	CDicom2DImageIOPlugin::Data imagelist;
 	imagelist.push_back(porg_image);
-	BOOST_REQUIRE(plugin.save("testsave.dcm", imagelist));
+	BOOST_REQUIRE(plugin.save("testsave-ss.dcm", imagelist));
 
-	CDicom2DImageIOPlugin::PData images = plugin.load("testsave.dcm");
+	CDicom2DImageIOPlugin::PData images = plugin.load("testsave-ss.dcm");
+	BOOST_REQUIRE(images);
+	BOOST_REQUIRE(images->size() == 1);
+	P2DImage pimage = *images->begin();
+	BOOST_REQUIRE(pimage);
+
+	BOOST_CHECK(*pimage ==  *org_image);
+
+	const C2DSSImage& load_image = dynamic_cast<const C2DSSImage&>(*pimage);
+
+	BOOST_CHECK_EQUAL(load_image.get_size(), size);
+
+	BOOST_CHECK(equal(load_image.begin(), load_image.end(), org_image->begin()));
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_dicom_us_save_load, DicomSaveLoadFixture<unsigned short> )
+{
+
+	fill_attributes();
+
+	CDicom2DImageIOPlugin::Data imagelist;
+	imagelist.push_back(porg_image);
+	BOOST_REQUIRE(plugin.save("testsave-us.dcm", imagelist));
+
+	CDicom2DImageIOPlugin::PData images = plugin.load("testsave-us.dcm");
 	BOOST_REQUIRE(images);
 	BOOST_REQUIRE(images->size() == 1);
 	P2DImage pimage = *images->begin();
@@ -191,7 +220,7 @@ BOOST_FIXTURE_TEST_CASE( test_dicom_save_load, DicomSaveLoadFixture )
 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_dicom_load_nothing, DicomSaveLoadFixture )
+BOOST_FIXTURE_TEST_CASE( test_dicom_load_nothing, DicomSaveLoadFixture<signed short> )
 {
 	CDicom2DImageIOPlugin plugin;
 	CDicom2DImageIOPlugin::PData images = plugin.load("nonexistence.dcm");
