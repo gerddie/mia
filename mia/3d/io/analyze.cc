@@ -451,8 +451,7 @@ CAnalyze3DImageIOPlugin::PData CAnalyze3DImageIOPlugin::do_load(const string&  f
 		}
 		P3DImage image(read_image(size, hdr.dime.datatype , data_file));
 		image->set_voxel_size(voxel);
-		C3DOrientationAndPosition  o(orientation, C3DFVector::_0, C3DFVector::_1 /* voxelsize!! */, Quaternion()); 
-		image->set_orientation(o);
+		image->set_orientation(orientation);
 		result->push_back(image);
 	}
 
@@ -539,7 +538,7 @@ bool CAnalyze3DImageIOPlugin::do_save(const string& fname, const Data& data) con
 
 	auto orient = (*k)->get_orientation();
 
-	switch (orient.get_axis_orientation()) {
+	switch (orient) {
 	case ior_axial:
 			hdr.hist.orient = ao_transverse_unflipped;
 			break;

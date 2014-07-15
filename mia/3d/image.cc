@@ -47,23 +47,24 @@ EPixelType C3DImage::get_pixel_type() const
 	return m_pixel_type;
 }
 
-C3DOrientationAndPosition C3DImage::get_orientation() const
+E3DImageOrientation C3DImage::get_orientation() const
 {
+	E3DImageOrientation axis_orientation = ior_default; 
 	const PAttribute attr = get_attribute("orientation");
-	if (!attr)
-		return C3DOrientationAndPosition(); 
-	
-	auto op = dynamic_cast<const C3DImageOrientationPositionAttribute *>(attr.get());
-	if (!op) {
-		cvwarn() << "C3DImage::get_orientation: Bogus orientation attribute, return default\n"; 
-		return C3DOrientationAndPosition(); 
+	if (attr) {
+		auto op = dynamic_cast<const TAttribute<E3DImageOrientation> *>(attr.get());
+		if (!op) {
+			cvwarn() << "C3DImage::get_orientation: Bogus orientation attribute, return default\n"; 
+		}else {
+			axis_orientation = *op; 
+		}
 	}
-	return *op; 
+	return axis_orientation; 
 }
 
-void C3DImage::set_orientation(const C3DOrientationAndPosition& orient)
+void C3DImage::set_orientation(E3DImageOrientation orient)
 {
-	set_attribute("orientation", PAttribute(new C3DImageOrientationPositionAttribute(orient))); 
+	set_attribute("orientation", PAttribute(new TAttribute<E3DImageOrientation>(orient)));
 }
 
 void C3DImage::set_voxel_size(const C3DFVector& voxel)

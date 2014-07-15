@@ -64,17 +64,17 @@ static void creat_and_check(EPixelType type)
 	image->set_voxel_size(voxel);
 	BOOST_CHECK(voxel == image->get_voxel_size());
 
-	image->set_orientation(C3DOrientationAndPosition(ior_saggital));
-	BOOST_CHECK_EQUAL(image->get_orientation().get_axis_orientation(), ior_saggital);
+	image->set_orientation(ior_saggital);
+	BOOST_CHECK_EQUAL(image->get_orientation(), ior_saggital);
 
-	image->set_orientation(C3DOrientationAndPosition(ior_axial));
-	BOOST_CHECK_EQUAL(image->get_orientation().get_axis_orientation(), ior_axial);
+	image->set_orientation(ior_axial);
+	BOOST_CHECK_EQUAL(image->get_orientation(), ior_axial);
 
 
 	T3DImage<T> image2(*timg);
 	BOOST_CHECK(image2.get_size()  == C3DBounds(2,2, 2));
 
-	BOOST_CHECK_EQUAL(image2.get_orientation().get_axis_orientation(), ior_axial);
+	BOOST_CHECK_EQUAL(image2.get_orientation(), ior_axial);
 
 	BOOST_CHECK(voxel == image2.get_voxel_size());
 	C3DFVector voxel2(3.2f,4.3f,1.5f);

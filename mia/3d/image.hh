@@ -114,13 +114,13 @@ public:
 	void set_rotation(const C3DRotation& voxel);
 
 	///@returns the orientation of the image 
-	C3DOrientationAndPosition get_orientation() const;
+	E3DImageOrientation get_orientation() const;
 
 	/** Set the orientation of the image 
 	    @param orient 
 	    @remark orientation is currently not really used
 	*/
-	void set_orientation(const C3DOrientationAndPosition& orient);
+	void set_orientation(E3DImageOrientation orient);
 private:
 	EPixelType m_pixel_type;
 };
