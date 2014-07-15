@@ -475,10 +475,14 @@ PAttribute C3DValueAttributeTranslator<T>::do_from_string(const std::string& val
 }
 
 template <typename T>
-void C3DValueAttributeTranslator<T>::register_for(const std::string& key)
+bool C3DValueAttributeTranslator<T>::register_for(const std::string& key)
 {
-	static C3DValueAttributeTranslator me;
-	me.do_register(key);
+	C3DValueAttributeTranslator *me = new C3DValueAttributeTranslator();
+	if (!me->do_register(key)) {
+		return false; 
+		delete me; 
+	}
+	return true; 
 }
 
 template class C3DValueAttribute<float>;

@@ -157,22 +157,23 @@ CStringAttrTranslatorMap::CStringAttrTranslatorMap()
 }
 
 
-void CStringAttrTranslatorMap::add(const string& key, const CAttrTranslator* const t)
+bool CStringAttrTranslatorMap::add(const string& key, CAttrTranslator* t)
 {
 	CMap::const_iterator k = m_translators.find(key);
 	if ( k != m_translators.end()) {
 		if ( typeid(*t) != typeid(*k->second))
 			throw invalid_argument(string("translator with key '") + key + ("' already defined otherwise"));
 		else
-			return;
+			return false;
 	}
 	cvdebug() << "add translator type '" << typeid(*t).name() << "' for '" << key << "'\n";
-	m_translators.insert(pair<string, const CAttrTranslator* const>(key,t));
+	m_translators.insert(make_pair(key,shared_ptr<CAttrTranslator>(t))); 
+	return true;
 }
 
 PAttribute CStringAttrTranslatorMap::to_attr(const string& key, const string& value) const
 {
-	map<string, const CAttrTranslator * const>::const_iterator i = m_translators.find(key);
+	auto i = m_translators.find(key);
 	if ( i != m_translators.end())
 		return i->second->from_string(value);
 	else
@@ -194,9 +195,9 @@ CAttrTranslator::CAttrTranslator()
 {
 }
 
-void CAttrTranslator::do_register(const std::string& key)
+bool CAttrTranslator::do_register(const std::string& key)
 {
-	CStringAttrTranslatorMap::instance().add(key, this);
+	return CStringAttrTranslatorMap::instance().add(key, this);
 }
 
 bool operator == (const CAttributeMap& am, const CAttributeMap& bm)

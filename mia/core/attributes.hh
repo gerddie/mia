@@ -413,7 +413,7 @@ protected:
 	   Register this translator to handle attributes with the given key 
 	   @param key 
 	 */
-	void do_register(const std::string& key);
+	bool do_register(const std::string& key);
 };
 
 /**
@@ -447,9 +447,9 @@ private:
 	   \param t the translator object
 	 */
 
-	void add(const std::string& key, const CAttrTranslator *  const t);
+	bool add(const std::string& key, CAttrTranslator * t);
 
-	typedef std::map<std::string, const CAttrTranslator *  const> CMap;
+	typedef std::map<std::string, std::shared_ptr<CAttrTranslator>> CMap;
 	CMap m_translators;
 };
 
@@ -502,7 +502,7 @@ public:
 	   Any translator type can be registered multiple times but keys must be different
 	   if the target translation type is different.
 	 */
-	static  void register_for(const std::string& key);
+	static  bool register_for(const std::string& key);
 private:
 	virtual PAttribute do_from_string(const std::string& value) const;
 };
@@ -714,10 +714,14 @@ bool TAttribute<T>::do_is_less(const CAttribute& other) const
 }
 
 template <typename T>
-void TTranslator<T>::register_for(const std::string& key)
+bool TTranslator<T>::register_for(const std::string& key)
 {
-	static TTranslator<T> me;
-	me.do_register(key);
+	TTranslator<T> * me = new TTranslator<T>();
+	if (!me->do_register(key)) {
+		delete me; 
+		return false; 
+	}
+	return true; 
 }
 
 template <typename T>

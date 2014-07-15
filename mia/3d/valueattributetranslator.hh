@@ -34,7 +34,7 @@ NS_MIA_BEGIN
 template <typename T>
 class EXPORT_3D C3DValueAttributeTranslator: public CAttrTranslator {
 public:
-	static  void register_for(const std::string& key);
+	static  bool register_for(const std::string& key);
 private:
 	PAttribute do_from_string(const std::string& value) const;
 };
