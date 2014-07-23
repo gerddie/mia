@@ -492,7 +492,12 @@ float CSlopeStatistics::get_level_change(size_t center) const
 
 float CSlopeStatisticsImpl::get_level_change(size_t center) const
 {
-	assert(center < m_series.size() - 1 && center > 0);
+	if (center >= m_series.size() - 1) {
+		return -(accumulate(m_series.begin(), m_series.begin(), 0.0f) / m_series.size()); 
+	}
+	if  (center <= 0) {
+		return (accumulate(m_series.begin(), m_series.begin(), 0.0f) / m_series.size()); 
+	}
 	
 	float before = accumulate(m_series.begin(), m_series.begin() + center, 0.0f) / center; 
 	float after = accumulate(m_series.begin() + center + 1, m_series.end(), 0.0f) / (m_series.size() - center - 1);
