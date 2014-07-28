@@ -92,6 +92,7 @@ std::pair<double, NCCGradHelper> NCCSums::get_grad_helper() const {
                 v2df prod = ms2_a * ms2_b; 
 
 #ifdef BUILD_SSE_ATTRIBUTE_VECTOR_CAN_USE_SUBSCRIPT
+                double sumab = m_sumab - prod[0] * m_n; 
 		
 		if (prod[1] > 1e-5) {
                         result = make_pair(1.0 - sumab * sumab / prod[1], 
