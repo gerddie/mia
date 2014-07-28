@@ -24,6 +24,10 @@
 #include <utility> 
 #include <mia/core/defines.hh>
 
+#if defined(__SSE2__)
+#include <emmintrin.h>
+#endif
+
 NS_MIA_BEGIN
 
 class NCCGradHelper  {

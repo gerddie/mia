@@ -93,6 +93,7 @@ ENDIF(UNIX)
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkSSEAttributeVectorCanUseSubscript.cmake)
 
 
 IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)

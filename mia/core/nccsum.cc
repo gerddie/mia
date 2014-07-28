@@ -21,10 +21,6 @@
 #include <mia/core/msgstream.hh> 
 #include <mia/core/nccsum.hh> 
 
-#if defined(__SSE2__)
-#include <emmintrin.h>
-#endif
-
 
 NS_MIA_BEGIN
 
@@ -44,14 +40,38 @@ double NCCSums::value() const {
                 v2df ms2_a = _mm_unpacklo_pd(mean, sum2); 
                 v2df ms2_b = _mm_unpackhi_pd(mean, sum2); 
                 
-                v2df prod = ms2_a * ms2_b; 
-                double sumab = m_sumab - prod[0] * m_n; 
+                v2df prod = ms2_a * ms2_b;
+		
+// new versiond of gcc can access these array directly 
 
+#ifdef BUILD_SSE_ATTRIBUTE_VECTOR_CAN_USE_SUBSCRIPT
+
+                double sumab = m_sumab - prod[0] * m_n; 
+		
                 if (prod[1] > 1e-10) {
                         result = 1.0 - sumab * sumab / prod[1]; 
                 }else if (sum2[0] < 1e-5 && sum2[1] < 1e-5) {
 			result = 0.0; 
 		}
+
+#else // !BUILD_SSE_ATTRIBUTE_VECTOR_CAN_USE_SUBSCRIPT
+
+		double __attribute__((aligned(16))) mprod[2]; 
+		_mm_store_pd(mprod, prod); 
+
+                double sumab = m_sumab - mprod[0] * m_n; 
+
+		double __attribute__((aligned(16))) msum2[2]; 
+		_mm_store_pd(msum2, sum2); 
+
+		if (mprod[1] > 1e-10) {
+                        result = 1.0 - sumab * sumab / mprod[1]; 
+                }else if (msum2[0] < 1e-5 && msum2[1] < 1e-5) {
+			result = 0.0; 
+		}
+
+#endif // BUILD_SSE_ATTRIBUTE_VECTOR_CAN_USE_SUBSCRIPT
+ 
         }
         return result; 
 }
@@ -70,10 +90,10 @@ std::pair<double, NCCGradHelper> NCCSums::get_grad_helper() const {
                 v2df ms2_b = _mm_unpackhi_pd(mean, sum2); 
                 
                 v2df prod = ms2_a * ms2_b; 
-                
-                double sumab = m_sumab - prod[0] * m_n; 
 
-                if (prod[1] > 1e-5) {
+#ifdef BUILD_SSE_ATTRIBUTE_VECTOR_CAN_USE_SUBSCRIPT
+		
+		if (prod[1] > 1e-5) {
                         result = make_pair(1.0 - sumab * sumab / prod[1], 
                                            NCCGradHelper(sumab / prod[1], sumab / sum2[0], mean[0], mean[1])); 
 		} else {
@@ -81,10 +101,35 @@ std::pair<double, NCCGradHelper> NCCSums::get_grad_helper() const {
 				result = make_pair(0.0, NCCGradHelper()); 
 			}
                 }
+
+#else // !BUILD_SSE_ATTRIBUTE_VECTOR_CAN_USE_SUBSCRIPT
+
+		double __attribute__((aligned(16))) mprod[2]; 
+		_mm_store_pd(mprod, prod); 
+
+		double __attribute__((aligned(16))) mmean[2]; 
+		_mm_store_pd(mmean, mean); 
+
+		double __attribute__((aligned(16))) msum2[2]; 
+		_mm_store_pd(msum2, sum2); 
+		
+                double sumab = m_sumab - mprod[0] * m_n; 
+
+                if (mprod[1] > 1e-5) {
+                        result = make_pair(1.0 - sumab * sumab / mprod[1], 
+                                           NCCGradHelper(sumab / mprod[1], sumab / msum2[0], mmean[0], mmean[1])); 
+		} else {
+			if (msum2[0] < 1e-5 && msum2[1] < 1e-5) {
+				result = make_pair(0.0, NCCGradHelper()); 
+			}
+                }
+#endif  // BUILD_SSE_ATTRIBUTE_VECTOR_CAN_USE_SUBSCRIPT
 	}
         return result; 
 }
-#else 
+
+#else // !__SSE2__
+
 double NCCSums::value() const
 {
         double  result = 1.0;
@@ -148,6 +193,6 @@ std::pair<double, NCCGradHelper> NCCSums::get_grad_helper() const
         return result; 
 }
 
-#endif 
+#endif // __SSE2__
 
 NS_MIA_END
