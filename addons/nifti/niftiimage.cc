@@ -432,4 +432,9 @@ std::string CNifti3DImageIOPlugin::do_get_preferred_suffix() const
         return "nii"; 
 }
 
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new CNifti3DImageIOPlugin();
+}
+
 NS_END
