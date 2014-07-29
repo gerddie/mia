@@ -92,7 +92,8 @@ std::pair<double, NCCGradHelper> NCCSums::get_grad_helper() const {
                 v2df prod = ms2_a * ms2_b; 
 
 #ifdef BUILD_SSE_ATTRIBUTE_VECTOR_CAN_USE_SUBSCRIPT
-		
+	
+	        double sumab = m_sumab - prod[0] * m_n;	
 		if (prod[1] > 1e-5) {
                         result = make_pair(1.0 - sumab * sumab / prod[1], 
                                            NCCGradHelper(sumab / prod[1], sumab / sum2[0], mean[0], mean[1])); 
@@ -106,17 +107,17 @@ std::pair<double, NCCGradHelper> NCCSums::get_grad_helper() const {
 
 		double __attribute__((aligned(16))) mprod[2]; 
 		_mm_store_pd(mprod, prod); 
-
+		
 		double __attribute__((aligned(16))) mmean[2]; 
 		_mm_store_pd(mmean, mean); 
-
+		
 		double __attribute__((aligned(16))) msum2[2]; 
 		_mm_store_pd(msum2, sum2); 
 		
-                double sumab = m_sumab - mprod[0] * m_n; 
-
-                if (mprod[1] > 1e-5) {
-                        result = make_pair(1.0 - sumab * sumab / mprod[1], 
+		double sumab = m_sumab - mprod[0] * m_n; 
+		
+		if (mprod[1] > 1e-5) {
+			result = make_pair(1.0 - sumab * sumab / mprod[1], 
                                            NCCGradHelper(sumab / mprod[1], sumab / msum2[0], mmean[0], mmean[1])); 
 		} else {
 			if (msum2[0] < 1e-5 && msum2[1] < 1e-5) {
