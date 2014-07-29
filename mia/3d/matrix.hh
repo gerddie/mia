@@ -25,8 +25,17 @@
 #include <mia/3d/vector.hh>
 #include <mia/core/msgstream.hh>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#endif 
+
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues> 
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 
 NS_MIA_BEGIN
 

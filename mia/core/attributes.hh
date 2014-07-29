@@ -325,8 +325,6 @@ public:
 	 */
 	void set_attribute(const std::string& key, const char* value);
 
-
-
 	
 	/// returns the requested attribute as string, returns an empty string if attribute doesn't exist
 	const std::string get_attribute_as_string(const std::string& key)const;
@@ -341,6 +339,17 @@ public:
 	*/
 	template <typename T>
 	const T get_attribute_as(const std::string& key)const;
+
+	/**
+	   Look for a certain attribute and try to cast it to the output type. 
+	   If the attribute is not found, or the cast goes wrong use the default value
+	   In the latter case a warning is written out. 
+	   @param key the key of the attribute to look up. 
+	   @param default_value the default value 
+	   @returns the value of the attribute 
+	*/
+	template <typename T>
+	const T get_attribute_as(const std::string& key, T default_value)const;
 
 	/**
 	   Delete the attribute with a given key from the list 
@@ -740,6 +749,19 @@ const T CAttributedData::get_attribute_as(const std::string& key)const
 		throw create_exception<std::invalid_argument>("CAttributedData: no attribute '", key, "' found");
 }
 
+template <typename T>
+const T CAttributedData::get_attribute_as(const std::string& key, T default_value)const
+{
+	PAttribute pattr = get_attribute(key);
+	if (!pattr) 
+		return default_value; 
+	auto attr = dynamic_cast<const TAttribute<T> *>(pattr.get());
+	if (!attr) {
+		cvwarn() << "Attribute '" << key << "'exists but is not of the expected type, returning default\n";
+		return default_value; 
+	}
+	return *attr; 
+}
 
 
 typedef TTranslator<double> CDoubleTranslator;
