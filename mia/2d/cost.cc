@@ -19,17 +19,21 @@
  */
 
 #include <mia/core/export_handler.hh>
+
 #include <mia/2d/cost.hh>
+#include <mia/core/cost.cxx>
 #include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>
-#include <mia/core/cost.cxx>
+
+
 
 
 NS_MIA_BEGIN
 namespace bfs=::boost::filesystem; 
 
-template class EXPORT_HANDLER TCost<C2DImage, C2DFVectorfield>;
+template class EXPORT_2D TCost<C2DImage, C2DFVectorfield>;
 
+EXPLICIT_INSTANCE_HANDLER(C2DImageCost);
 
 C2DImageCostPluginHandlerTestPath::C2DImageCostPluginHandlerTestPath()
 {
@@ -38,14 +42,14 @@ C2DImageCostPluginHandlerTestPath::C2DImageCostPluginHandlerTestPath()
 
 }
 
-template <> const char *  const 
+template <> const char *  const
 TPluginHandler<TFactory<C2DImageCost>>::m_help =  
 	"2D image similarity kernels evaluate the according similarity measure between "
 	"two images. These kernels may be used standalone, like e.g. in linear registration, "
 	"or will be called from generalized image similarity cost plug-ins that also take "
 	"care of transforming and scaling the images during the image registration process. ";
 
-EXPLICIT_INSTANCE_HANDLER(C2DImageCost);
+
 
 NS_MIA_END
 

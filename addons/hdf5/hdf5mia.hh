@@ -38,6 +38,21 @@
 #include <miaconfig.h> 
 #include <hdf5.h>
 
+
+#ifdef WIN32
+#ifdef hdf54mia_EXPORTS
+#define HDF54MIA_EXPORT __declspec(dllexport)
+#else
+#define HDF54MIA_EXPORT __declspec(dllimport)
+#endif
+#else
+#ifdef __GNUC__
+#    define HDF54MIA_EXPORT __attribute__((visibility("default")))
+#else 
+#    define HDF54MIA_EXPORT
+#endif
+#endif
+
 NS_MIA_BEGIN
 
 /**
@@ -51,7 +66,7 @@ NS_MIA_BEGIN
    i.e. sometimes the here defined intefaces accept plain HDF5 types and sometimes the 
    wrapper is needed. However, the wrapper also provides an automatic conversion to the handle type. 
 */
-struct H5Handle: public  TSingleReferencedObject<hid_t> {
+struct HDF54MIA_EXPORT H5Handle: public  TSingleReferencedObject<hid_t> {
 	H5Handle() = default; 
 	H5Handle(hid_t hid, const Destructor& d); 
 	void set_parent(const H5Handle& parent); 
@@ -60,37 +75,37 @@ private:
 	TSingleReferencedObject<hid_t> m_parent;
 }; 
 
-struct H5SpaceHandle: public H5Handle {
+struct HDF54MIA_EXPORT H5SpaceHandle: public H5Handle {
         H5SpaceHandle(hid_t hid);
 };
 
-struct H5TypeHandle: public H5Handle {
+struct HDF54MIA_EXPORT H5TypeHandle: public H5Handle {
         H5TypeHandle(hid_t hid);
 };
 
 
-struct H5GroupHandle: public H5Handle {
+struct HDF54MIA_EXPORT H5GroupHandle: public H5Handle {
         H5GroupHandle(hid_t hid);
 };
 
-struct H5DatasetHandle: public H5Handle {
+struct HDF54MIA_EXPORT H5DatasetHandle: public H5Handle {
         H5DatasetHandle(hid_t hid);
 };
 
-struct H5AttributeHandle: public H5Handle {
+struct HDF54MIA_EXPORT H5AttributeHandle: public H5Handle {
         H5AttributeHandle(hid_t hid);
 };
 
-struct H5FileHandle: public H5Handle {
+struct HDF54MIA_EXPORT H5FileHandle: public H5Handle {
         H5FileHandle(hid_t hid);
 };
 
-struct H5PropertyHandle: public H5Handle {
+struct HDF54MIA_EXPORT H5PropertyHandle: public H5Handle {
         H5PropertyHandle(hid_t hid);
 };
 
 
-class H5Base {
+class HDF54MIA_EXPORT H5Base {
 protected: 
 	H5Base(const H5Handle& handle); 
 public:
@@ -109,7 +124,7 @@ private:
 }; 
 
 
-class H5Property: public H5Base {
+class HDF54MIA_EXPORT H5Property: public H5Base {
 	H5Property (hid_t id); 
 public: 
 	H5Property() = default; 
@@ -117,7 +132,7 @@ public:
 }; 
 
 
-class H5File: public H5Base {
+class HDF54MIA_EXPORT H5File: public H5Base {
 	H5File(hid_t id); 
 public: 
 	H5File() = default; 
@@ -126,7 +141,7 @@ public:
 	static H5File open(const char *name, unsigned flags, hid_t access_prop);
 }; 
 
-class H5Space: public H5Base {
+class HDF54MIA_EXPORT H5Space: public H5Base {
 public: 
 	explicit H5Space (hid_t id); 
 	H5Space() = default; 
@@ -138,7 +153,7 @@ public:
 	std::vector<hsize_t> get_size() const; 
 }; 
 
-class H5Group: public H5Base {
+class HDF54MIA_EXPORT H5Group: public H5Base {
 public: 
 	explicit H5Group (hid_t id); 
 	H5Group() = default;
@@ -148,7 +163,7 @@ public:
 }; 
 
 
-class H5Type: public H5Base {
+class HDF54MIA_EXPORT H5Type: public H5Base {
 public: 
 	explicit H5Type (hid_t id); 
 	H5Type() = default; 
@@ -160,7 +175,7 @@ private:
 	int do_get_mia_type_id() const;
 }; 
 
-class H5Dataset: public H5Base {
+class HDF54MIA_EXPORT H5Dataset: public H5Base {
 	H5Dataset (hid_t id, const H5Space& space, const char *name); 
 public: 
 	H5Dataset() = default; 

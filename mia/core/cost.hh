@@ -117,6 +117,5 @@ private:
 	PData m_reference; 
 };
 
-
 NS_MIA_END
 #endif

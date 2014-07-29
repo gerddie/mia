@@ -21,6 +21,7 @@
 #ifndef SegSet_h
 #define SegSet_h
 
+#include <mia/core/ioplugin.hh>
 #include <mia/2d/SegFrame.hh>
 #include <mia/2d/BoundingBox.hh>
 
@@ -37,7 +38,7 @@ NS_MIA_BEGIN
    A set of slices containing segmentation information specifically designed for 
    myocardial perfusion image series. 
 */
-class EXPORT_2D CSegSet {
+class EXPORT_2D CSegSet: public CIOData {
 public:
 	/// convenience typedef for the frames comprising a segmentation set 
 	typedef std::vector<CSegFrame> Frames;

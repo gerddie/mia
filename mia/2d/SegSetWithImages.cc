@@ -25,12 +25,17 @@
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 
+#include <mia/core/export_handler.hh>
+#include <mia/core/ioplugin.cxx>
+#include <mia/core/iohandler.cxx>
 
 
 namespace bfs=boost::filesystem;
 
 NS_MIA_BEGIN
 using namespace std;
+
+const char *CSegSetWithImages::data_descr = "2dmyocardsegset"; 
 
 CSegSetWithImages::CSegSetWithImages()
 {
@@ -63,6 +68,11 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 		iframe->set_image(image); 
 		++iframe;
 	}
+}
+
+CSegSetWithImages *CSegSetWithImages::clone() const
+{
+	return new CSegSetWithImages(*this);
 }
 
 // sets the image series 
@@ -169,6 +179,16 @@ CSegFrame CSegFrameCropper::operator()(const CSegFrame& frame, const C2DImage& i
 	return result;
 
 }
+
+
+template class TIOPlugin<CSegSetWithImages>;
+template class TIOPluginHandler<CSegSetWithImagesIOPlugin>;
+template class TPluginHandler<CSegSetWithImagesIOPlugin>;
+template class THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin >>;
+
+template <> const char *  const
+TPluginHandler<CSegSetWithImagesIOPlugin>::m_help =  
+	"Input/output of 2D image series with segmentations.";
 
 
 NS_MIA_END

@@ -18,6 +18,7 @@
  *
  */
 
+#undef mia_2d_datafield_cxx
 #ifndef mia_2d_datafield_cxx
 #define mia_2d_datafield_cxx
 
@@ -81,7 +82,7 @@ void T2DDatafield<T>::make_single_ref()
 }
 
 template <class T> 
-typename T2DDatafield<T>::size_type T2DDatafield<T>::size()const
+typename T2DDatafield<T>::size_type T2DDatafield<T>::size() const
 {
 	return m_data->size(); 
 }

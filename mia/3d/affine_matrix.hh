@@ -32,7 +32,7 @@ NS_MIA_BEGIN
    This class implements affine 3D transformations. The storage layout is compatible 
    with OpenGL. 
 */
-class CAffinTransformMatrix {
+class EXPORT_3D CAffinTransformMatrix {
 
 public: 
 	/// standard constructor, initializes the transformation with the identity. 
@@ -154,7 +154,7 @@ private:
 /**
    Multiply two affine matrices
  */
-CAffinTransformMatrix operator * (const CAffinTransformMatrix& lhs, const CAffinTransformMatrix& rhs); 
+EXPORT_3D CAffinTransformMatrix operator * (const CAffinTransformMatrix& lhs, const CAffinTransformMatrix& rhs); 
 
 
 

@@ -26,6 +26,8 @@
 
 NS_MIA_BEGIN
 
+
+extern template class EXPORT_3D TCost<C3DImage, C3DFVectorfield>;
 /**
    @ingroup registration 
    @brief the image-to-image cost function base class 

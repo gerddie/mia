@@ -26,6 +26,8 @@
 
 NS_MIA_BEGIN
 
+
+extern template class EXPORT_2D TMaskedCost<C2DImage, C2DBitImage, C2DFVectorfield>;
 /**
    @ingroup registration 
    @brief the image-to-image cost function base class 

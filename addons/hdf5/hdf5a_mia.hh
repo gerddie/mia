@@ -25,7 +25,7 @@
 
 NS_MIA_BEGIN
 
-class H5Attribute: public H5Base {
+class HDF54MIA_EXPORT H5Attribute: public H5Base {
 public: 
 	H5Attribute(hid_t id, const H5Space& space); 
 	H5Attribute() = default; 
@@ -44,7 +44,7 @@ private:
 	H5Space m_space; 
 }; 
 
-class H5AttributeTranslator {
+class HDF54MIA_EXPORT H5AttributeTranslator {
 public: 
 	virtual H5Attribute apply(const H5Base& parent, const char *name, const CAttribute& attr) const = 0; 
 	virtual PAttribute apply(const char *name, const H5Attribute& attr ) const = 0; 
@@ -52,7 +52,7 @@ public:
 typedef std::shared_ptr<H5AttributeTranslator> PH5AttributeTranslator; 
 
 
-class H5AttributeTranslatorMap {
+class HDF54MIA_EXPORT H5AttributeTranslatorMap {
 	H5AttributeTranslatorMap(); 
 
 	H5AttributeTranslatorMap(const H5AttributeTranslatorMap& other) = delete; 
@@ -68,7 +68,7 @@ private:
 	TranslatorMap m_map;
 }; 
 
-void translate_to_hdf5_attributes(const H5Base& target, const CAttributedData& data); 
+void HDF54MIA_EXPORT translate_to_hdf5_attributes(const H5Base& target, const CAttributedData& data); 
 
 NS_MIA_END
 

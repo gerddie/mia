@@ -26,6 +26,7 @@
 
 NS_MIA_BEGIN
 
+extern template class EXPORT_2D TCost<C2DImage, C2DFVectorfield>;
 /// the base class for simple 2D image cost functions 
 typedef TCost<C2DImage, C2DFVectorfield> C2DImageCost;
 

@@ -39,10 +39,12 @@ typedef TIOPlugin<C3DTransformation> C3DTransformationIO;
 */
 
 
-class C3DTransformIOPluginHandlerImpl: public TIOPluginHandler<C3DTransformationIO> {
+class EXPORT_3D C3DTransformIOPluginHandlerImpl: public TIOPluginHandler<C3DTransformationIO> {
 protected:  
 	C3DTransformIOPluginHandlerImpl(); 
 };
+
+extern template class EXPORT_3D THandlerSingleton< C3DTransformIOPluginHandlerImpl >; 
 /**
    \ingroup io
    \brief Plug-in handler for the transformation IO plug-ins 

@@ -33,49 +33,29 @@ NS_MIA_BEGIN
    This class provides an  interface to make the IO opf vector fields possible 
  */
 template <typename T>
-class EXPORT_2D T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
+class EXPORT_2D  T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
 public:
 	/// plug.in related type description string 
 	static const char *data_descr;
 
-	T2DVectorfield(){};
+	T2DVectorfield();
 
 	/**
 	   Contruct a vector field of the given size 
 	   @param size of vector field 
 	 */
-	T2DVectorfield(const C2DBounds& size):
-		T2DDatafield<T>(size) {};
+	T2DVectorfield(const C2DBounds& size);
 
 
 	/**
 	   @param data meta data  
 	   @param size of vector field 
 	 */
-	T2DVectorfield(const CAttributedData& data, const C2DBounds& size):
-		T2DDatafield<T>(size),
-		CAttributedData(data)
-	{
-	}
+	T2DVectorfield(const CAttributedData& data, const C2DBounds& size); 
 
-	C2DFVector get_pixel_size() const {
-		const PAttribute attr = get_attribute("pixel");
-		if (!attr) {
-			cvinfo() << "C2DImage::get_pixel_size(): pixel size not defined\n";
-			return C2DFVector(1,1);
-		}
-		
-		const TAttribute<C2DFVector> * vs = dynamic_cast<TAttribute<C2DFVector> *>(attr.get());
-		if (!vs){
-			cvinfo() << "C2DImage::get_pixel_size(): pixel size wrong type\n";
-			return C2DFVector(1,1);
-		}
-		return *vs;
-	}
+	C2DFVector get_pixel_size() const; 
 
-	void set_pixel_size(const C2DFVector& pixel){
-		set_attribute("pixel", PAttribute(new TAttribute<C2DFVector>(pixel)));
-	}
+	void set_pixel_size(const C2DFVector& pixel); 
 
 };
 

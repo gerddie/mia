@@ -252,8 +252,8 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 #endif
 
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
-	template class T2DInterpolator<TYPE>;		\
-	template class T2DConvoluteInterpolator<TYPE>
+	template class EXPORT_2D T2DInterpolator<TYPE>;		\
+	template class EXPORT_2D T2DConvoluteInterpolator<TYPE>
 
 INSTANCIATE_INTERPOLATORS(bool);
 INSTANCIATE_INTERPOLATORS(unsigned char);
@@ -272,8 +272,8 @@ INSTANCIATE_INTERPOLATORS(unsigned long);
 
 INSTANCIATE_INTERPOLATORS(C2DFVector);
 
-template class T1DInterpolator<C2DFVector>;
-template class T1DConvoluteInterpolator<C2DFVector>;
+template class EXPORT_2D T1DInterpolator<C2DFVector>;
+template class EXPORT_2D T1DConvoluteInterpolator<C2DFVector>;
 
 
 

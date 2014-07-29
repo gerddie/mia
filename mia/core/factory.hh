@@ -346,17 +346,17 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& pa
 	Do some explicit instanciation for a plugin based on TFactory 
 */
 #define EXPLICIT_INSTANCE_PLUGIN(T) \
-	template class TPlugin<T::plugin_data, T::plugin_type>; \
-	template class TFactory<T>;					
+	template class EXPORT_HANDLER TPlugin<T::plugin_data, T::plugin_type>; \
+	template class EXPORT_HANDLER TFactory<T>;					
 
 /**     
 	\ingroup plugin
 	Do some explicit instanciation for a plugin based on TFactoryPluginHandler
 */
 #define EXPLICIT_INSTANCE_PLUGIN_HANDLER(P) \
-	template class TPluginHandler<P>;			\
-	template class TFactoryPluginHandler<P>;		\
-	template class THandlerSingleton<TFactoryPluginHandler<P> >;
+	template class EXPORT_HANDLER TPluginHandler<P>;			\
+	template class EXPORT_HANDLER TFactoryPluginHandler<P>;		\
+	template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<P> >;
 
 /** 
     \ingroup plugin
@@ -364,11 +364,11 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& pa
     a plugin based on TFactoryPluginHandler 
 */
 #define EXPLICIT_INSTANCE_HANDLER(T) \
-	template class TPlugin<T::plugin_data, T::plugin_type>; \
-	template class TFactory<T>;					\
-	template class TPluginHandler<TFactory<T> >;			\
-	template class TFactoryPluginHandler<TFactory<T> >;		\
-	template class THandlerSingleton<TFactoryPluginHandler<TFactory<T> > >;
+	template class EXPORT_HANDLER TPlugin<T::plugin_data, T::plugin_type>; \
+	template class EXPORT_HANDLER TFactory<T>;					\
+	template class EXPORT_HANDLER TPluginHandler<TFactory<T> >;			\
+	template class EXPORT_HANDLER TFactoryPluginHandler<TFactory<T> >;		\
+	template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<TFactory<T> > >;
 
 /** 
     \ingroup plugin
@@ -377,11 +377,11 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& pa
  */
 
 #define EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(T, F)		\
-	template class TPlugin<T::plugin_data, T::plugin_type>; \
-	template class TFactory<T>;					\
-	template class TPluginHandler<F>;			\
-	template class TFactoryPluginHandler<F>;		\
-	template class THandlerSingleton<TFactoryPluginHandler<F> >;
+	template class EXPORT_HANDLER TPlugin<T::plugin_data, T::plugin_type>; \
+	template class EXPORT_HANDLER TFactory<T>;					\
+	template class EXPORT_HANDLER TPluginHandler<F>;			\
+	template class EXPORT_HANDLER TFactoryPluginHandler<F>;		\
+	template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<F> >;
 
 
 

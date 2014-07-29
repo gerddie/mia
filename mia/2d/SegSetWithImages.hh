@@ -21,6 +21,9 @@
 #ifndef mia_2d_SegSetWithImages_hh
 #define mia_2d_SegSetWithImages_hh
 
+
+#include <mia/core/iohandler.hh>
+
 #include <mia/2d/SegSet.hh>
 #include <mia/2d/image.hh>
 
@@ -38,7 +41,8 @@ NS_MIA_BEGIN
  */
 class EXPORT_2D CSegSetWithImages: public CSegSet {
 public:
-	
+	static const char *data_descr;	
+	typedef CSegSetWithImages type;	
 	
 	CSegSetWithImages();
 
@@ -67,9 +71,21 @@ public:
 	*/
 	CSegSetWithImages crop(const C2DIVector&  start, const C2DIVector&  end,
 			       const std::string& crop_filename_base);
+
+	CSegSetWithImages *clone() const; 
 private:
 	C2DImageSeries m_images;
 };
+
+typedef TIOPlugin<CSegSetWithImages> CSegSetWithImagesIOPlugin;
+typedef THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin > > CSegSetWithImagesIOPluginHandler;
+
+template <> 
+struct IOHandler_of<CSegSetWithImages> {
+	typedef CSegSetWithImagesIOPluginHandler type;
+}; 
+
+
 
 NS_MIA_END
 

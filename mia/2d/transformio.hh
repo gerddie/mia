@@ -44,7 +44,7 @@ typedef TIOPlugin<C2DTransformation> C2DTransformationIO;
 */
 
 
-class C2DTransformIOPluginHandlerImpl: public TIOPluginHandler<C2DTransformationIO> {
+class EXPORT_2D C2DTransformIOPluginHandlerImpl: public TIOPluginHandler<C2DTransformationIO> {
 protected:  
 	C2DTransformIOPluginHandlerImpl(); 
 };

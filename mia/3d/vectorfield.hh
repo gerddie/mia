@@ -33,6 +33,9 @@ NS_MIA_BEGIN
    This class provides a field of 3D vectors,  
 */
 
+extern template class EXPORT_3D T3DDatafield<C3DFVector>;
+extern template class EXPORT_3D T3DDatafield<C3DDVector>;
+
 template <typename T>
 class T3DVectorfield: public T3DDatafield<T>, public CAttributedData {
 public:
@@ -81,6 +84,8 @@ public:
 	}
 
 };
+extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
+extern template class EXPORT_3D T3DVectorfield<C3DDVector>;
 /**
    @ingroup basic 
    @brief a 3D field of floating point single accuracy 3D vectors 

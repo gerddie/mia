@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-class NCCGradHelper  {
+class EXPORT_CORE NCCGradHelper  {
 public: 
         NCCGradHelper():
                 m_sumab_by_a2b2(0.0), m_sumab_by_suma2(0.0), 
@@ -59,7 +59,7 @@ private:
 #ifdef __SSE2__
 
 
-class NCCSums {
+class EXPORT_CORE NCCSums {
         typedef double v2df __attribute__ ((vector_size (16)));
 public: 
 	NCCSums():m_sumab(0.0), m_n(0.0) {
@@ -103,7 +103,7 @@ private:
 
 #else 
 
-class NCCSums {
+class EXPORT_CORE NCCSums {
 public: 
 	NCCSums():m_suma(0.0), m_sumb(0.0), 
                   m_suma2(0.0), m_sumb2(0.0), 

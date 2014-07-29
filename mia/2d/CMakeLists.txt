@@ -58,6 +58,7 @@ SET(MIA2D_SRC_BASE
   transform.cc
   transformio.cc
   transformfactory.cc
+  vectorfield.cc
   )
 
 

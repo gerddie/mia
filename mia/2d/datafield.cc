@@ -18,6 +18,7 @@
  *
  */
 
+#include <mia/2d/defines2d.hh>
 #include <mia/2d/datafield.cxx>
 #include <mia/2d/iterator.cxx>
 #include <mia/core/parameter.cxx>

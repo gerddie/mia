@@ -496,8 +496,8 @@ float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coef
 #endif
 
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
-	template class T3DInterpolator<TYPE>;		\
-	template class T3DConvoluteInterpolator<TYPE>
+	template class EXPORT_3D T3DInterpolator<TYPE>;		\
+	template class EXPORT_3D T3DConvoluteInterpolator<TYPE>
 
 INSTANCIATE_INTERPOLATORS(bool);
 INSTANCIATE_INTERPOLATORS(unsigned char);
@@ -516,11 +516,11 @@ INSTANCIATE_INTERPOLATORS(unsigned long);
 INSTANCIATE_INTERPOLATORS(C3DFVector);
 INSTANCIATE_INTERPOLATORS(C3DDVector);
 
-template class T1DInterpolator<C3DFVector>;
-template class T1DConvoluteInterpolator<C3DFVector>;
+template class EXPORT_3D T1DInterpolator<C3DFVector>;
+template class EXPORT_3D T1DConvoluteInterpolator<C3DFVector>;
 
-template class T1DInterpolator<C3DDVector>;
-template class T1DConvoluteInterpolator<C3DDVector>;
+template class EXPORT_3D T1DInterpolator<C3DDVector>;
+template class EXPORT_3D T1DConvoluteInterpolator<C3DDVector>;
 
 
 NS_MIA_END
