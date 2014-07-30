@@ -185,6 +185,7 @@ PrepareTestPluginPath::~PrepareTestPluginPath()
 }
 
 #ifdef WIN32
+
 EXPORT_CORE const string get_plugin_root()
 {
 	static string result;
@@ -223,9 +224,8 @@ EXPORT_CORE const string get_plugin_root()
 	}
 	return result;
 }
+
 #else
-
-
 
 const string EXPORT_CORE get_plugin_root()
 {
@@ -239,6 +239,7 @@ const string EXPORT_CORE get_plugin_root()
 		return string(plugin_root); 
 	return string(PLUGIN_SEARCH_PATH);
 }
+
 #endif
 
 NS_MIA_END
