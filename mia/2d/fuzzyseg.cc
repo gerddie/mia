@@ -176,22 +176,15 @@ vector<double> Isodata2d (const Data2D& src_image, unsigned int nClasses, unsign
 
 
 // solves the PDE  (W + lambda1 * H1 + lambda2 * H2) = f
-void solvePDE (C2DFImage& weight_image, C2DFImage& force_image, C2DFImage& gain_image, const SFuzzySegParams& params, double *firstnormr0, double min_res)
+void solvePDE (C2DFImage& weight_image, C2DFImage& force_image, C2DFImage& gain_image, const SFuzzySegParams& params)
 {
-#if 0 
-
-	C2DSolveCG solver(weight_image, force_image, gain_image, lambda1, lambda2, relres, min_res);
-	solver.solve ( _MAX_ITER_PDE, firstnormr0);
-	solver.get_solution (gain_image);
-#else 
 	C2DFuzzyClusterSolver solver(weight_image,params.lambda1, params.lambda2, 1000);
 	solver.solve (force_image, gain_image);
-#endif 
 }
 
 template <class Data2D>
 int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFImage*>& cls_image,
-		  vector<double> &clCenter, unsigned int classes, double * firstnormr0, const SFuzzySegParams& params)
+		  vector<double> &clCenter, unsigned int classes, const SFuzzySegParams& params)
 {
 
 	const unsigned int nx = src_image.get_size().x;
@@ -216,31 +209,13 @@ int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFIma
 			};
 			
 			forcePixel *= src_image(x, y);
-#if 0 			
-			// korrigiere randbedingungen
-			long i = y*nx + x;
-			if (!border[i-nx])    forcePixel += _LAMBDA1 + 8 * _LAMBDA2;
-			if (!border[i-1])     forcePixel += _LAMBDA1 + 8 * _LAMBDA2;
-			if (!border[i+1])     forcePixel += _LAMBDA1 + 8 * _LAMBDA2;
-			if (!border[i+nx])    forcePixel += _LAMBDA1 + 8 * _LAMBDA2;
-		
-			if (!border[i-nx-1])       forcePixel -= 2 * _LAMBDA2;
-			if (!border[i-nx+1])       forcePixel -= 2 * _LAMBDA2;
-			if (!border[i+nx-1])       forcePixel -= 2 * _LAMBDA2;
-			if (!border[i+nx+1])       forcePixel -= 2 * _LAMBDA2;
-			
-			if (!border[i - 2*nx])    forcePixel -= _LAMBDA2;
-			if (!border[i - 2])       forcePixel -= _LAMBDA2;
-			if (!border[i + 2])       forcePixel -= _LAMBDA2;
-			if (!border[i + 2*nx])    forcePixel -= _LAMBDA2;
-#endif 			
 			force_image(x, y) = (float)(forcePixel);
 			weight_image(x, y) = (float)(weightPixel);
 		};
 	};
 	// C.Wolters:
 	// now solve system using scaled CG
-	solvePDE(weight_image, force_image, gain_image, params, firstnormr0,1);
+	solvePDE(weight_image, force_image, gain_image, params);
 
 	return t;
 
@@ -288,7 +263,6 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 	// Field to store the border
 	vector<char> border(noOfPixels);
 
-	double firstnormr0 = 1.0;
 	double nom, den, dist;
 
 	// get type of iterator
@@ -365,10 +339,7 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 		// Algorithm step 2:
 		// estimate gain field
 
-		estimateGain (gain_image, data, cls_image, clCenter, m_nClasses,
-			      &firstnormr0, m_params);
-		if (firstnormr0 < 1000)
-			firstnormr0 = 1.0;
+		estimateGain (gain_image, data, cls_image, clCenter, m_nClasses, m_params);
 
 		// Algorithm step 3:
 		// recompute class memberships

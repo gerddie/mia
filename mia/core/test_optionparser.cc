@@ -69,7 +69,6 @@ BOOST_AUTO_TEST_CASE( test_parsing)
 
 	CComplexOptionParser::CParts parts;
 	CParsedOptions option;
-	typedef CComplexOptionParser::CParts::value_type CValue;
 
 	option["x1"] = string("value1");
 	option["x2"] = string("value2");

@@ -62,10 +62,12 @@ template <> const char *  const
 TPluginHandler<C2DVFIOPlugin>::m_help =  
    "These plug-ins handle loading and storing of the supported 2D vector field file types.";
 
-template class EXPORT_2D TIOPlugin<io_2dvf_type>;
-template class EXPORT_2D THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> >;
-template class EXPORT_2D TIOPluginHandler<C2DVFIOPlugin>;
-template class EXPORT_2D TPluginHandler<C2DVFIOPlugin>;
+
+template class TPlugin<io_2dvf_type, io_plugin_type>; 
+template class TIOPlugin<io_2dvf_type>;
+template class THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> >;
+template class TIOPluginHandler<C2DVFIOPlugin>;
+template class TPluginHandler<C2DVFIOPlugin>;
 
 
 NS_MIA_END

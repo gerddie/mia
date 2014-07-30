@@ -143,6 +143,7 @@ template<>
 const char * const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help = "These plug-ins provide various boundary "
 			       "conditions for spline based interpolation."; 
 
+
 EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(CSplineBoundaryCondition, CSplineBoundaryConditionPlugin); 
 
 NS_MIA_END

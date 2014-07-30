@@ -31,7 +31,7 @@
 NS_MIA_BEGIN
 namespace bfs=::boost::filesystem; 
 
-template class EXPORT_2D TCost<C2DImage, C2DFVectorfield>;
+template class TCost<C2DImage, C2DFVectorfield>;
 
 EXPLICIT_INSTANCE_HANDLER(C2DImageCost);
 
