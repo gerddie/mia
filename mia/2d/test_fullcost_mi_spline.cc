@@ -33,8 +33,6 @@ NS_MIA_USE
 namespace bfs=::boost::filesystem; 
 using namespace std; 
 
-PrepareTestPluginPath plugin_path_init; 
-
 BOOST_AUTO_TEST_CASE (test_image_spline_gradinet ) 
 {
 	C2DBounds size(mi_test_size.width, mi_test_size.height); 

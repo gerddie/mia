@@ -28,27 +28,8 @@ NS_MIA_USE;
 namespace bfs=::boost::filesystem;
 
 
-void init_path() 
-{
-	static bool run = false; 
-	if (run) 
-		return; 
-	
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/
-				   bfs::path("core")/bfs::path("spacialkernel"));
-	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
-	
-	CPathNameArray filter2dpath;
-	filter2dpath.push_back(bfs::path("../../2d/filter"));
-	C2DFilterPluginHandler::set_search_path(filter2dpath);
-	run = true; 
-}
-
 BOOST_FIXTURE_TEST_CASE( test_fifof_byslice_median , fifof_Fixture )
 {
-	init_path(); 
-
 	const size_t n_slices = 3;
 	const C2DBounds size(3,3);
 

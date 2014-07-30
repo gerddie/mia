@@ -19,16 +19,14 @@
  */
 
 #include <mia/2d/fullcost/image.hh>
-#include <mia/2d/inittesthandlers.hh>
 #include <mia/2d/imageio.hh>
+#include <mia/2d/transformfactory.hh>
 #include <mia/2d/filter.hh>
 
 #include <mia/internal/autotest.hh>
 
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
-
-PrepareTestPluginPath plugin_path_init; 
 
 struct ImagefullcostFixture {
 	ImagefullcostFixture(); 

@@ -34,8 +34,6 @@ NS_MIA_USE
 using namespace std;
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 BOOST_AUTO_TEST_CASE ( test_nothing ) 
 {
 	// this "test" is just here to have something in the test tree

@@ -124,13 +124,6 @@ CSplineBoundaryCondition *CSplineBoundaryConditionPlugin::do_create() const
 }
 
 
-using boost::filesystem::path; 
-CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()
-{
-	CSplineBoundaryConditionPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/splinebc")}); 
-	
-}
-
 EXPORT_CORE PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width)
 {
 	auto bc = produce_spline_boundary_condition(descr); 

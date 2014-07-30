@@ -25,8 +25,6 @@
 using namespace mia; 
 using std::vector; 
 
-CSplineBoundaryConditionTestPath  bc_test_path; 
-
 BOOST_AUTO_TEST_CASE( test_BoundaryConditionsPlugins ) 
 {
 	const auto& handler = CSplineBoundaryConditionPluginHandler::instance();

@@ -28,8 +28,6 @@ using namespace boost::unit_test;
 using std::set; 
 using std::string; 
 
-PrepareTestPluginPath plugin_path_init; 
-
 BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
 {
 	set<string> test_data = {"lncc","lsd", "mi", "ngf", "ncc", "ssd", "ssd-automask"}; 

@@ -28,8 +28,6 @@
 using namespace transform_3dimage_filter; 
 using namespace mia; 
 
-C3DTransformCreatorHandlerTestPath transformhandler_init_path; 
-
 struct TransformFixture {
 
 	TransformFixture();

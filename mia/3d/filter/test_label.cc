@@ -44,9 +44,6 @@ static void check(const C3DImage& inp, const char* mask_descr, unsigned char *an
 
 BOOST_AUTO_TEST_CASE( test_label )
 {
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("shapes"));
-	C3DShapePluginHandler::set_search_path(kernelsearchpath);
 
 	bool input[27] = { 1, 0, 0,
 			   0, 0, 0,

@@ -34,15 +34,6 @@ TPluginHandler<TFactory<C3DImageCost>>::m_help =
   "or will be called from generalized image similarity cost plug-ins that also take "
   "care of transforming and scaling the images during the image registration process.";
 
-using boost::filesystem::path; 
-C3DImageCostPluginHandlerTestPath::C3DImageCostPluginHandlerTestPath()
-{
-	CPathNameArray costsearchpath;
-	costsearchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/cost") );
-	C3DImageCostPluginHandler::set_search_path(costsearchpath);
-	
-}
-
 template class TCost<C3DImage, C3DFVectorfield>;
 template class TPlugin<C3DImage, cost_type>;
 template class TFactory<C3DImageCost>;

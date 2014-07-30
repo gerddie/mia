@@ -39,16 +39,6 @@ typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCostPlugin> > C2DImageCo
 /// pointer type of simple 2D image cost functions 
 typedef std::shared_ptr<C2DImageCost > P2DImageCost;
 
-/** 
-    @cond INTERNAL  
-    \ingroup test 
-    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
-*/
-struct EXPORT_2D C2DImageCostPluginHandlerTestPath {
-	C2DImageCostPluginHandlerTestPath(); 
-}; 
-/// @endcond 
-
 /// @cond NEVER 
 FACTORY_TRAIT(C2DImageCostPluginHandler);
 /// @endcond 

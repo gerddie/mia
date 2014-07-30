@@ -28,10 +28,6 @@
 NS_MIA_USE; 
 NS_USE(taggedssd_3d); 
 
-namespace bfs=::boost::filesystem;
-
-PrepareTestPluginPath plugin_path_init; 
-
 BOOST_AUTO_TEST_CASE( test_taggedssd)
 {
 

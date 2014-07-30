@@ -34,9 +34,6 @@ using namespace mia;
 using namespace std;
 using namespace mean_3dimage_filter;
 
-PrepareTestPluginPath plugin_path_init; 
-
-
 BOOST_AUTO_TEST_CASE( test_mean_from_plugin_simple)
 {
         C3DFImage image(C3DBounds(3,4,5)); 

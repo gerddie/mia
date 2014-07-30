@@ -33,8 +33,6 @@ using namespace boost;
 
 namespace bmpl=boost::mpl;
 
-PrepareTestPluginPath plugin_path_init; 
-
 struct TestIntegral2DFixture {
 
 	void check(double x0, double xF, double s1, double s2, double n, int n1, int n2);

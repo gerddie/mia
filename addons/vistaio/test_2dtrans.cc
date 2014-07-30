@@ -21,14 +21,11 @@
 #include <mia/internal/autotest.hh>
 #include <vistaio/2dtrans.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/inittesthandlers.hh>
 
 
 using namespace std; 
 using namespace mia; 
 using namespace vista_2dtrans_io; 
-
-PrepareTestPluginPath factory_test_path; 
 
 BOOST_AUTO_TEST_CASE(test_simple_io) 
 {

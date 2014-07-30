@@ -65,22 +65,6 @@ P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter)
 	return f->filter(image);
 }
 
-using boost::filesystem::path; 
-C2DFilterPluginHandlerTestPath::C2DFilterPluginHandlerTestPath()
-{
-	C2DShapePluginHandlerTestPath filter_test_path;
-	CPathNameArray sksearchpath({path(MIA_BUILD_ROOT"/mia/2d/filter")});
-	C2DFilterPluginHandler::set_search_path(sksearchpath); 
-}
-
-C2DCombinerPluginHandlerTestPath::C2DCombinerPluginHandlerTestPath()
-{
-	CPathNameArray searchpath; 
-	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/combiner"));
-	C2DFilterPluginHandler::set_search_path(searchpath); 
-}
-
-
 template<> const  char * const 
 TPluginHandler<C2DFilterPlugin>::m_help = 
 	"These plug-ins provide 2D image filters. Unless otherwise noted, "

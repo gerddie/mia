@@ -119,14 +119,9 @@ size_t C1DFoldingKernel::do_size()const
 
 
 
-using boost::filesystem::path; 
-C1DSpacialKernelPluginHandlerTestPath::C1DSpacialKernelPluginHandlerTestPath()
-{
-	C1DSpacialKernelPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/spacialkernel")}); 
-}
-
 template<>  const char * const 
-TPluginHandler<TFactory<C1DFoldingKernel>>::m_help = "These plug-ins provide folding kernel(s) for spacial separable filtering.";
+TPluginHandler<TFactory<C1DFoldingKernel>>::m_help = 
+	"These plug-ins provide folding kernel(s) for spacial separable filtering.";
 
 EXPLICIT_INSTANCE_HANDLER(C1DFoldingKernel); 
 

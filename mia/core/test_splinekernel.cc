@@ -34,9 +34,6 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
-CSplineKernelTestPath init_path; 
-CSplineBoundaryConditionTestPath bc_path; 
-
 BOOST_AUTO_TEST_CASE( test_plugin_availability ) 
 {
 	const auto& handler = CSplineKernelPluginHandler::instance();

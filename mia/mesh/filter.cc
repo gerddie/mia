@@ -49,15 +49,6 @@ PTriangleMesh  EXPORT_MESH run_filter(const CTriangleMesh& mesh, const char *fil
 	return f->filter(mesh);
 }
 
-using boost::filesystem::path; 
-CMeshFilterPluginHandlerTestPath::CMeshFilterPluginHandlerTestPath()
-{
-	CPathNameArray sksearchpath({path(MIA_BUILD_ROOT"/mia/mesh/filter")});
-	CMeshFilterPluginHandler::set_search_path(sksearchpath); 
-}
-
-
-
 template<> const  char * const 
 TPluginHandler<CMeshFilterPlugin>::m_help = 
    "These plug-ins provide mesh filters. Unless otherwise noted, "

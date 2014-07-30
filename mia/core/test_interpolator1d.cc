@@ -29,8 +29,6 @@ using namespace std;
 using namespace mia;
 namespace bfs=boost::filesystem; 
 
-CSplineBoundaryConditionTestPath bc_path; 
-
 struct InterpolatorIDFixture  {
 
 	double f(double x) const;
@@ -40,14 +38,6 @@ struct InterpolatorIDFixture  {
 	void test_case(EInterpolation type, double tolerance = 0.1);
 
 };
-
-struct Initialiaze {
-	Initialiaze() {
-		CSplineKernelPluginHandler::set_search_path({bfs::path("splinekernel")}); 
-	}
-}; 
-
-Initialiaze set_path; 
 
 BOOST_FIXTURE_TEST_CASE( test_linear, InterpolatorIDFixture)
 {

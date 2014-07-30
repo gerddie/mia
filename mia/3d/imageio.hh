@@ -77,16 +77,6 @@ typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
 typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
 /** 
-    @cond INTERNAL 
-    @ingroup test 
-    @brief class to initialize the plug-in path for tests on the uninstalled library 
-*/
-struct EXPORT_3D C3DImageIOPluginHandlerTestPath {
-	C3DImageIOPluginHandlerTestPath(); 
-}; 
-/// @endcond
-
-/** 
     @ingroup convenience 
     convenience function to create an image vector from a single image 
     \param image 

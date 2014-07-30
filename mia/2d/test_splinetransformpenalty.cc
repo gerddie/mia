@@ -24,8 +24,6 @@
 
 NS_MIA_USE; 
 
-PrepareTestPluginPath plugin_path_init; 
-
 class C2DSplinePenaltyMock: public C2DSplineTransformPenalty {
 public: 
 	
@@ -239,12 +237,6 @@ C2DSplineTransformPenalty *C2DSplinePenaltyMock::do_clone() const
 	return result; 
 }
   
-
-CSplineKernelTestPath kernel_test_path; 
-
-
-C2DSplineTransformPenaltyPluginHandlerTest penalty_plug_path; 
-
 BOOST_AUTO_TEST_CASE(test_available_plugins)
 {
 	std::set<std::string> test_data = {"divcurl"}; 

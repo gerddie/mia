@@ -29,8 +29,6 @@ using namespace ::boost::unit_test;
 namespace bfs=::boost::filesystem;
 using namespace SeparableConvolute_2dimage_filter;
 
-C1DSpacialKernelPluginHandlerTestPath spacial_kernel_test_path; 
-
 struct  SepconvTextFixture {
 	SepconvTextFixture(); 
 	

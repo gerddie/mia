@@ -22,15 +22,12 @@
 
 #include <mia/core/datapool.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/inittesthandlers.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/2d/filter/transform.hh>
 
 
 using namespace transform_2dimage_filter; 
 using namespace mia; 
-
-PrepareTestPluginPath plugin_path_init; 
 
 struct TransformFixture {
 

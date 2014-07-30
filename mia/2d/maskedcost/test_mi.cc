@@ -28,7 +28,6 @@ using namespace std;
 using namespace ::boost::unit_test;
 using namespace NS;
 
-CSplineKernelTestPath spline_kernel_init_path; 
 
 class MIFixture {
 protected: 

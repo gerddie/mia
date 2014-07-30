@@ -26,14 +26,6 @@
 
 NS_MIA_BEGIN
 
-C3DTransformCreatorHandlerTestPath::C3DTransformCreatorHandlerTestPath()
-{
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path(MIA_BUILD_ROOT"/mia/3d/transform"));
-	C3DTransformCreatorHandler::set_search_path(kernelsearchpath);
-}
-
-
 
 template <> const char *  const 
 TPluginHandler<C3DTransformCreatorPlugin>::m_help =  

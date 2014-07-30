@@ -58,14 +58,6 @@ struct __adjust<T3DVector<int> > {
 	}
 };
 
-using boost::filesystem::path; 
-C3DShapePluginHandlerTestPath::C3DShapePluginHandlerTestPath()
-{
-	CPathNameArray sksearchpath; 
-	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/shapes"));
-	C3DShapePluginHandler::set_search_path(sksearchpath); 
-}
-
 template <> const char *  const 
 TPluginHandler<TFactory<C3DShape>>::m_help =  "These plug-ins define 3D structuring elements "
 				"to describe neighborhoods for morphological and other filters."; 

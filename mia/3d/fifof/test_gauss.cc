@@ -27,23 +27,8 @@ NS_MIA_USE;
 
 namespace bfs=::boost::filesystem;
 
-struct GaussFixture: public fifof_Fixture {
-	GaussFixture() {
-		CPathNameArray kernelsearchpath;
-		kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/
-					   bfs::path("core")/bfs::path("spacialkernel"));
-		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 
-		CPathNameArray selfpath;
-		selfpath.push_back(bfs::path("..")/bfs::path("..")/
-				   bfs::path("2d")/bfs::path("filter"));
-		C2DFilterPluginHandler::set_search_path(selfpath);
-
-	}
-};
-
-
-BOOST_FIXTURE_TEST_CASE( test_fifof_gauss , GaussFixture )
+BOOST_FIXTURE_TEST_CASE( test_fifof_gauss, fifof_Fixture )
 {
 	const size_t slices = 4;
 	const C2DBounds size(3,3);

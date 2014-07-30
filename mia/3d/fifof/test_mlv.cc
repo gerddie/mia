@@ -28,7 +28,6 @@ NS_MIA_USE;
 using namespace std; 
 
 
-C3DFilterPluginHandlerTestPath filter3d_plugin_path; 
 
 BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_const, fifof_Fixture )
 {

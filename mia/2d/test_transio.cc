@@ -28,16 +28,12 @@ using std::string;
 
 namespace bfs=::boost::filesystem; 
 
-PrepareTestPluginPath plugin_path_init; 
-
 class PrepareTransIOTests {
 public: 
 	static const PrepareTransIOTests& instance(); 
 	
 	const C2DTransformationIOPluginHandler::Instance& transformio_handler()const; 
 	const C2DTransformCreatorHandler::Instance& transform_handler()const; 
-private:
-	PrepareTransIOTests(); 
 }; 
 
 BOOST_AUTO_TEST_CASE(test_transform_io) 
@@ -117,17 +113,4 @@ const C2DTransformCreatorHandler::Instance& PrepareTransIOTests::transform_handl
 {
 	return C2DTransformCreatorHandler::instance(); 
 }
-
-PrepareTransIOTests::PrepareTransIOTests()
-{
-	CPathNameArray transformio_plugpath; 
-	transformio_plugpath.push_back(bfs::path("transio"));
-	C2DTransformationIOPluginHandler::set_search_path(transformio_plugpath);
-	
-	CPathNameArray transform_searchpath;
-	transform_searchpath.push_back(bfs::path("transform"));
-	C2DTransformCreatorHandler::set_search_path(transform_searchpath);
-
-}
-
 

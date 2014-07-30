@@ -183,13 +183,6 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 	return result; 
 }
 
-C2DImageIOPluginHandlerTestPath::C2DImageIOPluginHandlerTestPath()
-{
-	CPathNameArray searchpath({bfs::path(".")});
-	C2DImageIOPluginHandler::set_search_path(searchpath);
-}
-
-
 template class TIOPlugin<io_2dimage_type>;
 template class THandlerSingleton<C2DImageIOPPH>;
 template class TIOPluginHandler<C2DImageIOPlugin>;

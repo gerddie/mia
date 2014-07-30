@@ -26,9 +26,6 @@
 using namespace mia; 
 using namespace std; 
 
-C3DFilterPluginHandlerTestPath filter_test_path; 
-C3DShapePluginHandlerTestPath shape_test_path; 
-
 const unsigned char  seed[3*72] = {
 	1, 0, 0, 0, 0, 0, 0, 0, 4,
 	0, 0, 0, 0, 0, 0, 0, 0, 0,

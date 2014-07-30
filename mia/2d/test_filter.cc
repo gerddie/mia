@@ -31,7 +31,6 @@
 
 NS_MIA_USE
 using namespace std; 
-PrepareTestPluginPath plugin_path_init; 
 
 BOOST_AUTO_TEST_CASE(test_available_filters)
 {

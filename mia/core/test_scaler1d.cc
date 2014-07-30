@@ -39,8 +39,6 @@ using namespace std;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 struct Scaler1DFixture  {
 	Scaler1DFixture(); 
 
@@ -130,9 +128,6 @@ Scaler1DFixture::Scaler1DFixture():
 	data(256, false)
 {
 
-	CPathNameArray  sksearchpath({bfs::path("splinekernel")});
-	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
-	
 	const double intervall = 2 * M_PI / 255.0; 
 
 	for(size_t x = 0; x < 256; ++x)

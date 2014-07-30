@@ -25,14 +25,11 @@
 
 NS_MIA_USE
 
-
 using namespace mia_3dtransform_raffine;
 using namespace std;
 using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
-
-PrepareTestPluginPath plugin_path_init; 
 
 struct ipfFixture {
 	ipfFixture():

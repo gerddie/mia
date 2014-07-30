@@ -28,7 +28,6 @@
 namespace bfs=::boost::filesystem;
 NS_MIA_USE; 
 
-CSplineKernelTestPath splinekernel_init_path; 
 struct SimityProfileFixture {
 	SimityProfileFixture(); 
 
@@ -51,22 +50,6 @@ BOOST_FIXTURE_TEST_CASE (test_C3DSimilarityProfile_ref10, SimityProfileFixture)
 
 SimityProfileFixture::SimityProfileFixture()
 {
-	CPathNameArray cost_plugpath;
-	cost_plugpath.push_back(bfs::path("cost"));
-	C3DImageCostPluginHandler::set_search_path(cost_plugpath);
-
-	CPathNameArray filter_plugpath;
-	filter_plugpath.push_back(bfs::path("filter"));
-	C3DFilterPluginHandler::set_search_path(filter_plugpath);
-
-	CPathNameArray io_plugpath;
-	io_plugpath.push_back(bfs::path("io"));
-	C3DImageIOPluginHandler::set_search_path(io_plugpath);
-
-	CPathNameArray fullcost_plugpath;
-	fullcost_plugpath.push_back(bfs::path("fullcost"));
-	C3DFullCostPluginHandler::set_search_path(fullcost_plugpath);
-
 
 	cost = C3DFullCostPluginHandler::instance().produce("image");
 

@@ -31,8 +31,6 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace morphological_2dimage_filter;
 
-C2DShapePluginHandlerTestPath shape_test_path; 
-
 struct CTestShape: public C2DShape {
 	CTestShape() {
 		insert(C2DShape::Flat::value_type( 0, 0));

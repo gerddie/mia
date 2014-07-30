@@ -27,9 +27,6 @@
 NS_MIA_USE; 
 using namespace std; 
 
-CSplineKernelTestPath splinekernel_init_path; 
-C3DTransformCreatorHandlerTestPath transform_creator_test_path; 
-
 
 namespace bfs=::boost::filesystem; 
 class PrepareTransIOTests {

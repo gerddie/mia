@@ -35,8 +35,6 @@ using namespace mia;
 using namespace std; 
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 class RigidRegisterFixture  {
 protected: 
 	RigidRegisterFixture(); 

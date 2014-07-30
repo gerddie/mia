@@ -26,7 +26,6 @@
 using namespace mia; 
 using namespace std; 
 
-C2DFilterPluginHandlerTestPath filter_test_path; 
 
 BOOST_AUTO_TEST_CASE ( test_seeded_watershead ) 
 {

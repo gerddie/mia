@@ -29,8 +29,6 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace growmask_3dimage_filter;
 
-C3DShapePluginHandlerTestPath shape_path; 
-
 const size_t nx = 5;
 const size_t ny = 4;
 const size_t nz = 3;

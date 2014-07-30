@@ -35,9 +35,6 @@ using namespace mia;
 using namespace boost;
 namespace bfs=::boost::filesystem; 
 
-PrepareTestPluginPath g_prepare_pluginpath; 
-
-
 void compare_sets(const set< string >& plugins, const set<string>& test_data)
 {
 	BOOST_CHECK_EQUAL(plugins.size(), test_data.size()); 

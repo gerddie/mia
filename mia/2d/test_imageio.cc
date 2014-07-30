@@ -31,8 +31,6 @@ using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem; 
 
-PrepareTestPluginPath plugin_path_init; 
-
 static P2DImage create_test_image(int acquisition, int instance, const string& protocol) 
 {
 	C2DSIImage *image = new C2DSIImage(C2DBounds(1,2)); 

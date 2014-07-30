@@ -26,8 +26,6 @@
 using namespace mia; 
 using namespace std; 
 
-C2DFilterPluginHandlerTestPath filter_test_path; 
-
 const unsigned char  seed[72] = {
 	1, 0, 0, 0, 0, 0, 0, 0, 4,
 	0, 0, 0, 0, 0, 0, 0, 0, 0,

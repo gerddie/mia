@@ -29,8 +29,6 @@ using namespace std;
 using namespace ::boost::unit_test;
 using namespace mia_2dcost_mi;
 
-CSplineKernelTestPath spline_kernel_init_path; 
-
 class MIFixture {
 protected: 
 	MIFixture(); 

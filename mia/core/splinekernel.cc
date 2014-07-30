@@ -304,12 +304,6 @@ double  EXPORT_CORE integrate2(const CSplineKernel& spline, double s1, double s2
 	return sum * n;
 }
 
-using boost::filesystem::path; 
-CSplineKernelTestPath::CSplineKernelTestPath()
-{
-	CSplineKernelPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/splinekernel")}); 
-	
-}
 template<>  const char * const 
 TPluginHandler<TFactory<CSplineKernel>>::m_help = 
 	"These plug-ins provide various kernels that evaluate the wights in spline-based interpolation.";

@@ -33,8 +33,6 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 struct TransformSplineFixture {
 	TransformSplineFixture():
 		size(33,65),

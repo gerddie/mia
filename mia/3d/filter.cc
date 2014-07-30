@@ -30,17 +30,6 @@ NS_MIA_BEGIN
 
 using namespace boost;
 
-
-using boost::filesystem::path; 
-C3DFilterPluginHandlerTestPath::C3DFilterPluginHandlerTestPath()
-{
-	CPathNameArray searchpath; 
-	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/filter"));
-	C3DFilterPluginHandler::set_search_path(searchpath); 
-}
-
-
-
 template<> const  char * const 
 TPluginHandler<C3DFilterPlugin>::m_help = 
 	"These plug-ins provide 3D image filters. Unless otherwise noted, "

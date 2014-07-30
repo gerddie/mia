@@ -76,30 +76,6 @@ typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> >
         C3DImageCombinerPluginHandler;
 
 
-/** 
-    @cond INTERNAL 
-    @ingroup test 
-    @brief class to initialize the plug-in path for tests on the uninstalled library 
-*/
-class EXPORT_3D C3DFilterPluginHandlerTestPath {
-public: 
-	C3DFilterPluginHandlerTestPath(); 
-private: 
-	C1DSpacialKernelPluginHandlerTestPath spk_path; 
-}; 
-
-class EXPORT_3D C3DCombinerPluginHandlerTestPath {
-public: 
-	C3DCombinerPluginHandlerTestPath(); 
-}; 
-
-/// @endcond 
-
-
-
-
-
-
 /// @cond NEVER 
 FACTORY_TRAIT(C3DFilterPluginHandler); 
 FACTORY_TRAIT(C3DImageCombinerPluginHandler); 

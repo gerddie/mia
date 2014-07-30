@@ -20,13 +20,12 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/2d/trackpoint.hh>
-#include <mia/2d/inittesthandlers.hh>
+#include <mia/2d/transformfactory.hh>
 #include <sstream>
 
 using namespace std; 
 using namespace mia; 
 
-PrepareTestPluginPath plugin_path_init; 
 const char test_input[] = 
 	"1;12;10;5;some text\n"
 	"2;13;7;5;other text\n"

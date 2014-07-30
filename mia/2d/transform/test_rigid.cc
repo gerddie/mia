@@ -31,8 +31,6 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 struct TranslateTransFixture {
 	TranslateTransFixture():size(60, 80),
 				rtrans(size, C2DFVector::_0, C2DInterpolatorFactory("bspline:d=3", "mirror"))

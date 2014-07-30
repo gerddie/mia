@@ -96,16 +96,6 @@ typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey;
  */
 typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
 
-/** 
-    @cond INTERNAL  
-    \ingroup test 
-    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
-*/
-struct EXPORT_2D C2DImageIOPluginHandlerTestPath {
-	C2DImageIOPluginHandlerTestPath(); 
-}; 
-/// @endcond 
-
 /**
    \ingroup convenience 
    Convenience function to create a vector of images wrapping one image

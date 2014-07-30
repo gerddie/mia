@@ -19,22 +19,14 @@
  */
 
 #include <climits>
-#define BOOST_TEST_DYN_LINK
 
-#include <boost/filesystem/convenience.hpp>
-#include <boost/filesystem/path.hpp>
-
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-
+#include <mia/internal/autotest.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/imageiotest.hh>
 
 #include <mia/2d/vfio.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
-
-#include <mia/2d/inittesthandlers.hh>
 
 #include <mia/3d/transformio.hh>
 #include <mia/3d/transformfactory.hh>
@@ -54,12 +46,6 @@ using namespace std;
 using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
-
-CSplineBoundaryConditionTestPath sbc_test_path; 
-CSplineKernelTestPath init_path; 
-
-C2DTransformCreatorHandlerTestPath trans2dcreate_path; 
-C3DTransformCreatorHandlerTestPath trans3dcreate_path; 
 
 template <typename T>
 void check_value(const CAttributedData& attr_map, const string& key,  T value)
@@ -100,7 +86,7 @@ void check_vattr_value(VistaIOAttrList list, const string& key,  const string va
 	BOOST_CHECK(string(lvalue) == value);
 }
 
-void check_translation()
+BOOST_AUTO_TEST_CASE( check_translation)
 {
 	VistaIOAttrList vista_list1 = VistaIOCreateAttrList();
 
@@ -162,64 +148,7 @@ void check_translation()
 	VistaIODestroyAttrList(vista_list2);
 }
 
-static void handler_setup()
-{
-	CPathNameArray searchpath;
-	searchpath.push_back(bfs::path("."));
-
-	C2DImageIOPluginHandler::set_search_path(searchpath);
-	C3DImageIOPluginHandler::set_search_path(searchpath);
-
-	C2DVFIOPluginHandler::set_search_path(searchpath);
-	C3DVFIOPluginHandler::set_search_path(searchpath);
-
-	C2DTransformationIOPluginHandler::set_search_path(searchpath);
-	C3DTransformationIOPluginHandler::set_search_path(searchpath);
-
-}
-
-
-
-static void test_3dimage_plugin_handler()
-{
-	const C3DImageIOPluginHandler::Instance& handler = C3DImageIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2u);
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(),  "datapool vista ");
-}
-
-
-
-static void test_2dimage_plugin_handler()
-{
-	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2u);
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
-}
-
-static void test_3dvf_plugin_handler()
-{
-	const C3DVFIOPluginHandler::Instance& handler = C3DVFIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 3u);
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "cvista datapool vista ");
-}
-
-
-static void test_2dvf_plugin_handler()
-{
-	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2u);
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
-}
-
-
-static void test_2dtransform_plugin_handler()
-{
-	const C2DTransformationIOPluginHandler::Instance& handler = C2DTransformationIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2u);
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
-}
-
-static void test_2dtransform_io()
+BOOST_AUTO_TEST_CASE(test_2dtransform_io)
 {
 	C2DBounds size( 20, 20); 
 	
@@ -263,7 +192,7 @@ static void test_2dtransform_io()
 }
 
 
-static void test_3dtransform_io()
+BOOST_AUTO_TEST_CASE(test_3dtransform_io)
 {
 	C3DBounds size( 20, 20, 10); 
 	
@@ -308,45 +237,3 @@ static void test_3dtransform_io()
 }
 
 
-bool init_unit_test_suite( )
-{
-
-	handler_setup();
-
-	test_suite *suite = &framework::master_test_suite();
-
-	suite->add( BOOST_TEST_CASE( &check_translation));
-	suite->add( BOOST_TEST_CASE( &test_2dimage_plugin_handler));
-	suite->add( BOOST_TEST_CASE( &test_2dimageio_plugins));
-
-	suite->add( BOOST_TEST_CASE( &test_3dimage_plugin_handler));
-	add_3dimageio_plugin_tests( suite );
-
-	suite->add( BOOST_TEST_CASE( &test_3dvf_plugin_handler ));
-	suite->add( BOOST_TEST_CASE( &test_2dvf_plugin_handler ));
-
-	suite->add( BOOST_TEST_CASE( &test_2dtransform_plugin_handler ));
-	suite->add( BOOST_TEST_CASE( &test_2dtransform_io ));
-	suite->add( BOOST_TEST_CASE( &test_3dtransform_io ));
-
-	add_2dvfio_tests( suite );
-
-	return true;
-}
-
-const SProgramDescription description = {
-        {pdi_group, "Tests"}, 
-	{pdi_short, "Vista tests"}, 
-	{pdi_description, "This program runs a set of tests."}
-};
-
-int BOOST_TEST_CALL_DECL
-do_main( int argc, char* argv[] )
-{
-	if (CCmdOptionList(description).parse(argc, argv) != CCmdOptionList::hr_no)
-		return 0; 
-	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
-}
-
-#include <mia/internal/main.hh>
-MIA_MAIN(do_main);

@@ -27,8 +27,6 @@
 
 NS_MIA_USE
 
-PrepareTestPluginPath plugin_path_init; 
-
 struct Combiner3DFilterFixture {
 
         Combiner3DFilterFixture(); 

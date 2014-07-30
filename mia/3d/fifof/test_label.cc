@@ -32,11 +32,6 @@ namespace bfs=::boost::filesystem;
 
 BOOST_FIXTURE_TEST_CASE( test_fifof_label , fifof_Fixture )
 {
-	CPathNameArray shape2dsearchpath;
-	shape2dsearchpath.push_back(bfs::path("..")/bfs::path("..")/
-				   bfs::path("2d")/bfs::path("shapes"));
-	C2DShapePluginHandler::set_search_path(shape2dsearchpath);
-
 
 	const size_t n_slices = 6; 
 	const C2DBounds size(4,4); 

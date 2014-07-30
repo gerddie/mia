@@ -25,8 +25,6 @@
 using namespace creator_lattic_3d;
 using namespace mia;
 
-C3DFilterPluginHandlerTestPath filter_test_path; 
-
 BOOST_AUTO_TEST_CASE ( test_sphere ) 
 {
 	C3DBounds size(10,20,30); 

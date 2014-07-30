@@ -34,8 +34,6 @@ using namespace std;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem; 
 
-CNoiseGeneratorPluginHandlerTestPath noise_kernel_init_path; 
-
 struct SplineMutualInformationFixture  {
 	SplineMutualInformationFixture();
 

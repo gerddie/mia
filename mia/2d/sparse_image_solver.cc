@@ -56,15 +56,6 @@ EXPORT_2D C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& 
 	return result; 
 }
 
-
-using boost::filesystem::path; 
-using std::list; 
-C2DImageSparseSolverTestPath::C2DImageSparseSolverTestPath() 
-{
-	CPathNameArray sksearchpath({path(MIA_BUILD_ROOT"/mia/2d/sparsimgsolver")});
-	C2DImageSparseSolverPluginHandler::set_search_path(sksearchpath); 
-}
-
 template <> const char *  const 
 TPluginHandler<TFactory<C2DImageSolverAmultx>>::m_help =  "These plug-ins define the multiplication of a sparse matrix "
 				"with a vector that is used in the sparse image solver class.";

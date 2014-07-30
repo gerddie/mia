@@ -32,8 +32,6 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 struct FieldSplineFixture {
 	FieldSplineFixture():
 		size(30, 32),
@@ -49,10 +47,6 @@ struct FieldSplineFixture {
 			}
 
 		std::shared_ptr<T2DInterpolator<C2DFVector>  > source(ipf.create(field));
-
-		CPathNameArray kernelsearchpath;
-		kernelsearchpath.push_back(bfs::path("../core/spacialkernel"));
-		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 
 	}
 	C2DBounds size;

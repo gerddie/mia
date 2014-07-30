@@ -32,8 +32,6 @@ using std::vector;
 using std::setprecision; 
 using std::invalid_argument; 
 
-CSplineKernelTestPath kernel_test_path; 
-
 BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_needed ) 
 {
 	CSplineKernel::VIndex index  = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }; 

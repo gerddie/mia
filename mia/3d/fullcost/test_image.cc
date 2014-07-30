@@ -33,7 +33,6 @@ struct ImagefullcostFixture {
 	
 }; 
 
-PrepareTestPluginPath plugin_path_init; 
 
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 {

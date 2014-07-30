@@ -34,8 +34,6 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-CSplineBoundaryConditionTestPath sbc_test_path; 
-
 class CCopyFilter: public TFilter<std::shared_ptr<C3DImage>  > {
 public:
 
@@ -84,7 +82,7 @@ static void creat_and_check(EPixelType type)
 	BOOST_CHECK(voxel2 == timg->get_voxel_size());
 }
 
-static void check_data_types()
+BOOST_AUTO_TEST_CASE( check_data_types )
 {
 	creat_and_check<bool>(it_bit);
 	creat_and_check<unsigned char>(it_ubyte);
@@ -103,7 +101,7 @@ static void check_data_types()
 
 
 
-static void check_gradient()
+BOOST_AUTO_TEST_CASE(check_gradient )
 {
 	const float init_data[64] = {
 		0, 1, 2, 3, /**/ 4, 6, 7, 9, /**/ 4, 3, 2, 1, /**/ 0, 7, 8, 9,
@@ -172,13 +170,6 @@ static void check_gradient()
 	BOOST_CHECK_CLOSE(gx, g.x, 0.0001);
 
 }
-
-void add_3dimage_tests( boost::unit_test::test_suite* suite)
-{
-	suite->add( BOOST_TEST_CASE(&check_data_types));
-	suite->add( BOOST_TEST_CASE(&check_gradient));
-}
-
 
 BOOST_AUTO_TEST_CASE( test_rotation_attribute )
 {

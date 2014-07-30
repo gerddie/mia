@@ -29,8 +29,6 @@
 NS_MIA_USE; 
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 class Cost3DMock {
 public: 
 	Cost3DMock(const C3DBounds& size); 
@@ -146,49 +144,6 @@ BOOST_FIXTURE_TEST_CASE (test_rotation_Gradient_center_shifted, TransformGradien
 	run_test(*transform); 
 }
 
-
-
-#if 0 
-BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture) 
-{
-	const C3DTransformCreatorHandler::Instance& handler =
-		C3DTransformCreatorHandler::instance();
-	P3DTransformationFactory creater = handler.produce("vf");
-	P3DTransformation transform = creater->create(size);
-
-	run_test(*transform, 2.0); 
-}
-
-#endif
-
-#if 0
-// this is actually tested in the spline.cc
-BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
-{
-	const C3DTransformCreatorHandler::Instance& handler =
-		C3DTransformCreatorHandler::instance();
-	P3DTransformationFactory creater = handler.produce("spline:rate=2");
-	P3DTransformation transform = creater->create(size);
-	transform->set_debug(); 
-
-	run_test(*transform, 10.0); 
-}
-#endif
-
-
-struct TransformPluginPathFixture {
-	TransformPluginPathFixture(); 
-}; 
-
-TransformPluginPathFixture::TransformPluginPathFixture()
-{
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("transform"));
-	C3DTransformCreatorHandler::set_search_path(kernelsearchpath);
-}
-
-TransformPluginPathFixture transform_plugin_test_path_init; 
-
 TransformGradientFixture::TransformGradientFixture():
 	size(20, 28, 16), 
 	cost(size),
@@ -298,7 +253,3 @@ double Cost3DMock::ref_value(const C3DFVector& x)const
 }
 
 
-BOOST_AUTO_TEST_CASE (test_iterator_range) 
-{
-	
-}

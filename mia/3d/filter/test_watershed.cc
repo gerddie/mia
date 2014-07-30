@@ -26,9 +26,6 @@
 using namespace mia; 
 using namespace std; 
 
-C3DFilterPluginHandlerTestPath filter_test_path; 
-C3DShapePluginHandlerTestPath shape_test_path; 
-
 BOOST_AUTO_TEST_CASE ( test_seeded_watershead ) 
 {
 	const C3DBounds size(11, 10, 3); 

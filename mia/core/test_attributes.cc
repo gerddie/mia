@@ -34,9 +34,6 @@
 #include <mia/core/msgstream.hh>
 
 #include <boost/mpl/vector.hpp>
-//#include <boost/test/unit_test_suite.hpp>
-//#include <boost/test/test_case_template.hpp>
-//#include <boost/test/test_tools.hpp>
 
 NS_MIA_USE
 using namespace std;

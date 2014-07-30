@@ -52,16 +52,6 @@ typedef TFactory<C3DImageCost> C3DImageCostPlugin;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> > C3DImageCostPluginHandler;
 
-/** 
-    @cond INTERNAL
-    @ingroup test 
-    @brief Initializer for testing un-installed plug-ins 
- */
-struct EXPORT_3D C3DImageCostPluginHandlerTestPath {
-	C3DImageCostPluginHandlerTestPath(); 
-}; 
-/// @endcond 
-
 /// @cond NEVER 
 FACTORY_TRAIT(C3DImageCostPluginHandler);
 /// @endcond 

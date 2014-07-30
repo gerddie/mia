@@ -46,7 +46,6 @@ namespace bfs = ::boost::filesystem;
 BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 {
 	CTestPluginHandler::set_search_path({bfs::path("testplug")});
-
 	auto callback = [](const tbb::blocked_range<int>& range, int init){
 		
 		CThreadMsgStream thread_stream;
@@ -88,6 +87,8 @@ BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 
 BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler )
 {
+	CTestPluginHandler::set_search_path({bfs::path("testplug")});
+	
 	const CTestPluginHandler::Instance& handler = CTestPluginHandler::instance();
 
 	BOOST_CHECK(handler.size() == 3);

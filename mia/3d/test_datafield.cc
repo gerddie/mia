@@ -19,7 +19,7 @@
  */
 
 #include <climits>
-#include <boost/test/unit_test_suite.hpp>
+
 #include <boost/test/unit_test.hpp>
 
 
@@ -29,7 +29,7 @@
 NS_MIA_USE
 using namespace std; 
 
-static void test_3ddatafield()
+BOOST_AUTO_TEST_CASE(test_3ddatafield)
 {
 
 	const float values[80]=
@@ -123,7 +123,7 @@ static C3DFDatafield create_field(const C3DBounds& size)
 }
 
 
-static void test_3ddatafield_get_put_xy()
+BOOST_AUTO_TEST_CASE(test_3ddatafield_get_put_xy)
 {
 	C3DBounds size(2,3,4);
 	C3DFDatafield data = create_field(size);
@@ -138,7 +138,7 @@ static void test_3ddatafield_get_put_xy()
 	BOOST_CHECK(equal(plane_xy.begin(), plane_xy.end(), data.begin_at(0,0,1)));
 }
 
-static void test_3ddatafield_zslice_flat()
+BOOST_AUTO_TEST_CASE(test_3ddatafield_zslice_flat)
 {
 	C3DBounds size(2,3,4);
 	C3DFDatafield data = create_field(size);
@@ -153,7 +153,7 @@ static void test_3ddatafield_zslice_flat()
 }
 
 
-static void test_3ddatafield_get_put_xz()
+BOOST_AUTO_TEST_CASE(test_3ddatafield_get_put_xz)
 {
 	C3DBounds size(2,3,4);
 	C3DFDatafield data = create_field(size);
@@ -174,7 +174,7 @@ static void test_3ddatafield_get_put_xz()
 
 }
 
-static void test_3ddatafield_yslice_flat()
+BOOST_AUTO_TEST_CASE( test_3ddatafield_yslice_flat )
 {
 	C3DBounds size(2,3,4);
 	C3DFDatafield data = create_field(size);
@@ -194,7 +194,7 @@ static void test_3ddatafield_yslice_flat()
 			BOOST_CHECK_EQUAL(*i, data(x,2,z));
 }
 
-static void test_3ddatafield_xslice_flat()
+BOOST_AUTO_TEST_CASE( test_3ddatafield_xslice_flat )
 {
 	C3DBounds size(2,3,4);
 	C3DFDatafield data = create_field(size);
@@ -216,7 +216,7 @@ static void test_3ddatafield_xslice_flat()
 
 
 
-static void test_3ddatafield_get_put_yz()
+BOOST_AUTO_TEST_CASE( test_3ddatafield_get_put_yz )
 {
 	C3DBounds size(2,3,4);
 	C3DFDatafield data = create_field(size);
@@ -236,13 +236,3 @@ static void test_3ddatafield_get_put_yz()
 			BOOST_CHECK(plane_yz(y, z) == data(1, y, z));
 }
 
-void add_3ddatafield_tests( boost::unit_test::test_suite* suite)
-{
-	suite->add( BOOST_TEST_CASE( &test_3ddatafield));
-	suite->add( BOOST_TEST_CASE( &test_3ddatafield_get_put_xy));
-	suite->add( BOOST_TEST_CASE( &test_3ddatafield_get_put_xz));
-	suite->add( BOOST_TEST_CASE( &test_3ddatafield_get_put_yz));
-	suite->add( BOOST_TEST_CASE( &test_3ddatafield_zslice_flat)); 
-	suite->add( BOOST_TEST_CASE( &test_3ddatafield_yslice_flat)); 
-	suite->add( BOOST_TEST_CASE( &test_3ddatafield_xslice_flat)); 
-}

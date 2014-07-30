@@ -30,8 +30,6 @@
 NS_MIA_USE
 namespace bfs=::boost::filesystem; 
 
-PrepareTestPluginPath plugin_path_init; 
-
 class C2DFullCostMock: public C2DFullCost {
 public: 
 	C2DFullCostMock(double weight, double cost, double gx, double gy); 

@@ -22,15 +22,8 @@
 #include <mia/3d/filter/msnormalizer.hh>
 #include <mia/3d/imagetest.hh>
 
-
-
 using namespace msnormalizer_3dimage_filter; 
 using namespace mia; 
-
-
-
-
-PrepareTestPluginPath plugin_path_init; 
 
 
 BOOST_AUTO_TEST_CASE( test_n_elements )

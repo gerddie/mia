@@ -36,18 +36,6 @@ typedef std::shared_ptr<C2DImageSparseSolver > P2DImageSparseSolver;
 /// Plugin handler for sparse image solver plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<TFactory<C2DImageSparseSolver> > > C2DImageSparseSolverPluginHandler;
 
-/**   
-      @cond INTERNAL 
-      \ingroup tests 
-      Class to set up the plug-in search path for spline kernels when running tests
-      in the build tree 
-*/
-struct EXPORT_2D C2DImageSparseSolverTestPath {
-	C2DImageSparseSolverTestPath(); 
-}; 
-
-/// @endcond 
-
 /// base class for the Matrix-Vector multiplication 
 typedef C2DImageSparseSolver::A_mult_x C2DImageSolverAmultx; 
 

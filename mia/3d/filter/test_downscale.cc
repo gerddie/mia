@@ -30,9 +30,6 @@ namespace bfs=boost::filesystem;
 using namespace downscale_3dimage_filter;
 
 
-C1DSpacialKernelPluginHandlerTestPath spacial_kernel_test_path; 
-C3DFilterPluginHandlerTestPath filter_test_path; 
-
 BOOST_AUTO_TEST_CASE( test_downscale )
 {
 	const short init[64] = {

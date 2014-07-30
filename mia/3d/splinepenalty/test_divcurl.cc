@@ -28,8 +28,6 @@ using namespace divcurl_splinepenalty;
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
 
-CSplineKernelTestPath kernel_test_path; 
-
 /*
   The proper evaluation of the penalty and its gradient 
   is done in test_ppmatrix.cc. Here we only test the proper 

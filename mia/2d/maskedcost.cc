@@ -35,15 +35,6 @@ TPluginHandler<TFactory<C2DMaskedImageCost>>::m_help =
 	"plug-ins that also take care of transforming and scaling the images during the "
 	"image registration process.";
 
-using boost::filesystem::path; 
-C2DMaskedImageCostPluginHandlerTestPath::C2DMaskedImageCostPluginHandlerTestPath()
-{
-	CPathNameArray costsearchpath;
-	costsearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/maskedcost") );
-	C2DMaskedImageCostPluginHandler::set_search_path(costsearchpath);
-	
-}
-
 template class TMaskedCost<C2DImage, C2DBitImage, C2DFVectorfield>;
 template class TPlugin<C2DImage, masked_cost_type>;
 template class TFactory<C2DMaskedImageCost>;

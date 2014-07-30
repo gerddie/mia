@@ -35,13 +35,6 @@ template class TCost<C2DImage, C2DFVectorfield>;
 
 EXPLICIT_INSTANCE_HANDLER(C2DImageCost);
 
-C2DImageCostPluginHandlerTestPath::C2DImageCostPluginHandlerTestPath()
-{
-	CPathNameArray cost_kernel_plugpath({bfs::path("cost")});
-	C2DImageCostPluginHandler::set_search_path(cost_kernel_plugpath);
-
-}
-
 template <> const char *  const
 TPluginHandler<TFactory<C2DImageCost>>::m_help =  
 	"2D image similarity kernels evaluate the according similarity measure between "

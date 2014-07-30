@@ -64,19 +64,6 @@ P3DTransformationFactory produce_3dtransform_factory(const std::string& descr)
 	return C3DTransformCreatorHandler::instance().produce(descr); 
 }
 
-/** 
-    @cond INTERNAL 
-    @ingroup test 
-    @brief class to initialize the plug-in path for tests on the uninstalled library 
-*/
-struct EXPORT_3D C3DTransformCreatorHandlerTestPath {
-	C3DTransformCreatorHandlerTestPath(); 
-private: 
-	CSplineKernelTestPath spktp; 
-	CSplineBoundaryConditionTestPath spctp;
-}; 
-/// @endcond
-
 /// @cond NEVER 
 FACTORY_TRAIT(C3DTransformCreatorHandler); 
 /// @endcond

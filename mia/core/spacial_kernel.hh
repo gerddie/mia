@@ -173,17 +173,6 @@ inline P1DSpacialKernel produce_spacial_kernel(const std::string& descr)
 	return C1DSpacialKernelPluginHandler::instance().produce(descr); 
 }
 
-/** 
-    @cond INTERNAL  
-    \ingroup test 
-    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
-*/
-class EXPORT_CORE C1DSpacialKernelPluginHandlerTestPath {
-public: 
-	C1DSpacialKernelPluginHandlerTestPath(); 
-}; 
-/// @endcond
-
 /// @cond NEVER
 FACTORY_TRAIT(C1DSpacialKernelPluginHandler); 
 /// @endcond

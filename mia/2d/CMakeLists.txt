@@ -168,7 +168,6 @@ SET(MIA2DLIBS mia2d  ${LIBS})
 # symbols, and in Windows, this is not supported# 
 SET(mia2dtestsrc 
   imageiotest.cc 
-  inittesthandlers.cc 
   vfiotest.cc 
   imagetest.cc
   transformmock.cc

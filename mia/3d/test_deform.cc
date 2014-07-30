@@ -30,8 +30,6 @@ using namespace std;
 using namespace ::boost;
 using namespace boost::unit_test;
 
-PrepareTestPluginPath plugin_path_init; 
-
 struct DeformFixture {
 	DeformFixture();
 	void check(EInterpolation ip);

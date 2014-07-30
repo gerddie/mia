@@ -28,8 +28,6 @@ using namespace divcurl_splinepenalty;
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 BOOST_AUTO_TEST_CASE( test_divcurl_cost ) 
 {
 	C2DDivcurlSplinePenalty  penalty(1.0, false, 1.0, 1.0); 

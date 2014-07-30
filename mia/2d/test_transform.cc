@@ -31,8 +31,6 @@
 NS_MIA_USE; 
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 class Cost2DMock {
 public: 
 	Cost2DMock(const C2DBounds& size); 

@@ -29,9 +29,6 @@ using namespace ::boost::unit_test;
 using namespace downscale_2dimage_filter;
 namespace bfs=::boost::filesystem;
 
-C1DSpacialKernelPluginHandlerTestPath spacial_kernel_test_path; 
-C2DFilterPluginHandlerTestPath filter_test_path; 
-
 
 BOOST_AUTO_TEST_CASE( test_downscale )
 {

@@ -29,7 +29,6 @@
 
 using namespace std; 
 using namespace mia; 
-PrepareTestPluginPath g_prepare_pluginpath; 
 
 
 template <typename Handler> 

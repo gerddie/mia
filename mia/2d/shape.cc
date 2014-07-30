@@ -62,14 +62,6 @@ TPluginHandler<TFactory<C2DShape>>::m_help =  "These plug-ins define 2D structur
 				"to describe neighborhoods for morphological and other filters."; 
 
 
-using boost::filesystem::path; 
-C2DShapePluginHandlerTestPath::C2DShapePluginHandlerTestPath()
-{
-	CPathNameArray sksearchpath({path(MIA_BUILD_ROOT"/mia/2d/shapes")});
-	C2DShapePluginHandler::set_search_path(sksearchpath); 
-	
-}
-	
 P2DShape rotate_90_degree(const C2DShape& shape)
 {
 	P2DShape result(new C2DShape); 

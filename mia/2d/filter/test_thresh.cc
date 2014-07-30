@@ -27,8 +27,6 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace thresh_2dimage_filter;
 
-C2DShapePluginHandlerTestPath shape_test_path; 
-
 struct ThreshFixture {
 
 	ThreshFixture(); 

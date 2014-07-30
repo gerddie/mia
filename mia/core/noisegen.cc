@@ -59,12 +59,6 @@ double CNoiseGenerator::ranf() const
 	return x / RAND_MAX;
 }
 
-using boost::filesystem::path; 
-CNoiseGeneratorPluginHandlerTestPath::CNoiseGeneratorPluginHandlerTestPath()
-{
-	CNoiseGeneratorPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/noise")}); 
-}
-
 template<> const char * const 
 TPluginHandler<TFactory<CNoiseGenerator>>::m_help = "These plug-ins provide various noise generators.";
 

@@ -30,22 +30,9 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
 
-struct HandlerTestFixture {
-	HandlerTestFixture();
 
-};
-
-HandlerTestFixture::HandlerTestFixture()
-{
-
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("transform"));
-	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
-}
-
-BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
+BOOST_AUTO_TEST_CASE(test_handler)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
@@ -55,7 +42,7 @@ BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(test_affine_creator, HandlerTestFixture)
+BOOST_AUTO_TEST_CASE(test_affine_creator)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
@@ -64,7 +51,7 @@ BOOST_FIXTURE_TEST_CASE(test_affine_creator, HandlerTestFixture)
 	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(10,20));
 }
 
-BOOST_FIXTURE_TEST_CASE(test_spline_creator_isotropic, HandlerTestFixture)
+BOOST_AUTO_TEST_CASE(test_spline_creator_isotropic)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
@@ -77,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(test_spline_creator_isotropic, HandlerTestFixture)
 	BOOST_CHECK_EQUAL(transform->degrees_of_freedom(), static_cast<size_t>((4+4) * (8+4) * 2));
 }
 
-BOOST_FIXTURE_TEST_CASE(test_spline_creator_anisotropic, HandlerTestFixture)
+BOOST_AUTO_TEST_CASE(test_spline_creator_anisotropic)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
@@ -91,7 +78,7 @@ BOOST_FIXTURE_TEST_CASE(test_spline_creator_anisotropic, HandlerTestFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(test_vf_creator, HandlerTestFixture)
+BOOST_AUTO_TEST_CASE(test_vf_creator)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
@@ -101,7 +88,7 @@ BOOST_FIXTURE_TEST_CASE(test_vf_creator, HandlerTestFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(test_transform_creator, HandlerTestFixture)
+BOOST_AUTO_TEST_CASE(test_transform_creator)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
@@ -110,7 +97,7 @@ BOOST_FIXTURE_TEST_CASE(test_transform_creator, HandlerTestFixture)
 	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(10,20));
 }
 
-BOOST_FIXTURE_TEST_CASE(test_transform_creator_option, HandlerTestFixture)
+BOOST_AUTO_TEST_CASE(test_transform_creator_option)
 {
 	auto product = C2DTransformCreatorHandler::instance().produce("spline"); 
 	BOOST_CHECK_EQUAL(product->get_init_string(), "spline"); 
@@ -122,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE(test_transform_creator_option, HandlerTestFixture)
 	
 }
 
-BOOST_FIXTURE_TEST_CASE(test_transform_creator_option2, HandlerTestFixture)
+BOOST_AUTO_TEST_CASE(test_transform_creator_option2)
 {
 	C2DTransformCreatorHandler::ProductPtr product; 
 	

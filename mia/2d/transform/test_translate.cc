@@ -26,8 +26,6 @@
 NS_MIA_USE
 using namespace std; 
 
-PrepareTestPluginPath plugin_path_init; 
-
 struct TranslateTransformFixture {
 
 	TranslateTransformFixture();

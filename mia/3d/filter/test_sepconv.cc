@@ -30,11 +30,6 @@ using namespace sepconv_3dimage_filter;
 
 BOOST_AUTO_TEST_CASE( test_sepconv )
 {
-
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/bfs::path("core")/bfs::path("spacialkernel"));
-	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
-
 	C3DFImage src(C3DBounds(3,3,3));
 	fill(src.begin(), src.end(), 0);
 	src(1,1,1) = 64.0f;

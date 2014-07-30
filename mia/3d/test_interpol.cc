@@ -20,22 +20,19 @@
 
 #include <climits>
 
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
+#include <boost/test/unit_test.hpp>
 #include <mia/3d/interpolator.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/threadedmsg.hh>
+#include <boost/mpl/vector.hpp>
 
 NS_MIA_USE
 using namespace std;
 using namespace boost;
-
-CSplineKernelTestPath spline_kernel_init_path; 
-
+namespace bmpl=boost::mpl;
 
 template <typename T, typename  I, bool is_int>
 struct __dispatch_check {
@@ -147,7 +144,7 @@ extern const char bspline5[] = "bspline:d=5";
 extern const char omomsspl3[] = "omoms:d=3"; 
 
 
-static void test_external_cache_interpolator() 
+BOOST_AUTO_TEST_CASE(test_external_cache_interpolator) 
 {
 	T3DDatafield<float> data(C3DBounds(10, 12, 11));
 	auto kernel = produce_spline_kernel(bspline3); 
@@ -237,7 +234,7 @@ struct FParallelInterpolator2 {
 	}
 }; 
 
-static void test_parallel_interpolator() 
+BOOST_AUTO_TEST_CASE(test_parallel_interpolator) 
 {
 	T3DDatafield<float> data(C3DBounds(10, 12, 11));
 	auto kernel = produce_spline_kernel(bspline3); 
@@ -262,7 +259,7 @@ static void test_parallel_interpolator()
 }
 
 
-static void test_parallel_interpolator_zerofill_shifted() 
+BOOST_AUTO_TEST_CASE(test_parallel_interpolator_zerofill_shifted) 
 {
 	C3DFVector shift(1,2,3); 
 
@@ -313,7 +310,7 @@ static double omoms3(double x)
 	return ((0.5 * x - 1) * x + 1/14.0) * x + 13.0 / 21.0;
 }
 
-static void test_omoms3()
+BOOST_AUTO_TEST_CASE(test_omoms3)
 {
 	const double x = 0.2;
 	auto kernel = produce_spline_kernel("omoms:d=3"); 
@@ -326,94 +323,27 @@ static void test_omoms3()
 	}
 }
 
-void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
-{
-	suite->add( BOOST_TEST_CASE( &test_omoms3));
-
-
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline1>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline1>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline1>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline1>)));
+typedef bmpl::vector<unsigned char,
+		     signed char, 
+		     unsigned short, 
+		     signed short, 
 #ifdef LONG_64BIT
-	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline1>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline1>)));
+		     signed long, 
+		     unsigned long, 
 #endif
-	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline1>)));
-	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline1>)));
+		     float, 
+		     double> types; 
 
 
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline2>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline2>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline2>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline2>)));
-#ifdef LONG_64BIT
-	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline2>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline2>)));
-#endif
-	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline2>)));
-	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline2>)));
 
-
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline3>)));
-#ifdef LONG_64BIT
-	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline3>)));
-#endif
-	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline3>)));
-	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline3>)));
-
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline4>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline4>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline4>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline4>)));
-#ifdef LONG_64BIT
-	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline4>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline4>)));
-#endif
-	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline4>)));
-	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline4>)));
-
-
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline5>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline5>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline5>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline5>)));
-#ifdef LONG_64BIT
-	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline5>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline5>)));
-#endif
-	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline5>)));
-	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline5>)));
-
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline0>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline0>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline0>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline0>)));
-#ifdef LONG_64BIT
-	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline0>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline0>)));
-#endif
-	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline0>)));
-	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline0>)));
-
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, omomsspl3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed char, omomsspl3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, omomsspl3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<signed short, omomsspl3>)));
-#ifdef LONG_64BIT
-	suite->add( BOOST_TEST_CASE(( &test_type<signed long, omomsspl3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, omomsspl3>)));
-#endif
-	suite->add( BOOST_TEST_CASE( (&test_type<float, omomsspl3>)));
-	suite->add( BOOST_TEST_CASE( (&test_type<double, omomsspl3>)));
-
-	suite->add( BOOST_TEST_CASE( (&test_external_cache_interpolator))); 
-	suite->add( BOOST_TEST_CASE( (&test_parallel_interpolator))); 
-
-	suite->add( BOOST_TEST_CASE( (&test_parallel_interpolator_zerofill_shifted))); 
-
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_types, T , types )
+{	
+	test_type<T, bspline1>(); 
+	test_type<T, bspline2>();
+	test_type<T, bspline3>();
+	test_type<T, bspline4>();
+	test_type<T, bspline5>();
+	test_type<T, bspline0>();
+	test_type<T, omomsspl3>();
 }
+

@@ -26,8 +26,6 @@
 NS_MIA_USE
 using namespace std;
 
-C3DLandmarklistIOTestPath test_path; 
-
 BOOST_AUTO_TEST_CASE( test_available_plugins ) 
 {
 	set<string> expected_plugins = {"lmx", "datapool"};

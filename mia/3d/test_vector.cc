@@ -21,7 +21,6 @@
 #include <sstream>
 #include <climits>
 
-#include <boost/test/unit_test_suite.hpp>
 #include <boost/test/unit_test.hpp>
 
 
@@ -31,7 +30,7 @@
 using namespace std;
 NS_MIA_USE
 
-static void test_3dvectors()
+BOOST_AUTO_TEST_CASE( test_3dvectors )
 {
 
 	C3DFVector a(1.0f, 2.0f, 3.0f);
@@ -100,7 +99,7 @@ static void test_3dvectors()
 
 }
 
-static void test_float_vector_option()
+BOOST_AUTO_TEST_CASE( test_float_vector_option)
 {
 	C3DFVector v(1,2,3);
 
@@ -124,7 +123,7 @@ static void test_float_vector_option()
 	}
 }
 
-void test_size_vector_option()
+BOOST_AUTO_TEST_CASE( test_size_vector_option)
 {
 	C3DBounds v(1,2,3);
 
@@ -149,7 +148,7 @@ void test_size_vector_option()
 	}
 }
 
-static void test_swizzle()
+BOOST_AUTO_TEST_CASE( test_swizzle )
 {
 	T3DVector<int> test(1,2,3);
 
@@ -163,7 +162,7 @@ static void test_swizzle()
 
 }
 
-static void test_fill()
+BOOST_AUTO_TEST_CASE( test_fill )
 {
 	T3DVector<int> test;
 
@@ -179,7 +178,7 @@ static void test_fill()
 
 }
 
-static void test_minus()
+BOOST_AUTO_TEST_CASE( test_minus )
 {
 	T3DVector<int> test(1,-2,3);
 	T3DVector<int> mtest = -test; 
@@ -191,13 +190,3 @@ static void test_minus()
 
 }
 
-
-void add_3dvector_tests(boost::unit_test::test_suite* suite)
-{
-	suite->add( BOOST_TEST_CASE( &test_3dvectors));
-	suite->add( BOOST_TEST_CASE( &test_float_vector_option));
-	suite->add( BOOST_TEST_CASE( &test_size_vector_option));
-	suite->add( BOOST_TEST_CASE( &test_swizzle ));
-	suite->add( BOOST_TEST_CASE( &test_fill ));
-	suite->add( BOOST_TEST_CASE(test_minus)); 
-}

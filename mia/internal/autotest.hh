@@ -38,6 +38,7 @@
 
 #include <miaconfig.h>
 #include <mia/core/cmdlineparser.hh>
+#include <mia/core/plugin_base.hh>
 #include <mia/internal/main.hh>
 
 const mia::SProgramDescription description = {
@@ -63,6 +64,7 @@ void test_pluginsets(const std::set< std::string >& plugins, const std::set<std:
 int BOOST_TEST_CALL_DECL
 do_main( int argc, char* argv[] )
 {
+	mia::PrepareTestPluginPath prepare_plugin_path; 
 #ifdef WIN32
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );

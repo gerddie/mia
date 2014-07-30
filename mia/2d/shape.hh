@@ -40,17 +40,6 @@ typedef TFactory<C2DShape> C2DShapePlugin;
 /// Plug-in handler for the shape plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
 
-/** 
-    @cond INTERNAL  
-    \ingroup test 
-    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
-*/
-class EXPORT_2D C2DShapePluginHandlerTestPath {
-public: 
-	C2DShapePluginHandlerTestPath(); 
-}; 
-/// @endcond 
-
 /**
    Convenience function to produce a shape from a plugin
    \param descr the description of the shape 

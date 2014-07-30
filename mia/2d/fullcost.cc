@@ -32,12 +32,6 @@ namespace bfs=::boost::filesystem;
 template class TFullCostPlugin<C2DTransformation>; 
 template class TFullCost<C2DTransformation>; 
 
-C2DFullCostPluginHandlerTestPath::C2DFullCostPluginHandlerTestPath()
-{
-	CPathNameArray cost_plugpath({bfs::path("fullcost")});
-	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
-}
-
 template <> const char *  const 
 TPluginHandler<C2DFullCostPlugin>::m_help =  
 	"This class of cost functions evaluates the cost resulting from the "

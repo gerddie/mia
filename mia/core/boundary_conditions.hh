@@ -195,15 +195,6 @@ extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<CSplin
 /// make spline boundary conditions parsable by the command line 
 FACTORY_TRAIT(CSplineBoundaryConditionPluginHandler); 
 
-/**   
-      \ingroup tests 
-      Class to set up the plug-in search path for boundary conditions when running tests
-      in the build tree 
-*/
-struct EXPORT_CORE CSplineBoundaryConditionTestPath {
-	CSplineBoundaryConditionTestPath(); 
-}; 
-
 
 /**
    Create a specific instance of a spline interpolation boundary condition. 

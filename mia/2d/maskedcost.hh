@@ -52,16 +52,6 @@ typedef TFactory<C2DMaskedImageCost> C2DMaskedImageCostPlugin;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C2DMaskedImageCostPlugin> > C2DMaskedImageCostPluginHandler;
 
-/** 
-    @cond INTERNAL
-    @ingroup test 
-    @brief Initializer for testing un-installed plug-ins 
- */
-struct EXPORT_2D C2DMaskedImageCostPluginHandlerTestPath {
-	C2DMaskedImageCostPluginHandlerTestPath(); 
-}; 
-/// @endcond 
-
 /// @cond NEVER 
 FACTORY_TRAIT(C2DMaskedImageCostPluginHandler);
 /// @endcond 

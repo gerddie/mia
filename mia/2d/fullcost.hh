@@ -56,18 +56,6 @@ inline P2DFullCost produce_2dfullcost(const std::string& descr)
 	return C2DFullCostPluginHandler::instance().produce(descr); 
 }
 
-/** 
-    @cond INTERNAL  
-    \ingroup test 
-    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
-*/
-struct EXPORT_2D C2DFullCostPluginHandlerTestPath {
-	C2DFullCostPluginHandlerTestPath(); 
-private: 
-	C2DImageCostPluginHandlerTestPath cost_path_init; 
-};
-/// @endcond 
-
 
 /// @cond NEVER 
 FACTORY_TRAIT(C2DFullCostPluginHandler); 

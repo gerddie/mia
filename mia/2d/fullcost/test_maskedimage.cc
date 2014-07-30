@@ -29,8 +29,6 @@
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
 
-PrepareTestPluginPath plugin_path_init; 
-
 BOOST_AUTO_TEST_CASE( test_imagefullcost_src_mask)
 {
 

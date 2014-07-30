@@ -23,8 +23,8 @@
 #include <numeric>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/BoundingBox.hh>
-#include <mia/2d/inittesthandlers.hh>
 #include <mia/2d/imageio.hh>
+#include <mia/2d/transformfactory.hh>
 #include <libxml++/libxml++.h>
 
 using namespace mia; 
@@ -33,8 +33,6 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace xmlpp;
 namespace bfs=boost::filesystem;
-
-PrepareTestPluginPath plugin_path_init; 
 
 extern const char *testframe_init;
 extern const char *testframe_init2;

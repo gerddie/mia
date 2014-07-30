@@ -36,8 +36,6 @@ NS_MIA_USE
 using namespace std; 
 namespace bfs=boost::filesystem;
 
-PrepareTestPluginPath g_prepare_pluginpath; 
-
 class RigidRegisterFixture {
 protected: 
 	RigidRegisterFixture(); 

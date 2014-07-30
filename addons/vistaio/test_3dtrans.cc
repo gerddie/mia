@@ -26,8 +26,6 @@ using namespace std;
 using namespace mia; 
 using namespace vista_3dtrans_io; 
 
-C3DTransformCreatorHandlerTestPath factory_test_path; 
-
 BOOST_AUTO_TEST_CASE(test_simple_io) 
 {
 	C3DTransformationIOPluginHandler::instance(); 

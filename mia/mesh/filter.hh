@@ -51,15 +51,6 @@ typedef std::shared_ptr<CMeshFilter > PMeshFilter;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<CMeshFilterPlugin> > CMeshFilterPluginHandler;
 
-/** @cond INTERNAL  
-    \ingroup test 
-    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
-*/
-struct EXPORT_MESH CMeshFilterPluginHandlerTestPath {
-	CMeshFilterPluginHandlerTestPath(); 
-}; 
-/// @endcond 
-
 /// @cond NEVER 
 FACTORY_TRAIT(CMeshFilterPluginHandler); 
 /// @endcond 

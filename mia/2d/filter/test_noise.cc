@@ -28,8 +28,6 @@ using namespace ::boost::unit_test;
 using namespace noise_2dimage_filter;
 
 
-CNoiseGeneratorPluginHandlerTestPath noise_gen_test_path; 
-
 struct CTestNoiseGenerator: public  CNoiseGenerator {
 	CTestNoiseGenerator () :CNoiseGenerator(1){}
 

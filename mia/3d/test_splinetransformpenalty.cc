@@ -259,11 +259,6 @@ C3DSplineTransformPenalty *C3DSplinePenaltyMock::do_clone() const
 }
   
 
-CSplineKernelTestPath kernel_test_path; 
-
-
-C3DSplineTransformPenaltyPluginHandlerTest penalty_plug_path; 
-
 BOOST_AUTO_TEST_CASE(test_available_plugins)
 {
 	std::set<std::string> test_data = {"divcurl"}; 
