@@ -44,11 +44,11 @@ C2DMaskedImageCostPluginHandlerTestPath::C2DMaskedImageCostPluginHandlerTestPath
 	
 }
 
-template class EXPORT_HANDLER TMaskedCost<C2DImage, C2DBitImage, C2DFVectorfield>;
-template class EXPORT_HANDLER TPlugin<C2DImage, masked_cost_type>;
-template class EXPORT_HANDLER TFactory<C2DMaskedImageCost>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DMaskedImageCostPlugin> >;
-template class EXPORT_HANDLER TFactoryPluginHandler<C2DMaskedImageCostPlugin>;
-template class EXPORT_HANDLER TPluginHandler<C2DMaskedImageCostPlugin>;
+template class TMaskedCost<C2DImage, C2DBitImage, C2DFVectorfield>;
+template class TPlugin<C2DImage, masked_cost_type>;
+template class TFactory<C2DMaskedImageCost>;
+template class THandlerSingleton<TFactoryPluginHandler<C2DMaskedImageCostPlugin> >;
+template class TFactoryPluginHandler<C2DMaskedImageCostPlugin>;
+template class TPluginHandler<C2DMaskedImageCostPlugin>;
 
 NS_MIA_END

@@ -43,10 +43,10 @@ C3DImageCostPluginHandlerTestPath::C3DImageCostPluginHandlerTestPath()
 	
 }
 
-template class EXPORT_HANDLER TCost<C3DImage, C3DFVectorfield>;
-template class EXPORT_HANDLER TPlugin<C3DImage, cost_type>;
-template class EXPORT_HANDLER TFactory<C3DImageCost>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >;
+template class TCost<C3DImage, C3DFVectorfield>;
+template class TPlugin<C3DImage, cost_type>;
+template class TFactory<C3DImageCost>;
+template class THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >;
 template class TFactoryPluginHandler<C3DImageCostPlugin>;
 template class TPluginHandler<C3DImageCostPlugin>;
 

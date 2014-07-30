@@ -39,10 +39,10 @@ template <> const char *  const
 	TPluginHandler<C2DTransformationIO>::m_help =  
        "These plug-ins implement the support for loading and storing 2D transformations to various file types.";
 
-template class EXPORT_2D TIOPlugin<C2DTransformation>;
-template class EXPORT_2D THandlerSingleton<C2DTransformIOPluginHandlerImpl>;
-template class EXPORT_2D TIOPluginHandler<C2DTransformationIO>;
-template class EXPORT_2D TPluginHandler<C2DTransformationIO>;
+template class TIOPlugin<C2DTransformation>;
+template class THandlerSingleton<C2DTransformIOPluginHandlerImpl>;
+template class TIOPluginHandler<C2DTransformationIO>;
+template class TPluginHandler<C2DTransformationIO>;
 
 NS_MIA_END
 

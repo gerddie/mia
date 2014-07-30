@@ -68,6 +68,7 @@ CNoiseGeneratorPluginHandlerTestPath::CNoiseGeneratorPluginHandlerTestPath()
 template<> const char * const 
 TPluginHandler<TFactory<CNoiseGenerator>>::m_help = "These plug-ins provide various noise generators.";
 
+
 EXPLICIT_INSTANCE_HANDLER(CNoiseGenerator); 
 
 NS_MIA_END

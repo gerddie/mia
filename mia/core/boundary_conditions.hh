@@ -154,10 +154,15 @@ private:
 
 	int m_width; 
 }; 
+
+
+
 /**  \ingroup interpol 
      Pointer type of the boundary conditions. 
 */
 typedef CSplineBoundaryCondition::Pointer PSplineBoundaryCondition; 
+
+extern template class EXPORT_CORE TFactory<CSplineBoundaryCondition>; 
 
 /**  \ingroup interpol 
      \brief Base plugin for spline boundary conditions
@@ -177,12 +182,15 @@ private:
 	int m_width; 
 }; 
 
+
+
 /**
    \ingroup interpol 
    Plugin handler for the creation of spline boundary conditions
 */
 typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> > CSplineBoundaryConditionPluginHandler;
 
+extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> >; 
 
 /// make spline boundary conditions parsable by the command line 
 FACTORY_TRAIT(CSplineBoundaryConditionPluginHandler); 
