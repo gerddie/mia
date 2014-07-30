@@ -23,7 +23,7 @@
 #include "fuzzyClusterSolverCG.hh"
 
 NS_MIA_BEGIN
-#warning this needs to be tested
+// this needs to be tested
 bool fborder (long index, long nx, long ny, long nz)
 {
 	const long x = index % nx;

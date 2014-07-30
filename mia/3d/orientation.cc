@@ -61,7 +61,6 @@ void C3DOrientationAndPosition::get_transform_parameters(CDoubleVector& params) 
 	const C3DFMatrix scale(C3DFVector(m_scale.x, 0, 0), C3DFVector(0, m_scale.y, 0), C3DFVector(0,0, m_scale.z)); 
 
 	C3DFMatrix rs = axis_switch * (rot * scale);
-	C3DFVector t = axis_switch * m_origin;
 	
 	params[0] = rs.x.x; 
 	params[1] = rs.x.y; 
@@ -146,7 +145,7 @@ const C3DFMatrix& C3DOrientationAndPosition::get_axis_switch_matrix() const
 	}
 }
 
-C3DOrientationAndPosition& C3DOrientationAndPosition::operator +=(const C3DOrientationAndPosition& other)
+C3DOrientationAndPosition& C3DOrientationAndPosition::operator +=(const C3DOrientationAndPosition& MIA_PARAM_UNUSED(other))
 {
 	assert(0 && "to be implemented"); 
 }
@@ -160,7 +159,7 @@ bool C3DOrientationAndPosition::operator == (const C3DOrientationAndPosition& ot
 
 }
 
-bool C3DOrientationAndPosition::operator < (const C3DOrientationAndPosition& other) const
+bool C3DOrientationAndPosition::operator < (const C3DOrientationAndPosition& MIA_PARAM_UNUSED(other)) const
 {
 	assert(0 && "to be implemented"); 
 }
