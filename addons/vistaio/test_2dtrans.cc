@@ -28,7 +28,7 @@ using namespace std;
 using namespace mia; 
 using namespace vista_2dtrans_io; 
 
-C2DTransformCreatorHandlerTestPath factory_test_path; 
+PrepareTestPluginPath factory_test_path; 
 
 BOOST_AUTO_TEST_CASE(test_simple_io) 
 {
