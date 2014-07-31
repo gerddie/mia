@@ -102,11 +102,26 @@ class EXPORT_CORE CPluginHandlerBase  {
 	void add_dependend_handlers(HandlerHelpMap& handler_map) const;  
 
 	/**
-	   
-	 */
+	   write the XML description of this handler to an XML node 
+	   @param os stream to write additional descriptions to. 
+	   @param root the parent node the information is added to 
+	*/
 	void get_string_help_description_xml(std::ostream& os, xmlpp::Element *root) const; 
-
+	
+	
+	/**
+	   @returns the type name of the plug-in handler 
+	*/
 	std::string get_handler_type_string() const; 
+	
+	
+	/**	  
+	   Validate the given string to see whether anything useful can be done 
+	   with it. The actual way how this is validated depends on the plug-in
+           type.  
+	 */
+	bool validate_parameter_string(const std::string& s) const; 
+
 private: 
 	
 	virtual void do_print_short_help(std::ostream& os) const = 0; 
@@ -115,7 +130,8 @@ private:
 	virtual void do_add_dependend_handlers(HandlerHelpMap& handler_map) const = 0;  
 	virtual std::string get_handler_type_string_and_help(std::ostream& os) const; 
 	virtual std::string do_get_handler_type_string() const; 
-	
+	virtual bool do_validate_parameter_string(const std::string& s) const; 
+
 	std::string m_descriptor; 
 }; 
 

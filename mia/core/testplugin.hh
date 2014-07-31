@@ -37,6 +37,10 @@ EXPORT_CORE extern const char *const test_property;
    \brief Class to test plugin handling. 
 */
 
+
+extern template class EXPORT_CORE TPlugin<test_plugin_data, test_plugin_type>; 
+
+
 class EXPORT_CORE CTestPlugin: public TPlugin<test_plugin_data, test_plugin_type>  {
 public:
 	/// Construct the test plugin with the given name 
@@ -45,6 +49,8 @@ public:
 	/// \returns the plugin search path for testing 
 	static ::boost::filesystem::path search_path();
 };
+
+extern template class EXPORT_CORE TPluginHandler<CTestPlugin>;
 
 
 /**
@@ -67,6 +73,8 @@ public:
 	 */
 	CTestPlugin *get_plugin(const char *name) const;
 };
+
+extern template class EXPORT_CORE THandlerSingleton<CTestPluginHandlerImpl>;
 
 
 /** \ingroup test  

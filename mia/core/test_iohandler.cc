@@ -97,3 +97,17 @@ BOOST_FIXTURE_TEST_CASE(  test_datapool_io, DummyPluginFixture )
 	}
 }
 
+BOOST_FIXTURE_TEST_CASE(  test_dummy_valid_file_name, DummyPluginFixture )
+{
+	const auto&  handler = CTestIOPluginHandler::instance();
+	
+	
+	BOOST_CHECK(handler.validate_parameter_string("somefile.@")); 
+	BOOST_CHECK(handler.validate_parameter_string("somefile.hey")); 
+	BOOST_CHECK(!handler.validate_parameter_string("somefile.nonsense")); 
+	
+	// the data pool should not allow gzip extension 
+	// BOOST_CHECK(!handler.validate_parameter_string("somefile.@.gz")); 
+	
+	
+}

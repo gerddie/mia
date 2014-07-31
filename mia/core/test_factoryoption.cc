@@ -122,6 +122,28 @@ BOOST_AUTO_TEST_CASE( test_a2_factory_option )
 	BOOST_CHECK_EQUAL(option->get_value_as_string(), "lala"); 
 }
 
+BOOST_AUTO_TEST_CASE( test_string_factory_hint_check_valide)
+{
+        string value;
+        PCmdOption popt(make_opt(value, "string", 's', "a string option",
+                                 CCmdOptionFlags::validate, &CFactoryHandlerMock::instance() ));
+
+
+        BOOST_CHECK_NO_THROW(popt->set_value("lala:stuff=no"));
+
+}
+
+BOOST_AUTO_TEST_CASE( test_string_factory_hint_check_fail)
+{
+        string value;
+        PCmdOption popt(make_opt(value, "string", 's', "a string option",
+                                 CCmdOptionFlags::validate, &CFactoryHandlerMock::instance() ));
+
+
+        BOOST_CHECK_THROW(popt->set_value("lalo:stuff=no"), invalid_argument);
+}
+
+
 BOOST_AUTO_TEST_CASE( test_a2_factory_option_unique )
 {
 

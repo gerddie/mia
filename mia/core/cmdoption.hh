@@ -151,6 +151,8 @@ protected:
 	    \param os the output stream 
 	*/
 	virtual void do_get_long_help(std::ostream& os) const;
+
+	bool has_flag(CCmdOptionFlags test_flags) const; 
 private:
 	std::string get_flag_string() const; 
 	const char *get_short_help() const;

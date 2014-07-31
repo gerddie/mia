@@ -149,7 +149,9 @@ private:
 	std::string get_handler_type_string_and_help(std::ostream& os) const; 
 	
 	std::string do_get_handler_type_string() const; 
-	
+
+        virtual bool do_validate_parameter_string(const std::string& s) const;
+
 	typename I::Product *produce_raw(const std::string& plugindescr) const;
 
 	mutable TProductCache<ProductPtr> m_cache; 
@@ -242,6 +244,19 @@ template <typename  I>
 std::string TFactoryPluginHandler<I>::do_get_handler_type_string() const
 {
 	return "factory"; 
+}
+
+template <typename  I>
+bool TFactoryPluginHandler<I>::do_validate_parameter_string(const std::string& s) const
+{
+	cvdebug() << "Check whether factory '" << this->get_descriptor() << "' can understand '" << s << "'\n"; 
+        // find the part describing the plug-in name and check whether it
+        // is available
+        auto colon_pos = s.find(':');
+        auto plugin_name = s.substr(0, colon_pos);
+        if (this->plugin(plugin_name.c_str())) 
+                return true;
+        return false;
 }
 
 template <typename Handler, typename Chained, bool chainable> 

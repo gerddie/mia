@@ -37,6 +37,7 @@ CLalaIOPlugin::CLalaIOPlugin():
 	CTestIOPlugin("la")
 {
 	add_suffix(".la"); 
+	add_suffix(".hey"); 
 }
 
 CLalaIOPlugin::PData  CLalaIOPlugin::do_load(const string& /*fname*/) const

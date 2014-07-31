@@ -77,7 +77,7 @@ TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 	CSuffixmap::const_iterator p = m_suffixmap.find(fsuffix);
 	if (p != m_suffixmap.end())
 		return this->plugin(p->second.c_str());
-	return 0; 
+	return nullptr; 
 }
 
 template <class I> 
@@ -307,7 +307,12 @@ const std::string TIOPluginHandler<I>::CDatapoolPlugin::do_get_descr() const
 	return "Virtual IO to and from the internal data pool"; 
 }
 
-
+template <class I>
+bool TIOPluginHandler<I>::do_validate_parameter_string(const std::string& s) const
+{
+	auto p = preferred_plugin_ptr(s); 
+	return p != nullptr ? true : false;  
+}
 
 NS_MIA_END
 

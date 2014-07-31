@@ -31,7 +31,8 @@ enum class CCmdOptionFlags : int {
         input = 2, 
         output = 4, 
         required_input = 3, 
-        required_output = 5
+	required_output = 5,
+	validate = 8	
 }; 
 
 inline CCmdOptionFlags operator | (CCmdOptionFlags lhs, CCmdOptionFlags rhs) 
@@ -64,6 +65,8 @@ inline std::ostream& operator << (std::ostream& os, CCmdOptionFlags flags)
         case CCmdOptionFlags::output: os << "CCmdOptionFlags::output"; break; 
         case CCmdOptionFlags::required_input: os << "CCmdOptionFlags::required_input"; break; 
         case CCmdOptionFlags::required_output: os << "CCmdOptionFlags::required_output"; break; 
+        case CCmdOptionFlags::validate: os << "CCmdOptionFlags::validate"; break; 
+
         default: os << "CCmdOptionFlags::<undefined>"; 
         }; 
         return os; 

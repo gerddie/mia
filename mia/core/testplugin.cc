@@ -72,6 +72,7 @@ CTestPlugin *CTestPluginHandlerImpl::get_plugin(const char *name) const
 template<> 
 const char * const TPluginHandler<CTestPlugin>::m_help = "This is a handler for the test plug-ins"; 
 
+template class TPlugin<test_plugin_data, test_plugin_type>; 
 template class TPluginHandler<CTestPlugin>;
 template class THandlerSingleton<CTestPluginHandlerImpl>;
 

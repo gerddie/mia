@@ -252,11 +252,11 @@ void CCmdOption::add_option_xml(xmlpp::Element& parent, HandlerHelpMap& handler_
 string CCmdOption::get_flag_string()const 
 {
 	ostringstream ss; 
-	if (has_flag(m_flags, CCmdOptionFlags::input))
+        if (mia::has_flag(m_flags, CCmdOptionFlags::input))
 		ss << "input "; 
-	if (has_flag(m_flags, CCmdOptionFlags::output))
+        if (mia::has_flag(m_flags, CCmdOptionFlags::output))
 		ss << "output "; 
-	if (has_flag(m_flags, CCmdOptionFlags::required))
+        if (mia::has_flag(m_flags, CCmdOptionFlags::required))
 		ss << "required ";
 	return ss.str(); 
 }
@@ -269,5 +269,11 @@ void CCmdOption::post_set()
 void CCmdOption::do_post_set()
 {
 }
+
+bool CCmdOption::has_flag(CCmdOptionFlags test_flags) const
+{
+        return mia::has_flag(m_flags, test_flags);
+}
+
 
 NS_MIA_END

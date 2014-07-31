@@ -90,4 +90,15 @@ std::string CPluginHandlerBase::do_get_handler_type_string() const
 }
 
 
+bool CPluginHandlerBase::validate_parameter_string(const std::string& s) const
+{
+	return do_validate_parameter_string(s);
+}
+
+bool CPluginHandlerBase::do_validate_parameter_string(const std::string& MIA_PARAM_UNUSED(s)) const
+{
+	return true; 
+}
+
+
 NS_MIA_END

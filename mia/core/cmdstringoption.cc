@@ -33,7 +33,7 @@ CCmdStringOption::CCmdStringOption(std::string& value, char short_opt, const cha
 	m_value(value), 
 	m_plugin_hint(plugin_hint)
 {
-	if (!value.empty() && has_flag(flags, CCmdOptionFlags::required) ) 
+        if (!value.empty() && mia::has_flag(flags, CCmdOptionFlags::required) )
 		cvwarn() << "CCmdStringOption:option '" << long_opt << "' has a default value '"
 			 << value
 			 <<"' but is also marked as required. This doesn't make mzúch sense."; 
@@ -41,8 +41,11 @@ CCmdStringOption::CCmdStringOption(std::string& value, char short_opt, const cha
 
 bool CCmdStringOption::do_set_value(const char *str_value)
 {
+	bool retval = true; 
 	m_value.assign(str_value); 
-	return true; 
+	if (m_plugin_hint && has_flag(CCmdOptionFlags::validate)) 
+		retval = m_plugin_hint->validate_parameter_string(m_value);  
+	return retval; 
 }
 
 const string CCmdStringOption::do_get_value_as_string() const
