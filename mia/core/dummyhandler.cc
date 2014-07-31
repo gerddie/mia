@@ -47,6 +47,8 @@ CTestIOPlugin::CTestIOPlugin(const char *name):
 template<> const char * const 
 TPluginHandler<CTestIOPlugin>::m_help = "These are some dummy plug-ins for IO handler testing."; 
 
+
+template class EXPORT_CORE TPlugin<test_io_data,io_plugin_type>; 
 template class TPluginHandler<CTestIOPlugin>;
 template class TIOPlugin<test_io_data>; 
 template class TIOPluginHandler<CTestIOPlugin>;

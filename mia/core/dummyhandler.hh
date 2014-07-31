@@ -39,6 +39,9 @@ struct test_io_data {
 	static const char *data_descr;
 };
 
+extern template class EXPORT_CORE TPlugin<test_io_data,io_plugin_type>; 
+extern template class EXPORT_CORE TIOPlugin<test_io_data>; 
+
 
 class EXPORT_CORE CTestIOPlugin : public TIOPlugin<test_io_data> {
 public:
