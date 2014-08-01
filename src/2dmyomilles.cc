@@ -34,7 +34,7 @@
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/imageio.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/transformfactory.hh>
 
 using namespace std;

@@ -22,8 +22,8 @@
 #define SegSet_h
 
 #include <mia/core/ioplugin.hh>
-#include <mia/2d/SegFrame.hh>
-#include <mia/2d/BoundingBox.hh>
+#include <mia/2d/segframe.hh>
+#include <mia/2d/boundingbox.hh>
 
 namespace xmlpp {
 	class Document;

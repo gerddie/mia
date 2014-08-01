@@ -19,7 +19,7 @@
  */
 
 #include <libxml++/libxml++.h>
-#include <mia/2d/SegSet.hh>
+#include <mia/2d/segset.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/filetools.hh>
 #include <mia/core/tools.hh>

@@ -33,7 +33,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/nonrigidregister.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/fullcost.hh>
 #include <mia/2d/similarity_profile.hh>

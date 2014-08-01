@@ -30,7 +30,7 @@
 
 #include <mia/2d/filter.hh>
 #include <mia/2d/imageio.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 #include <mia/core.hh>
 
 using namespace std;

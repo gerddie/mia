@@ -20,7 +20,7 @@
 
 #include <stdexcept>
 #include <string>
-#include <mia/2d/SegFrame.hh>
+#include <mia/2d/segframe.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/bfsv23dispatch.hh>

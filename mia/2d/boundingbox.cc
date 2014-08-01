@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/BoundingBox.hh>
+#include <mia/2d/boundingbox.hh>
 
 
 NS_MIA_BEGIN

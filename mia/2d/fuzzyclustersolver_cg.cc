@@ -21,7 +21,7 @@
 #include <cstring>
 
 #include <mia/core/msgstream.hh>
-#include <mia/2d/fuzzyClusterSolverCG.hh>
+#include <mia/2d/fuzzyclustersolver_cg.hh>
 
 
 NS_MIA_BEGIN

@@ -22,8 +22,8 @@
 #define SegFrame_h
 
 #include <vector>
-#include <mia/2d/SegStar.hh>
-#include <mia/2d/SegSection.hh>
+#include <mia/2d/segstar.hh>
+#include <mia/2d/segsection.hh>
 #include <mia/2d/image.hh>
 
 NS_MIA_BEGIN

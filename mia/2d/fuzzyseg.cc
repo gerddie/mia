@@ -31,8 +31,8 @@
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/histogram.hh>
-#include <mia/2d/fuzzyClusterSolverCG.hh>
-#include <mia/2d/fuzzyClusterSolverSOR.hh>
+#include <mia/2d/fuzzyclustersolver_cg.hh>
+#include <mia/2d/fuzzyclustersolver_sor.hh>
 #include <mia/2d/fuzzyseg.hh>
 
 NS_MIA_BEGIN

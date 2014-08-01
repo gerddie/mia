@@ -21,7 +21,7 @@
 #define VSTREAM_DOMAIN "SegSection"
 #include <stdexcept>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/SegSection.hh>
+#include <mia/2d/segsection.hh>
 #include <libxml++/libxml++.h>
 
 

@@ -20,7 +20,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/SegPoint.hh>
+#include <mia/2d/segpoint.hh>
 
 using namespace mia;
 

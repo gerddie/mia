@@ -24,7 +24,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/tools.hh>
 
-#include <mia/2d/SegStar.hh>
+#include <mia/2d/segstar.hh>
 #include <libxml++/libxml++.h>
 
 

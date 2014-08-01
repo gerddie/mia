@@ -32,7 +32,7 @@
 #include <mia/2d/filter.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
 #include <mia/2d/nonrigidregister.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/fullcost.hh>
 #include <mia/2d/similarity_profile.hh>

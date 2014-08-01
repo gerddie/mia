@@ -21,8 +21,8 @@
 #include <mia/internal/autotest.hh>
 
 #include <numeric>
-#include <mia/2d/SegSetWithImages.hh>
-#include <mia/2d/BoundingBox.hh>
+#include <mia/2d/segsetwithimages.hh>
+#include <mia/2d/boundingbox.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/imageio.hh>
 

@@ -18,29 +18,25 @@
 
 SET(MIA2D_SRC_BASE
   angle.cc
+  boundingbox.cc
+  correlation_weight.cc 
+  cost.cc
+  creator.cc
+  cstkernel.cc 
   datafield.cc
-  vectorfield.cc
+  distance.cc
   filter.cc
   image.cc
   imageio.cc
-  vfio.cc
-  BoundingBox.cc
-  cost.cc
-  correlation_weight.cc 
-  creator.cc
-  cstkernel.cc 
-  distance.cc
   interpolator.cc 
-#  fatcost.cc
+  filterchain.cc
   fftkernel.cc
   fuzzyseg.cc
-  fuzzyClusterSolverSOR.cc
-  fuzzyClusterSolverCG.cc
+  fuzzyclustersolver_sor.cc
+  fuzzyclustersolver_cg.cc
   fullcost.cc
-  filterchain.cc
   maskedcost.cc 
   model.cc
-#  modelsolverreg.cc
   morphshape.cc
   multicost.cc
   nfg.cc
@@ -49,8 +45,8 @@ SET(MIA2D_SRC_BASE
   ppmatrix.cc
   rgbimageio.cc
   rigidregister.cc
-  similarity_profile.cc
   shape.cc
+  similarity_profile.cc
   sparse_image_solver.cc
   splinetransformpenalty.cc
   timestep.cc
@@ -59,24 +55,25 @@ SET(MIA2D_SRC_BASE
   transformio.cc
   transformfactory.cc
   vectorfield.cc
+  vfio.cc
   )
 
 
 SET(SEG_SRC 
-  SegPoint.cc 
-  SegStar.cc 
-  SegSection.cc 
-  SegFrame.cc 
-  SegSet.cc
-  SegSetWithImages.cc
+  segframe.cc 
+  segpoint.cc 
+  segsection.cc 
+  segset.cc
+  segsetwithimages.cc
+  segstar.cc 
   )
 SET(SEG_HEADER 
-  SegPoint.hh
-  SegStar.hh
-  SegSection.hh
-  SegFrame.hh
-  SegSet.hh
-  SegSetWithImages.hh
+  segpoint.hh
+  segstar.hh
+  segsection.hh
+  segframe.hh
+  segset.hh
+  segsetwithimages.hh
   )
 
 IF(ITPP_FOUND)
@@ -102,7 +99,7 @@ SET(MIA2D_HEADERS_BASE
   vector.hh
   vectorfield.hh
   vfio.hh
-  BoundingBox.hh
+  boundingbox.hh
   cost.hh
   correlation_weight.hh 
   creator.hh
@@ -110,13 +107,12 @@ SET(MIA2D_HEADERS_BASE
   defines2d.hh
   deformer.hh
   distance.hh
-#  fatcost.hh
   fullcost.hh
   filterchain.hh
   fftkernel.hh
   fuzzyseg.hh
-  fuzzyClusterSolverSOR.hh
-  fuzzyClusterSolverCG.hh
+  fuzzyclustersolver_sor.hh
+  fuzzyclustersolver_cg.hh
   ground_truth_evaluator.hh
   groundtruthproblem.hh
   interpolator.hh
@@ -125,7 +121,6 @@ SET(MIA2D_HEADERS_BASE
   matrix.hh
   maskedcost.hh 
   model.hh
-#  modelsolverreg.hh
   morphshape.hh
   multicost.hh
   nonrigidregister.hh
@@ -199,7 +194,6 @@ TEST_2DMIA(distance mia2dtest)
 TEST_2DMIA(fullcost mia2dtest)
 TEST_2DMIA(interpol mia2dtest)
 TEST_2DMIA(matrix mia2dtest)
-#TEST_2DMIA(modelsolverreg mia2dtest)
 TEST_2DMIA(nfg mia2dtest)
 TEST_2DMIA(cost mia2dtest)
 TEST_2DMIA(iterator mia2dtest)
@@ -220,7 +214,6 @@ TEST_2DMIA(imageio mia2dtest)
 TEST_2DMIA(sparse_image_solver mia2dtest)
 TEST_2DMIA(filter_cast mia2d)
 TEST_2DMIA(splinetransformpenalty mia2d)
-#TEST_2DMIA(fullcost_mi_spline  mia2dtest)
 TEST_2DMIA(trackpoint mia2dtest)
 
 IF(CMAKE_BUILD_TYPE)

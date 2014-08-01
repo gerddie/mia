@@ -21,7 +21,7 @@
 #include <stdexcept>
 #include <boost/filesystem.hpp>
 #include <mia/core/errormacro.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 

@@ -39,7 +39,7 @@ SET(MIA3D_SRC
   filter.cc
   fullcost.cc
   fuzzyseg.cc
-  fuzzyClusterSolverCG.cc
+  fuzzyclustersolver_cg.cc
   image.cc
   imageio.cc
   imagecollect.cc

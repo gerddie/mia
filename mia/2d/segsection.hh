@@ -24,8 +24,8 @@
 #include <vector>
 #include <string>
 
-#include <mia/2d/SegPoint.hh>
-#include <mia/2d/BoundingBox.hh>
+#include <mia/2d/segpoint.hh>
+#include <mia/2d/boundingbox.hh>
 #include <mia/2d/polygon.hh>
 
 NS_MIA_BEGIN

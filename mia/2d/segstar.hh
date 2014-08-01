@@ -21,7 +21,7 @@
 #ifndef SegStar_h
 #define SegStar_h
 
-#include <mia/2d/SegPoint.hh>
+#include <mia/2d/segpoint.hh>
 #include <vector>
 
 NS_MIA_BEGIN

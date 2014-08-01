@@ -29,7 +29,7 @@
 #include <mia/internal/main.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/correlation_weight.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 
 NS_MIA_USE;
 using namespace std;

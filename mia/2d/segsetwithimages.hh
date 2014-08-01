@@ -24,7 +24,7 @@
 
 #include <mia/core/iohandler.hh>
 
-#include <mia/2d/SegSet.hh>
+#include <mia/2d/segset.hh>
 #include <mia/2d/image.hh>
 
 namespace xmlpp {

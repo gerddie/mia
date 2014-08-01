@@ -30,7 +30,7 @@
 #include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 #include <mia/internal/main.hh>

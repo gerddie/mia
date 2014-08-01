@@ -20,7 +20,7 @@
 
 #include <cstring>
 
-#include "fuzzyClusterSolverCG.hh"
+#include <mia/3d/fuzzyclustersolver_cg.hh>
 
 NS_MIA_BEGIN
 // this needs to be tested

@@ -25,7 +25,7 @@
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/imageio.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 #include <boost/filesystem.hpp>
 
 #include <mia/internal/main.hh>

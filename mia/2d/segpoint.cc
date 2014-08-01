@@ -21,7 +21,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cassert>
-#include <mia/2d/SegPoint.hh>
+#include <mia/2d/segpoint.hh>
 #include <mia/core/tools.hh>
 #include <libxml++/libxml++.h>
 

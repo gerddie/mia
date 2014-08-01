@@ -23,7 +23,7 @@
 #endif
 
 #include <cmath> 
-#include <mia/2d/fuzzyClusterSolverSOR.hh>
+#include <mia/2d/fuzzyclustersolver_sor.hh>
 #include <mia/core/msgstream.hh>
 
 

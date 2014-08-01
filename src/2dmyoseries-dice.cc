@@ -24,7 +24,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/internal/main.hh>
-#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/segsetwithimages.hh>
 #include <ostream>
 #include <fstream>
 
