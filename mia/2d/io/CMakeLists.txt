@@ -27,6 +27,13 @@ PLUGIN_WITH_PREFIX2("2dimage" "io" bmp "${MIA2DLIBS}")
 PLUGIN_WITH_PREFIX2("2dimage" "io" raw "${MIA2DLIBS}")
 
 
+SET(segset2dio
+  xml)
+
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("2dmyocardsegset" "io" "${segset2dio}" mia2dmyocardperf TESTLIBS  mia2dtest)
+
+
+
 
 
 

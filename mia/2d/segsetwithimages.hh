@@ -43,8 +43,21 @@ class EXPORT_2D CSegSetWithImages: public CSegSet {
 public:
 	static const char *data_descr;	
 	typedef CSegSetWithImages type;	
+	typedef std::shared_ptr<CSegSetWithImages> Pointer; 
 	
 	CSegSetWithImages();
+
+	CSegSetWithImages(int version);
+
+
+	/**
+	   Read the segmentation set and load the images 
+	   \param node the root node of the XML segmentation set description
+	   \param fileroot is the root location of the set file and it is used as 
+	   base path for the images. 
+	*/
+	CSegSetWithImages(const xmlpp::Document& node, const std::string& fileroot); 
+	
 
 	/**
 	   Read the segmentation set and load the images 
@@ -62,6 +75,15 @@ public:
 	
 	/// save the images to their give file names with the given directory as root @param root 
 	void save_images(const std::string& root) const; 
+
+
+	using CSegSet::add_frame; 
+	/**
+	   Add a frame ant its correcponding image 
+	   \param frame the new frame 
+	   \param image the image 
+	 */
+	void add_frame(const CSegFrame& frame, P2DImage image); 
 	
 	/** Run acropping on the inout images and correct the segmentation information accordingly 
 	    \param start upper left corner of the cropping reagion 
@@ -76,6 +98,8 @@ public:
 private:
 	C2DImageSeries m_images;
 };
+
+typedef CSegSetWithImages::Pointer PSegSetWithImages; 
 
 typedef TIOPlugin<CSegSetWithImages> CSegSetWithImagesIOPlugin;
 typedef THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin > > CSegSetWithImagesIOPluginHandler;

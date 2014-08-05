@@ -42,7 +42,7 @@ public:
 private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
-	std::string do_get_preferred_suffix() const; 
+	const std::string do_get_preferred_suffix() const; 
 	const string do_get_descr() const;
 };
 
@@ -56,7 +56,7 @@ CVista3DVFIOPlugin::CVista3DVFIOPlugin():
 	add_suffix(".VF");
 }
 
-std::string CVista3DVFIOPlugin::do_get_preferred_suffix() const
+const std::string CVista3DVFIOPlugin::do_get_preferred_suffix() const
 {
 	return "vf"; 
 }
@@ -138,7 +138,7 @@ public:
 private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
-	std::string do_get_preferred_suffix() const; 
+	const std::string do_get_preferred_suffix() const; 
 	const string do_get_descr() const;
 	template <typename T>
 	CScaled3DVFIOPlugin::PData read_compressed(const T3DVector<VistaIOLong>& _size, const C3DFVector& scale, 
@@ -173,7 +173,7 @@ CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::read_compressed(const T3DVector<
 	return result; 
 }
 
-std::string CScaled3DVFIOPlugin::do_get_preferred_suffix() const
+const std::string CScaled3DVFIOPlugin::do_get_preferred_suffix() const
 {
 	return "cvf"; 
 }

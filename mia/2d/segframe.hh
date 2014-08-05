@@ -199,6 +199,25 @@ public:
 	    \returns proposed contrast correction 
 	 */
 	float get_contrast() const; 
+
+
+	/**
+	   set the quality rating for the frame 
+	   \param q 0=not set, 1-5 worst to best 
+	 */
+	void set_quality(float q); 
+
+	/**
+	   set the brightness adjustment for the frame 
+	   \param b 0=no adjustment 
+	 */
+	void set_brightness(float b); 
+	
+         /**
+	    set contrast adjustment 
+	    \param c 0=no adjustment 
+	 */
+	void set_contrast(float c); 
 	
 private:
 	void load_image() const; 

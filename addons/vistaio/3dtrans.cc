@@ -43,7 +43,7 @@ C3DVistaTransformationIO::C3DVistaTransformationIO():
 	add_suffix(".v");
 }
 
-std::string C3DVistaTransformationIO::do_get_preferred_suffix() const
+const std::string C3DVistaTransformationIO::do_get_preferred_suffix() const
 {
 	return "v3dt"; 
 }

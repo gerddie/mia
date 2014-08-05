@@ -183,7 +183,7 @@ const string CVista3DImageIOPlugin::do_get_descr() const
 	return "Vista 3D";
 }
 
-std::string CVista3DImageIOPlugin::do_get_preferred_suffix() const
+const std::string CVista3DImageIOPlugin::do_get_preferred_suffix() const
 {
 	return "v"; 
 }

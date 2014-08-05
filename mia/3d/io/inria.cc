@@ -72,7 +72,7 @@ private:
 	virtual PData do_load(const string&  filename) const;
 	virtual bool do_save(const string& fname, const Data& data) const;
 	virtual const string do_get_descr() const;
-	std::string do_get_preferred_suffix() const; 
+	const std::string do_get_preferred_suffix() const; 
 };
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
@@ -569,7 +569,7 @@ bool CInria3DImageIOPlugin::do_save(string const&  filename, const C3DImageVecto
 }
 
 
-std::string CInria3DImageIOPlugin::do_get_preferred_suffix() const
+const std::string CInria3DImageIOPlugin::do_get_preferred_suffix() const
 {
 	return "inr"; 
 }

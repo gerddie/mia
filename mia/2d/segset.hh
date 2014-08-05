@@ -57,6 +57,8 @@ public:
 	 */
 	CSegSet(const xmlpp::Document& node);
 
+
+	CSegSet(int version);
 	/**
 	   Append a segmentation frame 
 	   \param frame 

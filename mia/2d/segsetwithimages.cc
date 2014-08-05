@@ -41,6 +41,30 @@ CSegSetWithImages::CSegSetWithImages()
 {
 }
 
+CSegSetWithImages::CSegSetWithImages(int version):CSegSet(version)
+{
+}
+
+CSegSetWithImages::CSegSetWithImages(const xmlpp::Document& node, const string& fileroot):
+	CSegSet(node)
+{
+	
+	auto iframe = get_frames().begin();
+	auto eframe = get_frames().end();
+
+	while (iframe != eframe) {
+		string input_image = iframe->get_imagename();
+		string iimage = bfs::path(input_image).string();
+		input_image = (fileroot / bfs::path(iimage) ).string();
+		iframe->set_imagename(iimage);
+		
+		P2DImage image = load_image2d(input_image); 
+		m_images.push_back(image);
+		iframe->set_image(image); 
+		++iframe;
+	}	
+}
+
 CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 	CSegSet(filename)
 {
@@ -104,6 +128,13 @@ void CSegSetWithImages::save_images(const string& filename) const
 		++iframe; 
 		++iimage; 
 	}
+}
+
+void CSegSetWithImages::add_frame(const CSegFrame& frame, P2DImage image)
+{
+	assert(	m_images.size() == get_frames().size()); 
+	add_frame(frame); 
+	m_images.push_back(image); 
 }
 
 const C2DImageSeries& CSegSetWithImages::get_images()const

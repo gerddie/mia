@@ -274,7 +274,7 @@ TIOPluginHandler<I>::CDatapoolPlugin::CDatapoolPlugin():
 }
 
 template <class I> 
-std::string TIOPluginHandler<I>::CDatapoolPlugin::do_get_preferred_suffix() const
+const std::string TIOPluginHandler<I>::CDatapoolPlugin::do_get_preferred_suffix() const
 {
 	return "@"; 
 }

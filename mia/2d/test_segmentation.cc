@@ -402,9 +402,9 @@ BOOST_AUTO_TEST_CASE(test_segstart_error_attribute)
 input_set.save_images(); 
 */
 
-BOOST_AUTO_TEST_CASE( test_segset_write )
+BOOST_AUTO_TEST_CASE( test_segset_write_version1 )
 {
-	CSegSet segset;
+	CSegSet segset(1);
 	CSegStar star1(CSegPoint2D(109, 118), 21, CSegPoint2D(10, 20),
 		       CSegPoint2D(20, 10), CSegPoint2D(0, 4));
 	CSegStar star2(CSegPoint2D(109, 118), 22, CSegPoint2D(10, 20),

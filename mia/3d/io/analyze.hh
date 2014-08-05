@@ -38,7 +38,7 @@ private:
 	virtual PData do_load(const std::string&  filename) const;
 	virtual bool do_save(const std::string& fname, const Data& data) const;
 	virtual const std::string do_get_descr() const;
-	std::string do_get_preferred_suffix() const; 
+	const std::string do_get_preferred_suffix() const; 
 
 	void swap_hdr(analyze_dsr& hdr) const;
 

@@ -41,7 +41,7 @@ private:
 	virtual PData do_load(const std::string& fname) const;
 	virtual bool do_save(const std::string& fname, const C2DTransformation& data) const;
 	const string do_get_descr() const;
-	std::string do_get_preferred_suffix() const; 
+	const std::string do_get_preferred_suffix() const; 
 }; 
 
 
@@ -51,7 +51,7 @@ C2DVistaTransformationIO::C2DVistaTransformationIO():
 	add_suffix(".v2dt");
 }
 
-std::string C2DVistaTransformationIO::do_get_preferred_suffix() const
+const std::string C2DVistaTransformationIO::do_get_preferred_suffix() const
 {
 	return "v2dt"; 
 }

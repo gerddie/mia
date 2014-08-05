@@ -43,7 +43,7 @@ private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
-	std::string do_get_preferred_suffix() const; 
+	const std::string do_get_preferred_suffix() const; 
 };
 
 CVista2DImageIOPlugin::CVista2DImageIOPlugin():
@@ -193,7 +193,7 @@ const string CVista2DImageIOPlugin::do_get_descr() const
 	return "a 2dimage io plugin for vista images";
 }
 
-std::string CVista2DImageIOPlugin::do_get_preferred_suffix() const
+const std::string CVista2DImageIOPlugin::do_get_preferred_suffix() const
 {
 	return "v"; 
 }

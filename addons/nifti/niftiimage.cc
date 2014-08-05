@@ -427,7 +427,7 @@ const std::string CNifti3DImageIOPlugin::do_get_descr() const
         return "NIFTI-1 3D image IO"; 
 }
 
-std::string CNifti3DImageIOPlugin::do_get_preferred_suffix() const
+const std::string CNifti3DImageIOPlugin::do_get_preferred_suffix() const
 {
         return "nii"; 
 }

@@ -32,7 +32,7 @@ private:
 	virtual PData do_load(const std::string& fname) const;
 	virtual bool do_save(const std::string& fname, const mia::C3DTransformation& data) const;
 	const std::string do_get_descr() const;
-	std::string do_get_preferred_suffix() const; 
+	const std::string do_get_preferred_suffix() const; 
 }; 
 
 

@@ -116,13 +116,13 @@ const typename TIOPlugin<D>::SuffixSet& TIOPlugin<D>::get_suffixes() const
 }
 
 template <typename D> 
-std::string TIOPlugin<D>::get_preferred_suffix() const
+const std::string TIOPlugin<D>::get_preferred_suffix() const
 {
 	return 	this->do_get_preferred_suffix(); 
 }
 
 template <typename D> 
-std::string TIOPlugin<D>::do_get_preferred_suffix() const
+const std::string TIOPlugin<D>::do_get_preferred_suffix() const
 {
 	return this->get_name(); 
 }

@@ -599,7 +599,7 @@ bool CAnalyze3DImageIOPlugin::do_save(const string& fname, const Data& data) con
 	return true;
 }
 
-std::string CAnalyze3DImageIOPlugin::do_get_preferred_suffix() const
+const std::string CAnalyze3DImageIOPlugin::do_get_preferred_suffix() const
 {
 	return "hdr"; 
 }

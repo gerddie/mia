@@ -218,7 +218,7 @@ void FHDF5Saver::operator ()( const T3DImage<T>& image)
 }
 
 
-std::string CHDF53DImageIOPlugin::do_get_preferred_suffix() const
+const std::string CHDF53DImageIOPlugin::do_get_preferred_suffix() const
 {
 	return "h5"; 
 }

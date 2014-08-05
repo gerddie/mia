@@ -159,7 +159,7 @@ private:
 		bool do_save(const std::string& fname, 
 			     const typename Interface::Data& data) const; 
 		const std::string do_get_descr() const;
-		std::string do_get_preferred_suffix() const; 
+		const std::string do_get_preferred_suffix() const; 
 			
 	}; 
 	CDatapoolPlugin *m_pool_plugin; 

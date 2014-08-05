@@ -166,7 +166,7 @@ static P3DImage get_3dimage(CImageInstances& slices)
 	return creator.get_image();
 }
 
-std::string CDicom3DImageIOPlugin::do_get_preferred_suffix() const
+const std::string CDicom3DImageIOPlugin::do_get_preferred_suffix() const
 {
 	return "dcm"; 
 }

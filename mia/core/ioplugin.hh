@@ -109,7 +109,7 @@ public:
 	   \returns preferred suffix of the file type 
 	   \remark in most cases this is just a pass-through 
 	 */
-	std::string get_preferred_suffix() const; 
+	const std::string get_preferred_suffix() const; 
 protected:
 
 	void add_suffix(const std::string& suffix);  
@@ -139,7 +139,7 @@ private:
 	 */
 	virtual bool do_save(const std::string& fname, const typename D::type& data) const = 0;
 
-	virtual std::string do_get_preferred_suffix() const; 
+	virtual const std::string do_get_preferred_suffix() const; 
 
 };
 

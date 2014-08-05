@@ -35,7 +35,15 @@ CSegSet::CSegSet():
 	m_RV_peak(-1),
 	m_LV_peak(-1), 
 	m_preferred_reference(-1), 
-	m_version(1)
+	m_version(2)
+{
+}
+
+CSegSet::CSegSet(int version):
+	m_RV_peak(-1),
+	m_LV_peak(-1), 
+	m_preferred_reference(-1), 
+	m_version(version)
 {
 }
 
@@ -43,7 +51,7 @@ CSegSet::CSegSet(const std::string& src_filename):
 	m_RV_peak(-1),
 	m_LV_peak(-1),
 	m_preferred_reference(-1), 
-	m_version(1)
+	m_version(2)
 {
 	DomParser parser;
 	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.

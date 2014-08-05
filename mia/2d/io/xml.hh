@@ -18,24 +18,19 @@
  *
  */
 
-#ifndef addons_vistaio_2dtrans_hh
-#define addons_vistaio_2dtrans_hh
+#include <mia/2d/segsetwithimages.hh>
 
-#include <mia/2d/transformio.hh>
 
-NS_BEGIN(vista_2dtrans_io)
+NS_BEGIN(myosegset2d)
 
-class C2DVistaTransformationIO: public mia::C2DTransformationIO {
-public: 	
-	C2DVistaTransformationIO(); 
-private: 
-	virtual PData do_load(const std::string& fname) const;
-	virtual bool do_save(const std::string& fname, const mia::C2DTransformation& data) const;
+class CXMLSegSetWithImagesIOPlugin: public mia::CSegSetWithImagesIOPlugin {
+public: 
+	CXMLSegSetWithImagesIOPlugin(); 
+private:
+	mia::PSegSetWithImages do_load(const std::string& fname) const;
+	bool do_save(const std::string& fname, const mia::CSegSetWithImages& data) const;
 	const std::string do_get_descr() const;
 	const std::string do_get_preferred_suffix() const; 
 }; 
 
-
-NS_END
-
-#endif 
+NS_END //myosegset2d

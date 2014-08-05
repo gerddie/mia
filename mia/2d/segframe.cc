@@ -343,6 +343,21 @@ size_t CSegFrame::get_nsections() const
 	return m_sections.size(); 
 }
 
+void CSegFrame::set_quality(float q)
+{
+	m_quality = q; 
+}
+
+void CSegFrame::set_brightness(float b)
+{
+	m_brightness = b; 
+}
+
+void CSegFrame::set_contrast(float c) 
+{
+	m_contrast = c; 
+}
+
 float CSegFrame::get_quality() const
 {
 	return m_quality; 
