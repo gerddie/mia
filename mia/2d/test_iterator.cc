@@ -231,6 +231,38 @@ BOOST_AUTO_TEST_CASE (test_fill_part)
 }
 
 
+// this tests whether the traits are properly set
+BOOST_AUTO_TEST_CASE (test_std_copy) 
+{
+	C2DBounds size(7,5); 
+	C2DFVectorfield in_field(size);
+	C2DBounds start(1,2); 
+	C2DBounds end(6,3); 
+	C2DBounds out_size = end - start; 
+	C2DFVectorfield out_field(out_size);
+
+	auto ibegin = in_field.begin_range(start, end);
+	auto iend = in_field.end_range(start, end);
+	
+	while (ibegin != iend) {
+		*ibegin = C2DFVector(ibegin.pos()); 
+		++ibegin; 
+	}
+
+	std::copy(in_field.begin_range(start, end), in_field.end_range(start, end), out_field.begin()); 
+	
+	auto ofb = out_field.begin_range(C2DBounds::_0, out_size); 
+	auto ofe = out_field.end_range(C2DBounds::_0, out_size); 
+	
+	while (ofb != ofe) {
+		BOOST_CHECK_EQUAL(*ofb, C2DFVector(ofb.pos() + start)); 
+		++ofb; 
+	}
+	
+	
+}
+
+
 BOOST_FIXTURE_TEST_CASE (test_const_lala, VFIteratorFixture) 
 {
 	const_range2d_vfiterator begin(C2DBounds(2,2), size, 

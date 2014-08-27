@@ -180,6 +180,37 @@ BOOST_AUTO_TEST_CASE (test_iterator_no_boundaries)
 	}
 }
 
+// this tests whether the traits are properly set
+BOOST_AUTO_TEST_CASE (test_std_copy) 
+{
+	C3DBounds size(7,5,6); 
+	C3DFVectorfield in_field(size);
+	C3DBounds start(1,2,2); 
+	C3DBounds end(6,3,5); 
+	C3DBounds out_size = end - start; 
+	C3DFVectorfield out_field(out_size);
+
+	auto ibegin = in_field.begin_range(start, end);
+	auto iend = in_field.end_range(start, end);
+	
+	while (ibegin != iend) {
+		*ibegin = C3DFVector(ibegin.pos()); 
+		++ibegin; 
+	}
+
+	std::copy(in_field.begin_range(start, end), in_field.end_range(start, end), out_field.begin()); 
+	
+	auto ofb = out_field.begin_range(C3DBounds::_0, out_size); 
+	auto ofe = out_field.end_range(C3DBounds::_0, out_size); 
+	
+	while (ofb != ofe) {
+		BOOST_CHECK_EQUAL(*ofb, C3DFVector(ofb.pos() + start)); 
+		++ofb; 
+	}
+	
+	
+}
+
 	
 BOOST_AUTO_TEST_CASE (test_fill_part) 
 {

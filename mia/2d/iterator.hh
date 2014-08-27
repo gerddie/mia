@@ -372,4 +372,29 @@ bool operator != (const range2d_iterator<I>& a, const range2d_iterator<I>& b)
 
 NS_MIA_END
 
+
+namespace std {
+
+template <typename I>
+class iterator_traits< mia::range2d_iterator<I> > {
+public: 
+	typedef typename I::difference_type  difference_type; 
+	typedef typename I::value_type	value_type; 
+	typedef typename I::pointer	pointer; 
+	typedef typename I::reference	reference; 
+	typedef forward_iterator_tag	iterator_category; 
+}; 
+
+template <typename I>
+class iterator_traits< mia::range2d_iterator_with_boundary_flag<I> > {
+public: 
+	typedef typename I::difference_type  difference_type; 
+	typedef typename I::value_type	value_type; 
+	typedef typename I::pointer	pointer; 
+	typedef typename I::reference	reference; 
+	typedef forward_iterator_tag	iterator_category; 
+}; 
+
+}
+
 #endif
