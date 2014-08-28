@@ -41,6 +41,7 @@ C3DVistaTransformationIO::C3DVistaTransformationIO():
 {
 	add_suffix(".v3dt");
 	add_suffix(".v");
+	add_standard_vistaio_properties(*this);
 }
 
 const std::string C3DVistaTransformationIO::do_get_preferred_suffix() const

@@ -146,6 +146,7 @@ private:
 EXPORT_CORE extern const char * const io_plugin_property_multi_record;
 EXPORT_CORE extern const char * const io_plugin_property_history_split;
 EXPORT_CORE extern const char * const io_plugin_property_has_attributes;
+EXPORT_CORE extern const char * const io_plugin_property_can_pipe;
 
 NS_MIA_END
 

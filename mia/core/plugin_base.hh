@@ -160,7 +160,6 @@ public:
 	 */
 	void add_dependend_handlers(HandlerHelpMap& handler_map); 
 
-protected:
 	/**
 	   Add a porperty to the map of supported properties
 	   \param property a named property

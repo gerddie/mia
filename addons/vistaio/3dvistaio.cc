@@ -52,8 +52,9 @@ CVista3DImageIOPlugin::CVista3DImageIOPlugin():
 	add_supported_type(it_uint);
 	add_supported_type(it_float);
 	add_supported_type(it_double);
-	add_property(io_plugin_property_multi_record);
-	add_property(io_plugin_property_has_attributes);
+	
+	add_standard_vistaio_properties(*this); 
+	
 	add_suffix(".v");
 	add_suffix(".V");
 	add_suffix(".vista");

@@ -49,6 +49,7 @@ C2DVistaTransformationIO::C2DVistaTransformationIO():
 	C2DTransformationIO("vista")
 {
 	add_suffix(".v2dt");
+	add_standard_vistaio_properties(*this); 
 }
 
 const std::string C2DVistaTransformationIO::do_get_preferred_suffix() const

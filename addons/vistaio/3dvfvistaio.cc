@@ -54,6 +54,8 @@ CVista3DVFIOPlugin::CVista3DVFIOPlugin():
 	add_suffix(".vf");
 	add_suffix(".V");
 	add_suffix(".VF");
+	
+	add_standard_vistaio_properties(*this); 
 }
 
 const std::string CVista3DVFIOPlugin::do_get_preferred_suffix() const

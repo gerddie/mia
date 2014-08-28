@@ -41,6 +41,13 @@ void vistaio_add_attribute(CAttributedData& attr, const string& name, VistaIOBit
 	attr.set_attribute(name, PAttribute(new TAttribute<bool>(value))); 
 }
 
+VISTA4MIA_EXPORT void add_standard_vistaio_properties(CPluginBase& plugin)
+{
+	plugin.add_property(io_plugin_property_multi_record); 
+	plugin.add_property(io_plugin_property_history_split);
+	plugin.add_property(io_plugin_property_has_attributes);
+	plugin.add_property(io_plugin_property_can_pipe);
+}
 
 
 VISTA4MIA_EXPORT void copy_attr_list(CAttributedData& attributes, const VistaIOAttrList in_list)

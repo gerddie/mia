@@ -159,6 +159,8 @@ private:
 		
 }; 
 
+VISTA4MIA_EXPORT void add_standard_vistaio_properties(CPluginBase& plugin); 
+
 NS_MIA_END
 
 

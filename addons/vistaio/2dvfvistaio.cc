@@ -52,6 +52,8 @@ CVista2DVFIOPlugin::CVista2DVFIOPlugin():
 	add_suffix(".vf");
 	add_suffix(".V");
 	add_suffix(".VF");
+	
+	add_standard_vistaio_properties(*this); 
 
 }
 
