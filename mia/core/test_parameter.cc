@@ -31,6 +31,7 @@
 #include <mia/core/parameter.hh>
 #include <mia/core/msgstream.hh>
 
+#include <mia/core/parameter.cxx>
 
 NS_MIA_USE
 
@@ -141,6 +142,20 @@ BOOST_AUTO_TEST_CASE( test_set_params)
 	BOOST_CHECK_THROW(testp1.set("3"), std::invalid_argument);
 
 	BOOST_CHECK_THROW(!testp1.set("gjhgjhdf"), std::invalid_argument);
+}
+
+BOOST_AUTO_TEST_CASE( test_vector_param)
+{
+	vector<int> val; 
+	CTParameter<vector<int>> testp1(val, false, "some vector valued parameter");
+	
+	BOOST_CHECK(testp1.set("2,3,1,2"));
+	BOOST_CHECK_EQUAL(val.size(), 4u);
+
+	BOOST_CHECK_EQUAL(val[0], 2); 
+	BOOST_CHECK_EQUAL(val[1], 3); 
+	BOOST_CHECK_EQUAL(val[2], 1); 
+	BOOST_CHECK_EQUAL(val[3], 2); 
 }
 
 

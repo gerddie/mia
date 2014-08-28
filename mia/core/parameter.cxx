@@ -68,6 +68,41 @@ struct __dispatch_parameter_do_set {
 	}
 };  
 
+template <typename T>
+struct __dispatch_parameter_do_set<std::vector<T> >  {
+	static bool apply (const std::string& str_value, std::vector<T>& value) {
+
+		std::string h(str_value);
+		unsigned int n = 1; 
+		
+		// count input values 
+		for(auto hb = h.begin(); hb != h.end(); ++hb)
+			if (*hb == ',') {
+				*hb = ' ';
+				++n; 
+			}
+		
+		if (!value.empty()) {
+			if (n > value.size()) {
+				throw create_exception<std::invalid_argument>("Expect only ", value.size(),  
+									      " coma separated values, but '", 
+									      str_value, "' provides ", n);
+			}
+		}else{
+			value.resize(n); 
+		}
+
+				
+                std::istringstream sval(h);
+		auto i =  value.begin(); 
+		while (!sval.eof()) {
+			sval >> *i;
+			++i; 
+		}
+                return sval.eof();
+	}
+};  
+
 template <>
 struct __dispatch_parameter_do_set<std::string> {
 	static bool apply (const std::string& str_value, std::string& value) {
