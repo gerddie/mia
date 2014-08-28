@@ -61,4 +61,6 @@ EXPORT_CORE const char * IDPositionerSecondaryAngleIncrement = "PositionerSecond
 EXPORT_CORE const char * IDSliceThickness = "SliceThickness"; 
 EXPORT_CORE const char * IDPhotometricInterpretation = "PhotometricInterpretation";
 
+EXPORT_CORE const char * IDAttrPixelSizeIsImager = "PixelSizeIsImagerSize"; 
+
 NS_MIA_END

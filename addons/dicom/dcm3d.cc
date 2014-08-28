@@ -323,8 +323,10 @@ bool CSliceSaver::operator () ( const T3DImage<T>& image) const
 	auto rotation = image.get_rotation();
 	
 	T2DImage<T> slice = image.get_data_plane_xy(m_slice);
+	slice.set_attributes(image.begin_attributes(), image.end_attributes()); 
 	slice.set_pixel_size(pixel);
 	slice.set_attribute("rotation3d", PAttribute(new C3DRotationAttribute(rotation)));
+
 	
 	C3DFVector new_origin = C3DFVector(rotation.as_matrix_3x3() * C3DDVector(0,0,m_slice)) + origin;
 	slice.set_attribute("origin3d", PAttribute(new CVoxelAttribute(new_origin))); 

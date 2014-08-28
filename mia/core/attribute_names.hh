@@ -62,6 +62,8 @@ extern EXPORT_CORE const char * IDPositionerPrimaryAngleIncrement;
 extern EXPORT_CORE const char * IDPositionerSecondaryAngleIncrement; 
 extern EXPORT_CORE const char * IDSliceThickness; 
 extern EXPORT_CORE const char * IDPhotometricInterpretation; 
+
+extern EXPORT_CORE const char * IDAttrPixelSizeIsImager; 
 /// @endcond 
 
 NS_MIA_END

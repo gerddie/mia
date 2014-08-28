@@ -242,8 +242,14 @@ P2DImage CDicomReader::load_image()const
 	// get pixel data
 	impl->getPixelData(result->begin(), result->size());
 	impl->getAcquisitionTimeIfAvailable(*result); 
+	
+	auto psize = get_pixel_size(); 
+	if (psize.x < 0) {
+		psize.x = -psize.x; 
+		result->set_attribute(IDAttrPixelSizeIsImager, PAttribute(new TAttribute<int>(1)));
+	}
 
-	result->set_pixel_size(get_pixel_size());
+	result->set_pixel_size(psize);
 	result->set_attribute("rotation3d", PAttribute(new C3DRotationAttribute(this->impl->getImageOrientationPatient()))); 
 	result->set_attribute("origin3d", PAttribute(new CVoxelAttribute(this->impl->getImagePositionPatient())));
 	
@@ -274,7 +280,13 @@ P3DImage CDicomReader::load_image3d()const
 	// get pixel data
 	impl->getPixelData(result->begin(), result->size());
 
-	result->set_voxel_size(this->get_voxel_size(true));
+
+	auto vsize = this->get_voxel_size(true); 
+	if (vsize.x < 0) {
+		vsize.x = -vsize.x; 
+		result->set_attribute(IDAttrPixelSizeIsImager, PAttribute(new TAttribute<int>(1)));
+	}
+	result->set_voxel_size(vsize);
 
 	result->set_rotation(this->impl->getImageOrientationPatient()); 
 	result->set_origin(this->impl->getImagePositionPatient()); 
@@ -601,10 +613,12 @@ C2DFVector CDicomReaderData::getImagePixelSpacing()
 	istringstream sheight(help.data());
 	sheight >> result.y;
 
-	cvwarn() << "The image contained no 'PixelSpacing' tag, only 'ImagerPixelSpacing' that corresponds to the " 
+	cvinfo() << "The image contained no 'PixelSpacing' tag, only 'ImagerPixelSpacing' that corresponds to the " 
 		 << "detector pixel spacing. If you can not assume that the rays are parallel, then your object "
 		 << "pixel spacing might have to be scaled."; 
 
+	// indicate that this is not physical pixel size but imager pixel size 
+	result.x = -result.x; 
 	return result;
 	
 }
@@ -640,7 +654,7 @@ private:
 	void setValueString(const string& key, const string& value);
 	void setValueString(const DcmTagKey& key, const string& value, bool meta);
 	void setSize(const C2DBounds& size);
-	void setPixelSpacing(const C2DFVector& value);
+	void setPixelSpacing(const DcmTagKey& key, const C2DFVector& value);
 	void setAcquisitionTime(double time_seconds); 
 	void setFloatArrayAsString(const DcmTagKey& key, const vector<double>& values); 
 	void setValueStringIfKeyExists(const CAttributeMap::value_type& value);
@@ -740,7 +754,10 @@ CDicomWriterData::CDicomWriterData(const C2DImage& image)
 {
 	setValueUint16(DCM_SamplesPerPixel, 1);
 	setSize(image.get_size());
-	setPixelSpacing(image.get_pixel_size());
+	
+	setPixelSpacing(image.has_attribute(IDAttrPixelSizeIsImager) ? 
+			DCM_ImagerPixelSpacing : DCM_PixelSpacing, 
+			image.get_pixel_size());
 	
 	// special treatment for the acquistion time
 	if (image.has_attribute(IDAcquisitionTime)) {
@@ -829,11 +846,11 @@ void CDicomWriterData::setSize(const C2DBounds& size)
 	setValueUint16(DCM_Columns, size.x);
 }
 
-void CDicomWriterData::setPixelSpacing(const C2DFVector& value)
+void CDicomWriterData::setPixelSpacing(const DcmTagKey& key, const C2DFVector& value)
 {
 	stringstream pixelspacing;
 	pixelspacing << value.x << "\\" << value.y;
-	setValueString(DCM_PixelSpacing, pixelspacing.str(), false);
+	setValueString(key, pixelspacing.str(), false);
 }
 
 void CDicomWriterData::setAcquisitionTime(double time_seconds)
