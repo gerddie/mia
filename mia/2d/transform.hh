@@ -373,6 +373,13 @@ public:
 	static constexpr const char *output_spacing_attr = "out-pixel-spacing"; 
 
 
+	/**
+	   \returns the minimal image size that makes sense for the transformation. 
+	   Usually this is (1,1), but for spline based transformation the image must 
+	   be larger. 
+	 */
+	virtual C2DBounds get_minimal_supported_image_size() const; 
+
 private: 
 
 	virtual Pointer do_upscale(const C2DBounds& size) const = 0;

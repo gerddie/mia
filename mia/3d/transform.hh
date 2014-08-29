@@ -360,6 +360,8 @@ public:
 	 */
 	static constexpr const char *output_spacing_attr = "out-voxel-spacing"; 
 
+
+	virtual C3DBounds get_minimal_supported_image_size() const; 
 protected: 
 	/// @returns information about the debug state 
 	bool get_debug()const; 

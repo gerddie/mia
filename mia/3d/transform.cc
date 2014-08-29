@@ -251,6 +251,11 @@ bool C3DTransformation::refine()
 	return false; 
 }
 
+C3DBounds C3DTransformation::get_minimal_supported_image_size() const
+{
+	return C3DBounds::_1; 
+}
+
 template <typename T> 
 struct F3DTransformer {
 	F3DTransformer(const C3DTransformation& _trans, 

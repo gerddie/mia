@@ -159,6 +159,11 @@ C3DSplineTransformation::~C3DSplineTransformation()
 {
 }
 
+C3DBounds C3DSplineTransformation::get_minimal_supported_image_size() const
+{
+	return C3DBounds(ceil(m_target_c_rate.x), ceil(m_target_c_rate.y), ceil(m_target_c_rate.z))  + C3DBounds::_1; 
+}
+
 void C3DSplineTransformation::set_coefficients(const C3DFVectorfield& field)
 {
 	TRACE_FUNCTION;

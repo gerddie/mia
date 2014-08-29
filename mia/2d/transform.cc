@@ -232,6 +232,10 @@ bool C2DTransformation::refine()
 	return false; 
 }
 
+C2DBounds C2DTransformation::get_minimal_supported_image_size() const
+{
+	return C2DBounds::_1;
+}
 
 /**
    @brief Helper functor for 2D image transformations 

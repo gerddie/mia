@@ -92,7 +92,7 @@ public:
 	virtual float pertuberate(C3DFVectorfield& v) const;
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
 	virtual C3DFVector operator () (const C3DFVector& x) const;
-
+	virtual C3DBounds get_minimal_supported_image_size() const; 
 
 	C3DFVector on_grid(const mia::C3DBounds& x) const; 
 

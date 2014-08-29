@@ -87,7 +87,7 @@ public:
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
-
+	virtual C2DBounds get_minimal_supported_image_size() const; 
 
 	C2DFVector on_grid(const mia::C2DBounds& x) const; 
 

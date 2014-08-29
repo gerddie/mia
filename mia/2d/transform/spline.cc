@@ -208,6 +208,11 @@ void C2DSplineTransformation::reinit()
 	}
 }
 
+C2DBounds C2DSplineTransformation::get_minimal_supported_image_size() const
+{
+	return C2DBounds(ceil(m_target_c_rate.x), ceil(m_target_c_rate.y)) + C2DBounds::_1; 
+}
+
 C2DFVector C2DSplineTransformation::interpolate(const C2DFVector& x) const 
 {
 	TRACE_FUNCTION;
