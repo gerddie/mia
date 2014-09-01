@@ -26,15 +26,15 @@
 
 NS_MIA_BEGIN
 
+extern template class EXPORT_3D T3DDatafield<C3DFVector>;
+extern template class EXPORT_3D T3DDatafield<C3DDVector>;
+
 /**
    @ingroup basic 
    @brief a 3D vector field 
    
    This class provides a field of 3D vectors,  
 */
-
-extern template class EXPORT_3D T3DDatafield<C3DFVector>;
-extern template class EXPORT_3D T3DDatafield<C3DDVector>;
 
 template <typename T>
 class T3DVectorfield: public T3DDatafield<T>, public CAttributedData {
@@ -84,10 +84,9 @@ public:
 	}
 
 };
+
 extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
 extern template class EXPORT_3D T3DVectorfield<C3DDVector>;
-
-extern template class EXPORT_3D T3DDatafield<C3DFVector>;
 extern template class EXPORT_3D range3d_iterator<T3DDatafield<C3DFVector>::iterator>;
 extern template class EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<C3DFVector>::iterator>;
 extern template class EXPORT_3D range3d_iterator<T3DDatafield<C3DFVector>::const_iterator>;

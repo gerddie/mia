@@ -40,18 +40,13 @@ typedef TFactory<C2DShape> C2DShapePlugin;
 /// Plug-in handler for the shape plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
 
+extern template class EXPORT_2D TShape<T2DVector, C2DBitImage>;
+
 /**
    Convenience function to produce a shape from a plugin
-   \param descr the description of the shape 
+   \param shape the description of the shape 
    \returns the newly created shape 
 */
-
-inline P2DShape produce_2d_shape(const std::string& descr) 
-{
-	return C2DShapePluginHandler::instance().produce(descr); 
-}
-
-extern template class EXPORT_2D TShape<T2DVector, C2DBitImage>;
 
 P2DShape EXPORT_2D rotate_90_degree(const C2DShape& shape); 
 
@@ -59,6 +54,11 @@ P2DShape EXPORT_2D rotate_90_degree(const C2DShape& shape);
 // Trait to make the shape definition parsable on the command line  
 FACTORY_TRAIT(C2DShapePluginHandler); 
 /// @endcond 
+
+inline P2DShape produce_2d_shape(const std::string& descr) 
+{
+	return C2DShapePluginHandler::instance().produce(descr); 
+}
 
 NS_MIA_END
 

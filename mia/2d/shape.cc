@@ -55,7 +55,7 @@ struct __adjust<T2DVector<int> > {
 
 
 
-template class EXPORT_2D TShape<T2DVector, C2DBitImage>;
+template class TShape<T2DVector, C2DBitImage>;
 
 template <> const char *  const 
 TPluginHandler<TFactory<C2DShape>>::m_help =  "These plug-ins define 2D structuring elements "
