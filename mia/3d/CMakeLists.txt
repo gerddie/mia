@@ -94,7 +94,7 @@ SET(MIA3D_HEADERS
   fifotestfixture.hh
   fullcost.hh
   fuzzyseg.hh
-  fuzzyClusterSolverCG.hh
+  fuzzyclustersolver_cg.hh
   interpolator.hh interpolator.cxx
   iterator.hh iterator.cxx
   ica.hh
