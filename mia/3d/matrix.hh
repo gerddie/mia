@@ -27,7 +27,9 @@
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
+#ifndef __clang__ 
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#endif 
 #endif 
 
 #include <Eigen/Core>

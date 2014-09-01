@@ -31,12 +31,12 @@ template <> const char *  const
 TPluginHandler<C2DRegModelPlugin>::m_help =  
    "These plug-ins define different models for time-marching non-linear image registration algorithms.";
 
-template class TRegModel<2>;
-template class TPlugin<C2DImage, regmodel_type>;
-template class TFactory<C2DRegModel>;
-template class TFactoryPluginHandler<C2DRegModelPlugin>;
-template class TPluginHandler<C2DRegModelPlugin>;
-template class THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >; 
+template class EXPORT_2D TRegModel<2>;
+template class EXPORT_2D TPlugin<C2DImage, regmodel_type>;
+template class EXPORT_2D TFactory<C2DRegModel>;
+template class EXPORT_2D TFactoryPluginHandler<C2DRegModelPlugin>;
+template class EXPORT_2D TPluginHandler<C2DRegModelPlugin>;
+template class EXPORT_2D THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >; 
 
 
 NS_MIA_END

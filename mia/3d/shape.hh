@@ -50,7 +50,7 @@ typedef TFactory<C3DShape> C3DShapePlugin;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePluginHandler;
 
-
+extern template class EXPORT_3D TShape<T3DVector, C3DBitImage>;
 /// @cond never
 FACTORY_TRAIT(C3DShapePluginHandler); 
 /// @endcond 

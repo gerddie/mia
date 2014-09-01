@@ -74,8 +74,8 @@ void TCST2DKernel<T>::prepare(const C2DBounds& s)
 
 
 
-template class TCST2DKernel<C2DFVectorfield>;
-template class TCST2DKernel<C2DFImage>;
+template class EXPORT_2D TCST2DKernel<C2DFVectorfield>;
+template class EXPORT_2D TCST2DKernel<C2DFImage>;
 
 
 template <> const char *  const 

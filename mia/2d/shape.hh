@@ -51,6 +51,8 @@ inline P2DShape produce_2d_shape(const std::string& descr)
 	return C2DShapePluginHandler::instance().produce(descr); 
 }
 
+extern template class EXPORT_2D TShape<T2DVector, C2DBitImage>;
+
 P2DShape EXPORT_2D rotate_90_degree(const C2DShape& shape); 
 
 /// @cond NEVER 

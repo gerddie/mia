@@ -74,6 +74,9 @@ typedef T2DVectorfield<C2DDVector>  C2DDVectorfield;
 */
 EXPORT_2D C2DFVectorfield& operator += (C2DFVectorfield& a, const C2DFVectorfield& b);
 
+extern template class EXPORT_2D T2DDatafield<C2DFVector>;
+extern template class EXPORT_2D range2d_iterator<T2DDatafield<C2DFVector>::iterator>;
+
 NS_MIA_END
 
 #endif
