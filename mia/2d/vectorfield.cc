@@ -82,7 +82,8 @@ void T2DVectorfield<T>::set_pixel_size(const C2DFVector& pixel)
 	set_attribute("pixel", PAttribute(new TAttribute<C2DFVector>(pixel)));
 }
 
-
+template <typename T>
+const char *T2DVectorfield<T>::data_descr = "2dvf"; 
 
 #define INSTANCIATE(TYPE) \
 	template class EXPORT_2D T2DVectorfield<TYPE>;			\
@@ -116,8 +117,6 @@ EXPORT_2D C2DFVectorfield& operator += (C2DFVectorfield& a, const C2DFVectorfiel
 	}
 	return a;
 }
-template <typename T>
-const char *T2DVectorfield<T>::data_descr = "2dvf"; 
 
 
 

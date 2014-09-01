@@ -50,7 +50,7 @@ public:
 	static ::boost::filesystem::path search_path();
 };
 
-extern template class EXPORT_CORE TPluginHandler<CTestPlugin>;
+EXTERN_TEMPLATE(EXPORT_CORE TPluginHandler<CTestPlugin>);
 
 
 /**

@@ -48,7 +48,7 @@ typedef std::shared_ptr<C3DRegModel > P3DRegModel;
 /// the 3D registration model plug-in base class 
 typedef TFactory<C3DRegModel>  C3DRegModelPlugin;
 
-extern template class EXPORT_3D TPluginHandler<C3DRegModelPlugin>;
+EXTERN_TEMPLATE(EXPORT_3D TPluginHandler<C3DRegModelPlugin>);
 extern template class EXPORT_3D THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
 /// the 3D registration model plug-in handler 
 typedef THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> > C3DRegModelPluginHandler;

@@ -211,15 +211,16 @@ CSegFrame CSegFrameCropper::operator()(const CSegFrame& frame, const C2DImage& i
 
 }
 
+template <> const char *  const
+TPluginHandler<CSegSetWithImagesIOPlugin>::m_help =  
+	"Input/output of 2D image series with segmentations.";
+
 
 template class TIOPlugin<CSegSetWithImages>;
 template class TIOPluginHandler<CSegSetWithImagesIOPlugin>;
 template class TPluginHandler<CSegSetWithImagesIOPlugin>;
 template class THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin >>;
 
-template <> const char *  const
-TPluginHandler<CSegSetWithImagesIOPlugin>::m_help =  
-	"Input/output of 2D image series with segmentations.";
 
 
 NS_MIA_END

@@ -33,8 +33,6 @@ namespace bfs=::boost::filesystem;
 
 template class TCost<C2DImage, C2DFVectorfield>;
 
-EXPLICIT_INSTANCE_HANDLER(C2DImageCost);
-
 template <> const char *  const
 TPluginHandler<TFactory<C2DImageCost>>::m_help =  
 	"2D image similarity kernels evaluate the according similarity measure between "
@@ -42,7 +40,9 @@ TPluginHandler<TFactory<C2DImageCost>>::m_help =
 	"or will be called from generalized image similarity cost plug-ins that also take "
 	"care of transforming and scaling the images during the image registration process. ";
 
-
+EXPLICIT_INSTANCE_HANDLER(C2DImageCost);
 
 NS_MIA_END
+
+
 

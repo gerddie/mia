@@ -57,7 +57,7 @@ public:
 	C2DIOVectorfield *clone() const __attribute__((warn_unused_result));
 };
 
-struct io_2dvf_type {
+struct EXPORT_2D io_2dvf_type {
 	typedef  C2DIOVectorfield type;
 	static const char *data_descr;
 };
@@ -69,7 +69,7 @@ typedef TIOPlugin<io_2dvf_type> C2DVFIOPlugin;
 
 extern template class EXPORT_2D TPlugin<io_2dvf_type, io_plugin_type>; 
 extern template class EXPORT_2D TIOPlugin<io_2dvf_type>; 
-extern template class EXPORT_2D TPluginHandler<C2DVFIOPlugin>;
+EXTERN_TEMPLATE(EXPORT_2D TPluginHandler<C2DVFIOPlugin>);
 extern template class EXPORT_2D TIOPluginHandler<C2DVFIOPlugin>;
 
 /// Handler for 2D vector field IO 

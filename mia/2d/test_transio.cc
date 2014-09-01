@@ -31,6 +31,7 @@ namespace bfs=::boost::filesystem;
 class PrepareTransIOTests {
 public: 
 	static const PrepareTransIOTests& instance(); 
+	PrepareTransIOTests(){}; 
 	
 	const C2DTransformationIOPluginHandler::Instance& transformio_handler()const; 
 	const C2DTransformCreatorHandler::Instance& transform_handler()const; 

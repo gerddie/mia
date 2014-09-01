@@ -95,8 +95,8 @@ private:
   \cond NEEDS_REHAUL 
 */
 
-extern template class EXPORT_2D TCST2DKernel<C2DFVectorfield>;
-extern template class EXPORT_2D TCST2DKernel<C2DFImage>;
+EXTERN_TEMPLATE(EXPORT_2D TCST2DKernel<C2DFVectorfield>); 
+EXTERN_TEMPLATE(EXPORT_2D TCST2DKernel<C2DFImage>);
 
 
 typedef TCST2DKernel<C2DFVectorfield> CCST2DVectorKernel;
@@ -105,21 +105,21 @@ typedef TCST2DKernel<C2DFImage>       CCST2DImageKernel;
 typedef  std::shared_ptr<CCST2DImageKernel > PCST2DImageKernel;
 typedef  std::shared_ptr<CCST2DVectorKernel > PCST2DVectorKernel;
 
-extern template class EXPORT_2D TFactory<CCST2DVectorKernel>; 
+EXTERN_TEMPLATE(EXPORT_2D TFactory<CCST2DVectorKernel>); 
 typedef TFactory<CCST2DVectorKernel> CCST2DVectorKernelPlugin;
 
-extern template class EXPORT_2D TPluginHandler<CCST2DVectorKernelPlugin>; 
-extern template class EXPORT_2D TFactoryPluginHandler<CCST2DVectorKernelPlugin>; 
-extern template class EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> >; 
+EXTERN_TEMPLATE(EXPORT_2D TPluginHandler<CCST2DVectorKernelPlugin>); 
+EXTERN_TEMPLATE(EXPORT_2D TFactoryPluginHandler<CCST2DVectorKernelPlugin>); 
+EXTERN_TEMPLATE(EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> >); 
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > CCST2DVectorKernelPluginHandler;
 
 
-extern template class EXPORT_2D TFactory<CCST2DImageKernel>; 
+EXTERN_TEMPLATE(EXPORT_2D TFactory<CCST2DImageKernel>); 
 typedef TFactory<CCST2DImageKernel> CCST2DImgKernelPlugin;
 
-extern template class EXPORT_2D TPluginHandler<CCST2DImgKernelPlugin>; 
-extern template class EXPORT_2D TFactoryPluginHandler<CCST2DImgKernelPlugin>; 
-extern template class EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> >; 
+EXTERN_TEMPLATE(EXPORT_2D TPluginHandler<CCST2DImgKernelPlugin>); 
+EXTERN_TEMPLATE(EXPORT_2D TFactoryPluginHandler<CCST2DImgKernelPlugin>); 
+EXTERN_TEMPLATE(EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> >); 
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> > CCST2DImgKernelPluginHandler;
 /// \endcond 
 
