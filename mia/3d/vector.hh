@@ -32,6 +32,7 @@
 #include <mia/core/defines.hh>
 #include <mia/core/type_traits.hh>
 #include <mia/core/attributetype.hh>
+#include <mia/3d/defines3d.hh>
 
 NS_MIA_BEGIN
 

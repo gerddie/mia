@@ -48,6 +48,7 @@ SET(MIA3D_SRC
   landmarklist.cc
   landmarklistio.cc
   maskedcost.cc
+  matrix.cc 
   model.cc
   multicost.cc
   nfg.cc 
