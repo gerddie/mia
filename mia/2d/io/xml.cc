@@ -89,7 +89,9 @@ const string CXMLSegSetWithImagesIOPlugin::do_get_preferred_suffix() const
 	return "set"; 
 }
 
-
-
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new CXMLSegSetWithImagesIOPlugin();
+}
 
 NS_END
