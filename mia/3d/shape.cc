@@ -62,11 +62,11 @@ template <> const char *  const
 TPluginHandler<TFactory<C3DShape>>::m_help =  "These plug-ins define 3D structuring elements "
 				"to describe neighborhoods for morphological and other filters."; 
 
-template class EXPORT_3D TShape<T3DVector, C3DBitImage>;
-template class EXPORT_3D TPlugin<C3DImage, shape_type>;
-template class EXPORT_3D TFactory<C3DShape>;
-template class EXPORT_3D THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> >;
-template class EXPORT_3D TFactoryPluginHandler<C3DShapePlugin>;
+template class TShape<T3DVector, C3DBitImage>;
+template class TPlugin<C3DImage, shape_type>;
+template class TFactory<C3DShape>;
+template class THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> >;
+template class TFactoryPluginHandler<C3DShapePlugin>;
 template class EXPORT_3D TPluginHandler<C3DShapePlugin>;
 
 NS_MIA_END

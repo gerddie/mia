@@ -31,11 +31,11 @@ template <> const char *  const
 TPluginHandler<C3DRegModelPlugin>::m_help =  
    "These plug-ins define different models for time-marching non-linear image registration algorithms.";
 
-template class EXPORT_3D TRegModel<3>;
-template class EXPORT_3D TPlugin<C3DImage, regmodel_type>;
-template class EXPORT_3D TFactory<C3DRegModel>;
-template class EXPORT_3D THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
-template class EXPORT_3D TFactoryPluginHandler<C3DRegModelPlugin>;
+template class TRegModel<3>;
+template class TPlugin<C3DImage, regmodel_type>;
+template class TFactory<C3DRegModel>;
+template class THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
+template class TFactoryPluginHandler<C3DRegModelPlugin>;
 template class EXPORT_3D TPluginHandler<C3DRegModelPlugin>;
 
 NS_MIA_END
