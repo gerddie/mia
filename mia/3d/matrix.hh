@@ -194,6 +194,36 @@ T3DVector<T> operator * (const T3DVector<T>& x, const T3DMatrix<T>& m )
 }
 
 
+template <typename T> 
+std::ostream& operator << (std::ostream& os, const T3DMatrix<T>& m) 
+{
+	m.print(os); 
+	return os; 
+}
+
+template <typename T> 
+T3DMatrix<T>& T3DMatrix<T>::operator -= (const T3DMatrix<T>& o)
+{
+	this->x -= o.x; 
+	this->y -= o.y; 
+	this->z -= o.z; 
+	return *this; 
+}
+
+template <typename T> 
+T3DMatrix<T> operator * (const T3DMatrix<T>& m, const T3DMatrix<T>& x  )
+{
+	return T3DMatrix<T>(T3DVector<T>(m.x.x * x.x.x + m.x.y * x.y.x + m.x.z * x.z.x, 
+					 m.x.x * x.x.y + m.x.y * x.y.y + m.x.z * x.z.y, 
+					 m.x.x * x.x.z + m.x.y * x.y.z + m.x.z * x.z.z), 
+			    T3DVector<T>(m.y.x * x.x.x + m.y.y * x.y.x + m.y.z * x.z.x, 
+					 m.y.x * x.x.y + m.y.y * x.y.y + m.y.z * x.z.y, 
+					 m.y.x * x.x.z + m.y.y * x.y.z + m.y.z * x.z.z), 
+			    T3DVector<T>(m.z.x * x.x.x + m.z.y * x.y.x + m.z.z * x.z.x, 
+					 m.z.x * x.x.y + m.z.y * x.y.y + m.z.z * x.z.y, 
+					 m.z.x * x.x.z + m.z.y * x.y.z + m.z.z * x.z.z));
+}
+
 /// a simple 3x3 matrix with single precision floating point values 
 typedef T3DMatrix<float> C3DFMatrix; 
 
