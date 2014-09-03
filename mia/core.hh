@@ -36,8 +36,6 @@
 #include <mia/core/optparam.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/streamredir.hh>
-#include <mia/core/testplugin.hh>
 #include <mia/core/watch.hh>
-
 
 #endif

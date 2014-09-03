@@ -36,6 +36,6 @@ template class TPlugin<C3DImage, regmodel_type>;
 template class TFactory<C3DRegModel>;
 template class THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
 template class TFactoryPluginHandler<C3DRegModelPlugin>;
-template class EXPORT_3D TPluginHandler<C3DRegModelPlugin>;
+template class TPluginHandler<C3DRegModelPlugin>;
 
 NS_MIA_END

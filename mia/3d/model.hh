@@ -51,7 +51,7 @@ typedef TFactory<C3DRegModel>  C3DRegModelPlugin;
 template <> const char *  const TPluginHandler<C3DRegModelPlugin>::m_help; 
 
 extern template class EXPORT_3D TRegModel<3>; 
-extern template class EXPORT_3D TPluginHandler<C3DRegModelPlugin>;
+extern template class EXPORT_3D TFactory<C3DRegModel>; 
 extern template class EXPORT_3D THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
 /// the 3D registration model plug-in handler 
 typedef THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> > C3DRegModelPluginHandler;

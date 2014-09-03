@@ -70,7 +70,6 @@ extern template class EXPORT_2D TRegModel<2>;
 extern template class EXPORT_2D TPlugin<C2DImage, regmodel_type>;
 extern template class EXPORT_2D TFactory<C2DRegModel>;
 extern template class EXPORT_2D TFactoryPluginHandler<C2DRegModelPlugin>;
-extern template class EXPORT_2D TPluginHandler<C2DRegModelPlugin>;
 extern template class EXPORT_2D THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >; 
 
 

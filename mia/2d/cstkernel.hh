@@ -115,14 +115,12 @@ TPluginHandler<TFactory<CCST2DVectorKernel>>::m_help;
 
 extern template class EXPORT_2D TCST2DKernel<C2DFVectorfield>; 
 extern template class EXPORT_2D TFactory<CCST2DVectorKernel>; 
-extern template class EXPORT_2D TPluginHandler<CCST2DVectorKernelPlugin>; 
 extern template class EXPORT_2D TFactoryPluginHandler<CCST2DVectorKernelPlugin>; 
 extern template class EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> >; 
 
 
 extern template class EXPORT_2D TCST2DKernel<C2DFImage>;
 extern template class EXPORT_2D TFactory<CCST2DImageKernel>; 
-extern template class EXPORT_2D TPluginHandler<CCST2DImgKernelPlugin>; 
 extern template class EXPORT_2D TFactoryPluginHandler<CCST2DImgKernelPlugin>; 
 extern template class EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> >; 
 
