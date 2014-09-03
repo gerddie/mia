@@ -62,10 +62,17 @@ typedef TFactory<C2DRegModel>  C2DRegModelPlugin;
    @brief Plugin handler for the 2D registration model. 
 */
 
-EXTERN_TEMPLATE(EXPORT_2D TPluginHandler<C2DRegModelPlugin>);
-EXTERN_TEMPLATE(EXPORT_2D THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >);
+template <> const char *  const TPluginHandler<C2DRegModelPlugin>::m_help; 
 
 typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> > C2DRegModelPluginHandler;
+
+extern template class EXPORT_2D TRegModel<2>;
+extern template class EXPORT_2D TPlugin<C2DImage, regmodel_type>;
+extern template class EXPORT_2D TFactory<C2DRegModel>;
+extern template class EXPORT_2D TFactoryPluginHandler<C2DRegModelPlugin>;
+extern template class EXPORT_2D TPluginHandler<C2DRegModelPlugin>;
+extern template class EXPORT_2D THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >; 
+
 
 NS_MIA_END
 

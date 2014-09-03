@@ -67,15 +67,18 @@ struct EXPORT_2D io_2dvf_type {
 /// Base class for 2D vector field IO plugins 
 typedef TIOPlugin<io_2dvf_type> C2DVFIOPlugin;
 
+template <> const char *  const TPluginHandler<C2DVFIOPlugin>::m_help; 
+
+
+
 extern template class EXPORT_2D TPlugin<io_2dvf_type, io_plugin_type>; 
 extern template class EXPORT_2D TIOPlugin<io_2dvf_type>; 
-EXTERN_TEMPLATE(EXPORT_2D TPluginHandler<C2DVFIOPlugin>);
+extern template class EXPORT_2D TPluginHandler<C2DVFIOPlugin>;
 extern template class EXPORT_2D TIOPluginHandler<C2DVFIOPlugin>;
+extern template class EXPORT_2D THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> >;
 
 /// Handler for 2D vector field IO 
 typedef  THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> > C2DVFIOPluginHandler;
-
-extern template class EXPORT_2D THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> >;
 
 
 NS_MIA_END

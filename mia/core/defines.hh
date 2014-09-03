@@ -102,17 +102,6 @@ NS_MIA_END
 #define MIA_PARAM_UNUSED(x) x __attribute__((unused))
 #endif 
 
-#ifdef __GNUC__
-#ifdef __clang__
-// clang++ wants to instanciate with extern template, so don't do extern 
-// can't compile with -fvisibility=hidden 
-#define EXTERN_TEMPLATE(EXP_CL) 
-#else
-#define EXTERN_TEMPLATE(EXP_CL) extern template class EXP_CL;
-#endif 
-#endif 
-
-
 #ifdef miacore_EXPORTS
 /// Macro to manage Visual C++ style dllimport/dllexport 
 #  define EXPORT_CORE DO_EXPORT

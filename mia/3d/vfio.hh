@@ -65,9 +65,12 @@ struct io_3dvf_data {
 */
 typedef TIOPlugin<io_3dvf_data> C3DVFIOPlugin;
 
+template <> const char *  const 
+TPluginHandler<C3DVFIOPlugin>::m_help; 
+
 extern template class EXPORT_3D TPlugin<io_3dvf_data, io_plugin_type>;
 extern template class EXPORT_3D TIOPlugin<io_3dvf_data>;
-EXTERN_TEMPLATE(EXPORT_3D TPluginHandler<C3DVFIOPlugin>);
+extern template class EXPORT_3D TPluginHandler<C3DVFIOPlugin>;
 extern template class EXPORT_3D TIOPluginHandler<C3DVFIOPlugin>; 
 extern template class EXPORT_3D THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> >; 
 /**

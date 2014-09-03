@@ -73,11 +73,6 @@ void TCST2DKernel<T>::prepare(const C2DBounds& s)
 }
 
 
-
-template class EXPORT_2D TCST2DKernel<C2DFVectorfield>;
-template class EXPORT_2D TCST2DKernel<C2DFImage>;
-
-
 template <> const char *  const 
 TPluginHandler<TFactory<CCST2DImageKernel>>::m_help =  "These plug-ins define kernels for 2D processing of images "
 							"in the Cosine transformed space.";
@@ -85,6 +80,10 @@ TPluginHandler<TFactory<CCST2DImageKernel>>::m_help =  "These plug-ins define ke
 template <> const char *  const 
 TPluginHandler<TFactory<CCST2DVectorKernel>>::m_help =  "These plug-ins define kernels for 2D processing of vector fields "
 							"in the Cosine transformed space.";
+
+template class TCST2DKernel<C2DFVectorfield>;
+template class TCST2DKernel<C2DFImage>;
+
 
 EXPLICIT_INSTANCE_HANDLER(CCST2DVectorKernel);
 EXPLICIT_INSTANCE_HANDLER(CCST2DImageKernel);

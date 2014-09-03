@@ -32,13 +32,12 @@ struct test_plugin_data;
 /// constant defining a test property 
 EXPORT_CORE extern const char *const test_property;
 
+extern template class EXPORT_CORE TPlugin<test_plugin_data, test_plugin_type>; 
+
 /**
    \ingroup test 
    \brief Class to test plugin handling. 
 */
-
-
-extern template class EXPORT_CORE TPlugin<test_plugin_data, test_plugin_type>; 
 
 
 class EXPORT_CORE CTestPlugin: public TPlugin<test_plugin_data, test_plugin_type>  {
@@ -50,8 +49,10 @@ public:
 	static ::boost::filesystem::path search_path();
 };
 
-EXTERN_TEMPLATE(EXPORT_CORE TPluginHandler<CTestPlugin>);
 
+template <> const char * const TPluginHandler<CTestPlugin>::m_help; 
+
+extern template class EXPORT_CORE TPluginHandler<CTestPlugin>;
 
 /**
    \ingroup test 
@@ -73,6 +74,9 @@ public:
 	 */
 	CTestPlugin *get_plugin(const char *name) const;
 };
+
+
+
 
 extern template class EXPORT_CORE THandlerSingleton<CTestPluginHandlerImpl>;
 

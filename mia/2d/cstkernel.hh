@@ -94,33 +94,38 @@ private:
 /**
   \cond NEEDS_REHAUL 
 */
-
-EXTERN_TEMPLATE(EXPORT_2D TCST2DKernel<C2DFVectorfield>); 
-EXTERN_TEMPLATE(EXPORT_2D TCST2DKernel<C2DFImage>);
-
-
 typedef TCST2DKernel<C2DFVectorfield> CCST2DVectorKernel;
 typedef TCST2DKernel<C2DFImage>       CCST2DImageKernel;
 
-typedef  std::shared_ptr<CCST2DImageKernel > PCST2DImageKernel;
-typedef  std::shared_ptr<CCST2DVectorKernel > PCST2DVectorKernel;
+typedef std::shared_ptr<CCST2DImageKernel > PCST2DImageKernel;
+typedef std::shared_ptr<CCST2DVectorKernel > PCST2DVectorKernel;
 
-EXTERN_TEMPLATE(EXPORT_2D TFactory<CCST2DVectorKernel>); 
 typedef TFactory<CCST2DVectorKernel> CCST2DVectorKernelPlugin;
-
-EXTERN_TEMPLATE(EXPORT_2D TPluginHandler<CCST2DVectorKernelPlugin>); 
-EXTERN_TEMPLATE(EXPORT_2D TFactoryPluginHandler<CCST2DVectorKernelPlugin>); 
-EXTERN_TEMPLATE(EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> >); 
-typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > CCST2DVectorKernelPluginHandler;
-
-
-EXTERN_TEMPLATE(EXPORT_2D TFactory<CCST2DImageKernel>); 
 typedef TFactory<CCST2DImageKernel> CCST2DImgKernelPlugin;
 
-EXTERN_TEMPLATE(EXPORT_2D TPluginHandler<CCST2DImgKernelPlugin>); 
-EXTERN_TEMPLATE(EXPORT_2D TFactoryPluginHandler<CCST2DImgKernelPlugin>); 
-EXTERN_TEMPLATE(EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> >); 
+typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > CCST2DVectorKernelPluginHandler;
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> > CCST2DImgKernelPluginHandler;
+
+template <> const char *  const 
+TPluginHandler<TFactory<CCST2DImageKernel>>::m_help;
+
+template <> const char *  const 
+TPluginHandler<TFactory<CCST2DVectorKernel>>::m_help;
+
+
+extern template class EXPORT_2D TCST2DKernel<C2DFVectorfield>; 
+extern template class EXPORT_2D TFactory<CCST2DVectorKernel>; 
+extern template class EXPORT_2D TPluginHandler<CCST2DVectorKernelPlugin>; 
+extern template class EXPORT_2D TFactoryPluginHandler<CCST2DVectorKernelPlugin>; 
+extern template class EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> >; 
+
+
+extern template class EXPORT_2D TCST2DKernel<C2DFImage>;
+extern template class EXPORT_2D TFactory<CCST2DImageKernel>; 
+extern template class EXPORT_2D TPluginHandler<CCST2DImgKernelPlugin>; 
+extern template class EXPORT_2D TFactoryPluginHandler<CCST2DImgKernelPlugin>; 
+extern template class EXPORT_2D THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> >; 
+
 /// \endcond 
 
 NS_MIA_END
