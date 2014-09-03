@@ -259,7 +259,7 @@ PAttribute H5TAttributeStringTranslator::apply(const char *name, const H5Attribu
 	auto space = attr.get_space(); 
 	
 	if (size.size() > 1) {
-		cvwarn() << "Suport for " << size.size() << "-dimensional string attributes not implemented."
+		cvwarn() << "Support for " << size.size() << "-dimensional string attributes not implemented."
 			 <<" Reading only first dimension.\n"; 
 	}
 	
