@@ -136,24 +136,24 @@ double NCCSums::value() const
         double  result = 1.0;
         if (m_n > 0) {
                 
-                double mean_a = m_suma / nn; 
-                double mean_b = m_suma / nn; 
+                double mean_a = m_suma / m_n; 
+                double mean_b = m_sumb / m_n; 
                 
                 double delta_a = m_suma * mean_a; 
                 double delta_b = m_sumb * mean_b; 
 
-                double suma2 = m_suma2 - mean_a; 
-                double sumb2 = m_sumb2 - mean_b; 
+                double suma2 = m_suma2 - delta_a; 
+                double sumb2 = m_sumb2 - delta_b; 
 
                 double help_0 = mean_a * mean_b; 
                 double help_1 = suma2 * sumb2; 
                         
-                double sumab = m_sumab - help_0 * n; 
+                double sumab = m_sumab - help_0 * m_n; 
                 
                 if (help_1 > 1e-5) {
 			result = 1.0 - sumab * sumab / help_1; 
-		} else if (suma2 > 1e-5 || sumb2 > 1e-5) {
-			result = 1.0; 
+		} else if (suma2 < 1e-5 &&  sumb2 < 1e-5) {
+			result = 0.0; 
 		}
         }
         return result; 
@@ -165,29 +165,25 @@ std::pair<double, NCCGradHelper> NCCSums::get_grad_helper() const
         std::pair<double, NCCGradHelper>  result = std::make_pair(1.0, NCCGradHelper()); 
         if (m_n > 0) {
                 
-                double mean_a = m_suma / nn; 
-                double mean_b = m_suma / nn; 
-                
+                double mean_a = m_suma / m_n; 
+                double mean_b = m_sumb / m_n; 
+
                 double delta_a = m_suma * mean_a; 
                 double delta_b = m_sumb * mean_b; 
-
-                double suma2 = m_suma2 - mean_a; 
-                double sumb2 = m_sumb2 - mean_b; 
+                
+                double suma2 = m_suma2 - delta_a; 
+                double sumb2 = m_sumb2 - delta_b; 
 
                 double help_0 = mean_a * mean_b; 
                 double help_1 = suma2 * sumb2; 
-                        
-                double sumab = m_sumab - help_0 * n; 
+                double sumab = m_sumab - help_0 * m_n; 
                 
                 if (help_1 > 1e-10) {
                         result = make_pair(1.0 - sumab * sumab / help_1, 
-                                           NCCGradHelper(2.0 * m_sumab / help_1, sumab / suma2, mean_a, mean_b)); 
+                                           NCCGradHelper(sumab / help_1, sumab / suma2, mean_a, mean_b)); 
                 }else{
-			// no correlation but at a maximum (= zero gradient) 
-			if (suma2 > 1e-5 || sumb2 > 1e-5) {
-				result = make_pair(1.0, NCCGradHelper(0.0, 0.0, mean_a, mean_b)); 
-			}else {
-				result = make_pair(0.0, NCCGradHelper(0.0, 0.0, mean_a, mean_b)); 
+			if (suma2 < 1e-5 && sumb2 < 1e-5) {
+				result = make_pair(0.0, NCCGradHelper()); 
 			}
 		}
         }

@@ -121,7 +121,7 @@ public:
         
         NCCSums& operator += (const NCCSums& other) {
                 m_suma += other.m_suma; 
-                m_sumB += other.m_sumB; 
+                m_sumb += other.m_sumb; 
                 m_suma2 +=  other.m_suma2; 
                 m_sumb2 +=  other.m_sumb2; 
                 m_sumab += other.m_sumab; 
@@ -142,8 +142,8 @@ private:
         double m_sumb; 
         double m_suma2; 
         double m_sumb2; 
-        double sumab; 
-        double n;
+        double m_sumab; 
+        double m_n;
 }; 
 
 
