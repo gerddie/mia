@@ -154,9 +154,9 @@ BOOST_AUTO_TEST_CASE( test_anisotropic_data )
 	BOOST_REQUIRE(result0.size() == ref_result.size()); 
 	for( auto test = result0.begin(), ref = ref_result.begin(); test != result0.end(); 
 	     ++test, ++ref) {
-		BOOST_CHECK_EQUAL(*test, *ref); 
+		BOOST_CHECK_EQUAL(test->point, ref->point); 
+		BOOST_CHECK_CLOSE(test->distance, ref->distance, 0.1); 
 	}
 }
-
 
 
