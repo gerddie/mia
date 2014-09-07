@@ -384,7 +384,7 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 	// the tainted variables. 
 	size_t h = info_header.height; 
 	size_t w = info_header.width; 
-	if (h > numeric_limits<size_t>::max() || w > numeric_limits<size_t>::max()) 
+	if (h > numeric_limits<unsigned>::max() || w > numeric_limits<unsigned>::max()) 
 		throw create_exception<runtime_error>("CBMP2DImageIO::load: Image has too big", 
 						      " width=", info_header.width, ", height=", 
 						      info_header.height);

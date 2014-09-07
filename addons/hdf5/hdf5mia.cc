@@ -411,13 +411,14 @@ H5Dataset H5Dataset::create(const H5Base& parent, const char *name, hid_t type_i
 		if (status < 0) {
 			cvwarn() << "HDF5 gzip should be supported, but failed, store uncompressed\n"; 
 			id =  H5Dcreate(p, relative_name.c_str(), type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		}else{
+			// we compress the whole data in one chunk
+			auto chunk_size = space.get_size(); 
+			status = H5Pset_chunk (dcpl, chunk_size.size(), &chunk_size[0]);
+			id = H5Dcreate (p, relative_name.c_str(), type_id, space, H5P_DEFAULT, dcpl,
+					H5P_DEFAULT);
+			cvdebug() << "HDF5: Dataset '"<< name <<"' created with gzip compression enabled\n"; 
 		}
-		// we compress the whole data in one chunk
-		auto chunk_size = space.get_size(); 
-		status = H5Pset_chunk (dcpl, chunk_size.size(), &chunk_size[0]);
-		id = H5Dcreate (p, relative_name.c_str(), type_id, space, H5P_DEFAULT, dcpl,
-				H5P_DEFAULT);
-		cvdebug() << "HDF5: Dataset '"<< name <<"' created with gzip compression enabled\n"; 
 	}else {
 		id =  H5Dcreate(p, relative_name.c_str(), type_id, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}

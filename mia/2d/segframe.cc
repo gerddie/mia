@@ -40,6 +40,9 @@ namespace bfs=boost::filesystem;
 
 CSegFrame::CSegFrame():
 	m_has_star(false), 
+	m_quality(0),
+	m_brightness(0), 
+	m_contrast(0), 
 	m_version(0)
 {
 }

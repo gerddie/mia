@@ -159,6 +159,7 @@ CSlopeStatisticsImpl::CSlopeStatisticsImpl(const vector<float>& series, int inde
 	m_start_movement(-1), 
 	m_gradient_peak_valid(false), 
 	m_wt_valid(false), 
+	m_max_freq_slot(0), 
 	m_wt_peak_coefficient(0),
 	m_wt_mean_wt_level(0),
 	m_wt_energy(0),

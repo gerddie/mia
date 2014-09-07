@@ -751,18 +751,18 @@ bool COffMeshIO::do_save(string const &  filename, const CTriangleMesh& data)con
 
 		if (flags & CTriangleMesh::ed_normal) {
 			const CTriangleMesh::normal_type& n = data.normal_at(i);
-			written = fprintf(f, " %f %f %f",n.x,n.y, n.z);
+			written += fprintf(f, " %f %f %f",n.x,n.y, n.z);
 		}
 		if (flags & CTriangleMesh::ed_color && flags & CTriangleMesh::ed_scale) {
 			const CTriangleMesh::color_type& c = data.color_at(i);
-			written = fprintf(f, " %f %f %f %f",c.x,c.y, c.z, data.scale_at(i));
+			written += fprintf(f, " %f %f %f %f",c.x,c.y, c.z, data.scale_at(i));
 		}else if (flags & CTriangleMesh::ed_color && !(flags & CTriangleMesh::ed_scale)) {
 			const CTriangleMesh::color_type& c = data.color_at(i);
-			written = fprintf(f, " %f %f %f 1.0",c.x,c.y, c.z);
+			written += fprintf(f, " %f %f %f 1.0",c.x,c.y, c.z);
 		}else if ( !(flags & CTriangleMesh::ed_color) && flags & CTriangleMesh::ed_scale) {
-			written = fprintf(f, "1.0 1.0 1.0");
+			written += fprintf(f, "1.0 1.0 1.0");
 		}
-		written = fprintf(f,"\n");
+		written += fprintf(f,"\n");
 	}
 
 	CTriangleMesh::const_triangle_iterator tb = data.triangles_begin();

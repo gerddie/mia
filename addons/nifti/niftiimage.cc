@@ -347,6 +347,9 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 	// todo: re-check how this qfac is actually used
 	output->qfac = 1; 
 	switch (image.get_orientation()) {
+		// Coverty complains here. 
+		// flipped needs to sent an extra parameter and 
+		// then fall through to the next case 
 	case ior_xyz_flipped: output->qfac = -1; 
 	case ior_undefined:
 	case ior_xyz: {

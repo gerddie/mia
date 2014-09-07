@@ -79,7 +79,6 @@ private:
 	C3DBitImage *m_ref_mask_scaled_bit;
 
 	P3DMaskedImageCost m_cost_kernel; 
-	bool m_debug;
 }; 
 
 NS_MIA_END
