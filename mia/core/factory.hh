@@ -311,11 +311,13 @@ struct create_plugin<Handler, ProductChained, true> {
 					cvdebug() << "print help\n"; 
 					cvmsg() << "\n"; 
 					h.print_help(cverb);
+					delete result; 
 					return nullptr; 
 				}
 				
 				auto factory = h.plugin(factory_name.c_str());
 				if (!factory) {
+					delete result; 
 					throw create_exception<std::invalid_argument>("Unable to find plugin for '", factory_name.c_str(), "'");
 				}
 				

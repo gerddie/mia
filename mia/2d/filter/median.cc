@@ -101,7 +101,8 @@ P2DImage C2DMedian::do_filter(const C2DImage& image) const
 
 
 C2DMedianFilterPluginFactory::C2DMedianFilterPluginFactory():
-	C2DFilterPlugin("median")
+	C2DFilterPlugin("median"),
+	m_hw(1)
 {
 	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "half filter width"));
 }

@@ -182,7 +182,7 @@ CSegment2d::result_type CSegment2d::operator()(const T2DImage<T>& image)
 		THistogram<THistogramFeeder<T> > histogram(THistogramFeeder<T>(_M_minh, _M_maxh, 256)); 
 		histogram.push_range(image.begin(), image.end());
 
-		float thresh = (image.size() - histogram[0]) / _M_nClasses;
+		float thresh = static_cast<float>(image.size() - histogram[0]) / _M_nClasses;
 		float hit = 0.0; 
 		size_t i = 1; 
 		float val = _M_minh + step; 

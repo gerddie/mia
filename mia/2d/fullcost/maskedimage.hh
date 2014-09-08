@@ -72,7 +72,6 @@ private:
 	C2DBitImage *m_ref_mask_scaled_bit;
 
 	P2DMaskedImageCost m_cost_kernel; 
-	bool m_debug;
 }; 
 
 NS_MIA_END

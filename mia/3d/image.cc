@@ -479,8 +479,8 @@ bool C3DValueAttributeTranslator<T>::register_for(const std::string& key)
 {
 	C3DValueAttributeTranslator *me = new C3DValueAttributeTranslator();
 	if (!me->do_register(key)) {
-		return false; 
 		delete me; 
+		return false; 
 	}
 	return true; 
 }

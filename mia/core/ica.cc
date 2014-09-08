@@ -399,6 +399,9 @@ CICAAnalysisImpl::CICAAnalysisImpl(size_t rows, size_t length):
 }
 
 CICAAnalysisImpl::CICAAnalysisImpl(const itpp::mat& ic, const itpp::mat& mix, const std::vector<float>& mean):
+	// Coverty may complain here, but the order is correct
+	// the signal is a matrix of the number of columns of the mixing matrix = time points 
+	// by rows of the independent components - each row constitutes th epixel ogf a feature image
 	m_Signal(mix.cols(), ic.rows()),
 	m_ICs(ic),
 	m_Mix(mix),
@@ -409,6 +412,7 @@ CICAAnalysisImpl::CICAAnalysisImpl(const itpp::mat& ic, const itpp::mat& mix, co
 	m_max_iterations(0), 
 	m_approach(FICA_APPROACH_DEFL)
 {
+	TRACE_FUNCTION;
 }
 
 void CICAAnalysis::normalize_ICs()
