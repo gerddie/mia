@@ -216,7 +216,8 @@ void run_registration_pass(CSegSetWithImages& input_set,
 
 void run_nonlinear_registration_passes (CSegSetWithImages& input_set, 
                                         C2DImageSeries& references,  
-                                        int skip_images,  int components, bool normalize, bool no_meanstrip, int max_ica_iterations, 
+					int components, bool normalize, bool no_meanstrip, int max_ica_iterations, 
+					int skip_images,
                                         const string& minimizer, 
                                         size_t mg_levels, double c_rate, double c_rate_divider, 
                                         double divcurlweight, double divcurlweight_divider, 
@@ -616,7 +617,7 @@ int do_main( int argc, char *argv[] )
 			
 		}
                 run_nonlinear_registration_passes (input_set, references,  
-                                                   components,  normalize, no_meanstrip, max_ica_iterations, 
+						   components,  normalize, no_meanstrip, max_ica_iterations, 
                                                    skip_images,  nonlinear_minimizer, 
                                                    mg_levels, c_rate, c_rate_divider, 
                                                    divcurlweight, divcurlweight_divider, 
