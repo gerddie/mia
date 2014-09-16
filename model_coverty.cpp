@@ -23,10 +23,4 @@ void BOOST_REQUIRE(const void *x)
 		__coverity_panic__();  
   
 }
- 
-void BOOST_REQUIRE(std::shared_ptr<mia::CAttribute> x) 
-{
-	if (!x) 
-		__coverity_panic__();	
-}
 
