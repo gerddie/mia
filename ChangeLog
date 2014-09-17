@@ -1,21 +1,28 @@
+2.2.1
+
+  * fixes for potential bugs discovered by Coverity
+  * src/2dmyoica-full.cc: fixes and error in the order of
+     parameters passed
+
 2.2.0
 
-  New features: 
-  
-  * Major ABI changes 
-  * Add support for HDF5 and NIFTI1 IO 
-  * Support for masked cost functions in voxel based image registration 
+  New features:
+
+  * Major ABI changes
+  * Add support for HDF5 and NIFTI1 IO
+  * Support for masked cost functions in voxel based image registration
   * Use Eigen3 for  the 3D matrix eigenvalue/eigenvector evaluation
-  * More C++11, minimal requirement is now g++ >= 4.7 
-  * Keep track of orientations 
-  * Add perfusion motion eompensation programs that are specifically designed to use a global 
-    reference even if the algorithm doesn't dictate this 
-  * automatically set C++11 compiler flag by cmake 
+  * More C++11, minimal requirement is now g++ >= 4.7
+  * Keep track of orientations
+  * Add perfusion motion compensation programs that are specifically
+    designed to use a global reference even if the algorithm doesn't
+    dictate this
+  * automatically set C++11 compiler flag by cmake
 
   Fixes for tracked issues:
 
- * #4 add 2D/3D filters that actually run a combiner, 
- * #12 add basic support for loading and stroring nifti 
+ * #4 add 2D/3D filters that actually run a combiner,
+ * #12 add basic support for loading and stroring nifti
  * #14 load and store ImageOrientationPatient and ImagePositionPatient related
  * #19 Add positional information to C3DTransform::const_iterator
  * #49 Parallize the 3D scale filter
@@ -23,10 +30,10 @@
  * #76 Remove the old divcurl penalty interface in 2D Closes
  * #90 Add voxel/pixel size attribute to vector field
  * #100 Make the 3D image combiner similar to the 2D combiner
- * #108 
+ * #108 Change segmentation set IO to possible make use of plug-ins
  * #117 Add support to query minimal image size for transformations
  * #123 Correct handling of ica instance when RV/LV classification fails in all cases,
- * #124 Add attribute to indicate the pixel size is from the imager 
+ * #124 Add attribute to indicate the pixel size is from the imager
  * #125 Make slicelocation and slicespacing non-obligatory
  * #126 Correct plug-in file suffix mapping for 2D and 3D images.
  * #127 Correct documentation and output to refer to 2D data.
@@ -44,10 +51,10 @@
  * #144 Parallelize the prefiltering in the 3D interpolator
  * #145 make sure the interpolator output range always includes zero
 
- * #147 Add function to override interpolator once. 
+ * #147 Add function to override interpolator once.
  * #152 add 3 label-voting downscale filter
  * #153 Add traits for the range iterators
- * #156 add additional flags to to the XML document creation CStringParameter, 
+ * #156 add additional flags to to the XML document creation CStringParameter,
  * #157 split range iterator in version with and without boundary flags.
  * #158 Consistently implement the lncc metric for masked and unmasked images
  * #159 Add option to chain filters into one entity.
@@ -56,14 +63,14 @@
  Additional fixes:
 
   * make all source files lowercase
-  * correct compilation with visibility=hidden 
-  * handles signed and unsigned pixel values in DICOM 
-  * let the xml-help write to a file instead of stdout 
+  * correct compilation with visibility=hidden
+  * handles signed and unsigned pixel values in DICOM
+  * let the xml-help write to a file instead of stdout
   * Correct default suffix for 2D transforms.
   * add attributes to boost::serialization transform IO
   * Add the _1 quaternion that corresponds to no rotation
   * Add printing of CAttributedData for testing
-  * Add an affine matrix with OpenGL like layout 
+  * Add an affine matrix with OpenGL like layout
   * add a program to evaluate the pixel wise maximum intensity of  number of images
   * add support for setting the minimum number of digits in the output file names.
   * Add SSD cost function with automasking baswed on intensity thresholds.
