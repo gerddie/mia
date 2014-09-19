@@ -44,6 +44,10 @@
 #include <dcmtk/dcmnet/diutil.h>
 #include <dcmtk/dcmjpeg/djdecode.h>
 
+#include <dcmtk/dcmdata/dcostrmf.h>
+#include <dcmtk/dcmdata/dcistrmf.h>
+
+#include <mia/core/file.hh>
 #include <mia/2d/imageio.hh>
 
 NS_MIA_BEGIN
@@ -157,7 +161,11 @@ CDicomReader::CDicomReader(const char *filename):
 	impl(new CDicomReaderData()),
 	m_filename(filename)
 {
-	impl->status = impl->dcm.loadFile( filename );
+	// here one should be able t open the file and pass the handle like in 
+	// the file writer, but for some reason this is not available. 
+
+	DcmInputFileStream is(filename); 
+	impl->status = impl->dcm.read(is); 
 }
 
 CDicomReader::~CDicomReader()
@@ -881,8 +889,18 @@ void CDicomWriterData::setValueStringIfKeyExists(const CAttributeMap::value_type
 
 bool CDicomWriterData::write(const char *filename)
 {
-	OFCondition status = dcm.saveFile(filename, EXS_LittleEndianImplicit,
-					  EET_UndefinedLength,EGL_withoutGL);
+	// Should use COutputFile, but the DcmOutputFileStream also takes ownership of 
+	// the file handle
+	FILE *out_file = fopen(filename, "wb");
+	if (!out_file)  { 
+		throw create_exception<runtime_error>("DICOM: unable to open '", 
+						      filename, "' for writing: ", 
+						      strerror(errno));
+	}
+
+	DcmOutputFileStream os(out_file);
+	OFCondition status = dcm.write (os, EXS_LittleEndianImplicit, EET_UndefinedLength, NULL); 
+
 	return status.good();
 }
 
