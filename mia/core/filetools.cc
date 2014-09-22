@@ -22,7 +22,7 @@
 #include <cstring>
 #include <climits>
 
-
+#include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp> // includes boost/filesystem/path.hpp
 #include <boost/filesystem/fstream.hpp>    // ditto
 #include <mia/core/bfsv23dispatch.hh>

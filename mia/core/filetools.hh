@@ -25,9 +25,15 @@
 #include <vector>
 
 #include <mia/core/defines.hh>
-#include <boost/filesystem/path.hpp>
+
+namespace boost {
+namespace filesystem {
+class path; 
+}
+}
 
 NS_MIA_BEGIN
+
 
 typedef std::vector<boost::filesystem::path> CPathNameArray; 
 
