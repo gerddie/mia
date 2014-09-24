@@ -19,6 +19,10 @@
  */
 
 #include <cassert>
+#include <cstring>
+#include <iostream>
+#include <gsl/gsl_statistics.h>
+
 #include <gsl++/matrix.hh>
 
 namespace gsl {
@@ -33,6 +37,14 @@ Matrix::Matrix(size_t rows, size_t columns, bool clean):
 	m_matrix = clean ? 
 		gsl_matrix_calloc(rows, columns):
 		gsl_matrix_alloc(rows, columns); 
+}
+
+Matrix::Matrix(size_t rows, size_t columns, const double *init):
+	m_matrix(NULL)
+{
+	assert(init); 
+	m_matrix = gsl_matrix_alloc(rows, columns); 
+	memcpy(gsl_matrix_ptr (m_matrix, 0, 0), init, rows * columns * sizeof(double)); 
 }
 
 Matrix::Matrix(const Matrix& other)
@@ -97,6 +109,40 @@ Matrix::operator const gsl_matrix *() const
 	return m_matrix; 
 }
 
+
+
+
+Matrix Matrix::covariance() const 
+{
+	int n = rows(); 
+	int d = cols(); 
+	Matrix cov(d,d, true); 
+	
+	Matrix help(n, d, false); 
+
+	// remove mean 
+	for (int i = 0; i < d; ++i)  {
+		auto tmp = gsl_matrix_column (m_matrix, i);
+		auto mean = gsl_stats_mean (tmp.vector.data, tmp.vector.stride, n); 
+		for (int r = 0; r < n; ++r)  {
+			help.set(r,i, gsl_matrix_get(m_matrix, r, i) - mean); 
+		}
+	}
+
+	for (int i = 0; i < d; i++) {
+		for (int j = 0; j <= i; j++) {
+			
+			auto a = gsl_matrix_column (help, i);
+			auto b = gsl_matrix_column (help, j);
+			double c = gsl_stats_covariance(a.vector.data, a.vector.stride,
+							b.vector.data, b.vector.stride, n);
+			cov.set(j, i, c); 
+			cov.set(i, j, c); 
+		}
+	}
+	return cov; 
 }
 
 
+
+}

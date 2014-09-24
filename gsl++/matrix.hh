@@ -46,6 +46,15 @@ public:
 	Matrix(size_t rows, size_t columns, bool clean); 
 
 	/**
+	   Create a matrix of size rows \f$\times\f$ columns and initialize it 
+	   with the given data 
+	   \param rows
+	   \param columns 
+	   \param init the input data in row major format 
+	*/
+	Matrix(size_t rows, size_t columns, const double *init);
+	
+	/**
 	   Copy constructor that executes a deep copy 
 	 */
 	Matrix(const Matrix& other); 
@@ -66,6 +75,8 @@ public:
 	
 	operator gsl_matrix *(); 
 	operator const gsl_matrix *() const; 
+
+	Matrix covariance() const; 
 
 private: 
 	gsl_matrix *m_matrix; 
