@@ -78,6 +78,29 @@ BOOST_AUTO_TEST_CASE( test_with_init )
 	
 }
 
+BOOST_AUTO_TEST_CASE( test_transpose ) 
+{
+	const double input[6]  = { 
+		1,2,3,4,5,6
+	}; 
+	
+	Matrix m(2,3, input); 
+	
+	auto t = m.transposed(); 
+
+	BOOST_CHECK_EQUAL(t.rows(), 3); 
+	BOOST_CHECK_EQUAL(t.cols(), 2); 
+	
+	BOOST_CHECK_EQUAL(t(0,0), 1); 
+	BOOST_CHECK_EQUAL(t(1,0), 2); 
+	BOOST_CHECK_EQUAL(t(2,0), 3); 
+	BOOST_CHECK_EQUAL(t(0,1), 4); 
+	BOOST_CHECK_EQUAL(t(1,1), 5); 
+	BOOST_CHECK_EQUAL(t(2,1), 6); 
+	
+}
+
+
 BOOST_AUTO_TEST_CASE( test_matrix_covariance ) 
 {
 	const double input[50]  = { 

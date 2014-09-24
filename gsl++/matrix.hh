@@ -59,6 +59,12 @@ public:
 	 */
 	Matrix(const Matrix& other); 
 
+	/**
+	   Acquire the transposed matrix. 
+	   \returns  transposed matrix as newly created object
+	*/
+	Matrix transposed() const; 
+
 
 	/**
 	   Copy operator that executes a deep copy 

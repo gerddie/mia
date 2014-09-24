@@ -67,7 +67,7 @@ int pcamat(const Matrix& vectors, int numOfIC, int firstEig, int lastEig, Matrix
 	
 	int oldDimension = vectors.rows();
 	
-	Matrix covarianceMatrix = covariance_transposed(vectors);
+	auto  covarianceMatrix = vectors.transposed().covariance();
 	
 	eig_sym(covarianceMatrix, Dt, Et);
 	

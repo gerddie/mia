@@ -109,8 +109,12 @@ Matrix::operator const gsl_matrix *() const
 	return m_matrix; 
 }
 
-
-
+Matrix Matrix::transposed() const
+{
+	Matrix result(cols(), rows(), false); 
+	gsl_matrix_transpose_memcpy (result.m_matrix, m_matrix); 
+	return result; 
+}
 
 Matrix Matrix::covariance() const 
 {
