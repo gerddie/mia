@@ -46,7 +46,6 @@ IF(WITH_OpenEXR)
     
     # test programs 
     ADD_EXECUTABLE(test-openexr test_openexr.cc)
-    ADD_DEPENDENCIES(test-openexr 2dimage-io-openexr 2dvf-io-openexr)
     
     SET(DEPLIBS mia2dtest mia2d ${BASELIBS})
     TARGET_LINK_LIBRARIES(test-openexr ${DEPLIBS} ${BOOST_UNITTEST})

@@ -51,7 +51,6 @@ IF (USE_VISTAIO)
     
   
     ADD_EXECUTABLE(test-vista4mia  test_vista4mia.cc)
-    ADD_DEPENDENCIES(test-vista4mia  2dvistaio 3dvistaio 3dvfvistaio)
     
     SET(VISTADEPLIBS vista4mia mia3dtest mia2dtest mia3d mia2d)
     
