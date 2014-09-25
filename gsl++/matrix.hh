@@ -82,7 +82,8 @@ public:
 	operator gsl_matrix *(); 
 	operator const gsl_matrix *() const; 
 
-	Matrix covariance() const; 
+	Matrix column_covariance() const; 
+	Matrix row_covariance() const; 
 
 private: 
 	gsl_matrix *m_matrix; 

@@ -18,9 +18,14 @@
  *
  */
 
+#define FICA_TOL 1e-9; 
+
 #include <gsl++/fastica.hh>
+#include <algorithm>
 
 namespace gsl {
+
+using std::sort; 
 
 FastICA::FastICA(const Matrix&  mix):
         m_mix(mix), 
@@ -58,8 +63,6 @@ void remove_mean(const Matrix& mixedSig, Matrix& mixedSigCentered, DoubleVector&
 static 
 int pcamat(const Matrix& vectors, int numOfIC, int firstEig, int lastEig, Matrix& E, DoubleVector& D)
 {
-	Matrix Et;
-	DoubleVector  Dt;
 	Matrix Ec;
 	DoubleVector  Dc;
 	double lowerLimitValue = 0.0,
@@ -68,30 +71,40 @@ int pcamat(const Matrix& vectors, int numOfIC, int firstEig, int lastEig, Matrix
 	int oldDimension = vectors.rows();
 	
 	auto  covarianceMatrix = vectors.transposed().covariance();
-	
-	eig_sym(covarianceMatrix, Dt, Et);
-	
+
+	gsl_eigen_symm_workspace *ws = gsl_eigen_symm_alloc (covarianceMatrix.rows()); 
+
+Matrix evec(covarianceMatrix.rows(), covarianceMatrix.cols(), false);
+	DoubleVector eval(covarianceMatrix.rows()); 
+
+	gsl_eigen_symmv (covarianceMatrix, eval, evec, ws); 
+	gsl_eigen_symmv_free (ws); 
+		 
 	int maxLastEig = 0;
 	
 	// Compute rank
-	for (int i = 0; i < Dt.length(); i++) if (Dt(i) > FICA_TOL) maxLastEig++;
-	if (maxLastEig < 1) return 0;
+	for (int i = 0; i < eval.size(); i++) 
+		if (eval[i] > FICA_TOL) 
+			maxLastEig++;
+	if (maxLastEig < 1) 
+		return 0;
 	
 	// Force numOfIC components
-	if (maxLastEig > numOfIC) maxLastEig = numOfIC;
+	if (maxLastEig > numOfIC) 
+		maxLastEig = m_numOfIC;
 	
-	vec eigenvalues = zeros(size(Dt));
-	vec eigenvalues2 = zeros(size(Dt));
+	DoubleVector eigenvalues(eval.size(), true);
+	DoubleVector eigenvalues2(eval);
 	
-	eigenvalues2 = Dt;
+	sort(eigenvalues2.begin(), eigenvalues2.end());
 	
-	sort(eigenvalues2);
+	DoubleVector  lowerColumns(eval.size(), true);
+#error 	continue here 
+	for (int i = 0; i < size(Dt); i++) 
+		eigenvalues(i) = eigenvalues2(size(Dt) - i - 1);
 	
-	vec lowerColumns = zeros(size(Dt));
-	
-	for (int i = 0; i < size(Dt); i++) eigenvalues(i) = eigenvalues2(size(Dt) - i - 1);
-	
-	if (lastEig > maxLastEig) lastEig = maxLastEig;
+	if (lastEig > maxLastEig) 
+		lastEig = maxLastEig;
 	
 	if (lastEig < oldDimension) lowerLimitValue = (eigenvalues(lastEig - 1) + eigenvalues(lastEig)) / 2;
 	else lowerLimitValue = eigenvalues(oldDimension - 1) - 1;

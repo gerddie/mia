@@ -116,7 +116,38 @@ Matrix Matrix::transposed() const
 	return result; 
 }
 
-Matrix Matrix::covariance() const 
+Matrix Matrix::row_covariance() const 
+{
+	int d = rows(); 
+	int n = cols(); 
+	Matrix cov(d,d, true); 
+	
+	Matrix help(d, n, false); 
+
+	// remove mean 
+	for (int r = 0; r < d; ++r)  {
+		auto tmp = gsl_matrix_row (m_matrix, r);
+		auto mean = gsl_stats_mean (tmp.vector.data, tmp.vector.stride, n); 
+		for (int c = 0; c < n; ++c)  {
+			help.set(r, c, gsl_matrix_get(m_matrix, r, c) - mean); 
+		}
+	}
+
+	for (int i = 0; i < d; i++) {
+		for (int j = 0; j <= i; j++) {
+			
+			auto a = gsl_matrix_row (help, i);
+			auto b = gsl_matrix_row (help, j);
+			double c = gsl_stats_covariance(a.vector.data, a.vector.stride,
+							b.vector.data, b.vector.stride, n);
+			cov.set(j, i, c); 
+			cov.set(i, j, c); 
+		}
+	}
+	return cov; 
+}
+
+Matrix Matrix::column_covariance() const
 {
 	int n = rows(); 
 	int d = cols(); 
@@ -145,8 +176,8 @@ Matrix Matrix::covariance() const
 		}
 	}
 	return cov; 
+	
 }
-
 
 
 }

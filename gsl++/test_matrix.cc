@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( test_transpose )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_matrix_covariance ) 
+BOOST_AUTO_TEST_CASE( test_matrix_column_covariance ) 
 {
 	const double input[50]  = { 
 		1, 2, 3, 2, 1, 
@@ -118,7 +118,49 @@ BOOST_AUTO_TEST_CASE( test_matrix_covariance )
 
 	Matrix m(10, 5, input); 
 	
-	auto cov = m.covariance(); 
+	auto cov = m.column_covariance(); 
+	
+
+	BOOST_CHECK_EQUAL(cov.rows(), 5); 
+	BOOST_CHECK_EQUAL(cov.cols(), 5); 
+
+	
+	const double test[25]  = {  
+		1.82222,  -0.11111,  -0.06667,   0.13333,   0.02222,
+		-0.11111,   2.72222,   0.00000,  -0.94444,   2.11111,
+		-0.06667,   0.00000,   4.26667,  -2.31111,  -0.86667,
+		0.13333,  -0.94444,  -2.31111,   4.45556,   2.28889,
+		0.02222,   2.11111,  -0.86667,   2.28889,   5.95556
+	}; 
+	
+	auto t = test; 
+	for (unsigned  r = 0; r < cov.rows(); ++r) 
+		for (unsigned  c = 0; c < cov.cols(); ++c, ++t) {
+			if (*t == 0.0) 
+				BOOST_CHECK_SMALL(cov(r,c), 1e-10); 
+			else 
+				BOOST_CHECK_CLOSE(cov(r,c), *t, 0.1); 
+		}
+}
+
+BOOST_AUTO_TEST_CASE( test_matrix_row_covariance ) 
+{
+	const double input[50]  = { 
+		1, 2, 3, 2, 1, 
+		2, 1, 2, 5, 2, 
+		3, 2, 5, 2, 5, 
+		2, 6, 2, 3, 8, 
+		4, 1, 6, 2, 1, 
+		4, 1, 2, 5, 5, 
+		2, 2, 3, 8, 7, 
+		2, 4, 8, 1, 4, 
+		1, 2, 3, 2, 2, 
+		5, 4, 2, 3, 3
+	}; 
+
+	Matrix m(10, 5, input); 
+	
+	auto cov = m.transposed().row_covariance(); 
 	
 
 	BOOST_CHECK_EQUAL(cov.rows(), 5); 
