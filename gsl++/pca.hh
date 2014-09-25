@@ -29,7 +29,10 @@ namespace gsl {
 
 
 /**
-   This class implements a PCA estimator. The number of principal components 
+   \brief This class implements Principal Component Analysis. 
+   
+   This class implements Principal Component Analysis by using the covariance matrix. 
+   The number of principal components 
    to be evaluated can be defined in two ways: Either a hard number is given 
    in the constructor, or the energy ratio is defined. In both cases PC are 
    added starting from the component with the eigenvalue with the largest 
