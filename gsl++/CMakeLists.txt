@@ -19,6 +19,7 @@
 SET(GSLPP_SOURCE 
   matrix.cc
   multimin.cc
+  pca.cc 
   vector.cc
   wavelet.cc
   )
@@ -26,6 +27,7 @@ SET(GSLPP_SOURCE
 SET(GSLPP_HEADERS 
   matrix.hh
   multimin.hh
+  pca.hh
   vector.hh
   vector_template.hh
   wavelet.hh
@@ -45,9 +47,10 @@ MACRO(GSL_TEST name)
 ENDMACRO(GSL_TEST name)
 
 IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  GSL_TEST(vector)
   GSL_TEST(matrix)
   GSL_TEST(multimin)
+  GSL_TEST(pca)
+  GSL_TEST(vector)
 ENDIF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
 
 

@@ -27,6 +27,8 @@
 
 namespace gsl {
 
+using std::swap; 
+
 Matrix::Matrix():m_matrix(NULL)
 {
 }
@@ -53,6 +55,8 @@ Matrix::Matrix(const Matrix& other)
 	gsl_matrix_memcpy (m_matrix, other.m_matrix); 
 }
 
+
+
 Matrix& Matrix::operator =(const Matrix& other)
 {
 	if (this == &other) 
@@ -64,10 +68,21 @@ Matrix& Matrix::operator =(const Matrix& other)
 	}
 	gsl_matrix *help = gsl_matrix_alloc(other.rows(), other.cols()); 
 	gsl_matrix_memcpy (help, other.m_matrix); 
-	if (m_matrix) 
-		gsl_matrix_free(m_matrix);
-	m_matrix = help; 
+	swap(m_matrix, help); 
+	if (help) 
+		gsl_matrix_free(help);
+
 	return *this; 
+}
+
+void Matrix::reset(size_t rows, size_t columns, bool clean) 
+{
+	gsl_matrix *help = clean ? 
+		gsl_matrix_calloc(rows, columns):
+		gsl_matrix_alloc(rows, columns); 
+	swap(help, m_matrix); 
+	if (help) 
+		gsl_matrix_free(help);
 }
 
 Matrix::~Matrix()

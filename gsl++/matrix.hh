@@ -71,6 +71,8 @@ public:
 	 */
 	Matrix& operator =(const Matrix& other); 
 
+	void reset(size_t rows, size_t columns, bool clean); 
+
 	~Matrix(); 
 
 	size_t rows()const; 

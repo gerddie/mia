@@ -70,28 +70,56 @@ int pcamat(const Matrix& vectors, int numOfIC, int firstEig, int lastEig, Matrix
 	
 	int oldDimension = vectors.rows();
 	
-	auto  covarianceMatrix = vectors.transposed().covariance();
+	auto  covarianceMatrix = vectors.row_covariance();
 
+	// evaluate the eivenvectors and eigenvalues 
 	gsl_eigen_symm_workspace *ws = gsl_eigen_symm_alloc (covarianceMatrix.rows()); 
-
-Matrix evec(covarianceMatrix.rows(), covarianceMatrix.cols(), false);
+	Matrix evec(covarianceMatrix.rows(), covarianceMatrix.cols(), false);
 	DoubleVector eval(covarianceMatrix.rows()); 
-
 	gsl_eigen_symmv (covarianceMatrix, eval, evec, ws); 
 	gsl_eigen_symmv_free (ws); 
 		 
-	int maxLastEig = 0;
+
+	typedef pair<double, int> SEigenvalueWithIndex; 
 	
-	// Compute rank
-	for (int i = 0; i < eval.size(); i++) 
-		if (eval[i] > FICA_TOL) 
-			maxLastEig++;
+	double ev_energy = 0.0; 
+	vector <SEigenvalueWithIndex> evorder(oldDimension); 
+	for (int i = 0; i < oldDimension) {
+		evorder[i].first = eval[i]; 
+		ev_energy += eval[i];
+		evorder[i].second = i; 
+	}
+	
+	sort(evorder.begin(), evorder.end(), 
+	     []->bool (const SEigenvalueWithIndex& lhs, const SEigenvalueWithIndex& rhs) {
+		     return lhs.first > rhs.first; 
+	     }); 
+	
+
+	int maxLastEig = 0;	
+	
+	// automatic number based on culmulative energy threshold 
+	if (m_numOfIC < 1) {
+		double ev_part_energy = 0.0;
+		double ev_part_thresh = m_auto_pca_thresh * ev_energy;
+		
+		while ((ev_part_energy < ev_part_thresh) && 
+		       (maxLastEig < eval.size())) {
+			ev_part_energy += evorder[maxLastEig].first; 
+			++maxLastEig; 
+		}
+	} else { // fixed number of PC/IC
+		while ((evorder[maxLastEig] > FICA_TOL) && 
+		       (maxLastEig < eval.size()) && 
+		       (maxLastEig < m_numOfIC))
+			++maxLastEig; 
+	}
+	
 	if (maxLastEig < 1) 
 		return 0;
+
 	
-	// Force numOfIC components
-	if (maxLastEig > numOfIC) 
-		maxLastEig = m_numOfIC;
+	
 	
 	DoubleVector eigenvalues(eval.size(), true);
 	DoubleVector eigenvalues2(eval);
