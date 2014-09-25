@@ -46,6 +46,14 @@ public:
 	Matrix(size_t rows, size_t columns, bool clean); 
 
 	/**
+	   Create a matrix of size rows \f$\times\f$ columns, 
+	   \param rows
+	   \param columns 
+	   \param init set the matrix elements to this value 
+	 */
+	Matrix(size_t rows, size_t columns, double init); 
+
+	/**
 	   Create a matrix of size rows \f$\times\f$ columns and initialize it 
 	   with the given data 
 	   \param rows
@@ -72,6 +80,7 @@ public:
 	Matrix& operator =(const Matrix& other); 
 
 	void reset(size_t rows, size_t columns, bool clean); 
+	void reset(size_t rows, size_t columns, double init); 
 
 	~Matrix(); 
 

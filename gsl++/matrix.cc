@@ -28,6 +28,7 @@
 namespace gsl {
 
 using std::swap; 
+using std::fill; 
 
 Matrix::Matrix():m_matrix(NULL)
 {
@@ -39,6 +40,14 @@ Matrix::Matrix(size_t rows, size_t columns, bool clean):
 	m_matrix = clean ? 
 		gsl_matrix_calloc(rows, columns):
 		gsl_matrix_alloc(rows, columns); 
+}
+
+Matrix::Matrix(size_t rows, size_t columns, double init):
+	m_matrix(NULL)
+{
+	m_matrix = gsl_matrix_alloc(rows, columns); 
+	auto p = gsl_matrix_ptr (m_matrix, 0, 0);
+	fill(p, p + rows * columns, init); 
 }
 
 Matrix::Matrix(size_t rows, size_t columns, const double *init):
@@ -80,6 +89,17 @@ void Matrix::reset(size_t rows, size_t columns, bool clean)
 	gsl_matrix *help = clean ? 
 		gsl_matrix_calloc(rows, columns):
 		gsl_matrix_alloc(rows, columns); 
+	swap(help, m_matrix); 
+	if (help) 
+		gsl_matrix_free(help);
+}
+
+void Matrix::reset(size_t rows, size_t columns, double init) 
+{
+	gsl_matrix *help = gsl_matrix_alloc(rows, columns); 
+	auto p = gsl_matrix_ptr (help, 0, 0);
+	fill(p, p + rows * columns, init); 
+	
 	swap(help, m_matrix); 
 	if (help) 
 		gsl_matrix_free(help);
