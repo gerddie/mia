@@ -22,6 +22,8 @@
 
 #include <gsl++/fastica.hh>
 #include <algorithm>
+#include <random>
+#include <gsl/gsl_blas.h>
 
 namespace gsl {
 
@@ -44,6 +46,7 @@ FastICA::FastICA(const Matrix&  mix):
         m_firstEig(1), 
         m_lastEig(m_mix.rows()), 
         m_PCAonly(false), 
+	m_with_initial_guess(false)
 {
 }
 
@@ -59,118 +62,38 @@ void remove_mean(const Matrix& mixedSig, Matrix& mixedSigCentered, DoubleVector&
 	}
 }
 
-
-static 
-int pcamat(const Matrix& vectors, int numOfIC, int firstEig, int lastEig, Matrix& E, DoubleVector& D)
+Matrix FastICA::whiten(const Matrix& signal, const Matrix& evec, const DoubleVector& eval)
 {
-	Matrix Ec;
-	DoubleVector  Dc;
-	double lowerLimitValue = 0.0,
-		higherLimitValue = 0.0;
+	m_whitening_matrix.reset(evec.cols(), evec.rows(), false); 
+	m_dewhitening_matrix.reset(evec.rows(), evec.cols(), false);
 	
-	int oldDimension = vectors.rows();
-	
-	auto  covarianceMatrix = vectors.row_covariance();
-
-	// evaluate the eivenvectors and eigenvalues 
-	gsl_eigen_symm_workspace *ws = gsl_eigen_symm_alloc (covarianceMatrix.rows()); 
-	Matrix evec(covarianceMatrix.rows(), covarianceMatrix.cols(), false);
-	DoubleVector eval(covarianceMatrix.rows()); 
-	gsl_eigen_symmv (covarianceMatrix, eval, evec, ws); 
-	gsl_eigen_symmv_free (ws); 
-		 
-
-	typedef pair<double, int> SEigenvalueWithIndex; 
-	
-	double ev_energy = 0.0; 
-	vector <SEigenvalueWithIndex> evorder(oldDimension); 
-	for (int i = 0; i < oldDimension) {
-		evorder[i].first = eval[i]; 
-		ev_energy += eval[i];
-		evorder[i].second = i; 
-	}
-	
-	sort(evorder.begin(), evorder.end(), 
-	     []->bool (const SEigenvalueWithIndex& lhs, const SEigenvalueWithIndex& rhs) {
-		     return lhs.first > rhs.first; 
-	     }); 
-	
-
-	int maxLastEig = 0;	
-	
-	// automatic number based on culmulative energy threshold 
-	if (m_numOfIC < 1) {
-		double ev_part_energy = 0.0;
-		double ev_part_thresh = m_auto_pca_thresh * ev_energy;
+	for (int i = 0; i < eval.size(); i++) {
+		double iwscale = sqrt(eval[i]);
+		double wscale = 1.0 / iwscale;
 		
-		while ((ev_part_energy < ev_part_thresh) && 
-		       (maxLastEig < eval.size())) {
-			ev_part_energy += evorder[maxLastEig].first; 
-			++maxLastEig; 
-		}
-	} else { // fixed number of PC/IC
-		while ((evorder[maxLastEig] > FICA_TOL) && 
-		       (maxLastEig < eval.size()) && 
-		       (maxLastEig < m_numOfIC))
-			++maxLastEig; 
+		auto wmr = gsl_matrix_row(m_whitening_matrix, i); 
+		auto inv = gsl_matrix_row(evec, i);
+		auto dwmc = gsl_matrix_column(m_dewhitening_matrix, i); 
+		
+		gsl_vector_memcpy (&wmr.vector, &inv.vector); 
+		gsl_blas_dscal (wscale, &wmr.vector); 
+		
+		gsl_vector_memcpy (&dwmc.vector, &inv.vector); 
+		gsl_blas_dscal (iwscale, &dwmc.vector); 
 	}
 	
-	if (maxLastEig < 1) 
-		return 0;
-
+	Matrix result(evec.rows(), mixedSigC.cols(), true); 
 	
+	gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, m_whitening_matrix, 
+			signal, 1.0, result); 
 	
-	
-	DoubleVector eigenvalues(eval.size(), true);
-	DoubleVector eigenvalues2(eval);
-	
-	sort(eigenvalues2.begin(), eigenvalues2.end());
-	
-	DoubleVector  lowerColumns(eval.size(), true);
-#error 	continue here 
-	for (int i = 0; i < size(Dt); i++) 
-		eigenvalues(i) = eigenvalues2(size(Dt) - i - 1);
-	
-	if (lastEig > maxLastEig) 
-		lastEig = maxLastEig;
-	
-	if (lastEig < oldDimension) lowerLimitValue = (eigenvalues(lastEig - 1) + eigenvalues(lastEig)) / 2;
-	else lowerLimitValue = eigenvalues(oldDimension - 1) - 1;
-	
-	for (int i = 0; i < size(Dt); i++) if (Dt(i) > lowerLimitValue) lowerColumns(i) = 1;
-	
-	if (firstEig > 1) higherLimitValue = (eigenvalues(firstEig - 2) + eigenvalues(firstEig - 1)) / 2;
-	else higherLimitValue = eigenvalues(0) + 1;
-	
-	vec higherColumns = zeros(size(Dt));
-	for (int i = 0; i < size(Dt); i++) if (Dt(i) < higherLimitValue) higherColumns(i) = 1;
-	
-	vec selectedColumns = zeros(size(Dt));
-	for (int i = 0; i < size(Dt); i++) selectedColumns(i) = (lowerColumns(i) == 1 && higherColumns(i) == 1) ? 1 : 0;
-	
-	selcol(Et, selectedColumns, Es);
-	
-	int numTaken = 0;
-	
-	for (int i = 0; i < size(selectedColumns); i++) if (selectedColumns(i) == 1) numTaken++;
-	
-	Ds = zeros(numTaken);
-	
-	numTaken = 0;
-	
-	for (int i = 0; i < size(Dt); i++)
-		if (selectedColumns(i) == 1) {
-			Ds(numTaken) = Dt(i);
-			numTaken++;
-		}
-	
-	return lastEig;
+	return result; 
 }
 
 bool FastICA::separate()
 {
 
-	int dim = numOfIC;
+	int dim = m_numOfIC;
 
 	Matrix mixedSigC(m_mixedSig.rows(), m_mixedSig.cols(), true);
 	DoubleVector mixedMean(m_mixedSig.rows(), clear);
@@ -187,47 +110,67 @@ bool FastICA::separate()
 
 	remove_mean(m_mixedSig, mixedSigCentered, mixed_mean);
 	
-	Matrix E; 
-	DoubleVector D; 
+	PCA pca(m_numOfIC, 0.9);
+	auto pca_result = pca.analyze(m_mixedSig); 
 	
-	
-	if (pcamat(mixedSigCentered, m_numOfIC, m_firstEig, m_lastEig, E, D) < 1) {
-		// no principal components could be found (e.g. all-zero data): return the unchanged input
+	if (pca_result.eval.size() < 1) {
 		m_icasig = m_mixedSig;
 		return false;
 	}
+
+	m_numOfIC = pca_result.evec.size(); 
 	
-	whitenv(mixedSigC, E, diag(D), whitesig, whiteningMatrix, dewhiteningMatrix);
+	auto whitened_signal = whithen(mixedSigCentered, pca_result.evec, pca_result.eval);
 
-  Dim = whitesig.rows();
-  if (numOfIC > Dim) numOfIC = Dim;
-
-  ivec NcFirst = to_ivec(zeros(numOfIC));
-  vec NcVp = D;
-  for (int i = 0; i < NcFirst.size(); i++) {
-
-    NcFirst(i) = max_index(NcVp);
-    NcVp(NcFirst(i)) = 0.0;
-    VecPr.set_col(i, dewhiteningMatrix.get_col(i));
-
-  }
-
-  bool result = true;
-  if (PCAonly == false) {
-
-    result = fpica(whitesig, whiteningMatrix, dewhiteningMatrix, approach, numOfIC, g, finetune, a1, a2, mu, stabilization, epsilon, maxNumIterations, maxFineTune, initState, guess, sampleSize, A, W);
-
-    icasig = W * mixedSig;
-
-  }
-
-  else { // PCA only : returns E as IcaSig
-    icasig = VecPr;
-  }
-  return result;
-
-        
+	// if only PCA, stop here and save the dewithening as independend components 
+	// where is the mixing matrix? 
+	if (m_PCAonly) {
+		m_mixing_matrix.reset(mixedSigCentered.rows(), m_dewhitening_matrix.cols(), 1.0);
+		m_independent_components = m_dewhitening_matrix; 
+		return true; 
+	}
 	
+	switch (m_approach) {
+	case appr_defl: return fpica_defl(whitened_signal);
+	case appr_symm: return fpica_symm(whitened_signal);
+	default: 
+		throw invalid_argument("FastICA::separate: unknown apporach given"); 
+		
+	}
+}
+
+bool FastICA::fpica_defl(const Matrix& X)
+{ 
+	// not yet supported 
+	assert(!m_with_initial_guess); 
+		
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
+
+	vector<DoubleVector> W; 
+	DoubleVector w( X.rows(), false); 
+	DoubleVector wtX( X.rows(), false); 
+	
+	const double inv_m = 1.0 / X.cols();
+	
+	for (int i = 0; i < m_numOfIC; ++i) {
+		for (unsigned i = 0; i < w; ++i) 
+			w[i] = random_source(gen);
+		
+		double delta = 1.0; 
+		
+		DoubleVector w_old(w);
+		while (delta > m_epsilon) {
+			
+			X.left_multiply(w, wtX);  
+			
+			
+			
+		}
+		
+	}
+
 }
 
 void FastICA::set_approach(EApproach apr)

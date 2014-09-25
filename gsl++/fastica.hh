@@ -88,15 +88,13 @@ public:
 
 	int  get_nrof_independent_components () const;
 
-	const Matrix&	get_principal_eigenvectors () const;
-
 	const Matrix&	get_whitening_matrix () const;
 
 	const Matrix&	get_dewhitening_matrix () const;
 
-	const Matrix&	get_white_sig () const;
 	
 private:
+	Matrix whiten(const Matrix& signal, const Matrix& evec, const DoubleVector& eval); 
 
 	const Matrix&  m_mix;
 	
@@ -138,14 +136,10 @@ private:
 	
 	Matrix	m_independent_components;
 	
-
-	Matrix	m_principal_eigenvectors;
-	
 	Matrix	m_whitening_matrix;
 	
 	Matrix	m_dewhitening_matrix;
 	
-	Matrix	m_white_sig;
 };
 
 class FNonlinPow3 : public FastICA::FNonlinearity {
