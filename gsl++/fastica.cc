@@ -148,7 +148,7 @@ bool FastICA::fpica_defl(const Matrix& X)
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
 
-	vector<DoubleVector> W; 
+	m_separating_matrix.reset(m_numOfIC, X.cols(), false); 
 	const int N = X.rows(); 
 	DoubleVector w( X.rows(), false); 
 	DoubleVector wtX( X.rows(), false); 
@@ -156,30 +156,48 @@ bool FastICA::fpica_defl(const Matrix& X)
 	const double inv_m = 1.0 / X.cols();
 	
 	for (int i = 0; i < m_numOfIC; ++i) {
+		
+		// replace this by a generic method that can use 
+		// some init data or other means 
 		for (unsigned i = 0; i < w; ++i) 
 			w[i] = random_source(gen);
 		
-		double delta = 1.0; 
+		
+		double delta = m_epsilon + 1.0;
 		
 		DoubleVector w_old(w);
 		while (delta > m_epsilon) {
 			
 			multiply_v_m(wtX, w, X); 
 			
-			m_nonlinearity->apply(w, inv_m, wtX); 
+			m_nonlinearity->apply(w, wtX); 
 			
 			DoubleVector w_save(w); 
 			for (int j = 0; j < i; ++i) {
-				double dot = cblas_ddot(N, W[j]->data, W[j]->stride, 
-							w_save->data, w_save->stride); 
-				cblas_daxpy(N, -dot, W[j]->data, W[j]->stride, w->data, w->stride); 
+				const auto wj = gsl_matrix_const_row(m_separating_matrix, j);
+				const double dot = multiply_v_v(w_save, wj); 
+				cblas_daxpy(N, -dot, wj->data, wj->stride, w->data, w->stride);
 			}
 			
+			double norm = sqrt(multiply(w, w));
+			if (norm > 0.0) 
+				gsl_vector_scale(w, 1.0/norm); 
+			gsl_vector_sub(w_old, w); 
 			
-			
+			delta = sqrt(multiply(w_old, w_old));
+			gsl_vector_memcpy(w_old, w); 
 		}
-		
+		auto wi = gsl_matrix_row(m_separating_matrix, i);
+		gsl_vector_memcpy(&wi.vector, w); 
 	}
+
+	m_independent_components.reset(m_numOfIC, X.cols(), false); 
+	multiply(m_independent_components, m_separating_matrix, X); 
+	
+	m_mixing_matrix.reset(X.rows(), m_numOfIC, false); 
+	multiply(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
+	
+	
 
 }
 
@@ -306,6 +324,72 @@ const Matrix&	FastICA::get_white_sig () const
         return m_white_sig; 
 }
 
+void FastICA::FNonlinearity::set_sample(double sample_size, size_t num_samples)
+{
+	m_sample_size = sample_size; 
+	m_num_samples = num_samples;
+}
+
+void FastICA::FNonlinearity::set_signal(const Matrix *signal)
+{
+	m_signal = signal; 
+	assert(m_signal); 
+
+	m_workspace = DoubleVector(m_signal->cols());  
+	m_workspace2 = DoubleVector(m_signal->rows());
+}
+
+void FastICA::FNonlinearity::set_scaling(double myy)
+{
+	assert(myy != 0.0); 
+	m_myy = myy; 
+}
+
+double FastICA::FNonlinearity::get_sample_size() const
+{
+	return m_sample_size; 
+}
+
+size_t FastICA::FNonlinearity::get_num_samples() const
+{
+	return m_sum_samples; 
+}
+
+double FastICA::FNonlinearity::get_scaling() const
+{
+	return m_myy; 
+}
+
+const Matrix& FastICA::FNonlinearity::get_signal() const
+{
+	assert(m_signal); 
+	return *m_signal; 
+}
+
+void FastICA::FNonlinearity::apply(DoubleVector& w, const DoubleVector& wtX) const
+{
+	gsl_vector_memcpy(m_workspace, wtX); 
+	for_each(m_workspace,begin(), m_workspace.end(), [this](double x) -> double {
+			return g(x); 
+		}); 
+	multiply_m_v(m_workspace2, get_signal(), m_workspace);
+	
+	double w_scale = sum_g1_normalized(wtX);
+	
+	cblas_daxpy(m_workspace2.size(), w->data, w->stride, 
+		    m_workspace2->data, m_workspace2->stride); 
+	gsl_vector_memcpy(w, m_workspace2); 
+}
+
+double FNonlinPow3::g(double x) const
+{
+	return x*x*x;
+}
+
+double FNonlinPow3::sum_g1_normalized(const DoubleVector& wtX) const
+{
+	return 3; 
+}
 
 
 }; 
