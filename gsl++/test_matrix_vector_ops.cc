@@ -128,3 +128,23 @@ BOOST_AUTO_TEST_CASE( test_mult_vec_marix )
         BOOST_CHECK_CLOSE(result[2], 28, 0.1); 
 
 }
+
+BOOST_AUTO_TEST_CASE( test_mult_vec_vec ) 
+{
+        const double vector1_init[] = {
+                1, 2, 
+        };
+
+        const double vector2_init[] = {
+                2, 3
+        }; 
+
+
+        DoubleVector lhs(2, false); 
+        DoubleVector rhs(2, false); 
+        
+        std::copy(vector1_init, vector1_init + 2, lhs.begin()); 
+        std::copy(vector2_init, vector2_init + 2, rhs.begin()); 
+        
+        BOOST_CHECK_CLOSE(multiply_v_v(lhs, rhs), 8, 0.1); 
+}

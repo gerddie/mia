@@ -21,6 +21,7 @@
 #define FICA_TOL 1e-9; 
 
 #include <gsl++/fastica.hh>
+#include <gsl++/matrix_vector_ops.hh>
 #include <algorithm>
 #include <random>
 #include <gsl/gsl_blas.h>
@@ -84,8 +85,7 @@ Matrix FastICA::whiten(const Matrix& signal, const Matrix& evec, const DoubleVec
 	
 	Matrix result(evec.rows(), mixedSigC.cols(), true); 
 	
-	gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, m_whitening_matrix, 
-			signal, 1.0, result); 
+	multiply_m_m(result, m_whitening_matrix, signal); 
 	
 	return result; 
 }
@@ -149,6 +149,7 @@ bool FastICA::fpica_defl(const Matrix& X)
 	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
 
 	vector<DoubleVector> W; 
+	const int N = X.rows(); 
 	DoubleVector w( X.rows(), false); 
 	DoubleVector wtX( X.rows(), false); 
 	
@@ -163,7 +164,16 @@ bool FastICA::fpica_defl(const Matrix& X)
 		DoubleVector w_old(w);
 		while (delta > m_epsilon) {
 			
-			X.left_multiply(w, wtX);  
+			multiply_v_m(wtX, w, X); 
+			
+			m_nonlinearity->apply(w, inv_m, wtX); 
+			
+			DoubleVector w_save(w); 
+			for (int j = 0; j < i; ++i) {
+				double dot = cblas_ddot(N, W[j]->data, W[j]->stride, 
+							w_save->data, w_save->stride); 
+				cblas_daxpy(N, -dot, W[j]->data, W[j]->stride, w->data, w->stride); 
+			}
 			
 			
 			

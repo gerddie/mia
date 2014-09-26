@@ -87,17 +87,25 @@ void multiply_m_v(DoubleVector& result, const Matrix& lhs, const DoubleVector& r
         assert(result.size() == lhs.rows()); 
         assert(rhs.size() == lhs.cols());
         
-        const gsl_vector vrhs = *rhs;  
-        auto mult = [&result, &lhs, &vrhs](const blocked_range<int>& range) -> void {
+        auto mult = [&result, &lhs, &rhs](const blocked_range<int>& range) -> void {
                 for (int r = range.begin(); r != range.end(); ++r) {
                         auto lhs_row = gsl_matrix_const_row(lhs, r); 
                         const double val = cblas_ddot (result.size(), lhs_row.vector.data, lhs_row.vector.stride, 
-                                                       vrhs.data, vrhs.stride);
+                                                       rhs->data, rhs->stride);
                         result[r] = val; 
                 }
         }; 
         parallel_for(blocked_range<int>( 0, result.size()), mult);
         
+}
+
+double multiply_v_v(const DoubleVector& lhs, const DoubleVector& rhs)
+{
+        assert(rhs.size() == lhs.size());
+        
+        return cblas_ddot (rhs.size(), lhs->data, lhs->stride, 
+                           rhs->data, rhs->stride);
+
 }
 
 }

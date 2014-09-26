@@ -34,7 +34,7 @@ public:
 	class FNonlinearity {
 	public: 
 		void set_sample(double sample_size, size_t num_samples); 
-		virtual void apply(Matrix& B, double myy, const Matrix& B) const = 0; 
+		virtual void apply(DoubleVector& inout, double myy, const DoubleVector& in) const = 0; 
 	protected: 
 		double get_sample_size() const; 
 		size_t get_num_samples() const; 
@@ -145,7 +145,7 @@ private:
 };
 
 class FNonlinPow3 : public FastICA::FNonlinearity {
-	virtual void apply(Matrix& B, double myy, const Matrix& B) const; 
+	virtual void apply(DoubleVector& inout, double myy, const DoubleVector& in) const; 
 }; 
 
 

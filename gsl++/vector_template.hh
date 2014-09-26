@@ -202,6 +202,10 @@ public:
 	/// read only vector pointer type operator to enable transparent calls to the GSL APL
 	operator const vector_type *() const; 
 	
+
+	const vector_type * operator  ->() const; 
+	vector_type * operator  ->(); 
+	
 	/// vector pointer type operator  to enable transparent calls to the GSL APL
 	operator vector_pointer_type (); 
 private: 
