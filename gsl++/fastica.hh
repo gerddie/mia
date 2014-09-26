@@ -128,6 +128,8 @@ private:
 	
 	bool m_PCAonly;
 	
+	bool m_with_initial_guess; 
+	
 	Matrix m_initGuess;
 	
 	Matrix m_mixing_matrix;

@@ -18,6 +18,7 @@
 
 SET(GSLPP_SOURCE 
   matrix.cc
+  matrix_vector_ops.cc
   multimin.cc
   pca.cc 
   vector.cc
@@ -26,6 +27,7 @@ SET(GSLPP_SOURCE
 
 SET(GSLPP_HEADERS 
   matrix.hh
+  matrix_vector_ops.hh
   multimin.hh
   pca.hh
   vector.hh
@@ -34,7 +36,7 @@ SET(GSLPP_HEADERS
   gsldefines.hh
   )
 
-MIA_ADD_LIBRARY(miagsl "${GSLPP_SOURCE}" "${GSL_LIBRARIES}" "${BLAS_LIBRARIES}")
+MIA_ADD_LIBRARY(miagsl "${GSLPP_SOURCE}" "${GSL_LIBRARIES} ${TBB_LIBRARIES}")
 
 INSTALL_WITH_EXPORT(miagsl)
 
@@ -48,6 +50,7 @@ ENDMACRO(GSL_TEST name)
 
 IF(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   GSL_TEST(matrix)
+  GSL_TEST(matrix_vector_ops)
   GSL_TEST(multimin)
   GSL_TEST(pca)
   GSL_TEST(vector)

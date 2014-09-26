@@ -100,6 +100,7 @@ private:
 	gsl_matrix *m_matrix; 
 }; 
 
+
 } // end namespace 
 
 #endif
