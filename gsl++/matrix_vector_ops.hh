@@ -30,7 +30,7 @@ namespace gsl {
 void multiply_m_m(Matrix& result, const Matrix& lhs, const Matrix& rhs);
 void multiply_v_m(DoubleVector& result, const DoubleVector& lhs, const Matrix& rhs); 
 void multiply_m_v(DoubleVector& result, const Matrix& rhs, const DoubleVector& lhs);
-double multiply_v_v(const DoubleVector& result, const DoubleVector& lhs);
+double multiply_v_v(const gsl_vector *lhs, const gsl_vector *rhs);
 
 }
 

@@ -99,11 +99,13 @@ void multiply_m_v(DoubleVector& result, const Matrix& lhs, const DoubleVector& r
         
 }
 
-double multiply_v_v(const DoubleVector& lhs, const DoubleVector& rhs)
+double multiply_v_v(const gsl_vector *lhs, const gsl_vector *rhs)
 {
-        assert(rhs.size() == lhs.size());
+        assert(rhs); 
+        assert(lhs); 
+        assert(rhs->size == lhs->size);
         
-        return cblas_ddot (rhs.size(), lhs->data, lhs->stride, 
+        return cblas_ddot (rhs->size, lhs->data, lhs->stride, 
                            rhs->data, rhs->stride);
 
 }
