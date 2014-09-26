@@ -366,29 +366,81 @@ const Matrix& FastICA::FNonlinearity::get_signal() const
 	return *m_signal; 
 }
 
-void FastICA::FNonlinearity::apply(DoubleVector& w, const DoubleVector& wtX) const
+void FastICA::post_set_signal()
 {
-	gsl_vector_memcpy(m_workspace, wtX); 
-	for_each(m_workspace,begin(), m_workspace.end(), [this](double x) -> double {
-			return g(x); 
+}
+
+void FNonlinPow3::apply(DoubleVector& w, const DoubleVector& wtX) const
+{
+	transform(wtX.begin(), wtX.end(), m_workspace.begin(), [inv_m](double x) -> double {
+			return x*x*x;
 		}); 
+	
 	multiply_m_v(m_workspace2, get_signal(), m_workspace);
 	
-	double w_scale = sum_g1_normalized(wtX);
+	cblas_daxpy(m_workspace2.size(), 3.0, w->data, w->stride, 
+		    m_workspace2->data, m_workspace2->stride);
+
+	double inv_m = 1.0 / m_signal.rows(); 
+	transform(m_workspace2.begin(), m_workspace2.end(), w.begin(), 
+		  [inv_m](double x) { return x * inv_m;}); 
+}
+
+void FNonlinTanh::apply(DoubleVector& w, const DoubleVector& wtX) const
+{
+	double inv_m = 1.0 / m_signal.cols(); 
+	transform(m_wtX.begin(), m_wtX.end(), m_workspace.begin(), 
+		  [this](double x) {
+			  return tanh(m_a1 * x);
+		  }); 
 	
-	cblas_daxpy(m_workspace2.size(), w->data, w->stride, 
+	multiply_m_v(m_workspace2, get_signal(), m_workspace);
+	
+	
+	double scale = 0.0; 
+	for_each(m_workspace,begin(), m_workspace.end(), [this, &scale](double x) {
+			scale += 1 - x*x;
+		}); 
+	
+	cblas_daxpy(m_workspace2.size(), scale, w->data, w->stride,
 		    m_workspace2->data, m_workspace2->stride); 
-	gsl_vector_memcpy(w, m_workspace2); 
+
+	transform(m_workspace2.begin(), m_workspace2.end(), w.begin(), 
+		  [inv_m](double x) { return x * inv_m;}); 
+	
 }
 
-double FNonlinPow3::g(double x) const
+void FNonlinGauss::post_set_signal()
 {
-	return x*x*x;
+	m_workspace3 = DoubleVector(m_signal->rows());
 }
 
-double FNonlinPow3::sum_g1_normalized(const DoubleVector& wtX) const
+void FNonlinGauss::apply(DoubleVector& w, const DoubleVector& wtX) const
 {
-	return 3; 
+	transform(m_wtX.begin(), m_wtX.end(), m_workspace.begin(), 
+		  [](double x) {return x * x; }); 
+	
+	transform(m_workspace.begin(), m_workspace.end(), m_workspace3.begin(),
+		  [](double x) { return exp(- x / 2.0);}); 
+	
+	transform(m_wtX.begin(), m_wtX.end(), m_workspace3.begin(), m_workspace.begin()
+		  [](double u, double expu2) {return u * expu2}); 
+	
+	multiply_m_v(m_workspace2, get_signal(), m_workspace);
+	
+	transform(m_wtX.begin(), m_wtX.end(), m_workspace3.begin(), m_workspace3.begin(),
+		  [](double u, double expu2) { return (1 - u*u) * expu2;});
+	
+	double scale = 0.0; 
+	for_each(m_workspace3.begin(), m_workspace3.end(), [this, &scale](double x) {
+			scale += x;
+		}); 
+	
+	cblas_daxpy(m_workspace2.size(), scale, w->data, w->stride,
+		    m_workspace2->data, m_workspace2->stride); 
+	
+	transform(m_workspace2.begin(), m_workspace2.end(), w.begin(), 
+		  [inv_m](double x) { return x * inv_m;}); 
 }
 
 
