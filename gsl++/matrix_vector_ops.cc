@@ -22,6 +22,7 @@
 #include <gsl++/matrix_vector_ops.hh>
 
 #include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
 #include <cassert>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
@@ -59,6 +60,35 @@ void MultVectMatrix::operator () (const blocked_range<int>& range) const
         }
 }
 
+
+struct MultVectMatrixT {
+        typedef   DoubleVector::vector_pointer_type pvector; 
+        MultVectMatrixT(gsl_vector& result, const gsl_vector& lhs, const Matrix& rhs); 
+        
+        void operator () (const blocked_range<int>& range) const; 
+private:
+        gsl_vector& m_result; 
+        const gsl_vector& m_lhs; 
+        const Matrix& m_rhs; 
+}; 
+
+MultVectMatrixT::MultVectMatrixT(gsl_vector& result, const gsl_vector& lhs, const Matrix& rhs):
+        m_result(result), 
+        m_lhs(lhs), 
+        m_rhs(rhs)
+{
+}
+
+void MultVectMatrixT::operator () (const blocked_range<int>& range) const
+{
+        for (int c = range.begin(); c != range.end(); ++c) {
+                auto rhs_row = gsl_matrix_const_row(m_rhs, c); 
+                const double val = cblas_ddot (m_rhs.cols(), m_lhs.data, m_lhs.stride, 
+                                         rhs_row.vector.data, rhs_row.vector.stride); 
+                gsl_vector_set(&m_result, c, val); 
+        }
+}
+
 void multiply_m_m(Matrix& result, const Matrix& lhs, const Matrix& rhs)
 {
         assert(result.rows() == lhs.rows()); 
@@ -72,6 +102,36 @@ void multiply_m_m(Matrix& result, const Matrix& lhs, const Matrix& rhs)
                 parallel_for(blocked_range<int>( 0, result.cols()), op);
         }
 }
+
+void multiply_mT_m(Matrix& result, const Matrix& lhs, const Matrix& rhs)
+{
+	assert(result.rows() == lhs.cols()); 
+        assert(result.cols() == rhs.cols()); 
+        assert(lhs.rows() == rhs.rows());
+
+        for (unsigned r = 0; r < result.rows(); ++r) {
+                gsl_vector_view out_row = gsl_matrix_row(result, r); 
+                gsl_vector_const_view lhs_col = gsl_matrix_const_column(lhs, r); 
+                MultVectMatrix op(out_row.vector, lhs_col.vector, rhs);
+                parallel_for(blocked_range<int>( 0, result.cols()), op);
+        }
+
+}
+
+void multiply_m_mT(Matrix& result, const Matrix& lhs, const Matrix& rhs)
+{
+	assert(result.rows() == lhs.rows()); 
+        assert(result.cols() == rhs.rows()); 
+        assert(lhs.cols() == rhs.cols());
+
+	for (unsigned r = 0; r < result.rows(); ++r) {
+                gsl_vector_view out_row = gsl_matrix_row(result, r); 
+                gsl_vector_const_view lhs_row = gsl_matrix_const_row(lhs, r); 
+                MultVectMatrixT op(out_row.vector, lhs_row.vector, rhs);
+                parallel_for(blocked_range<int>( 0, result.cols()), op);
+        }
+}
+
 
 void multiply_v_m(DoubleVector& result, const DoubleVector& lhs, const Matrix& rhs)
 {
@@ -108,6 +168,16 @@ double multiply_v_v(const gsl_vector *lhs, const gsl_vector *rhs)
         return cblas_ddot (rhs->size, lhs->data, lhs->stride, 
                            rhs->data, rhs->stride);
 
+}
+
+void matrix_orthogonalize(Matrix& M)
+{
+	Matrix V(M.cols(), M.cols(), true); 
+	DoubleVector D(M.cols(), true); 
+	DoubleVector work_vector(M.cols(), false); 
+	
+	gsl_linalg_SV_decomp (M, V, D, work_vector); 
+	
 }
 
 }

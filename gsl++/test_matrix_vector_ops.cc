@@ -101,6 +101,90 @@ BOOST_AUTO_TEST_CASE( test_mult_matrix_marix )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_mult_matrix_matrixT ) 
+{
+
+        const double lhs_init[] = {
+                2, 3, 
+                1, 2, 
+                -1, -2, 
+                4, 5
+        }; 
+
+        const double rhs_init[] = {
+                1, 4,
+                2, 5, 
+		3, 6
+        };
+
+
+        Matrix lhs(4, 2, lhs_init); 
+        Matrix rhs(3, 2, rhs_init); 
+
+        
+        Matrix result(4, 3, true); 
+        
+        multiply_m_mT(result, lhs, rhs);
+
+        BOOST_CHECK_CLOSE(result(0, 0), 14, 0.1); 
+        BOOST_CHECK_CLOSE(result(0, 1), 19, 0.1); 
+        BOOST_CHECK_CLOSE(result(0, 2), 24, 0.1); 
+
+        BOOST_CHECK_CLOSE(result(1, 0),  9, 0.1); 
+        BOOST_CHECK_CLOSE(result(1, 1), 12, 0.1); 
+        BOOST_CHECK_CLOSE(result(1, 2), 15, 0.1); 
+
+        BOOST_CHECK_CLOSE(result(2, 0), -9, 0.1); 
+        BOOST_CHECK_CLOSE(result(2, 1),-12, 0.1); 
+        BOOST_CHECK_CLOSE(result(2, 2),-15, 0.1); 
+
+        BOOST_CHECK_CLOSE(result(3, 0), 24, 0.1); 
+        BOOST_CHECK_CLOSE(result(3, 1), 33, 0.1); 
+        BOOST_CHECK_CLOSE(result(3, 2), 42, 0.1); 
+
+}
+
+BOOST_AUTO_TEST_CASE( test_mult_matrixT_martix ) 
+{
+
+        const double lhs_init[] = {
+		2, 1, -1, 4, 
+		3, 2, -2, 5
+        }; 
+
+        const double rhs_init[] = {
+                1, 2, 3, 
+		4, 5, 6
+        };
+
+
+        Matrix lhs(2, 4, lhs_init); 
+        Matrix rhs(2, 3, rhs_init); 
+
+        
+        Matrix result(4, 3, true); 
+        
+        multiply_mT_m(result, lhs, rhs);
+
+        BOOST_CHECK_CLOSE(result(0, 0), 14, 0.1); 
+        BOOST_CHECK_CLOSE(result(0, 1), 19, 0.1); 
+        BOOST_CHECK_CLOSE(result(0, 2), 24, 0.1); 
+
+        BOOST_CHECK_CLOSE(result(1, 0),  9, 0.1); 
+        BOOST_CHECK_CLOSE(result(1, 1), 12, 0.1); 
+        BOOST_CHECK_CLOSE(result(1, 2), 15, 0.1); 
+
+        BOOST_CHECK_CLOSE(result(2, 0), -9, 0.1); 
+        BOOST_CHECK_CLOSE(result(2, 1),-12, 0.1); 
+        BOOST_CHECK_CLOSE(result(2, 2),-15, 0.1); 
+
+        BOOST_CHECK_CLOSE(result(3, 0), 24, 0.1); 
+        BOOST_CHECK_CLOSE(result(3, 1), 33, 0.1); 
+        BOOST_CHECK_CLOSE(result(3, 2), 42, 0.1); 
+
+}
+
+
 BOOST_AUTO_TEST_CASE( test_mult_vec_marix ) 
 {
 
