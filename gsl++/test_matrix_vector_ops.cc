@@ -30,6 +30,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
+#include <iostream>
+
 using namespace gsl; 
 
 
@@ -231,4 +233,55 @@ BOOST_AUTO_TEST_CASE( test_mult_vec_vec )
         std::copy(vector2_init, vector2_init + 2, rhs.begin()); 
         
         BOOST_CHECK_CLOSE(multiply_v_v(lhs, rhs), 8, 0.1); 
+}
+
+
+BOOST_AUTO_TEST_CASE( test_matrix_orthogonalize ) 
+{
+        const double U_init[] = {
+                1.0, 0, 0, 0, 
+		0, 1.0/sqrt(2.0), 1.0/sqrt(2.0), 0, 
+		0, 1.0/sqrt(2.0), -1.0/sqrt(2.0), 0, 
+		0, 0, 0, 1.0 
+        };
+	
+        const double V_init[] = {
+                1.0/sqrt(2.0), 1.0/sqrt(2.0), 0, 
+		0, 1.0/sqrt(2.0), -1.0/sqrt(2.0), 0, 
+		0, 0,  1.0
+        }; 
+	
+	const double D_init[] = {
+		2, 0, 0, 
+		0, 3, 0, 
+		0, 0, 4, 
+		0, 0, 0
+	}; 
+	
+	Matrix U(4, 4, U_init);
+	Matrix V(3, 3, V_init);
+	Matrix D(4, 3, D_init);
+	Matrix temp(4, 3, false);
+		
+	Matrix M(4,3, false);
+		
+	multiply_m_m(temp, D, V);
+	multiply_m_m(M, U, temp);
+	
+	matrix_orthogonalize(M); 
+	
+	
+	for (int c = 0; c < 3; ++c) {
+		auto col_1 = gsl_matrix_column(M, c);
+		// should be unity
+		BOOST_CHECK_CLOSE(multiply_v_v(&col_1.vector, &col_1.vector), 1.0, 0.1); 
+		for (int c2 = 0; c2 < c; ++c2) {
+			auto col_2 = gsl_matrix_column(M, c2); 
+			BOOST_CHECK_SMALL(multiply_v_v(&col_1.vector, &col_2.vector), 1e-10); 
+			
+		}
+
+	}
+
+
 }

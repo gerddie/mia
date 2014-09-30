@@ -27,14 +27,12 @@
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
-
-
 namespace gsl {
 using namespace tbb;
 
 struct MultVectMatrix {
-        typedef   DoubleVector::vector_pointer_type pvector; 
-        MultVectMatrix(gsl_vector& result, const gsl_vector& lhs, const Matrix& rhs); 
+	typedef   DoubleVector::vector_pointer_type pvector; 
+	MultVectMatrix(gsl_vector& result, const gsl_vector& lhs, const Matrix& rhs); 
         
         void operator () (const blocked_range<int>& range) const; 
 private:
@@ -55,7 +53,7 @@ void MultVectMatrix::operator () (const blocked_range<int>& range) const
         for (int c = range.begin(); c != range.end(); ++c) {
                 auto rhs_column = gsl_matrix_const_column(m_rhs, c); 
                 const double val = cblas_ddot (m_rhs.rows(), m_lhs.data, m_lhs.stride, 
-                                         rhs_column.vector.data, rhs_column.vector.stride); 
+					       rhs_column.vector.data, rhs_column.vector.stride); 
                 gsl_vector_set(&m_result, c, val); 
         }
 }
@@ -172,12 +170,14 @@ double multiply_v_v(const gsl_vector *lhs, const gsl_vector *rhs)
 
 void matrix_orthogonalize(Matrix& M)
 {
+	Matrix U(M); 
 	Matrix V(M.cols(), M.cols(), true); 
 	DoubleVector D(M.cols(), true); 
 	DoubleVector work_vector(M.cols(), false); 
 	
-	gsl_linalg_SV_decomp (M, V, D, work_vector); 
+	gsl_linalg_SV_decomp (U, V, D, work_vector); 
 	
+	multiply_m_mT(M, U, V); 
 }
 
 }
