@@ -198,7 +198,7 @@ bool FastICA::fpica_defl(const Matrix& X)
 	multiply(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
 	
 	
-
+	return true; 
 }
 
 void FastICA::set_approach(EApproach apr)
