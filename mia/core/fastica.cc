@@ -26,7 +26,9 @@
 #include <random>
 #include <gsl/gsl_blas.h>
 
-namespace gsl {
+namespace mia {
+
+using namespace gsl; 
 
 using std::sort; 
 
@@ -201,6 +203,32 @@ bool FastICA::fpica_defl(const Matrix& X)
 	return true; 
 }
 
+bool FastICA::fpica_symm(const Matrix& X)
+{
+	// not yet supported 
+	assert(!m_with_initial_guess); 
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
+
+	m_separating_matrix.reset(m_numOfIC, X.cols(), false); 
+	
+	// random and orthogonalize 
+	for(unsigned r = 0; r <  m_numOfIC; ++r) 
+		for(unsigned c = 0; c <  m_numOfIC; ++c){
+			m_separating_matrix.set(r, c, random_source(gen)); 
+		}
+	
+	matrix_orthogonalize(m_separating_matrix); 
+	
+	
+	
+	
+	
+
+}
+
 void FastICA::set_approach(EApproach apr)
 {
         m_approach = apr; 
@@ -337,6 +365,7 @@ void FastICA::FNonlinearity::set_signal(const Matrix *signal)
 
 	m_workspace = DoubleVector(m_signal->cols());  
 	m_workspace2 = DoubleVector(m_signal->rows());
+	post_set_signal(); 
 }
 
 void FastICA::FNonlinearity::set_scaling(double myy)
@@ -366,7 +395,7 @@ const Matrix& FastICA::FNonlinearity::get_signal() const
 	return *m_signal; 
 }
 
-void FastICA::post_set_signal()
+void FastICA::FNonlinearity::post_set_signal()
 {
 }
 

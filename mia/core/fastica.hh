@@ -18,10 +18,10 @@
  *
  */
 
-#ifndef gslpp_fastica_hh
-#define gslpp_fastica_hh
+#ifndef mia_core_fastica_hh
+#define mia_core_fastica_hh
 
-namespace gsl {
+namespace mia {
 
 /**
    
@@ -34,26 +34,26 @@ public:
 	class FNonlinearity {
 	public: 
 		void set_sample(double sample_size, size_t num_samples); 
-		void set_signal(const Matrix *signal); 
+		void set_signal(const gsl::Matrix *signal); 
 		void set_scaling(double myy); 
-		virtual void apply(DoubleVector& w, const DoubleVector& wtX) const = 0; 
+		virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const = 0; 
 	protected: 
 		double get_sample_size() const; 
 		size_t get_num_samples() const; 
 		double get_scaling() const; 
-		const Matrix& get_signal() const; 
+		const gsl::Matrix& get_signal() const; 
 	private: 
 		virtual void post_set_signal(); 
 		double m_sample_size; 
 		size_t m_num_samples; 
-		const Matrix *m_signal; 
+		const gsl::Matrix *m_signal; 
 		double m_myy; 
-		DoubleVector m_workspace; 
-		DoubleVector m_workspace2; 
+		gsl::DoubleVector m_workspace; 
+		gsl::DoubleVector m_workspace2; 
 	}; 
 
 	
-	FastICA(const Matrix&  mix);
+	FastICA(const gsl::Matrix&  mix);
 
 	bool separate(); 
 
@@ -87,25 +87,25 @@ public:
  
 	void 	set_pca_only (bool in_PCAonly);
  
-	void 	set_init_guess (const Matrix&  ma_initGuess);
+	void 	set_init_guess (const gsl::Matrix&  ma_initGuess);
 
-	const Matrix& 	get_mixing_matrix () const;
+	const gsl::Matrix& 	get_mixing_matrix () const;
 
-	const Matrix& 	get_separating_matrix () const;
+	const gsl::Matrix& 	get_separating_matrix () const;
 
-	const Matrix&	get_independent_components () const;
+	const gsl::Matrix&	get_independent_components () const;
 
 	int  get_nrof_independent_components () const;
 
-	const Matrix&	get_whitening_matrix () const;
+	const gsl::Matrix&	get_whitening_matrix () const;
 
-	const Matrix&	get_dewhitening_matrix () const;
+	const gsl::Matrix&	get_dewhitening_matrix () const;
 
 	
 private:
-	Matrix whiten(const Matrix& signal, const Matrix& evec, const DoubleVector& eval); 
+	gsl::Matrix whiten(const gsl::Matrix& signal, const gsl::Matrix& evec, const gsl::DoubleVector& eval); 
 
-	const Matrix&  m_mix;
+	const gsl::Matrix&  m_mix;
 	
 	EApproach m_approach; 
 	
@@ -139,33 +139,33 @@ private:
 	
 	bool m_with_initial_guess; 
 	
-	Matrix m_initGuess;
+	gsl::Matrix m_initGuess;
 	
-	Matrix m_mixing_matrix;
+	gsl::Matrix m_mixing_matrix;
 	
-	Matrix m_separating_matrix;
+	gsl::Matrix m_separating_matrix;
 	
-	Matrix	m_independent_components;
+	gsl::Matrix	m_independent_components;
 	
-	Matrix	m_whitening_matrix;
+	gsl::Matrix	m_whitening_matrix;
 	
-	Matrix	m_dewhitening_matrix;
+	gsl::Matrix	m_dewhitening_matrix;
 	
 };
 
 class FNonlinPow3 : public FastICA::FNonlinearity {
-	virtual void apply(DoubleVector& w, const DoubleVector& wtX) const ; 
+	virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const ; 
 
 }; 
 
 class FNonlinTanh : public FastICA::FNonlinearity {
-	virtual void apply(DoubleVector& w, const DoubleVector& wtX) const ;
+	virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const ;
 
 }; 
 
 class FNonlinGauss : public FastICA::FNonlinearity {
-	virtual void apply(DoubleVector& w, const DoubleVector& wtX) const ;
-	DoubleVector m_workspace3; 
+	virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const ;
+	gsl::DoubleVector m_workspace3; 
 }; 
 
 
