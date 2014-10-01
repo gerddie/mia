@@ -30,12 +30,12 @@ namespace gsl {
 using std::swap; 
 using std::fill; 
 
-Matrix::Matrix():m_matrix(NULL)
+Matrix::Matrix():m_matrix(NULL), m_owner(false)
 {
 }
 
 Matrix::Matrix(size_t rows, size_t columns, bool clean):
-	m_matrix(NULL)
+	m_matrix(NULL), m_owner(true)
 {
 	m_matrix = clean ? 
 		gsl_matrix_calloc(rows, columns):
@@ -43,7 +43,7 @@ Matrix::Matrix(size_t rows, size_t columns, bool clean):
 }
 
 Matrix::Matrix(size_t rows, size_t columns, double init):
-	m_matrix(NULL)
+	m_matrix(NULL), m_owner(true)
 {
 	m_matrix = gsl_matrix_alloc(rows, columns); 
 	auto p = gsl_matrix_ptr (m_matrix, 0, 0);
@@ -51,20 +51,22 @@ Matrix::Matrix(size_t rows, size_t columns, double init):
 }
 
 Matrix::Matrix(size_t rows, size_t columns, const double *init):
-	m_matrix(NULL)
+	m_matrix(NULL), m_owner(true)
 {
 	assert(init); 
 	m_matrix = gsl_matrix_alloc(rows, columns); 
 	memcpy(gsl_matrix_ptr (m_matrix, 0, 0), init, rows * columns * sizeof(double)); 
 }
 
-Matrix::Matrix(const Matrix& other)
+Matrix::Matrix(const Matrix& other):m_owner(true)
 {
 	m_matrix = gsl_matrix_alloc(other.rows(), other.cols()); 
 	gsl_matrix_memcpy (m_matrix, other.m_matrix); 
 }
 
-
+Matrix::Matrix(gsl_matrix* m):m_matrix(m), m_owner(false)
+{
+}
 
 Matrix& Matrix::operator =(const Matrix& other)
 {
@@ -78,9 +80,10 @@ Matrix& Matrix::operator =(const Matrix& other)
 	gsl_matrix *help = gsl_matrix_alloc(other.rows(), other.cols()); 
 	gsl_matrix_memcpy (help, other.m_matrix); 
 	swap(m_matrix, help); 
-	if (help) 
+	if (help && m_owner) 
 		gsl_matrix_free(help);
 
+	m_owner = true; 
 	return *this; 
 }
 
@@ -90,7 +93,7 @@ void Matrix::reset(size_t rows, size_t columns, bool clean)
 		gsl_matrix_calloc(rows, columns):
 		gsl_matrix_alloc(rows, columns); 
 	swap(help, m_matrix); 
-	if (help) 
+	if (help && m_owner) 
 		gsl_matrix_free(help);
 }
 
@@ -101,13 +104,13 @@ void Matrix::reset(size_t rows, size_t columns, double init)
 	fill(p, p + rows * columns, init); 
 	
 	swap(help, m_matrix); 
-	if (help) 
+	if (help && m_owner) 
 		gsl_matrix_free(help);
 }
 
 Matrix::~Matrix()
 {
-	if (m_matrix) 
+	if (m_matrix && m_owner) 
 		gsl_matrix_free(m_matrix);
 }
 
@@ -142,6 +145,28 @@ Matrix::operator gsl_matrix * ()
 Matrix::operator const gsl_matrix *() const
 {
 	return m_matrix; 
+}
+
+
+matrix_iterator Matrix::begin()
+{
+	return matrix_iterator(m_matrix, true); 
+}
+
+matrix_iterator Matrix::end()
+{
+	return matrix_iterator(m_matrix, false);
+}
+
+
+const_matrix_iterator Matrix::begin() const
+{
+	return const_matrix_iterator(m_matrix, true); 
+}
+
+const_matrix_iterator Matrix::end() const
+{
+	return const_matrix_iterator(m_matrix, false); 
 }
 
 Matrix Matrix::transposed() const
@@ -212,6 +237,31 @@ Matrix Matrix::column_covariance() const
 	}
 	return cov; 
 	
+}
+
+
+bool operator == (const matrix_iterator& lhs, const matrix_iterator& rhs)
+{
+	assert(lhs.m_matrix == rhs.m_matrix); 
+	return lhs.m_current == rhs.m_current; 
+}
+
+bool operator != (const matrix_iterator& lhs, const matrix_iterator& rhs)
+{
+	assert(lhs.m_matrix == rhs.m_matrix); 
+	return lhs.m_current != rhs.m_current; 
+}
+
+bool operator == (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs)
+{
+	assert(lhs.m_matrix == rhs.m_matrix); 
+	return lhs.m_current == rhs.m_current; 
+}
+
+bool operator != (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs)
+{
+	assert(lhs.m_matrix == rhs.m_matrix); 
+	return lhs.m_current != rhs.m_current; 
 }
 
 

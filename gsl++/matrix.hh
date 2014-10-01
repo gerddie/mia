@@ -21,12 +21,140 @@
 #ifndef GSLPP_MATRIX_HH
 #define GSLPP_MATRIX_HH
 
-
+#include <cassert>
+#include <iterator>
 #include <gsl/gsl_matrix.h>
 #include <gsl++/gsldefines.hh>
 
 namespace gsl {
 
+class EXPORT_GSL matrix_iterator {
+        friend class const_matrix_iterator; 
+public: 
+	matrix_iterator(gsl_matrix *m, bool begin):
+		m_matrix(m), 
+		m_current(begin ? m->data : m->data +  m->size1 * m->tda), 
+		m_current_column(0), 
+		m_row_jump(m->tda - m->size2)
+		{
+		}
+		
+	matrix_iterator():
+		m_matrix(nullptr), 
+		m_current(nullptr), 
+		m_current_column(0)
+		{
+		}
+		
+		
+	matrix_iterator(const matrix_iterator& other):
+		m_matrix(other.m_matrix), 
+		m_current(other.m_current), 
+		m_current_column(other.m_current_column)
+		{
+		}
+
+	double& operator *(){
+		assert(m_current); 
+		return *m_current; 
+	}
+	
+	matrix_iterator& operator ++() {
+		++m_current; 
+		++m_current_column; 
+		if(m_current_column == m_matrix->size2) {
+			m_current += m_row_jump; 
+			m_current_column = 0; 
+		}
+		return *this; 
+	}
+	
+	
+	matrix_iterator operator ++(int) {
+		matrix_iterator result(*this); 
+		++(*this); 
+		return result; 
+	}
+	
+	friend bool operator == (const matrix_iterator& lhs, const matrix_iterator& rhs); 
+	friend bool operator != (const matrix_iterator& lhs, const matrix_iterator& rhs); 
+private: 
+	gsl_matrix *m_matrix; 
+	double *m_current; 
+	size_t m_current_column; 
+	size_t m_row_jump; 
+}; 
+
+bool operator == (const matrix_iterator& lhs, const matrix_iterator& rhs); 
+bool operator != (const matrix_iterator& lhs, const matrix_iterator& rhs); 
+
+
+class EXPORT_GSL const_matrix_iterator {
+public: 
+	const_matrix_iterator(const gsl_matrix *m, bool begin):
+		m_matrix(m), 
+		m_current(begin ? m->data : m->data +  m->size1 * m->tda), 
+		m_current_column(0), 
+		m_row_jump(m->tda - m->size2)
+		{
+		}
+
+	const_matrix_iterator(const matrix_iterator& other):
+		m_matrix(other.m_matrix), 
+		m_current(other.m_current), 
+		m_current_column(other.m_current_column), 
+		m_row_jump(other.m_row_jump)
+		{
+		}
+		
+	const_matrix_iterator():
+		m_matrix(nullptr), 
+		m_current(nullptr), 
+		m_current_column(0)
+		{
+		}
+		
+		
+	const_matrix_iterator(const const_matrix_iterator& other):
+		m_matrix(other.m_matrix), 
+		m_current(other.m_current), 
+		m_current_column(other.m_current_column), 
+		m_row_jump(other.m_row_jump)
+		{
+		}
+
+	double operator *() const{
+		assert(m_current); 
+		return *m_current; 
+	}
+	
+	const_matrix_iterator& operator ++() {
+		++m_current; 
+		++m_current_column; 
+		if(m_current_column == m_matrix->size2) {
+			m_current += m_row_jump; 
+			m_current_column = 0; 
+		}
+		return *this; 
+	}
+			
+	const_matrix_iterator operator ++(int) {
+		const_matrix_iterator result(*this); 
+		++(*this); 
+		return result; 
+	}
+
+	friend bool operator == (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
+	friend bool operator != (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
+private: 
+	const gsl_matrix *m_matrix; 
+	const double *m_current; 
+	size_t m_current_column; 
+	size_t m_row_jump; 
+}; 
+
+bool operator == (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
+bool operator != (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
 
 
 /**
@@ -35,6 +163,9 @@ namespace gsl {
 */
 class EXPORT_GSL Matrix {
 public: 
+	typedef matrix_iterator iterator; 
+	typedef const_matrix_iterator const_iterator; 
+
 	Matrix(); 
 
 	/**
@@ -66,6 +197,8 @@ public:
 	   Copy constructor that executes a deep copy 
 	 */
 	Matrix(const Matrix& other); 
+	
+	Matrix(gsl_matrix* m); 
 
 	/**
 	   Acquire the transposed matrix. 
@@ -96,11 +229,45 @@ public:
 	Matrix column_covariance() const; 
 	Matrix row_covariance() const; 
 
+	matrix_iterator begin(); 
+	matrix_iterator end(); 
+
+	const_matrix_iterator begin() const; 
+	const_matrix_iterator end() const; 
+
+	
+
 private: 
 	gsl_matrix *m_matrix; 
+	bool m_owner; 
 }; 
 
 
 } // end namespace 
+
+namespace std {
+
+template <>
+class iterator_traits< gsl::const_matrix_iterator >  {
+public: 
+	typedef size_t   difference_type; 
+	typedef double	 value_type; 
+	typedef const double* pointer; 
+	typedef const double&	reference; 
+	typedef forward_iterator_tag	iterator_category; 
+}; 
+
+template <>
+class iterator_traits< gsl::matrix_iterator > {
+public: 
+	typedef size_t   difference_type; 
+	typedef double	 value_type; 
+	typedef double* pointer; 
+	typedef double&	reference; 
+	typedef forward_iterator_tag	iterator_category; 
+}; 
+
+}
+
 
 #endif
