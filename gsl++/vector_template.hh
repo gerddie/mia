@@ -23,6 +23,7 @@
 
 #include <gsl/gsl_vector.h>
 #include <cassert>
+#include <iterator>
 
 namespace gsl {
 
@@ -52,13 +53,119 @@ protected:
 }; 
 
 
+template <typename T> 
+class vector_iterator {
+public:  
+	typedef T value_type; 
+	typedef T* pointer;
+	typedef T& reference; 
+	typedef size_t difference_type; 
+
+	vector_iterator(T *base, int stride): m_current(base), 	m_stride(stride){}
+	
+	vector_iterator(const vector_iterator<T>& other) = default;  
+	
+	vector_iterator():m_current(nullptr), m_stride(0){}
+	
+	T& operator *() {
+		return *m_current;
+	}; 
+	
+	T* operator ->() {
+		return  m_current;
+	}; 
+
+	void operator ++() {
+		m_current += m_stride;
+	}; 
+	
+	vector_iterator<T> operator ++(int){
+		vector_iterator<T> result(*this); 
+		++(*this); 
+		return result; 
+	}
+
+	double& operator[] (int idx) {
+		return m_current[idx * m_stride]; 
+	}
+	
+	difference_type operator - (const vector_iterator<T>& other) {
+		assert(m_stride == other.m_stride); 
+		return (m_current - other.m_current) / (sizeof(T) *m_stride);  
+	}
+	
+	bool operator == (const vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current == other.m_current; 
+	}
+private: 
+	T* m_current;
+	int m_stride;
+}; 
+
+
+template <typename T> 
+class const_vector_iterator {
+public:  
+	typedef const T value_type; 
+	typedef const T* pointer;
+	typedef const T& reference; 
+	typedef size_t difference_type; 
+	
+
+	const_vector_iterator(T *base, int stride): m_current(base), m_stride(stride){}
+	
+	const_vector_iterator(const const_vector_iterator<T>& other) = default;  
+	const_vector_iterator(const vector_iterator<T>& other): m_current(other.m_current),
+							     m_stride(other.m_stride){
+	}
+	
+	const_vector_iterator():m_current(nullptr), m_stride(0){
+	}
+	
+	const T& operator *() const {
+		return *m_current;
+	}; 
+	
+	const T* operator ->() const {
+		return  m_current;
+	}; 
+
+	void operator ++() {
+		m_current += m_stride;
+	}; 
+	
+	const_vector_iterator<T> operator ++(int){
+		const_vector_iterator<T> result(*this); 
+		++(*this); 
+		return result; 
+	}
+
+	difference_type operator - (const const_vector_iterator<T>& other) {
+		assert(m_stride == other.m_stride); 
+		return (m_current - other.m_current) / (sizeof(T) *m_stride);  
+	}
+
+	const double& operator[] (int idx) const {
+		return m_current[idx * m_stride]; 
+	}
+	
+	bool operator == (const const_vector_iterator<T>& other) const {
+		return m_current == other.m_current; 
+	}
+private: 
+	const T* m_current;
+	int m_stride;
+}; 
+
+
 /* because of the C-nameing scheme we need specialications for ceach type */
 #define GSL_VECTOR_DISPATCH(TYPE)		 \
 	template <>						\
 	struct gsl_vector_dispatch<TYPE> {			\
 		typedef TYPE value_type;			\
-		typedef TYPE *iterator;				\
-		typedef const TYPE *const_iterator;		\
+		typedef vector_iterator<TYPE> iterator;	\
+		typedef const_vector_iterator<TYPE> const_iterator;	\
 		typedef size_t size_type;			\
 		typedef TYPE& reference;			\
 		typedef const TYPE& const_reference;		\
@@ -100,8 +207,8 @@ protected:
 	struct gsl_vector_dispatch<double> {	
 		
 		typedef double value_type;		
-		typedef double *iterator;			
-		typedef const double *const_iterator;	
+		typedef vector_iterator<double> iterator;			
+		typedef const_vector_iterator<double> const_iterator;	
 		typedef size_t size_type;		
 		typedef double& reference;		
 		typedef const double& const_reference;	
@@ -215,4 +322,30 @@ private:
 }; 
 
 }
+
+
+namespace std {
+
+template <typename T>
+class iterator_traits< gsl::const_vector_iterator<T> >  {
+public: 
+	typedef size_t   difference_type; 
+	typedef T	 value_type; 
+	typedef const T* pointer; 
+	typedef const T&	reference; 
+	typedef random_access_iterator_tag	iterator_category; 
+}; 
+
+template <typename T>
+class iterator_traits< gsl::vector_iterator<T> > {
+public: 
+	typedef size_t   difference_type; 
+	typedef T	 value_type; 
+	typedef T* pointer; 
+	typedef T&	reference; 
+	typedef random_access_iterator_tag	iterator_category; 
+}; 
+
+}
+
 #endif
