@@ -198,8 +198,13 @@ public:
 	 */
 	Matrix(const Matrix& other); 
 	
+	/**
+	   Wrap an existing GSL matrix 
+	   \param m the GSL matrix 
+	 */
 	Matrix(gsl_matrix* m); 
 
+	Matrix(const gsl_matrix* m); 
 	/**
 	   Acquire the transposed matrix. 
 	   \returns  transposed matrix as newly created object
@@ -239,6 +244,7 @@ public:
 
 private: 
 	gsl_matrix *m_matrix; 
+	const gsl_matrix *m_const_matrix; 
 	bool m_owner; 
 }; 
 

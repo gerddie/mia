@@ -240,3 +240,49 @@ BOOST_AUTO_TEST_CASE( test_matrix_iterator )
 	
 
 }
+
+BOOST_AUTO_TEST_CASE( test_const_matrix_iterator ) 
+{
+	const double input[50]  = { 
+		1, 2, 3, 4, 5, 
+		6, 7, 8, 9,10, 
+	 	11, 12, 13, 14, 15, 
+		2, 6, 2, 3, 8, 
+		4, 1, 6, 2, 1, 
+		4, 1, 2, 5, 5, 
+		2, 2, 3, 8, 7, 
+		2, 4, 8, 1, 4, 
+		1, 2, 3, 2, 2, 
+		5, 4, 2, 3, 3
+	}; 
+
+	const double test_submatrix[21]  = { 
+	 	12, 13, 14,
+		6, 2, 3, 
+		1, 6, 2,
+		1, 2, 5,
+		2, 3, 8,
+		4, 8, 1,
+		2, 3, 2
+	}; 
+
+	const Matrix m(10, 5, input); 
+
+	auto im = m.begin(); 
+	for (int i = 0; i < 50; ++i, ++im) {
+		BOOST_CHECK_EQUAL(*im, input[i]); 
+	}
+
+	// look at a view 
+
+	gsl_matrix_const_view mv = gsl_matrix_const_submatrix (m, 2, 1, 7, 3); 
+	
+	const Matrix mvm(&mv.matrix); 
+	
+	auto imvm = mvm.begin(); 
+	for (int i = 0; i < 21; ++i, ++imvm) {
+		BOOST_CHECK_EQUAL(*imvm, test_submatrix[i]); 
+	}
+	
+
+}

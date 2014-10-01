@@ -30,7 +30,7 @@ namespace gsl {
 using std::swap; 
 using std::fill; 
 
-Matrix::Matrix():m_matrix(NULL), m_owner(false)
+Matrix::Matrix():m_matrix(nullptr), m_const_matrix(nullptr), m_owner(false)
 {
 }
 
@@ -40,6 +40,7 @@ Matrix::Matrix(size_t rows, size_t columns, bool clean):
 	m_matrix = clean ? 
 		gsl_matrix_calloc(rows, columns):
 		gsl_matrix_alloc(rows, columns); 
+	m_const_matrix = m_matrix; 
 }
 
 Matrix::Matrix(size_t rows, size_t columns, double init):
@@ -48,6 +49,7 @@ Matrix::Matrix(size_t rows, size_t columns, double init):
 	m_matrix = gsl_matrix_alloc(rows, columns); 
 	auto p = gsl_matrix_ptr (m_matrix, 0, 0);
 	fill(p, p + rows * columns, init); 
+	m_const_matrix = m_matrix; 
 }
 
 Matrix::Matrix(size_t rows, size_t columns, const double *init):
@@ -56,15 +58,28 @@ Matrix::Matrix(size_t rows, size_t columns, const double *init):
 	assert(init); 
 	m_matrix = gsl_matrix_alloc(rows, columns); 
 	memcpy(gsl_matrix_ptr (m_matrix, 0, 0), init, rows * columns * sizeof(double)); 
+	m_const_matrix = m_matrix; 
 }
 
-Matrix::Matrix(const Matrix& other):m_owner(true)
+Matrix::Matrix(const Matrix& other):
+	m_owner(true)
 {
 	m_matrix = gsl_matrix_alloc(other.rows(), other.cols()); 
-	gsl_matrix_memcpy (m_matrix, other.m_matrix); 
+	gsl_matrix_memcpy (m_matrix, other.m_matrix);
+	m_const_matrix = m_matrix; 
 }
 
-Matrix::Matrix(gsl_matrix* m):m_matrix(m), m_owner(false)
+Matrix::Matrix(gsl_matrix* m):
+	m_matrix(m), 
+	m_const_matrix(m), 
+	m_owner(false)
+{
+}
+
+Matrix::Matrix(const gsl_matrix* m):
+	m_matrix(nullptr), 
+	m_const_matrix(m), 
+	m_owner(false)
 {
 }
 
@@ -74,7 +89,7 @@ Matrix& Matrix::operator =(const Matrix& other)
 		return *this; 
 
 	if (m_matrix && rows() == other.rows() && cols() == other.cols()) {
-		gsl_matrix_memcpy (m_matrix, other.m_matrix);
+		gsl_matrix_memcpy (m_matrix, other.m_const_matrix);
 		return *this; 
 	}
 	gsl_matrix *help = gsl_matrix_alloc(other.rows(), other.cols()); 
@@ -82,7 +97,8 @@ Matrix& Matrix::operator =(const Matrix& other)
 	swap(m_matrix, help); 
 	if (help && m_owner) 
 		gsl_matrix_free(help);
-
+	
+	m_const_matrix = m_matrix; 
 	m_owner = true; 
 	return *this; 
 }
@@ -95,6 +111,7 @@ void Matrix::reset(size_t rows, size_t columns, bool clean)
 	swap(help, m_matrix); 
 	if (help && m_owner) 
 		gsl_matrix_free(help);
+	m_const_matrix = m_matrix; 
 }
 
 void Matrix::reset(size_t rows, size_t columns, double init) 
@@ -106,6 +123,7 @@ void Matrix::reset(size_t rows, size_t columns, double init)
 	swap(help, m_matrix); 
 	if (help && m_owner) 
 		gsl_matrix_free(help);
+	m_const_matrix = m_matrix; 
 }
 
 Matrix::~Matrix()
@@ -116,61 +134,68 @@ Matrix::~Matrix()
 
 size_t Matrix::rows()const
 {
-	assert(m_matrix); 
-	return m_matrix->size1; 
+	assert(m_const_matrix); 
+	return m_const_matrix->size1; 
 }
 
 size_t Matrix::cols()const
 {
-	assert(m_matrix); 
-	return m_matrix->size2; 
+	assert(m_const_matrix); 
+	return m_const_matrix->size2; 
 }
 
 
 void Matrix::set(size_t i, size_t j, double x)
 {
+	assert(m_matrix); 
 	gsl_matrix_set(m_matrix, i,j,x); 
 }
 
 double Matrix::operator ()(size_t i, size_t j) const
 {
-	return gsl_matrix_get(m_matrix, i,j);
+	return gsl_matrix_get(m_const_matrix, i,j);
 }
 
 Matrix::operator gsl_matrix * ()
 {
+	assert(m_matrix); 
 	return m_matrix; 
 }
 
 Matrix::operator const gsl_matrix *() const
 {
-	return m_matrix; 
+	return m_const_matrix; 
 }
 
 
 matrix_iterator Matrix::begin()
 {
+	assert(m_matrix); 
 	return matrix_iterator(m_matrix, true); 
 }
 
 matrix_iterator Matrix::end()
 {
+	assert(m_matrix); 
 	return matrix_iterator(m_matrix, false);
 }
 
 
 const_matrix_iterator Matrix::begin() const
 {
-	return const_matrix_iterator(m_matrix, true); 
+	assert(m_const_matrix); 
+	return const_matrix_iterator(m_const_matrix, true); 
 }
 
 const_matrix_iterator Matrix::end() const
 {
-	return const_matrix_iterator(m_matrix, false); 
+	assert(m_const_matrix); 
+	return const_matrix_iterator(m_const_matrix, false); 
 }
 
 Matrix Matrix::transposed() const
 {
+	assert(m_matrix); 
 	Matrix result(cols(), rows(), false); 
 	gsl_matrix_transpose_memcpy (result.m_matrix, m_matrix); 
 	return result; 
@@ -186,10 +211,10 @@ Matrix Matrix::row_covariance() const
 
 	// remove mean 
 	for (int r = 0; r < d; ++r)  {
-		auto tmp = gsl_matrix_row (m_matrix, r);
+		auto tmp = gsl_matrix_const_row (m_const_matrix, r);
 		auto mean = gsl_stats_mean (tmp.vector.data, tmp.vector.stride, n); 
 		for (int c = 0; c < n; ++c)  {
-			help.set(r, c, gsl_matrix_get(m_matrix, r, c) - mean); 
+			help.set(r, c, gsl_matrix_get(m_const_matrix, r, c) - mean); 
 		}
 	}
 
@@ -217,10 +242,10 @@ Matrix Matrix::column_covariance() const
 
 	// remove mean 
 	for (int i = 0; i < d; ++i)  {
-		auto tmp = gsl_matrix_column (m_matrix, i);
+		auto tmp = gsl_matrix_const_column (m_const_matrix, i);
 		auto mean = gsl_stats_mean (tmp.vector.data, tmp.vector.stride, n); 
 		for (int r = 0; r < n; ++r)  {
-			help.set(r,i, gsl_matrix_get(m_matrix, r, i) - mean); 
+			help.set(r,i, gsl_matrix_get(m_const_matrix, r, i) - mean); 
 		}
 	}
 
