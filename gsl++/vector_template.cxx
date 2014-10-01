@@ -128,7 +128,7 @@ template <typename T>
 typename TVector<T>::const_iterator TVector<T>::begin()const
 {
 	assert(cdata); 
-	return const_vector_iterator<T>(cdata->data, data->stride); 
+	return const_vector_iterator<T>(cdata->data, cdata->stride); 
 }
 
 
@@ -136,16 +136,9 @@ template <typename T>
 typename TVector<T>::const_iterator TVector<T>::end()const
 {
 	assert(cdata); 
-	return const_vector_iterator<T>(cdata->data + cdata->size, data->stride); 
+	return const_vector_iterator<T>(cdata->data + cdata->size, cdata->stride); 
 }
 
-
-template <typename T> 
-const typename TVector<T>::value_type TVector<T>::operator[](size_t i)const
-{
-	assert(cdata); 
-	return this->get (cdata, i); 
-}
 
 template <typename T> 
 typename TVector<T>::size_type TVector<T>::size() const

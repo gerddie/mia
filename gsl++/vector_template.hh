@@ -24,6 +24,7 @@
 #include <gsl/gsl_vector.h>
 #include <cassert>
 #include <iterator>
+#include <iostream>
 
 namespace gsl {
 
@@ -82,7 +83,7 @@ public:
 	
 	vector_iterator<T> operator ++(int){
 		vector_iterator<T> result(*this); 
-		++(*this); 
+		++(*this);
 		return result; 
 	}
 
@@ -114,7 +115,7 @@ public:
 	
 	difference_type operator - (const vector_iterator<T>& other) {
 		assert(m_stride == other.m_stride); 
-		return (m_current - other.m_current) / (sizeof(T) *m_stride);  
+		return (m_current - other.m_current) / m_stride;  
 	}
 	
 	bool operator == (const vector_iterator<T>& other) const {
@@ -238,7 +239,7 @@ public:
 
 	difference_type operator - (const const_vector_iterator<T>& other) {
 		assert(m_stride == other.m_stride); 
-		return (m_current - other.m_current) / (sizeof(T) *m_stride);  
+		return (m_current - other.m_current) / m_stride;  
 	}
 
 	const double& operator[] (int idx) const {
@@ -377,7 +378,7 @@ const_vector_iterator<T> operator + (int dist, const const_vector_iterator<T>& i
 			gsl_vector_free(v);			
 		}							
 		static value_type get(const vector_type *v, size_t i)  { 
-			return gsl_vector_get(v,i);		
+			return gsl_vector_get(v,i);
 		}							
 	}; 
 
@@ -445,11 +446,14 @@ public:
 
 	size_type size() const; 
 
-	const value_type operator[](size_t i)const; 
+	const value_type operator[](size_t i)const {
+	        assert(cdata); 
+		return cdata->data[i * cdata->stride]; 
+        }; 
 
 	reference operator[](size_t i){
 		assert(data); 
-		return data->data[i]; 
+		return data->data[i * data->stride]; 
 	}
 
 	/// read only vector pointer type operator to enable transparent calls to the GSL APL

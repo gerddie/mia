@@ -33,6 +33,7 @@
 #include <gsl++/vector.hh>
 
 #include <vector>
+#include <iostream>
 
 
 using namespace gsl; 
@@ -92,7 +93,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_copy_from, T ,test_types )
 	for(size_t i = 0; i < 5; ++i)
 		gsl_vector[i] = i+1; 
 	
-	std::vector<typename T::value_type> a(5); 
+	std::vector<typename T::value_type> a(5,6); 
+
+	BOOST_REQUIRE(gsl_vector.begin() != gsl_vector.end()); 
+	BOOST_REQUIRE(!(gsl_vector.begin() == gsl_vector.end())); 
 	copy(gsl_vector.begin(), gsl_vector.end(), a.begin()); 
 	
 	for(size_t i = 0; i < 5; ++i)
@@ -108,14 +112,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_inplace_add, T ,test_types )
 	BOOST_REQUIRE(gsl_vector.size()== 5); 
 
 	for(size_t i = 0; i < 5; ++i) {
-		gsl_vector[i] += i+1; 
+		gsl_vector[i] = i; 
+		gsl_vector[i] += 1; 
 	}
 	
-	std::vector<typename T::value_type> a(5); 
-	copy(gsl_vector.begin(), gsl_vector.end(), a.begin()); 
-	
+
 	for(size_t i = 0; i < 5; ++i)
-		BOOST_CHECK_EQUAL(a[i], static_cast<typename T::value_type>(i + 1)); 
+		BOOST_CHECK_EQUAL(gsl_vector[i], static_cast<typename T::value_type>(i + 1)); 
 
 	
 }
@@ -153,6 +156,76 @@ BOOST_AUTO_TEST_CASE( test_vector_copy )
 	wx = wy; 
 	BOOST_CHECK_EQUAL(wx.size(), 5u); 
 	BOOST_CHECK_EQUAL(wx[i2], 2.0); 
-
 }
+
+BOOST_AUTO_TEST_CASE( test_vector_iterator ) 
+{
+	DoubleVector v(50, false); 
+	for (int i = 0; i < 50; ++i)
+		v[i] = i + 0; 
+
+	auto it_dv = v.begin(); 
+	for (int i = 0; i < 50; ++i, ++it_dv)
+		BOOST_CHECK_EQUAL(*it_dv, i); 
+	
+
+	gsl_vector_view vview = gsl_vector_subvector_with_stride (v, 2, 2, 20); 
+	
+	DoubleVector dv_view(&vview.vector); 
+	
+	for (int i = 0; i < 20; ++i) {
+		BOOST_CHECK_EQUAL(dv_view[i], 2*i + 2); 
+	}
+
+	auto it_dv_view = dv_view.begin(); 
+	
+	BOOST_CHECK_EQUAL(*it_dv_view, 2); 
+
+	it_dv_view += 3; 
+	BOOST_CHECK_EQUAL(*it_dv_view, 8); 
+
+	it_dv_view -= -2; 
+	BOOST_CHECK_EQUAL(*it_dv_view, 12);
+
+	
+		
+}
+
+
+static void test_const_vector_iterator_impl(const DoubleVector& v) 
+{
+	auto it_dv = v.begin(); 
+	for (int i = 0; i < 50; ++i, ++it_dv)
+		BOOST_CHECK_EQUAL(*it_dv, i); 
+	
+	
+	gsl_vector_const_view vview = gsl_vector_const_subvector_with_stride (v, 2, 2, 20); 
+	
+	const DoubleVector dv_view(&vview.vector); 
+	
+	for (int i = 0; i < 20; ++i) {
+		BOOST_CHECK_EQUAL(dv_view[i], 2*i + 2); 
+	}
+	
+	auto it_dv_view = dv_view.begin(); 
+	
+	BOOST_CHECK_EQUAL(*it_dv_view, 2); 
+	
+	it_dv_view += 3; 
+	BOOST_CHECK_EQUAL(*it_dv_view, 8); 
+	
+	it_dv_view -= -2; 
+	BOOST_CHECK_EQUAL(*it_dv_view, 12);
+	
+}
+
+BOOST_AUTO_TEST_CASE( test_const_vector_iterator ) 
+{
+	DoubleVector v(50, false); 
+	for (int i = 0; i < 50; ++i)
+		v[i] = i + 0; 
+
+	test_const_vector_iterator_impl(v); 
+}
+
 
