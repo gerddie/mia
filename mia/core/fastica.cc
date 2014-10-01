@@ -415,6 +415,20 @@ void FNonlinPow3::apply(DoubleVector& w, const DoubleVector& wtX) const
 		  [inv_m](double x) { return x * inv_m;}); 
 }
 
+void FNonlinPow3::apply(gsl::Matrix& W, gsl::Matrix& WtX) const
+{
+	transform(WtX.begin(), WtX.end(), WtX.begin(), [](double x)(return x*x*x;}); 
+	
+#error m_matrix_workspace not prepared 
+	multiply_m_m(m_matrix_workspace,  get_signal(), WtX); 
+
+	transform(WtX.begin(), WtX.end(), WtX.begin(), [](double x)(return x*x*x;}); 
+	
+	double inv_m = 1.0 / m_signal.rows(); 
+	transform(W.begin(), W.end(), m_matrix_workspace.begin(), W.begin(), 
+		  [inv_m](double w, double x){return x * inv_m - 3 * w;}); 
+}
+
 void FNonlinTanh::apply(DoubleVector& w, const DoubleVector& wtX) const
 {
 	double inv_m = 1.0 / m_signal.cols(); 
@@ -437,6 +451,26 @@ void FNonlinTanh::apply(DoubleVector& w, const DoubleVector& wtX) const
 	transform(m_workspace2.begin(), m_workspace2.end(), w.begin(), 
 		  [inv_m](double x) { return x * inv_m;}); 
 	
+}
+
+void FNonlinTanh::apply(gsl::Matrix& W, gsl::Matrix& WtX) const
+{
+	transform(WtX.begin(), WtX.end(), WtX.begin(), [this](double x){return tanh(m_a1 * x);}); 
+	for(unsigned c = 0; c < WtX.cols(); ++t) {
+		double sum = 0.0; 
+		auto wtx_col = gsl_matrix_get_const_column(WtX, c); 
+		const DoubleVector wc(&wtx_col.vector); 
+		for (unsigned r = 0; r < WtX.rows(); ++r) {
+			sum += 1 - wc[r] * wc[r]; 
+		}
+		m_workspace[c] = sum; 
+	}
+#error m_matrix_workspace not prepared 
+	multiply_m_m(m_matrix_workspace,  get_signal(), WtX); 
+
+	// test fist !!!
+	
+
 }
 
 void FNonlinGauss::post_set_signal()

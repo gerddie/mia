@@ -37,6 +37,7 @@ public:
 		void set_signal(const gsl::Matrix *signal); 
 		void set_scaling(double myy); 
 		virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const = 0; 
+		virtual void apply(gsl::Matrix& W, const gsl::Matrix& WtX) const = 0; 
 	protected: 
 		double get_sample_size() const; 
 		size_t get_num_samples() const; 
@@ -155,6 +156,7 @@ private:
 
 class FNonlinPow3 : public FastICA::FNonlinearity {
 	virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const ; 
+	virtual void apply(gsl::Matrix& W, gsl::Matrix& WtX) const; 
 
 }; 
 
