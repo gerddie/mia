@@ -142,8 +142,8 @@ int CFDFMinimizerImpl::run(DoubleVector& x)
 	} while (status == GSL_CONTINUE && iter < 100); 
 	
 	// copy best solution 
-	gsl_vector * help = gsl_multimin_fdfminimizer_x (m_s); 
-	std::copy(help->data, help->data + m_problem->size(), x.begin()); 
+	DoubleVector help(gsl_multimin_fdfminimizer_x (m_s)); 
+	std::copy(help.begin(), help.end(), x.begin()); 
 
 	return status; 
 }
