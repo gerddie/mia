@@ -177,11 +177,22 @@ BOOST_AUTO_TEST_CASE( test_vector_iterator )
 		BOOST_CHECK_EQUAL(dv_view[i], 2*i + 2); 
 	}
 
+	auto it_dv_base = dv_view.begin(); 
 	auto it_dv_view = dv_view.begin(); 
+
+	BOOST_CHECK(it_dv_base ==  it_dv_view); 
+	BOOST_CHECK(it_dv_base <=  it_dv_view); 
+	BOOST_CHECK(it_dv_base >=  it_dv_view); 
 	
 	BOOST_CHECK_EQUAL(*it_dv_view, 2); 
-
 	it_dv_view += 3; 
+
+	BOOST_CHECK(it_dv_base <  it_dv_view); 
+	BOOST_CHECK(it_dv_base <=  it_dv_view); 
+	BOOST_CHECK(it_dv_view >= it_dv_base); 
+	BOOST_CHECK(it_dv_view != it_dv_base); 
+
+
 	BOOST_CHECK_EQUAL(*it_dv_view, 8); 
 
 	it_dv_view -= -2; 
@@ -207,11 +218,22 @@ static void test_const_vector_iterator_impl(const DoubleVector& v)
 		BOOST_CHECK_EQUAL(dv_view[i], 2*i + 2); 
 	}
 	
+	auto it_dv_base = dv_view.begin(); 
 	auto it_dv_view = dv_view.begin(); 
+
+	BOOST_CHECK(it_dv_base ==  it_dv_view); 
+	BOOST_CHECK(it_dv_base <=  it_dv_view); 
+	BOOST_CHECK(it_dv_base >=  it_dv_view); 
 	
 	BOOST_CHECK_EQUAL(*it_dv_view, 2); 
-	
 	it_dv_view += 3; 
+
+	BOOST_CHECK(it_dv_base <  it_dv_view); 
+	BOOST_CHECK(it_dv_base <=  it_dv_view); 
+	BOOST_CHECK(it_dv_view >= it_dv_base); 
+	BOOST_CHECK(it_dv_view != it_dv_base); 
+	
+
 	BOOST_CHECK_EQUAL(*it_dv_view, 8); 
 	
 	it_dv_view -= -2; 
