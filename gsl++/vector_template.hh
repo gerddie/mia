@@ -75,14 +75,37 @@ public:
 		return  m_current;
 	}; 
 
-	void operator ++() {
+	vector_iterator<T>& operator ++() {
 		m_current += m_stride;
+		return *this; 
 	}; 
 	
 	vector_iterator<T> operator ++(int){
 		vector_iterator<T> result(*this); 
 		++(*this); 
 		return result; 
+	}
+
+
+	vector_iterator<T>& operator --() {
+		m_current -= m_stride;
+		return *this; 
+	}; 
+	
+	vector_iterator<T> operator --(int){
+		vector_iterator<T> result(*this); 
+		--(*this); 
+		return result; 
+	}
+	
+	vector_iterator<T>& operator += (int dist) {
+		m_current += dist * m_stride; 
+		return *this; 
+	}
+
+	vector_iterator<T>& operator -= (int dist) {
+		m_current -= dist * m_stride; 
+		return *this; 
 	}
 
 	double& operator[] (int idx) {
@@ -98,10 +121,60 @@ public:
 		assert(m_stride == other.m_stride); 
 		return m_current == other.m_current; 
 	}
+
+	bool operator != (const vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current != other.m_current; 
+	}
+
+	bool operator < (const vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current < other.m_current; 
+	}
+
+	bool operator <= (const vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current <= other.m_current; 
+	}
+
+	bool operator > (const vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current > other.m_current; 
+	}
+	
+	bool operator >= (const vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current >= other.m_current; 
+	}
+
 private: 
 	T* m_current;
 	int m_stride;
 }; 
+
+template <typename T>
+vector_iterator<T> operator + (const vector_iterator<T>& it, int dist) 
+{
+	vector_iterator<T> result(it); 
+	result += dist; 
+	return result; 
+}
+
+template <typename T>
+vector_iterator<T> operator - (const vector_iterator<T>& it, int dist) 
+{
+	vector_iterator<T> result(it); 
+	result -= dist; 
+	return result; 
+}
+
+template <typename T>
+vector_iterator<T> operator + (int dist, const vector_iterator<T>& it) 
+{
+	vector_iterator<T> result(it); 
+	result += dist; 
+	return result; 
+}
 
 
 template <typename T> 
@@ -131,14 +204,36 @@ public:
 		return  m_current;
 	}; 
 
-	void operator ++() {
+	const_vector_iterator<T>& operator ++() {
 		m_current += m_stride;
+		return *this; 
 	}; 
 	
 	const_vector_iterator<T> operator ++(int){
 		const_vector_iterator<T> result(*this); 
 		++(*this); 
 		return result; 
+	}
+
+	const_vector_iterator<T>& operator --() {
+		m_current -= m_stride;
+		return *this; 
+	}; 
+	
+	const_vector_iterator<T> operator --(int){
+		const_vector_iterator<T> result(*this); 
+		--(*this); 
+		return result; 
+	}
+
+	const_vector_iterator<T>& operator += (int dist) {
+		m_current += dist * m_stride; 
+		return *this; 
+	}
+
+	const_vector_iterator<T>& operator -= (int dist) {
+		m_current -= dist * m_stride; 
+		return *this; 
 	}
 
 	difference_type operator - (const const_vector_iterator<T>& other) {
@@ -151,13 +246,64 @@ public:
 	}
 	
 	bool operator == (const const_vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
 		return m_current == other.m_current; 
 	}
+
+	bool operator != (const const_vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current != other.m_current; 
+	}
+
+	bool operator < (const const_vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current < other.m_current; 
+	}
+
+	bool operator <= (const const_vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current <= other.m_current; 
+	}
+
+	bool operator > (const const_vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current > other.m_current; 
+	}
+	
+	bool operator >= (const const_vector_iterator<T>& other) const {
+		assert(m_stride == other.m_stride); 
+		return m_current >= other.m_current; 
+	}
+
+
 private: 
 	const T* m_current;
 	int m_stride;
 }; 
 
+template <typename T>
+const_vector_iterator<T> operator + (const const_vector_iterator<T>& it, int dist) 
+{
+	const_vector_iterator<T> result(it); 
+	result += dist; 
+	return result; 
+}
+
+template <typename T>
+const_vector_iterator<T> operator - (const const_vector_iterator<T>& it, int dist) 
+{
+	const_vector_iterator<T> result(it); 
+	result -= dist; 
+	return result; 
+}
+
+template <typename T>
+const_vector_iterator<T> operator + (int dist, const const_vector_iterator<T>& it) 
+{
+	const_vector_iterator<T> result(it); 
+	result += dist; 
+	return result; 
+}
 
 /* because of the C-nameing scheme we need specialications for ceach type */
 #define GSL_VECTOR_DISPATCH(TYPE)		 \
