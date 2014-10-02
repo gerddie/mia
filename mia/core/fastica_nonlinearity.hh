@@ -59,14 +59,15 @@ public:
 
 	static const char *type_descr; 
 	
-        virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const = 0; 
+        void apply(gsl::DoubleVector& w) const; 
 protected: 
+        virtual void do_apply(gsl::DoubleVector& w) const; 
 	virtual void post_set_signal();
-	gsl::DoubleVector& get_workspace(); 
-	gsl::DoubleVector& get_workspace2(); 
+	gsl::DoubleVector& get_XTw(){return m_XTw;}; 
+	gsl::DoubleVector& get_workspace(){return m_workspace;}; 
 private: 
+        gsl::DoubleVector m_XTw;
         gsl::DoubleVector m_workspace; 
-        gsl::DoubleVector m_workspace2; 
 }; 
 
 
@@ -74,8 +75,8 @@ class EXPORT_CORE CFastICASymmNonlinearity : public CFastICANonlinearityBase {
 public: 
 	typedef CFastICASymmNonlinearity plugin_type; 
 	static const char *type_descr;  
-        virtual void apply(gsl::Matrix& W, gsl::Matrix& wtX) const = 0; 
 protected: 
+        virtual void do_apply(gsl::Matrix& W, gsl::Matrix& wtX) const = 0; 
 	virtual void post_set_signal();
 private: 
         gsl::Matrix m_matrix_workspace; 

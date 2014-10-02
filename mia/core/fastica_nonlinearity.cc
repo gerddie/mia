@@ -60,13 +60,20 @@ const Matrix& CFastICANonlinearityBase::get_signal() const
 
 void CFastICADeflNonlinearity::post_set_signal()
 {
-m_workspace = DoubleVector(get_signal().rows(), false); 
-m_workspace2 = DoubleVector(get_signal().rows(), false); 
+	m_workspace = DoubleVector(get_signal().rows(), false); 
+	m_XTw = DoubleVector(get_signal().cols(), false); 
 }
 
 const char *CFastICANonlinearityBase::data_descr = "fastica"; 
 const char *CFastICADeflNonlinearity::type_descr = "deflation"; 
 const char *CFastICASymmNonlinearity::type_descr = "symmetric"; 
+
+
+void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w) const
+{
+	multiply_v_m(m_XTw, w, get_signal());
+	do_apply(w);  
+}
 
 gsl::DoubleVector& CFastICADeflNonlinearity::get_workspace()
 {
