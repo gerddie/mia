@@ -399,22 +399,6 @@ void FastICA::FNonlinearity::post_set_signal()
 {
 }
 
-void FNonlinPow3::apply(DoubleVector& w, const DoubleVector& wtX) const
-{
-	transform(wtX.begin(), wtX.end(), m_workspace.begin(), [inv_m](double x) -> double {
-			return x*x*x;
-		}); 
-	
-	multiply_m_v(m_workspace2, get_signal(), m_workspace);
-	
-	cblas_daxpy(m_workspace2.size(), 3.0, w->data, w->stride, 
-		    m_workspace2->data, m_workspace2->stride);
-
-	double inv_m = 1.0 / m_signal.rows(); 
-	transform(m_workspace2.begin(), m_workspace2.end(), w.begin(), 
-		  [inv_m](double x) { return x * inv_m;}); 
-}
-
 void FNonlinPow3::apply(gsl::Matrix& W, gsl::Matrix& WtX) const
 {
 	transform(WtX.begin(), WtX.end(), WtX.begin(), [](double x)(return x*x*x;}); 
@@ -429,29 +413,6 @@ void FNonlinPow3::apply(gsl::Matrix& W, gsl::Matrix& WtX) const
 		  [inv_m](double w, double x){return x * inv_m - 3 * w;}); 
 }
 
-void FNonlinTanh::apply(DoubleVector& w, const DoubleVector& wtX) const
-{
-	double inv_m = 1.0 / m_signal.cols(); 
-	transform(m_wtX.begin(), m_wtX.end(), m_workspace.begin(), 
-		  [this](double x) {
-			  return tanh(m_a1 * x);
-		  }); 
-	
-	multiply_m_v(m_workspace2, get_signal(), m_workspace);
-	
-	
-	double scale = 0.0; 
-	for_each(m_workspace,begin(), m_workspace.end(), [this, &scale](double x) {
-			scale += 1 - x*x;
-		}); 
-	
-	cblas_daxpy(m_workspace2.size(), scale, w->data, w->stride,
-		    m_workspace2->data, m_workspace2->stride); 
-
-	transform(m_workspace2.begin(), m_workspace2.end(), w.begin(), 
-		  [inv_m](double x) { return x * inv_m;}); 
-	
-}
 
 void FNonlinTanh::apply(gsl::Matrix& W, gsl::Matrix& WtX) const
 {

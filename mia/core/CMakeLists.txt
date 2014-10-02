@@ -276,12 +276,15 @@ ENDIF(WIN32)
 #ENDIF (NOT WIN32)
 #CORE_TEST(noisegen)
 
-ADD_SUBDIRECTORY(testplug      )
-ADD_SUBDIRECTORY(spacialkernel )
-ADD_SUBDIRECTORY(noise         ) 
+
+
+ADD_SUBDIRECTORY(fastica       )
 ADD_SUBDIRECTORY(minimizer     ) 
+ADD_SUBDIRECTORY(noise         ) 
+ADD_SUBDIRECTORY(spacialkernel )
 ADD_SUBDIRECTORY(splinekernel  ) 
 ADD_SUBDIRECTORY(splinebc  ) 
+ADD_SUBDIRECTORY(testplug      )
 
 NEW_TEST(Vector miacore)
 NEW_TEST(attributes miacore)

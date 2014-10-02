@@ -26,14 +26,14 @@
 NS_BEGIN(fastica_deflnonlin)
 
 class CFastICADeflPow3 : public mia::CFastICADeflNonlinearity {
-	virtual void do_apply(gsl::DoubleVector& w) const; 
+	virtual void do_apply(gsl::DoubleVector& w); 
 }; 
 
 class CFastICADeflTanh : public mia::CFastICADeflNonlinearity {
 public: 
         CFastICADeflTanh(double a); 
 private: 
-	virtual void do_apply(gsl::DoubleVector& w) const;
+	virtual void do_apply(gsl::DoubleVector& w);
         double m_a; 
 }; 
 
@@ -42,13 +42,14 @@ public:
         CFastICADeflGauss(double a); 
 private: 
 
-	virtual void do_apply(gsl::DoubleVector& w) const;
+	virtual void do_apply(gsl::DoubleVector& w);
 	virtual void post_set_signal();
-	gsl::DoubleVector m_workspace2; 
+        gsl::DoubleVector m_usquared;
+	gsl::DoubleVector m_ex; 
         double m_a; 
 }; 
 
-class CFastICADeflPow3Plugin: public CFastICADeflNonlinearityPlugin {
+class CFastICADeflPow3Plugin: public mia::CFastICADeflNonlinearityPlugin {
 public: 
         CFastICADeflPow3Plugin(); 
         
@@ -59,7 +60,7 @@ public:
 }; 
 
 
-class CFastICADeflTanhPlugin: public CFastICADeflNonlinearityPlugin {
+class CFastICADeflTanhPlugin: public mia::CFastICADeflNonlinearityPlugin {
 public: 
         CFastICADeflTanhPlugin(); 
 private: 
@@ -70,17 +71,18 @@ private:
 
 }; 
 
-class CFastICADeflGaussPlugin: public CFastICADeflNonlinearityPlugin {
+class CFastICADeflGaussPlugin: public mia::CFastICADeflNonlinearityPlugin {
 public: 
         CFastICADeflGaussPlugin(); 
 private:         
         virtual mia::CFastICADeflNonlinearity *do_create() const;
         
 	virtual const std::string do_get_descr()const;
+        double m_a; 
 
 }; 
 
-NS_END(fastica_deflnonlin)
+NS_END
 
 #endif 
 

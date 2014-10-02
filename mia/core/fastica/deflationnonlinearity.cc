@@ -18,46 +18,53 @@
  *
  */
 
+
 #include <mia/core/fastica/deflationnonlinearity.hh>
 #include <gsl/gsl_blas.h>
+#include <gsl++/matrix_vector_ops.hh>
+#include <algorithm> 
 
 NS_BEGIN(fastica_deflnonlin)
 
+using namespace std; 
+using namespace mia; 
 
-void CFastICADeflPow3::do_apply(gsl::DoubleVector& w) const
+
+void CFastICADeflPow3::do_apply(gsl::DoubleVector& w) 
 {
-	transform(get_wtX().begin(), get_wtX().end(), get_wtX().begin(), [](double x) -> double {
+
+	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), [](double x) -> double {
 			return x*x*x;
 		}); 
-	
-	multiply_m_v(get_workspace(), get_signal(), get_wtX());
-	
-	cblas_daxpy(get_workspace().size(), 3.0, w->data, w->stride, 
+
+	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+
+	cblas_daxpy(get_workspace().size(), -3.0 * get_signal().cols(), w->data, w->stride, 
 		    get_workspace()->data, get_workspace()->stride);
 
-	double inv_m = 1.0 / m_signal.rows(); 
+        double inv_m = 1.0 / get_signal().cols(); 
 	transform(get_workspace().begin(), get_workspace().end(), w.begin(), 
 		  [inv_m](double x) { return x * inv_m;}); 
 }
 
 
-CFastICADeflTanh::CFastICADeflTanh(double a1):m_a(a)
+CFastICADeflTanh::CFastICADeflTanh(double a):m_a(a)
 {
 }
 
-void CFastICADeflTanh::do_apply(gsl::DoubleVector& w) const
+void CFastICADeflTanh::do_apply(gsl::DoubleVector& w) 
 {
-	double inv_m = 1.0 / m_signal.cols(); 
+        double inv_m = 1.0 / get_signal().cols(); 
 	
-	transform(get_wtX().begin(), get_wtX().end(), get_wtX().begin(), 
+	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), 
 		  [this](double x) {
 			  return tanh(m_a * x);
 		  }); 
 	
-	multiply_m_v(get_workspace(), get_signal(), get_wtX());
+	multiply_m_v(get_workspace(), get_signal(), get_XTw());
 	
 	double scale = 0.0; 
-	for_each(get_wtX().begin(), get_wtX().end(), [this, &scale](double x) {
+	for_each(get_XTw().begin(), get_XTw().end(), [this, &scale](double x) {
 			scale += 1 - x*x;
 		}); 
 	
@@ -73,40 +80,42 @@ CFastICADeflGauss::CFastICADeflGauss(double a):m_a(a)
 {
 }
 
-void CFastICADeflGauss::do_apply(gsl::DoubleVector& w) const
+void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 {
-	transform(get_wtX().begin(), get_wtX().end(), m_usquared.begin(), 
+	transform(get_XTw().begin(), get_XTw().end(), m_usquared.begin(), 
 		  [](double x) {return x * x; }); 
 	
 	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(),
 		  [this](double x) { return exp(- m_a * x / 2.0);}); 
 	
-	transform(get_wtX().begin(), get_wtX().end(), m_ex.begin(), get_wtX().begin()
-		  [](double u, double expu2) {return u * expu2}); 
+        transform(get_XTw().begin(), get_XTw().end(), m_ex.begin(), get_XTw().begin(),
+			  [](double u, double expu2) {return u * expu2;}); 
 	
-	multiply_m_v(get_workspace(), get_signal(), get_wtX());
+	multiply_m_v(get_workspace(), get_signal(), get_XTw());
 	
 
-	for_each(m_usquared.begin(), m_usquared.end(), m_ex.begin(), m_ex.begin(),
-		  [this](double u2, double expu2) { return (1 - m_a * u ) * expu2;});
+	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(), m_ex.begin(),
+		  [this](double u2, double expu2) { return (1 - m_a * u2 ) * expu2;});
 	
 	double scale = 0.0; 
-	for_each(m_ex.begin(), m_es.end(), [this, &scale](double x) {
+	for_each(m_ex.begin(), m_ex.end(), [this, &scale](double x) {
 			scale += x;
 		}); 
 	
 	cblas_daxpy(w.size(), scale, w->data, w->stride,
 		    get_workspace()->data, get_workspace()->stride); 
 	
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), 
+
+        double inv_m = 1.0 / get_signal().cols(); 
+        transform(get_workspace().begin(), get_workspace().end(), w.begin(), 
 		  [inv_m](double x) { return x * inv_m;}); 
 
 }
 
 void CFastICADeflGauss::post_set_signal()
 {
-	m_usquared = DoubleVector(get_signal().columns()); 
-	m_ex = DoubleVector(get_signal().columns()); 
+        m_usquared = gsl::DoubleVector(get_signal().cols(), false); 
+	m_ex = gsl::DoubleVector(get_signal().cols(), false); 
 	CFastICADeflNonlinearity::post_set_signal();
 }
 
@@ -117,9 +126,9 @@ CFastICADeflPow3Plugin::CFastICADeflPow3Plugin():
 {
 }
 
-mia::CFastICADeflNonlinearity *CFastICADeflPow3Plugin::do_create() const
+CFastICADeflNonlinearity *CFastICADeflPow3Plugin::do_create() const
 {
-	return new CFastICADeflPow3(): 
+       return new CFastICADeflPow3(); 
 }
 
 const std::string CFastICADeflPow3Plugin::do_get_descr()const
@@ -138,7 +147,7 @@ CFastICADeflTanhPlugin::CFastICADeflTanhPlugin():
 	
 }
 
-mia::CFastICADeflNonlinearity *CFastICADeflTanhPlugin::do_create() const
+CFastICADeflNonlinearity *CFastICADeflTanhPlugin::do_create() const
 {
 	return new CFastICADeflTanh(m_a); 
 }
@@ -159,12 +168,12 @@ CFastICADeflGaussPlugin::CFastICADeflGaussPlugin():
 	this->add_parameter("a", 
 			    new CDoubleParameter(m_a, 0, std::numeric_limits<float>::max(), 
 						 false, 
-						 "Tuning parameter: a \in (0,2) for super-Gaussian"
+						 "Tuning parameter: a in (0,2) for super-Gaussian"
 						 "density, a > 2 for sub-Gaussian density. "
 						 "a~1 is usually a good choice.")); 
 }
 
-mia::CFastICADeflNonlinearity *CFastICADeflGaussPlugin::do_create() const
+CFastICADeflNonlinearity *CFastICADeflGaussPlugin::do_create() const
 {
 	return new CFastICADeflGauss(m_a); 
 }
@@ -181,9 +190,9 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	auto result = new CFastICADeflGaussPlugin(); 
 	result->append_interface(new CFastICADeflTanhPlugin()); 
-	result->append_interface(new CFastICADeflPow3()); 
+	result->append_interface(new CFastICADeflPow3Plugin()); 
 	return result;
 }
 
 
-NS_END(fastica_deflnonlin)
+NS_END

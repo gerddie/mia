@@ -59,9 +59,9 @@ public:
 
 	static const char *type_descr; 
 	
-        void apply(gsl::DoubleVector& w) const; 
+        void apply(gsl::DoubleVector& w); 
 protected: 
-        virtual void do_apply(gsl::DoubleVector& w) const; 
+        virtual void do_apply(gsl::DoubleVector& w) = 0; 
 	virtual void post_set_signal();
 	gsl::DoubleVector& get_XTw(){return m_XTw;}; 
 	gsl::DoubleVector& get_workspace(){return m_workspace;}; 
@@ -76,7 +76,7 @@ public:
 	typedef CFastICASymmNonlinearity plugin_type; 
 	static const char *type_descr;  
 protected: 
-        virtual void do_apply(gsl::Matrix& W, gsl::Matrix& wtX) const = 0; 
+        virtual void do_apply(gsl::Matrix& W, gsl::Matrix& wtX)  = 0; 
 	virtual void post_set_signal();
 private: 
         gsl::Matrix m_matrix_workspace; 

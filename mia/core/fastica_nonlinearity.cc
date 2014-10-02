@@ -19,10 +19,11 @@
  */
 
 #include <mia/core/fastica_nonlinearity.hh>
-
+#include <gsl++/matrix_vector_ops.hh>
 #include <mia/core/export_handler.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
+
 
 namespace mia {
 
@@ -69,21 +70,10 @@ const char *CFastICADeflNonlinearity::type_descr = "deflation";
 const char *CFastICASymmNonlinearity::type_descr = "symmetric"; 
 
 
-void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w) const
+void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w)
 {
 	multiply_v_m(m_XTw, w, get_signal());
 	do_apply(w);  
-}
-
-gsl::DoubleVector& CFastICADeflNonlinearity::get_workspace()
-{
-        return m_workspace; 
-}
-
-
-gsl::DoubleVector& CFastICADeflNonlinearity::get_workspace2()
-{
-        return m_workspace2; 
 }
 
 void CFastICASymmNonlinearity::post_set_signal()

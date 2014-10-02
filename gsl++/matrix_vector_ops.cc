@@ -148,7 +148,7 @@ void multiply_m_v(DoubleVector& result, const Matrix& lhs, const DoubleVector& r
         auto mult = [&result, &lhs, &rhs](const blocked_range<int>& range) -> void {
                 for (int r = range.begin(); r != range.end(); ++r) {
                         auto lhs_row = gsl_matrix_const_row(lhs, r); 
-                        const double val = cblas_ddot (result.size(), lhs_row.vector.data, lhs_row.vector.stride, 
+                        const double val = cblas_ddot (lhs_row.vector.size, lhs_row.vector.data, lhs_row.vector.stride, 
                                                        rhs->data, rhs->stride);
                         result[r] = val; 
                 }
