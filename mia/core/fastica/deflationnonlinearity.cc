@@ -87,9 +87,6 @@ void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 	transform(get_XTw().begin(), get_XTw().end(), m_usquared.begin(), 
 		  [](double x) {return x * x; }); 
 
-	std::copy(get_workspace().begin(), get_workspace().end(), ostream_iterator<double>(std::cout, ", ")); 
-	cout << "\n"; 
-	
 	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(),
 		  [this](double x) { return exp(- m_a * x / 2.0);}); 
 	
@@ -107,7 +104,7 @@ void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 			scale += x;
 		}); 
 	
-	cblas_daxpy(w.size(), scale, w->data, w->stride,
+	cblas_daxpy(w.size(), -scale, w->data, w->stride,
 		    get_workspace()->data, get_workspace()->stride); 
 	
 

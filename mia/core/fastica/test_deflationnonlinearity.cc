@@ -62,6 +62,20 @@ BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity, NonlinearityFixture )
 	
 }
 
+BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity, NonlinearityFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss:a=1.1");
+	
+	plugin->set_signal(&signal);
+	plugin->apply(w); 
+	   
+	BOOST_CHECK_CLOSE(w[0],  0.17860, 0.1); 
+	BOOST_CHECK_CLOSE(w[1], -0.15242, 0.1); 
+	BOOST_CHECK_CLOSE(w[2], -0.38649, 0.1); 
+	BOOST_CHECK_CLOSE(w[3], -0.11984, 0.1); 
+	
+}
+
 
 NonlinearityFixture::NonlinearityFixture()
 {
