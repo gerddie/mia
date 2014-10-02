@@ -48,6 +48,21 @@ BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity, NonlinearityFixture )
 	
 }
 
+BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity, NonlinearityFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
+	
+	plugin->set_signal(&signal);
+	plugin->apply(w); 
+	 
+	BOOST_CHECK_CLOSE(w[0],  0.26363, 0.1); 
+	BOOST_CHECK_CLOSE(w[1], -0.22528, 0.1); 
+	BOOST_CHECK_CLOSE(w[2], -0.57095, 0.1); 
+	BOOST_CHECK_CLOSE(w[3], -0.17719, 0.1); 
+	
+}
+
+
 NonlinearityFixture::NonlinearityFixture()
 {
 	const double init_signal[] = {

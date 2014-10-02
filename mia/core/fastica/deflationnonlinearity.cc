@@ -60,15 +60,17 @@ void CFastICADeflTanh::do_apply(gsl::DoubleVector& w)
 		  [this](double x) {
 			  return tanh(m_a * x);
 		  }); 
-	
+
+
 	multiply_m_v(get_workspace(), get_signal(), get_XTw());
-	
+
+
 	double scale = 0.0; 
 	for_each(get_XTw().begin(), get_XTw().end(), [this, &scale](double x) {
 			scale += 1 - x*x;
 		}); 
 	
-	cblas_daxpy(get_workspace().size(), m_a * scale, w->data, w->stride,
+	cblas_daxpy(get_workspace().size(), -m_a * scale, w->data, w->stride,
 		    get_workspace()->data, get_workspace()->stride); 
 
 	transform(get_workspace().begin(), get_workspace().end(), w.begin(), 
@@ -84,6 +86,9 @@ void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 {
 	transform(get_XTw().begin(), get_XTw().end(), m_usquared.begin(), 
 		  [](double x) {return x * x; }); 
+
+	std::copy(get_workspace().begin(), get_workspace().end(), ostream_iterator<double>(std::cout, ", ")); 
+	cout << "\n"; 
 	
 	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(),
 		  [this](double x) { return exp(- m_a * x / 2.0);}); 
