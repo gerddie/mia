@@ -29,43 +29,35 @@ NS_BEGIN(fastica_deflnonlin)
 using namespace std; 
 using namespace mia; 
 
+void CFastICADeflPow3::common_evaluations()
+{
+        double inv_m = 1.0 / get_signal().cols(); 
+	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), [inv_m](double x) -> double {
+			return x*x*x * inv_m;
+		}); 
+	
+	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+}
 
 void CFastICADeflPow3::do_apply(gsl::DoubleVector& w) 
 {
+	common_evaluations(); 
 
-	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), [](double x) -> double {
-			return x*x*x;
-		}); 
-
-	multiply_m_v(get_workspace(), get_signal(), get_XTw());
-
-	cblas_daxpy(get_workspace().size(), -3.0 * get_signal().cols(), w->data, w->stride, 
-		    get_workspace()->data, get_workspace()->stride);
-
-        double inv_m = 1.0 / get_signal().cols(); 
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), 
-		  [inv_m](double x) { return x * inv_m;}); 
+	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
+		  [](double x, double y) { return x - 3 * y;}); 
 }
 
 void CFastICADeflPow3::do_apply_stabelized(gsl::DoubleVector& w)
 {
-        const double inv_m = 1.0 / get_signal().cols();
-	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), [inv_m](double x) -> double {
-			return x*x*x * inv_m;
-		}); 
-
-
-	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+	common_evaluations(); 
 
 	const double beta = multiply_v_v(w, get_workspace()); 
+	const double a1 = 1 - get_mu() *beta/ (3 - beta); 
+	const double a2 = get_mu() / (3 - beta); 
 
-	cblas_daxpy(get_workspace().size(), -beta, w->data, w->stride, 
-		    get_workspace()->data, get_workspace()->stride);
+	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
+		  [a1, a2](double x, double y){return a1 * y - a2 * x;}); 
 
-	
-	cblas_daxpy(get_workspace().size(), - get_mu() / (3.0 - beta),
-		    get_workspace()->data, get_workspace()->stride, 
-		    w->data, w->stride);
 }
 
 CFastICADeflTanh::CFastICADeflTanh(double a):m_a(a)
