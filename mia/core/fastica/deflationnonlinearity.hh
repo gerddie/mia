@@ -28,7 +28,7 @@ NS_BEGIN(fastica_deflnonlin)
 class CFastICADeflPow3 : public mia::CFastICADeflNonlinearity {
 	virtual void do_apply(gsl::DoubleVector& w); 
 	virtual void do_apply_stabelized(gsl::DoubleVector& w);
-	void common_evaluations(); 
+	double common_evaluations_and_scale(); 
 }; 
 
 class CFastICADeflTanh : public mia::CFastICADeflNonlinearity {

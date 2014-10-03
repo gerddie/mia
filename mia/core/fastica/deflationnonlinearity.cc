@@ -29,34 +29,30 @@ NS_BEGIN(fastica_deflnonlin)
 using namespace std; 
 using namespace mia; 
 
-void CFastICADeflPow3::common_evaluations()
+double CFastICADeflPow3::common_evaluations_and_scale()
 {
         const double inv_m = get_sample_scale(); 
 	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), [inv_m](double x) -> double {
-			return x*x*x * inv_m;
+			return x*x*x;
 		}); 
 	
 	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+	return 3.0 / inv_m; 
 }
 
 void CFastICADeflPow3::do_apply(gsl::DoubleVector& w) 
 {
-	common_evaluations(); 
+        const double inv_m = get_sample_scale(); 
+	const double scale = common_evaluations_and_scale(); 
 
 	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
-		  [](double x, double y) { return x - 3 * y;}); 
+		  [scale, inv_m](double x, double y) { return (x - scale * y) * inv_m;}); 
 }
 
 void CFastICADeflPow3::do_apply_stabelized(gsl::DoubleVector& w)
 {
-	common_evaluations(); 
-
-	const double beta = multiply_v_v(w, get_workspace()); 
-	const double a1 = 1 + get_mu() *beta/ (3 - beta); 
-	const double a2 = get_mu() / (3 - beta); 
-
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
-		  [a1, a2](double x, double y){return a1 * y - a2 * x;}); 
+	const double scale = common_evaluations_and_scale(); 
+	sum_final(w, scale); 
 
 }
 
@@ -93,14 +89,8 @@ void CFastICADeflTanh::do_apply(gsl::DoubleVector& w)
 void CFastICADeflTanh::do_apply_stabelized(gsl::DoubleVector& w)
 {
 	const double scale = m_a * common_evaluations_and_scale(); 
-	const double beta = multiply_v_v(w, get_workspace());
+	sum_final(w, scale); 
 
-
-	const double a2 = get_mu() / (scale - beta); 
-	const double a1 = 1 + beta * a2; 
-
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
-		  [a1, a2](double x, double y){return a1 * y - a2 * x;}); 
 }
 
 
@@ -136,29 +126,18 @@ double CFastICADeflGauss::common_evaluations_and_scale()
 void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 {
 	const double scale = common_evaluations_and_scale();
-	
-	cblas_daxpy(w.size(), -scale, w->data, w->stride,
-		    get_workspace()->data, get_workspace()->stride); 
-	
-
         const double inv_m = get_sample_scale(); 
-        transform(get_workspace().begin(), get_workspace().end(), w.begin(), 
-		  [inv_m](double x) { return x * inv_m;}); 
+	
+	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
+		  [inv_m, scale](double x, double y) { return (x - scale * y) * inv_m;}); 
+
 
 }
 
 void CFastICADeflGauss::do_apply_stabelized(gsl::DoubleVector& w)
 {
 	const double scale = common_evaluations_and_scale(); 
-	
-	const double beta = multiply_v_v(w,  get_workspace()); 
-	cblas_daxpy(w.size(), -beta, w->data, w->stride,
-		    get_workspace()->data, get_workspace()->stride); 
-	
-	cblas_daxpy(w.size(), -get_mu() / (scale - beta), 
-		    get_workspace()->data, get_workspace()->stride, 
-		    w->data, w->stride); 
-
+	sum_final(w, scale); 
 }
 
 

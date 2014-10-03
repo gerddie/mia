@@ -44,6 +44,7 @@ protected:
         double get_sample_scale() const {return m_sample_scale;}
 	double get_mu() const { return m_mu;}; 
         const gsl::Matrix& get_signal() const; 
+
 private: 
         virtual void post_set_signal() = 0;
 	double m_mu;
@@ -66,6 +67,7 @@ protected:
 	virtual void post_set_signal();
 	gsl::DoubleVector& get_XTw(){return m_XTw;}; 
 	gsl::DoubleVector& get_workspace(){return m_workspace;}; 
+	void sum_final(gsl::DoubleVector& w, double scale); 
 private: 
         gsl::DoubleVector m_XTw;
         gsl::DoubleVector m_workspace; 

@@ -23,10 +23,11 @@
 #include <mia/core/export_handler.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
-
+#include <algorithm>
 
 namespace mia {
 
+using std::transform; 
 using namespace gsl; 
 
 CFastICANonlinearityBase::CFastICANonlinearityBase():m_mu(1.0)
@@ -46,6 +47,7 @@ void CFastICANonlinearityBase::set_mu(double mu)
 {
 	m_mu = mu; 
 }
+
 
 
 const Matrix& CFastICANonlinearityBase::get_signal() const
@@ -73,6 +75,18 @@ void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w)
 	else 
 		do_apply_stabelized(w); 
 }
+
+void CFastICADeflNonlinearity::sum_final(gsl::DoubleVector& w, double scale)
+{
+	const double beta = multiply_v_v(w, get_workspace()); 
+	const double a2 = get_mu() / (scale - beta); 
+	const double a1 = 1 + beta * a2; 
+
+	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
+		  [a1, a2](double x, double y){return a1 * y - a2 * x;}); 
+
+}
+
 
 void CFastICASymmNonlinearity::post_set_signal()
 {
