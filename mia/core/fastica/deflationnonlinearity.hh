@@ -49,6 +49,7 @@ private:
 	virtual void do_apply(gsl::DoubleVector& w);
 	virtual void do_apply_stabelized(gsl::DoubleVector& w);
 	virtual void post_set_signal();
+	double common_evaluations_and_scale(); 
         gsl::DoubleVector m_usquared;
 	gsl::DoubleVector m_ex; 
         double m_a; 

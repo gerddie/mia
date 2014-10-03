@@ -108,7 +108,7 @@ CFastICADeflGauss::CFastICADeflGauss(double a):m_a(a)
 {
 }
 
-void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
+double CFastICADeflGauss::common_evaluations_and_scale()
 {
 	transform(get_XTw().begin(), get_XTw().end(), m_usquared.begin(), 
 		  [](double x) {return x * x; }); 
@@ -129,6 +129,13 @@ void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 	for_each(m_ex.begin(), m_ex.end(), [this, &scale](double x) {
 			scale += x;
 		}); 
+	return scale; 
+}
+	
+
+void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
+{
+	const double scale = common_evaluations_and_scale();
 	
 	cblas_daxpy(w.size(), -scale, w->data, w->stride,
 		    get_workspace()->data, get_workspace()->stride); 
@@ -142,25 +149,7 @@ void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 
 void CFastICADeflGauss::do_apply_stabelized(gsl::DoubleVector& w)
 {
-	transform(get_XTw().begin(), get_XTw().end(), m_usquared.begin(), 
-		  [](double x) {return x * x; }); 
-
-	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(),
-		  [this](double x) { return exp(- m_a * x / 2.0);}); 
-	
-        transform(get_XTw().begin(), get_XTw().end(), m_ex.begin(), get_XTw().begin(),
-			  [](double u, double expu2) {return u * expu2;}); 
-	
-	multiply_m_v(get_workspace(), get_signal(), get_XTw());
-	
-
-	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(), m_ex.begin(),
-		  [this](double u2, double expu2) { return (1 - m_a * u2 ) * expu2;});
-	
-	double scale = 0.0; 
-	for_each(m_ex.begin(), m_ex.end(), [this, &scale](double x) {
-			scale += x;
-		}); 
+	const double scale = common_evaluations_and_scale(); 
 	
 	const double beta = multiply_v_v(w,  get_workspace()); 
 	cblas_daxpy(w.size(), -beta, w->data, w->stride,
