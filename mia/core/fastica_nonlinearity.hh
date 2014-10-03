@@ -68,6 +68,8 @@ protected:
 	gsl::DoubleVector& get_XTw(){return m_XTw;}; 
 	gsl::DoubleVector& get_workspace(){return m_workspace;}; 
 	void sum_final(gsl::DoubleVector& w, double scale); 
+	void sum_final_stabelized(gsl::DoubleVector& w, double scale); 
+	virtual double common_evaluations_and_scale() = 0; 
 private: 
         gsl::DoubleVector m_XTw;
         gsl::DoubleVector m_workspace; 
