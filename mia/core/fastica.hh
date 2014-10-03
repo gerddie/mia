@@ -64,11 +64,7 @@ public:
 	
 	void set_non_linearity (FNonlinearity *in_g); 
 	
-	void 	set_fine_tune (bool in_finetune); 
-			
-	void 	set_a1 (double a1); 
-		
-	void 	set_a2 (double a2); 
+	void 	set_fine_tune (bool in_finetune); 2
 		
  	void 	set_mu (double mu); 
 	
@@ -115,10 +111,6 @@ private:
 	std::unique_ptr<FNonlinearity> m_nonlinearity; 
 	
 	bool m_finetune; 
-	
-	double m_a1; 
-	
-	double m_a2; 
 	
 	double m_mu; 
 	

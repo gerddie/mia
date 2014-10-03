@@ -38,8 +38,6 @@ FastICA::FastICA(const Matrix&  mix):
         m_nrIC(m_mix.rows()), 
         m_nonlinearity(new FNonlinPow3), 
         m_finetune(false), 
-        m_a1(1.0), 
-        m_a2(1.0), 
         m_mu(1.0), 
         m_epsilon(0.0001), 
         m_sampleSize(1.0), 
@@ -141,6 +139,64 @@ bool FastICA::separate()
 	}
 }
 
+bool FastICA::fpica_defl_round(int component, DoubleVector& w, bool stabelize)
+{
+	
+	double mu = m_mu;
+	
+	double old_delta = m_epsilon + 2.0;
+	double delta = m_epsilon + 1.0;
+	DoubleVector w_old(w);
+	DoubleVector w_restart(w);
+	int iter = 0;
+	while (delta > m_epsilon && iter < m_maxNumIterations) {
+			
+		cvdebug() << "Defl: c=" << component
+			  << ", iter= " << iter 
+			  << ", delta= " << delta
+			  << "\n"; 
+		
+		m_nonlinearity->set_mu(mu); 
+		m_nonlinearity->apply(w); 
+		
+		DoubleVector w_save(w); 
+		for (int j = 0; j < component; ++j) {
+			const auto wj = gsl_matrix_const_row(m_separating_matrix, j);
+			const double dot = multiply_v_v(w_save, wj); 
+			cblas_daxpy(N, -dot, wj->data, wj->stride, w->data, w->stride);
+		}
+		
+		double norm = sqrt(multiply(w, w));
+		if (norm > 0.0) 
+			gsl_vector_scale(w, 1.0/norm); 
+		gsl_vector_sub(w_old, w); 
+		
+		delta = sqrt(multiply(w_old, w_old));
+		
+		if (!stabelize) {
+			gsl_vector_memcpy(w_old, w); 
+			
+		}else{	/// if we stabelize we try to lower step size if improvement was bad 
+			if(old_delta > delta) {
+				gsl_vector_memcpy(w_old, w); 
+				gsl_vector_memcpy(w_restart, w); 
+				old_delta = delta; 
+				try_tune = 0; 
+			}else if (try_tune < m_maxFineTune ) {
+				gsl_vector_memcpy(w_old, w); 
+				++try_tune; 
+			}else {
+				try_tune = 0;
+				mu /= 2;
+				gsl_vector_memcpy(w,w_restart); 
+			}
+		}
+		iter++; 
+	}
+	
+	return delta < m_epsilon; 
+}
+
 bool FastICA::fpica_defl(const Matrix& X)
 { 
 	// not yet supported 
@@ -153,42 +209,25 @@ bool FastICA::fpica_defl(const Matrix& X)
 	m_separating_matrix.reset(m_numOfIC, X.cols(), false); 
 	const int N = X.rows(); 
 	DoubleVector w( X.rows(), false); 
-	DoubleVector wtX( X.rows(), false); 
 	
 	const double inv_m = 1.0 / X.cols();
 	
+	m_nonlinearity->set_signal(&X);
+	
+	bool global_converged = true; 
+	
 	for (int i = 0; i < m_numOfIC; ++i) {
 		
-		// replace this by a generic method that can use 
-		// some init data or other means 
-		for (unsigned i = 0; i < w; ++i) 
+		// initalize vector (should also go into extra class 
+		for (unsigned i = 0; i < w.size(); ++i) 
 			w[i] = random_source(gen);
 		
-		
-		double delta = m_epsilon + 1.0;
-		
-		DoubleVector w_old(w);
-		while (delta > m_epsilon) {
-			
-			multiply_v_m(wtX, w, X); 
-			
-			m_nonlinearity->apply(w, wtX); 
-			
-			DoubleVector w_save(w); 
-			for (int j = 0; j < i; ++i) {
-				const auto wj = gsl_matrix_const_row(m_separating_matrix, j);
-				const double dot = multiply_v_v(w_save, wj); 
-				cblas_daxpy(N, -dot, wj->data, wj->stride, w->data, w->stride);
-			}
-			
-			double norm = sqrt(multiply(w, w));
-			if (norm > 0.0) 
-				gsl_vector_scale(w, 1.0/norm); 
-			gsl_vector_sub(w_old, w); 
-			
-			delta = sqrt(multiply(w_old, w_old));
-			gsl_vector_memcpy(w_old, w); 
+		bool converged = fpica_defl_round(i, w, false); 
+		if (!converged && m_stabilization) {
+			converged = fpica_defl_round(i, w, true);
 		}
+		
+		global_converged &= converged; 
 		auto wi = gsl_matrix_row(m_separating_matrix, i);
 		gsl_vector_memcpy(&wi.vector, w); 
 	}
@@ -199,8 +238,7 @@ bool FastICA::fpica_defl(const Matrix& X)
 	m_mixing_matrix.reset(X.rows(), m_numOfIC, false); 
 	multiply(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
 	
-	
-	return true; 
+	return global_converged; 
 }
 
 bool FastICA::fpica_symm(const Matrix& X)
@@ -250,16 +288,6 @@ void FastICA::set_non_linearity (FNonlinearity *g)
 void FastICA::set_fine_tune (bool finetune)
 {
         m_finetune = finetune; 
-}
-
-void FastICA::set_a1 (double a1)
-{
-        m_a1 = a1; 
-}
-
-void FastICA::set_a2 (double a2)
-{
-        m_a2 = a2; 
 }
 
 void FastICA::set_mu (double mu)
