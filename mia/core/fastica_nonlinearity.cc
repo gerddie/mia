@@ -70,7 +70,7 @@ const char *CFastICASymmNonlinearity::type_descr = "symmetric";
 void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w)
 {
 	multiply_v_m(m_XTw, w, get_signal());
-	const double scale = common_evaluations_and_scale(); 
+	const double scale = get_correction_and_scale(m_XTw, m_workspace); 
 
 	if (get_mu() >= 1.0) 
 		sum_final(w, scale);  
@@ -82,18 +82,18 @@ void CFastICADeflNonlinearity::sum_final(gsl::DoubleVector& w, double scale)
 {
 	const double inv_m = get_sample_scale(); 
 
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
+	transform(m_workspace.begin(), m_workspace.end(), w.begin(), w.begin(), 
 		  [scale, inv_m](double x, double y) { return (x - scale * y) * inv_m;}); 
 
 }
 
 void CFastICADeflNonlinearity::sum_final_stabelized(gsl::DoubleVector& w, double scale)
 {
-	const double beta = multiply_v_v(w, get_workspace()); 
+	const double beta = multiply_v_v(w, m_workspace); 
 	const double a2 = get_mu() / (scale - beta); 
 	const double a1 = 1 + beta * a2; 
 
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
+	transform(m_workspace.begin(), m_workspace.end(), w.begin(), w.begin(), 
 		  [a1, a2](double x, double y){return a1 * y - a2 * x;}); 
 
 }

@@ -26,18 +26,14 @@
 NS_BEGIN(fastica_deflnonlin)
 
 class CFastICADeflPow3 : public mia::CFastICADeflNonlinearity {
-	virtual void do_apply(gsl::DoubleVector& w); 
-	virtual void do_apply_stabelized(gsl::DoubleVector& w);
-	double common_evaluations_and_scale(); 
+	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction); 
 }; 
 
 class CFastICADeflTanh : public mia::CFastICADeflNonlinearity {
 public: 
         CFastICADeflTanh(double a); 
 private: 
-	virtual void do_apply(gsl::DoubleVector& w);
-	virtual void do_apply_stabelized(gsl::DoubleVector& w);
-	double common_evaluations_and_scale(); 
+	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction); 
         double m_a; 
 }; 
 
@@ -46,10 +42,8 @@ public:
         CFastICADeflGauss(double a); 
 private: 
 
-	virtual void do_apply(gsl::DoubleVector& w);
-	virtual void do_apply_stabelized(gsl::DoubleVector& w);
 	virtual void post_set_signal();
-	double common_evaluations_and_scale(); 
+	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction); 
         gsl::DoubleVector m_usquared;
 	gsl::DoubleVector m_ex; 
         double m_a; 

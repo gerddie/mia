@@ -29,89 +29,54 @@ NS_BEGIN(fastica_deflnonlin)
 using namespace std; 
 using namespace mia; 
 
-double CFastICADeflPow3::common_evaluations_and_scale()
+double CFastICADeflPow3::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction)
 {
         const double inv_m = get_sample_scale(); 
-	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), [inv_m](double x) -> double {
+	transform(XTw.begin(), XTw.end(), XTw.begin(), [inv_m](double x) -> double {
 			return x*x*x;
 		}); 
 	
-	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+	multiply_m_v(correction, get_signal(), XTw);
 	return 3.0 / inv_m; 
-}
-
-void CFastICADeflPow3::do_apply(gsl::DoubleVector& w) 
-{
-        const double inv_m = get_sample_scale(); 
-	const double scale = common_evaluations_and_scale(); 
-
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
-		  [scale, inv_m](double x, double y) { return (x - scale * y) * inv_m;}); 
-}
-
-void CFastICADeflPow3::do_apply_stabelized(gsl::DoubleVector& w)
-{
-	const double scale = common_evaluations_and_scale(); 
-	sum_final(w, scale); 
-
 }
 
 CFastICADeflTanh::CFastICADeflTanh(double a):m_a(a)
 {
 }
 
-double CFastICADeflTanh::common_evaluations_and_scale()
+double CFastICADeflTanh::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction)
 {
-	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), 
+	transform(XTw.begin(), XTw.end(), XTw.begin(), 
 		  [this](double x) { return tanh(m_a * x);}); 
 	
-	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+	multiply_m_v(correction, get_signal(), XTw);
 
 	double scale = 0.0; 
-	for_each(get_XTw().begin(), get_XTw().end(), [this, &scale](double x) {
+	for_each(XTw.begin(), XTw.end(), [this, &scale](double x) {
 			scale += 1 - x*x;
 		}); 
 	
-	return scale; 
+	return m_a * scale; 
 }
-
-void CFastICADeflTanh::do_apply(gsl::DoubleVector& w) 
-{
-	
-	const double wscale = m_a * common_evaluations_and_scale(); 
-	const double inv = get_sample_scale(); 
-
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
-		  [wscale, inv](double x, double y) { return (x - wscale * y) * inv;}); 
-
-}
-
-void CFastICADeflTanh::do_apply_stabelized(gsl::DoubleVector& w)
-{
-	const double scale = m_a * common_evaluations_and_scale(); 
-	sum_final(w, scale); 
-
-}
-
 
 CFastICADeflGauss::CFastICADeflGauss(double a):m_a(a)
 {
 }
 
-double CFastICADeflGauss::common_evaluations_and_scale()
+double CFastICADeflGauss::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction)
 {
-	transform(get_XTw().begin(), get_XTw().end(), m_usquared.begin(), 
+	transform(XTw.begin(), XTw.end(), m_usquared.begin(), 
 		  [](double x) {return x * x; }); 
 
 	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(),
 		  [this](double x) { return exp(- m_a * x / 2.0);}); 
 	
-        transform(get_XTw().begin(), get_XTw().end(), m_ex.begin(), get_XTw().begin(),
+        transform(XTw.begin(), XTw.end(), m_ex.begin(), XTw.begin(),
 			  [](double u, double expu2) {return u * expu2;}); 
 	
-	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+	multiply_m_v(correction, get_signal(), XTw);
 	
-
+	
 	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(), m_ex.begin(),
 		  [this](double u2, double expu2) { return (1 - m_a * u2 ) * expu2;});
 	
@@ -122,24 +87,6 @@ double CFastICADeflGauss::common_evaluations_and_scale()
 	return scale; 
 }
 	
-
-void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
-{
-	const double scale = common_evaluations_and_scale();
-        const double inv_m = get_sample_scale(); 
-	
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
-		  [inv_m, scale](double x, double y) { return (x - scale * y) * inv_m;}); 
-
-
-}
-
-void CFastICADeflGauss::do_apply_stabelized(gsl::DoubleVector& w)
-{
-	const double scale = common_evaluations_and_scale(); 
-	sum_final(w, scale); 
-}
-
 
 void CFastICADeflGauss::post_set_signal()
 {

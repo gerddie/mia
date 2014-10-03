@@ -52,6 +52,18 @@ private:
         const gsl::Matrix *m_signal; 
 }; 
 
+/**
+   \brief This is the base clase for non-linearities used in deflation based ICA
+   
+   This class defines the interface of the nonlinearity g for deflation based FastICA. In order to 
+   implement the a real non-linearity the method get_correction_and_scale must be overwritten. 
+   
+   If the factor $\mu$ defined in the parent class is $\ge 1.0$, than the normal implementation 
+   will be used, if the value is positive but $\le 1.0$ then the stabelized variant of the algorithm 
+   is used. 
+   
+*/
+
 class EXPORT_CORE CFastICADeflNonlinearity : public CFastICANonlinearityBase {
 public: 
 
@@ -62,15 +74,20 @@ public:
 	
         void apply(gsl::DoubleVector& w); 
 protected: 
-        virtual void do_apply(gsl::DoubleVector& w) = 0; 
-        virtual void do_apply_stabelized(gsl::DoubleVector& w) = 0; 
 	virtual void post_set_signal();
-	gsl::DoubleVector& get_XTw(){return m_XTw;}; 
-	gsl::DoubleVector& get_workspace(){return m_workspace;}; 
+private: 
+	/**
+	   Key worker function of the class that needs to be overwritten. Given the signal X and the 
+	   input vector \a w passed to \a apply the parameters are to interpreted as follows: 
+	   \param XTw the vector resulting from the multiplication of $X^T w$. This vector will be overwritten. 
+	   \param correction [in,out] a vector of the same size like \a w. On output it must contain the 
+	   correction $X g(X^T w)$
+	 */
+
+	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction) = 0; 
 	void sum_final(gsl::DoubleVector& w, double scale); 
 	void sum_final_stabelized(gsl::DoubleVector& w, double scale); 
-	virtual double common_evaluations_and_scale() = 0; 
-private: 
+
         gsl::DoubleVector m_XTw;
         gsl::DoubleVector m_workspace; 
 }; 
