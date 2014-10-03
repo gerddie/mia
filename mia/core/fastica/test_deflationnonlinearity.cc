@@ -41,10 +41,10 @@ BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity, NonlinearityFixture )
 	plugin->set_signal(&signal);
 	plugin->apply(w); 
 	
-	BOOST_CHECK_CLOSE(w[0],  0.67748, 0.1); 
-	BOOST_CHECK_CLOSE(w[1], -0.48505, 0.1); 
-	BOOST_CHECK_CLOSE(w[2], -1.35082, 0.1); 
-	BOOST_CHECK_CLOSE(w[3], -0.35110, 0.1); 
+	BOOST_CHECK_CLOSE(w[0],  0.67748, 0.01); 
+	BOOST_CHECK_CLOSE(w[1], -0.48505, 0.01); 
+	BOOST_CHECK_CLOSE(w[2], -1.35082, 0.01); 
+	BOOST_CHECK_CLOSE(w[3], -0.35110, 0.01); 
 	
 }
 
@@ -56,10 +56,10 @@ BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity_stabelized, NonlinearityFixture 
 	plugin->set_mu(0.1); 
 	plugin->apply(w); 
 	 
-	BOOST_CHECK_CLOSE(w[0], -0.22633, 0.1); 
-	BOOST_CHECK_CLOSE(w[1], 0.16169, 0.1); 
-	BOOST_CHECK_CLOSE(w[2], 0.45097, 0.1); 
-	BOOST_CHECK_CLOSE(w[3], 0.11686, 0.1); 
+	BOOST_CHECK_CLOSE(w[0], -0.22633, 0.01); 
+	BOOST_CHECK_CLOSE(w[1], 0.16169, 0.01); 
+	BOOST_CHECK_CLOSE(w[2], 0.45097, 0.01); 
+	BOOST_CHECK_CLOSE(w[3], 0.11686, 0.01); 
 	
 }
 
@@ -70,10 +70,10 @@ BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity, NonlinearityFixture )
 	plugin->set_signal(&signal);
 	plugin->apply(w); 
 	 
-	BOOST_CHECK_CLOSE(w[0],  0.26363, 0.1); 
-	BOOST_CHECK_CLOSE(w[1], -0.22528, 0.1); 
-	BOOST_CHECK_CLOSE(w[2], -0.57095, 0.1); 
-	BOOST_CHECK_CLOSE(w[3], -0.17719, 0.1); 
+	BOOST_CHECK_CLOSE(w[0],  0.26363, 0.01); 
+	BOOST_CHECK_CLOSE(w[1], -0.22528, 0.01); 
+	BOOST_CHECK_CLOSE(w[2], -0.57095, 0.01); 
+	BOOST_CHECK_CLOSE(w[3], -0.17719, 0.01); 
 	
 }
 
@@ -85,10 +85,10 @@ BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_stabelized, NonlinearityFixture 
 	plugin->set_mu(0.1); 
 	plugin->apply(w); 
 
-	BOOST_CHECK_CLOSE(w[0], -0.22299, 0.1); 
-	BOOST_CHECK_CLOSE(w[1], 0.16196, 0.1); 
-	BOOST_CHECK_CLOSE(w[2], 0.44761, 0.1); 
-	BOOST_CHECK_CLOSE(w[3], 0.11809, 0.1); 
+	BOOST_CHECK_CLOSE(w[0], -0.22299, 0.01); 
+	BOOST_CHECK_CLOSE(w[1], 0.16196, 0.01); 
+	BOOST_CHECK_CLOSE(w[2], 0.44761, 0.01); 
+	BOOST_CHECK_CLOSE(w[3], 0.11809, 0.01); 
 	
 }
 
@@ -100,10 +100,10 @@ BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity, NonlinearityFixture )
 	plugin->set_signal(&signal);
 	plugin->apply(w); 
 	   
-	BOOST_CHECK_CLOSE(w[0],  0.17860, 0.1); 
-	BOOST_CHECK_CLOSE(w[1], -0.15242, 0.1); 
-	BOOST_CHECK_CLOSE(w[2], -0.38649, 0.1); 
-	BOOST_CHECK_CLOSE(w[3], -0.11984, 0.1); 
+	BOOST_CHECK_CLOSE(w[0],  0.17860, 0.01); 
+	BOOST_CHECK_CLOSE(w[1], -0.15242, 0.01); 
+	BOOST_CHECK_CLOSE(w[2], -0.38649, 0.01); 
+	BOOST_CHECK_CLOSE(w[3], -0.11984, 0.01); 
 	
 }
 BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity_stabilized, NonlinearityFixture ) 
@@ -114,10 +114,10 @@ BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity_stabilized, NonlinearityFixture
 	plugin->set_mu(0.1); 
 	plugin->apply(w); 
 	 
-	BOOST_CHECK_CLOSE(w[0],  -0.22302, 0.1); 
-	BOOST_CHECK_CLOSE(w[1],  0.16196, 0.1); 
-	BOOST_CHECK_CLOSE(w[2],  0.44763, 0.1); 
-	BOOST_CHECK_CLOSE(w[3],  0.11809, 0.1); 
+	BOOST_CHECK_CLOSE(w[0],  -0.22302, 0.01); 
+	BOOST_CHECK_CLOSE(w[1],  0.16196, 0.01); 
+	BOOST_CHECK_CLOSE(w[2],  0.44763, 0.01); 
+	BOOST_CHECK_CLOSE(w[3],  0.11809, 0.01); 
 
 }
 NonlinearityFixture::NonlinearityFixture()

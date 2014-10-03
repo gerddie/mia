@@ -31,7 +31,7 @@ using namespace mia;
 
 void CFastICADeflPow3::common_evaluations()
 {
-        double inv_m = 1.0 / get_signal().cols(); 
+        const double inv_m = get_sample_scale(); 
 	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), [inv_m](double x) -> double {
 			return x*x*x * inv_m;
 		}); 
@@ -52,7 +52,7 @@ void CFastICADeflPow3::do_apply_stabelized(gsl::DoubleVector& w)
 	common_evaluations(); 
 
 	const double beta = multiply_v_v(w, get_workspace()); 
-	const double a1 = 1 - get_mu() *beta/ (3 - beta); 
+	const double a1 = 1 + get_mu() *beta/ (3 - beta); 
 	const double a2 = get_mu() / (3 - beta); 
 
 	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
@@ -64,55 +64,43 @@ CFastICADeflTanh::CFastICADeflTanh(double a):m_a(a)
 {
 }
 
-void CFastICADeflTanh::do_apply(gsl::DoubleVector& w) 
+double CFastICADeflTanh::common_evaluations_and_scale()
 {
-        double inv_m = 1.0 / get_signal().cols(); 
-	
 	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), 
-		  [this](double x) {
-			  return tanh(m_a * x);
-		  }); 
-
-
+		  [this](double x) { return tanh(m_a * x);}); 
+	
 	multiply_m_v(get_workspace(), get_signal(), get_XTw());
-
 
 	double scale = 0.0; 
 	for_each(get_XTw().begin(), get_XTw().end(), [this, &scale](double x) {
 			scale += 1 - x*x;
 		}); 
 	
-	cblas_daxpy(get_workspace().size(), -m_a * scale, w->data, w->stride,
-		    get_workspace()->data, get_workspace()->stride); 
+	return scale; 
+}
 
-	transform(get_workspace().begin(), get_workspace().end(), w.begin(), 
-		  [inv_m](double x) { return x * inv_m;}); 
+void CFastICADeflTanh::do_apply(gsl::DoubleVector& w) 
+{
+	
+	const double wscale = m_a * common_evaluations_and_scale(); 
+	const double inv = get_sample_scale(); 
+
+	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
+		  [wscale, inv](double x, double y) { return (x - wscale * y) * inv;}); 
 
 }
 
 void CFastICADeflTanh::do_apply_stabelized(gsl::DoubleVector& w)
 {
-	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), 
-		  [this](double x) {
-			  return tanh(m_a * x);
-		  }); 
-
-	multiply_m_v(get_workspace(), get_signal(), get_XTw());
-
+	const double scale = m_a * common_evaluations_and_scale(); 
 	const double beta = multiply_v_v(w, get_workspace());
 
-	double scale = 0.0; 
-	for_each(get_XTw().begin(), get_XTw().end(), [this, &scale](double x) {
-			scale += 1 - x*x;
-		}); 
 
-	cblas_daxpy(get_workspace().size(), -beta, w->data, w->stride,
-		    get_workspace()->data, get_workspace()->stride); 
+	const double a2 = get_mu() / (scale - beta); 
+	const double a1 = 1 + beta * a2; 
 
-
-	cblas_daxpy(get_workspace().size(), -get_mu() / ( m_a  * scale - beta), 
-		    get_workspace()->data, get_workspace()->stride, 
-		    w->data, w->stride); 
+	transform(get_workspace().begin(), get_workspace().end(), w.begin(), w.begin(), 
+		  [a1, a2](double x, double y){return a1 * y - a2 * x;}); 
 }
 
 
@@ -146,7 +134,7 @@ void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 		    get_workspace()->data, get_workspace()->stride); 
 	
 
-        double inv_m = 1.0 / get_signal().cols(); 
+        const double inv_m = get_sample_scale(); 
         transform(get_workspace().begin(), get_workspace().end(), w.begin(), 
 		  [inv_m](double x) { return x * inv_m;}); 
 

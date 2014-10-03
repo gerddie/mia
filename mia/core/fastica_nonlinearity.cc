@@ -33,17 +33,12 @@ CFastICANonlinearityBase::CFastICANonlinearityBase():m_mu(1.0)
 {
 }
 
-void CFastICANonlinearityBase::set_sample(double sample_size, size_t num_samples)
-{
-	m_sample_size = sample_size; 
-	m_num_samples = num_samples;
-}
-
 void CFastICANonlinearityBase::set_signal(const Matrix *signal)
 {
 	m_signal = signal; 
 	assert(m_signal); 
-
+	m_sample_scale = 1.0 / m_signal->cols(); 
+	
 	post_set_signal(); 
 }
 
@@ -52,15 +47,6 @@ void CFastICANonlinearityBase::set_mu(double mu)
 	m_mu = mu; 
 }
 
-double CFastICANonlinearityBase::get_sample_size() const
-{
-	return m_sample_size; 
-}
-
-size_t CFastICANonlinearityBase::get_num_samples() const
-{
-	return m_num_samples; 
-}
 
 const Matrix& CFastICANonlinearityBase::get_signal() const
 {
