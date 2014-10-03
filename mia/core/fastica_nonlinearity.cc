@@ -29,6 +29,10 @@ namespace mia {
 
 using namespace gsl; 
 
+CFastICANonlinearityBase::CFastICANonlinearityBase():m_mu(1.0)
+{
+}
+
 void CFastICANonlinearityBase::set_sample(double sample_size, size_t num_samples)
 {
 	m_sample_size = sample_size; 
@@ -41,6 +45,11 @@ void CFastICANonlinearityBase::set_signal(const Matrix *signal)
 	assert(m_signal); 
 
 	post_set_signal(); 
+}
+
+void CFastICANonlinearityBase::set_mu(double mu)
+{
+	m_mu = mu; 
 }
 
 double CFastICANonlinearityBase::get_sample_size() const
@@ -73,7 +82,10 @@ const char *CFastICASymmNonlinearity::type_descr = "symmetric";
 void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w)
 {
 	multiply_v_m(m_XTw, w, get_signal());
-	do_apply(w);  
+	if (get_mu() >= 1.0) 
+		do_apply(w);  
+	else 
+		do_apply_stabelized(w); 
 }
 
 void CFastICASymmNonlinearity::post_set_signal()

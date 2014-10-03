@@ -47,6 +47,26 @@ void CFastICADeflPow3::do_apply(gsl::DoubleVector& w)
 		  [inv_m](double x) { return x * inv_m;}); 
 }
 
+void CFastICADeflPow3::do_apply_stabelized(gsl::DoubleVector& w)
+{
+        const double inv_m = 1.0 / get_signal().cols();
+	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), [inv_m](double x) -> double {
+			return x*x*x * inv_m;
+		}); 
+
+
+	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+
+	const double beta = multiply_v_v(w, get_workspace()); 
+
+	cblas_daxpy(get_workspace().size(), -beta, w->data, w->stride, 
+		    get_workspace()->data, get_workspace()->stride);
+
+	
+	cblas_daxpy(get_workspace().size(), - get_mu() / (3.0 - beta),
+		    get_workspace()->data, get_workspace()->stride, 
+		    w->data, w->stride);
+}
 
 CFastICADeflTanh::CFastICADeflTanh(double a):m_a(a)
 {
@@ -77,6 +97,32 @@ void CFastICADeflTanh::do_apply(gsl::DoubleVector& w)
 		  [inv_m](double x) { return x * inv_m;}); 
 
 }
+
+void CFastICADeflTanh::do_apply_stabelized(gsl::DoubleVector& w)
+{
+	transform(get_XTw().begin(), get_XTw().end(), get_XTw().begin(), 
+		  [this](double x) {
+			  return tanh(m_a * x);
+		  }); 
+
+	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+
+	const double beta = multiply_v_v(w, get_workspace());
+
+	double scale = 0.0; 
+	for_each(get_XTw().begin(), get_XTw().end(), [this, &scale](double x) {
+			scale += 1 - x*x;
+		}); 
+
+	cblas_daxpy(get_workspace().size(), -beta, w->data, w->stride,
+		    get_workspace()->data, get_workspace()->stride); 
+
+
+	cblas_daxpy(get_workspace().size(), -get_mu() / ( m_a  * scale - beta), 
+		    get_workspace()->data, get_workspace()->stride, 
+		    w->data, w->stride); 
+}
+
 
 CFastICADeflGauss::CFastICADeflGauss(double a):m_a(a)
 {
@@ -113,6 +159,39 @@ void CFastICADeflGauss::do_apply(gsl::DoubleVector& w)
 		  [inv_m](double x) { return x * inv_m;}); 
 
 }
+
+void CFastICADeflGauss::do_apply_stabelized(gsl::DoubleVector& w)
+{
+	transform(get_XTw().begin(), get_XTw().end(), m_usquared.begin(), 
+		  [](double x) {return x * x; }); 
+
+	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(),
+		  [this](double x) { return exp(- m_a * x / 2.0);}); 
+	
+        transform(get_XTw().begin(), get_XTw().end(), m_ex.begin(), get_XTw().begin(),
+			  [](double u, double expu2) {return u * expu2;}); 
+	
+	multiply_m_v(get_workspace(), get_signal(), get_XTw());
+	
+
+	transform(m_usquared.begin(), m_usquared.end(), m_ex.begin(), m_ex.begin(),
+		  [this](double u2, double expu2) { return (1 - m_a * u2 ) * expu2;});
+	
+	double scale = 0.0; 
+	for_each(m_ex.begin(), m_ex.end(), [this, &scale](double x) {
+			scale += x;
+		}); 
+	
+	const double beta = multiply_v_v(w,  get_workspace()); 
+	cblas_daxpy(w.size(), -beta, w->data, w->stride,
+		    get_workspace()->data, get_workspace()->stride); 
+	
+	cblas_daxpy(w.size(), -get_mu() / (scale - beta), 
+		    get_workspace()->data, get_workspace()->stride, 
+		    w->data, w->stride); 
+
+}
+
 
 void CFastICADeflGauss::post_set_signal()
 {

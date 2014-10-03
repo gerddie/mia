@@ -48,10 +48,25 @@ BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity, NonlinearityFixture )
 	
 }
 
+BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity_stabelized, NonlinearityFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
+	
+	plugin->set_signal(&signal);
+	plugin->set_mu(0.1); 
+	plugin->apply(w); 
+	 
+	BOOST_CHECK_CLOSE(w[0], -0.22633, 0.1); 
+	BOOST_CHECK_CLOSE(w[1], 0.16169, 0.1); 
+	BOOST_CHECK_CLOSE(w[2], 0.45097, 0.1); 
+	BOOST_CHECK_CLOSE(w[3], 0.11686, 0.1); 
+	
+}
+
 BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity, NonlinearityFixture ) 
 {
 	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
-	
+		
 	plugin->set_signal(&signal);
 	plugin->apply(w); 
 	 
@@ -61,6 +76,22 @@ BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity, NonlinearityFixture )
 	BOOST_CHECK_CLOSE(w[3], -0.17719, 0.1); 
 	
 }
+
+BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_stabelized, NonlinearityFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
+		
+	plugin->set_signal(&signal);
+	plugin->set_mu(0.1); 
+	plugin->apply(w); 
+
+	BOOST_CHECK_CLOSE(w[0], -0.22299, 0.1); 
+	BOOST_CHECK_CLOSE(w[1], 0.16196, 0.1); 
+	BOOST_CHECK_CLOSE(w[2], 0.44761, 0.1); 
+	BOOST_CHECK_CLOSE(w[3], 0.11809, 0.1); 
+	
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity, NonlinearityFixture ) 
 {
@@ -75,8 +106,20 @@ BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity, NonlinearityFixture )
 	BOOST_CHECK_CLOSE(w[3], -0.11984, 0.1); 
 	
 }
+BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity_stabilized, NonlinearityFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss:a=1.1");
+	
+	plugin->set_signal(&signal);
+	plugin->set_mu(0.1); 
+	plugin->apply(w); 
+	 
+	BOOST_CHECK_CLOSE(w[0],  -0.22302, 0.1); 
+	BOOST_CHECK_CLOSE(w[1],  0.16196, 0.1); 
+	BOOST_CHECK_CLOSE(w[2],  0.44763, 0.1); 
+	BOOST_CHECK_CLOSE(w[3],  0.11809, 0.1); 
 
-
+}
 NonlinearityFixture::NonlinearityFixture()
 {
 	const double init_signal[] = {

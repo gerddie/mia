@@ -36,17 +36,21 @@ public:
 
 	static const char *data_descr; 
 
+	CFastICANonlinearityBase(); 
+
 	void set_sample(double sample_size, size_t num_samples); 
         void set_signal(const gsl::Matrix *signal); 
-        void set_scaling(double myy); 
+        void set_mu(double m); 
 protected: 
         double get_sample_size() const; 
         size_t get_num_samples() const; 
         double get_scaling() const; 
+	double get_mu() const { return m_mu;}; 
         const gsl::Matrix& get_signal() const; 
 private: 
         virtual void post_set_signal() = 0;
         double m_sample_size; 
+	double m_mu;
         size_t m_num_samples; 
         const gsl::Matrix *m_signal; 
 }; 
@@ -62,6 +66,7 @@ public:
         void apply(gsl::DoubleVector& w); 
 protected: 
         virtual void do_apply(gsl::DoubleVector& w) = 0; 
+        virtual void do_apply_stabelized(gsl::DoubleVector& w) = 0; 
 	virtual void post_set_signal();
 	gsl::DoubleVector& get_XTw(){return m_XTw;}; 
 	gsl::DoubleVector& get_workspace(){return m_workspace;}; 
