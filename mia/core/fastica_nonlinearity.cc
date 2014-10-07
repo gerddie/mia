@@ -78,6 +78,24 @@ void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w)
 		sum_final_stabelized(w, scale); 
 }
 
+void CFastICADeflNonlinearity::apply(gsl::Matrix& W)
+{
+	for (unsigned c = 0; c < W.cols(); ++c) {
+		auto wc = gsl_matrix_column(W, c); 
+		gsl::DoubleVector w(&wc.vector); 
+		
+		
+		multiply_v_m(m_XTw, w, get_signal());
+		const double scale = get_correction_and_scale(m_XTw, m_workspace); 
+
+		if (get_mu() >= 1.0) 
+			sum_final(w, scale);  
+		else 
+			sum_final_stabelized(w, scale); 
+	}
+}
+
+
 void CFastICADeflNonlinearity::sum_final(gsl::DoubleVector& w, double scale)
 {
 	const double inv_m = get_sample_scale(); 

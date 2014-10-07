@@ -73,6 +73,7 @@ public:
 	static const char *type_descr; 
 	
         void apply(gsl::DoubleVector& w); 
+	void apply(gsl::Matrix& W);
 protected: 
 	virtual void post_set_signal();
 private: 
