@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE( test_mult_vec_vec )
         std::copy(vector1_init, vector1_init + 2, lhs.begin()); 
         std::copy(vector2_init, vector2_init + 2, rhs.begin()); 
         
-        BOOST_CHECK_CLOSE(multiply_v_v(lhs, rhs), 8, 0.1); 
+        BOOST_CHECK_CLOSE(dot(lhs, rhs), 8, 0.1); 
 }
 
 
@@ -274,10 +274,10 @@ BOOST_AUTO_TEST_CASE( test_matrix_orthogonalize )
 	for (int c = 0; c < 3; ++c) {
 		auto col_1 = gsl_matrix_column(M, c);
 		// should be unity
-		BOOST_CHECK_CLOSE(multiply_v_v(&col_1.vector, &col_1.vector), 1.0, 0.1); 
+		BOOST_CHECK_CLOSE(dot(&col_1.vector, &col_1.vector), 1.0, 0.1); 
 		for (int c2 = 0; c2 < c; ++c2) {
 			auto col_2 = gsl_matrix_column(M, c2); 
-			BOOST_CHECK_SMALL(multiply_v_v(&col_1.vector, &col_2.vector), 1e-10); 
+			BOOST_CHECK_SMALL(dot(&col_1.vector, &col_2.vector), 1e-10); 
 			
 		}
 

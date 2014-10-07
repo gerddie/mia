@@ -24,7 +24,8 @@
 #include <cassert>
 #include <iterator>
 #include <gsl/gsl_matrix.h>
-#include <gsl++/gsldefines.hh>
+#include <gsl++/vector.hh>
+#include <gsl++/gsldefines.hh> 
 
 namespace gsl {
 
@@ -240,8 +241,12 @@ public:
 	const_matrix_iterator begin() const; 
 	const_matrix_iterator end() const; 
 
-	
+	void set_row(int r, const DoubleVector& row); 
+	void set_column(int r, const DoubleVector& row); 
 
+	double dot_row(int r, const DoubleVector& row) const; 
+	double dot_column(int c, const DoubleVector& col) const; 
+	
 private: 
 	gsl_matrix *m_matrix; 
 	const gsl_matrix *m_const_matrix; 

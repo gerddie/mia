@@ -139,7 +139,7 @@ bool FastICA::separate()
 	}
 }
 
-bool FastICA::fpica_defl_round(int component, DoubleVector& w, bool stabelize)
+bool FastICA::fpica_defl_round(int component, DoubleVector& w)
 {
 	
 	double mu = m_mu;
@@ -147,9 +147,14 @@ bool FastICA::fpica_defl_round(int component, DoubleVector& w, bool stabelize)
 	double old_delta = m_epsilon + 2.0;
 	double delta = m_epsilon + 1.0;
 	DoubleVector w_old(w);
-	DoubleVector w_restart(w);
+	DoubleVector w_old2(w);
 	int iter = 0;
-	while (delta > m_epsilon && iter < m_maxNumIterations) {
+
+	boof is_finetuning = false;  
+	bool converged = false; 
+	int finetune = 0; 
+	
+	while (iter < m_maxNumIterations + finetune) {
 			
 		cvdebug() << "Defl: c=" << component
 			  << ", iter= " << iter 
@@ -166,31 +171,43 @@ bool FastICA::fpica_defl_round(int component, DoubleVector& w, bool stabelize)
 			cblas_daxpy(N, -dot, wj->data, wj->stride, w->data, w->stride);
 		}
 		
-		double norm = sqrt(multiply(w, w));
+		double norm = sqrt(multiply_v_v(w, w));
 		if (norm > 0.0) 
 			gsl_vector_scale(w, 1.0/norm); 
-		gsl_vector_sub(w_old, w); 
+
+		DoubleVector w_help = w_old; 
+		gsl_vector_sub(w_help, w); 
 		
-		delta = sqrt(multiply(w_old, w_old));
-		
-		if (!stabelize) {
-			gsl_vector_memcpy(w_old, w); 
-			
-		}else{	/// if we stabelize we try to lower step size if improvement was bad 
-			if(old_delta > delta) {
-				gsl_vector_memcpy(w_old, w); 
-				gsl_vector_memcpy(w_restart, w); 
-				old_delta = delta; 
-				try_tune = 0; 
-			}else if (try_tune < m_maxFineTune ) {
-				gsl_vector_memcpy(w_old, w); 
-				++try_tune; 
-			}else {
-				try_tune = 0;
-				mu /= 2;
-				gsl_vector_memcpy(w,w_restart); 
+		double delta = sqrt(multiply(w_help, w_help));
+
+		cvinfo() << "DEFL["<<iter<<"]: delta = " << delta << "\n"; 
+
+		if (delta < m_epsilon) {
+			if (m_finetune && !is_finetuning) {
+				is_finetuning = true; 
+				finetune = m_maxFineTune; 
+				mu = 0.01 * m_mu; 
+			}else{
+				converged = true; 
+			}
+		} else if (m_stabilization) {
+			gsl_vector_sub(w_old2, w);
+			double delta2 = sqrt(multiply(w_old2, w_old2));
+			if ( (stroke == 0.0) && (delta2 < m_epsilon)) {
+				stroke = mu; 
+				mu *= 0.5; 
+			}else if (stroke != 0.0) {
+				mu = stroke; 
+				stroke = 0.0; 
+			}else if (! loong && 2*iter >  m_maxNumIterations ) {
+				loong = true; 
+				mu *= 0.5; 
 			}
 		}
+		w_old2 = w_old; 
+		w_old = w; 
+		
+		
 		iter++; 
 	}
 	
@@ -241,6 +258,37 @@ bool FastICA::fpica_defl(const Matrix& X)
 	return global_converged; 
 }
 
+
+static double min_abs_diag(const Matrix& m)
+{
+	unsigned N = m.rows() > m.cols() ? m.rows() : m.cols(); 
+	double min_val = fabs(m(0,0)); 
+	for (unsigned i = 1; i < N; ++i) {
+		double v = fabs(m(i,i)); 
+		if ( min_val > v) 
+			min_val = v; 
+	}
+	return min_val; 
+}
+
+static void msqrtm(Matrix& m )
+{
+	Matrix wm(m); 
+	Matrix evec(m.rows(), m.rows(), false); 
+	DoubleVector eval(m.rows(), false); 
+	
+	gsl_eigen_symmv_workspace *ws = gsl_eigen_symmv_alloc (m.rows()); 
+	gsl_eigen_symmv (wm, eval, evec, ws); 
+	gsl_eigen_symmv_free (ws); 
+
+	wm = ws; 
+	for (unsigned r = 0; r < wm.rows(); ++r) {
+		auto wmr = gsl_matrix_row(wm, c); 
+		gsl_vector_multiply(&wmr.vector, 1.0/ sqrt(eval[c])); 
+	}
+	multiply_m_mT(m, wm, ws); 
+}
+
 bool FastICA::fpica_symm(const Matrix& X)
 {
 	// not yet supported 
@@ -250,7 +298,11 @@ bool FastICA::fpica_symm(const Matrix& X)
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
 
-	m_separating_matrix.reset(m_numOfIC, X.cols(), false); 
+	m_separating_matrix.reset(m_numOfIC, X.cols(), true); 
+
+	Matrix w_old(m_separating_matrix);
+	Matrix w_restart(m_separating_matrix);
+	Matrix w_new(m_separating_matrix);
 	
 	// random and orthogonalize 
 	for(unsigned r = 0; r <  m_numOfIC; ++r) 
@@ -259,12 +311,74 @@ bool FastICA::fpica_symm(const Matrix& X)
 		}
 	
 	matrix_orthogonalize(m_separating_matrix); 
+	m_nonlinearity->set_signal(&X);
 	
-	
-	
-	
-	
+	bool is_fine_tuning = false; 
+	double mu = m_mu;
 
+	Matrix BTB(m_separating_matrix.cols(), m_separating_matrix.cols(), false); 
+
+	bool converged = false; 
+	unsigned iter = 0; 
+	double stroke = 0.0; 
+	bool loong = false; 
+
+	while (!converged  && iter < m_maxNumIterations) {
+		
+		m_nonlinearity->set_mu(mu); 
+		m_nonlinearity->apply(m_separating_matrix);
+
+		// re-orthognalize 
+		multiply_mT_m(BTB, m_separating_matrix, m_separating_matrix); 
+		msqrtm(BTB);
+		multiply_m_m(w_new, m_separating_matrix, BTB); 
+		
+		multiply_mT_m(BTB, w_new, m_separating_matrix); 
+		double minAbsCos = min_abs_diag(BTB); 
+		
+		if ( 1.0 - minAbsCos < m_epsilon) {
+			// run one more time with lower step-width
+			if (m_finetune && !is_fine_tuning) {
+				mu *= 0.01;
+				is_fine_tuning = true; 
+			}
+			else {
+				converged = true; 
+			}
+		} else if (m_stabilization) {
+			multiply_mT_m(BTB, w_new, m_old); 
+			double minAbsCos2 = min_abs_diag(BTB); 
+			
+			// Avoid ping-pong 
+			if (!stroke && (1 - minAbsCos2 < m_epsilon)) {
+				stroke = mu; 
+				mu /= 2.0; 
+			} else if (stroke) { // back to normal 
+				mu = stroke; 
+				stroke == 0; 
+			} else if ( !loong && 2 * iter > m_maxNumIterations) {
+				// already running some time and 
+				// no convergence, try half step width 
+				// once
+				loong = true; 
+				mu *= 0.5; 
+			}
+		}
+		
+		w_old = m_separating_matrix;
+		m_separating_matrix = w_new; 
+		
+		++iter; 
+	}
+	
+	m_independent_components.reset(m_numOfIC, X.cols(), false); 
+	multiply(m_independent_components, m_separating_matrix, X); 
+	
+	m_mixing_matrix.reset(X.rows(), m_numOfIC, false); 
+	multiply(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
+				   
+	return converged; 
+	
 }
 
 void FastICA::set_approach(EApproach apr)

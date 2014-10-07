@@ -157,7 +157,7 @@ void multiply_m_v(DoubleVector& result, const Matrix& lhs, const DoubleVector& r
         
 }
 
-double multiply_v_v(const gsl_vector *lhs, const gsl_vector *rhs)
+double dot(const gsl_vector *lhs, const gsl_vector *rhs)
 {
         assert(rhs); 
         assert(lhs); 

@@ -24,6 +24,7 @@
 #include <gsl/gsl_statistics.h>
 
 #include <gsl++/matrix.hh>
+#include <gsl++/matrix_vector_ops.hh>
 
 namespace gsl {
 
@@ -143,6 +144,33 @@ size_t Matrix::cols()const
 	assert(m_const_matrix); 
 	return m_const_matrix->size2; 
 }
+
+void Matrix::set_row(int r, const DoubleVector& row)
+{
+	assert(row.size() == rows()); 
+	auto mrow = gsl_matrix_row(m_matrix, r); 
+	gsl_vector_memcpy(&mrow.vector, row); 
+}
+
+void Matrix::set_column(int c, const DoubleVector& col)
+{
+	assert(col.size() == cols()); 
+	auto mcol = gsl_matrix_column(m_matrix, c); 
+	gsl_vector_memcpy(&mcol.vector, col); 
+}
+
+double Matrix::dot_row(int r, const DoubleVector& row) const 
+{
+	auto mrow = gsl_matrix_const_row(m_matrix, r); 
+	return dot(row, &mrow.vector); 
+}
+
+double Matrix::dot_column(int c, const DoubleVector& col) const 
+{
+	auto mcol = gsl_matrix_const_column(m_matrix, c); 
+	return dot(col, &mcol.vector); 
+}
+
 
 
 void Matrix::set(size_t i, size_t j, double x)

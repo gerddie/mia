@@ -64,7 +64,7 @@ public:
 	
 	void set_non_linearity (FNonlinearity *in_g); 
 	
-	void 	set_fine_tune (bool in_finetune); 2
+	void 	set_fine_tune (bool in_finetune); 
 		
  	void 	set_mu (double mu); 
 	
