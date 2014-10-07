@@ -107,7 +107,7 @@ void CFastICADeflNonlinearity::sum_final(gsl::DoubleVector& w, double scale)
 
 void CFastICADeflNonlinearity::sum_final_stabelized(gsl::DoubleVector& w, double scale)
 {
-	const double beta = multiply_v_v(w, m_workspace); 
+	const double beta = dot(w, m_workspace); 
 	const double a2 = get_mu() / (scale - beta); 
 	const double a1 = 1 + beta * a2; 
 
