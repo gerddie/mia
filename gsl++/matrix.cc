@@ -22,6 +22,7 @@
 #include <cstring>
 #include <iostream>
 #include <gsl/gsl_statistics.h>
+#include <gsl/gsl_eigen.h>
 
 #include <gsl++/matrix.hh>
 #include <gsl++/matrix_vector_ops.hh>
@@ -292,6 +293,16 @@ Matrix Matrix::column_covariance() const
 	
 }
 
+CSymmvEvalEvec::CSymmvEvalEvec(Matrix m):
+	evec(m.rows(), m.cols(), false), 
+	eval(m.rows(), false)
+{
+	assert(m.cols() == m.rows()); 
+	
+	gsl_eigen_symmv_workspace *ws = gsl_eigen_symmv_alloc (m.rows()); 
+	gsl_eigen_symmv (m, eval, evec, ws); 
+	gsl_eigen_symmv_free (ws); 
+}
 
 bool operator == (const matrix_iterator& lhs, const matrix_iterator& rhs)
 {

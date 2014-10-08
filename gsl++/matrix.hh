@@ -205,7 +205,12 @@ public:
 	 */
 	Matrix(gsl_matrix* m); 
 
+	/**
+	   Wrap an existing GSL constant matrix 
+	   \param m the GSL matrix 
+	 */
 	Matrix(const gsl_matrix* m); 
+
 	/**
 	   Acquire the transposed matrix. 
 	   \returns  transposed matrix as newly created object
@@ -218,33 +223,135 @@ public:
 	 */
 	Matrix& operator =(const Matrix& other); 
 
+	/**
+	   Reset the matrix with the new dimensions. 
+	   \param rows 
+	   \param columns 
+	   \param clean - set all values to zero 
+	 */
 	void reset(size_t rows, size_t columns, bool clean); 
+
+	/**
+	   Reset the matrix with the new dimensions. 
+	   \param rows 
+	   \param columns 
+	   \param init - set all values to \a init 
+	 */
 	void reset(size_t rows, size_t columns, double init); 
 
 	~Matrix(); 
 
+
+	/**
+	   \returns the number of rows in the matrix 
+	 */
 	size_t rows()const; 
+
+	/**
+	   \returns the number of columns in the matrix 
+	*/
 	size_t cols()const; 
 	
+	/**
+	   Set a value of the matrix 
+	   \param i row 
+	   \param j column 
+	   \param x value
+	 */
 	void set(size_t i, size_t j, double x); 
+
+	/**
+	   Get a value of the matrix 
+	   \param i row 
+	   \param j column 
+	   \returns the value 
+	 */
+
 	double operator ()(size_t i, size_t j) const; 
 	
+	/**
+	   operator to get the underlying gsl_matrix pointer 
+	 */
 	operator gsl_matrix *(); 
+
+	/**
+	   operator to get the underlying const gsl_matrix pointer 
+	 */
 	operator const gsl_matrix *() const; 
 
+	/**
+	   Evaluate the covariance matrix between the columns of this matrix 
+	   \returns the covariance matrix 
+	 */
 	Matrix column_covariance() const; 
+
+	/**
+	   Evaluate the covariance matrix between the rows of this matrix 
+	   \returns the covariance matrix 
+	 */
 	Matrix row_covariance() const; 
 
+	/**
+	   Iterator over the matrix elements of the matrix, column indices are the 
+	   fastest changing indices. 
+	   \returns the begin of the range 
+	 */ 
 	matrix_iterator begin(); 
+
+	/**
+	   Iterator over the matrix elements of the matrix, column indices are the 
+	   fastest changing indices. 
+	   \returns the end of the range 
+	 */ 
 	matrix_iterator end(); 
 
+	/**
+	   Read only iterator over the matrix elements of the matrix, column indices are the 
+	   fastest changing indices. 
+	   \returns the begin of the range 
+	 */ 
 	const_matrix_iterator begin() const; 
+
+	/**
+	   Read only iterator over the matrix elements of the matrix, column indices are the 
+	   fastest changing indices. 
+	   \returns the end of the range 
+	 */ 
 	const_matrix_iterator end() const; 
 
+	/**
+	   Set a matrix row 
+	   \param r index of row to be set, must be in [0, this->rows()-1]
+	   \param row vector containing the new values. It's size must be equal 
+	   to the number of columns of the matrix 
+	 */ 
 	void set_row(int r, const DoubleVector& row); 
-	void set_column(int r, const DoubleVector& row); 
 
-	double dot_row(int r, const DoubleVector& row) const; 
+	/**
+	   Set a matrix column 
+	   \param c index of column to be set,  must be in [0, this->cols()-1]
+	   \param col vector containing the new values. It's size must be equal 
+	   to the number of rows of the matrix 
+	 */ 
+	void set_column(int c, const DoubleVector& col); 
+
+	/**
+	   Evaluate the dot product between a row of the matrix and a given vector 
+	   \param r index of row, must be in [0, this->rows()-1] 
+	   \param v vector to evaluate the dot product with. The vector's size must be equal to the 
+	   number of matrix columns. 
+	   \returns the dot product of the row vector and the input vector 
+	 */ 
+	double dot_row(int r, const DoubleVector& v) const; 
+
+	/**
+	   Evaluate the dot product between a column  of the matrix and a given vector 
+	   \param c index of column,  must be in [0, this->cols()-1]
+	   \param v vector to evaluate the dot product with. The vector's size must be equal to the 
+	   number of matrix rows.  
+	   \returns the dot product of the row vector and the input vector 
+	 */ 
+
 	double dot_column(int c, const DoubleVector& col) const; 
 	
 private: 
@@ -252,6 +359,18 @@ private:
 	const gsl_matrix *m_const_matrix; 
 	bool m_owner; 
 }; 
+
+/**
+   Evaluate the eigenvalues and eigenvectors of the input matrix
+*/
+struct CSymmvEvalEvec {
+	CSymmvEvalEvec(Matrix m); 
+	
+	Matrix evec; 
+	DoubleVector eval; 
+}; 
+	
+
 
 
 } // end namespace 
