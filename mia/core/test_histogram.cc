@@ -106,6 +106,17 @@ BOOST_AUTO_TEST_CASE( test_float_histogram)
 
 }
 
+BOOST_AUTO_TEST_CASE( test_histogram_excess_kurtosis_1 )
+{
+	vector<double> input{1,2,3,2,5,6,1,2,1,5}; 
+	THistogram<THistogramFeeder<float> > h(THistogramFeeder<float>(1,6,6));
+	h.push_range(input.begin(), input.end()); 
+	BOOST_CHECK_CLOSE(h.average(),  2.8, 0.1); 
+	BOOST_CHECK_CLOSE(h.deviation(), sqrt(3.5111), 0.1); 
+	BOOST_CHECK_CLOSE(h.excess_kurtosis(),  -1.5039, 0.1); 
+	
+}
+
 BOOST_AUTO_TEST_CASE( test_histogram2)
 {
 	const size_t nsamples = 31;
