@@ -166,24 +166,24 @@ bool FastICA::fpica_defl_round(int component, DoubleVector& w)
 		
 		DoubleVector w_save(w); 
 		for (int j = 0; j < component; ++j) {
-			const auto wj = gsl_matrix_const_row(m_separating_matrix, j);
-			const double dot = multiply_v_v(w_save, wj); 
-			cblas_daxpy(N, -dot, wj->data, wj->stride, w->data, w->stride);
+			const double wdot = m_separating_matrix.dot_row(j, w_save); 
+			cblas_daxpy(N, -wdot, wj->data, wj->stride, w->data, w->stride);
 		}
 		
-		double norm = sqrt(multiply_v_v(w, w));
+		double norm = sqrt(dot(w, w));
 		if (norm > 0.0) 
 			gsl_vector_scale(w, 1.0/norm); 
 
 		DoubleVector w_help = w_old; 
 		gsl_vector_sub(w_help, w); 
 		
-		double delta = sqrt(multiply(w_help, w_help));
+		double delta = sqrt(dot(w_help, w_help));
 
 		cvinfo() << "DEFL["<<iter<<"]: delta = " << delta << "\n"; 
 
 		if (delta < m_epsilon) {
 			if (m_finetune && !is_finetuning) {
+				cvinfo() << "DEFL: start fine tuning\n"; 
 				is_finetuning = true; 
 				finetune = m_maxFineTune; 
 				mu = 0.01 * m_mu; 
@@ -192,7 +192,7 @@ bool FastICA::fpica_defl_round(int component, DoubleVector& w)
 			}
 		} else if (m_stabilization) {
 			gsl_vector_sub(w_old2, w);
-			double delta2 = sqrt(multiply(w_old2, w_old2));
+			double delta2 = sqrt(dot(w_old2, w_old2));
 			if ( (stroke == 0.0) && (delta2 < m_epsilon)) {
 				stroke = mu; 
 				mu *= 0.5; 
@@ -245,8 +245,7 @@ bool FastICA::fpica_defl(const Matrix& X)
 		}
 		
 		global_converged &= converged; 
-		auto wi = gsl_matrix_row(m_separating_matrix, i);
-		gsl_vector_memcpy(&wi.vector, w); 
+		m_separating_matrix.set_row(i, w);
 	}
 
 	m_independent_components.reset(m_numOfIC, X.cols(), false); 
@@ -273,20 +272,15 @@ static double min_abs_diag(const Matrix& m)
 
 static void msqrtm(Matrix& m )
 {
-	Matrix wm(m); 
-	Matrix evec(m.rows(), m.rows(), false); 
-	DoubleVector eval(m.rows(), false); 
-	
-	gsl_eigen_symmv_workspace *ws = gsl_eigen_symmv_alloc (m.rows()); 
-	gsl_eigen_symmv (wm, eval, evec, ws); 
-	gsl_eigen_symmv_free (ws); 
+
+	CSymmvEvalEvec see(m);
 
 	wm = ws; 
 	for (unsigned r = 0; r < wm.rows(); ++r) {
-		auto wmr = gsl_matrix_row(wm, c); 
-		gsl_vector_multiply(&wmr.vector, 1.0/ sqrt(eval[c])); 
+		auto wmr = gsl_matrix_row(see.evec, c); 
+		gsl_vector_multiply(&wmr.vector, 1.0/ sqrt(see.eval[c])); 
 	}
-	multiply_m_mT(m, wm, ws); 
+	multiply_m_mT(m, see.evec, see.evec); 
 }
 
 bool FastICA::fpica_symm(const Matrix& X)
