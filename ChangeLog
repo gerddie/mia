@@ -1,3 +1,13 @@
+2.2.2
+
+  Fixes:
+
+  * #165 throw exception where "exit" was used before
+  * Add boost_system to required link libraries in *.pc files
+  * Reduce the number of explicitely libraries used from VTK
+  * vtkmash.cc: Add explicit cast to make it compile with clang++
+  * test_cmdlineparser: Correct failing test if NDEBUG is defined
+
 2.2.1
 
   * fixes for potential bugs discovered by Coverity
