@@ -148,7 +148,7 @@ size_t Matrix::cols()const
 
 void Matrix::set_row(int r, const DoubleVector& row)
 {
-	assert(row.size() == rows()); 
+	assert(row.size() == cols()); 
 	auto mrow = gsl_matrix_row(m_matrix, r); 
 	gsl_vector_memcpy(&mrow.vector, row); 
 }
@@ -165,7 +165,7 @@ ConstVectorView Matrix::get_row(int r) const
 
 void Matrix::set_column(int c, const DoubleVector& col)
 {
-	assert(col.size() == cols()); 
+	assert(col.size() == rows()); 
 	auto mcol = gsl_matrix_column(m_matrix, c); 
 	gsl_vector_memcpy(&mcol.vector, col); 
 }

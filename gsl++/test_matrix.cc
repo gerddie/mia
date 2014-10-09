@@ -302,6 +302,55 @@ BOOST_AUTO_TEST_CASE( test_row_ops )
 		5, 4, 2, 3, 3
 	}; 
 	
+	Matrix m(10, 5, input); 
+
+	auto mr = m.get_row(2); 
+	BOOST_CHECK_EQUAL(mr.size(), 5); 
+
+	BOOST_CHECK_EQUAL(mr[0], 11); 
+	BOOST_CHECK_EQUAL(mr[1], 12); 
+	BOOST_CHECK_EQUAL(mr[2], 13); 
+	BOOST_CHECK_EQUAL(mr[3], 14); 
+	BOOST_CHECK_EQUAL(mr[4], 15); 
+	
+	auto b = mr.begin(); 
+
+	BOOST_CHECK_EQUAL(*b, 11); ++b; 
+	BOOST_CHECK_EQUAL(*b, 12); ++b; 
+	BOOST_CHECK_EQUAL(*b, 13); ++b; 
+	BOOST_CHECK_EQUAL(*b, 14); ++b; 
+	BOOST_CHECK_EQUAL(*b, 15); ++b; 
+	
+	BOOST_CHECK(b == mr.end()); 
+
+	m.set_row(3, mr); 
+	auto mr3 = m.get_row(3); 
+	BOOST_CHECK_EQUAL(mr3.size(), 5); 
+
+	BOOST_CHECK_EQUAL(mr3[0], 11); 
+	BOOST_CHECK_EQUAL(mr3[1], 12); 
+	BOOST_CHECK_EQUAL(mr3[2], 13); 
+	BOOST_CHECK_EQUAL(mr3[3], 14); 
+	BOOST_CHECK_EQUAL(mr3[4], 15); 
+	
+
+}
+
+BOOST_AUTO_TEST_CASE( test_const_row_ops ) 
+{
+	const double input[50]  = { 
+		1, 2, 3, 4, 5, 
+		6, 7, 8, 9,10, 
+	 	11, 12, 13, 14, 15, 
+		2, 6, 2, 3, 8, 
+		4, 1, 6, 2, 1, 
+		4, 1, 2, 5, 5, 
+		2, 2, 3, 8, 7, 
+		2, 4, 8, 1, 4, 
+		1, 2, 3, 2, 2, 
+		5, 4, 2, 3, 3
+	}; 
+	
 	const Matrix m(10, 5, input); 
 
 	auto mr = m.get_row(2); 
@@ -313,4 +362,133 @@ BOOST_AUTO_TEST_CASE( test_row_ops )
 	BOOST_CHECK_EQUAL(mr[3], 14); 
 	BOOST_CHECK_EQUAL(mr[4], 15); 
 	
+	auto b = mr.begin(); 
+
+	BOOST_CHECK_EQUAL(*b, 11); ++b; 
+	BOOST_CHECK_EQUAL(*b, 12); ++b; 
+	BOOST_CHECK_EQUAL(*b, 13); ++b; 
+	BOOST_CHECK_EQUAL(*b, 14); ++b; 
+	BOOST_CHECK_EQUAL(*b, 15); ++b; 
+	
+	BOOST_CHECK(b == mr.end()); 
+
+}
+
+
+BOOST_AUTO_TEST_CASE( test_const_col_ops ) 
+{
+	const double input[50]  = { 
+		1, 2, 3, 4, 5, 
+		6, 7, 8, 9,10, 
+	 	11, 12, 13, 14, 15, 
+		2, 6, 2, 3, 8, 
+		4, 1, 6, 2, 1, 
+		4, 1, 2, 5, 5, 
+		2, 2, 3, 8, 7, 
+		2, 4, 8, 1, 4, 
+		1, 2, 3, 2, 2, 
+		5, 4, 2, 3, 3
+	}; 
+	
+	const Matrix m(10, 5, input); 
+
+	auto mr = m.get_column(2); 
+	BOOST_CHECK_EQUAL(mr.size(), 10); 
+
+	BOOST_CHECK_EQUAL(mr[0], 3); 
+	BOOST_CHECK_EQUAL(mr[1], 8); 
+	BOOST_CHECK_EQUAL(mr[2], 13); 
+	BOOST_CHECK_EQUAL(mr[3], 2); 
+	BOOST_CHECK_EQUAL(mr[4], 6); 
+
+	BOOST_CHECK_EQUAL(mr[5], 2); 
+	BOOST_CHECK_EQUAL(mr[6], 3); 
+	BOOST_CHECK_EQUAL(mr[7], 8); 
+	BOOST_CHECK_EQUAL(mr[8], 3); 
+	BOOST_CHECK_EQUAL(mr[9], 2); 	
+
+	
+	auto b = mr.begin(); 
+
+	BOOST_CHECK_EQUAL(*b, 3); ++b; 
+	BOOST_CHECK_EQUAL(*b, 8); ++b; 
+	BOOST_CHECK_EQUAL(*b, 13); ++b; 
+	BOOST_CHECK_EQUAL(*b, 2); ++b; 
+	BOOST_CHECK_EQUAL(*b, 6); ++b; 
+	BOOST_CHECK_EQUAL(*b, 2); ++b; 
+	BOOST_CHECK_EQUAL(*b, 3); ++b; 
+	BOOST_CHECK_EQUAL(*b, 8); ++b; 
+	BOOST_CHECK_EQUAL(*b, 3); ++b; 
+	BOOST_CHECK_EQUAL(*b, 2); ++b; 
+
+	BOOST_CHECK(b == mr.end()); 
+
+}
+
+
+BOOST_AUTO_TEST_CASE( test_col_ops ) 
+{
+	const double input[50]  = { 
+		1, 2, 3, 4, 5, 
+		6, 7, 8, 9,10, 
+	 	11, 12, 13, 14, 15, 
+		2, 6, 2, 3, 8, 
+		4, 1, 6, 2, 1, 
+		4, 1, 2, 5, 5, 
+		2, 2, 3, 8, 7, 
+		2, 4, 8, 1, 4, 
+		1, 2, 3, 2, 2, 
+		5, 4, 2, 3, 3
+	}; 
+	
+	Matrix m(10, 5, input); 
+
+	auto mr = m.get_column(2); 
+	BOOST_CHECK_EQUAL(mr.size(), 10); 
+
+	BOOST_CHECK_EQUAL(mr[0], 3); 
+	BOOST_CHECK_EQUAL(mr[1], 8); 
+	BOOST_CHECK_EQUAL(mr[2], 13); 
+	BOOST_CHECK_EQUAL(mr[3], 2); 
+	BOOST_CHECK_EQUAL(mr[4], 6); 
+
+	BOOST_CHECK_EQUAL(mr[5], 2); 
+	BOOST_CHECK_EQUAL(mr[6], 3); 
+	BOOST_CHECK_EQUAL(mr[7], 8); 
+	BOOST_CHECK_EQUAL(mr[8], 3); 
+	BOOST_CHECK_EQUAL(mr[9], 2); 	
+
+	
+	auto b = mr.begin(); 
+
+	BOOST_CHECK_EQUAL(*b, 3); ++b; 
+	BOOST_CHECK_EQUAL(*b, 8); ++b; 
+	BOOST_CHECK_EQUAL(*b, 13); ++b; 
+	BOOST_CHECK_EQUAL(*b, 2); ++b; 
+	BOOST_CHECK_EQUAL(*b, 6); ++b; 
+	BOOST_CHECK_EQUAL(*b, 2); ++b; 
+	BOOST_CHECK_EQUAL(*b, 3); ++b; 
+	BOOST_CHECK_EQUAL(*b, 8); ++b; 
+	BOOST_CHECK_EQUAL(*b, 3); ++b; 
+	BOOST_CHECK_EQUAL(*b, 2); ++b; 
+
+	BOOST_CHECK(b == mr.end()); 
+
+	m.set_column(4, mr); 
+
+
+	auto mr3 = m.get_column(4); 
+	BOOST_CHECK_EQUAL(mr3.size(), 10); 
+
+	BOOST_CHECK_EQUAL(mr3[0], 3); 
+	BOOST_CHECK_EQUAL(mr3[1], 8); 
+	BOOST_CHECK_EQUAL(mr3[2], 13); 
+	BOOST_CHECK_EQUAL(mr3[3], 2); 
+	BOOST_CHECK_EQUAL(mr3[4], 6); 
+
+	BOOST_CHECK_EQUAL(mr3[5], 2); 
+	BOOST_CHECK_EQUAL(mr3[6], 3); 
+	BOOST_CHECK_EQUAL(mr3[7], 8); 
+	BOOST_CHECK_EQUAL(mr3[8], 3); 
+	BOOST_CHECK_EQUAL(mr3[9], 2); 	
 }
