@@ -115,7 +115,10 @@ BOOST_AUTO_TEST_CASE( test_histogram_excess_kurtosis_1 )
 	// test values have been evaluated by using octave 3.8.2
 	BOOST_CHECK_CLOSE(h.average(),  2.8, 0.1); 
 	BOOST_CHECK_CLOSE(h.deviation(), sqrt(3.5111), 0.1); 
+	BOOST_CHECK_CLOSE(h.skewness(), 0.62378, 0.1); 
 	BOOST_CHECK_CLOSE(h.excess_kurtosis(),  -1.1530, 0.1); 
+
+
 	
 }
 
