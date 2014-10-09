@@ -424,7 +424,7 @@ double THistogram<Feeder>::excess_kurtosis() const
 		sum3 +=  h * value.second;
 	}
 	
-	double sigma2 = (sum2 - sum1 * sum1 / m_n) / (m_n - 1); 
+	double sigma2 = (sum2 - sum1 * sum1 / m_n) / m_n; 
 	double mu4 = sum3 / m_n; 
 	return mu4 / (sigma2 * sigma2) - 3;
 }

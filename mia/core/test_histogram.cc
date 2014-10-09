@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE( test_histogram_excess_kurtosis_1 )
 	h.push_range(input.begin(), input.end()); 
 	BOOST_CHECK_CLOSE(h.average(),  2.8, 0.1); 
 	BOOST_CHECK_CLOSE(h.deviation(), sqrt(3.5111), 0.1); 
-	BOOST_CHECK_CLOSE(h.excess_kurtosis(),  -1.5039, 0.1); 
+	BOOST_CHECK_CLOSE(h.excess_kurtosis(),  -1.1530, 0.1); 
 	
 }
 
