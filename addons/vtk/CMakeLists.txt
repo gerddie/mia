@@ -31,8 +31,11 @@ IF(WITH_VTKIO)
     SET(vfio_path "${PLUGIN_INSTALL_PATH}/3dvf/io")
     SET(imageio_path "${PLUGIN_INSTALL_PATH}/3dimage/io")
     
-    SET(VTK_LINK_LIBS_MESH ${VTK_LIBRARIES} miamesh)
-    SET(VTK_LINK_LIBS_3D ${VTK_LIBRARIES} mia3d)
+    # this is probably a hack that can break with every new release
+    SET(SELECTED_VTK_LIBS vtkIOImage vtkmetaio vtkIOXML vtkIOCore vtkIOLegacy)
+
+    SET(VTK_LINK_LIBS_MESH ${SELECTED_VTK_LIBS} miamesh)
+    SET(VTK_LINK_LIBS_3D ${SELECTED_VTK_LIBS} mia3d)
 
     PLUGIN_WITH_TEST_AND_PREFIX2("mesh" "io" vtkmesh "${VTK_LINK_LIBS_MESH}")
     PLUGIN_WITH_TEST_AND_PREFIX2("3dvf" "io" vtkvf "${VTK_LINK_LIBS_3D}")
