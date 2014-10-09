@@ -20,9 +20,9 @@ OPTION(WITH_VTKIO "enable support for VTK files" ${SEARCH_LIBS_DEFAULT})
 
 IF(WITH_VTKIO)
   if (STRICT_DEPENDECIES)
-    FIND_PACKAGE(VTK REQUIRED)
+    FIND_PACKAGE(VTK REQUIRED COMPONENTS  vtkIOImage  vtkIOXML vtkIOLegacy)
   else (STRICT_DEPENDECIES)
-    FIND_PACKAGE(VTK QUIET)
+    FIND_PACKAGE(VTK COMPONENTS vtkIOImage vtkIOXML vtkIOLegacy)
   endif (STRICT_DEPENDECIES)
   IF(VTK_FOUND)
     DEFINE_PROPERTY(GLOBAL PROPERTY HAVE_VTK_PROP BRIEF_DOCS "yeah" FULL_DOCS "yeah")
@@ -31,9 +31,8 @@ IF(WITH_VTKIO)
     SET(vfio_path "${PLUGIN_INSTALL_PATH}/3dvf/io")
     SET(imageio_path "${PLUGIN_INSTALL_PATH}/3dimage/io")
     
-    # this is probably a hack that can break with every new release
-    SET(SELECTED_VTK_LIBS vtkIOImage vtkmetaio vtkIOXML vtkIOCore vtkIOLegacy)
 
+    SET(SELECTED_VTK_LIBS ${VTK_MODULES_REQUESTED})
     SET(VTK_LINK_LIBS_MESH ${SELECTED_VTK_LIBS} miamesh)
     SET(VTK_LINK_LIBS_3D ${SELECTED_VTK_LIBS} mia3d)
 
