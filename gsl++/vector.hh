@@ -21,6 +21,7 @@
 #ifndef GSLPP_VECTOR_HH
 #define GSLPP_VECTOR_HH
 
+#include <gsl++/gsldefines.hh>
 #include <gsl++/vector_template.hh>
 
 namespace gsl {
@@ -37,6 +38,59 @@ typedef TVector<ulong>   ULongVector;
 typedef TVector<uint>    UIntVector; 
 typedef TVector<ushort>  UShortVector; 
 typedef TVector<uchar>   UCharVector; 
+
+extern template class EXPORT_GSL TVector<double>; 
+
+typedef DoubleVector Vector; 
+
+
+
+class EXPORT_GSL VectorView :public Vector {
+public: 
+	VectorView(gsl_vector_view vv): m_view(vv) {
+		reset_holder(&m_view.vector); 
+	}; 
+private: 
+	gsl_vector_view m_view; 
+}; 
+
+class EXPORT_GSL ConstVectorView :private  Vector {
+public: 
+	ConstVectorView(gsl_vector_const_view vv):m_view(vv) {
+		reset_holder(&m_view.vector); 
+	}; 
+	
+		const_iterator begin()const{
+			return Vector::begin(); 
+		}
+		
+		const_iterator end()const{
+			return Vector::end(); 
+		}
+		
+		size_type size() const {
+			return Vector::size(); 
+		}
+		
+		value_type operator[](size_t i)const {
+			
+			return Vector::operator[](i); 
+		}; 
+		
+		/// read only vector pointer type operator to enable transparent calls to the GSL APL
+		operator const vector_type *() const {
+			return Vector::operator const vector_type *(); 
+		}
+		
+		
+		const vector_type * operator  ->() const{
+			return Vector::operator ->(); 
+		}
+
+
+private: 
+	gsl_vector_const_view m_view; 
+}; 
 
 }
 

@@ -153,12 +153,34 @@ void Matrix::set_row(int r, const DoubleVector& row)
 	gsl_vector_memcpy(&mrow.vector, row); 
 }
 
+VectorView Matrix::get_row(int r)
+{
+	return VectorView(gsl_matrix_row(m_matrix, r)); 
+}
+
+ConstVectorView Matrix::get_row(int r) const 
+{
+	return ConstVectorView(gsl_matrix_const_row(m_matrix, r)); 
+}
+
 void Matrix::set_column(int c, const DoubleVector& col)
 {
 	assert(col.size() == cols()); 
 	auto mcol = gsl_matrix_column(m_matrix, c); 
 	gsl_vector_memcpy(&mcol.vector, col); 
 }
+
+VectorView Matrix::get_column(int c)
+{
+	return VectorView(gsl_matrix_column(m_matrix, c)); 
+}
+
+ConstVectorView Matrix::get_column(int c) const
+{
+	return ConstVectorView(gsl_matrix_const_column(m_matrix, c)); 
+}
+
+
 
 double Matrix::dot_row(int r, const DoubleVector& row) const 
 {

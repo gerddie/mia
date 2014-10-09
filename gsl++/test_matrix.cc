@@ -286,3 +286,31 @@ BOOST_AUTO_TEST_CASE( test_const_matrix_iterator )
 	
 
 }
+
+BOOST_AUTO_TEST_CASE( test_row_ops ) 
+{
+	const double input[50]  = { 
+		1, 2, 3, 4, 5, 
+		6, 7, 8, 9,10, 
+	 	11, 12, 13, 14, 15, 
+		2, 6, 2, 3, 8, 
+		4, 1, 6, 2, 1, 
+		4, 1, 2, 5, 5, 
+		2, 2, 3, 8, 7, 
+		2, 4, 8, 1, 4, 
+		1, 2, 3, 2, 2, 
+		5, 4, 2, 3, 3
+	}; 
+	
+	const Matrix m(10, 5, input); 
+
+	auto mr = m.get_row(2); 
+	BOOST_CHECK_EQUAL(mr.size(), 5); 
+
+	BOOST_CHECK_EQUAL(mr[0], 11); 
+	BOOST_CHECK_EQUAL(mr[1], 12); 
+	BOOST_CHECK_EQUAL(mr[2], 13); 
+	BOOST_CHECK_EQUAL(mr[3], 14); 
+	BOOST_CHECK_EQUAL(mr[4], 15); 
+	
+}

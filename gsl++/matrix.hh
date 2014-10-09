@@ -327,6 +327,10 @@ public:
 	 */ 
 	void set_row(int r, const DoubleVector& row); 
 
+	VectorView get_row(int r); 
+
+	ConstVectorView get_row(int r) const; 
+
 	/**
 	   Set a matrix column 
 	   \param c index of column to be set,  must be in [0, this->cols()-1]
@@ -334,6 +338,11 @@ public:
 	   to the number of rows of the matrix 
 	 */ 
 	void set_column(int c, const DoubleVector& col); 
+
+	VectorView get_column(int c); 
+
+	ConstVectorView get_column(int c) const; 
+
 
 	/**
 	   Evaluate the dot product between a row of the matrix and a given vector 

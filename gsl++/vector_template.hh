@@ -465,6 +465,16 @@ public:
 	
 	/// vector pointer type operator  to enable transparent calls to the GSL APL
 	operator vector_pointer_type (); 
+protected:
+	void reset_holder(vector_type *holder){
+		cdata = data = holder; 
+		owner = false; 
+	}
+	void reset_holder(const vector_type *holder){
+		cdata = holder;
+		owner = false;  
+	}
+
 private: 
 	vector_type *data; 
 	const vector_type *cdata; 
