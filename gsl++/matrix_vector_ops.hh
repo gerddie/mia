@@ -39,6 +39,8 @@ double dot(const gsl_vector *lhs, const gsl_vector *rhs);
 
 void matrix_orthogonalize(Matrix& M); 
 
+Matrix operator * (const Matrix& lhs, const Matrix& rhs); 
+
 }
 
 

@@ -72,22 +72,14 @@ Matrix FastICA::whiten(const Matrix& signal, const Matrix& evec, const DoubleVec
 		double iwscale = sqrt(eval[i]);
 		double wscale = 1.0 / iwscale;
 		
-		auto wmr = gsl_matrix_row(m_whitening_matrix, i); 
-		auto inv = gsl_matrix_row(evec, i);
-		auto dwmc = gsl_matrix_column(m_dewhitening_matrix, i); 
-		
-		gsl_vector_memcpy (&wmr.vector, &inv.vector); 
-		gsl_blas_dscal (wscale, &wmr.vector); 
-		
-		gsl_vector_memcpy (&dwmc.vector, &inv.vector); 
-		gsl_blas_dscal (iwscale, &dwmc.vector); 
+		auto wmr = m_whitening_matrix.get_row(i); 
+		auto inv = evec.get_row(i);
+		auto dwmc = m_dewhitening_matrix.get_column(i); 
+		transform(inv.begin(), inv.end(), wmr.begin(), [wscale](double x) {return wscale * x;}); 
+		transform(inv.begin(), inv.end(), dwmc.begin(), [iwscale](double x) {return iwscale * x;}); 
 	}
 	
-	Matrix result(evec.rows(), mixedSigC.cols(), true); 
-	
-	multiply_m_m(result, m_whitening_matrix, signal); 
-	
-	return result; 
+	return m_whitening_matrix * signal; 
 }
 
 bool FastICA::separate()
@@ -105,8 +97,6 @@ bool FastICA::separate()
 		guess = m_initGuess;
 
 	Matrix processing(m_mixedSig.rows(), m_numOfIC, clear);
-
-	m_icasig = Matrix(m_numOfIC, m_mixedSig.cols(), clear);
 
 	remove_mean(m_mixedSig, mixedSigCentered, mixed_mean);
 	

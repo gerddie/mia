@@ -315,6 +315,13 @@ Matrix Matrix::column_covariance() const
 	
 }
 
+Matrix operator * (const Matrix& lhs, const Matrix& rhs)
+{
+	Matrix result(lhs.rows(), rhs.cols(), false); 
+	void multiply_m_m(result, lhs, rhs);
+	return result; 
+}
+
 CSymmvEvalEvec::CSymmvEvalEvec(Matrix m):
 	evec(m.rows(), m.cols(), false), 
 	eval(m.rows(), false)
