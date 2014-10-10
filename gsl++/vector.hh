@@ -54,42 +54,42 @@ private:
 	gsl_vector_view m_view; 
 }; 
 
-class EXPORT_GSL ConstVectorView :private  Vector {
+class EXPORT_GSL ConstVectorView {
 public: 
-	ConstVectorView(gsl_vector_const_view vv):m_view(vv) {
-		reset_holder(&m_view.vector); 
+	ConstVectorView(gsl_vector_const_view vv):m_view(vv), 
+		m_holder(&m_view.vector)
+	{
+		
 	}; 
 	
-		const_iterator begin()const{
-			return Vector::begin(); 
-		}
+	Vector::const_iterator begin()const{
+		return m_holder.begin(); 
+	}
 		
-		const_iterator end()const{
-			return Vector::end(); 
-		}
+	Vector::const_iterator end()const{
+		return m_holder.end(); 
+	}
+	
+	Vector::size_type size() const {
+		return m_holder.size(); 
+	}
+	
+	Vector::value_type operator[](size_t i)const {
 		
-		size_type size() const {
-			return Vector::size(); 
-		}
+		return m_holder[i]; 
+	}; 
 		
-		value_type operator[](size_t i)const {
-			
-			return Vector::operator[](i); 
-		}; 
-		
-		/// read only vector pointer type operator to enable transparent calls to the GSL APL
-		operator const vector_type *() const {
-			return Vector::operator const vector_type *(); 
-		}
-		
-		
-		const vector_type * operator  ->() const{
-			return Vector::operator ->(); 
-		}
-
+	const Vector::vector_type * operator  ->() const{
+		return m_holder.operator ->(); 
+	}
+	
+	operator Vector::vector_const_pointer_type () const {
+		return m_holder.operator vector_const_pointer_type(); 
+	}
 
 private: 
 	gsl_vector_const_view m_view; 
+	const Vector m_holder; 
 }; 
 
 }

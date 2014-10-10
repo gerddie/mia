@@ -50,10 +50,10 @@ MultVectMatrix::MultVectMatrix(gsl_vector& result, const gsl_vector& lhs, const 
 
 void MultVectMatrix::operator () (const blocked_range<int>& range) const
 {
+	double val = 0.0; 
         for (int c = range.begin(); c != range.end(); ++c) {
-                auto rhs_column = gsl_matrix_const_column(m_rhs, c); 
-                const double val = cblas_ddot (m_rhs.rows(), m_lhs.data, m_lhs.stride, 
-					       rhs_column.vector.data, rhs_column.vector.stride); 
+                auto rhs_column = m_rhs.get_column(c); 
+                gsl_blas_ddot(&m_lhs, rhs_column, &val); 
                 gsl_vector_set(&m_result, c, val); 
         }
 }

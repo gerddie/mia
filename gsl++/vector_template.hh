@@ -319,6 +319,7 @@ const_vector_iterator<T> operator + (int dist, const const_vector_iterator<T>& i
 								\
 		typedef gsl_vector_##TYPE vector_type;		\
 		typedef gsl_vector_##TYPE *vector_pointer_type; \
+		typedef const gsl_vector_##TYPE *vector_const_pointer_type; \
 	protected:							\
 	static vector_type *alloc(size_t n) {			\
 		return gsl_vector_##TYPE##_alloc(n);			\
@@ -362,6 +363,7 @@ const_vector_iterator<T> operator + (int dist, const const_vector_iterator<T>& i
 		
 		typedef gsl_vector vector_type; 
 		typedef gsl_vector *vector_pointer_type; 
+		typedef const gsl_vector *vector_const_pointer_type; 
 		
 		protected:						
 		static vector_type *alloc(size_t n) {		
@@ -397,6 +399,7 @@ public:
 	typedef typename gsl_vector_dispatch<T>::reference reference;
 	typedef typename gsl_vector_dispatch<T>::const_reference const_reference; 
 	typedef typename gsl_vector_dispatch<T>::vector_pointer_type vector_pointer_type; 
+	typedef typename gsl_vector_dispatch<T>::vector_const_pointer_type vector_const_pointer_type; 
 	
 	/**
 	   Construct an empty vector without allocating the GSL data structures
@@ -456,15 +459,17 @@ public:
 		return data->data[i * data->stride]; 
 	}
 
-	/// read only vector pointer type operator to enable transparent calls to the GSL APL
-	operator const vector_type *() const; 
-	
 
 	const vector_type * operator  ->() const; 
 	vector_type * operator  ->(); 
 	
+        /// vector const pointer type operator  to enable transparent calls to the GSL APL
+	operator vector_const_pointer_type () const; 
+
 	/// vector pointer type operator  to enable transparent calls to the GSL APL
 	operator vector_pointer_type (); 
+	
+	
 protected:
 	void reset_holder(vector_type *holder){
 		cdata = data = holder; 

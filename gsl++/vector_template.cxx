@@ -85,12 +85,6 @@ TVector<T>::~TVector()
 }
 
 template <typename T> 
-TVector<T>::operator const typename TVector<T>::vector_type *() const
-{
-	return cdata; 
-}
-
-template <typename T> 
 const typename TVector<T>::vector_type * TVector<T>::operator  ->() const
 {
 	return cdata; 
@@ -107,6 +101,12 @@ template <typename T>
 TVector<T>::operator typename TVector<T>::vector_pointer_type ()
 {
 	return data; 
+}
+
+template <typename T> 
+TVector<T>::operator typename TVector<T>::vector_const_pointer_type () const
+{
+	return cdata; 
 }
 
 template <typename T> 
