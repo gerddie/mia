@@ -20,23 +20,28 @@
 
 #define FICA_TOL 1e-9; 
 
-#include <gsl++/fastica.hh>
 #include <gsl++/matrix_vector_ops.hh>
+#include <gsl++/pca.hh>
+#include <mia/core/fastica.hh>
 #include <algorithm>
 #include <random>
+#include <stdexcept>
 #include <gsl/gsl_blas.h>
+#include <mia/core/fastica_nonlinearity.hh>
 
 namespace mia {
 
-using namespace gsl; 
+using gsl::Vector; 
+using gsl::Matrix; 
+using gsl::CSymmvEvalEvec; 
 
 using std::sort; 
+using std::transform; 
 
 FastICA::FastICA(const Matrix&  mix):
         m_mix(mix), 
         m_approach(appr_defl), 
-        m_nrIC(m_mix.rows()), 
-        m_nonlinearity(new FNonlinPow3), 
+        m_numOfIC(m_mix.rows()), 
         m_finetune(false), 
         m_mu(1.0), 
         m_epsilon(0.0001), 
@@ -49,102 +54,110 @@ FastICA::FastICA(const Matrix&  mix):
         m_PCAonly(false), 
 	m_with_initial_guess(false)
 {
+        m_nonlinearity = produce_fastica_nonlinearity("tanh");  
 }
 
-static 
-void remove_mean(const Matrix& mixedSig, Matrix& mixedSigCentered, DoubleVector& mixed_mean)
+struct CCenteredSignal  {
+	CCenteredSignal(const Matrix& mixedSig); 
+	
+	Matrix signal; 
+	Vector mean; 
+}; 
+
+
+CCenteredSignal::CCenteredSignal(const Matrix& mixedSig):
+	signal(mixedSig.rows(), mixedSig.cols(), false), 
+	mean(mixedSig.rows(), true)
 {
 	for (size_t r = 0; r < mixedSig.rows(); ++r) {
 		for (size_t c = 0; c < mixedSig.cols(); ++c)
-			mixed_mean[r] += mixedSig(r,c); 
-		mixed_mean[r] /= mixedSig.cols(); 
+			mean[r] += mixedSig(r,c); 
+		mean[r] /= mixedSig.cols(); 
 		for (size_t c = 0; c < mixedSig.cols(); ++c)
-			mixedSigCentered.set(r,c, mixedSig(r,c) - mixed_mean[r]); 
+			signal.set(r,c, mixedSig(r,c) - mean[r]); 
 	}
 }
 
-Matrix FastICA::whiten(const Matrix& signal, const Matrix& evec, const DoubleVector& eval)
+void FastICA::evaluate_whiten_matrix(const Matrix& evec, const Vector& eval)
 {
 	m_whitening_matrix.reset(evec.cols(), evec.rows(), false); 
 	m_dewhitening_matrix.reset(evec.rows(), evec.cols(), false);
 	
-	for (int i = 0; i < eval.size(); i++) {
+	for (unsigned  i = 0; i < eval.size(); i++) {
 		double iwscale = sqrt(eval[i]);
 		double wscale = 1.0 / iwscale;
 		
 		auto wmr = m_whitening_matrix.get_row(i); 
 		auto inv = evec.get_row(i);
 		auto dwmc = m_dewhitening_matrix.get_column(i); 
-		transform(inv.begin(), inv.end(), wmr.begin(), [wscale](double x) {return wscale * x;}); 
-		transform(inv.begin(), inv.end(), dwmc.begin(), [iwscale](double x) {return iwscale * x;}); 
+		
+		transform(inv.begin(), inv.end(), wmr.begin(), 
+			  [wscale](double x) {return wscale * x;}); 
+		
+		transform(inv.begin(), inv.end(), dwmc.begin(), 
+			  [iwscale](double x) {return iwscale * x;}); 
 	}
-	
-	return m_whitening_matrix * signal; 
 }
 
 bool FastICA::separate()
 {
 
-	int dim = m_numOfIC;
-
-	Matrix mixedSigC(m_mixedSig.rows(), m_mixedSig.cols(), true);
-	DoubleVector mixedMean(m_mixedSig.rows(), clear);
-
+	CCenteredSignal centered(m_mix);
+	
 	Matrix guess;
-	if (m_initGuess.rows() != dim || m_initGuess.cols() != dim)
-		guess = Matrix(Dim, Dim, true);
-	else
+	if (m_initGuess.rows() > 0 && m_initGuess.cols() >0 )
 		guess = m_initGuess;
 
-	Matrix processing(m_mixedSig.rows(), m_numOfIC, clear);
-
-	remove_mean(m_mixedSig, mixedSigCentered, mixed_mean);
+	Matrix processing(m_mix.rows(), m_numOfIC, true);
 	
-	PCA pca(m_numOfIC, 0.9);
-	auto pca_result = pca.analyze(m_mixedSig); 
+	
+	gsl::PCA pca(m_numOfIC, 0.9);
+	auto pca_result = pca.analyze(centered.signal); 
 	
 	if (pca_result.eval.size() < 1) {
-		m_icasig = m_mixedSig;
+		m_independent_components = m_mix;
 		return false;
 	}
 
-	m_numOfIC = pca_result.evec.size(); 
-	
-	auto whitened_signal = whithen(mixedSigCentered, pca_result.evec, pca_result.eval);
+	m_numOfIC = pca_result.eval.size(); 
+	evaluate_whiten_matrix(pca_result.evec, pca_result.eval);
 
 	// if only PCA, stop here and save the dewithening as independend components 
 	// where is the mixing matrix? 
 	if (m_PCAonly) {
-		m_mixing_matrix.reset(mixedSigCentered.rows(), m_dewhitening_matrix.cols(), 1.0);
+		m_mixing_matrix.reset(m_mix.rows(), m_dewhitening_matrix.cols(), 1.0);
 		m_independent_components = m_dewhitening_matrix; 
 		return true; 
 	}
 	
+	auto whitened_signal = centered.signal * m_whitening_matrix; 
 	switch (m_approach) {
 	case appr_defl: return fpica_defl(whitened_signal);
 	case appr_symm: return fpica_symm(whitened_signal);
 	default: 
-		throw invalid_argument("FastICA::separate: unknown apporach given"); 
+		throw std::invalid_argument("FastICA::separate: unknown apporach given"); 
 		
 	}
 }
 
-bool FastICA::fpica_defl_round(int component, DoubleVector& w)
+bool FastICA::fpica_defl_round(int component, Vector& w)
 {
 	
 	double mu = m_mu;
 	
-	double old_delta = m_epsilon + 2.0;
+
 	double delta = m_epsilon + 1.0;
-	DoubleVector w_old(w);
-	DoubleVector w_old2(w);
+	Vector w_old(w);
+	Vector w_old2(w);
 	int iter = 0;
 
-	boof is_finetuning = false;  
+	bool is_finetuning = false;  
 	bool converged = false; 
 	int finetune = 0; 
-	
-	while (iter < m_maxNumIterations + finetune) {
+	bool loong = false; 
+	double stroke = 0.0; 
+
+	while (!converged && iter < m_maxNumIterations + finetune) {
 			
 		cvdebug() << "Defl: c=" << component
 			  << ", iter= " << iter 
@@ -154,17 +167,18 @@ bool FastICA::fpica_defl_round(int component, DoubleVector& w)
 		m_nonlinearity->set_mu(mu); 
 		m_nonlinearity->apply(w); 
 		
-		DoubleVector w_save(w); 
+		Vector w_save(w); 
 		for (int j = 0; j < component; ++j) {
 			const double wdot = m_separating_matrix.dot_row(j, w_save); 
-			cblas_daxpy(N, -wdot, wj->data, wj->stride, w->data, w->stride);
+                        auto wj = m_separating_matrix.get_row(j);
+			cblas_daxpy(wj->size, -wdot, wj->data, wj->stride, w->data, w->stride);
 		}
 		
 		double norm = sqrt(dot(w, w));
 		if (norm > 0.0) 
 			gsl_vector_scale(w, 1.0/norm); 
 
-		DoubleVector w_help = w_old; 
+		Vector w_help = w_old; 
 		gsl_vector_sub(w_help, w); 
 		
 		double delta = sqrt(dot(w_help, w_help));
@@ -214,11 +228,9 @@ bool FastICA::fpica_defl(const Matrix& X)
 	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
 
 	m_separating_matrix.reset(m_numOfIC, X.cols(), false); 
-	const int N = X.rows(); 
-	DoubleVector w( X.rows(), false); 
+	Vector w( X.rows(), false); 
 	
-	const double inv_m = 1.0 / X.cols();
-	
+
 	m_nonlinearity->set_signal(&X);
 	
 	bool global_converged = true; 
@@ -229,20 +241,17 @@ bool FastICA::fpica_defl(const Matrix& X)
 		for (unsigned i = 0; i < w.size(); ++i) 
 			w[i] = random_source(gen);
 		
-		bool converged = fpica_defl_round(i, w, false); 
-		if (!converged && m_stabilization) {
-			converged = fpica_defl_round(i, w, true);
-		}
+		bool converged = fpica_defl_round(i, w); 
 		
 		global_converged &= converged; 
 		m_separating_matrix.set_row(i, w);
 	}
 
 	m_independent_components.reset(m_numOfIC, X.cols(), false); 
-	multiply(m_independent_components, m_separating_matrix, X); 
+	multiply_m_m(m_independent_components, m_separating_matrix, X); 
 	
 	m_mixing_matrix.reset(X.rows(), m_numOfIC, false); 
-	multiply(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
+	multiply_m_m(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
 	
 	return global_converged; 
 }
@@ -264,11 +273,12 @@ static void msqrtm(Matrix& m )
 {
 
 	CSymmvEvalEvec see(m);
-
-	wm = ws; 
-	for (unsigned r = 0; r < wm.rows(); ++r) {
-		auto wmr = gsl_matrix_row(see.evec, c); 
-		gsl_vector_multiply(&wmr.vector, 1.0/ sqrt(see.eval[c])); 
+	
+	for (unsigned r = 0; r < see.evec.rows(); ++r) {
+		
+		auto wmr = see.evec.get_row(r); 
+		const double f = 1.0/ sqrt(see.eval[r]); 
+		transform(wmr.begin(), wmr.end(), wmr.begin(), [f](double x) {return f*x;}); 
 	}
 	multiply_m_mT(m, see.evec, see.evec); 
 }
@@ -289,8 +299,8 @@ bool FastICA::fpica_symm(const Matrix& X)
 	Matrix w_new(m_separating_matrix);
 	
 	// random and orthogonalize 
-	for(unsigned r = 0; r <  m_numOfIC; ++r) 
-		for(unsigned c = 0; c <  m_numOfIC; ++c){
+	for(int r = 0; r <  m_numOfIC; ++r) 
+		for(int c = 0; c <  m_numOfIC; ++c){
 			m_separating_matrix.set(r, c, random_source(gen)); 
 		}
 	
@@ -303,7 +313,7 @@ bool FastICA::fpica_symm(const Matrix& X)
 	Matrix BTB(m_separating_matrix.cols(), m_separating_matrix.cols(), false); 
 
 	bool converged = false; 
-	unsigned iter = 0; 
+	int iter = 0; 
 	double stroke = 0.0; 
 	bool loong = false; 
 
@@ -330,7 +340,7 @@ bool FastICA::fpica_symm(const Matrix& X)
 				converged = true; 
 			}
 		} else if (m_stabilization) {
-			multiply_mT_m(BTB, w_new, m_old); 
+			multiply_mT_m(BTB, w_new, w_old); 
 			double minAbsCos2 = min_abs_diag(BTB); 
 			
 			// Avoid ping-pong 
@@ -339,7 +349,7 @@ bool FastICA::fpica_symm(const Matrix& X)
 				mu /= 2.0; 
 			} else if (stroke) { // back to normal 
 				mu = stroke; 
-				stroke == 0; 
+				stroke = 0; 
 			} else if ( !loong && 2 * iter > m_maxNumIterations) {
 				// already running some time and 
 				// no convergence, try half step width 
@@ -356,10 +366,10 @@ bool FastICA::fpica_symm(const Matrix& X)
 	}
 	
 	m_independent_components.reset(m_numOfIC, X.cols(), false); 
-	multiply(m_independent_components, m_separating_matrix, X); 
+	multiply_m_m(m_independent_components, m_separating_matrix, X); 
 	
 	m_mixing_matrix.reset(X.rows(), m_numOfIC, false); 
-	multiply(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
+	multiply_m_m(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
 				   
 	return converged; 
 	
@@ -372,14 +382,14 @@ void FastICA::set_approach(EApproach apr)
 
 void FastICA::set_nrof_independent_components (int nrIC)
 {
-        m_nrIC = nrIC; 
+        m_numOfIC = nrIC; 
 }
 
 
-void FastICA::set_non_linearity (FNonlinearity *g)
+void FastICA::set_non_linearity (PFastICADeflNonlinearity g)
 {
         assert(g); 
-        m_nonlinearity.reset(g); 
+        m_nonlinearity = g; 
 }
 
 
@@ -477,121 +487,5 @@ const Matrix&	FastICA::get_white_sig () const
 {
         return m_white_sig; 
 }
-
-void FastICA::FNonlinearity::set_sample(double sample_size, size_t num_samples)
-{
-	m_sample_size = sample_size; 
-	m_num_samples = num_samples;
-}
-
-void FastICA::FNonlinearity::set_signal(const Matrix *signal)
-{
-	m_signal = signal; 
-	assert(m_signal); 
-
-	m_workspace = DoubleVector(m_signal->cols());  
-	m_workspace2 = DoubleVector(m_signal->rows());
-	post_set_signal(); 
-}
-
-void FastICA::FNonlinearity::set_scaling(double myy)
-{
-	assert(myy != 0.0); 
-	m_myy = myy; 
-}
-
-double FastICA::FNonlinearity::get_sample_size() const
-{
-	return m_sample_size; 
-}
-
-size_t FastICA::FNonlinearity::get_num_samples() const
-{
-	return m_sum_samples; 
-}
-
-double FastICA::FNonlinearity::get_scaling() const
-{
-	return m_myy; 
-}
-
-const Matrix& FastICA::FNonlinearity::get_signal() const
-{
-	assert(m_signal); 
-	return *m_signal; 
-}
-
-void FastICA::FNonlinearity::post_set_signal()
-{
-}
-
-void FNonlinPow3::apply(gsl::Matrix& W, gsl::Matrix& WtX) const
-{
-	transform(WtX.begin(), WtX.end(), WtX.begin(), [](double x)(return x*x*x;}); 
-	
-#error m_matrix_workspace not prepared 
-	multiply_m_m(m_matrix_workspace,  get_signal(), WtX); 
-
-	transform(WtX.begin(), WtX.end(), WtX.begin(), [](double x)(return x*x*x;}); 
-	
-	double inv_m = 1.0 / m_signal.rows(); 
-	transform(W.begin(), W.end(), m_matrix_workspace.begin(), W.begin(), 
-		  [inv_m](double w, double x){return x * inv_m - 3 * w;}); 
-}
-
-
-void FNonlinTanh::apply(gsl::Matrix& W, gsl::Matrix& WtX) const
-{
-	transform(WtX.begin(), WtX.end(), WtX.begin(), [this](double x){return tanh(m_a1 * x);}); 
-	for(unsigned c = 0; c < WtX.cols(); ++t) {
-		double sum = 0.0; 
-		auto wtx_col = gsl_matrix_get_const_column(WtX, c); 
-		const DoubleVector wc(&wtx_col.vector); 
-		for (unsigned r = 0; r < WtX.rows(); ++r) {
-			sum += 1 - wc[r] * wc[r]; 
-		}
-		m_workspace[c] = sum; 
-	}
-#error m_matrix_workspace not prepared 
-	multiply_m_m(m_matrix_workspace,  get_signal(), WtX); 
-
-	// test fist !!!
-	
-
-}
-
-void FNonlinGauss::post_set_signal()
-{
-	m_workspace3 = DoubleVector(m_signal->rows());
-}
-
-void FNonlinGauss::apply(DoubleVector& w, const DoubleVector& wtX) const
-{
-	transform(m_wtX.begin(), m_wtX.end(), m_workspace.begin(), 
-		  [](double x) {return x * x; }); 
-	
-	transform(m_workspace.begin(), m_workspace.end(), m_workspace3.begin(),
-		  [](double x) { return exp(- x / 2.0);}); 
-	
-	transform(m_wtX.begin(), m_wtX.end(), m_workspace3.begin(), m_workspace.begin()
-		  [](double u, double expu2) {return u * expu2}); 
-	
-	multiply_m_v(m_workspace2, get_signal(), m_workspace);
-	
-	transform(m_wtX.begin(), m_wtX.end(), m_workspace3.begin(), m_workspace3.begin(),
-		  [](double u, double expu2) { return (1 - u*u) * expu2;});
-	
-	double scale = 0.0; 
-	for_each(m_workspace3.begin(), m_workspace3.end(), [this, &scale](double x) {
-			scale += x;
-		}); 
-	
-	cblas_daxpy(m_workspace2.size(), scale, w->data, w->stride,
-		    m_workspace2->data, m_workspace2->stride); 
-	
-	transform(m_workspace2.begin(), m_workspace2.end(), w.begin(), 
-		  [inv_m](double x) { return x * inv_m;}); 
-}
-
 
 }; 

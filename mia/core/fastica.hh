@@ -21,6 +21,10 @@
 #ifndef mia_core_fastica_hh
 #define mia_core_fastica_hh
 
+#include <memory>
+#include <gsl++/matrix.hh>
+#include <mia/core/fastica_nonlinearity.hh>
+
 namespace mia {
 
 /**
@@ -31,29 +35,6 @@ class FastICA {
 public: 
 	enum EApproach {appr_defl, appr_symm}; 
 
-	class FNonlinearity {
-	public: 
-		void set_sample(double sample_size, size_t num_samples); 
-		void set_signal(const gsl::Matrix *signal); 
-		void set_scaling(double myy); 
-		virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const = 0; 
-		virtual void apply(gsl::Matrix& W, const gsl::Matrix& WtX) const = 0; 
-	protected: 
-		double get_sample_size() const; 
-		size_t get_num_samples() const; 
-		double get_scaling() const; 
-		const gsl::Matrix& get_signal() const; 
-	private: 
-		virtual void post_set_signal(); 
-		double m_sample_size; 
-		size_t m_num_samples; 
-		const gsl::Matrix *m_signal; 
-		double m_myy; 
-		gsl::DoubleVector m_workspace; 
-		gsl::DoubleVector m_workspace2; 
-	}; 
-
-	
 	FastICA(const gsl::Matrix&  mix);
 
 	bool separate(); 
@@ -62,7 +43,7 @@ public:
 	
 	void set_nrof_independent_components (int in_nrIC); 
 	
-	void set_non_linearity (FNonlinearity *in_g); 
+	void set_non_linearity (PFastICADeflNonlinearity in_g); 
 	
 	void 	set_fine_tune (bool in_finetune); 
 		
@@ -98,17 +79,23 @@ public:
 
 	const gsl::Matrix&	get_dewhitening_matrix () const;
 
+const gsl::Matrix&	get_principal_eigenvectors () const; 
+const gsl::Matrix&	get_white_sig () const;
 	
 private:
-	gsl::Matrix whiten(const gsl::Matrix& signal, const gsl::Matrix& evec, const gsl::DoubleVector& eval); 
+	// evaluate the whitening and de-whitening matrices 
+	void evaluate_whiten_matrix(const gsl::Matrix& evec, const gsl::Vector& eval); 
+        bool fpica_defl_round(int component, gsl::Vector& w); 
+	bool fpica_defl(const gsl::Matrix& X); 
+	bool fpica_symm(const gsl::Matrix& X); 
 
 	const gsl::Matrix&  m_mix;
 	
 	EApproach m_approach; 
 	
-	int m_nrIC; 
+	int m_numOfIC; 
 	
-	std::unique_ptr<FNonlinearity> m_nonlinearity; 
+	PFastICADeflNonlinearity m_nonlinearity; 
 	
 	bool m_finetune; 
 	
@@ -143,25 +130,13 @@ private:
 	gsl::Matrix	m_whitening_matrix;
 	
 	gsl::Matrix	m_dewhitening_matrix;
+
+        gsl::Matrix	m_principal_eigenvectors; 
+
+        gsl::Matrix	m_white_sig; 
+
 	
 };
-
-class FNonlinPow3 : public FastICA::FNonlinearity {
-	virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const ; 
-	virtual void apply(gsl::Matrix& W, gsl::Matrix& WtX) const; 
-
-}; 
-
-class FNonlinTanh : public FastICA::FNonlinearity {
-	virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const ;
-
-}; 
-
-class FNonlinGauss : public FastICA::FNonlinearity {
-	virtual void apply(gsl::DoubleVector& w, const gsl::DoubleVector& wtX) const ;
-	gsl::DoubleVector m_workspace3; 
-}; 
-
 
 }
 

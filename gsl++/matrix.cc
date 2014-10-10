@@ -318,7 +318,7 @@ Matrix Matrix::column_covariance() const
 Matrix operator * (const Matrix& lhs, const Matrix& rhs)
 {
 	Matrix result(lhs.rows(), rhs.cols(), false); 
-	void multiply_m_m(result, lhs, rhs);
+	multiply_m_m(result, lhs, rhs);
 	return result; 
 }
 

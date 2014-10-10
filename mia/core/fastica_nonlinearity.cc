@@ -132,6 +132,12 @@ TPluginHandler<TFactory<CFastICASymmNonlinearity>>::m_help =
 	"These plug-ins provide various non-linearity models for the FastICA algorithm "
         "that uses symetric estimation.";
 
+
+EXPORT_CORE PFastICADeflNonlinearity produce_fastica_nonlinearity(const std::string& descr)
+{
+	return CFastICADeflNonlinearityPluginHandler::instance().produce(descr);
+}
+
 EXPLICIT_INSTANCE_HANDLER(CFastICADeflNonlinearity); 
 EXPLICIT_INSTANCE_HANDLER(CFastICASymmNonlinearity); 
 

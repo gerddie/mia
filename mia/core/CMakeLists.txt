@@ -32,6 +32,7 @@ SET(MIACORE_SRC_BASE
   distance.cc
   dlloader.cc
   dummyhandler.cc
+  fastica.cc
   fastica_nonlinearity.cc
   file.cc 
   filetools.cc 
@@ -114,6 +115,7 @@ SET(MIACORE_HEADER_BASE
   export_handler.hh
   factory.hh
   factory_trait.hh
+  fastica.hh
   fastica_nonlinearity.hh
   fft1d_r2c.hh
   fftslopeclassifier.hh

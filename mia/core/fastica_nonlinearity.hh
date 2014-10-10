@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef mia_core_fastica_hh
-#define mia_core_fastica_hh
+#ifndef mia_core_fastica_nonlinearity_hh
+#define mia_core_fastica_nonlinearity_hh
 
 #include <gsl++/vector.hh>
 #include <gsl++/matrix.hh>
@@ -58,8 +58,8 @@ private:
    This class defines the interface of the nonlinearity g for deflation based FastICA. In order to 
    implement the a real non-linearity the method get_correction_and_scale must be overwritten. 
    
-   If the factor $\mu$ defined in the parent class is $\ge 1.0$, than the normal implementation 
-   will be used, if the value is positive but $\le 1.0$ then the stabelized variant of the algorithm 
+   If the factor \f$\mu\f$ defined in the parent class is \f$\ge 1.0\f$, than the normal implementation 
+   will be used, if the value is positive but \f$\le 1.0\f$ then the stabelized variant of the algorithm 
    is used. 
    
 */
@@ -94,6 +94,8 @@ private:
 }; 
 
 
+typedef std::shared_ptr<CFastICADeflNonlinearity> PFastICADeflNonlinearity; 
+
 class EXPORT_CORE CFastICASymmNonlinearity : public CFastICANonlinearityBase {
 public: 
 	typedef CFastICASymmNonlinearity plugin_type; 
@@ -104,6 +106,10 @@ protected:
 private: 
         gsl::Matrix m_matrix_workspace; 
 }; 
+
+
+EXPORT_CORE PFastICADeflNonlinearity produce_fastica_nonlinearity(const std::string& descr); 
+
 
 typedef TFactory<CFastICADeflNonlinearity> CFastICADeflNonlinearityPlugin; 
 
