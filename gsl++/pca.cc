@@ -48,7 +48,7 @@ void PCA::set_eigenvalue_minimum(double min)
 
 PCA::Result PCA::analyze(const Matrix& signal) const
 {
-        auto  covariance_matrix = signal.column_covariance();
+        auto  covariance_matrix = signal.row_covariance();
 
         // evaluate eigen-decomposition of covariance matrix 
 

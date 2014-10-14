@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( test_matrix_pca )
 
         PCA pca(3, 0.0);
         
-        auto result = pca.analyze(m);
+        auto result = pca.analyze(m.transposed());
         BOOST_CHECK_EQUAL(result.eval.size(), 3u); 
         BOOST_CHECK_CLOSE(result.eval[0], 8.785043, 0.1); 
         BOOST_CHECK_CLOSE(result.eval[1], 5.462723, 0.1); 

@@ -362,6 +362,7 @@ public:
 	 */ 
 
 	double dot_column(int c, const DoubleVector& col) const; 
+
 	
 private: 
 	gsl_matrix *m_matrix; 

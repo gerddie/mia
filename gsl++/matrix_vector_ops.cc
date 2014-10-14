@@ -103,9 +103,10 @@ void multiply_m_m(Matrix& result, const Matrix& lhs, const Matrix& rhs)
 
 void multiply_mT_m(Matrix& result, const Matrix& lhs, const Matrix& rhs)
 {
-	assert(result.rows() == lhs.cols()); 
-        assert(result.cols() == rhs.cols()); 
         assert(lhs.rows() == rhs.rows());
+	if (result.rows() != lhs.cols() || 
+	    result.cols() != rhs.cols()) 
+		result.reset(lhs.cols(), rhs.cols(), false); 
 
         for (unsigned r = 0; r < result.rows(); ++r) {
                 gsl_vector_view out_row = gsl_matrix_row(result, r); 
@@ -118,9 +119,12 @@ void multiply_mT_m(Matrix& result, const Matrix& lhs, const Matrix& rhs)
 
 void multiply_m_mT(Matrix& result, const Matrix& lhs, const Matrix& rhs)
 {
-	assert(result.rows() == lhs.rows()); 
-        assert(result.cols() == rhs.rows()); 
         assert(lhs.cols() == rhs.cols());
+
+	if (result.rows() != lhs.rows() || 
+	    result.cols() != rhs.rows()) 
+		result.reset(lhs.rows(), rhs.rows(), false); 
+
 
 	for (unsigned r = 0; r < result.rows(); ++r) {
                 gsl_vector_view out_row = gsl_matrix_row(result, r); 

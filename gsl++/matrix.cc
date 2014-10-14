@@ -209,7 +209,6 @@ double Matrix::operator ()(size_t i, size_t j) const
 
 Matrix::operator gsl_matrix * ()
 {
-	assert(m_matrix); 
 	return m_matrix; 
 }
 
@@ -314,6 +313,7 @@ Matrix Matrix::column_covariance() const
 	return cov; 
 	
 }
+
 
 Matrix operator * (const Matrix& lhs, const Matrix& rhs)
 {
