@@ -104,8 +104,10 @@ bool FastICA::separate()
 
 	CCenteredSignal centered(m_mix);
 	
+	cvdebug() << "separate signal of size " << centered.signal.rows() << "x" << centered.signal.cols() << "\n"; 
+
 	Matrix guess;
-	if (m_initGuess.rows() > 0 && m_initGuess.cols() >0 )
+	if (m_initGuess)
 		guess = m_initGuess;
 
 	Matrix processing(m_mix.rows(), m_numOfIC, true);
@@ -120,7 +122,11 @@ bool FastICA::separate()
 	}
 
 	m_numOfIC = pca_result.eval.size(); 
+	cvdebug() << "Considering " << m_numOfIC << " independend components\n"; 
+
 	evaluate_whiten_matrix(pca_result.evec, pca_result.eval);
+
+	cvdebug() << "Whitening matrix is of size " << m_whitening_matrix.rows() << "x" << m_whitening_matrix.cols() << "\n"; 
 
 	// if only PCA, stop here and save the dewithening as independend components 
 	// where is the mixing matrix? 
@@ -130,7 +136,7 @@ bool FastICA::separate()
 		return true; 
 	}
 	
-	auto whitened_signal = centered.signal * m_whitening_matrix; 
+	auto whitened_signal = m_whitening_matrix * centered.signal; 
 	switch (m_approach) {
 	case appr_defl: return fpica_defl(whitened_signal);
 	case appr_symm: return fpica_symm(whitened_signal);
@@ -169,8 +175,8 @@ bool FastICA::fpica_defl_round(int component, Vector& w)
 		
 		Vector w_save(w); 
 		for (int j = 0; j < component; ++j) {
-			const double wdot = m_separating_matrix.dot_row(j, w_save); 
-                        auto wj = m_separating_matrix.get_row(j);
+			const double wdot = m_separating_matrix.dot_column(j, w_save); 
+                        auto wj = m_separating_matrix.get_column(j);
 			cblas_daxpy(wj->size, -wdot, wj->data, wj->stride, w->data, w->stride);
 		}
 		
@@ -244,14 +250,28 @@ bool FastICA::fpica_defl(const Matrix& X)
 		bool converged = fpica_defl_round(i, w); 
 		
 		global_converged &= converged; 
-		m_separating_matrix.set_row(i, w);
+		m_separating_matrix.set_column(i, w);
 	}
 
-	m_independent_components.reset(m_numOfIC, X.cols(), false); 
-	multiply_m_m(m_independent_components, m_separating_matrix, X); 
+	cvdebug() << "Got B matrix " << m_separating_matrix.rows() << ", " 
+		  << m_separating_matrix.cols() << "\n"; 
 	
-	m_mixing_matrix.reset(X.rows(), m_numOfIC, false); 
-	multiply_m_m(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
+	cvdebug() << "Got whitening matrix " << m_whitening_matrix.rows() << ", " 
+		  << m_whitening_matrix.cols() << "\n"; 
+	
+	
+	Matrix W(m_separating_matrix.cols(),  m_whitening_matrix.cols(), false); 
+
+	multiply_mT_m(W, m_separating_matrix, m_whitening_matrix);
+	m_separating_matrix = W; 
+
+	cvdebug() << "Got separating matrix " << m_separating_matrix.rows() << ", " 
+		  << m_separating_matrix.cols() << "\n"; 
+
+
+	m_independent_components = m_separating_matrix * m_mix; 
+	
+	m_mixing_matrix = m_dewhitening_matrix * m_separating_matrix; 
 	
 	return global_converged; 
 }
@@ -283,6 +303,20 @@ static void msqrtm(Matrix& m )
 	multiply_m_mT(m, see.evec, see.evec); 
 }
 
+double FastICA::fpica_symm_step(Matrix& B, Matrix& B_old,double mu, Matrix& workspace)
+{
+	m_nonlinearity->set_mu(mu); 
+	m_nonlinearity->apply(B);
+	
+	// re-orthognalize 
+	multiply_mT_m(workspace, B, B); 
+	msqrtm(workspace);
+	multiply_m_m(B, B_old, workspace); 
+	
+	multiply_mT_m(workspace, B, B_old); 
+	return min_abs_diag(workspace); 
+}
+
 bool FastICA::fpica_symm(const Matrix& X)
 {
 	// not yet supported 
@@ -292,25 +326,24 @@ bool FastICA::fpica_symm(const Matrix& X)
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
 
-	m_separating_matrix.reset(m_numOfIC, X.cols(), true); 
+	Matrix B(X.rows(), m_numOfIC,  true); 
 
-	Matrix w_old(m_separating_matrix);
-	Matrix w_restart(m_separating_matrix);
-	Matrix w_new(m_separating_matrix);
+	Matrix B_old2(B);
+	Matrix B_restart(B);
 	
 	// random and orthogonalize 
-	for(int r = 0; r <  m_numOfIC; ++r) 
-		for(int c = 0; c <  m_numOfIC; ++c){
-			m_separating_matrix.set(r, c, random_source(gen)); 
-		}
-	
-	matrix_orthogonalize(m_separating_matrix); 
+	for(auto ib = B.begin(); ib != B.end(); ++ib) 
+		*ib = random_source(gen); 
+
+	Matrix B_old(B);
+
+	matrix_orthogonalize(B); 
 	m_nonlinearity->set_signal(&X);
 	
 	bool is_fine_tuning = false; 
 	double mu = m_mu;
 
-	Matrix BTB(m_separating_matrix.cols(), m_separating_matrix.cols(), false); 
+	Matrix BTB(B.cols(), B.rows(), false); 
 
 	bool converged = false; 
 	int iter = 0; 
@@ -319,28 +352,18 @@ bool FastICA::fpica_symm(const Matrix& X)
 
 	while (!converged  && iter < m_maxNumIterations) {
 		
-		m_nonlinearity->set_mu(mu); 
-		m_nonlinearity->apply(m_separating_matrix);
+		double minAbsCos = fpica_symm_step(B, B_old, mu, BTB); 
 
-		// re-orthognalize 
-		multiply_mT_m(BTB, m_separating_matrix, m_separating_matrix); 
-		msqrtm(BTB);
-		multiply_m_m(w_new, m_separating_matrix, BTB); 
-		
-		multiply_mT_m(BTB, w_new, m_separating_matrix); 
-		double minAbsCos = min_abs_diag(BTB); 
-		
 		if ( 1.0 - minAbsCos < m_epsilon) {
 			// run one more time with lower step-width
 			if (m_finetune && !is_fine_tuning) {
 				mu *= 0.01;
 				is_fine_tuning = true; 
-			}
-			else {
+			} else {
 				converged = true; 
 			}
 		} else if (m_stabilization) {
-			multiply_mT_m(BTB, w_new, w_old); 
+			multiply_mT_m(BTB, B, B_old2); 
 			double minAbsCos2 = min_abs_diag(BTB); 
 			
 			// Avoid ping-pong 
@@ -359,17 +382,15 @@ bool FastICA::fpica_symm(const Matrix& X)
 			}
 		}
 		
-		w_old = m_separating_matrix;
-		m_separating_matrix = w_new; 
+		B_old2 = B_old; 
+		B_old = B;
 		
 		++iter; 
 	}
-	
-	m_independent_components.reset(m_numOfIC, X.cols(), false); 
-	multiply_m_m(m_independent_components, m_separating_matrix, X); 
+	m_independent_components = m_dewhitening_matrix * B; 
 	
 	m_mixing_matrix.reset(X.rows(), m_numOfIC, false); 
-	multiply_m_m(m_mixing_matrix, m_dewhitening_matrix, m_separating_matrix); 
+	multiply_mT_m(m_mixing_matrix, B, m_whitening_matrix); 
 				   
 	return converged; 
 	
