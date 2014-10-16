@@ -26,6 +26,8 @@
 
 #include <gsl++/matrix_vector_ops.hh>
 
+#include <gsl/gsl_blas.h>
+
 using gsl::Matrix; 
 using namespace mia; 
 
@@ -38,17 +40,18 @@ BOOST_AUTO_TEST_CASE ( test_fastica_symm )
 			    0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1};
 
 	Matrix in_ics(3, 13, c); 
+	const int steps = 101; 
 
-	Matrix in_mixing_matrix(21, 3, false);
+	Matrix in_mixing_matrix(steps, 3, false);
 
 	auto c0 = in_mixing_matrix.get_column(0);
 	auto c1 = in_mixing_matrix.get_column(1);
 	auto c2 = in_mixing_matrix.get_column(2);
 
 	// sin(x) ; cos(x); sin(2x)
-	for ( int i = 0; i < 21; ++i) {
+	for ( int i = 0; i < steps; ++i) {
 		cvdebug() << "init row " << i << "\n"; 
-		double x = M_PI * (i - 10.0) / 21.0;
+		double x = (M_PI * (i - (steps- 1)/2)) / steps;
 		c0[i] = sin(x); 
 		c1[i] = cos(x); 
 		c2[i] = sin(2 * x);
@@ -61,36 +64,108 @@ BOOST_AUTO_TEST_CASE ( test_fastica_symm )
 
 	ica.set_approach(FastICA::appr_symm); 
 	ica.set_nrof_independent_components (3); 
-	
+ 	ica.set_epsilon (1e-10); 
+	ica.set_fine_tune(true); 
+	ica.set_non_linearity(produce_fastica_nonlinearity("pow3")); 
 	BOOST_CHECK(ica.separate()); 
 	
 	
 	const gsl::Matrix& out_mixing_matrix = ica.get_mixing_matrix();
 	const gsl::Matrix& out_ics = ica.get_independent_components();
 
+	// the mixes should be close to orthogonal 
+	
+	for (unsigned int c = 1; c < out_mixing_matrix.cols(); ++c) {
+		auto col_a = out_mixing_matrix.get_column(c); 
+		double na = 0.0; 
+		gsl_blas_ddot(col_a, col_a, &na); 
+		for (unsigned int c1 = 0; c1 < c; ++c1) {
+			auto col_b = out_mixing_matrix.get_column(c1); 
+			auto dot = 1.0; 
+			double nb = 0.0; 
+			gsl_blas_ddot(col_b, col_b, &nb); 
+			gsl_blas_ddot(col_a, col_b, & dot); 
+			BOOST_CHECK_SMALL(dot, 0.1 * na * nb); 
+		}
+	}
+
+
 	BOOST_CHECK_EQUAL(out_mixing_matrix.rows(), in_mixing_matrix.rows()); 
 	BOOST_CHECK_EQUAL(out_mixing_matrix.cols(), in_mixing_matrix.cols()); 
 	
-	for (unsigned int r = 0; r < out_mixing_matrix.rows(); ++r) 
-		for (unsigned int c = 0; c < out_mixing_matrix.cols(); ++c) {
-			cvdebug() << ""<< r << "x" << c <<": have "
-				  << out_mixing_matrix(r,c) << " expect " 
-				  << in_mixing_matrix(r,c) << "\n"; 
-			BOOST_CHECK_CLOSE(out_mixing_matrix(r,c), in_mixing_matrix(r,c), 0.1); 
-		}
 
 	BOOST_CHECK_EQUAL(out_ics.rows(), in_ics.rows()); 
 	BOOST_CHECK_EQUAL(out_ics.cols(), in_ics.cols()); 
 	
-	for (unsigned int r = 0; r < out_ics.rows(); ++r) 
-		for (unsigned int c = 0; c < out_ics.cols(); ++c) {
-			cvdebug() << ""<< r << "x" << c <<": have "
-				  << out_ics(r,c) << " expect " 
-				  << in_ics(r,c) << "\n"; 
-
-			BOOST_CHECK_CLOSE(out_ics(r,c), in_ics(r,c), 0.1); 
-		}
-	
 }
 
 
+
+BOOST_AUTO_TEST_CASE ( test_fastica_defl ) 
+{
+	// create the components and the mixing matrix 
+
+	const double c[] = {1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,  
+			    0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 
+			    0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1};
+
+	Matrix in_ics(3, 13, c); 
+	const int steps = 101; 
+
+	Matrix in_mixing_matrix(steps, 3, false);
+
+	auto c0 = in_mixing_matrix.get_column(0);
+	auto c1 = in_mixing_matrix.get_column(1);
+	auto c2 = in_mixing_matrix.get_column(2);
+
+	// sin(x) ; cos(x); sin(2x)
+	for ( int i = 0; i < steps; ++i) {
+		cvdebug() << "init row " << i << "\n"; 
+		double x = (M_PI * (i - (steps- 1)/2)) / steps;
+		c0[i] = sin(x); 
+		c1[i] = cos(x); 
+		c2[i] = sin(2 * x);
+	}
+	
+	Matrix mix = in_mixing_matrix * in_ics; 
+	
+
+	FastICA ica(mix);
+
+	ica.set_approach(FastICA::appr_defl); 
+	ica.set_nrof_independent_components (3); 
+ 	ica.set_epsilon (1e-10); 
+	ica.set_fine_tune(true); 
+	ica.set_stabilization(true); 
+	ica.set_non_linearity(produce_fastica_nonlinearity("pow3")); 
+	BOOST_CHECK(ica.separate()); 
+	
+	
+	const gsl::Matrix& out_mixing_matrix = ica.get_mixing_matrix();
+	const gsl::Matrix& out_ics = ica.get_independent_components();
+
+	// the mixes should be close to orthogonal 
+	
+	for (unsigned int c = 1; c < out_mixing_matrix.cols(); ++c) {
+		auto col_a = out_mixing_matrix.get_column(c); 
+		double na = 0.0; 
+		gsl_blas_ddot(col_a, col_a, &na); 
+		for (unsigned int c1 = 0; c1 < c; ++c1) {
+			auto col_b = out_mixing_matrix.get_column(c1); 
+			auto dot = 1.0; 
+			double nb = 0.0; 
+			gsl_blas_ddot(col_b, col_b, &nb); 
+			gsl_blas_ddot(col_a, col_b, & dot); 
+			BOOST_CHECK_SMALL(dot, 0.1 * na * nb); 
+		}
+	}
+
+
+	BOOST_CHECK_EQUAL(out_mixing_matrix.rows(), in_mixing_matrix.rows()); 
+	BOOST_CHECK_EQUAL(out_mixing_matrix.cols(), in_mixing_matrix.cols()); 
+	
+
+	BOOST_CHECK_EQUAL(out_ics.rows(), in_ics.rows()); 
+	BOOST_CHECK_EQUAL(out_ics.cols(), in_ics.cols()); 
+	
+}

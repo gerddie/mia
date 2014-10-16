@@ -469,6 +469,7 @@ public:
 	/// vector pointer type operator  to enable transparent calls to the GSL APL
 	operator vector_pointer_type (); 
 	
+	void print(std::ostream& os) const;  
 	
 protected:
 	void reset_holder(vector_type *holder){

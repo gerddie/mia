@@ -354,6 +354,7 @@ public:
 
 	double dot_column(int c, const DoubleVector& col) const; 
 
+	void print(std::ostream& os) const; 
 	
 private: 
 	gsl_matrix *m_matrix; 
@@ -363,6 +364,12 @@ private:
 
 
 Matrix operator * (const Matrix& lhs, const Matrix& rhs); 
+
+inline std::ostream& operator << (std::ostream& os, const Matrix& m)
+{
+	m.print(os); 
+	return os; 
+}
 
 /**
    Evaluate the eigenvalues and eigenvectors of the input matrix

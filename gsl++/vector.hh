@@ -21,6 +21,8 @@
 #ifndef GSLPP_VECTOR_HH
 #define GSLPP_VECTOR_HH
 
+
+#include <iostream>
 #include <gsl++/gsldefines.hh>
 #include <gsl++/vector_template.hh>
 
@@ -91,6 +93,11 @@ private:
 	gsl_vector_const_view m_view; 
 	const Vector m_holder; 
 }; 
+
+inline std::ostream& operator << (std::ostream& os, const Vector& v) {
+	v.print(os); 
+	return os; 
+} 
 
 }
 

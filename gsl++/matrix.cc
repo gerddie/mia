@@ -33,6 +33,7 @@ namespace gsl {
 
 using std::swap; 
 using std::fill; 
+using std::ostream_iterator; 
 
 Matrix::Matrix():m_matrix(nullptr), m_const_matrix(nullptr), m_owner(false)
 {
@@ -186,17 +187,37 @@ ConstVectorView Matrix::get_column(int c) const
 
 double Matrix::dot_row(int r, const DoubleVector& row) const 
 {
-	auto mrow = gsl_matrix_const_row(m_matrix, r); 
+	auto mrow = gsl_matrix_const_row(m_const_matrix, r); 
 	return dot(row, &mrow.vector); 
 }
 
 double Matrix::dot_column(int c, const DoubleVector& col) const 
 {
-	auto mcol = gsl_matrix_const_column(m_matrix, c); 
+	auto mcol = gsl_matrix_const_column(m_const_matrix, c); 
 	return dot(col, &mcol.vector); 
 }
 
-
+void Matrix::print(std::ostream& os) const
+{
+	os << "["; 
+	if (!m_matrix) {
+		if (!m_const_matrix) {
+			os << "(null)]\n"; 
+			return; 
+		}
+			
+		os << "(const)"; 
+	}
+	os << "\n"; 
+	
+	for (unsigned r = 0; r < rows(); ++r) {
+		auto mrow = get_row(r); 
+		os << "  "; 
+		copy(mrow.begin(), mrow.end(), ostream_iterator<double>(os, ", ")); 
+		os << "\n"; 
+	}
+	os << "]"; 
+}
 
 void Matrix::set(size_t i, size_t j, double x)
 {

@@ -20,6 +20,7 @@
 
 #include <cassert>
 #include <vector>
+#include <iterator>
 
 namespace gsl {
 template <typename T> 
@@ -96,6 +97,13 @@ typename TVector<T>::vector_type * TVector<T>::operator  ->()
 	return data; 
 }
 
+template <typename T> 
+void TVector<T>::print(std::ostream& os) const
+{
+	os << "["; 
+	std::copy(begin(), end(), std::ostream_iterator<T>(os, ", ")); 
+	os << "]"; 
+}
 
 template <typename T> 
 TVector<T>::operator typename TVector<T>::vector_pointer_type ()
