@@ -148,7 +148,7 @@ struct SymmetryNonlinearityFixture {
 }; 
 
 
-BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity_stabilized_Symm, SymmetryNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_pow_nonlinearity_stabilized_Symm, SymmetryNonlinearityFixture ) 
 {
 	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
 	
@@ -163,6 +163,29 @@ BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity_stabilized_Symm, SymmetryNonlin
 	BOOST_CHECK_CLOSE(W(2,1), -0.39022, 0.01); 
 	BOOST_CHECK_CLOSE(W(3,0), -0.64952, 0.01); 
 	BOOST_CHECK_CLOSE(W(3,1), -1.35443, 0.01); 
+
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_Symm, SymmetryNonlinearityFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
+	
+	plugin->set_signal(&signal);
+	plugin->apply(W); 
+	    
+   
+    
+   
+
+	BOOST_CHECK_CLOSE(W(0,0), 0.42007, 0.01); 
+	BOOST_CHECK_CLOSE(W(0,1), -1.05476, 0.01); 
+	BOOST_CHECK_CLOSE(W(1,0),  -0.36337, 0.01); 
+	BOOST_CHECK_CLOSE(W(1,1), -0.58123, 0.01); 
+	BOOST_CHECK_CLOSE(W(2,0), -0.91679, 0.01); 
+	BOOST_CHECK_CLOSE(W(2,1), -0.24641, 0.01); 
+	BOOST_CHECK_CLOSE(W(3,0),  -0.28688, 0.01); 
+	BOOST_CHECK_CLOSE(W(3,1), -0.62782, 0.01); 
 
 }
 
