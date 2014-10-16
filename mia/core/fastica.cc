@@ -289,29 +289,23 @@ static double min_abs_diag(const Matrix& m)
 	return min_val; 
 }
 
-static void msqrtm(Matrix& m )
-{
-
-	CSymmvEvalEvec see(m);
-	
-	for (unsigned r = 0; r < see.evec.rows(); ++r) {
-		
-		auto wmr = see.evec.get_row(r); 
-		const double f = 1.0/ sqrt(see.eval[r]); 
-		transform(wmr.begin(), wmr.end(), wmr.begin(), [f](double x) {return f*x;}); 
-	}
-	multiply_m_mT(m, see.evec, see.evec); 
-}
-
 double FastICA::fpica_symm_step(Matrix& B, Matrix& B_old,double mu, Matrix& workspace)
 {
 	m_nonlinearity->set_mu(mu); 
+
 	m_nonlinearity->apply(B);
+
 	
-	// re-orthognalize 
-	multiply_mT_m(workspace, B, B); 
-	msqrtm(workspace);
-	multiply_m_m(B, B_old, workspace); 
+	cvdebug() << "before msqrtm: (" << workspace.rows() << "x" << workspace.cols()  << ")="; 
+	copy(workspace.begin(), workspace.end(), std::ostream_iterator<double>(cverb, ", ")); 
+	cverb << "\n"; 
+
+	matrix_inv_sqrt(B);
+
+	cvdebug() << "after msqrtm: (" << workspace.rows() << "x" << workspace.cols()  << "\n"; 
+	copy(workspace.begin(), workspace.end(), std::ostream_iterator<double>(cverb, ", ")); 
+	cverb << "\n"; 
+
 	
 	multiply_mT_m(workspace, B, B_old); 
 	return min_abs_diag(workspace); 
@@ -337,7 +331,15 @@ bool FastICA::fpica_symm(const Matrix& X)
 
 	Matrix B_old(B);
 
+	cvdebug() << "B= before orthogonalization"; 
+	copy(B.begin(), B.end(), std::ostream_iterator<double>(cverb, ", ")); 
+	cverb << "\n"; 
 	matrix_orthogonalize(B); 
+
+	cvdebug() << "B= after orthogonalization" ; 
+	copy(B.begin(), B.end(), std::ostream_iterator<double>(cverb, ", ")); 
+	cverb << "\n"; 
+
 	m_nonlinearity->set_signal(&X);
 	
 	bool is_fine_tuning = false; 
@@ -352,7 +354,13 @@ bool FastICA::fpica_symm(const Matrix& X)
 
 	while (!converged  && iter < m_maxNumIterations) {
 		
+
+		cvdebug() << "B= before calling fpica_symm_step" ; 
+		copy(B.begin(), B.end(), std::ostream_iterator<double>(cverb, ", ")); 
+		cverb << "\n"; 
+
 		double minAbsCos = fpica_symm_step(B, B_old, mu, BTB); 
+		cvdebug() <<  iter << ":" << 1.0 - minAbsCos << "\n"; 
 
 		if ( 1.0 - minAbsCos < m_epsilon) {
 			// run one more time with lower step-width
@@ -369,6 +377,7 @@ bool FastICA::fpica_symm(const Matrix& X)
 			// Avoid ping-pong 
 			if (!stroke && (1 - minAbsCos2 < m_epsilon)) {
 				stroke = mu; 
+
 				mu /= 2.0; 
 			} else if (stroke) { // back to normal 
 				mu = stroke; 
@@ -387,10 +396,12 @@ bool FastICA::fpica_symm(const Matrix& X)
 		
 		++iter; 
 	}
-	m_independent_components = m_dewhitening_matrix * B; 
+	m_mixing_matrix = m_dewhitening_matrix * B; 
+		
+	m_separating_matrix.reset(X.rows(), m_numOfIC, false); 
+	multiply_mT_m(m_separating_matrix, B, m_whitening_matrix); 
 	
-	m_mixing_matrix.reset(X.rows(), m_numOfIC, false); 
-	multiply_mT_m(m_mixing_matrix, B, m_whitening_matrix); 
+	m_independent_components = m_separating_matrix * m_mix; 
 				   
 	return converged; 
 	

@@ -426,6 +426,42 @@ BOOST_AUTO_TEST_CASE( test_const_col_ops )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_matrix_inv_sqrt ) 
+{
+	const double input[16]  = {
+		0.25, 0.35, 0.1, 0.3, 
+		0.35, 0.25, 0.1, 0.3, 
+		0.1,  0.3, 0.25, 0.35,  
+		0.15, 0.45, 0.2, 0.7
+	}; 
+
+	Matrix m(4,4,input); 
+	matrix_inv_sqrt(m); 
+
+	       
+	BOOST_CHECK_CLOSE(m(0,0), 0.272403, 0.1); 
+	BOOST_CHECK_CLOSE(m(0,1), 0.919640, 0.1);
+	BOOST_CHECK_CLOSE(m(0,2),-0.228760, 0.1);
+	BOOST_CHECK_CLOSE(m(0,3),-0.166518, 0.1);
+
+	BOOST_CHECK_CLOSE(m(1,0), 0.937965, 0.1);
+	BOOST_CHECK_CLOSE(m(1,1),-0.201772, 0.1);
+	BOOST_CHECK_CLOSE(m(1,2), 0.120041, 0.1);
+	BOOST_CHECK_CLOSE(m(1,3), 0.255148, 0.1);
+
+	BOOST_CHECK_CLOSE(m(2,0), -0.079173, 0.1);
+	BOOST_CHECK_CLOSE(m(2,1), 0.271666, 0.1);
+	BOOST_CHECK_CLOSE(m(2,2), 0.957528, 0.1);
+	BOOST_CHECK_CLOSE(m(2,3), 0.055393, 0.1);
+
+	BOOST_CHECK_CLOSE(m(3,0), -0.199374, 0.1);
+	BOOST_CHECK_CLOSE(m(3,1), 0.199370, 0.1);
+	BOOST_CHECK_CLOSE(m(3,2), -0.128056, 0.1);
+	BOOST_CHECK_CLOSE(m(3,3), 0.950843, 0.1);
+
+	
+}
+
 BOOST_AUTO_TEST_CASE( test_col_ops ) 
 {
 	const double input[50]  = { 

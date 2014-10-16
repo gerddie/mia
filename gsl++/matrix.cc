@@ -23,9 +23,11 @@
 #include <iostream>
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_eigen.h>
+#include <gsl/gsl_blas.h>
 
 #include <gsl++/matrix.hh>
 #include <gsl++/matrix_vector_ops.hh>
+#include <algorithm>
 
 namespace gsl {
 
@@ -332,6 +334,24 @@ CSymmvEvalEvec::CSymmvEvalEvec(Matrix m):
 	gsl_eigen_symmv (m, eval, evec, ws); 
 	gsl_eigen_symmv_free (ws); 
 }
+
+void matrix_inv_sqrt(Matrix& m )
+{
+	Matrix mTm(m.cols(), m.cols(), false); 
+	multiply_mT_m(mTm, m, m); 
+
+	CSymmvEvalEvec see(mTm);
+	
+	for (unsigned r = 0; r < see.evec.cols(); ++r) {
+		auto wmr = see.evec.get_column(r); 
+		const double f = see.eval[r] > 0 ? 1.0/ sqrt(sqrt(see.eval[r])) : 0.0; 
+		std::transform(wmr.begin(), wmr.end(), wmr.begin(), [f](double x) {return f*x;}); 
+	}
+	multiply_m_mT(mTm, see.evec, see.evec); 
+	m = m * mTm; 
+
+}
+
 
 bool operator == (const matrix_iterator& lhs, const matrix_iterator& rhs)
 {

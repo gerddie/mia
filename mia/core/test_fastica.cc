@@ -72,7 +72,10 @@ BOOST_AUTO_TEST_CASE ( test_fastica_symm )
 	BOOST_CHECK_EQUAL(out_mixing_matrix.cols(), in_mixing_matrix.cols()); 
 	
 	for (unsigned int r = 0; r < out_mixing_matrix.rows(); ++r) 
-		for (unsigned int c = 0; c < out_mixing_matrix.rows(); ++c) {
+		for (unsigned int c = 0; c < out_mixing_matrix.cols(); ++c) {
+			cvdebug() << ""<< r << "x" << c <<": have "
+				  << out_mixing_matrix(r,c) << " expect " 
+				  << in_mixing_matrix(r,c) << "\n"; 
 			BOOST_CHECK_CLOSE(out_mixing_matrix(r,c), in_mixing_matrix(r,c), 0.1); 
 		}
 
@@ -80,7 +83,11 @@ BOOST_AUTO_TEST_CASE ( test_fastica_symm )
 	BOOST_CHECK_EQUAL(out_ics.cols(), in_ics.cols()); 
 	
 	for (unsigned int r = 0; r < out_ics.rows(); ++r) 
-		for (unsigned int c = 0; c < out_ics.rows(); ++c) {
+		for (unsigned int c = 0; c < out_ics.cols(); ++c) {
+			cvdebug() << ""<< r << "x" << c <<": have "
+				  << out_ics(r,c) << " expect " 
+				  << in_ics(r,c) << "\n"; 
+
 			BOOST_CHECK_CLOSE(out_ics(r,c), in_ics(r,c), 0.1); 
 		}
 	

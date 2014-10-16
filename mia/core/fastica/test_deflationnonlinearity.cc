@@ -174,10 +174,6 @@ BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_Symm, SymmetryNonlinearityFixtur
 	plugin->set_signal(&signal);
 	plugin->apply(W); 
 	    
-   
-    
-   
-
 	BOOST_CHECK_CLOSE(W(0,0), 0.42007, 0.01); 
 	BOOST_CHECK_CLOSE(W(0,1), -1.05476, 0.01); 
 	BOOST_CHECK_CLOSE(W(1,0),  -0.36337, 0.01); 

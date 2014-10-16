@@ -48,12 +48,7 @@ public:
 		}
 		
 		
-	matrix_iterator(const matrix_iterator& other):
-		m_matrix(other.m_matrix), 
-		m_current(other.m_current), 
-		m_current_column(other.m_current_column)
-		{
-		}
+	matrix_iterator(const matrix_iterator& other) = default; 
 
 	double& operator *(){
 		assert(m_current); 
@@ -61,6 +56,7 @@ public:
 	}
 	
 	matrix_iterator& operator ++() {
+		assert(m_current); 
 		++m_current; 
 		++m_current_column; 
 		if(m_current_column == m_matrix->size2) {
@@ -116,13 +112,7 @@ public:
 		}
 		
 		
-	const_matrix_iterator(const const_matrix_iterator& other):
-		m_matrix(other.m_matrix), 
-		m_current(other.m_current), 
-		m_current_column(other.m_current_column), 
-		m_row_jump(other.m_row_jump)
-		{
-		}
+	const_matrix_iterator(const const_matrix_iterator& other) = default; 
 
 	double operator *() const{
 		assert(m_current); 
@@ -130,6 +120,7 @@ public:
 	}
 	
 	const_matrix_iterator& operator ++() {
+		assert(m_current); 
 		++m_current; 
 		++m_current_column; 
 		if(m_current_column == m_matrix->size2) {
@@ -370,6 +361,9 @@ private:
 	bool m_owner; 
 }; 
 
+
+Matrix operator * (const Matrix& lhs, const Matrix& rhs); 
+
 /**
    Evaluate the eigenvalues and eigenvectors of the input matrix
 */
@@ -381,6 +375,11 @@ struct CSymmvEvalEvec {
 }; 
 	
 
+/**
+   Evaluate in place: pow(m, -0.5); 
+
+*/
+void matrix_inv_sqrt(Matrix& m); 
 
 
 } // end namespace 

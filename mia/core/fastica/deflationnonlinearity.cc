@@ -115,7 +115,8 @@ const std::string CFastICADeflPow3Plugin::do_get_descr()const
 }
 
 CFastICADeflTanhPlugin::CFastICADeflTanhPlugin():
-	CFastICADeflNonlinearityPlugin("tanh")
+	CFastICADeflNonlinearityPlugin("tanh"), 
+	m_a(1.0)
 {
 	this->add_parameter("a", 
 			    new CDoubleParameter(m_a, 1, 2, 
