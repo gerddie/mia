@@ -20,6 +20,8 @@
 
 #include <gsl++/vector.hh>
 
+#include <cstring>
+
 namespace gsl {
 
 
@@ -35,13 +37,20 @@ Vector::Vector(size_type n, bool clear):
 {
 	cdata = data = (vector_type*) (clear ? gsl_vector_calloc (n) : gsl_vector_alloc (n));  
 }
-	
+
+Vector::Vector(size_type size, const double *init):
+	owner(true)
+{
+	cdata = data = (vector_type*) (gsl_vector_alloc (size));  
+	memcpy(gsl_vector_ptr (data,0), init, size * sizeof(double)); 
+}
+
 Vector::Vector(const Vector& other):
 	owner(true)
 {
 	assert(other.cdata); 
 	
-	cdata = data = gsl_vector_calloc (other.cdata->size);
+	cdata = data = gsl_vector_alloc (other.cdata->size);
 	gsl_vector_memcpy(data, other.cdata); 
 }
 

@@ -32,6 +32,7 @@ namespace gsl {
 /**
     This is a wrapper class around the GSL vector type. It provides 
     a compatibility layer to make it possible to use STL algorithms and constructs.
+    
 */
 class Vector {
 
@@ -57,6 +58,14 @@ public:
 	   \param clear if set to \a true set all values to zero at allocation 
 	 */
 	Vector(size_type size, bool clear);
+
+
+	/**
+	   Construct a vector of given size and initialize it with the given data 
+	   \param size 
+	   \param init double array that must be at least of size \a size 
+	 */
+	Vector(size_type size, const double *init);
 
 	/**
 	   Wrap a pre-constructed GSL vector. The passed GSL-vector will not be destroyed 
