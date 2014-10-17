@@ -40,6 +40,12 @@ double CFastICADeflPow3::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::D
 	return 3.0 / inv_m; 
 }
 
+double CFastICADeflPow3::do_get_saddle_test_value(const gsl::Vector& ic) const
+{
+	return 0.0; 
+}
+	
+
 CFastICADeflTanh::CFastICADeflTanh(double a):m_a(a)
 {
 }
@@ -58,6 +64,12 @@ double CFastICADeflTanh::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::D
 	
 	return m_a * scale; 
 }
+
+double CFastICADeflTanh::do_get_saddle_test_value(const gsl::Vector& ic) const
+{
+	return 0.0; 
+}
+
 
 CFastICADeflGauss::CFastICADeflGauss(double a):m_a(a)
 {
@@ -85,6 +97,11 @@ double CFastICADeflGauss::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::
 			scale += x;
 		}); 
 	return scale; 
+}
+
+double CFastICADeflGauss::do_get_saddle_test_value(const gsl::Vector& ic) const
+{
+	return 0.0; 
 }
 	
 

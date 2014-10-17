@@ -50,7 +50,8 @@ FastICA::FastICA(const Matrix&  mix):
         m_maxNumIterations(1000), 
         m_maxFineTune(200), 
         m_PCAonly(false), 
-	m_with_initial_guess(false)
+	m_with_initial_guess(false), 
+	m_do_saddle_check(false)
 {
         m_nonlinearity = produce_fastica_nonlinearity("pow3");  
 }
@@ -328,49 +329,60 @@ bool FastICA::fpica_symm(const Matrix& X)
 
 	int maxiter = m_maxNumIterations; 
 
-	while (!converged  && iter < maxiter) {
+	bool do_saddle_check = m_do_saddle_check; 
 
-		double minAbsCos = fpica_symm_step(B, B_old, mu, BTB); 
+	do {
+		while (!converged  && iter < maxiter) {
 
-		cvdebug() << "B= "  << B << "\n"; 
-
-		cvmsg() << "FastICA: "<<  iter << ":" << 1.0 - minAbsCos << "\n"; 
-
-		if ( 1.0 - minAbsCos < m_epsilon) {
-			// run one more time with lower step-width
-			if (m_finetune && !is_fine_tuning) {
-				mu *= 0.01;
-				is_fine_tuning = true; 
-				maxiter += m_maxFineTune;
-			} else {
-				converged = true; 
-			}
-		} else if (m_stabilization) {
-			multiply_mT_m(BTB, B, B_old2); 
-			double minAbsCos2 = min_abs_diag(BTB); 
+			double minAbsCos = fpica_symm_step(B, B_old, mu, BTB); 
 			
-			// Avoid ping-pong 
-			if (!stroke && (1 - minAbsCos2 < m_epsilon)) {
-				stroke = mu; 
-
-				mu /= 2.0; 
-			} else if (stroke) { // back to normal 
-				mu = stroke; 
-				stroke = 0; 
-			} else if ( !loong && 2 * iter > m_maxNumIterations) {
-				// already running some time and 
-				// no convergence, try half step width 
-				// once
-				loong = true; 
-				mu *= 0.5; 
+			cvdebug() << "B= "  << B << "\n"; 
+			
+			cvmsg() << "FastICA: "<<  iter << ":" << 1.0 - minAbsCos << "\n"; 
+			
+			if ( 1.0 - minAbsCos < m_epsilon) {
+				// run one more time with lower step-width
+				if (m_finetune && !is_fine_tuning) {
+					mu *= 0.01;
+					is_fine_tuning = true; 
+					maxiter += m_maxFineTune;
+				} else {
+					converged = true; 
+				}
+			} else if (m_stabilization) {
+				multiply_mT_m(BTB, B, B_old2); 
+				double minAbsCos2 = min_abs_diag(BTB); 
+				
+				// Avoid ping-pong 
+				if (!stroke && (1 - minAbsCos2 < m_epsilon)) {
+					stroke = mu; 
+					
+					mu /= 2.0; 
+				} else if (stroke) { // back to normal 
+					mu = stroke; 
+					stroke = 0; 
+				} else if ( !loong && 2 * iter > m_maxNumIterations) {
+					// already running some time and 
+					// no convergence, try half step width 
+					// once
+					loong = true; 
+					mu *= 0.5; 
+				}
 			}
+			
+			B_old2 = B_old; 
+			B_old = B;
+			
+			++iter; 
+		}
+		if (do_saddle_check) {
+			Matrix U(B.cols(), X.cols(), false); 
+			multiply_mT_m(U, B, X); 
+			auto table = m_nonlinearity->get_saddle_test_table(U);
 		}
 		
-		B_old2 = B_old; 
-		B_old = B;
+	} while (do_saddle_check); 
 		
-		++iter; 
-	}
 
 	m_mixing_matrix = m_dewhitening_matrix * B; 
 		

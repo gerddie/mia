@@ -40,6 +40,7 @@ public:
 
         void set_signal(const gsl::Matrix *signal); 
         void set_mu(double m); 
+
 protected: 
         double get_sample_scale() const {return m_sample_scale;}
 	double get_mu() const { return m_mu;}; 
@@ -71,9 +72,14 @@ public:
 	typedef CFastICADeflNonlinearity plugin_type; 
 
 	static const char *type_descr; 
-	
+
+
         void apply(gsl::DoubleVector& w); 
 	void apply(gsl::Matrix& W);
+
+	std::vector<double> get_saddle_test_table(const gsl::Matrix& ics) const;  
+	double get_saddle_test_value(const gsl::Vector& ic) const;
+
 protected: 
 	virtual void post_set_signal();
 private: 
@@ -86,6 +92,12 @@ private:
 	 */
 
 	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction) = 0; 
+	
+	/**
+	   This function evaluates the SIR quantity needed for the saddle test
+	   \param ic independet component to evaluate the SIR from 
+	 */
+	virtual double do_get_saddle_test_value(const gsl::Vector& ic) const = 0;
 	void sum_final(gsl::DoubleVector& w, double scale); 
 	void sum_final_stabelized(gsl::DoubleVector& w, double scale); 
 
@@ -95,17 +107,6 @@ private:
 
 
 typedef std::shared_ptr<CFastICADeflNonlinearity> PFastICADeflNonlinearity; 
-
-class EXPORT_CORE CFastICASymmNonlinearity : public CFastICANonlinearityBase {
-public: 
-	typedef CFastICASymmNonlinearity plugin_type; 
-	static const char *type_descr;  
-protected: 
-        virtual void do_apply(gsl::Matrix& W, gsl::Matrix& wtX)  = 0; 
-	virtual void post_set_signal();
-private: 
-        gsl::Matrix m_matrix_workspace; 
-}; 
 
 
 EXPORT_CORE PFastICADeflNonlinearity produce_fastica_nonlinearity(const std::string& descr); 
@@ -118,16 +119,6 @@ typedef TFactory<CFastICADeflNonlinearity> CFastICADeflNonlinearityPlugin;
    Plugin handler for the creation of deflation FastICA nonlinearities 
 */
 typedef THandlerSingleton<TFactoryPluginHandler<CFastICADeflNonlinearityPlugin> > CFastICADeflNonlinearityPluginHandler;
-
-
-typedef TFactory<CFastICASymmNonlinearity> CFastICASymmNonlinearityPlugin; 
-
-/**
-   \ingroup interpol 
-   Plugin handler for the creation of deflation FastICA nonlinearities 
-*/
-typedef THandlerSingleton<TFactoryPluginHandler<CFastICASymmNonlinearityPlugin> > CFastICASymmNonlinearityPluginHandler;
-
 
 }
 

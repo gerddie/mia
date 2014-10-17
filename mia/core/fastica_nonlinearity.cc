@@ -28,6 +28,7 @@
 namespace mia {
 
 using std::transform; 
+using std::vector; 
 using namespace gsl; 
 using std::ostream_iterator; 
 
@@ -65,7 +66,6 @@ void CFastICADeflNonlinearity::post_set_signal()
 
 const char *CFastICANonlinearityBase::data_descr = "fastica"; 
 const char *CFastICADeflNonlinearity::type_descr = "deflation"; 
-const char *CFastICASymmNonlinearity::type_descr = "symmetric"; 
 
 
 void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w)
@@ -95,6 +95,21 @@ void CFastICADeflNonlinearity::apply(gsl::Matrix& W)
 	}
 }
 
+vector<double> CFastICADeflNonlinearity::get_saddle_test_table(const gsl::Matrix& ics) const
+{
+	vector<double> result(ics.rows()); 
+	for (unsigned i = 0; i < ics.rows(); ++i) {
+		auto row = ics.get_row(i); 
+		result[i] = do_get_saddle_test_value(row); 
+	}
+	return result; 
+}
+
+double CFastICADeflNonlinearity::get_saddle_test_value(const gsl::Vector& ic) const
+{
+	return do_get_saddle_test_value(ic); 
+}
+
 
 void CFastICADeflNonlinearity::sum_final(gsl::DoubleVector& w, double scale)
 {
@@ -116,22 +131,10 @@ void CFastICADeflNonlinearity::sum_final_stabelized(gsl::DoubleVector& w, double
 
 }
 
-
-void CFastICASymmNonlinearity::post_set_signal()
-{
-        // create helper matrix 
-}
-
 template<>  const char * const 
 TPluginHandler<TFactory<CFastICADeflNonlinearity>>::m_help = 
 	"These plug-ins provide various non-linearity models for the FastICA algorithm "
         "that uses deflation.";
-
-template<>  const char * const 
-TPluginHandler<TFactory<CFastICASymmNonlinearity>>::m_help = 
-	"These plug-ins provide various non-linearity models for the FastICA algorithm "
-        "that uses symetric estimation.";
-
 
 EXPORT_CORE PFastICADeflNonlinearity produce_fastica_nonlinearity(const std::string& descr)
 {
@@ -139,7 +142,6 @@ EXPORT_CORE PFastICADeflNonlinearity produce_fastica_nonlinearity(const std::str
 }
 
 EXPLICIT_INSTANCE_HANDLER(CFastICADeflNonlinearity); 
-EXPLICIT_INSTANCE_HANDLER(CFastICASymmNonlinearity); 
 
 
 }// end namespace 

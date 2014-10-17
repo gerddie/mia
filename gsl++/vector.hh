@@ -80,6 +80,10 @@ public:
 		
 		return m_holder[i]; 
 	}; 
+
+	operator const Vector(){
+		return m_holder; 
+	}
 		
 	const Vector::vector_type * operator  ->() const{
 		return m_holder.operator ->(); 

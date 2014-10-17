@@ -45,23 +45,25 @@ public:
 	
 	void set_nonlinearity (PFastICADeflNonlinearity in_g); 
 	
-	void 	set_finetune (bool in_finetune); 
+	void set_finetune (bool in_finetune); 
 		
- 	void 	set_mu (double mu); 
+ 	void set_mu (double mu); 
 	
- 	void 	set_epsilon (double epsilon); 
+ 	void set_epsilon (double epsilon); 
 
- 	void 	set_sample_size (double sampleSize);
+ 	void set_sample_size (double sampleSize);
 
- 	void 	set_stabilization (bool in_stabilization);
+ 	void set_stabilization (bool in_stabilization);
 
- 	void 	set_max_num_iterations (int in_maxNumIterations);
+ 	void set_max_num_iterations (int in_maxNumIterations);
 
- 	void 	set_max_fine_tune (int in_maxFineTune);
+ 	void set_max_fine_tune (int in_maxFineTune);
 
-	void 	set_pca_only (bool in_PCAonly);
+	void set_pca_only (bool in_PCAonly);
  
-	void 	set_init_guess (const gsl::Matrix&  ma_initGuess);
+	void set_init_guess (const gsl::Matrix&  ma_initGuess);
+
+	void set_saddle_check(bool saddle_check); 
 
 	const gsl::Matrix& 	get_mixing_matrix () const;
 
@@ -86,6 +88,8 @@ private:
 	bool fpica_defl(const gsl::Matrix& X); 
 	double fpica_symm_step(gsl::Matrix& B, gsl::Matrix& B_old, double mu, gsl::Matrix& Workspace); 
 	bool fpica_symm(const gsl::Matrix& X); 
+
+	bool do_saddle_check(); 
 
 	const gsl::Matrix&  m_mix;
 	
@@ -116,6 +120,8 @@ private:
 	bool m_PCAonly;
 	
 	bool m_with_initial_guess; 
+
+	bool m_do_saddle_check; 
 	
 	gsl::Matrix m_initGuess;
 	
