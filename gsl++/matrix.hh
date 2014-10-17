@@ -149,6 +149,9 @@ bool operator == (const const_matrix_iterator& lhs, const const_matrix_iterator&
 bool operator != (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
 
 
+
+
+
 /**
    This is a wrapper class around the GSL matrix type. It provides 
    a compatibility to avoid handling de-alloction manually.
@@ -355,7 +358,16 @@ public:
 	double dot_column(int c, const DoubleVector& col) const; 
 
 	void print(std::ostream& os) const; 
-	
+
+	Matrix& operator -=(const Matrix& rhs) {
+		gsl_matrix_sub(*this, rhs); 
+		return *this; 
+	}
+
+	Matrix& operator +=(const Matrix& rhs) {
+		gsl_matrix_add(*this, rhs); 
+		return *this; 
+	}
 private: 
 	gsl_matrix *m_matrix; 
 	const gsl_matrix *m_const_matrix; 
@@ -364,6 +376,7 @@ private:
 
 
 Matrix operator * (const Matrix& lhs, const Matrix& rhs); 
+Matrix operator - (const Matrix& lhs, const Matrix& rhs); 
 
 inline std::ostream& operator << (std::ostream& os, const Matrix& m)
 {

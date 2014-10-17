@@ -338,6 +338,20 @@ Matrix Matrix::column_covariance() const
 }
 
 
+Matrix operator - (const Matrix& lhs, const Matrix& rhs)
+{
+	Matrix result(lhs); 
+	result -= rhs; 
+	return result; 
+}
+
+Matrix operator + (const Matrix& lhs, const Matrix& rhs)
+{
+	Matrix result(lhs); 
+	result += rhs; 
+	return result; 
+}
+
 Matrix operator * (const Matrix& lhs, const Matrix& rhs)
 {
 	Matrix result(lhs.rows(), rhs.cols(), false); 

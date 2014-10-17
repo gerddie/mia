@@ -41,11 +41,11 @@ public:
 
 	void set_approach(EApproach apr); 
 	
-	void set_nrof_independent_components (int in_nrIC); 
+	void set_nr_of_independent_components (int in_nrIC); 
 	
-	void set_non_linearity (PFastICADeflNonlinearity in_g); 
+	void set_nonlinearity (PFastICADeflNonlinearity in_g); 
 	
-	void 	set_fine_tune (bool in_finetune); 
+	void 	set_finetune (bool in_finetune); 
 		
  	void 	set_mu (double mu); 
 	
@@ -59,10 +59,6 @@ public:
 
  	void 	set_max_fine_tune (int in_maxFineTune);
 
- 	void 	set_first_eig (int in_firstEig);
- 
-	void 	set_last_eig (int in_lastEig);
- 
 	void 	set_pca_only (bool in_PCAonly);
  
 	void 	set_init_guess (const gsl::Matrix&  ma_initGuess);
@@ -73,14 +69,15 @@ public:
 
 	const gsl::Matrix&	get_independent_components () const;
 
-	int  get_nrof_independent_components () const;
+	int  get_nr_of_independent_components () const;
 
 	const gsl::Matrix&	get_whitening_matrix () const;
 
 	const gsl::Matrix&	get_dewhitening_matrix () const;
-
-const gsl::Matrix&	get_principal_eigenvectors () const; 
-const gsl::Matrix&	get_white_sig () const;
+	
+	const gsl::Matrix&	get_principal_eigenvectors () const; 
+	
+	const gsl::Matrix&	get_white_signal () const;
 	
 private:
 	// evaluate the whitening and de-whitening matrices 

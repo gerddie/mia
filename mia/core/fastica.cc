@@ -42,19 +42,17 @@ FastICA::FastICA(const Matrix&  mix):
         m_mix(mix), 
         m_approach(appr_defl), 
         m_numOfIC(m_mix.rows()), 
-        m_finetune(false), 
+        m_finetune(true), 
         m_mu(1.0), 
-        m_epsilon(0.0001), 
+        m_epsilon(1e-10), 
         m_sampleSize(1.0), 
-        m_stabilization(false), 
-        m_maxNumIterations(100000), 
-        m_maxFineTune(100), 
-        m_firstEig(1), 
-        m_lastEig(m_mix.rows()), 
+        m_stabilization(true), 
+        m_maxNumIterations(1000), 
+        m_maxFineTune(200), 
         m_PCAonly(false), 
 	m_with_initial_guess(false)
 {
-        m_nonlinearity = produce_fastica_nonlinearity("tanh");  
+        m_nonlinearity = produce_fastica_nonlinearity("pow3");  
 }
 
 struct CCenteredSignal  {
@@ -153,22 +151,23 @@ bool FastICA::separate()
 
 bool FastICA::fpica_defl_round(int component, Vector& w, Matrix& B)
 {
-	
-	double mu = m_mu;
-	
 
-	double delta = m_epsilon + 1.0;
 	Vector w_old(w);
 	Vector w_old2(w);
-	int iter = 0;
+
+	double mu = m_mu;
+	double delta = m_epsilon + 1.0;
 
 	bool is_finetuning = false;  
 	bool converged = false; 
-	int finetune = 0; 
 	bool loong = false; 
+
 	double stroke = 0.0; 
 
-	while (!converged && iter < m_maxNumIterations + finetune) {
+	int iter = 0;
+	int maxiter = m_maxNumIterations; 
+	
+	while (!converged && iter < maxiter) {
 			
 		cvdebug() << "Defl: c=" << component
 			  << ", iter= " << iter 
@@ -202,7 +201,7 @@ bool FastICA::fpica_defl_round(int component, Vector& w, Matrix& B)
 			if (m_finetune && !is_finetuning) {
 				cvinfo() << "DEFL: start fine tuning\n"; 
 				is_finetuning = true; 
-				finetune = m_maxFineTune; 
+				maxiter += m_maxFineTune; 
 				mu = 0.01 * m_mu; 
 			}else{
 				converged = true; 
@@ -327,9 +326,9 @@ bool FastICA::fpica_symm(const Matrix& X)
 	double stroke = 0.0; 
 	bool loong = false; 
 
-	while (!converged  && iter < m_maxNumIterations) {
-		
+	int maxiter = m_maxNumIterations; 
 
+	while (!converged  && iter < maxiter) {
 
 		double minAbsCos = fpica_symm_step(B, B_old, mu, BTB); 
 
@@ -342,6 +341,7 @@ bool FastICA::fpica_symm(const Matrix& X)
 			if (m_finetune && !is_fine_tuning) {
 				mu *= 0.01;
 				is_fine_tuning = true; 
+				maxiter += m_maxFineTune;
 			} else {
 				converged = true; 
 			}
@@ -392,20 +392,20 @@ void FastICA::set_approach(EApproach apr)
         m_approach = apr; 
 }
 
-void FastICA::set_nrof_independent_components (int nrIC)
+void FastICA::set_nr_of_independent_components (int nrIC)
 {
         m_numOfIC = nrIC; 
 }
 
 
-void FastICA::set_non_linearity (PFastICADeflNonlinearity g)
+void FastICA::set_nonlinearity (PFastICADeflNonlinearity g)
 {
         assert(g); 
         m_nonlinearity = g; 
 }
 
 
-void FastICA::set_fine_tune (bool finetune)
+void FastICA::set_finetune (bool finetune)
 {
         m_finetune = finetune; 
 }
@@ -440,16 +440,6 @@ void 	FastICA::set_max_fine_tune (int maxFineTune)
         m_maxFineTune = maxFineTune; 
 }
 
-void 	FastICA::set_first_eig (int firstEig)
-{
-        m_firstEig = firstEig; 
-}
-
-void 	FastICA::set_last_eig (int lastEig)
-{
-        m_lastEig = lastEig; 
-}
-
 void 	FastICA::set_pca_only (bool PCAonly)
 {
         m_PCAonly = PCAonly; 
@@ -475,7 +465,7 @@ const Matrix&	FastICA::get_independent_components () const
         return m_independent_components; 
 }
 
-int FastICA::get_nrof_independent_components () const
+int FastICA::get_nr_of_independent_components () const
 {
         return m_numOfIC; 
 }
@@ -495,7 +485,7 @@ const Matrix&	FastICA::get_dewhitening_matrix () const
         return m_dewhitening_matrix; 
 }
 
-const Matrix&	FastICA::get_white_sig () const
+const Matrix&	FastICA::get_white_signal () const
 {
         return m_white_sig; 
 }

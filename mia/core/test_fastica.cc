@@ -63,10 +63,10 @@ BOOST_AUTO_TEST_CASE ( test_fastica_symm )
 	FastICA ica(mix);
 
 	ica.set_approach(FastICA::appr_symm); 
-	ica.set_nrof_independent_components (3); 
+	ica.set_nr_of_independent_components (3); 
  	ica.set_epsilon (1e-10); 
-	ica.set_fine_tune(true); 
-	ica.set_non_linearity(produce_fastica_nonlinearity("pow3")); 
+	ica.set_finetune(true); 
+	ica.set_nonlinearity(produce_fastica_nonlinearity("pow3")); 
 	BOOST_CHECK(ica.separate()); 
 	
 	
@@ -92,10 +92,18 @@ BOOST_AUTO_TEST_CASE ( test_fastica_symm )
 
 	BOOST_CHECK_EQUAL(out_mixing_matrix.rows(), in_mixing_matrix.rows()); 
 	BOOST_CHECK_EQUAL(out_mixing_matrix.cols(), in_mixing_matrix.cols()); 
-	
-
 	BOOST_CHECK_EQUAL(out_ics.rows(), in_ics.rows()); 
 	BOOST_CHECK_EQUAL(out_ics.cols(), in_ics.cols()); 
+	
+	// create the remix and test it against the input mix
+	
+
+	Matrix remix = out_mixing_matrix * out_ics;
+	Matrix delta = remix - mix; 
+	
+	for(auto id = delta.begin(); id != delta.end(); ++id) {
+		BOOST_CHECK_SMALL(*id, 1e-10); 
+	}
 	
 }
 
@@ -133,11 +141,11 @@ BOOST_AUTO_TEST_CASE ( test_fastica_defl )
 	FastICA ica(mix);
 
 	ica.set_approach(FastICA::appr_defl); 
-	ica.set_nrof_independent_components (3); 
+	ica.set_nr_of_independent_components (3); 
  	ica.set_epsilon (1e-10); 
-	ica.set_fine_tune(true); 
+	ica.set_finetune(true); 
 	ica.set_stabilization(true); 
-	ica.set_non_linearity(produce_fastica_nonlinearity("pow3")); 
+	ica.set_nonlinearity(produce_fastica_nonlinearity("pow3")); 
 	BOOST_CHECK(ica.separate()); 
 	
 	
@@ -167,5 +175,12 @@ BOOST_AUTO_TEST_CASE ( test_fastica_defl )
 
 	BOOST_CHECK_EQUAL(out_ics.rows(), in_ics.rows()); 
 	BOOST_CHECK_EQUAL(out_ics.cols(), in_ics.cols()); 
+
+	Matrix remix = out_mixing_matrix * out_ics;
+	Matrix delta = remix - mix; 
+	
+	for(auto id = delta.begin(); id != delta.end(); ++id) {
+		BOOST_CHECK_SMALL(*id, 1e-10); 
+	}
 	
 }
