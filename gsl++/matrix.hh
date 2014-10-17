@@ -321,8 +321,18 @@ public:
 	 */ 
 	void set_row(int r, const Vector& row); 
 
+	/**
+	   Get a read-write view of a matrix row
+	   \param r index of the matrix row 
+	   \returns view 
+	*/
 	VectorView get_row(int r); 
 
+	/**
+	   Get a read-only view of a matrix row
+	   \param r index of the matrix row 
+	   \returns constant view 
+	*/
 	ConstVectorView get_row(int r) const; 
 
 	/**
@@ -333,10 +343,19 @@ public:
 	 */ 
 	void set_column(int c, const Vector& col); 
 
+	/**
+	   Get a read-write view of a matrix column
+	   \param c index of the matrix column 
+	   \returns view 
+	*/
 	VectorView get_column(int c); 
 
+	/**
+	   Get a read-only view of a matrix column
+	   \param c index of the matrix column 
+	   \returns view 
+	*/
 	ConstVectorView get_column(int c) const; 
-
 
 	/**
 	   Evaluate the dot product between a row of the matrix and a given vector 
@@ -357,17 +376,42 @@ public:
 
 	double dot_column(int c, const Vector& col) const; 
 
+	/**
+	   Print matrix to a ostream 
+	   \param os output stream to write to 
+	 */
 	void print(std::ostream& os) const; 
 
+	/**
+	   Element wise matrix subtraction 
+	   \param rhs matrix to subtract 
+	   \returns reference of this matrix
+	*/
 	Matrix& operator -=(const Matrix& rhs) {
 		gsl_matrix_sub(*this, rhs); 
 		return *this; 
 	}
 
+	/**
+	   Element wise matrix addition  
+	   \param rhs matrix to add 
+	   \returns reference of this matrix
+	*/
 	Matrix& operator +=(const Matrix& rhs) {
 		gsl_matrix_add(*this, rhs); 
 		return *this; 
 	}
+
+	/**
+	   Scale elements with a factor   
+	   \param rhs scaling factor  
+	   \returns reference of this matrix
+	*/
+	Matrix& operator *=(double rhs) {
+		gsl_matrix_scale(*this, rhs); 
+		return *this; 
+	}
+	
 private: 
 	gsl_matrix *m_matrix; 
 	const gsl_matrix *m_const_matrix; 
@@ -376,6 +420,7 @@ private:
 
 
 Matrix operator * (const Matrix& lhs, const Matrix& rhs); 
+Matrix operator + (const Matrix& lhs, const Matrix& rhs); 
 Matrix operator - (const Matrix& lhs, const Matrix& rhs); 
 
 inline std::ostream& operator << (std::ostream& os, const Matrix& m)
@@ -394,7 +439,6 @@ struct CSymmvEvalEvec {
 	Vector eval; 
 }; 
 	
-
 /**
    Evaluate in place: pow(m, -0.5); 
 

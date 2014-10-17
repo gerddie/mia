@@ -92,32 +92,59 @@ public:
 	   Copy operator, does a deep copy of the internal data structures. 
 	 */
 	Vector& operator = (const Vector& other); 
-
+	
+	/// Destructor 
 	~Vector(); 
 	
+	/** \returns an STL compatible read-write iterator to the vector data 
+	    pointing to the beginning 
+	 */
 	iterator begin(); 
 
+	/** \returns an STL compatible read-write iterator to the vector data 
+	    pointing to the past end 
+	 */
 	iterator end(); 
 
+	/** \returns an STL compatible read-only iterator to the vector data 
+	    pointing to the beginning 
+	 */
 	const_iterator begin()const; 
 
+	/** \returns an STL compatible read-only iterator to the vector data 
+	    pointing to the past end 
+	 */
 	const_iterator end()const; 
 
+	/**
+	   \returns number of elements in the vector 
+	 */ 
 	size_type size() const; 
 
+	/**
+	   Element read only access operator 
+	   \param i 
+	   \returns value 
+	 */
 	value_type operator[](size_t i) const {
 	        assert(cdata); 
 		return cdata->data[i * cdata->stride]; 
         }; 
 
+	/**
+	   Element read only access operator 
+	   \param i 
+	   \returns reference to value 
+	 */
 	reference operator[](size_t i) {
 		assert(data); 
 		return data->data[i * data->stride]; 
 	}
 
-
+	/// \returns transparent read-only access to underlying gsl_vector structure
 	const gsl_vector * operator  ->() const; 
 	
+	/// \returns transparent read-write access to underlying gsl_vector structure
 	gsl_vector * operator  ->(); 
 	
         /// vector const pointer type operator  to enable transparent calls to the GSL APL
@@ -126,14 +153,19 @@ public:
 	/// vector pointer type operator  to enable transparent calls to the GSL APL
 	operator vector_pointer_type (); 
 	
+	/**
+	   Write the vector to a stream 
+	   \param os the output stream 
+	*/
 	void print(std::ostream& os) const;  
 
-
 protected:
+	
 	void reset_holder(gsl_vector *holder){
 		cdata = data = holder; 
 		owner = false; 
 	}
+	
 	void reset_holder(const gsl_vector *holder){
 		cdata = holder;
 		owner = false;  
