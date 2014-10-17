@@ -81,7 +81,7 @@ public:
 		return m_holder[i]; 
 	}; 
 
-	operator const Vector(){
+	operator const Vector&(){
 		return m_holder; 
 	}
 		

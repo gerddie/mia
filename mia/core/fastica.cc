@@ -379,6 +379,8 @@ bool FastICA::fpica_symm(const Matrix& X)
 			Matrix U(B.cols(), X.cols(), false); 
 			multiply_mT_m(U, B, X); 
 			auto table = m_nonlinearity->get_saddle_test_table(U);
+			
+
 		}
 		
 	} while (do_saddle_check); 

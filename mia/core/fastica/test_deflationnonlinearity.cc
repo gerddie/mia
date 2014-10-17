@@ -40,6 +40,12 @@ struct NonlinearitySaddlevalueFixture {
 	Vector u;
 }; 
 
+struct NonlinearitySaddleMatrixFixture {
+
+	NonlinearitySaddleMatrixFixture(); 
+	Matrix U;
+}; 
+
 
 BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity, DeflationNonlinearityFixture ) 
 {
@@ -62,6 +68,16 @@ BOOST_FIXTURE_TEST_CASE( test_pow3_SIR,  NonlinearitySaddlevalueFixture )
 	BOOST_CHECK_CLOSE(plugin->get_saddle_test_value(u), 8.9148, 0.1); 
 	
 }
+
+BOOST_FIXTURE_TEST_CASE( test_pow3_SIR_Matrix,  NonlinearitySaddleMatrixFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
+	auto values = plugin->get_saddle_test_table(U); 
+	BOOST_CHECK_CLOSE(values[0], 8.9148, 0.1); 
+	BOOST_CHECK_CLOSE(values[1], 8.1902, 0.1); 
+	
+}
+
 
 
 BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity_stabelized, DeflationNonlinearityFixture ) 
@@ -99,6 +115,16 @@ BOOST_FIXTURE_TEST_CASE( test_tanh_1_SIR,  NonlinearitySaddlevalueFixture )
 	BOOST_CHECK_CLOSE(plugin->get_saddle_test_value(u), 0.11077, 0.1); 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_tanh_SIR_Matrix,  NonlinearitySaddleMatrixFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh");
+	auto values = plugin->get_saddle_test_table(U); 
+	BOOST_CHECK_CLOSE(values[0], 0.11077, 0.1); 
+	BOOST_CHECK_CLOSE(values[1], 0.070633, 0.1); 
+	
+}
+
+
 
 BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_stabelized, DeflationNonlinearityFixture ) 
 {
@@ -127,6 +153,16 @@ BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity, DeflationNonlinearityFixture )
 	BOOST_CHECK_CLOSE(w[1], -0.15242, 0.01); 
 	BOOST_CHECK_CLOSE(w[2], -0.38649, 0.01); 
 	BOOST_CHECK_CLOSE(w[3], -0.11984, 0.01); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE( test_gauss_SIR_matrix,  NonlinearitySaddleMatrixFixture ) 
+{
+	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss");
+
+	auto values = plugin->get_saddle_test_table(U); 
+	BOOST_CHECK_CLOSE(values[0], 0.063381, 0.1); 
+	BOOST_CHECK_CLOSE(values[1], 0.036016, 0.1); 
 	
 }
 
@@ -236,4 +272,13 @@ NonlinearitySaddlevalueFixture::NonlinearitySaddlevalueFixture():
 	double init_u[] = { .1, .2, .3, .4, .5, .1, .2 }; 
 	copy(init_u, init_u +7, u.begin()); 
 
+}
+
+
+NonlinearitySaddleMatrixFixture::NonlinearitySaddleMatrixFixture()
+{
+	double init_U[] = { .1, .2, .3, .4, .5, .1, .2, 
+			    .3, .1, .5, .7, .1, .9, .0
+	}; 
+	U = Matrix(2, 7, init_U); 
 }

@@ -100,7 +100,7 @@ vector<double> CFastICADeflNonlinearity::get_saddle_test_table(const gsl::Matrix
 	vector<double> result(ics.rows()); 
 	for (unsigned i = 0; i < ics.rows(); ++i) {
 		auto row = ics.get_row(i); 
-		result[i] = do_get_saddle_test_value(row); 
+		result[i] = do_get_saddle_test_value(row);
 	}
 	return result; 
 }

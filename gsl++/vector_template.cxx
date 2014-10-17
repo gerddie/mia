@@ -42,9 +42,9 @@ template <typename T>
 TVector<T>::TVector(const TVector<T>& other):
 	owner(true)
 {
-	assert(other.data); 
+	assert(other.cdata); 
 	
-	cdata = data = this->alloc(other.data->size); 
+	cdata = data = this->alloc(other.cdata->size); 
 	std::copy(other.begin(), other.end(), begin());
 }
 
