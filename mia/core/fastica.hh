@@ -88,8 +88,7 @@ private:
 	bool fpica_defl(const gsl::Matrix& X); 
 	double fpica_symm_step(gsl::Matrix& B, gsl::Matrix& B_old, double mu, gsl::Matrix& Workspace); 
 	bool fpica_symm(const gsl::Matrix& X); 
-
-	bool do_saddle_check(); 
+	bool run_saddlecheck(gsl::Matrix &B, const gsl::Matrix& X); 
 
 	const gsl::Matrix&  m_mix;
 	

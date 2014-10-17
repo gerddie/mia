@@ -46,6 +46,26 @@ extern template class EXPORT_GSL TVector<double>;
 typedef DoubleVector Vector; 
 
 
+inline Vector operator + (const Vector& lhs, const Vector& rhs) 
+{
+	Vector result(lhs); 
+	gsl_vector_add(result, rhs); 
+	return result; 
+}
+
+inline Vector operator - (const Vector& lhs, const Vector& rhs) 
+{
+	Vector result(lhs); 
+	gsl_vector_sub(result, rhs); 
+	return result; 
+}
+
+inline Vector operator * (const Vector& lhs, double f) 
+{
+	Vector result(lhs); 
+	gsl_vector_scale(result, f); 
+	return result; 
+}
 
 class EXPORT_GSL VectorView :public Vector {
 public: 

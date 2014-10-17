@@ -25,6 +25,7 @@
 #include <mia/core/fastica.hh>
 #include <algorithm>
 #include <random>
+#include <cmath>
 #include <stdexcept>
 #include <gsl/gsl_blas.h>
 #include <mia/core/fastica_nonlinearity.hh>
@@ -37,6 +38,7 @@ using gsl::CSymmvEvalEvec;
 
 using std::sort; 
 using std::transform; 
+using std::vector; 
 
 FastICA::FastICA(const Matrix&  mix):
         m_mix(mix), 
@@ -189,7 +191,6 @@ bool FastICA::fpica_defl_round(int component, Vector& w, Matrix& B)
 		if (norm > 0.0) 
 			gsl_vector_scale(w, 1.0/norm); 
 
-
 		Vector w_help = w_old; 
 		gsl_vector_sub(w_help, w); 
 		
@@ -312,8 +313,8 @@ bool FastICA::fpica_symm(const Matrix& X)
 	for(auto ib = B.begin(); ib != B.end(); ++ib) 
 		*ib = random_source(gen); 
 
-	Matrix B_old(B);
 	matrix_orthogonalize(B); 
+	Matrix B_old(B);
 
 	m_nonlinearity->set_signal(&X);
 	
@@ -330,6 +331,7 @@ bool FastICA::fpica_symm(const Matrix& X)
 	int maxiter = m_maxNumIterations; 
 
 	bool do_saddle_check = m_do_saddle_check; 
+	bool finished = !do_saddle_check; 
 
 	do {
 		while (!converged  && iter < maxiter) {
@@ -356,7 +358,6 @@ bool FastICA::fpica_symm(const Matrix& X)
 				// Avoid ping-pong 
 				if (!stroke && (1 - minAbsCos2 < m_epsilon)) {
 					stroke = mu; 
-					
 					mu /= 2.0; 
 				} else if (stroke) { // back to normal 
 					mu = stroke; 
@@ -376,15 +377,15 @@ bool FastICA::fpica_symm(const Matrix& X)
 			++iter; 
 		}
 		if (do_saddle_check) {
-			Matrix U(B.cols(), X.cols(), false); 
-			multiply_mT_m(U, B, X); 
-			auto table = m_nonlinearity->get_saddle_test_table(U);
-			
-
-		}
+			do_saddle_check = run_saddlecheck(B, X); 
+			// TODO: reset iterations here 
+		}else 
+			finished = true;
 		
-	} while (do_saddle_check); 
+	} while (!finished); 
 		
+	// here we could add the EFICA fine tuning 
+	
 
 	m_mixing_matrix = m_dewhitening_matrix * B; 
 		
@@ -400,6 +401,40 @@ bool FastICA::fpica_symm(const Matrix& X)
 	return converged; 
 	
 }
+
+bool FastICA::run_saddlecheck(Matrix &B, const Matrix& X)
+{
+	bool result = false; 
+	vector<bool> rotated(B.cols(), false); 
+	Matrix U(B.cols(), X.cols(), false); 
+	multiply_mT_m(U, B, X); 
+	auto table = m_nonlinearity->get_saddle_test_table(U);
+	
+	for (unsigned i = 0; i < U.rows(); ++i) {
+		for (unsigned j = i+1; j < U.rows() && !rotated[i]; ++j) {
+			if (rotated[j]) 
+				continue; 
+			auto ui = U.get_row(i);
+			auto uj = U.get_row(j);
+			const double isqrt2 = 1.0 / sqrt(2.0); 
+			auto ui_new = (ui + uj) * isqrt2; 
+			auto uj_new = (ui - uj) * isqrt2; 
+			
+			auto ui_sir = m_nonlinearity->get_saddle_test_value(ui_new);
+			auto uj_sir = m_nonlinearity->get_saddle_test_value(uj_new);
+			
+			if (fmax(ui_sir, uj_sir) > fmax(table[i], table[j])) {
+				result = rotated[i] = rotated[j] = true;
+				auto bi_new = (B.get_row(i) + B.get_row(j)) * isqrt2; 
+				auto bj_new = (B.get_row(i) - B.get_row(j)) * isqrt2; 
+				B.set_row(i, bi_new); 
+				B.set_row(j, bj_new);
+				cvdebug() << "Rotating components " << i << " and " << j << "\n"; 
+			}
+		}
+	}
+	return result; 
+}; 
 
 void FastICA::set_approach(EApproach apr)
 {

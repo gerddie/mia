@@ -470,7 +470,8 @@ public:
 	operator vector_pointer_type (); 
 	
 	void print(std::ostream& os) const;  
-	
+
+
 protected:
 	void reset_holder(vector_type *holder){
 		cdata = data = holder; 
@@ -486,6 +487,7 @@ private:
 	const vector_type *cdata; 
 	bool owner; 
 }; 
+
 
 }
 
