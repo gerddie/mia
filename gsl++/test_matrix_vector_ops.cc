@@ -47,8 +47,8 @@ BOOST_AUTO_TEST_CASE( test_vec_mult_marix )
         }; 
 
         Matrix rhs(2,3, matrix_init); 
-        DoubleVector lhs(2, false); 
-        DoubleVector result(3, true); 
+        Vector lhs(2, false); 
+        Vector result(3, true); 
         
         std::copy(vector_init, vector_init + 2, lhs.begin()); 
         
@@ -202,8 +202,8 @@ BOOST_AUTO_TEST_CASE( test_mult_vec_marix )
 
 
         Matrix lhs(3,2, matrix_init); 
-        DoubleVector rhs(2, false); 
-        DoubleVector result(3, true); 
+        Vector rhs(2, false); 
+        Vector result(3, true); 
         
         std::copy(vector_init, vector_init + 2, rhs.begin()); 
         
@@ -226,8 +226,8 @@ BOOST_AUTO_TEST_CASE( test_mult_vec_vec )
         }; 
 
 
-        DoubleVector lhs(2, false); 
-        DoubleVector rhs(2, false); 
+        Vector lhs(2, false); 
+        Vector rhs(2, false); 
         
         std::copy(vector1_init, vector1_init + 2, lhs.begin()); 
         std::copy(vector2_init, vector2_init + 2, rhs.begin()); 

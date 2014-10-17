@@ -31,7 +31,7 @@ namespace gsl {
 using namespace tbb;
 
 struct MultVectMatrix {
-	typedef   DoubleVector::vector_pointer_type pvector; 
+	typedef   Vector::vector_pointer_type pvector; 
 	MultVectMatrix(gsl_vector& result, const gsl_vector& lhs, const Matrix& rhs); 
         
         void operator () (const blocked_range<int>& range) const; 
@@ -60,7 +60,7 @@ void MultVectMatrix::operator () (const blocked_range<int>& range) const
 
 
 struct MultVectMatrixT {
-        typedef   DoubleVector::vector_pointer_type pvector; 
+        typedef   Vector::vector_pointer_type pvector; 
         MultVectMatrixT(gsl_vector& result, const gsl_vector& lhs, const Matrix& rhs); 
         
         void operator () (const blocked_range<int>& range) const; 
@@ -135,7 +135,7 @@ void multiply_m_mT(Matrix& result, const Matrix& lhs, const Matrix& rhs)
 }
 
 
-void multiply_v_m(DoubleVector& result, const DoubleVector& lhs, const Matrix& rhs)
+void multiply_v_m(Vector& result, const Vector& lhs, const Matrix& rhs)
 {
         assert(result.size() == rhs.cols()); 
         assert(lhs.size() == rhs.rows());
@@ -144,7 +144,7 @@ void multiply_v_m(DoubleVector& result, const DoubleVector& lhs, const Matrix& r
         parallel_for(blocked_range<int>( 0, result.size()), op);
 }
 
-void multiply_m_v(DoubleVector& result, const Matrix& lhs, const DoubleVector& rhs)
+void multiply_m_v(Vector& result, const Matrix& lhs, const Vector& rhs)
 {
         assert(result.size() == lhs.rows()); 
         assert(rhs.size() == lhs.cols());
@@ -176,8 +176,8 @@ void matrix_orthogonalize(Matrix& M)
 {
 	Matrix U(M); 
 	Matrix V(M.cols(), M.cols(), true); 
-	DoubleVector D(M.cols(), true); 
-	DoubleVector work_vector(M.cols(), false); 
+	Vector D(M.cols(), true); 
+	Vector work_vector(M.cols(), false); 
 	
 	gsl_linalg_SV_decomp (U, V, D, work_vector); 
 	

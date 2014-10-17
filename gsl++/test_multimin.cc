@@ -37,9 +37,9 @@ class TestCFDFProblem : public CFDFMinimizer::Problem {
 public:
 	TestCFDFProblem(); 
 private: 
-	virtual double  do_f(const DoubleVector& x); 
-	virtual void    do_df(const DoubleVector&  x, DoubleVector&  g); 
-	virtual double  do_fdf(const DoubleVector&  x, DoubleVector&  g); 
+	virtual double  do_f(const Vector& x); 
+	virtual void    do_df(const Vector&  x, Vector&  g); 
+	virtual double  do_fdf(const Vector&  x, Vector&  g); 
 	std::vector<double> m_p; 
 }; 
 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(test_cfdf_multmin )
 {
 	CFDFMinimizer minimizer(CFDFMinimizer::PProblem(new TestCFDFProblem), gsl_multimin_fdfminimizer_conjugate_fr );
 	
-	DoubleVector x(2, false); 
+	Vector x(2, false); 
 	const size_t i0 = 0; 
 	const size_t i1 = 1; 
 
@@ -68,7 +68,7 @@ TestCFDFProblem::TestCFDFProblem():
 }
 	
 
-double  TestCFDFProblem::do_f(const DoubleVector&  v)
+double  TestCFDFProblem::do_f(const Vector&  v)
 {
 
 	const size_t i0 = 0; 
@@ -82,7 +82,7 @@ double  TestCFDFProblem::do_f(const DoubleVector&  v)
 	
 }
 
-void    TestCFDFProblem::do_df(const DoubleVector&  v, DoubleVector&  g)
+void    TestCFDFProblem::do_df(const Vector&  v, Vector&  g)
 {
 	const size_t i0 = 0; 
 	const size_t i1 = 1; 
@@ -94,7 +94,7 @@ void    TestCFDFProblem::do_df(const DoubleVector&  v, DoubleVector&  g)
 	g[i1] = 2.0 * m_p[3] * (y - m_p[1]);
 }
 
-double  TestCFDFProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
+double  TestCFDFProblem::do_fdf(const Vector&  x, Vector&  g)
 {
 	do_df(x,g); 
 	return do_f(x); 
@@ -105,7 +105,7 @@ class TestCFProblem : public CFMinimizer::Problem {
 public:
 	TestCFProblem(); 
 private: 
-	virtual double  do_f(const DoubleVector& x); 
+	virtual double  do_f(const Vector& x); 
 	std::vector<double> m_p; 
 }; 
 
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_cf_multmin )
 	const size_t i0 = 0; 
 	const size_t i1 = 1; 
 
-	DoubleVector x(2, false); 
+	Vector x(2, false); 
 	x[i0] = 5.0; 
 	x[i1] = 7.0; 
 	
@@ -135,7 +135,7 @@ TestCFProblem::TestCFProblem():
 	copy(p_init, p_init+5, m_p.begin()); 
 }
 
-double  TestCFProblem::do_f(const DoubleVector&  v)
+double  TestCFProblem::do_f(const Vector&  v)
 {
 
 	const size_t i0 = 0; 

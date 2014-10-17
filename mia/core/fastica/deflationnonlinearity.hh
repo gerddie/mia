@@ -26,7 +26,7 @@
 NS_BEGIN(fastica_deflnonlin)
 
 class CFastICADeflPow3 : public mia::CFastICADeflNonlinearity {
-	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction); 
+	virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction); 
 	virtual double do_get_saddle_test_value(const gsl::Vector& ic) const; 
 }; 
 
@@ -34,7 +34,7 @@ class CFastICADeflTanh : public mia::CFastICADeflNonlinearity {
 public: 
         CFastICADeflTanh(double a); 
 private: 
-	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction); 
+	virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction); 
 	virtual double do_get_saddle_test_value(const gsl::Vector& ic) const;
         double m_a; 
 }; 
@@ -45,10 +45,10 @@ public:
 private: 
 
 	virtual void post_set_signal();
-	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction); 
+	virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction); 
 	virtual double do_get_saddle_test_value(const gsl::Vector& ic) const;
-        gsl::DoubleVector m_usquared;
-	gsl::DoubleVector m_ex; 
+        gsl::Vector m_usquared;
+	gsl::Vector m_ex; 
         double m_a; 
 }; 
 

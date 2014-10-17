@@ -29,7 +29,7 @@ NS_BEGIN(fastica_deflnonlin)
 using namespace std; 
 using namespace mia; 
 
-double CFastICADeflPow3::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction)
+double CFastICADeflPow3::get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction)
 {
         const double inv_m = get_sample_scale(); 
 	transform(XTw.begin(), XTw.end(), XTw.begin(), [inv_m](double x) -> double {
@@ -56,7 +56,7 @@ CFastICADeflTanh::CFastICADeflTanh(double a):m_a(a)
 {
 }
 
-double CFastICADeflTanh::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction)
+double CFastICADeflTanh::get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction)
 {
 	transform(XTw.begin(), XTw.end(), XTw.begin(), 
 		  [this](double x) { return tanh(m_a * x);}); 
@@ -87,7 +87,7 @@ CFastICADeflGauss::CFastICADeflGauss(double a):m_a(a)
 {
 }
 
-double CFastICADeflGauss::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction)
+double CFastICADeflGauss::get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction)
 {
 	transform(XTw.begin(), XTw.end(), m_usquared.begin(), 
 		  [](double x) {return x * x; }); 
@@ -125,8 +125,8 @@ double CFastICADeflGauss::do_get_saddle_test_value(const gsl::Vector& ic) const
 
 void CFastICADeflGauss::post_set_signal()
 {
-        m_usquared = gsl::DoubleVector(get_signal().cols(), false); 
-	m_ex = gsl::DoubleVector(get_signal().cols(), false); 
+        m_usquared = gsl::Vector(get_signal().cols(), false); 
+	m_ex = gsl::Vector(get_signal().cols(), false); 
 	CFastICADeflNonlinearity::post_set_signal();
 }
 

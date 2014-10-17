@@ -149,7 +149,7 @@ size_t Matrix::cols()const
 	return m_const_matrix->size2; 
 }
 
-void Matrix::set_row(int r, const DoubleVector& row)
+void Matrix::set_row(int r, const Vector& row)
 {
 	assert(row.size() == cols()); 
 	auto mrow = gsl_matrix_row(m_matrix, r); 
@@ -166,7 +166,7 @@ ConstVectorView Matrix::get_row(int r) const
 	return ConstVectorView(gsl_matrix_const_row(m_matrix, r)); 
 }
 
-void Matrix::set_column(int c, const DoubleVector& col)
+void Matrix::set_column(int c, const Vector& col)
 {
 	assert(col.size() == rows()); 
 	auto mcol = gsl_matrix_column(m_matrix, c); 
@@ -185,13 +185,13 @@ ConstVectorView Matrix::get_column(int c) const
 
 
 
-double Matrix::dot_row(int r, const DoubleVector& row) const 
+double Matrix::dot_row(int r, const Vector& row) const 
 {
 	auto mrow = gsl_matrix_const_row(m_const_matrix, r); 
 	return dot(row, &mrow.vector); 
 }
 
-double Matrix::dot_column(int c, const DoubleVector& col) const 
+double Matrix::dot_column(int c, const Vector& col) const 
 {
 	auto mcol = gsl_matrix_const_column(m_const_matrix, c); 
 	return dot(col, &mcol.vector); 

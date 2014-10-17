@@ -69,9 +69,9 @@ public:
 
 		size_t size() const; 
 	private: 
-		virtual double  do_f(const DoubleVector& x) = 0; 
-		virtual void    do_df(const DoubleVector& x, DoubleVector&  g) = 0; 
-		virtual double  do_fdf(const DoubleVector& x, DoubleVector&  g) = 0; 
+		virtual double  do_f(const Vector& x) = 0; 
+		virtual void    do_df(const Vector& x, Vector&  g) = 0; 
+		virtual double  do_fdf(const Vector& x, Vector&  g) = 0; 
 		gsl_multimin_function_fdf m_func; 
 	}; 
 	typedef std::shared_ptr<Problem> PProblem; 
@@ -101,7 +101,7 @@ public:
 	   \param[in,out] x at entry contains the start point of the optimization at exit the optimized value 
 	   \returns returns a status whether the optimization succeeded or why it stopped 
 	 */
-	int run(DoubleVector& x); 
+	int run(Vector& x); 
 	
 private: 
 	struct CFDFMinimizerImpl *impl; 
@@ -137,7 +137,7 @@ public:
 
 		size_t size() const; 
 	private: 
-		virtual double  do_f(const DoubleVector& x) = 0; 
+		virtual double  do_f(const Vector& x) = 0; 
 		gsl_multimin_function m_func; 
 	}; 
 	typedef std::shared_ptr<Problem> PProblem; 
@@ -156,7 +156,7 @@ public:
 	   \param[in,out] x at entry contains the start point of the optimization at exit the optimized value 
 	   \returns returns a status whether the optimization succeeded or why it stopped 
 	 */
-	int run(DoubleVector& x); 
+	int run(Vector& x); 
 private: 
 	struct CFMinimizerImpl *impl; 
 }; 

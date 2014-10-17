@@ -32,7 +32,7 @@ struct CFDFMinimizerImpl {
 	CFDFMinimizerImpl(CFDFMinimizer::PProblem problem, const gsl_multimin_fdfminimizer_type *ot); 
 	~CFDFMinimizerImpl(); 
 	
-	int run(DoubleVector& x); 
+	int run(Vector& x); 
 
 	CFDFMinimizer::PProblem m_problem; 
 	const gsl_multimin_fdfminimizer_type *m_optimizer_type; 
@@ -48,7 +48,7 @@ CFDFMinimizer::CFDFMinimizer(PProblem problem, const gsl_multimin_fdfminimizer_t
 {
 }
 
-int CFDFMinimizer::run(DoubleVector& x) 
+int CFDFMinimizer::run(Vector& x) 
 {
 	return impl->run(x); 
 }
@@ -70,22 +70,22 @@ CFDFMinimizer::Problem::Problem(size_t n)
 double CFDFMinimizer::Problem::f(const gsl_vector * x, void * params)
 {
 	Problem *p = (Problem *)params; 
-	return p->do_f(DoubleVector(x)); 
+	return p->do_f(Vector(x)); 
 }
 
 void CFDFMinimizer::Problem::df(const gsl_vector * x, void * params, gsl_vector * g)
 {
 	Problem *p = (Problem *)params; 
-	const DoubleVector vx(x); 
-	DoubleVector gx(g); 
+	const Vector vx(x); 
+	Vector gx(g); 
 	p->do_df(vx,gx); 
 }
 
 void CFDFMinimizer::Problem::fdf(const gsl_vector * x, void * params, double * f, gsl_vector * g)
 {
 	Problem *p = (Problem *)params; 
-	const DoubleVector vx(x); 
-	DoubleVector gx(g); 
+	const Vector vx(x); 
+	Vector gx(g); 
 	*f = p->do_fdf(vx,gx); 
 }
 
@@ -127,7 +127,7 @@ void CFDFMinimizer::set_stop_eps(double tol)
 }
 
 
-int CFDFMinimizerImpl::run(DoubleVector& x)
+int CFDFMinimizerImpl::run(Vector& x)
 {
 	int iter = 0; 
 	int status = GSL_CONTINUE; 
@@ -142,7 +142,7 @@ int CFDFMinimizerImpl::run(DoubleVector& x)
 	} while (status == GSL_CONTINUE && iter < 100); 
 	
 	// copy best solution 
-	DoubleVector help(gsl_multimin_fdfminimizer_x (m_s)); 
+	Vector help(gsl_multimin_fdfminimizer_x (m_s)); 
 	std::copy(help.begin(), help.end(), x.begin()); 
 
 	return status; 
@@ -158,7 +158,7 @@ CFMinimizer::Problem::Problem(size_t n)
 double CFMinimizer::Problem::f(const gsl_vector * x, void * params)
 {
 	Problem *p = (Problem *)params; 
-	return p->do_f(DoubleVector(x)); 
+	return p->do_f(Vector(x)); 
 }
 
 size_t CFMinimizer::Problem::size() const
@@ -171,7 +171,7 @@ struct CFMinimizerImpl {
 	CFMinimizerImpl(CFMinimizer::PProblem problem, const gsl_multimin_fminimizer_type *ot); 
 	~CFMinimizerImpl(); 
 	
-	int run(DoubleVector& x); 
+	int run(Vector& x); 
 
 	CFMinimizer::PProblem m_problem; 
 	const gsl_multimin_fminimizer_type *m_optimizer_type; 
@@ -196,7 +196,7 @@ CFMinimizer::~CFMinimizer()
 	delete impl; 
 }
 	
-int CFMinimizer::run(DoubleVector& x)
+int CFMinimizer::run(Vector& x)
 {
 	return impl->run(x); 
 }
@@ -219,7 +219,7 @@ CFMinimizerImpl::~CFMinimizerImpl()
 	gsl_vector_free(m_step_size); 
 }
 
-int CFMinimizerImpl::run(DoubleVector& x)
+int CFMinimizerImpl::run(Vector& x)
 {
 	int iter = 0; 
 	int status;  

@@ -60,15 +60,15 @@ const Matrix& CFastICANonlinearityBase::get_signal() const
 
 void CFastICADeflNonlinearity::post_set_signal()
 {
-	m_workspace = DoubleVector(get_signal().rows(), false); 
-	m_XTw = DoubleVector(get_signal().cols(), false); 
+	m_workspace = Vector(get_signal().rows(), false); 
+	m_XTw = Vector(get_signal().cols(), false); 
 }
 
 const char *CFastICANonlinearityBase::data_descr = "fastica"; 
 const char *CFastICADeflNonlinearity::type_descr = "deflation"; 
 
 
-void CFastICADeflNonlinearity::apply(gsl::DoubleVector& w)
+void CFastICADeflNonlinearity::apply(gsl::Vector& w)
 {
 	multiply_v_m(m_XTw, w, get_signal());
 	const double scale = get_correction_and_scale(m_XTw, m_workspace); 
@@ -83,7 +83,7 @@ void CFastICADeflNonlinearity::apply(gsl::Matrix& W)
 {
 	for (unsigned c = 0; c < W.cols(); ++c) {
 		auto wc = gsl_matrix_column(W, c); 
-		gsl::DoubleVector w(&wc.vector); 
+		gsl::Vector w(&wc.vector); 
 		
 		multiply_v_m(m_XTw, w, get_signal());
 		const double scale = get_correction_and_scale(m_XTw, m_workspace); 
@@ -111,7 +111,7 @@ double CFastICADeflNonlinearity::get_saddle_test_value(const gsl::Vector& ic) co
 }
 
 
-void CFastICADeflNonlinearity::sum_final(gsl::DoubleVector& w, double scale)
+void CFastICADeflNonlinearity::sum_final(gsl::Vector& w, double scale)
 {
 	const double inv_m = get_sample_scale(); 
 
@@ -120,7 +120,7 @@ void CFastICADeflNonlinearity::sum_final(gsl::DoubleVector& w, double scale)
 
 }
 
-void CFastICADeflNonlinearity::sum_final_stabelized(gsl::DoubleVector& w, double scale)
+void CFastICADeflNonlinearity::sum_final_stabelized(gsl::Vector& w, double scale)
 {
 	const double beta = dot(w, m_workspace); 
 	const double a2 = get_mu() / (scale - beta); 

@@ -42,16 +42,7 @@ using namespace ::boost::unit_test;
 
 namespace bmpl=boost::mpl;
 
-typedef bmpl::vector<DoubleVector, 
-		     FloatVector, 
-		     LongVector, 
-		     IntVector, 
-		     ShortVector, 
-		     CharVector,
-		     ULongVector,
-		     UIntVector,
-		     UShortVector,
-		     UCharVector>  test_types;
+typedef bmpl::vector<Vector>  test_types;
 
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_zero_init, T ,test_types ) 
@@ -128,7 +119,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_inplace_add, T ,test_types )
 BOOST_AUTO_TEST_CASE( test_vector_non_owning ) 
 {									
 	gsl_vector *x = gsl_vector_calloc(10); 
-	DoubleVector wx(x); 
+	Vector wx(x); 
 	
 	const size_t i2 = 2; 
 
@@ -142,8 +133,8 @@ BOOST_AUTO_TEST_CASE( test_vector_non_owning )
 
 BOOST_AUTO_TEST_CASE( test_vector_copy ) 
 {
-	DoubleVector wx(10, false); 
-	DoubleVector wy(5, false); 
+	Vector wx(10, false); 
+	Vector wy(5, false); 
 	
 	const size_t i2 = 2; 
 	wx[i2] = 3.0; 
@@ -160,7 +151,7 @@ BOOST_AUTO_TEST_CASE( test_vector_copy )
 
 BOOST_AUTO_TEST_CASE( test_vector_iterator ) 
 {
-	DoubleVector v(50, false); 
+	Vector v(50, false); 
 	for (int i = 0; i < 50; ++i)
 		v[i] = i + 0; 
 
@@ -171,7 +162,7 @@ BOOST_AUTO_TEST_CASE( test_vector_iterator )
 
 	gsl_vector_view vview = gsl_vector_subvector_with_stride (v, 2, 2, 20); 
 	
-	DoubleVector dv_view(&vview.vector); 
+	Vector dv_view(&vview.vector); 
 	
 	for (int i = 0; i < 20; ++i) {
 		BOOST_CHECK_EQUAL(dv_view[i], 2*i + 2); 
@@ -203,7 +194,7 @@ BOOST_AUTO_TEST_CASE( test_vector_iterator )
 }
 
 
-static void test_const_vector_iterator_impl(const DoubleVector& v) 
+static void test_const_vector_iterator_impl(const Vector& v) 
 {
 	auto it_dv = v.begin(); 
 	for (int i = 0; i < 50; ++i, ++it_dv)
@@ -212,7 +203,7 @@ static void test_const_vector_iterator_impl(const DoubleVector& v)
 	
 	gsl_vector_const_view vview = gsl_vector_const_subvector_with_stride (v, 2, 2, 20); 
 	
-	const DoubleVector dv_view(&vview.vector); 
+	const Vector dv_view(&vview.vector); 
 	
 	for (int i = 0; i < 20; ++i) {
 		BOOST_CHECK_EQUAL(dv_view[i], 2*i + 2); 
@@ -243,7 +234,7 @@ static void test_const_vector_iterator_impl(const DoubleVector& v)
 
 BOOST_AUTO_TEST_CASE( test_const_vector_iterator ) 
 {
-	DoubleVector v(50, false); 
+	Vector v(50, false); 
 	for (int i = 0; i < 50; ++i)
 		v[i] = i + 0; 
 

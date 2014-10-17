@@ -24,26 +24,117 @@
 
 #include <iostream>
 #include <gsl++/gsldefines.hh>
-#include <gsl++/vector_template.hh>
+#include <gsl++/iterator.hh>
+#include <gsl/gsl_vector.h>
 
 namespace gsl {
 
-typedef TVector<double>  DoubleVector; 
-typedef TVector<float>   FloatVector; 
+/**
+    This is a wrapper class around the GSL vector type. It provides 
+    a compatibility layer to make it possible to use STL algorithms and constructs.
+*/
+class Vector {
 
-typedef TVector<long>    LongVector; 
-typedef TVector<int>     IntVector; 
-typedef TVector<short>   ShortVector; 
-typedef TVector<char>    CharVector; 
+public: 
+	typedef vector_iterator iterator; 
+	typedef const_vector_iterator const_iterator; 
+	typedef size_t size_type; 
+	typedef double value_type; 
+	typedef double& reference;
+	typedef const double& const_reference; 
+	typedef gsl_vector vector_type; 
+	typedef gsl_vector *vector_pointer_type; 
+	typedef const gsl_vector *vector_const_pointer_type; 
+	
+	/**
+	   Construct an empty vector without allocating the GSL data structures
+	 */
+	Vector();
 
-typedef TVector<ulong>   ULongVector; 
-typedef TVector<uint>    UIntVector; 
-typedef TVector<ushort>  UShortVector; 
-typedef TVector<uchar>   UCharVector; 
+	/**
+	   Construct a vector of given size
+	   \param size 
+	   \param clear if set to \a true set all values to zero at allocation 
+	 */
+	Vector(size_type size, bool clear);
 
-extern template class EXPORT_GSL TVector<double>; 
+	/**
+	   Wrap a pre-constructed GSL vector. The passed GSL-vector will not be destroyed 
+	   when the destructor is called. 
+	   The values of the GSL vector can be changed 
+	   \param holder the already allocated GSL vector 
+	   
+	*/
+	Vector(gsl_vector *holder); 
+	/**
+	   Wrap a pre-constructed GSL vector. The passed GSL-vector will not be destroyed 
+	   when the destructor is called. 
+	   The values of the GSL vector can \a not be changed 
+	   \param holder the already allocated GSL vector 
+	*/
+	Vector(const gsl_vector *holder); 
 
-typedef DoubleVector Vector; 
+	/**
+	   Copy constructor, does a deep copy of the internal data structures. 
+	 */
+	Vector(const Vector& other); 
+
+	/**
+	   Copy operator, does a deep copy of the internal data structures. 
+	 */
+	Vector& operator = (const Vector& other); 
+
+	~Vector(); 
+	
+	iterator begin(); 
+
+	iterator end(); 
+
+	const_iterator begin()const; 
+
+	const_iterator end()const; 
+
+	size_type size() const; 
+
+	value_type operator[](size_t i) const {
+	        assert(cdata); 
+		return cdata->data[i * cdata->stride]; 
+        }; 
+
+	reference operator[](size_t i) {
+		assert(data); 
+		return data->data[i * data->stride]; 
+	}
+
+
+	const gsl_vector * operator  ->() const; 
+	
+	gsl_vector * operator  ->(); 
+	
+        /// vector const pointer type operator  to enable transparent calls to the GSL APL
+	operator vector_const_pointer_type () const; 
+
+	/// vector pointer type operator  to enable transparent calls to the GSL APL
+	operator vector_pointer_type (); 
+	
+	void print(std::ostream& os) const;  
+
+
+protected:
+	void reset_holder(gsl_vector *holder){
+		cdata = data = holder; 
+		owner = false; 
+	}
+	void reset_holder(const gsl_vector *holder){
+		cdata = holder;
+		owner = false;  
+	}
+
+private: 
+	gsl_vector *data; 
+	const gsl_vector *cdata; 
+	bool owner; 
+}; 
 
 
 inline Vector operator + (const Vector& lhs, const Vector& rhs) 
@@ -69,7 +160,8 @@ inline Vector operator * (const Vector& lhs, double f)
 
 class EXPORT_GSL VectorView :public Vector {
 public: 
-	VectorView(gsl_vector_view vv): m_view(vv) {
+	VectorView(gsl_vector_view vv): m_view(vv) 
+	{
 		reset_holder(&m_view.vector); 
 	}; 
 private: 
@@ -96,7 +188,7 @@ public:
 		return m_holder.size(); 
 	}
 	
-	Vector::value_type operator[](size_t i)const {
+	double operator[](size_t i)const {
 		
 		return m_holder[i]; 
 	}; 
@@ -105,7 +197,7 @@ public:
 		return m_holder; 
 	}
 		
-	const Vector::vector_type * operator  ->() const{
+	const gsl_vector * operator  ->() const{
 		return m_holder.operator ->(); 
 	}
 	

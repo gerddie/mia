@@ -74,7 +74,7 @@ public:
 	static const char *type_descr; 
 
 
-        void apply(gsl::DoubleVector& w); 
+        void apply(gsl::Vector& w); 
 	void apply(gsl::Matrix& W);
 
 	std::vector<double> get_saddle_test_table(const gsl::Matrix& ics) const;  
@@ -91,18 +91,18 @@ private:
 	   correction $X g(X^T w)$
 	 */
 
-	virtual double get_correction_and_scale(gsl::DoubleVector& XTw, gsl::DoubleVector& correction) = 0; 
+	virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction) = 0; 
 	
 	/**
 	   This function evaluates the SIR quantity needed for the saddle test
 	   \param ic independet component to evaluate the SIR from 
 	 */
 	virtual double do_get_saddle_test_value(const gsl::Vector& ic) const = 0;
-	void sum_final(gsl::DoubleVector& w, double scale); 
-	void sum_final_stabelized(gsl::DoubleVector& w, double scale); 
+	void sum_final(gsl::Vector& w, double scale); 
+	void sum_final_stabelized(gsl::Vector& w, double scale); 
 
-        gsl::DoubleVector m_XTw;
-        gsl::DoubleVector m_workspace; 
+        gsl::Vector m_XTw;
+        gsl::Vector m_workspace; 
 }; 
 
 

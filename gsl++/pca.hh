@@ -47,7 +47,7 @@ namespace gsl {
 class PCA {
 public: 
         typedef struct {
-                DoubleVector eval; 
+                Vector eval; 
                 Matrix evec; 
         } Result;
 

@@ -319,7 +319,7 @@ public:
 	   \param row vector containing the new values. It's size must be equal 
 	   to the number of columns of the matrix 
 	 */ 
-	void set_row(int r, const DoubleVector& row); 
+	void set_row(int r, const Vector& row); 
 
 	VectorView get_row(int r); 
 
@@ -331,7 +331,7 @@ public:
 	   \param col vector containing the new values. It's size must be equal 
 	   to the number of rows of the matrix 
 	 */ 
-	void set_column(int c, const DoubleVector& col); 
+	void set_column(int c, const Vector& col); 
 
 	VectorView get_column(int c); 
 
@@ -345,7 +345,7 @@ public:
 	   number of matrix columns. 
 	   \returns the dot product of the row vector and the input vector 
 	 */ 
-	double dot_row(int r, const DoubleVector& v) const; 
+	double dot_row(int r, const Vector& v) const; 
 
 	/**
 	   Evaluate the dot product between a column  of the matrix and a given vector 
@@ -355,7 +355,7 @@ public:
 	   \returns the dot product of the row vector and the input vector 
 	 */ 
 
-	double dot_column(int c, const DoubleVector& col) const; 
+	double dot_column(int c, const Vector& col) const; 
 
 	void print(std::ostream& os) const; 
 
@@ -391,7 +391,7 @@ struct CSymmvEvalEvec {
 	CSymmvEvalEvec(Matrix m); 
 	
 	Matrix evec; 
-	DoubleVector eval; 
+	Vector eval; 
 }; 
 	
 

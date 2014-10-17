@@ -84,7 +84,7 @@ PCA::Result PCA::analyze(const Matrix& signal) const
         PCA::Result result;
         if (max_useful_eigen >= 1) {
                 // copy the useful eigenvalues and eigenvectors over 
-                result.eval = DoubleVector(max_useful_eigen, false); 
+                result.eval = Vector(max_useful_eigen, false); 
                 result.evec.reset(covariance_matrix.rows(), max_useful_eigen, false); 
                 
                 for (unsigned i = 0; i < max_useful_eigen; ++i) {

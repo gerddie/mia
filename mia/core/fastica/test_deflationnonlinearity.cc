@@ -30,7 +30,7 @@ struct DeflationNonlinearityFixture {
 
 	DeflationNonlinearityFixture(); 
 	Matrix signal;
-	DoubleVector w;
+	Vector w;
 
 }; 
 
@@ -201,7 +201,7 @@ DeflationNonlinearityFixture::DeflationNonlinearityFixture()
 	double init_w[] = { -0.22638, 0.16168, 0.45102, 0.11684}; 
 
 	signal = Matrix(4, 10, init_signal); 
-	w = DoubleVector(4, false); 
+	w = Vector(4, false); 
 	std::copy(init_w, init_w + 4, w.begin()); 
 
 
