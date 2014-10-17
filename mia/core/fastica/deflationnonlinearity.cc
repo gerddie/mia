@@ -42,7 +42,13 @@ double CFastICADeflPow3::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::D
 
 double CFastICADeflPow3::do_get_saddle_test_value(const gsl::Vector& ic) const
 {
-	return 0.0; 
+	double result = 0.0; 
+	for (auto v = ic.begin(); v != ic.end(); ++v) {
+		double vv = *v * *v; 
+		result += vv * vv; 
+	}
+	result = result / ic.size() - 3.0; 
+	return result * result; 
 }
 	
 
@@ -67,7 +73,13 @@ double CFastICADeflTanh::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::D
 
 double CFastICADeflTanh::do_get_saddle_test_value(const gsl::Vector& ic) const
 {
-	return 0.0; 
+	// note that this is only valid for a = 1
+	double result = 0.0; 
+	for (auto v = ic.begin(); v != ic.end(); ++v) {
+		result += log(cosh(*v));
+	}
+	result = result / ic.size() - 0.37457; // = Integral (log(cos(x)) * N(0,1)(x)) 
+	return result * result; 
 }
 
 
@@ -101,7 +113,13 @@ double CFastICADeflGauss::get_correction_and_scale(gsl::DoubleVector& XTw, gsl::
 
 double CFastICADeflGauss::do_get_saddle_test_value(const gsl::Vector& ic) const
 {
-	return 0.0; 
+	// note that this is only valid for a = 1
+	double result = 0.0; 
+	for (auto v = ic.begin(); v != ic.end(); ++v) {
+		result += exp( - *v * *v / 2.0 );
+	}
+	result = result / ic.size() - 1.0 / sqrt(2.0);
+	return result * result; 
 }
 	
 
