@@ -275,20 +275,10 @@ INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIRS})
 LINK_DIRECTORIES(${EIGEN3_LIBRARY_DIRS})
 
 
-################################################################################
-# 
-# search for some blas
-# 
-
 IF(UNIX)
   GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
   SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${TBB_LIBRARIES} ${PTHREADLIB} -ldl")
 ENDIF(UNIX)
-
-#
-# End BLAS 
-# 
-##################################################################################
 
 ##################################################################################
 #
