@@ -18,8 +18,6 @@
  *
  */
 
-#define FICA_TOL 1e-9; 
-
 #include <gsl++/matrix_vector_ops.hh>
 #include <gsl++/pca.hh>
 #include <mia/core/fastica.hh>
