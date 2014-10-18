@@ -28,16 +28,26 @@
 namespace mia {
 
 /**
-   
+   This class implements the FastICA blind source separation with some 
+   addituions. 
+
  */
 
 class EXPORT_CORE FastICA {
 public: 
-	enum EApproach {appr_defl, appr_symm}; 
 
-	FastICA(const gsl::Matrix&  mix);
+	/**
+	   Separation approach to be used.  
+	 */
+	enum EApproach {
+		appr_defl, /**< Deflation approach - each component is extimated separately */ 
+		appr_symm  /**< Symmetric approach thet estimates all components at the same time */
+	}; 
 
-	bool separate(); 
+	
+	FastICA(int num_ic);
+
+	bool separate(const gsl::Matrix&  mix); 
 
 	void set_approach(EApproach apr); 
 	
@@ -85,13 +95,11 @@ private:
 	// evaluate the whitening and de-whitening matrices 
 	void evaluate_whiten_matrix(const gsl::Matrix& evec, const gsl::Vector& eval); 
         bool fpica_defl_round(int component, gsl::Vector& w, gsl::Matrix& B); 
-	bool fpica_defl(const gsl::Matrix& X); 
+	bool fpica_defl(const gsl::Matrix& X, gsl::Matrix& B); 
 	double fpica_symm_step(gsl::Matrix& B, gsl::Matrix& B_old, double mu, gsl::Matrix& Workspace); 
-	bool fpica_symm(const gsl::Matrix& X); 
+	bool fpica_symm(const gsl::Matrix& X, gsl::Matrix& B); 
 	bool run_saddlecheck(gsl::Matrix &B, const gsl::Matrix& X); 
 
-	const gsl::Matrix&  m_mix;
-	
 	EApproach m_approach; 
 	
 	int m_numOfIC; 

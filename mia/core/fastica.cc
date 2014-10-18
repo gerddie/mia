@@ -40,10 +40,9 @@ using std::sort;
 using std::transform; 
 using std::vector; 
 
-FastICA::FastICA(const Matrix&  mix):
-        m_mix(mix), 
+FastICA::FastICA(int num_ic):
         m_approach(appr_defl), 
-        m_numOfIC(m_mix.rows()), 
+        m_numOfIC(num_ic), 
         m_finetune(true), 
         m_mu(1.0), 
         m_epsilon(1e-10), 
@@ -53,7 +52,8 @@ FastICA::FastICA(const Matrix&  mix):
         m_maxFineTune(200), 
         m_PCAonly(false), 
 	m_with_initial_guess(false), 
-	m_do_saddle_check(false)
+	m_do_saddle_check(false), 
+	m_separating_matrix(1,1,false)
 {
         m_nonlinearity = produce_fastica_nonlinearity("pow3");  
 }
@@ -104,10 +104,10 @@ void FastICA::evaluate_whiten_matrix(const Matrix& evec, const Vector& eval)
 
 }
 
-bool FastICA::separate()
+bool FastICA::separate(const gsl::Matrix&  mix)
 {
 
-	CCenteredSignal centered(m_mix);
+	CCenteredSignal centered(mix);
 	
 	cvdebug() << "separate signal of size " << centered.signal.rows() << "x" << centered.signal.cols() << "\n"; 
 
@@ -115,46 +115,62 @@ bool FastICA::separate()
 	if (m_initGuess)
 		guess = m_initGuess;
 
-	Matrix processing(m_mix.rows(), m_numOfIC, true);
+	Matrix processing(mix.rows(), m_numOfIC, true);
 	
 	
 	gsl::PCA pca(m_numOfIC, 0.9);
 	auto pca_result = pca.analyze(centered.signal); 
 	
 	if (pca_result.eval.size() < 1) {
-		m_independent_components = m_mix;
+		m_independent_components = mix;
 		return false;
 	}
 
 	m_numOfIC = pca_result.eval.size(); 
+
 	cvdebug() << "Considering " << m_numOfIC << " independend components\n"; 
-	
 	cvdebug() << "PCA: eval= " << pca_result.eval << "\n"; 
 	cvdebug() << "PCA: evec= " << pca_result.evec << "\n"; 
+
 
 	evaluate_whiten_matrix(pca_result.evec, pca_result.eval);
 
 	// if only PCA, stop here and save the dewithening as independend components 
 	// where is the mixing matrix? 
 	if (m_PCAonly) {
-		m_mixing_matrix.reset(m_mix.rows(), m_dewhitening_matrix.cols(), 1.0);
+		m_mixing_matrix.reset(mix.rows(), m_dewhitening_matrix.cols(), 1.0);
 		m_independent_components = m_dewhitening_matrix; 
 		return true; 
 	}
 	
 	auto whitened_signal = m_whitening_matrix * centered.signal; 
+
+	bool result = false; 
+	Matrix B( whitened_signal.rows(), m_numOfIC,  true); 	
+	
 	switch (m_approach) {
-	case appr_defl: return fpica_defl(whitened_signal);
-	case appr_symm: return fpica_symm(whitened_signal);
+	case appr_defl: result = fpica_defl(whitened_signal, B);break; 
+	case appr_symm: result = fpica_symm(whitened_signal, B); break; 
 	default: 
 		throw std::invalid_argument("FastICA::separate: unknown apporach given"); 
 		
 	}
+
+	m_mixing_matrix = m_dewhitening_matrix * B; 
+		
+	cvdebug() << "Mixing matrix= " << m_mixing_matrix << "\n"; 
+
+	multiply_mT_m(m_separating_matrix, B, m_whitening_matrix); 
+	
+	m_independent_components = m_separating_matrix * mix; 
+
+	cvdebug() << "ICs= " << m_independent_components << "\n"; 
+
+	return result; 
 }
 
 bool FastICA::fpica_defl_round(int component, Vector& w, Matrix& B)
 {
-
 	Vector w_old(w);
 	Vector w_old2(w);
 
@@ -233,7 +249,7 @@ bool FastICA::fpica_defl_round(int component, Vector& w, Matrix& B)
 	return delta < m_epsilon; 
 }
 
-bool FastICA::fpica_defl(const Matrix& X)
+bool FastICA::fpica_defl(const Matrix& X, Matrix& B)
 { 
 	// not yet supported 
 	assert(!m_with_initial_guess); 
@@ -243,7 +259,6 @@ bool FastICA::fpica_defl(const Matrix& X)
 	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
 
 	Vector w( X.rows(), false); 
-	Matrix B( X.rows(), m_numOfIC,  true); 	
 
 	m_nonlinearity->set_signal(&X);
 	
@@ -262,14 +277,6 @@ bool FastICA::fpica_defl(const Matrix& X)
 		B.set_column(i, w);
 	}
 
-	m_mixing_matrix = m_dewhitening_matrix * B; 
-		
-	cvdebug() << "Mixing matrix= " << m_mixing_matrix << "\n"; 
-	m_separating_matrix.reset(X.rows(), m_numOfIC, false); 
-	multiply_mT_m(m_separating_matrix, B, m_whitening_matrix); 
-	
-	m_independent_components = m_separating_matrix * m_mix; 
-	
 	return global_converged; 
 }
 
@@ -295,7 +302,7 @@ double FastICA::fpica_symm_step(Matrix& B, Matrix& B_old,double mu, Matrix& work
 	return min_abs_diag(workspace); 
 }
 
-bool FastICA::fpica_symm(const Matrix& X)
+bool FastICA::fpica_symm(const Matrix& X, Matrix& B)
 {
 	// not yet supported 
 	assert(!m_with_initial_guess); 
@@ -303,8 +310,6 @@ bool FastICA::fpica_symm(const Matrix& X)
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<> random_source( -0.5, 0.5 ); 
-
-	Matrix B(X.rows(), m_numOfIC,  true); 
 
 	Matrix B_old2(B);
 	Matrix B_restart(B);
@@ -336,10 +341,11 @@ bool FastICA::fpica_symm(const Matrix& X)
 	do {
 		while (!converged  && iter < maxiter) {
 
+
 			double minAbsCos = fpica_symm_step(B, B_old, mu, BTB); 
 			
 			cvdebug() << "B= "  << B << "\n"; 
-			
+
 			cvmsg() << "FastICA: "<<  iter << ":" << 1.0 - minAbsCos << "\n"; 
 			
 			if ( 1.0 - minAbsCos < m_epsilon) {
@@ -383,23 +389,8 @@ bool FastICA::fpica_symm(const Matrix& X)
 			finished = true;
 		
 	} while (!finished); 
-		
-	// here we could add the EFICA fine tuning 
 	
-
-	m_mixing_matrix = m_dewhitening_matrix * B; 
-		
-	cvdebug() << "Mixing matrix= " << m_mixing_matrix << "\n"; 
-
-	m_separating_matrix.reset(X.rows(), m_numOfIC, false); 
-	multiply_mT_m(m_separating_matrix, B, m_whitening_matrix); 
-	
-	m_independent_components = m_separating_matrix * m_mix; 
-
-	cvdebug() << "ICs= " << m_independent_components << "\n"; 
-				   
-	return converged; 
-	
+	return converged; 	
 }
 
 bool FastICA::run_saddlecheck(Matrix &B, const Matrix& X)

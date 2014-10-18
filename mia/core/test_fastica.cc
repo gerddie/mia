@@ -60,14 +60,13 @@ BOOST_AUTO_TEST_CASE ( test_fastica_symm )
 	Matrix mix = in_mixing_matrix * in_ics; 
 	
 
-	FastICA ica(mix);
+	FastICA ica(3);
 
 	ica.set_approach(FastICA::appr_symm); 
-	ica.set_nr_of_independent_components (3); 
  	ica.set_epsilon (1e-10); 
 	ica.set_finetune(true); 
 	ica.set_nonlinearity(produce_fastica_nonlinearity("pow3")); 
-	BOOST_CHECK(ica.separate()); 
+	BOOST_CHECK(ica.separate(mix)); 
 	
 	
 	const gsl::Matrix& out_mixing_matrix = ica.get_mixing_matrix();
@@ -138,15 +137,14 @@ BOOST_AUTO_TEST_CASE ( test_fastica_defl )
 	Matrix mix = in_mixing_matrix * in_ics; 
 	
 
-	FastICA ica(mix);
+	FastICA ica(3);
 
 	ica.set_approach(FastICA::appr_defl); 
-	ica.set_nr_of_independent_components (3); 
  	ica.set_epsilon (1e-10); 
 	ica.set_finetune(true); 
 	ica.set_stabilization(true); 
 	ica.set_nonlinearity(produce_fastica_nonlinearity("pow3")); 
-	BOOST_CHECK(ica.separate()); 
+	BOOST_CHECK(ica.separate(mix)); 
 	
 	
 	const gsl::Matrix& out_mixing_matrix = ica.get_mixing_matrix();
