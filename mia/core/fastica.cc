@@ -30,7 +30,7 @@
 #include <gsl/gsl_blas.h>
 #include <mia/core/fastica_nonlinearity.hh>
 
-namespace mia {
+NS_MIA_BEGIN 
 
 using gsl::Vector; 
 using gsl::Matrix; 
@@ -51,8 +51,10 @@ FastICA::FastICA(int num_ic):
         m_maxNumIterations(1000), 
         m_maxFineTune(200), 
         m_PCAonly(false), 
+	m_component_energy_limit(0.9), 
 	m_with_initial_guess(false), 
 	m_do_saddle_check(false), 
+	m_saddle_postiter(100), 
 	m_separating_matrix(1,1,false)
 {
         m_nonlinearity = produce_fastica_nonlinearity("pow3");  
@@ -106,19 +108,19 @@ void FastICA::evaluate_whiten_matrix(const Matrix& evec, const Vector& eval)
 
 bool FastICA::separate(const gsl::Matrix&  mix)
 {
-
 	CCenteredSignal centered(mix);
-	
 	cvdebug() << "separate signal of size " << centered.signal.rows() << "x" << centered.signal.cols() << "\n"; 
 
+	// currently not used 
 	Matrix guess;
 	if (m_initGuess)
 		guess = m_initGuess;
 
-	Matrix processing(mix.rows(), m_numOfIC, true);
-	
-	
-	gsl::PCA pca(m_numOfIC, 0.9);
+
+	// run PCA to prepare the whitening 
+	// also select the limit of useful compinents based on maximal 
+	// energy 
+	gsl::PCA pca(m_numOfIC, m_component_energy_limit);
 	auto pca_result = pca.analyze(centered.signal); 
 	
 	if (pca_result.eval.size() < 1) {
@@ -126,12 +128,12 @@ bool FastICA::separate(const gsl::Matrix&  mix)
 		return false;
 	}
 
+	// update the number of components 
 	m_numOfIC = pca_result.eval.size(); 
 
 	cvdebug() << "Considering " << m_numOfIC << " independend components\n"; 
 	cvdebug() << "PCA: eval= " << pca_result.eval << "\n"; 
 	cvdebug() << "PCA: evec= " << pca_result.evec << "\n"; 
-
 
 	evaluate_whiten_matrix(pca_result.evec, pca_result.eval);
 
@@ -142,6 +144,8 @@ bool FastICA::separate(const gsl::Matrix&  mix)
 		m_independent_components = m_dewhitening_matrix; 
 		return true; 
 	}
+
+	// run the actual ICA 
 	
 	auto whitened_signal = m_whitening_matrix * centered.signal; 
 
@@ -156,6 +160,7 @@ bool FastICA::separate(const gsl::Matrix&  mix)
 		
 	}
 
+	// evaluate the results if the ICA 
 	m_mixing_matrix = m_dewhitening_matrix * B; 
 		
 	cvdebug() << "Mixing matrix= " << m_mixing_matrix << "\n"; 
@@ -341,7 +346,6 @@ bool FastICA::fpica_symm(const Matrix& X, Matrix& B)
 	do {
 		while (!converged  && iter < maxiter) {
 
-
 			double minAbsCos = fpica_symm_step(B, B_old, mu, BTB); 
 			
 			cvdebug() << "B= "  << B << "\n"; 
@@ -384,8 +388,9 @@ bool FastICA::fpica_symm(const Matrix& X, Matrix& B)
 		}
 		if (do_saddle_check) {
 			do_saddle_check = run_saddlecheck(B, X); 
-			// TODO: reset iterations here 
-		}else 
+			m_saddle_postiter = maxiter; 
+			iter = 0; 
+		} else 
 			finished = true;
 		
 	} while (!finished); 
@@ -393,6 +398,19 @@ bool FastICA::fpica_symm(const Matrix& X, Matrix& B)
 	return converged; 	
 }
 
+
+/*
+  This is the saddle check as described in 
+ 
+  Petr Tichavský, Zbynek Koldovský, and Erkki Oja
+  "Performance Analysis of the FastICA Algorithm and Cramér–Rao "
+  "Bounds for Linear Independent Component Analysis"
+  IEEE Tran Signal Processing, 54(4), 2006, 1189-1203  
+  
+  Returns true if at least one check resulted in an update of the
+  components.
+  
+*/ 
 bool FastICA::run_saddlecheck(Matrix &B, const Matrix& X)
 {
 	bool result = false; 
@@ -465,69 +483,85 @@ void FastICA::set_sample_size (double sampleSize)
         m_sampleSize = sampleSize; 
 }
 
-void 	FastICA::set_stabilization (bool stabilization)
+void FastICA::set_component_energy_limit(double limit)
+{
+	m_component_energy_limit = limit; 
+}
+
+void FastICA::set_stabilization (bool stabilization)
 {
         m_stabilization = stabilization; 
 }
 
-void 	FastICA::set_max_num_iterations (int maxNumIterations)
+void FastICA::set_max_num_iterations (int maxNumIterations)
 {
         m_maxNumIterations = maxNumIterations; 
 }
 
-void 	FastICA::set_max_fine_tune (int maxFineTune)
+void FastICA::set_max_fine_tune (int maxFineTune)
 {
         m_maxFineTune = maxFineTune; 
 }
 
-void 	FastICA::set_pca_only (bool PCAonly)
+void FastICA::set_pca_only (bool PCAonly)
 {
         m_PCAonly = PCAonly; 
 }
 
-void 	FastICA::set_init_guess (const Matrix&  initGuess)
+void FastICA::set_init_guess (const Matrix&  initGuess)
 {
         m_initGuess = initGuess;
 }
 
-const Matrix& 	FastICA::get_mixing_matrix () const
+void FastICA::set_saddle_check(bool saddle_check)
 {
-        return m_mixing_matrix; 
+	m_do_saddle_check = saddle_check; 
 }
 
-const Matrix& 	FastICA::get_separating_matrix () const
+void FastICA::set_saddle_check_postiterations(int saddle_postiter)
 {
-        return m_separating_matrix; 
+	m_saddle_postiter = saddle_postiter; 
 }
-
-const Matrix&	FastICA::get_independent_components () const
-{
-        return m_independent_components; 
-}
-
+	
 int FastICA::get_nr_of_independent_components () const
 {
         return m_numOfIC; 
 }
 
-const Matrix&	FastICA::get_principal_eigenvectors () const
+const Matrix& FastICA::get_mixing_matrix () const
+{
+        return m_mixing_matrix; 
+}
+
+const Matrix& FastICA::get_separating_matrix () const
+{
+        return m_separating_matrix; 
+}
+
+const Matrix& FastICA::get_independent_components () const
+{
+        return m_independent_components; 
+}
+
+
+const Matrix& FastICA::get_principal_eigenvectors () const
 {
         return m_principal_eigenvectors; 
 }
 
-const Matrix&	FastICA::get_whitening_matrix () const
+const Matrix& FastICA::get_whitening_matrix () const
 {
         return m_whitening_matrix; 
 }
 
-const Matrix&	FastICA::get_dewhitening_matrix () const
+const Matrix& FastICA::get_dewhitening_matrix () const
 {
         return m_dewhitening_matrix; 
 }
 
-const Matrix&	FastICA::get_white_signal () const
+const Matrix& FastICA::get_white_signal () const
 {
         return m_white_sig; 
 }
 
-}; 
+NS_END  
