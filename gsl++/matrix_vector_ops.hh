@@ -27,16 +27,16 @@
 
 namespace gsl {
 
-void multiply_m_m(Matrix& result, const Matrix& lhs, const Matrix& rhs);
-void multiply_mT_m(Matrix& result, const Matrix& lhs, const Matrix& rhs);
-void multiply_m_mT(Matrix& result, const Matrix& lhs, const Matrix& rhs);
+void EXPORT_GSL multiply_m_m(Matrix& result, const Matrix& lhs, const Matrix& rhs);
+void EXPORT_GSL multiply_mT_m(Matrix& result, const Matrix& lhs, const Matrix& rhs);
+void EXPORT_GSL multiply_m_mT(Matrix& result, const Matrix& lhs, const Matrix& rhs);
 
-void multiply_v_m(Vector& result, const Vector& lhs, const Matrix& rhs); 
-void multiply_m_v(Vector& result, const Matrix& rhs, const Vector& lhs);
+void EXPORT_GSL multiply_v_m(Vector& result, const Vector& lhs, const Matrix& rhs); 
+void EXPORT_GSL multiply_m_v(Vector& result, const Matrix& rhs, const Vector& lhs);
 
-double dot(const gsl_vector *lhs, const gsl_vector *rhs); 
+double EXPORT_GSL dot(const gsl_vector *lhs, const gsl_vector *rhs); 
 
-void matrix_orthogonalize(Matrix& M); 
+void EXPORT_GSL matrix_orthogonalize(Matrix& M); 
 
 
 }

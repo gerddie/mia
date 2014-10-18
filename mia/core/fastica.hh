@@ -31,7 +31,7 @@ namespace mia {
    
  */
 
-class FastICA {
+class EXPORT_CORE FastICA {
 public: 
 	enum EApproach {appr_defl, appr_symm}; 
 

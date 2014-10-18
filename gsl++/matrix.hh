@@ -82,8 +82,8 @@ private:
 	size_t m_row_jump; 
 }; 
 
-bool operator == (const matrix_iterator& lhs, const matrix_iterator& rhs); 
-bool operator != (const matrix_iterator& lhs, const matrix_iterator& rhs); 
+bool EXPORT_GSL operator == (const matrix_iterator& lhs, const matrix_iterator& rhs); 
+bool EXPORT_GSL operator != (const matrix_iterator& lhs, const matrix_iterator& rhs); 
 
 
 class EXPORT_GSL const_matrix_iterator {
@@ -145,8 +145,8 @@ private:
 	size_t m_row_jump; 
 }; 
 
-bool operator == (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
-bool operator != (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
+bool EXPORT_GSL operator == (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
+bool EXPORT_GSL operator != (const const_matrix_iterator& lhs, const const_matrix_iterator& rhs); 
 
 
 
@@ -419,9 +419,9 @@ private:
 }; 
 
 
-Matrix operator * (const Matrix& lhs, const Matrix& rhs); 
-Matrix operator + (const Matrix& lhs, const Matrix& rhs); 
-Matrix operator - (const Matrix& lhs, const Matrix& rhs); 
+Matrix EXPORT_GSL operator * (const Matrix& lhs, const Matrix& rhs); 
+Matrix EXPORT_GSL operator + (const Matrix& lhs, const Matrix& rhs); 
+Matrix EXPORT_GSL operator - (const Matrix& lhs, const Matrix& rhs); 
 
 inline std::ostream& operator << (std::ostream& os, const Matrix& m)
 {
@@ -432,7 +432,7 @@ inline std::ostream& operator << (std::ostream& os, const Matrix& m)
 /**
    Evaluate the eigenvalues and eigenvectors of the input matrix
 */
-struct CSymmvEvalEvec {
+struct EXPORT_GSL CSymmvEvalEvec {
 	CSymmvEvalEvec(Matrix m); 
 	
 	Matrix evec; 
@@ -443,7 +443,7 @@ struct CSymmvEvalEvec {
    Evaluate in place: pow(m, -0.5); 
 
 */
-void matrix_inv_sqrt(Matrix& m); 
+void EXPORT_GSL matrix_inv_sqrt(Matrix& m); 
 
 
 } // end namespace 

@@ -44,7 +44,7 @@ namespace gsl {
    user-defined ratio. 
 */
 
-class PCA {
+class EXPORT_GSL PCA {
 public: 
         typedef struct {
                 Vector eval; 

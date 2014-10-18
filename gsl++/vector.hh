@@ -34,7 +34,7 @@ namespace gsl {
     a compatibility layer to make it possible to use STL algorithms and constructs.
     
 */
-class Vector {
+class  EXPORT_GSL Vector {
 
 public: 
 	typedef vector_iterator iterator; 
@@ -199,6 +199,10 @@ inline Vector operator * (const Vector& lhs, double f)
 	return result; 
 }
 
+/**
+   Wrapper for the gsl_vector_view providing transparent access 
+   to the underlying vector. 
+*/
 class EXPORT_GSL VectorView :public Vector {
 public: 
 	VectorView(gsl_vector_view vv): m_view(vv) 
@@ -209,6 +213,11 @@ private:
 	gsl_vector_view m_view; 
 }; 
 
+
+/**
+   Wrapper for the gsl_vector_const_view providing transparent access 
+   to the underlying vector. 
+*/
 class EXPORT_GSL ConstVectorView {
 public: 
 	ConstVectorView(gsl_vector_const_view vv):m_view(vv), 

@@ -24,7 +24,6 @@
 
 namespace gsl {
 
-
 Vector::Vector():
 	data(NULL), 
 	cdata(NULL), 

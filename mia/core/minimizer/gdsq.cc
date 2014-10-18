@@ -19,9 +19,8 @@
  */
 
 #include <mia/core/minimizer/gdsq.hh>
-extern "C" {
-#include <cblas.h>
-}
+#include <gsl/gsl_cblas.h>
+
 
 NS_BEGIN(minimizer_gdsq)
 using namespace mia; 

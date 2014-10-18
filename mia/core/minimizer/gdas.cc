@@ -20,9 +20,9 @@
 
 #include <mia/core/minimizer/gdas.hh>
 #include <mia/core/errormacro.hh>
-extern "C" {
-#include <cblas.h>
-}
+
+#include <gsl/gsl_cblas.h>
+
 
 NS_BEGIN(gdas)
 using namespace mia; 

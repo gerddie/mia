@@ -22,10 +22,7 @@
 #include <config.h>
 #endif
 
-extern "C" {
-#include <cblas.h>
-}
-
+#include <gsl/gsl_cblas.h>
 #include <iomanip>
 #include <limits>
 

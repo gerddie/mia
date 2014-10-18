@@ -24,9 +24,7 @@
 #include <mia/3d/filter/msnormalizer.hh>
 #include <mia/core/threadedmsg.hh>
 
-extern "C" {
-#include <cblas.h>
-}
+#include <gsl/gsl_cblas.h>
 
 
 NS_BEGIN(msnormalizer_3dimage_filter)
