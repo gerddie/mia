@@ -40,7 +40,7 @@ def get_date_string():
     return "%d %s %d"% (lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
 
 def get_version():
-    return "2.0.10"
+    return "2.2.2"
 
 #taken from http://effbot.org/zone/re-sub.htm#unescape-html
     
