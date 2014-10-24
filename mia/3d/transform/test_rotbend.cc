@@ -117,7 +117,7 @@ BOOST_FIXTURE_TEST_CASE( test_affine3d_iterator, ipfFixture )
 {
 	C3DBounds size(10,20,15);
 
-	C3DRotBendTransformation t1(size, C3DFVector(5,9.0f,7.5f), ipf);
+	C3DRotBendTransformation t1(size, C3DFVector(5,9.0f, 7.5f), false, ipf);
 	C3DRotBendTransformation::const_iterator ti = t1.begin();
 	
 	for (size_t z = 0; z < size.z; ++z)
@@ -134,7 +134,7 @@ BOOST_FIXTURE_TEST_CASE( test_affine3d_ranged_iterator, ipfFixture)
 	C3DBounds size(10,20,30);
 	C3DBounds delta(1,2,3); 
 
-	C3DRotBendTransformation t1(size, C3DFVector(5,9.0f,15.5f), ipf);
+	C3DRotBendTransformation t1(size, C3DFVector(5,9.0f,15.5f), false, ipf);
 	auto ti = t1.begin_range(delta, size - delta);
 
 	for (size_t z = delta.z; z < size.z - delta.z; ++z)
@@ -149,7 +149,7 @@ BOOST_FIXTURE_TEST_CASE( test_affine3d_ranged_iterator, ipfFixture)
 Axis1Fixture::Axis1Fixture():
 m_origin(12,23,32), 
         m_size(25, 47, 70), 
-        m_transform(m_size, m_origin / C3DFVector(m_size), ipf)
+        m_transform(m_size, m_origin / C3DFVector(m_size), false, ipf)
 {
 
 }
