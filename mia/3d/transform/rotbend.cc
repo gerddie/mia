@@ -42,13 +42,13 @@ C3DFVector C3DRotBendTransformation::transform(const C3DFVector& x)const
 	int offset = m_norot ? 0 : 2; 
 	auto y = m_pre_matrix * x; 
 
-	if (y.x > 0) {
-		const float max_distance = get_size().x - m_rotation_center.x; 
-		y.z += y.x * y.x * m_params[offset] / (max_distance * max_distance + 1); 
+	if (y.y > 0) {
+		const float max_distance = get_size().y - m_rotation_center.y; 
+		y.z += y.y * y.y * m_params[offset] / (max_distance * max_distance + 1); 
 	} 
-	else if (y.x < 0) {
-		const float max_distance = m_rotation_center.x; 
-		y.z += y.x * y.x * m_params[offset + 1] / (max_distance * max_distance + 1); 
+	else if (y.y < 0) {
+		const float max_distance = m_rotation_center.y; 
+		y.z += y.y * y.y * m_params[offset + 1] / (max_distance * max_distance + 1); 
 	}
 
 	return m_post_matrix * y;

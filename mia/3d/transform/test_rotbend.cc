@@ -104,13 +104,13 @@ BOOST_FIXTURE_TEST_CASE( test_rotbend3d_rotation_x, Axis1Fixture )
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d_bend_left, Axis1Fixture )
 {
 	check_transformed_is_expected(2, 2.0, m_origin +  C3DFVector(1, 2, -0.2), 
-				      m_origin + C3DFVector(1, 2, -0.2 + 2.0/(13*13+1) ));
+				      m_origin + C3DFVector(1, 2, -0.2 + 8.0/(24*24+1) ));
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rotbend3d__bend_right, Axis1Fixture )
 {
-	check_transformed_is_expected(3, 3.0, m_origin +  C3DFVector(-3, 2, -0.2), 
-				      m_origin + C3DFVector(-3, 2, -0.2 + 27.0 / (12*12+1)));
+	check_transformed_is_expected(3, 4.0, m_origin +  C3DFVector(-3, -2, -0.2), 
+				      m_origin + C3DFVector(-3, -2, -0.2 + 16.0 / (23*23+1) ));
 }
 
 BOOST_FIXTURE_TEST_CASE( test_affine3d_iterator, ipfFixture )
