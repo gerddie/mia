@@ -84,6 +84,9 @@ class CTextNode:
         if not expect is None and node.tag != expect:
             raise ValueError("expected '%s' got '%s'" % (expect, node.tag))
 
+        self.required = False
+        self.is_input = False
+        self.is_output = False
         self.entry = node.tag
         self.flags = []
         self.text  = ""
@@ -95,13 +98,33 @@ class CTextNode:
             if child.tail is not None:
                 self.text = self.text + child.tail
 
+        for f in self.flags: 
+                p = {
+                    "required": self.set_is_required, 
+                    "input":    self.set_is_input, 
+                    "output":   self.set_is_output,
+                    }.get(f, self.dummy)(f)
+    
+    def set_is_required(self, f):
+        self.required = True
+
+    def set_is_input(self, f):
+        self.is_input = True
+
+    def set_is_output(self, f):
+        self.is_output = True
+
+    def dummy(self, f):
+        warnings.warn ('Unknown flag "{}" encountered'.format(f))
+
+
 class COption(CTextNode):
     def __init__(self, node):
         CTextNode.__init__(self, node, "option")
 
         self.short = node.get("short")
         self.long =  node.get("long")
-        self.required = int(node.get("required")) 
+#        self.required = int(node.get("required")) 
         self.default = node.get("default")
         self.type = node.get("type")
 
@@ -267,8 +290,8 @@ class CParam:
         self.name = node.get("name")
         self.type = node.get("type")
         self.default = node.get("default")
-        self.required = int(node.get("required")) 
         self.text = node.text
+        self.required = False
         self.flags = []
 
         for child in node.iter("flags"):
@@ -280,6 +303,26 @@ class CParam:
             # if there is a ',' in the text make clean that it needs to be escaped  
         if m is not None: 
             self.default = "[" + self.default + "]"
+
+        for f in self.flags: 
+                p = {
+                    "required": self.set_is_required, 
+                    "input":    self.set_is_input, 
+                    "output":   self.set_is_output,
+                    }.get(f, self.dummy)(f)
+    
+    def set_is_required(self, f):
+        self.required = True
+
+    def set_is_input(self, f):
+        self.is_input = True
+
+    def set_is_output(self, f):
+        self.is_output = True
+
+    def dummy(self, f):
+        warnings.warn ('Unknown flag "{}" encountered'.format(f))
+
 
     def print_man(self):
         print ".I"

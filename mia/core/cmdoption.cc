@@ -238,7 +238,6 @@ void CCmdOption::add_option_xml(xmlpp::Element& parent, HandlerHelpMap& handler_
 	auto option = parent.add_child("option"); 
 	option->set_attribute("short", to_string<char>(get_short_option()));
 	option->set_attribute("long", get_long_option());
-	option->set_attribute("required", to_string<bool>(is_required())); 
 	option->set_attribute("default", get_value_as_string()); 
 	
 	auto flagstring = get_flag_string(); 
