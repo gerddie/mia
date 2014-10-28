@@ -27,6 +27,7 @@ xmlns = "{%s}" % xml_namespace
 # supported tags: 
 #   program      main tag 
 #   name         text: program name
+#   version      text: package version number 
 #   section      text: program type
 #   description  text: basic description of the program 
 #   basic_usage  text: generic call 
@@ -592,6 +593,8 @@ class CDescription:
                 self.name = n.text
             elif n.tag == 'section':
                 self.section = n.text
+            elif n.tag == 'version':
+                self.version = n.text
             elif n.tag == 'whatis':
                 self.whatis = n.text
             elif n.tag == 'description':

@@ -277,7 +277,8 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	Element* nodeRoot = doc->create_root_node("program");
 	Element* program_name = nodeRoot->add_child("name"); 
 	program_name->set_child_text(name_help); 
-
+	Element*  version_string = nodeRoot->add_child("version"); 
+	version_string->set_child_text(get_revision()); 
 	Element* program_group = nodeRoot->add_child("section"); 
 	program_group->set_child_text(m_program_group); 
 	Element* description = nodeRoot->add_child("description"); 
@@ -285,6 +286,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	Element* basic_usage = nodeRoot->add_child("basic_usage"); 
 	Element*  short_descr = nodeRoot->add_child("whatis"); 
 	short_descr->set_child_text(m_short_descr); 
+
 
 	ostringstream usage_text; 
 	usage_text << " " << name_help << " "; 
@@ -506,7 +508,7 @@ void CCmdOptionListData::print_usage(const char *name) const
 
 void CCmdOptionListData::print_version(const char *name_help) const
 {
-	*m_log << name_help << " revision:" << get_revision() << "\n\n"; 
+	*m_log << name_help << " version: " << get_revision() << "\n\n"; 
 	*m_log << g_basic_copyright1; 
 	*m_log << get_author(); 
 	*m_log << g_basic_copyright2 << "\n"; 
