@@ -40,7 +40,7 @@ nipype_header = """from nipype.interfaces.base import (
         File,
         traits
     )
-    import os"""
+import os"""
 
 
 from miareadxml import parse_file
@@ -97,6 +97,7 @@ class  NipypeOutput:
             "float" : lambda i : self.create_Float_param(i), 
             "double": lambda i : self.create_Float_param(i), 
             "dict"  : lambda i : self.create_Dict_param(i), 
+            "set"  : lambda i : self.create_Set_param(i), 
             "factory" : lambda i : self.create_Factory_param(i)
         }
         
@@ -126,6 +127,11 @@ class  NipypeOutput:
         self.create_param_tail(param)
 
     def create_Dict_param(self, param):
+        self.create_trait_input_param_start(param, 'Enum', param.get_names_as_string())
+        self.out.write('argstr="--{} %s" '.format(param.long)), 
+        self.create_param_tail(param)
+
+    def create_Set_param(self, param):
         self.create_trait_input_param_start(param, 'Enum', param.get_names_as_string())
         self.out.write('argstr="--{} %s" '.format(param.long)), 
         self.create_param_tail(param)
@@ -161,7 +167,7 @@ class  NipypeOutput:
         self.out.write ( '\toutput_{} = File(desc="{}"'.format(dash_to_underscore(param.long), param.text)), 
         if param.required: 
                 self.out.write (', exists = True '), 
-        self.out.write( ')')
+        self.out.write( ')\n')
 
 
     def write_unknown_type(self, param):
@@ -229,7 +235,7 @@ class  NipypeOutput:
 
         self.out.write( 'if __name__ == "__main__":\n')
         self.out.write( '\tmia_prog = {}_Task()\n'.format(name))
-        self.out.write( '\tself.out.write mia_prog.cmdline\n')
+        self.out.write( '\tprint( mia_prog.cmdline)\n')
 
 
     def write_nipype_file(self):

@@ -211,6 +211,44 @@ class CDictOption(COption):
             parent.append(opttable)
 
 
+class CSetOption(COption):
+    def __init__(self, node):
+        COption.__init__(self, node)
+        self.set = []
+        for child in node.iter("set"):
+            for cc in child.iter("value"):
+                self.set.append(cc.get("name"))
+                
+    def get_names_as_string(self):
+        result = ""
+        for k in self.set:
+            result = result + '"' + k + '", '
+        return result
+
+    def do_print_man(self):
+        if len(self.set) > 0:
+            print ""
+            print ".RS 10"
+            print ".I" 
+
+            print "Supported values are:(", 
+            for k in self.set:
+                print "%s, " % (escape_dash(k)), 
+                print ")"
+            print ".RE"
+
+
+    def do_write_xml(self, parent):
+        if len(self.set) > 0:
+            e = etree.SubElement(row, "entry", align="left", valign="top")
+            str_list = [self.text, " Supported values are:("]
+            
+            for k in self.set:
+                str_list.append("%s, " % (k))
+            str_list.append(")")
+            e.text = ''.join(str_list)
+                
+
 class CIOOption(COption):
     def __init__(self, node):
         COption.__init__(self, node)
@@ -277,6 +315,7 @@ class CGroup:
                     "io": lambda n: CIOOption(n), 
                     "factory": lambda n: CFactoryOption(n), 
                     "dict":    lambda n: CDictOption(n),
+                    "set": lambda n: CSetOption(n),
                     }.get(child.get("type"), lambda n: COption(n))(child)
                 self.options.append(p)
             else:
