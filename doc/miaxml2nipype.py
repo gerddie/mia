@@ -123,12 +123,12 @@ class  NipypeOutput:
 
     def  create_XDBounds_param(self, param):
         self.create_trait_input_param_start(param, 'ListInt')
-        self.out.write('argstr="--{} [%s]", sep=","'.format(param.long)), 
+        self.out.write('argstr="--{} %s", sep=","'.format(param.long)), 
         self.create_param_tail(param)
         
     def create_XDFVector_param(self, param):
         self.create_trait_input_param_start(param, 'ListFloat')
-        self.out.write('argstr="--{} [%s]", sep=","'.format(param.long)), 
+        self.out.write('argstr="--{} %s", sep=","'.format(param.long)), 
         self.create_param_tail(param)
 
     def create_Integral_param(self, param):
