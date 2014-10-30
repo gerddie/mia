@@ -87,6 +87,11 @@ class  NipypeOutput:
         self.descr = parse_file(input_file)
         self.out=open(output_file, 'w')
         self.ParamTable = {
+            "2dbounds" : lambda i : self.create_XDBounds_param(i), 
+            "3dbounds" : lambda i : self.create_XDBounds_param(i), 
+            "2dfvector" : lambda i : self.create_XDFVector_param(i), 
+            "3dfvector" : lambda i : self.create_XDFVector_param(i), 
+
             "bool"  : lambda i : self.create_Bool_param(i), 
             "short" : lambda i : self.create_Integral_param(i), 
             "int"   : lambda i : self.create_Integral_param(i), 
@@ -114,6 +119,16 @@ class  NipypeOutput:
     def create_Bool_param(self, param):
         self.create_trait_input_param_start(param, 'Bool')
         self.out.write('argstr="--{}" '.format(param.long)), 
+        self.create_param_tail(param)
+
+    def  create_XDBounds_param(self, param):
+        self.create_trait_input_param_start(param, 'ListInt')
+        self.out.write('argstr="--{} [%s]", sep=","'.format(param.long)), 
+        self.create_param_tail(param)
+        
+    def create_XDFVector_param(self, param):
+        self.create_trait_input_param_start(param, 'ListFloat')
+        self.out.write('argstr="--{} [%s]", sep=","'.format(param.long)), 
         self.create_param_tail(param)
 
     def create_Integral_param(self, param):
@@ -146,12 +161,10 @@ class  NipypeOutput:
         self.out.write('argstr="--{} %s" '.format(param.long)), 
         self.create_param_tail(param)
 
-
     def create_input_File_param(self, param):
         self.create_trait_input_param_start(param, 'File')
         self.out.write('argstr="--{} %s", exists=True '.format(param.long)), 
         self.create_param_tail(param)
-
 
     def create_output_String_param(self, param):
         self.out.write ( '\toutput_{} = traits.String(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
