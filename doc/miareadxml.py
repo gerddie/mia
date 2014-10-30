@@ -188,6 +188,11 @@ class CDictOption(COption):
         for child in node.iter("dict"):
             for v in child:
                 self.dict[v.get("name")] = v.text
+    def get_names_as_string(self):
+        result = ""
+        for k in self.dict.keys():
+            result = result + '"' + k + '", '
+        return result
 
     def do_print_man(self):
         if len(self.dict) > 0:
