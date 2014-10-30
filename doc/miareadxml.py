@@ -88,13 +88,15 @@ class CTextNode:
         self.is_input = False
         self.is_output = False
         self.entry = node.tag
-        self.flags = []
+        self.flags = set()
         self.text  = ""
         if node.text is not None:
             self.text = self.text + node.text
 
         for child in node.iter("flags"):
-            self.flags = self.flags + string.split(child.text)
+            f = string.split(child.text)
+            for ff in f: 
+                self.flags.add(ff) 
             if child.tail is not None:
                 self.text = self.text + child.tail
 
@@ -135,9 +137,12 @@ class COption(CTextNode):
             short = "  ";
 
         if len(self.flags) > 0:
-            flagstring = self.flags[0]
-            for f in self.flags[1:]:
-                flagstring = flagstring + ',' + f
+            flagstring = ""
+            for f in self.flags:
+                if len(flagstring) == 0:
+                    flagstring = f
+                else:
+                    flagstring = flagstring + ', ' + f
             print ".IP \"%s \-\-%s=(%s)\""% (short, self.long, flagstring)
         else:
             if not self.type == "bool":
@@ -159,9 +164,14 @@ class COption(CTextNode):
         termtext = termtext + "-" + self.long
 
         if len(self.flags) > 0:
-            termtext = termtext + "=(" + self.flags[0]
-            for f in self.flags[1:]:
-                termtext = termtext + ',' + f
+            termtext = termtext + "=("
+            first = True
+            for f in self.flags:
+                if first: 
+                    termtext = termtext + f
+                    first=False
+                else:
+                    termtext = termtext + ", " + f
             termtext = termtext + ")"
         elif self.type != "bool":
             termtext = termtext + "="
@@ -234,14 +244,14 @@ class CSetOption(COption):
             print "Supported values are:(", 
             for k in self.set:
                 print "%s, " % (escape_dash(k)), 
-                print ")"
+            print ")"
             print ".RE"
 
 
     def do_write_xml(self, parent):
         if len(self.set) > 0:
-            e = etree.SubElement(row, "entry", align="left", valign="top")
-            str_list = [self.text, " Supported values are:("]
+            e = etree.SubElement(parent, "entry", align="left", valign="top")
+            str_list = [" Supported values are:("]
             
             for k in self.set:
                 str_list.append("%s, " % (k))
