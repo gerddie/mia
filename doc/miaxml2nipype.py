@@ -26,6 +26,10 @@ import calendar
 import string
 import htmlentitydefs
 import re
+from os import path
+
+from argparse import ArgumentParser
+from argparse import RawTextHelpFormatter
 
 sys.dont_write_bytecode = True
 
@@ -143,7 +147,7 @@ class  NipypeOutput:
         self.out.write('argstr="--{} %s", sep=","'.format(param.long)), 
         self.create_param_tail(param)
 
-    def create_input_VString_param(self.param):
+    def create_input_VString_param(self, param):
         self.create_trait_input_param_start(param, 'ListString')
         self.out.write('argstr="--{} %s", sep=","'.format(param.long)), 
         self.create_param_tail(param)
@@ -297,8 +301,39 @@ class  NipypeOutput:
 
         self.out.write("\n#\n# Main function used for testing\n#\n"); 
         self.write_main(name)
-      
+   
+  
 
-a = NipypeOutput(sys.argv[1], sys.argv[2])
+def SanitizeName(matchobj):
+    s = matchobj.group(0)
+    if s[0] == '-':
+        s = s[1:]
+    return s.upper() 
+         
+
+#
+# main program 
+#
+
+parser = ArgumentParser(description='Convert MIA style command line tools description into a nipype interface.', 
+                                         formatter_class=RawTextHelpFormatter)
+        
+group = parser.add_argument_group('File I/O')
+group.add_argument("-i", "--input",  action="store", required=True,  help="input XML file containing the description")
+group.add_argument("-o", "--output", action="store", help="output file name, if not given, the name will be deducted from the input file")
+group.add_argument("-p", "--outpath", action="store", help="output path for the nipype interface file")
+
+
+options = parser.parse_args()
+
+if options.output is None:
+    (name , ext) = path.splitext(options.input)
+    options.output = re.sub(r'(^[a-z]|-[a-z]|-[0-9][a-z])', SanitizeName, name) + ".py"
+
+if options.outpath is not None:
+    options.output = path.join(options.outpath, options.output)
+
+
+a = NipypeOutput(options.input, options.output)
 a.write_nipype_file()                          
 
