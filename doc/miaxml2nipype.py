@@ -18,7 +18,7 @@
 #
 
 # this program is used to translate the XML files obtained by running a mia-* program 
-# into a Unix man page. 
+# into a nipype interface 
 
 import sys
 import time
@@ -335,5 +335,5 @@ if options.outpath is not None:
 
 
 a = NipypeOutput(options.input, options.output)
-a.write_nipype_file()                          
+a.write_nipype_file()
 
