@@ -87,10 +87,19 @@ class  NipypeOutput:
         self.descr = parse_file(input_file)
         self.out=open(output_file, 'w')
         self.ParamTable = {
-            "2dbounds" : lambda i : self.create_XDBounds_param(i), 
-            "3dbounds" : lambda i : self.create_XDBounds_param(i), 
-            "2dfvector" : lambda i : self.create_XDFVector_param(i), 
-            "3dfvector" : lambda i : self.create_XDFVector_param(i), 
+            "2dbounds" : lambda i : self.create_vint_param(i), 
+            "3dbounds" : lambda i : self.create_vint_param(i), 
+            "vshort":    lambda i : self.create_vint_param(i), 
+            "vint":      lambda i : self.create_vint_param(i), 
+            "vlong":     lambda i : self.create_vint_param(i), 
+            "vushort":   lambda i : self.create_vint_param(i), 
+            "vuint":     lambda i : self.create_vint_param(i), 
+            "vulong":    lambda i : self.create_vint_param(i), 
+
+            "2dfvector" :lambda i : self.create_vfloat_param(i), 
+            "3dfvector" :lambda i : self.create_vfloat_param(i), 
+            "vdouble"   :lambda i : self.create_vfloat_param(i), 
+            "vfloat"    :lambda i : self.create_vfloat_param(i), 
 
             "bool"  : lambda i : self.create_Bool_param(i), 
             "short" : lambda i : self.create_Integral_param(i), 
@@ -101,6 +110,9 @@ class  NipypeOutput:
             "ulong" : lambda i : self.create_Integral_param(i), 
             "float" : lambda i : self.create_Float_param(i), 
             "double": lambda i : self.create_Float_param(i), 
+
+            "vstring": lambda i : self.create_input_VString_param(i), 
+
             "dict"  : lambda i : self.create_Dict_param(i), 
             "set"  : lambda i : self.create_Set_param(i), 
             "factory" : lambda i : self.create_Factory_param(i)
@@ -121,13 +133,18 @@ class  NipypeOutput:
         self.out.write('argstr="--{}" '.format(param.long)), 
         self.create_param_tail(param)
 
-    def  create_XDBounds_param(self, param):
+    def  create_vint_param(self, param):
         self.create_trait_input_param_start(param, 'ListInt')
         self.out.write('argstr="--{} %s", sep=","'.format(param.long)), 
         self.create_param_tail(param)
         
-    def create_XDFVector_param(self, param):
+    def create_vfloat_param(self, param):
         self.create_trait_input_param_start(param, 'ListFloat')
+        self.out.write('argstr="--{} %s", sep=","'.format(param.long)), 
+        self.create_param_tail(param)
+
+    def create_input_VString_param(self.param):
+        self.create_trait_input_param_start(param, 'ListString')
         self.out.write('argstr="--{} %s", sep=","'.format(param.long)), 
         self.create_param_tail(param)
 
@@ -182,12 +199,9 @@ class  NipypeOutput:
                 self.out.write (', exists = True '), 
         self.out.write( ')\n')
 
-
     def write_unknown_type(self, param):
-        self.out.write ("# Unhandled parameter name {}, type {}\n".format(param.long, param.type)), 
-
+        print ("WARNING: Unknown  parameter type '{}' encounterd for option '{}', \n".format(param.long, param.type)), 
     
-
     def write_input_spec(self, name, inputs, params):
 
         self.out.write ("class {}_InputSpec(CommandLineInputSpec):\n".format(name))
@@ -205,7 +219,6 @@ class  NipypeOutput:
         for i in params: 
             ParamTableCopy.get(i.type, self.write_unknown_type)(i)
 
-
     def write_input_outputs(self, name, outputs, params):
 
         InputTable = self.ParamTable
@@ -215,12 +228,9 @@ class  NipypeOutput:
         for i in outputs: 
             InputTable.get(i.type, self.write_unknown_type)(i)
 
-
     def write_input_free_params_spec(self, freeparams):
         self.out.write ( '\tinput_free_params = traits.ListStr(desc="Plug-in specifications of type {}", '.format(freeparams)),
         self.out.write ( 'argstr="%s")')
-
-
 
     def write_output_spec(self, name, outputs, params):
 
@@ -234,7 +244,6 @@ class  NipypeOutput:
             ParamTableCopy.get(i.type, self.write_unknown_type)(i)
         self.out.write ("\n")
 
-
     def write_task(self, name):
 
         self.out.write('class {}_Task(CommandLine):\n'.format(name))
@@ -242,14 +251,11 @@ class  NipypeOutput:
         self.out.write('\toutput_spec = {}_OutputSpec\n'.format(name))
         self.out.write('\t_cmd = "{}"\n'.format(self.descr.name))
 
-
-
     def write_main(self, name):
 
         self.out.write( 'if __name__ == "__main__":\n')
         self.out.write( '\tmia_prog = {}_Task()\n'.format(name))
         self.out.write( '\tprint( mia_prog.cmdline)\n')
-
 
     def write_nipype_file(self):
 
@@ -292,8 +298,6 @@ class  NipypeOutput:
         self.out.write("\n#\n# Main function used for testing\n#\n"); 
         self.write_main(name)
       
-                
-    
 
 a = NipypeOutput(sys.argv[1], sys.argv[2])
 a.write_nipype_file()                          
