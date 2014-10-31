@@ -257,6 +257,9 @@ string CCmdOption::get_flag_string()const
 		ss << "output "; 
         if (mia::has_flag(m_flags, CCmdOptionFlags::required))
 		ss << "required ";
+        if (mia::has_flag(m_flags, CCmdOptionFlags::nonipype))
+		ss << "nonipype ";
+
 	return ss.str(); 
 }
 

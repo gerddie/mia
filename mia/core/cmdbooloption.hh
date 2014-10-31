@@ -44,7 +44,7 @@ class EXPORT_CORE CCmdBoolOption : public CCmdOption {
 	   \param long_opt the long command line option 
 	   \param long_help the full help bool that describes the option completely 
 	*/
-	CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help);
+	CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help, CCmdOptionFlags flags);
  private: 
 	bool do_set_value(const char *str_value);
 	void do_write_value(std::ostream& os) const;

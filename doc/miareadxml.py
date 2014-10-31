@@ -87,6 +87,7 @@ class CTextNode:
         self.required = False
         self.is_input = False
         self.is_output = False
+        self.no_nipype = False
         self.entry = node.tag
         self.flags = set()
         self.text  = ""
@@ -105,6 +106,7 @@ class CTextNode:
                     "required": self.set_is_required, 
                     "input":    self.set_is_input, 
                     "output":   self.set_is_output,
+                    "nonipype": self.set_nipype_ignore,
                     }.get(f, self.dummy)(f)
     
     def set_is_required(self, f):
@@ -115,6 +117,9 @@ class CTextNode:
 
     def set_is_output(self, f):
         self.is_output = True
+
+    def set_nipype_ignore(self, f):
+        self.no_nipype = True
 
     def dummy(self, f):
         warnings.warn ('Unknown flag "{}" encountered'.format(f))
@@ -139,10 +144,11 @@ class COption(CTextNode):
         if len(self.flags) > 0:
             flagstring = ""
             for f in self.flags:
-                if len(flagstring) == 0:
-                    flagstring = f
-                else:
-                    flagstring = flagstring + ', ' + f
+                if f != "nonipype":
+                    if len(flagstring) == 0:
+                        flagstring = f
+                    else:
+                        flagstring = flagstring + ', ' + f
             print ".IP \"%s \-\-%s=(%s)\""% (short, self.long, flagstring)
         else:
             if not self.type == "bool":
@@ -167,11 +173,12 @@ class COption(CTextNode):
             termtext = termtext + "=("
             first = True
             for f in self.flags:
-                if first: 
-                    termtext = termtext + f
-                    first=False
-                else:
-                    termtext = termtext + ", " + f
+                if f != "nonipype":
+                    if first: 
+                        termtext = termtext + f
+                        first=False
+                    else:
+                        termtext = termtext + ", " + f
             termtext = termtext + ")"
         elif self.type != "bool":
             termtext = termtext + "="
@@ -346,10 +353,13 @@ class CParam:
         self.default = node.get("default")
         self.text = node.text
         self.required = False
-        self.flags = []
+        self.no_nipype = False 
+        self.flags = set()
 
         for child in node.iter("flags"):
-            self.flags = self.flags + string.split(child.text)
+            f = string.split(child.text)
+            for ff in f: 
+                self.flags.add(ff) 
             if child.tail is not None:
                 self.text = self.text + child.tail
 
@@ -363,6 +373,7 @@ class CParam:
                     "required": self.set_is_required, 
                     "input":    self.set_is_input, 
                     "output":   self.set_is_output,
+                    "nonipype": self.set_nipype_ignore,
                     }.get(f, self.dummy)(f)
     
     def set_is_required(self, f):
@@ -373,6 +384,9 @@ class CParam:
 
     def set_is_output(self, f):
         self.is_output = True
+        
+    def set_nipype_ignore(self, f):
+        self.no_nipype = True
 
     def dummy(self, f):
         warnings.warn ('Unknown flag "{}" encountered'.format(f))
@@ -381,10 +395,18 @@ class CParam:
     def print_man(self):
         print ".I"
         print self.name
+
+
         if len(self.flags) > 0:
-            termtext = "=(" + self.flags[0]
-            for f in self.flags[1:]:
-                termtext = termtext + ',' + f
+            termtext = ""
+            for f in self.flags:
+                if f == "nonipype":
+                    continue 
+                if len(termtext) == 0:
+                    termtext = "=(" + f
+                else:
+                    termtext = termtext + ', ' + f
+
             termtext = termtext + ", %s)"
             print termtext % (self.type)
         elif self.required:
@@ -406,10 +428,17 @@ class CParam:
         e = etree.SubElement(row, "entry", align="center", valign="top")
         e.text = self.type
         e = etree.SubElement(row, "entry", align="center", valign="top")
+
         if len(self.flags) > 0:
-            e.text = "(" + self.flags[0]
-            for f in self.flags[1:]:
-                e.text = e.text + ',' + f
+            first = True
+            for f in self.flags:
+                if f == "nonipype": 
+                    continue
+                if first:
+                    e.text = "(" + f
+                    first = False
+                else:
+                    e.text = e.text + ',' + f
             e.text = e.text + ')'
         elif self.required: 
             e.text = "(required)"

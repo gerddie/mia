@@ -659,11 +659,13 @@ PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt,
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help help string (must not be NULL)
+   \param flags option flags
    \returns the option warped into a \a boost::shared_ptr
 
 */
 
-PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help); 
+PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help, 
+		    CCmdOptionFlags flags = CCmdOptionFlags::none); 
 
 /**
    \ingroup cmdline

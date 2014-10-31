@@ -185,11 +185,11 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	add(make_opt(verbose, g_verbose_dict, "verbose",  'V', 
 		     "verbosity of output, print messages of given level and higher priorities."
 		     " Supported priorities starting at lowest level are:"));
-	add(make_opt(copyright,  "copyright", 0, "print copyright information"));
-	add(make_opt(help,  "help", 'h', "print this help"));
-	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML"));
-	add(make_opt(usage,  "usage", '?', "print a short help"));
-	add(make_opt(version,  "version", 0, "print the version number and exit"));
+	add(make_opt(copyright,  "copyright", 0, "print copyright information", CCmdOptionFlags::nonipype));
+	add(make_opt(help,  "help", 'h', "print this help", CCmdOptionFlags::nonipype));
+	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML", CCmdOptionFlags::nonipype));
+	add(make_opt(usage,  "usage", '?', "print a short help", CCmdOptionFlags::nonipype));
+	add(make_opt(version,  "version", 0, "print the version number and exit", CCmdOptionFlags::nonipype));
 
 	set_current_group("Processing"); 
 	add(make_opt(max_threads, "threads", 0, "Maxiumum number of threads to use for processing," 
@@ -779,7 +779,7 @@ CHistoryRecord CCmdOptionList::get_values() const
 }
 
 CHelpOption::CHelpOption(Callback *cb, char short_opt, const char *long_opt, const char *long_help):
-	CCmdOption(short_opt, long_opt, long_help, NULL, CCmdOptionFlags::none), 
+	CCmdOption(short_opt, long_opt, long_help, NULL, CCmdOptionFlags::nonipype), 
 	m_callback(cb)
 {
 }
@@ -873,50 +873,12 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const char *long_opt, char s
 					       flags, plugin_hint)); 
 }
 
-PCmdOption EXPORT_CORE make_opt(bool& value, const char *long_opt, char short_opt, const char *help)
+PCmdOption EXPORT_CORE make_opt(bool& value, const char *long_opt, char short_opt, const char *help, 
+				CCmdOptionFlags flags)
 {
-	return PCmdOption(new CCmdBoolOption(value, short_opt, long_opt, help ));
+	return PCmdOption(new CCmdBoolOption(value, short_opt, long_opt, help, flags ));
 }
 
 
-//
-// Implementation of the standard option that holds a value
-//
-#if 0
-CBooleanCmdOption::CBooleanCmdOption(T& val, char short_opt, const char *long_opt, const char *long_help):
-        CCmdOption(short_opt, long_opt, long_help, short_help, flags), 
-	m_value(val)
-{
-	m_value = false; 
-}
-
-
-bool CBooleanCmdOption::do_set_value(const char *svalue)
-{
-	m_value = true;
-	return true; 
-}
-
-
-size_t CBooleanCmdOption::do_get_needed_args() const
-{
-        return 0;
-}
-
-
-void CBooleanCmdOption::do_get_long_help(std::ostream& /*os*/) const
-{
-}
-
-
-void CBooleanCmdOption::do_write_value(std::ostream& /*os*/) const
-{
-}
-
-const std::string CBooleanCmdOption::do_get_value_as_string() const
-{
-	return m_value ? "true" : "false";
-}
-#endif 
 
 NS_MIA_END

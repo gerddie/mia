@@ -17,8 +17,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-# this program is used to translate the XML files obtained by running a mia-* program 
-# into a nipype interface 
+# this program is used to translate the XML files obtained by running 
+# a mia-* program with --help-xml into a nipype interface 
 
 import sys
 import time
@@ -270,9 +270,9 @@ class  NipypeOutput:
         params = [] 
 
         for g in self.descr.option_groups:
-            if g.name == "Help & Info":
-                continue 
             for o in g.options:
+                if o.no_nipype:
+                    continue 
                 if o.is_input:
                     inputs.append(o)
                 elif o.is_output:

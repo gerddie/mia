@@ -27,12 +27,13 @@ NS_MIA_BEGIN
 
 enum class CCmdOptionFlags : int {
         none = 0, 
-        required = 1, 
-        input = 2, 
+	required = 1, 
+	input = 2, 
         output = 4, 
         required_input = 3, 
 	required_output = 5,
-	validate = 8	
+	validate = 8, 	
+        nonipype = 16
 }; 
 
 inline CCmdOptionFlags operator | (CCmdOptionFlags lhs, CCmdOptionFlags rhs) 
@@ -66,7 +67,7 @@ inline std::ostream& operator << (std::ostream& os, CCmdOptionFlags flags)
         case CCmdOptionFlags::required_input: os << "CCmdOptionFlags::required_input"; break; 
         case CCmdOptionFlags::required_output: os << "CCmdOptionFlags::required_output"; break; 
         case CCmdOptionFlags::validate: os << "CCmdOptionFlags::validate"; break; 
-
+	case CCmdOptionFlags::nonipype: os << "CCmdOptionFlags::nonipype"; break; 
         default: os << "CCmdOptionFlags::<undefined>"; 
         }; 
         return os; 

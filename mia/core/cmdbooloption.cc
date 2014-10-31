@@ -24,8 +24,9 @@
 NS_MIA_BEGIN
 
 
-CCmdBoolOption::CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help):
-	CCmdOption(short_opt, long_opt, long_help, long_opt, false), 
+CCmdBoolOption::CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help, 
+			       CCmdOptionFlags flags):
+	CCmdOption(short_opt, long_opt, long_help, long_opt, flags), 
 	m_value(value)
 {
 	m_value = false; 
