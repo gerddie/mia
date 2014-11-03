@@ -437,12 +437,13 @@ ENDIF(ALWAYS_CREATE_DOC)
 #
 # python is needed for creating end-user documentation 
 #
+SET(CREATE_USERDOC FALSE)
+
 FIND_PACKAGE(PythonInterp)
 IF(PYTHONINTERP_FOUND) 
   EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
   IF(LXML_ERR) 
     MESSAGE(python found, but no lxml, no user documantation will be created) 
-    SET(CREATE_USERDOC FALSE)
   ELSE(LXML_ERR)
     SET(CREATE_USERDOC TRUE)
   ENDIF(LXML_ERR) 

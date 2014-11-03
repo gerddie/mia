@@ -120,8 +120,13 @@ MACRO(ASSERT_SIZE  NAME EXPECTED)
   ENDIF(NOT ${${NAME}_TYPE_SIZE} EQUAL ${EXPECTED})
 ENDMACRO(ASSERT_SIZE)
 
-MACRO(CREATE_EXE_DOCU name) 
-  
+
+
+#
+# This macro runs the program to create the XML program descrition 
+# that is used to create documentation and interfaced 
+#
+MACRO(CREATE_EXE_XML_HELP name)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH} 
     ./mia-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
@@ -130,19 +135,35 @@ MACRO(CREATE_EXE_DOCU name)
     
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
   ADD_DEPENDENCIES(XMLDOC mia-${name}-xml)
-  
-  SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
-  
-  ADD_CUSTOM_COMMAND(OUTPUT   ${${name}-manfile}
-    COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-    ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${${name}-manfile}
-    MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-    DEPENDS mandir mia-${name}-xml
-    )
-  ADD_CUSTOM_TARGET(mia-${name}-man DEPENDS ${${name}-manfile})
-  add_dependencies(manpages mia-${name}-man)    
-ENDMACRO(CREATE_EXE_DOCU)
+ENDMACRO(CREATE_EXE_XML_HELP)
 
+
+#
+#
+# man pages can only be created if the python + lxml packages are available 
+#
+MACRO(CREATE_MANPAGE_FROM_XML name)
+  IF(CREATE_USERDOC) 
+    
+    SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
+    
+    ADD_CUSTOM_COMMAND(OUTPUT   ${${name}-manfile}
+      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
+      ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${${name}-manfile}
+      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+      DEPENDS mandir mia-${name}-xml
+      )
+    ADD_CUSTOM_TARGET(mia-${name}-man DEPENDS ${${name}-manfile})
+    add_dependencies(manpages mia-${name}-man)    
+  ENDIF(CREATE_USERDOC)
+
+ENDMACRO(CREATE_MANPAGE_FROM_XML)
+
+
+MACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE name)
+  CREATE_EXE_XML_HELP(${name})
+  CREATE_MANPAGE_FROM_XML(${name})
+ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
 
 MACRO(DEFEXE name libraries) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
@@ -152,21 +173,29 @@ MACRO(DEFEXE name libraries)
   
   TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
-  CREATE_EXE_DOCU(${name})
+  
+  MIA_EXE_CREATE_DOCU_AND_INTERFACE(${name})
 ENDMACRO(DEFEXE)
 
+
+
+
 MACRO(DEFCHKEXE name deps) 
-   ADD_EXECUTABLE(mia-${name} ${name}.cc)
-   
-   FOREACH(lib ${deps}) 
-       TARGET_LINK_LIBRARIES(mia-${name} ${lib})
-   ENDFOREACH(lib)
-   SET_TARGET_PROPERTIES(mia-${name} PROPERTIES COMPILE_FLAGS -DVSTREAM='\\\"TEST-2D\\\"' COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
-   TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
-   TARGET_LINK_LIBRARIES(mia-${name} ${BOOST_UNITTEST})
-   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
-   CREATE_EXE_DOCU(${name})
+  ADD_EXECUTABLE(mia-${name} ${name}.cc)
+  
+  FOREACH(lib ${deps}) 
+    TARGET_LINK_LIBRARIES(mia-${name} ${lib})
+  ENDFOREACH(lib)
+  SET_TARGET_PROPERTIES(mia-${name} PROPERTIES COMPILE_FLAGS -DVSTREAM='\\\"TEST-2D\\\"' COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+  TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
+  TARGET_LINK_LIBRARIES(mia-${name} ${BOOST_UNITTEST})
+  INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
+
+  CREATE_EXE_XML_HELP(${name})
+  CREATE_MANPAGE_FROM_XML(${name})
 ENDMACRO(DEFCHKEXE)
+
+
 
 
 MACRO(NEW_TEST name libs)

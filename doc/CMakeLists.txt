@@ -24,13 +24,13 @@ add_dependencies(doc docs)
 
 IF(CREATE_USERDOC) 
 
-  add_dependencies(docs manpages)    
+  add_dependencies(docs manpages)
   IF(ALWAYS_CREATE_DOC) 
     INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/ DESTINATION share/man/man1/)
   ENDIF(ALWAYS_CREATE_DOC) 
 
   ##################################################################
-  #  for html userref xsltproc and the style sheet is needed 
+  #  for html userref xsltproc and the style sheet is needed
   #
   find_program(XSLTPROC xsltproc)
   IF(XSLTPROC)
@@ -73,7 +73,7 @@ IF(CREATE_USERDOC)
       DEPENDS process_xml userref_css userref_outdir progref_link ${CMAKE_CURRENT_BINARY_DIR}/program.xml
       ) 
     ADD_CUSTOM_TARGET(userref DEPENDS userref.stamp)
-    add_dependencies(docs userref)  
+    add_dependencies(docs userref)
     
     ####################################################
     #
@@ -85,7 +85,7 @@ IF(CREATE_USERDOC)
     ENDIF(ALWAYS_CREATE_DOC)     
   ENDIF(HTML_CHUNK_FILEPATH) 
   
-ENDIF(CREATE_USERDOC) 
+ENDIF(CREATE_USERDOC)
 
 IF (DOXYGEN_FOUND)
   ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
