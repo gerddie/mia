@@ -18,6 +18,7 @@
  *
  */
 
+#include <cassert>
 #include <mia/core/typedescr.hh>
 #include <mia/core/cmdbooloption.hh>
 
@@ -30,6 +31,8 @@ CCmdBoolOption::CCmdBoolOption(bool& value, char short_opt, const char *long_opt
 	m_value(value)
 {
 	m_value = false; 
+
+	assert(!has_flag(CCmdOptionFlags::required) && "A boolean flag option must not have the flag CCmdOptionFlags::required"); 
 }
 
 bool CCmdBoolOption::do_set_value(const char */*str_value*/)

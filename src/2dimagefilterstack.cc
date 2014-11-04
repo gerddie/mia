@@ -83,12 +83,6 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt(startid, "start", 's', "first possible number of file number range to be filtered")); 
 	options.add(make_opt(endid, "end", 'e', "last possible number of file number range to be filtered")); 
 	
-		
-	options.set_group(g_help_optiongroup); 
-	options.add(make_help_opt( "help-filters", 0,
-				   "give some help about the filter plugins", 
-				   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>)); 
-		
 	if (options.parse(argc, argv, "filter", &filter_plugins) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 		

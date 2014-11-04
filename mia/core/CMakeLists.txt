@@ -69,6 +69,7 @@ SET(MIACORE_SRC_BASE
   revision.cc 
   scaler1d.cc
   seriesstats.cc 
+  selftestcmdoption.cc
   shape.cc 
   slopestatistics.cc
   slopeclassifier.cc
@@ -155,6 +156,7 @@ SET(MIACORE_HEADER_BASE
   scaler1d.hh
   shape.hh shape.cxx
   seriesstats.hh
+  selftestcmdoption.hh
   singular_refobj.hh
   slopestatistics.hh
   slopeclassifier.hh

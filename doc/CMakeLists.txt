@@ -59,6 +59,14 @@ IF(CREATE_USERDOC)
       COMMAND ln ARGS -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/progref.xml) 
 
     ADD_CUSTOM_TARGET(progref_link DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/progref.xml)
+
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/program.xml 
+      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+      DEPENDS XMLDOC
+      )
+    
+    ADD_CUSTOM_TARGET(process_xml DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/program.xml)
+
       
     ADD_CUSTOM_COMMAND(OUTPUT  "userref.stamp"
       COMMAND  
@@ -70,8 +78,8 @@ IF(CREATE_USERDOC)
       --output "userref/" 
       ${HTML_CHUNK_FILEPATH}/chunk.xsl progref.xml
       COMMAND touch ARGS userref.stamp
-      DEPENDS process_xml userref_css userref_outdir progref_link ${CMAKE_CURRENT_BINARY_DIR}/program.xml
-      ) 
+      DEPENDS process_xml userref_css userref_outdir progref_link ${CMAKE_CURRENT_BINARY_DIR}/program.xml ) 
+    
     ADD_CUSTOM_TARGET(userref DEPENDS userref.stamp)
     add_dependencies(docs userref)
     

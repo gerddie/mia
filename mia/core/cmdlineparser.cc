@@ -89,6 +89,7 @@ struct CCmdOptionListData {
 	bool copyright;
 	vstream::Level verbose;
 	int max_threads;
+	bool m_selftest_run; 
 
 	CCmdOptionListData(const SProgramDescription& description); 
 
@@ -124,6 +125,44 @@ struct CCmdOptionListData {
 	string m_author; 
 	ostream *m_log; 
 };
+
+
+/**
+   This option is used to run a selftest. 
+
+   A program can only have one selftest option and all other options that are not 
+   in the Help & Info section are ignored when the selftest option is set. 
+   The selftest is done within a class derived from the CSelftestOption::Callback 
+   class that overrides the Callback::do_run() method. 
+*/
+class EXPORT_CORE CSelftestOption: public CCmdOption {
+public: 
+        /**
+           Test callback base class. 
+
+           The tests to be run must be implemented in the "int do_run() const"  method, and 
+           it must return 0 if the test run successfull. 
+         */
+
+
+
+private: 
+        friend class CCmdOptionList; 
+        /**
+           Constructor of the selftest function 
+        */
+        CSelftestOption(bool& run, int& test_result, CSelftestCallback *callback);
+        
+
+        virtual bool do_set_value(const char *str_value);
+	virtual void do_write_value(std::ostream& os) const;
+        virtual size_t do_get_needed_args() const; 
+        
+        std::unique_ptr<CSelftestCallback> m_callback;
+        int& m_test_result;
+        bool& m_run; 
+        
+}; 
 
 void CCmdOptionListData::set_logstream(ostream& os)
 {
@@ -169,6 +208,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 #else 
 	max_threads(tbb::task_scheduler_init::automatic), 
 #endif 
+	m_selftest_run(false), 
 	m_log(&std::cout)
 {
 
@@ -236,6 +276,7 @@ void CCmdOptionListData::add(const string& group, PCmdOption opt)
 	if (options.find(group) == options.end()) 
 		options[group] = vector<PCmdOption>();
 	options[group].push_back(opt); 
+	opt->add_option(short_map, long_map);
 }
 
 CHistoryRecord CCmdOptionListData::get_values() const
@@ -529,6 +570,11 @@ void CCmdOptionList::add(const std::string& table, PCmdOption opt)
 	m_impl->add(table, opt);
 }
 
+void CCmdOptionList::add_selftest(int& test_result, CSelftestCallback *callback)
+{
+	m_impl->add("Test", PCmdOption(new CSelftestOption(m_impl->m_selftest_run, test_result, callback))); 
+}
+
 void CCmdOptionList::set_group(const std::string& group)
 {
 	m_impl->set_current_group(group); 
@@ -722,6 +768,8 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 	} else if (m_impl->copyright) {
 		::print_full_copyright(name_help, m_impl->get_author());
 		return hr_copyright;
+	} else if (m_impl->m_selftest_run) {
+		return hr_selftest; 
 	}
 
 	cverb.set_verbosity(m_impl->verbose);
@@ -778,42 +826,6 @@ CHistoryRecord CCmdOptionList::get_values() const
 	return m_impl->get_values();
 }
 
-CHelpOption::CHelpOption(Callback *cb, char short_opt, const char *long_opt, const char *long_help):
-	CCmdOption(short_opt, long_opt, long_help, NULL, CCmdOptionFlags::nonipype), 
-	m_callback(cb)
-{
-}
-
-void CHelpOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, 
-				       HandlerHelpMap& /*handler_map*/) const
-{
-	do_get_long_help(os);
-	parent.set_attribute("type", "bool");
-}
-
-
-void CHelpOption::print(std::ostream& os) const
-{
-	m_callback->print(os);
-}
-
-bool CHelpOption::do_set_value(const char */*str_value*/)
-{
-	exit(0); 
-}
-size_t CHelpOption::do_get_needed_args() const
-{
-	return 0; 
-}
-
-void CHelpOption::do_get_long_help(std::ostream& /*os*/) const
-{
-}
-
-void CHelpOption::do_write_value(std::ostream& /*os*/) const
-{
-}
-
 CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt, 
 			       const char *long_opt, const char *long_help, 
 			       const char *short_help, 
@@ -851,6 +863,35 @@ size_t CCmdFlagOption::do_get_needed_args() const
 	return 1;
 }
 
+
+CSelftestOption::CSelftestOption(bool& run, int& test_result, CSelftestCallback *callback):
+        CCmdOption(0, "selftest", "run a self test of the program", 0, 
+                   CCmdOptionFlags::nonipype), 
+        m_callback(callback), 
+        m_test_result(test_result), 
+        m_run(run)
+{
+        
+}
+
+
+bool CSelftestOption::do_set_value(const char * /* str_value */)
+{
+        assert(m_callback); 
+        m_test_result = m_callback->run();
+        m_run = true;
+        return true; 
+}
+
+void CSelftestOption::do_write_value(std::ostream& /* os */) const
+{
+}
+
+size_t CSelftestOption::do_get_needed_args() const
+{
+        return 0; 
+}
+
 PCmdOption EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt, 
 				char short_opt,const char *long_help, 
 				const char *short_help, CCmdOptionFlags flags)
@@ -859,12 +900,6 @@ PCmdOption EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *
                           long_help, short_help, flags ));
 }
 
-
-PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt, 
-				     const char *long_help, CHelpOption::Callback *cb)
-{
-	return PCmdOption(new CHelpOption(cb, short_opt, long_opt, long_help));
-}
 
 PCmdOption EXPORT_CORE make_opt(std::string& value, const char *long_opt, char short_opt, const char *long_help, 
 				CCmdOptionFlags flags, const CPluginHandlerBase *plugin_hint)

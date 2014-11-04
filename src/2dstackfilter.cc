@@ -126,9 +126,6 @@ int do_main(int argc, char *argv[])
 			      , CCmdOptionFlags::required, &imageio));
 	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',
 			      "output file type", CCmdOptionFlags::required));
-	options.add(make_help_opt( "help-plugins", 0, 
-				   "give some help about the filter plugins", 
-				   new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 
 
 	if (options.parse(argc, argv, "filter", &sfh) != CCmdOptionList::hr_no)

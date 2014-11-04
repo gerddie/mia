@@ -66,7 +66,7 @@ DEFCHKEXE(2dlerp mia2d )
 
 #Programs related to 2D myocardic perfusion 
 
-DEFCHKEXE(2dsegshift          mia2dmyocardperf )
+DEFEXE(2dsegshift             mia2dmyocardperf )
 DEFEXE(2dsegshiftperslice     mia2dmyocardperf )
 DEFEXE(2dsegseriesstats       mia2dmyocardperf )
 DEFEXE(2dseries2dordermedian  mia2dmyocardperf )
@@ -176,11 +176,4 @@ ENDIF(ITPP_FOUND)
 ADD_SUBDIRECTORY(fluid2d  )
 ADD_SUBDIRECTORY(fluid3d  )
 ADD_SUBDIRECTORY(isosurface  )
-
-ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/program.xml 
-  COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2sgml.py ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc
-  DEPENDS XMLDOC
-  )
-    
-ADD_CUSTOM_TARGET(process_xml DEPENDS ${CMAKE_BINARY_DIR}/doc/program.xml)
 

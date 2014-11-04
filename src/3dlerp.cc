@@ -19,6 +19,9 @@
  */
 
 #include <climits>
+
+#define BOOST_TEST_MAIN
+#define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -38,8 +41,10 @@ const SProgramDescription g_description = {
         {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
 	{pdi_short, "Linearly combine two 3D images."}, 
 	{pdi_description, "merge two images by linear combination."}, 
-	{pdi_example_descr, "Combine image inputA.v and inputB.v by using position "
-	 "coordinates 4, 7, and 9 and write the result to output.v"}, 
+	{pdi_example_descr, "Combine image inputA.v and inputB.v by using position coordinates "
+	 "4, 7, and 9. This means the output pixel values will be evaluated according to\n\n"
+	 "    (9-7)/(9-4) * A + (7-4)/(9-4) * B  \n\n"
+	 "The result image will be written to output.v"}, 
 	{pdi_example_code, "-1 inputA.v -2 inputB.v -p 4,7,9 -o output.v"}
 }; 
 
@@ -87,7 +92,7 @@ private:
 	float m_w;
 };
 
-static void run_self_test()
+BOOST_AUTO_TEST_CASE( run_self_test )
 {
 	const C3DBounds size(1,2,1);
 
@@ -113,11 +118,7 @@ static void run_self_test()
 
 }
 
-static bool init_unit_test_suite( )
-{
-	::boost::unit_test::framework::master_test_suite().add( BOOST_TEST_CASE( &run_self_test));
-	return true;
-}
+SELFTEST_CALLBACK(CSelftest);
 
 template <typename F>
 struct FFilter {
@@ -141,7 +142,7 @@ int do_main(int argc, char **argv)
 	string src1_filename;
 	string src2_filename;
 	string out_filename;
-	bool self_test = false;
+	int self_test_result = 0;
 
 	vector<float> positions;
 
@@ -153,13 +154,17 @@ int do_main(int argc, char **argv)
 			      CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( positions, "positions", 'p', 
 				    "image series positions (first, target, second)", CCmdOptionFlags::required));
-	options.add(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
+	
+	options.add_selftest(self_test_result, new CSelftest(argc, argv));
 
-	if (options.parse(argc, (const char **)argv) != CCmdOptionList::hr_no)
+
+	switch (options.parse(argc, argv, "boost-test-options")) {
+	case CCmdOptionList::hr_no:
+		break; 
+	case CCmdOptionList::hr_selftest: 
+		return self_test_result; 
+	default: 
 		return EXIT_SUCCESS; 
-
-	if (self_test) {
-		return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 	}
 
 	if (positions.size() != 3) {

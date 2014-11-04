@@ -193,6 +193,7 @@ MACRO(DEFCHKEXE name deps)
 
   CREATE_EXE_XML_HELP(${name})
   CREATE_MANPAGE_FROM_XML(${name})
+  ADD_TEST(${name} mia-${name} --selftest)
 ENDMACRO(DEFCHKEXE)
 
 
