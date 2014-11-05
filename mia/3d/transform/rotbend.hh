@@ -33,7 +33,7 @@ namespace mia_3dtransform_rotbend {
 
 class EXPORT_3D C3DRotBendTransformation : public mia::C3DTransformation {
 public:
-	C3DRotBendTransformation(const mia::C3DBounds& size, const mia::C3DFVector& orig, 
+	C3DRotBendTransformation(const mia::C3DBounds& size, const mia::C3DFVector& orig, bool norot, 
 				 const mia::C3DInterpolatorFactory& ipf); 
 	
 	mia::C3DFVector apply(const mia::C3DFVector& x) const;
@@ -92,17 +92,20 @@ private:
         mia::C3DFVector m_relative_origin;
         mia::C3DFVector m_rotation_center;
 	mia::C3DBounds m_size;
+	bool m_norot; 
 };
 
 
 class C3DRotBendTransformCreator: public mia::C3DTransformCreator {
 public: 
 	C3DRotBendTransformCreator(const mia::C3DFVector& origin, 
+				   int norot, 
 				   const mia::C3DInterpolatorFactory& ipf); 
 private: 
 	virtual mia::P3DTransformation do_create(const mia::C3DBounds& size, 
 						 const mia::C3DInterpolatorFactory& ipf) const;
 	mia::C3DFVector m_origin; 
+	int m_norot; 
 };
 
 class C3DRotBendTransformCreatorPlugin: public mia::C3DTransformCreatorPlugin {
@@ -112,6 +115,7 @@ public:
 	const std::string do_get_descr() const;
 private:
 	mia::C3DFVector m_origin; 
+	int m_norot; 
 };
 
 

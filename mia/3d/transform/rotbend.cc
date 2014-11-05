@@ -39,27 +39,29 @@ C3DFVector C3DRotBendTransformation::apply(const C3DFVector& x) const
 
 C3DFVector C3DRotBendTransformation::transform(const C3DFVector& x)const
 {
+	int offset = m_norot ? 0 : 2; 
 	auto y = m_pre_matrix * x; 
 
-	if (y.x > 0) {
-		const float max_distance = get_size().x - m_rotation_center.x; 
-		y.z += y.x * y.x * m_params[2] / (max_distance * max_distance + 1); 
+	if (y.y > 0) {
+		const float max_distance = get_size().y - m_rotation_center.y; 
+		y.z += y.y * y.y * m_params[offset] / (max_distance * max_distance + 1); 
 	} 
-	else if (y.x < 0) {
-		const float max_distance = m_rotation_center.x; 
-		y.z += y.x * y.x * m_params[3] / (max_distance * max_distance + 1); 
+	else if (y.y < 0) {
+		const float max_distance = m_rotation_center.y; 
+		y.z += y.y * y.y * m_params[offset + 1] / (max_distance * max_distance + 1); 
 	}
 
 	return m_post_matrix * y;
 }
 
-C3DRotBendTransformation::C3DRotBendTransformation(const C3DBounds& size, const C3DFVector& orig, 
+C3DRotBendTransformation::C3DRotBendTransformation(const C3DBounds& size, const C3DFVector& orig, bool norot, 
 						   const C3DInterpolatorFactory& ipf):
 	C3DTransformation(ipf), 
-        m_params(4), 
+        m_params(norot ? 2 : 4), 
         m_relative_origin(orig), 
 	m_rotation_center(C3DFVector(size) * m_relative_origin), 
-	m_size(size)
+	m_size(size), 
+	m_norot(norot)
 {
 	m_pre_matrix.identity();
 	m_post_matrix.identity();
@@ -105,9 +107,11 @@ void C3DRotBendTransformation::set_parameters(const CDoubleVector& params)
         m_pre_matrix.identity(); 
 	m_post_matrix.identity(); 
 	m_pre_matrix.translate( -1.0f * m_rotation_center); 
-
-	m_pre_matrix.rotate_x(m_params[0]); 
-	m_pre_matrix.rotate_y(m_params[1]); 
+	
+	if (!m_norot)  {
+		m_pre_matrix.rotate_x(m_params[0]); 
+		m_pre_matrix.rotate_y(m_params[1]); 
+	}
 
         m_post_matrix.translate(m_rotation_center); 
 }
@@ -119,7 +123,7 @@ const C3DBounds& C3DRotBendTransformation::get_size() const
 
 P3DTransformation C3DRotBendTransformation::do_upscale(const C3DBounds& size) const
 {
-	auto result = new C3DRotBendTransformation(size, m_relative_origin, get_interpolator_factory()); 
+	auto result = new C3DRotBendTransformation(size, m_relative_origin, m_norot, get_interpolator_factory()); 
 	result->set_parameters(m_params); 
 	return P3DTransformation(result);
 }
@@ -180,35 +184,6 @@ void C3DRotBendTransformation::translate(const C3DFVectorfield& gradient, CDoubl
 {
 	
 	assert(0 && !"not yet implemented"); 
-	assert(gradient.get_size() == m_size);
-	assert(params.size() == degrees_of_freedom());
-
-	vector<double> r(params.size(), 0.0);
-
-	auto g = gradient.begin();
-	for (size_t z = 0; z < m_size.z; ++z) {
-		double fy =  - m_rotation_center.y; 
-		for (size_t y = 0; y < m_size.y; ++y, fy += 1.0) {
-			double fx =  - m_rotation_center.x;
-			for (size_t x = 0; x < m_size.x; ++x, ++g, fx += 1.0) {
-				r[0] += -fy * g->x + fx * g->y;
-				
-				// scaling 
-				r[1] += 0; 
-				r[2] += 0;
-				
-
-
-				// shear 
-				r[3] += 0; 
-				r[4] += 0; 
-				r[5] += 0; 
-
-				
-			}
-		}
-	}
-	std::copy(r.begin(), r.end(), params.begin());
 }
 
 
@@ -287,32 +262,35 @@ float C3DRotBendTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 	DEBUG_ASSERT_RELEASE_THROW(false, "C3DRotBendTransformation doesn't implement pertuberate."); 
 }
 
-C3DRotBendTransformCreator::C3DRotBendTransformCreator(const C3DFVector& origin, 
+C3DRotBendTransformCreator::C3DRotBendTransformCreator(const C3DFVector& origin, int norot, 
 						       const C3DInterpolatorFactory& ipf):
 C3DTransformCreator(ipf), 
-	m_origin(origin)
+	m_origin(origin), 
+	m_norot(norot)
 {
 }
 
 P3DTransformation C3DRotBendTransformCreator::do_create(const C3DBounds& size, 
 							const C3DInterpolatorFactory& ipf) const
 {
-	return P3DTransformation(new C3DRotBendTransformation(size, m_origin, ipf));
+	return P3DTransformation(new C3DRotBendTransformation(size, m_origin, m_norot, ipf));
 }
 
 
 
 
 C3DRotBendTransformCreatorPlugin::C3DRotBendTransformCreatorPlugin():
-        C3DTransformCreatorPlugin("rotbend")
+C3DTransformCreatorPlugin("rotbend"), 
+	m_norot(0)
 {
 	add_parameter("origin", new C3DFVectorParameter(m_origin, true, "center of the transformation"));
+	add_parameter("norot", new CIntParameter(m_norot, 0, 1, false, "Don't optimize the rotation"));
 }
 
 
 C3DTransformCreator *C3DRotBendTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
-	return new C3DRotBendTransformCreator(m_origin, ipf);
+	return new C3DRotBendTransformCreator(m_origin, m_norot, ipf);
 }
 
 const std::string C3DRotBendTransformCreatorPlugin::do_get_descr() const

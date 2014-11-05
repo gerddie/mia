@@ -43,8 +43,9 @@ class EXPORT_CORE CCmdBoolOption : public CCmdOption {
 	   \param short_opt the one letter command line option 
 	   \param long_opt the long command line option 
 	   \param long_help the full help bool that describes the option completely 
+	   \param flags specific flags for the option. Note that passing CCmdOptionFlags::required doesn't make sense. 
 	*/
-	CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help);
+	CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help, CCmdOptionFlags flags);
  private: 
 	bool do_set_value(const char *str_value);
 	void do_write_value(std::ostream& os) const;

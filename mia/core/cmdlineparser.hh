@@ -30,12 +30,12 @@
 #include <string>
 #include <iterator>
 #include <mia/core/cmdoption.hh>
-#include <mia/core/cmdoption.hh>
 #include <mia/core/typedescr.hh>
 #include <mia/core/paramoption.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/flagstring.hh>
 #include <mia/core/handlerbase.hh>
+#include <mia/core/selftestcmdoption.hh>
 
 NS_MIA_BEGIN
 
@@ -159,68 +159,6 @@ private:
 
 /**
    \ingroup cmdline
-   \brief A command line option that will appear in the help group 
-   and exits the program after printing the help. 
-
-   Option that will appear in the help group and setting it will 
-   always terminate the program after printing out the requested 
-   help. 
- */
-class EXPORT_CORE CHelpOption: public CCmdOption {
-public:
-
-	/**
-	   \ingroup cmdline
-	   \brief Interface for the callback to print the help assositated with the given option.
-	 */
-	class Callback {
-	public:
-		/**
-		   Interface to print the help 
-		   \param os output stream to print to
-		*/
-		virtual void print(std::ostream& os) const = 0;
-	};
-
-	/** Constructor of the command option
-	     \param cb callback to call when help option is requested
-	     \param short_opt short option name (or 0)
-	     \param long_opt long option name (must not be NULL)
-	     \param long_help long help string (must not be NULL)
-         */
-	CHelpOption(Callback *cb, char short_opt, const char*long_opt, const char *long_help);
-
-	/** Print the option to a stream 
-	    @param os 
-	*/
-	void print(std::ostream& os) const;
-
-private:
-	std::unique_ptr<Callback> m_callback;
-	virtual bool do_set_value(const char *str_value);
-	virtual size_t do_get_needed_args() const;
-	virtual void do_write_value(std::ostream& os) const;
-	virtual void do_get_long_help(std::ostream& os) const;
-	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, 
-					  HandlerHelpMap& /*handler_map*/) const; 
-
-};
-
-/**
-    \ingroup cmdline
-    \brief Help callback to print the help for the given plug-in 
-  
-*/
-template <typename PluginHandler>
-class TPluginHandlerHelpCallback: public CHelpOption::Callback {
-	void print(std::ostream& os) const{
-		PluginHandler::instance().print_help(os);
-	}
-}; 
-
-
-/**
-   \ingroup cmdline
    \brief The class to hold the list of options
 
    This class holds all the user defined and default command line option, 
@@ -239,7 +177,8 @@ public:
 		hr_help_xml,  /**< XML-formatted help has been requested */
 		hr_usage,     /**< a short usage description has been requested */ 
 		hr_version,   /**< The version information has been requested */ 
-		hr_copyright  /**< The long copyright information has been requested */
+		hr_copyright, /**< The long copyright information has been requested */
+		hr_selftest   /**< The selftest was run */
 	};
 
         /**
@@ -263,6 +202,17 @@ public:
 	    \param opt the option to add
         */
 	void add(const std::string& group, PCmdOption opt);
+
+	/**
+	   Add a selftest option. 
+
+	   The selftest option runs the given self test and then exists. Additional parameters 
+	   given on the command line are ignored. 
+	   The option is set within the group \a Test and provides the long optionb name \a --selftest. 
+	   \param [out] test_result stores the result returned by running by running the test suite 
+	   \param callback the test functor that must have CSelftestCallback as a base class 
+	 */
+	void add_selftest(int& test_result, CSelftestCallback *callback);
 
         /** the work routine, can take the arguemnts straight from \a main
 	    This version parses the command line and allows for additional arguments that can be 
@@ -659,11 +609,13 @@ PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt,
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help help string (must not be NULL)
+   \param flags option flags
    \returns the option warped into a \a boost::shared_ptr
 
 */
 
-PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help); 
+PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help, 
+		    CCmdOptionFlags flags = CCmdOptionFlags::none); 
 
 /**
    \ingroup cmdline
@@ -816,19 +768,6 @@ PCmdOption make_opt(typename std::unique_ptr<T>& value, const char *default_valu
 					    new TFactoryParameter<F>(value, default_value, required, help))); 
 }
 
-
-/**
-   \ingroup cmdline
-   \brief Create a command line help option 
-   
-   Create a command line hoption that is used to print out some help. 
-   \param long_opt long option name
-   \param short_opt short option char, set to 0 of none givn
-   \param long_help the help string for thie option
-   \param cb a call back that us used to write the help 
-*/
-PCmdOption  make_help_opt(const char *long_opt, char short_opt, 
-				     const char *long_help, CHelpOption::Callback* cb); 
 
 NS_MIA_END
 

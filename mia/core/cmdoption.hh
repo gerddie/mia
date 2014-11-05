@@ -56,11 +56,8 @@ public:
 	    \param long_opt the long option name
 	    \param long_help a long help string
 	    \param short_help help to print out when only usage information is requested 
-	    \param required set to true if the option must be set by the user 
+	    \param flags add certain \a CCmdOptionFlags to the option 
         */
-	CCmdOption(char short_opt, const char *long_opt, const char *long_help, 
-		   const char *short_help, bool required)__attribute__((deprecated));
-
 	CCmdOption(char short_opt, const char *long_opt, const char *long_help, 
 		   const char *short_help, CCmdOptionFlags flags);
 	

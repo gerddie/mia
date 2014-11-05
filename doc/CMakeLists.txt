@@ -24,13 +24,13 @@ add_dependencies(doc docs)
 
 IF(CREATE_USERDOC) 
 
-  add_dependencies(docs manpages)    
+  add_dependencies(docs manpages)
   IF(ALWAYS_CREATE_DOC) 
     INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/ DESTINATION share/man/man1/)
   ENDIF(ALWAYS_CREATE_DOC) 
 
   ##################################################################
-  #  for html userref xsltproc and the style sheet is needed 
+  #  for html userref xsltproc and the style sheet is needed
   #
   find_program(XSLTPROC xsltproc)
   IF(XSLTPROC)
@@ -59,6 +59,14 @@ IF(CREATE_USERDOC)
       COMMAND ln ARGS -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/progref.xml) 
 
     ADD_CUSTOM_TARGET(progref_link DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/progref.xml)
+
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/program.xml 
+      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+      DEPENDS XMLDOC
+      )
+    
+    ADD_CUSTOM_TARGET(process_xml DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/program.xml)
+
       
     ADD_CUSTOM_COMMAND(OUTPUT  "userref.stamp"
       COMMAND  
@@ -70,10 +78,10 @@ IF(CREATE_USERDOC)
       --output "userref/" 
       ${HTML_CHUNK_FILEPATH}/chunk.xsl progref.xml
       COMMAND touch ARGS userref.stamp
-      DEPENDS process_xml userref_css userref_outdir progref_link ${CMAKE_CURRENT_BINARY_DIR}/program.xml
-      ) 
+      DEPENDS process_xml userref_css userref_outdir progref_link ${CMAKE_CURRENT_BINARY_DIR}/program.xml ) 
+    
     ADD_CUSTOM_TARGET(userref DEPENDS userref.stamp)
-    add_dependencies(docs userref)  
+    add_dependencies(docs userref)
     
     ####################################################
     #
@@ -85,7 +93,7 @@ IF(CREATE_USERDOC)
     ENDIF(ALWAYS_CREATE_DOC)     
   ENDIF(HTML_CHUNK_FILEPATH) 
   
-ENDIF(CREATE_USERDOC) 
+ENDIF(CREATE_USERDOC)
 
 IF (DOXYGEN_FOUND)
   ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")

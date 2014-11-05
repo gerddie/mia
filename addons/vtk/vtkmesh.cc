@@ -248,7 +248,9 @@ bool CVtkMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh) co
 	auto triangles = vtkSmartPointer<vtkCellArray>::New();
 	for_each(mesh.triangles_begin(), mesh.triangles_end(),  
 		 [&triangles](const CTriangleMesh::triangle_type& x)->void {
-			 vtkIdType p[] = {x.x, x.y, x.z}; 
+			 vtkIdType p[] = {static_cast<int>(x.x), 
+					  static_cast<int>(x.y), 
+					  static_cast<int>(x.z)}; 
 			 triangles->InsertNextCell(3, p); 
 		 });
 

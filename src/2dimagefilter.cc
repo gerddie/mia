@@ -54,10 +54,6 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", 
 			      CCmdOptionFlags::required_output, &imageio));
-	options.set_group(g_help_optiongroup); 
-	options.add(make_help_opt( "help-filters", 0,
-				   "give some help about the filter plugins", 
-				   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
 	
 	if (options.parse(argc, argv, "filter", &filter_plugins) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

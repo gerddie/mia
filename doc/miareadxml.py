@@ -27,6 +27,7 @@ xmlns = "{%s}" % xml_namespace
 # supported tags: 
 #   program      main tag 
 #   name         text: program name
+#   version      text: package version number 
 #   section      text: program type
 #   description  text: basic description of the program 
 #   basic_usage  text: generic call 
@@ -83,16 +84,46 @@ class CTextNode:
         if not expect is None and node.tag != expect:
             raise ValueError("expected '%s' got '%s'" % (expect, node.tag))
 
+        self.required = False
+        self.is_input = False
+        self.is_output = False
+        self.no_nipype = False
         self.entry = node.tag
-        self.flags = []
+        self.flags = set()
         self.text  = ""
         if node.text is not None:
             self.text = self.text + node.text
 
         for child in node.iter("flags"):
-            self.flags = self.flags + string.split(child.text)
+            f = string.split(child.text)
+            for ff in f: 
+                self.flags.add(ff) 
             if child.tail is not None:
                 self.text = self.text + child.tail
+
+        for f in self.flags: 
+                p = {
+                    "required": self.set_is_required, 
+                    "input":    self.set_is_input, 
+                    "output":   self.set_is_output,
+                    "nonipype": self.set_nipype_ignore,
+                    }.get(f, self.dummy)(f)
+    
+    def set_is_required(self, f):
+        self.required = True
+
+    def set_is_input(self, f):
+        self.is_input = True
+
+    def set_is_output(self, f):
+        self.is_output = True
+
+    def set_nipype_ignore(self, f):
+        self.no_nipype = True
+
+    def dummy(self, f):
+        warnings.warn ('Unknown flag "{}" encountered'.format(f))
+
 
 class COption(CTextNode):
     def __init__(self, node):
@@ -100,7 +131,7 @@ class COption(CTextNode):
 
         self.short = node.get("short")
         self.long =  node.get("long")
-        self.required = int(node.get("required")) 
+#        self.required = int(node.get("required")) 
         self.default = node.get("default")
         self.type = node.get("type")
 
@@ -111,9 +142,13 @@ class COption(CTextNode):
             short = "  ";
 
         if len(self.flags) > 0:
-            flagstring = self.flags[0]
-            for f in self.flags[1:]:
-                flagstring = flagstring + ',' + f
+            flagstring = ""
+            for f in self.flags:
+                if f != "nonipype":
+                    if len(flagstring) == 0:
+                        flagstring = f
+                    else:
+                        flagstring = flagstring + ', ' + f
             print ".IP \"%s \-\-%s=(%s)\""% (short, self.long, flagstring)
         else:
             if not self.type == "bool":
@@ -135,9 +170,15 @@ class COption(CTextNode):
         termtext = termtext + "-" + self.long
 
         if len(self.flags) > 0:
-            termtext = termtext + "=(" + self.flags[0]
-            for f in self.flags[1:]:
-                termtext = termtext + ',' + f
+            termtext = termtext + "=("
+            first = True
+            for f in self.flags:
+                if f != "nonipype":
+                    if first: 
+                        termtext = termtext + f
+                        first=False
+                    else:
+                        termtext = termtext + ", " + f
             termtext = termtext + ")"
         elif self.type != "bool":
             termtext = termtext + "="
@@ -164,6 +205,11 @@ class CDictOption(COption):
         for child in node.iter("dict"):
             for v in child:
                 self.dict[v.get("name")] = v.text
+    def get_names_as_string(self):
+        result = ""
+        for k in self.dict.keys():
+            result = result + '"' + k + '", '
+        return result
 
     def do_print_man(self):
         if len(self.dict) > 0:
@@ -181,6 +227,44 @@ class CDictOption(COption):
             opttable = get_dict_table(self.dict, "informaltable")
             parent.append(opttable)
 
+
+class CSetOption(COption):
+    def __init__(self, node):
+        COption.__init__(self, node)
+        self.set = []
+        for child in node.iter("set"):
+            for cc in child.iter("value"):
+                self.set.append(cc.get("name"))
+                
+    def get_names_as_string(self):
+        result = ""
+        for k in self.set:
+            result = result + '"' + k + '", '
+        return result
+
+    def do_print_man(self):
+        if len(self.set) > 0:
+            print ""
+            print ".RS 10"
+            print ".I" 
+
+            print "Supported values are:(", 
+            for k in self.set:
+                print "%s, " % (escape_dash(k)), 
+            print ")"
+            print ".RE"
+
+
+    def do_write_xml(self, parent):
+        if len(self.set) > 0:
+            e = etree.SubElement(parent, "entry", align="left", valign="top")
+            str_list = [" Supported values are:("]
+            
+            for k in self.set:
+                str_list.append("%s, " % (k))
+            str_list.append(")")
+            e.text = ''.join(str_list)
+                
 
 class CIOOption(COption):
     def __init__(self, node):
@@ -248,6 +332,7 @@ class CGroup:
                     "io": lambda n: CIOOption(n), 
                     "factory": lambda n: CFactoryOption(n), 
                     "dict":    lambda n: CDictOption(n),
+                    "set": lambda n: CSetOption(n),
                     }.get(child.get("type"), lambda n: COption(n))(child)
                 self.options.append(p)
             else:
@@ -266,12 +351,15 @@ class CParam:
         self.name = node.get("name")
         self.type = node.get("type")
         self.default = node.get("default")
-        self.required = int(node.get("required")) 
         self.text = node.text
-        self.flags = []
+        self.required = False
+        self.no_nipype = False 
+        self.flags = set()
 
         for child in node.iter("flags"):
-            self.flags = self.flags + string.split(child.text)
+            f = string.split(child.text)
+            for ff in f: 
+                self.flags.add(ff) 
             if child.tail is not None:
                 self.text = self.text + child.tail
 
@@ -280,13 +368,45 @@ class CParam:
         if m is not None: 
             self.default = "[" + self.default + "]"
 
+        for f in self.flags: 
+                p = {
+                    "required": self.set_is_required, 
+                    "input":    self.set_is_input, 
+                    "output":   self.set_is_output,
+                    "nonipype": self.set_nipype_ignore,
+                    }.get(f, self.dummy)(f)
+    
+    def set_is_required(self, f):
+        self.required = True
+
+    def set_is_input(self, f):
+        self.is_input = True
+
+    def set_is_output(self, f):
+        self.is_output = True
+        
+    def set_nipype_ignore(self, f):
+        self.no_nipype = True
+
+    def dummy(self, f):
+        warnings.warn ('Unknown flag "{}" encountered'.format(f))
+
+
     def print_man(self):
         print ".I"
         print self.name
+
+
         if len(self.flags) > 0:
-            termtext = "=(" + self.flags[0]
-            for f in self.flags[1:]:
-                termtext = termtext + ',' + f
+            termtext = ""
+            for f in self.flags:
+                if f == "nonipype":
+                    continue 
+                if len(termtext) == 0:
+                    termtext = "=(" + f
+                else:
+                    termtext = termtext + ', ' + f
+
             termtext = termtext + ", %s)"
             print termtext % (self.type)
         elif self.required:
@@ -308,10 +428,17 @@ class CParam:
         e = etree.SubElement(row, "entry", align="center", valign="top")
         e.text = self.type
         e = etree.SubElement(row, "entry", align="center", valign="top")
+
         if len(self.flags) > 0:
-            e.text = "(" + self.flags[0]
-            for f in self.flags[1:]:
-                e.text = e.text + ',' + f
+            first = True
+            for f in self.flags:
+                if f == "nonipype": 
+                    continue
+                if first:
+                    e.text = "(" + f
+                    first = False
+                else:
+                    e.text = e.text + ',' + f
             e.text = e.text + ')'
         elif self.required: 
             e.text = "(required)"
@@ -592,6 +719,8 @@ class CDescription:
                 self.name = n.text
             elif n.tag == 'section':
                 self.section = n.text
+            elif n.tag == 'version':
+                self.version = n.text
             elif n.tag == 'whatis':
                 self.whatis = n.text
             elif n.tag == 'description':

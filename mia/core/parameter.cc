@@ -55,12 +55,14 @@ void CParameter::get_help_xml(xmlpp::Element& param) const
 {
 	TRACE_FUNCTION; 
 	param.set_attribute("type", m_type); 
-	param.set_attribute("required", to_string<bool>(m_is_required)); 
 	param.set_attribute("default", get_default_value());
 	ostringstream d; 
-//	descr(d); 
 	param.set_child_text(m_descr);
 	do_get_help_xml(param); 
+	if (m_is_required) {
+		auto flags = param.add_child("flags"); 
+		flags->set_child_text("required");
+	}
 }
 
 void CParameter::do_get_help_xml(xmlpp::Element& /*param*/) const

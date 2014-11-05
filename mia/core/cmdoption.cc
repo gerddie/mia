@@ -32,21 +32,6 @@ using std::invalid_argument;
 NS_MIA_BEGIN
 
 CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
-		       const char *long_help, const char *short_help, bool required):
-	m_short_opt(short_opt), 
-	m_long_opt(long_opt),
-	m_long_help(long_help), 
-	m_short_help(short_help),
-	m_flags(required ? CCmdOptionFlags::required : CCmdOptionFlags::none)
-{
-	TRACE_FUNCTION; 
-	cvdebug() << "Create option '" << long_opt << "'\n"; 
-        assert(long_opt);
-        assert(long_help);
-
-}
-
-CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
 		       const char *long_help, const char *short_help, CCmdOptionFlags flags):
 	m_short_opt(short_opt), 
 	m_long_opt(long_opt),
@@ -238,7 +223,6 @@ void CCmdOption::add_option_xml(xmlpp::Element& parent, HandlerHelpMap& handler_
 	auto option = parent.add_child("option"); 
 	option->set_attribute("short", to_string<char>(get_short_option()));
 	option->set_attribute("long", get_long_option());
-	option->set_attribute("required", to_string<bool>(is_required())); 
 	option->set_attribute("default", get_value_as_string()); 
 	
 	auto flagstring = get_flag_string(); 
@@ -258,6 +242,9 @@ string CCmdOption::get_flag_string()const
 		ss << "output "; 
         if (mia::has_flag(m_flags, CCmdOptionFlags::required))
 		ss << "required ";
+        if (mia::has_flag(m_flags, CCmdOptionFlags::nonipype))
+		ss << "nonipype ";
+
 	return ss.str(); 
 }
 

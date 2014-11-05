@@ -75,10 +75,6 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required, &imageio));
 	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOptionFlags::required));
 	
-	options.add(make_help_opt( "help-plugins", 0,
-				   "give some help about the filter plugins", 
-				   new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
-
 	if (options.parse(argc, argv, "filter", &filter_plugins) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 

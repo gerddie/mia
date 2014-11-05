@@ -39,9 +39,6 @@ def get_date_string():
     lt = time.localtime(time.time())
     return "%d %s %d"% (lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
 
-def get_version():
-    return "2.2.2"
-
 #taken from http://effbot.org/zone/re-sub.htm#unescape-html
     
 def unescape(text):
@@ -74,7 +71,7 @@ def clean (text):
 
 def write_man_file(descr):
     name = escape_dash(descr.name)
-    print ".TH %s 1 \"%s\" \"%s\"  \"USER COMMANDS\"" %(escape_dash(descr.name), get_date_string(), get_version())
+    print ".TH %s 1 \"%s\" \"v%s\"  \"USER COMMANDS\"" %(escape_dash(descr.name), get_date_string(), descr.version)
     print ".SH NAME"
     print name, 
     print "\- %s" % (clean(descr.whatis))
