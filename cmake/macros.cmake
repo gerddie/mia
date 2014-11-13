@@ -138,6 +138,23 @@ MACRO(CREATE_EXE_XML_HELP name)
 ENDMACRO(CREATE_EXE_XML_HELP)
 
 
+MACRO(CREATE_NIPYPE_FROM_XML name)
+  IF(CREATE_NIPYPE_INTERFACES)
+    STRING(REGEX REPLACE "-" "_" PythonName ${name})
+    SET(${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/${PythonName}.py)
+    
+    ADD_CUSTOM_COMMAND(OUTPUT ${${name}-nipype-interface} 
+      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2nipype.py 
+      -i ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml -o ${${name}-nipype-interface}
+      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
+    
+    ADD_CUSTOM_TARGET(mia-${name}-nipype DEPENDS ${${name}-nipype-interface})
+    ADD_DEPENDENCIES(nipypeinterfaces mia-${name}-nipype)
+    
+    INSTALL(FILES ${${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR}/mia)
+
+  ENDIF(CREATE_NIPYPE_INTERFACES)
+ENDMACRO(CREATE_NIPYPE_FROM_XML)
 #
 #
 # man pages can only be created if the python + lxml packages are available 
@@ -163,6 +180,7 @@ ENDMACRO(CREATE_MANPAGE_FROM_XML)
 MACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE name)
   CREATE_EXE_XML_HELP(${name})
   CREATE_MANPAGE_FROM_XML(${name})
+  CREATE_NIPYPE_FROM_XML(${name})
 ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
 
 MACRO(DEFEXE name libraries) 
@@ -176,8 +194,6 @@ MACRO(DEFEXE name libraries)
   
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(${name})
 ENDMACRO(DEFEXE)
-
-
 
 
 MACRO(DEFCHKEXE name deps) 
@@ -195,8 +211,6 @@ MACRO(DEFCHKEXE name deps)
   CREATE_MANPAGE_FROM_XML(${name})
   ADD_TEST(${name} mia-${name} --selftest)
 ENDMACRO(DEFCHKEXE)
-
-
 
 
 MACRO(NEW_TEST name libs)
