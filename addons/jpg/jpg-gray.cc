@@ -66,7 +66,7 @@ C2DImageIOPlugin::PData CJpeg2DImageIOPlugin::do_load(const string& fname) const
 {
 	CInputFile f(fname);
 	if (!f)
-		throw create_exception<runtime_error>("CPNG2DImageIO::save:unable to open input file '", fname, "'");
+		throw create_exception<runtime_error>("C2DImageIOPlugin::load :unable to open input file '", fname, "'");
 
 	struct jpeg_decompress_struct cdecompress_info;
 	struct jpeg_error_mgr jerr;
