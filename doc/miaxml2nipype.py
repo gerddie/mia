@@ -250,7 +250,7 @@ class  NipypeOutput:
 
     def write_task(self, name):
 
-        self.out.write('class {}_Task(CommandLine):\n'.format(name))
+        self.out.write('class {}(CommandLine):\n'.format(name))
         self.out.write('\tinput_spec = {}_InputSpec\n'.format(name))
         self.out.write('\toutput_spec = {}_OutputSpec\n'.format(name))
         self.out.write('\t_cmd = "{}"\n'.format(self.descr.name))
@@ -258,7 +258,7 @@ class  NipypeOutput:
     def write_main(self, name):
 
         self.out.write( 'if __name__ == "__main__":\n')
-        self.out.write( '\tmia_prog = {}_Task()\n'.format(name))
+        self.out.write( '\tmia_prog = {}()\n'.format(name))
         self.out.write( '\tprint( mia_prog.cmdline)\n')
 
     def write_nipype_file(self):

@@ -140,8 +140,9 @@ ENDMACRO(CREATE_EXE_XML_HELP)
 
 MACRO(CREATE_NIPYPE_FROM_XML name)
   IF(CREATE_NIPYPE_INTERFACES)
-    STRING(REGEX REPLACE "-" "_" PythonName ${name})
-    SET(${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/${PythonName}.py)
+    STRING(REPLACE "-" "_" PythonName ${name})
+
+    SET(${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/mia_${PythonName}.py)
     
     ADD_CUSTOM_COMMAND(OUTPUT ${${name}-nipype-interface} 
       COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2nipype.py 
