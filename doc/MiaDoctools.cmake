@@ -94,7 +94,7 @@ MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
   ADD_CUSTOM_TARGET(${prefix}-${name}-nipype DEPENDS ${${prefix}-${name}-nipype-interface})
   ADD_DEPENDENCIES(nipypeinterfaces ${prefix}-${name}-nipype)
   
-  INSTALL(FILES ${${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR})
+  INSTALL(TARGETS ${${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR})
 ENDMACRO(MIA_CREATE_NIPYPE_FROM_XML)
 
 #
@@ -110,7 +110,7 @@ MACRO(MIA_CREATE_MANPAGE_FROM_XML prefix name)
       )
     ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})
     add_dependencies(manpages ${prefix}-${name}-man)
-    INSTALL(FILES ${${name}-manfile} DESTINATION "share/man/man1")
+    INSTALL(TARGETS ${${name}-manfile} DESTINATION "share/man/man1")
 ENDMACRO(MIA_CREATE_MANPAGE_FROM_XML)
 
 
