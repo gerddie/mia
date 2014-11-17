@@ -27,14 +27,15 @@ MACRO(MIA_PREPARE_AUTODOC ${prefix})
   
   OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml)" OFF)
   OPTION(MIA_CREATE_NIPYPE "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype)" OFF)
-  
+  ADD_CUSTOM_TARGET(xmldoc)  
   
   IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE)
     
     FIND_PACKAGE(PythonInterp REQUIRED)
     EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
-    MESSAGE(FATAL "Python found, but no pythonl-xml")
-    ADD_CUSTOM_TARGET(xmldoc)
+    IF(LXML_ERR) 
+      MESSAGE(FATAL "Python found, but no pythonl-xml")
+    ENDIF(LXML_ERR)
     
     IF(MIA_CREATE_MANPAGES) 
       ADD_CUSTOM_TARGET(manpages ALL)
@@ -73,7 +74,7 @@ MACRO(MIA_CREATE_EXE_XML_HELP prefix name)
     
   ADD_CUSTOM_TARGET(${prefix}-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml)
   ADD_DEPENDENCIES(xmldoc ${prefix}-${name}-xml)
-ENDMACRO(CREATE_EXE_XML_HELP)
+ENDMACRO(MIA_CREATE_EXE_XML_HELP)
 
 #
 # INTERNAL USE 
@@ -81,16 +82,16 @@ ENDMACRO(CREATE_EXE_XML_HELP)
 # and add it to the install target 
 #
 
-MACRO(MIA_CREATE_NIPYPE_FROM_XML name)
+MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
   STRING(REPLACE "-" "_" PythonName ${name})
   
   SET(${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/mia_${PythonName}.py)
   
   ADD_CUSTOM_COMMAND(OUTPUT ${${name}-nipype-interface} 
-    COMMAND  mia-xmldoc2nipype ${prefix}-${name}.xml ${${name}-nipype-interface}
+    COMMAND  mia-xmldoc2nipype ${prefix}-${name}.xml ${${prefix}-${name}-nipype-interface}
     MAIN_DEPENDENCY ${prefix}-${name}.xml)
   
-  ADD_CUSTOM_TARGET(${prefix}-${name}-nipype DEPENDS ${${name}-nipype-interface})
+  ADD_CUSTOM_TARGET(${prefix}-${name}-nipype DEPENDS ${${prefix}-${name}-nipype-interface})
   ADD_DEPENDENCIES(nipypeinterfaces ${prefix}-${name}-nipype)
   
   INSTALL(FILES ${${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR})
@@ -101,13 +102,13 @@ ENDMACRO(MIA_CREATE_NIPYPE_FROM_XML)
 # Create the man page from the xml doc description 
 # and add it to the install target 
 #
-MACRO(MIA_CREATE_MANPAGE_FROM_XML name)
-  SET(${name}-manfile ${prefix}-${name}.1)
-  ADD_CUSTOM_COMMAND(OUTPUT   ${${name}-manfile}
-    COMMAND mia-xmldoc2man ${prefix}-${name}.xml ${${name}-manfile}
+MACRO(MIA_CREATE_MANPAGE_FROM_XML prefix name)
+  SET(${prefix}-${name}-manfile ${prefix}-${name}.1)
+  ADD_CUSTOM_COMMAND(OUTPUT   ${${prefix}-${name}-manfile}
+    COMMAND mia-xmldoc2man ${prefix}-${name}.xml ${${prefix}-${name}-manfile}
       MAIN_DEPENDENCY ${prefix}-${name}.xml
       )
-    ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${name}-manfile})
+    ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})
     add_dependencies(manpages ${prefix}-${name}-man)
     INSTALL(FILES ${${name}-manfile} DESTINATION "share/man/man1")
 ENDMACRO(MIA_CREATE_MANPAGE_FROM_XML)
@@ -129,7 +130,7 @@ MACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE prefix name)
   IF(MIA_CREATE_NIPYPE_INTERFACES)
     MIA_CREATE_NIPYPE_FROM_XML(${prefix} ${name})
   ENDIF(MIA_CREATE_NIPYPE_INTERFACES)
-
+  
 ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
 
 #
@@ -140,7 +141,6 @@ ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
 #   libraries: libraries to link this exe against 
 #
 MACRO(MIA_DEFEXE prefix name libraries) 
-
   ADD_EXECUTABLE(${prefix}-${name} ${name}.cc)
   FOREACH(lib ${libraries}) 
     TARGET_LINK_LIBRARIES(${prefix}-${name} ${lib})
@@ -148,7 +148,7 @@ MACRO(MIA_DEFEXE prefix name libraries)
   INSTALL(TARGETS ${prefix}-${name} RUNTIME DESTINATION "bin")
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(${prefix}  ${name})
 
-ENDMACRO(DEFEXE)
+ENDMACRO(MIA_DEFEXE)
 
 #
 # Create an executable and its documentation and nipype interface 
@@ -164,4 +164,4 @@ MACRO(MIA_DEFEXE_WITH_TEST prefix name deps)
   MIA_DEFEXE(${prefix} ${name} ${deps})
   ADD_TEST(${name} ${prefix}-${name} --selftest)
 
-ENDMACRO(DEFCHKEXE)
+ENDMACRO(MIA_DEFEXE_WITH_TEST)

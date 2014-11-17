@@ -26,10 +26,13 @@ add_dependencies(doc docs)
 SET(MIADOCTOOLS_FILES 
   miareadxml.py  
   miawritprogram.py  
+  MiaDoctools.cmake
+  )
+
+SET(MIADOCTOOLS_PYTHON_EXE
   miaxml2man.py  
   miaxml2nipype.py  
   miaxml2sgml.py
-  MiaDoctools.cmake
   )
 
 SET(MIADOC_SCRIPTS
@@ -38,6 +41,8 @@ SET(MIADOC_SCRIPTS
   )
 
 INSTALL(FILES ${MIADOCTOOLS_FILES} DESTINATION ${MIA_DOCTOOLS_ROOT})
+
+INSTALL(PROGRAMS ${MIADOCTOOLS_PYTHON_EXE} DESTINATION ${MIA_DOCTOOLS_ROOT})
 
 
 MACRO(CREATE_SCRIPTS names) 

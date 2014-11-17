@@ -1,4 +1,4 @@
-#!/bin/env python 
+#!/usr/bin/env python 
 #
 # Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
 #
