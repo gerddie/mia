@@ -90,6 +90,7 @@ struct CCmdOptionListData {
 	vstream::Level verbose;
 	int max_threads;
 	bool m_selftest_run; 
+	bool m_stdout_is_result; 
 
 	CCmdOptionListData(const SProgramDescription& description); 
 
@@ -209,6 +210,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	max_threads(tbb::task_scheduler_init::automatic), 
 #endif 
 	m_selftest_run(false), 
+	m_stdout_is_result(false), 
 	m_log(&std::cout)
 {
 
@@ -361,6 +363,10 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 		Element* free_parameters = nodeRoot->add_child("freeparams"); 
 		free_parameters->set_attribute("name", additional_help->get_descriptor()); 
 		free_parameters->set_attribute("type", "factory"); 
+	}
+	
+	if (m_stdout_is_result) {
+		nodeRoot->add_child("stdout-is-result");
 	}
 		
 	usage_text << "[options]"; 
@@ -670,6 +676,11 @@ CCmdOptionList::parse(size_t argc, char *args[], const string& additional_type,
 {
 	m_impl->m_free_parametertype = additional_type; 
 	return do_parse(argc, (const char **)args, true, additional_help);
+}
+
+void CCmdOptionList::set_stdout_is_result()
+{
+	m_impl->m_stdout_is_result = true; 
 }
 
 struct TBBTaskScheduler {

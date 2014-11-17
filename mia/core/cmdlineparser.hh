@@ -276,6 +276,11 @@ public:
 	   \param os new output stream
 	 */
 	void set_logstream(std::ostream& os); 
+
+
+	/** This function sets a flag that indicates that data written 
+	    to stdout is an actual result */
+	void set_stdout_is_result(); 
 private:
 	EHelpRequested do_parse(size_t argc, const char *args[], bool has_additional, 
 				const CPluginHandlerBase *additional_help) 

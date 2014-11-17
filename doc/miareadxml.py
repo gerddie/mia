@@ -712,6 +712,7 @@ class CDescription:
     def __init__(self, node):
         self.Example = None 
         self.FreeParams = None
+        self.stdout_is_result = False
         self.option_groups = []
         self.handlers = {}
         for n in node:
@@ -738,6 +739,8 @@ class CDescription:
                 self.author = n.text
             elif n.tag == 'freeparams':
                 self.FreeParams = n.get("name")
+            elif n.tag == "stdout-is-result":
+                self.stdout_is_result = True
             else: 
                 print "unknown tag '%s'"% (n.tag)
         self.anchor = make_sec_ancor("Sec", self.name)

@@ -246,6 +246,10 @@ class  NipypeOutput:
 
         for i in outputs: 
             ParamTableCopy.get(i.type, self.write_unknown_type)(i)
+
+        if self.descr.stdout_is_result:
+            self.out.write ( '\toutput_stdout = traits.Str()\n')
+            
         self.out.write ("\n")
 
     def write_task(self, name):
