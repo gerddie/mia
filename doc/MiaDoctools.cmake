@@ -23,7 +23,7 @@
 # - prefix will be used to set the prefix of the executables and the 
 # target directory of the nipype interface 
 #
-MACRO(MIA_PREPARE_AUTODOC ${prefix})
+MACRO(MIA_PREPARE_AUTODOC prefix)
   
   OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml)" OFF)
   OPTION(MIA_CREATE_NIPYPE_INTERFACES "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype)" OFF)
@@ -50,7 +50,7 @@ MACRO(MIA_PREPARE_AUTODOC ${prefix})
         MESSAGE(FATAL "nipype not found, can not create nipype interfaces") 
       ENDIF()
       
-      STRING(REGEX REPLACE "^/[a-z/]*\(python.*\)\n" "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/\\1/interfaces/${prefix}" 
+      STRING(REGEX REPLACE "^/[a-z/]*\(python.*\)\n" "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/\\1/interfaces/${prefix}/" 
         NIPYPE_INTERFACE_DIR ${NIPYPE_BASE_PATH})
       MESSAGE("Will create nipype interfaces and install to " ${NIPYPE_INTERFACE_DIR}) 
       
@@ -85,7 +85,7 @@ ENDMACRO(MIA_CREATE_EXE_XML_HELP)
 MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
   STRING(REPLACE "-" "_" PythonName ${name})
   
-  SET(${prefix}-${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/mia_${PythonName}.py)
+  SET(${prefix}-${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/${prefix}_${PythonName}.py)
   
   ADD_CUSTOM_COMMAND(OUTPUT ${${prefix}-${name}-nipype-interface} 
     COMMAND  mia-xmldoc2nipype ${prefix}-${name}.xml ${${prefix}-${name}-nipype-interface}
@@ -94,7 +94,7 @@ MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
   ADD_CUSTOM_TARGET(${prefix}-${name}-nipype DEPENDS ${${prefix}-${name}-nipype-interface})
   ADD_DEPENDENCIES(nipypeinterfaces ${prefix}-${name}-nipype)
   
-  INSTALL(TARGETS ${${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR})
+  INSTALL(FILES ${${prefix}-${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR})
 ENDMACRO(MIA_CREATE_NIPYPE_FROM_XML)
 
 #
@@ -103,14 +103,14 @@ ENDMACRO(MIA_CREATE_NIPYPE_FROM_XML)
 # and add it to the install target 
 #
 MACRO(MIA_CREATE_MANPAGE_FROM_XML prefix name)
-  SET(${prefix}-${name}-manfile ${prefix}-${name}.1)
+  SET(${prefix}-${name}-manfile ${CMAKE_CURRENT_BINARY_DIR}/${prefix}-${name}.1)
   ADD_CUSTOM_COMMAND(OUTPUT   ${${prefix}-${name}-manfile}
     COMMAND mia-xmldoc2man ${prefix}-${name}.xml ${${prefix}-${name}-manfile}
       MAIN_DEPENDENCY ${prefix}-${name}.xml
       )
     ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})
     add_dependencies(manpages ${prefix}-${name}-man)
-    INSTALL(TARGETS ${${name}-manfile} DESTINATION "share/man/man1")
+    INSTALL(FILES ${${prefix}-${name}-manfile} DESTINATION "share/man/man1")
 ENDMACRO(MIA_CREATE_MANPAGE_FROM_XML)
 
 
