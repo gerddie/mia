@@ -19,8 +19,35 @@
 
 INCLUDE (${CMAKE_ROOT}/Modules/FindDoxygen.cmake)
 
+
 ADD_CUSTOM_TARGET(docs echo "creating documentation")
 add_dependencies(doc docs)  
+
+SET(MIADOCTOOLS_FILES 
+  miareadxml.py  
+  miawritprogram.py  
+  miaxml2man.py  
+  miaxml2nipype.py  
+  miaxml2sgml.py
+  MiaDoctools.cmake
+  )
+
+SET(MIADOC_SCRIPTS
+  mia-xmldoc2man 
+  mia-xmldoc2nipype
+  )
+
+INSTALL(FILES ${MIADOCTOOLS_FILES} DESTINATION ${MIA_DOCTOOLS_ROOT})
+
+
+MACRO(CREATE_SCRIPTS names) 
+  FOREACH(n ${names})
+    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${n}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${n} @ONLY)
+    install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${n}" DESTINATION bin)
+  ENDFOREACH(n)
+ENDMACRO(CREATE_SCRIPTS names) 
+
+CREATE_SCRIPTS("${MIADOC_SCRIPTS}")
 
 IF(CREATE_USERDOC) 
 

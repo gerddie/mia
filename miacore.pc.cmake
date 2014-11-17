@@ -8,6 +8,8 @@ includedir=${prefix}/@INCLUDE_INSTALL_PATH@
 pluginroot=@PLUGIN_SEARCH_PATH@
 TestLibs= 
 
+doctools=@MIA_DOCTOOLS_ROOT@
+
 Name: miacore
 Description: A library for 2D/3D grayscale image processing 
 Version: @PACKAGE_VERSION@
