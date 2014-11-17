@@ -26,7 +26,7 @@
 MACRO(MIA_PREPARE_AUTODOC ${prefix})
   
   OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml)" OFF)
-  OPTION(MIA_CREATE_NIPYPE "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype)" OFF)
+  OPTION(MIA_CREATE_NIPYPE_INTERFACES "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype)" OFF)
   ADD_CUSTOM_TARGET(xmldoc)  
   
   IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE)
@@ -40,7 +40,7 @@ MACRO(MIA_PREPARE_AUTODOC ${prefix})
     IF(MIA_CREATE_MANPAGES) 
       ADD_CUSTOM_TARGET(manpages ALL)
     ENDIF()
-    IF(CREATE_NIPYPE_INTERFACES) 
+    IF(MIA_CREATE_NIPYPE_INTERFACES) 
       EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import nipype\nprint(nipype.get_info()['pkg_path'])"  
         RESULT_VARIABLE NIPYPE_ERR
         OUTPUT_VARIABLE NIPYPE_BASE_PATH
@@ -85,9 +85,9 @@ ENDMACRO(MIA_CREATE_EXE_XML_HELP)
 MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
   STRING(REPLACE "-" "_" PythonName ${name})
   
-  SET(${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/mia_${PythonName}.py)
+  SET(${prefix}-${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/mia_${PythonName}.py)
   
-  ADD_CUSTOM_COMMAND(OUTPUT ${${name}-nipype-interface} 
+  ADD_CUSTOM_COMMAND(OUTPUT ${${prefix}-${name}-nipype-interface} 
     COMMAND  mia-xmldoc2nipype ${prefix}-${name}.xml ${${prefix}-${name}-nipype-interface}
     MAIN_DEPENDENCY ${prefix}-${name}.xml)
   
@@ -142,9 +142,7 @@ ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
 #
 MACRO(MIA_DEFEXE prefix name libraries) 
   ADD_EXECUTABLE(${prefix}-${name} ${name}.cc)
-  FOREACH(lib ${libraries}) 
-    TARGET_LINK_LIBRARIES(${prefix}-${name} ${lib})
-  ENDFOREACH(lib)
+  TARGET_LINK_LIBRARIES(${prefix}-${name} ${libraries})
   INSTALL(TARGETS ${prefix}-${name} RUNTIME DESTINATION "bin")
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(${prefix}  ${name})
 
