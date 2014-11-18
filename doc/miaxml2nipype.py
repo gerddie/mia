@@ -258,6 +258,11 @@ class  NipypeOutput:
         self.out.write('\tinput_spec = {}_InputSpec\n'.format(name))
         self.out.write('\toutput_spec = {}_OutputSpec\n'.format(name))
         self.out.write('\t_cmd = "{}"\n'.format(self.descr.name))
+        if self.descr.stdout_is_result:
+            self.out.write('\tdef aggregate_outputs(self, runtime=None, needed_outputs=None):\n'))
+            self.out.write('\t\toutputs = self._outputs()\n')
+            self.out.write('\t\toutputs.output_stdout = runtime.stdout\n')
+            self.out.write('\t\treturn outputs\n')
 
     def write_main(self, name):
 
