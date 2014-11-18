@@ -252,15 +252,29 @@ class  NipypeOutput:
             
         self.out.write ("\n")
 
-    def write_task(self, name):
+    def write_task(self, name, outputs):
 
         self.out.write('class {}(CommandLine):\n'.format(name))
         self.out.write('\tinput_spec = {}_InputSpec\n'.format(name))
         self.out.write('\toutput_spec = {}_OutputSpec\n'.format(name))
-        self.out.write('\t_cmd = "{}"\n'.format(self.descr.name))
+        self.out.write('\t_cmd = "{}"\n\n'.format(self.descr.name))
+
+        self.out.write('\tdef _list_outputs(self):\n')
+        self.out.write('\t\toutputs = self.output_spec().get()\n')
+
+        for i in outputs: 
+            # there is a problem here: for files that are given as pattern this will fail. 
+            if i.type == "io" or i.type == "string":
+                name = dash_to_underscore(i.long)
+                self.out.write('\t\toutputs[\'output_{}\']=os.path.abspath(self.inputs.output_{})\n'.format(name,name))
+            else:
+                print('Only io or string supported for output, but got {}'.format(i))
+        
+        self.out.write('\t\treturn outputs\n')
+       
         if self.descr.stdout_is_result:
             self.out.write('\tdef aggregate_outputs(self, runtime=None, needed_outputs=None):\n')
-            self.out.write('\t\toutputs = self._outputs()\n')
+            self.out.write('\t\toutputs = super({}, self).aggregate_outputs(runtime, needed_outputs)\n'.format(name))
             self.out.write('\t\toutputs.output_stdout = runtime.stdout\n')
             self.out.write('\t\treturn outputs\n')
 
@@ -306,7 +320,7 @@ class  NipypeOutput:
         self.write_output_spec(name, outputs, params)
 
         self.out.write("\n#\n# Task class specification\n#\n"); 
-        self.write_task(name)
+        self.write_task(name, outputs)
 
         self.out.write("\n#\n# Main function used for testing\n#\n"); 
         self.write_main(name)
