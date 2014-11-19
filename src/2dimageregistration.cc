@@ -56,10 +56,10 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("File-IO"); 
-	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOptionFlags::output, &imageio));
-	options.add(make_opt( trans_filename, "trans", 't', "output transformation", 
+	options.add(make_opt( src_filename, "in-image", 'i', "test image to be registered", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image to be registered to", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-image", 'o', "registered output image", CCmdOptionFlags::output, &imageio));
+	options.add(make_opt( trans_filename, "transformation", 't', "output transformation comprising the registration",
 			      CCmdOptionFlags::required_output, &C2DTransformationIOPluginHandler::instance()));
 
 	options.set_group("Parameters"); 

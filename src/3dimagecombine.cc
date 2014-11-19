@@ -56,7 +56,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", 
 			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( combiner, "add", "combiner", 'c', "combiner operation", CCmdOptionFlags::required));
-	options.add(make_opt( out_filename, "out", 'o', "output file", CCmdOptionFlags::required_output, &imageio));
+	options.add(make_opt( out_filename, "out-image", 'o', "output file", CCmdOptionFlags::required_output, &imageio));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

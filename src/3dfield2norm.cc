@@ -46,8 +46,10 @@ int do_main(int argc, char *argv[])
 	
 	CCmdOptionList options(g_description);
 	
-	options.add(make_opt( src_filename, "in", 'i', "input vector field", CCmdOptionFlags::required_input, &C3DVFIOPluginHandler::instance()));
-	options.add(make_opt( out_filename, "out", 'o', "output image", CCmdOptionFlags::required_output, &C3DImageIOPluginHandler::instance()));
+	options.add(make_opt( src_filename, "in-vectorfield", 'i', "input vector field", 
+			      CCmdOptionFlags::required_input, &C3DVFIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out-image", 'o', "output image comprising the per voxel norm of each image", 
+			      CCmdOptionFlags::required_output, &C3DImageIOPluginHandler::instance()));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

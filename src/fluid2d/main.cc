@@ -110,13 +110,13 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList options(g_description);
 	
 	options.set_group("File-IO"); 
-	options.add(make_opt( src_filename, "in-image", 'i', "input (model) image to be registered", 
+	options.add(make_opt( src_filename, "in-image", 'i', "input (test) image to be registered", 
 			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image", 
 			      CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( out_filename, "out", 'o', "output vector field", 
+	options.add(make_opt( out_filename, "out-transformation", 'o', "output transformation comprising the registration", 
 			      CCmdOptionFlags::output, &C2DVFIOPluginHandler::instance()));
-	options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image", 
+	options.add(make_opt( def_filename, "out-image", 'd', "output image deformed according to the transformation", 
 			      CCmdOptionFlags::output, &imageio));
 
 	options.set_group("Registration parameters"); 
