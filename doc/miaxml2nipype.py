@@ -124,8 +124,8 @@ class  NipypeOutput:
         
 
     def create_trait_input_param_start(self, param, trait, enums=""):
-        self.out.write ( '\tinput_{} = traits.{}({} desc="{}", '.format(dash_to_underscore(param.long), 
-                                                                                trait, enums, param.text)), 
+        self.out.write ( '\t{} = traits.{}({} desc="{}", '.format(dash_to_underscore(param.long), 
+                                                                  trait, enums, param.text)), 
 
     def create_param_tail(self, param):
         if param.required: 
@@ -188,17 +188,17 @@ class  NipypeOutput:
         self.create_param_tail(param)
 
     def create_output_String_param(self, param):
-        self.out.write ( '\toutput_{} = traits.String(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
+        self.out.write ( '\t{} = traits.String(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
         self.out.write('argstr="--{} %s" '.format(param.long)), 
         self.create_param_tail(param)
 
     def create_output_File_param(self, param):
-        self.out.write ( '\toutput_{} = File(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
+        self.out.write ( '\t{} = File(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
         self.out.write('argstr="--{} %s" '.format(param.long)), 
         self.create_param_tail(param)
 
     def create_output_File_param_outspec(self, param):
-        self.out.write ( '\toutput_{} = File(desc="{}"'.format(dash_to_underscore(param.long), param.text)), 
+        self.out.write ( '\t{} = File(desc="{}"'.format(dash_to_underscore(param.long), param.text)), 
         if param.required: 
                 self.out.write (', exists = True '), 
         self.out.write( ')\n')
@@ -233,7 +233,7 @@ class  NipypeOutput:
             InputTable.get(i.type, self.write_unknown_type)(i)
 
     def write_input_free_params_spec(self, freeparams):
-        self.out.write ( '\tinput_free_params = traits.ListStr(desc="Plug-in specifications of type {}", '.format(freeparams)),
+        self.out.write ( '\tfree_params = traits.ListStr(desc="Plug-in specifications of type {}", '.format(freeparams)),
         self.out.write ( 'argstr="%s")')
 
     def write_output_spec(self, name, outputs, params):
@@ -248,7 +248,7 @@ class  NipypeOutput:
             ParamTableCopy.get(i.type, self.write_unknown_type)(i)
 
         if self.descr.stdout_is_result:
-            self.out.write ( '\toutput_stdout = traits.Str(\'result from stdout\')\n')
+            self.out.write ( '\tstdout = traits.Str(\'result from stdout\')\n')
             
         self.out.write ("\n")
 
@@ -266,7 +266,7 @@ class  NipypeOutput:
             # there is a problem here: for files that are given as pattern this will fail. 
             if i.type == "io" or i.type == "string":
                 name = dash_to_underscore(i.long)
-                self.out.write('\t\toutputs[\'output_{}\']=os.path.abspath(self.inputs.output_{})\n'.format(name,name))
+                self.out.write('\t\toutputs[\'{}\']=os.path.abspath(self.inputs.{})\n'.format(name,name))
             else:
                 print('Only io or string supported for output, but got {}'.format(i))
         
@@ -275,7 +275,7 @@ class  NipypeOutput:
         if self.descr.stdout_is_result:
             self.out.write('\tdef aggregate_outputs(self, runtime=None, needed_outputs=None):\n')
             self.out.write('\t\toutputs = super({}, self).aggregate_outputs(runtime, needed_outputs)\n'.format(name))
-            self.out.write('\t\toutputs.output_stdout = runtime.stdout\n')
+            self.out.write('\t\toutputs.stdout = runtime.stdout\n')
             self.out.write('\t\treturn outputs\n')
 
     def write_main(self, name):
