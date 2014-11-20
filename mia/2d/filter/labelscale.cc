@@ -82,14 +82,14 @@ typename C2DLabelscale::result_type C2DLabelscale::operator () (const T2DImage<T
         if (m_out_size.x  < data.get_size().x ){
                 block_size.x = (data.get_size().x + m_out_size.x - 1) / m_out_size.x; 
         }else{
-                coordinate_scale.x = (m_out_size.x - 1.0) / (data.get_size().x - 1.0); 
+                coordinate_scale.x = float(data.get_size().x) / float(m_out_size.x); 
         }
 
                 
         if (m_out_size.y  < data.get_size().y ) {
                 block_size.y = (data.get_size().y + m_out_size.y - 1) / m_out_size.y;
         }else{
-                coordinate_scale.y = (m_out_size.y - 1.0) / (data.get_size().y - 1.0); 
+                coordinate_scale.y = float(data.get_size().y) / float(m_out_size.y); 
         }
         
         vector<T> buffer; 
@@ -97,10 +97,10 @@ typename C2DLabelscale::result_type C2DLabelscale::operator () (const T2DImage<T
         auto ir = result->begin(); 
 
         for (unsigned y = 0; y < m_out_size.y; ++y) {
-                unsigned iy = static_cast<unsigned>(floor(y * coordinate_scale.y + 0.5)); 
+                unsigned iy = static_cast<unsigned>(floor(y * coordinate_scale.y)); 
                 auto rangey = clamp_coord(iy, block_size.y, data.get_size().y); 
                 for (unsigned x = 0; x < m_out_size.x; ++x, ++ir) {
-                        unsigned ix = static_cast<unsigned>(floor(x * coordinate_scale.y + 0.5)); 
+                        unsigned ix = static_cast<unsigned>(floor(x * coordinate_scale.x)); 
                         auto rangex = clamp_coord(ix, block_size.x, data.get_size().x);
                         C2DBounds ibegin(rangex.first, rangey.first); 
                         C2DBounds iend(rangex.second, rangey.second);
@@ -110,6 +110,7 @@ typename C2DLabelscale::result_type C2DLabelscale::operator () (const T2DImage<T
                                  [&buffer](T pixel) {
                                          buffer.push_back(pixel); 
                                  });
+                        
                         sort(buffer.begin(), buffer.end()); 
                         *ir = get_max_represented(buffer);
                 }
