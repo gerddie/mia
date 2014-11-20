@@ -26,10 +26,8 @@ SET (NOTHING
   harmmean
   ianiso
   kuwahara
-  labelmap
   lnfft
   midpoint
-  regiongrow
   rgg
   variation
   wmean
@@ -52,6 +50,7 @@ SET(filters2dNew_base
   kmeans
   label 
   labelmap
+  labelscale
   load
   mask
   mean 

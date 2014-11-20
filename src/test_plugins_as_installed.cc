@@ -260,7 +260,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture)
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", "combiner",
 		"convert", "close", "crop", "dilate", "distance", 
 		"downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
-		"label", "labelmap", "load", "mask", "mean", "median", "mlv", 
+		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", 
 		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", 
 		"scale", "selectbig", "sepconv", "shmean", "sort-label", "sws", 
 		"tee", "thinning", "thresh", "transform", "ws"
