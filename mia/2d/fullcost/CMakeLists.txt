@@ -16,5 +16,5 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(fullcost image maskedimage)
+SET(fullcost image maskedimage label)
 PLUGINGROUP_WITH_TEST_AND_PREFIX2("2dimage" "fullcost" "${fullcost}" mia2dtest )
