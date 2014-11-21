@@ -44,7 +44,7 @@ private:
 	bool do_get_full_size(C2DBounds& size) const; 
 
         double value(int idx, int label) const; 
-        double value_and_gradient(int idx, int label, C2DFVector& gradient) const; 
+        double value_and_gradient(int idx, int label, C2DFVector& gradient, const C2DBounds& pos, int boundaries) const; 
         void prepare_distance_fields(const C2DUBImage& image); 
         
 	double do_value() const; 
@@ -61,6 +61,17 @@ private:
 
         std::vector<bool> m_ref_label_exists; 
         std::vector<C2DFImage> m_ref_distances;
+
+	enum EBoundaries {
+		eb_none = 0, 
+		eb_xlow  = 1, /**< at low x-boundary */ 
+		eb_xhigh = 2, /**< at high x-boundary */  
+		eb_x = 3, /**< at high x-boundary */  
+		eb_ylow = 4,  /**< at low y-boundary */ 
+		eb_yhigh = 8, /**< at high y-boundary */
+		eb_y = 12, /**< any y-boundary */
+	}; 
+ 
 
 }; 
 

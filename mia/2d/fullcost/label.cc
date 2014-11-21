@@ -65,11 +65,6 @@ double C2DLabelFullCost::do_value(const C2DTransformation& t) const
         for (size_t i = 0; i < temp_ubyte.size(); ++i) {
 		double v = value(i, temp_ubyte[i]);
                 result += v; 
-		cvdebug() << "[" << i << "]( " 
-			  << int(m_ref_scaled[i]) << ", " 
-			  << int(temp_ubyte[i]) << ")=" << v << "\n"; 
-			
-
         }
         return result; 
 }
@@ -86,9 +81,6 @@ double C2DLabelFullCost::do_value() const
         for (size_t i = 0; i < m_src_scaled.size(); ++i) {
                 result += value(i, m_src_scaled[i]);
         }
-
-        
-	cvdebug() << "C2DLabelFullCost::value = " << result << "\n"; 
 	return result; 
 }
 
@@ -103,13 +95,39 @@ double C2DLabelFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& 
 
         C2DFVectorfield force(get_current_size()); 
 
-        double result = 0.0; 
-        for (size_t i = 0; i < temp_ubyte.size(); ++i) {
-                result += value_and_gradient(i, temp_ubyte[i], force[i]);
-        }
+	C2DBounds pos(0,0); 
+	
+	double result = value_and_gradient(0, temp_ubyte[0], force[0], pos, eb_xlow | eb_ylow);
+	int idx = 1; 
+	
+	for (pos.x = 1; pos.x < temp_ubyte.get_size().x - 1; ++pos.x, ++idx) {
+		result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_ylow);
+	}
+	result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xhigh | eb_ylow);
+	++idx; 
+	
+	for (pos.y = 1; pos.y < temp_ubyte.get_size().y-1; ++pos.y) {
+		pos.x = 0; 
+		result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xlow);
+		++idx; 
+			
+		for (pos.x = 1; pos.x < temp_ubyte.get_size().x - 1; ++pos.x, ++idx) {
+			result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_none);
+		}
+		result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xhigh);
+		++idx; 
+	}
+	
+	result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xlow | eb_yhigh);
+	++idx; 
 
+	for (pos.x = 1; pos.x < temp_ubyte.get_size().x-1; ++pos.x, ++idx) {
+		result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_yhigh);
+	}
+	result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xhigh | eb_yhigh);
+	
 	// at this point one could inject a hole-filling algorithm to 
-	// add forces inside of the homogeinous overlapping label regions 
+	// add forces inside of the homogen overlapping label regions 
         
 	t.translate(force, gradient); 
 
@@ -171,13 +189,6 @@ void C2DLabelFullCost::prepare_distance_fields( const C2DUBImage &image )
 			transform(m_ref_distances[i].begin(), m_ref_distances[i].end(), 
 				  m_ref_distances[i].begin(), [](float& x){ return sqrt(x);}); 
 			
-			cvdebug() << "exist: " << i << "\n"; 
-			copy(bool_bin.begin(), bool_bin.end(), 
-			     ostream_iterator<bool>(cverb, ", "));
-			cverb << "\n"; 
-			copy(m_ref_distances[i].begin(), m_ref_distances[i].end(), 
-			     ostream_iterator<float>(cverb, ", "));
-			cverb << "\n"; 
                 }
         }
 }
@@ -189,14 +200,44 @@ double C2DLabelFullCost::value(int idx, int label) const
         return m_ref_label_exists[label] ? m_ref_distances[label][idx] : 0.0;
 }
 
-double C2DLabelFullCost::value_and_gradient(int idx, int label, C2DFVector& gradient) const
+double C2DLabelFullCost::value_and_gradient(int idx, int label, C2DFVector& gradient, 
+					    const C2DBounds& pos, int boundaries) const
 {
         double result; 
         
         if (m_ref_label_exists[label]) {
-                result = m_ref_distances[label][idx]; 
-                gradient = m_ref_distances[label].get_gradient(idx); 
-        }else {
+		const auto & dref = m_ref_distances[label]; 
+                result = dref[idx]; 
+		if (result > 0.0) {
+			if (boundaries == eb_none) 
+				gradient = dref.get_gradient(idx); 
+			else { // emulate repeat boundary conditions 
+				switch (boundaries & eb_x) {
+				case eb_xlow: 
+					gradient.x = 0.5 * (dref(pos.x + 1, pos.y) - dref(pos.x, pos.y)); 
+					break; 
+				case eb_xhigh: 
+					gradient.x = 0.5 * (dref(pos.x, pos.y) - dref(pos.x - 1, pos.y)); 
+					break; 
+				default:
+					gradient.x = 0.5 * (dref(pos.x + 1, pos.y) - dref(pos.x - 1, pos.y)); 
+				}
+				
+				switch (boundaries & eb_y) {
+				case eb_ylow: 
+					gradient.y = 0.5 * (dref(pos.x, pos.y + 1) - dref(pos.x, pos.y)); 
+					break; 
+				case eb_yhigh: 
+					gradient.y = 0.5 * (dref(pos.x, pos.y) - dref(pos.x, pos.y - 1)); 
+					break; 
+				default:
+					gradient.y = 0.5 * (dref(pos.x, pos.y + 1) - dref(pos.x, pos.y - 1)); 
+				}
+			}
+		}else{
+			gradient = C2DFVector::_0;
+		}
+	}else {
                 result = 0.0; 
                 gradient = C2DFVector::_0;
         }

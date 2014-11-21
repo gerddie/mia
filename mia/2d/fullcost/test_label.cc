@@ -53,6 +53,8 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 	}; 
 
 
+	
+
         const float distances [25] = {
                 0, 0, 1, 0,         0, 
                 0, 0, 1, 0,         0, 
@@ -61,6 +63,24 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
                 0, 0, 1, sqrt(2.0), 0,
         }; 
         
+	const float gradx [25] = {
+		0, 0, 1, 0, 0, 
+                0, 0, 1, 0, 0, 
+                0, 0, 1, 0, 0, 
+                0, 0, 0, 0, 0, 
+                0, 0, -0.5 * sqrt(2.0), -0.5 * (sqrt(5.0) - 1.0), 0 
+	}; 
+
+        const float grady [25] = {
+                0, 0,  0, 0, 0, 
+                0, 0,  0, 0, 0, 
+		0, 0,  0, 0, 0, 
+                -1, -1,  0, 0, 0, 
+		0, 0,-.5, -.5 * (sqrt(2.0) - 1), 0 
+        }; 
+
+
+
         const C2DBounds size(5,5);
         
         
@@ -86,13 +106,28 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
         BOOST_CHECK_CLOSE(cost->cost_value(*t), 6 + sqrt(2.0), 0.01); 
         BOOST_CHECK_CLOSE(cost->cost_value(), 6 + sqrt(2.0), 0.01); 
         
-        
+	CDoubleVector gradient(t->degrees_of_freedom()); 
+	double cost_value = cost->evaluate(*t, gradient);
 
+	for(int i = 0; i < 25; ++i) {
+		cvdebug() << "[" << i << "]: (" << gradient[2*i] << ", " << gradient[2*i+1]
+			  << ") expect ("<< gradx[i] << ", " << grady[i] << ")\n"; 
+
+		if (gradx[i] != 0.0) 
+			BOOST_CHECK_CLOSE(gradient[2*i], gradx[i], 0.1); 
+		else 
+			BOOST_CHECK_SMALL(gradient[2*i], 1e-10); 
+		if (grady[i] != 0.0) 
+			BOOST_CHECK_CLOSE(gradient[2*i+1], grady[i], 0.1);
+		else 
+			BOOST_CHECK_SMALL(gradient[2*i+1], 1e-10); 
+	}
 }
 
 
+
 TransformInitFixture::TransformInitFixture():
-        tff(C2DTransformCreatorHandler::instance().produce("translate:imgkernel=[bspline:d=0],imgboundary=zero"))
+        tff(C2DTransformCreatorHandler::instance().produce("vf:imgkernel=[bspline:d=0],imgboundary=zero"))
 {
         
 }
