@@ -135,7 +135,7 @@ P2DImage C2DLabelscale::do_filter(const C2DImage& image) const
 C2DLabelscaleFilterPluginFactory::C2DLabelscaleFilterPluginFactory():
 C2DFilterPlugin("labelscale")
 {
-        add_parameter("out-size", new C2DBoundsParameter(m_out_size, true, "target size as 2D array"));
+        add_parameter("out-size", new C2DBoundsParameter(m_out_size, true, "target size given as two coma separated values"));
 }
 
 C2DFilter *C2DLabelscaleFilterPluginFactory::do_create()const
@@ -152,7 +152,9 @@ const std::string C2DLabelscaleFilterPluginFactory::do_get_descr()const
         return "A filter that only creates output voxels that are already created in "
                 "the input image. Scaling is done by using a voting algorithms that "
                 "selects the target pixel value based on the highest pixel count of a "
-                "certain label in the corresponding source region"; 
+                "certain label in the corresponding source region. If the region "
+                "comprises two labels with the same count, the one with the lower number "
+                "wins.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
