@@ -194,8 +194,8 @@ private:
 BOOST_AUTO_TEST_CASE( test_load_plugins ) 
 {	
 	const C2DFullCostPluginHandler::Instance& handler = PrepareFullcostTests::instance().fullcost_handler(); 
-	BOOST_CHECK_EQUAL(handler.size(), 2u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "image maskedimage ");
+	BOOST_CHECK_EQUAL(handler.size(), 3u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "image labelimage maskedimage ");
 }
 
 #if 0 
