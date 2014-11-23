@@ -60,7 +60,7 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
                 0, 0, 1, 0,         0, 
                 0, 0, 1, 0,         0, 
                 1, 1, 0, 0,         0, 
-                0, 0, 1, sqrt(2.0), 0,
+                0, 0, 1, sqrtf(2.0f), 0,
         }; 
         
 	const float gradx [25] = {
@@ -68,7 +68,7 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
                 0, 0, 1, 0, 0, 
                 0, 0, 1, 0, 0, 
                 0, 0, 0, 0, 0, 
-                0, 0, -0.5 * sqrt(2.0), -0.5 * (sqrt(5.0) - 1.0), 0 
+                0, 0, -0.5f * sqrtf(2.0f), -0.5f * (sqrtf(5.0f) - 1.0f), 0 
 	}; 
 
         const float grady [25] = {
@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
                 0, 0,  0, 0, 0, 
 		0, 0,  0, 0, 0, 
                 -1, -1,  0, 0, 0, 
-		0, 0,-.5, -.5 * (sqrt(2.0) - 1), 0 
+		0, 0,-.5f, -.5f * (sqrtf(2.0f) - 1.0f), 0 
         }; 
 
 
