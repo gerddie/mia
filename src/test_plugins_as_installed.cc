@@ -74,6 +74,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageIOPluginHandler,PluginTestFixture)
 		"inria", 
 		"hdf5", 
 		"mhd", 
+		"nifti", 
 		"vff", 
 		"vti", 
 		"vtk", 
@@ -103,7 +104,8 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageCreatorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DTransformCreatorHandler,PluginTestFixture) 
 {
 	set<string> test_data = { 
-		"affine", "axisrot", "raffine", "rigid", "spline", "translate", "rotation", "vf"
+		"affine", "axisrot", "raffine", "rigid", "spline", 
+		"translate", "rotation", "rotbend", "vf"
 	}; 
 	test(C3DTransformCreatorHandler::instance().get_set(), test_data); 
 }
@@ -217,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DVFIOPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DFullCostPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"image", "maskedimage"
+		"image", "labelimage", "maskedimage"
 	}; 
 	
 	test(C2DFullCostPluginHandler::instance().get_set(), test_data); 
