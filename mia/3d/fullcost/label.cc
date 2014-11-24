@@ -107,6 +107,7 @@ double C3DLabelFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 		result += value_and_gradient(idx, i, *ig); 
 		++i; 
 		++ig; 
+		++idx; 
 	}
 
 
@@ -187,7 +188,7 @@ double C3DLabelFullCost::value(int idx, int label) const
 
 double C3DLabelFullCost::value_and_gradient(int idx, const C3DUBImage::const_range_iterator_with_boundary_flag& i, C3DFVector& gradient) const
 {
-        double result; 
+        double result  = 0.0; 
         
         if (m_ref_label_exists[*i]) {
 		const auto & dref = m_ref_distances[*i]; 
@@ -236,7 +237,6 @@ double C3DLabelFullCost::value_and_gradient(int idx, const C3DUBImage::const_ran
 			gradient = C3DFVector::_0;
 		}
 	}else {
-                result = 0.0; 
                 gradient = C3DFVector::_0;
         }
         return result; 

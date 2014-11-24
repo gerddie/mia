@@ -119,7 +119,7 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 
 	}; 
 
-        const float grady [25] = {
+        const float grady [125] = {
                 0, 0,  0, 0, 0, 
                 0, 0,  0, 0, 0, 
 		0, 0,  0, 0, 0, 
@@ -154,24 +154,27 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
         BOOST_CHECK_CLOSE(cost->cost_value(*t), 16 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
         BOOST_CHECK_CLOSE(cost->cost_value(), 16 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
         
-#if 0 
+
 	CDoubleVector gradient(t->degrees_of_freedom()); 
 	double cost_value = cost->evaluate(*t, gradient);
+        BOOST_CHECK_CLOSE(cost_value, 16 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
 
 	for(int i = 0; i < 25; ++i) {
-		cvdebug() << "[" << i << "]: (" << gradient[2*i] << ", " << gradient[2*i+1]
+		cvdebug() << "[" << i << "]: (" << gradient[3*i] << ", " << gradient[3*i+1]
 			  << ") expect ("<< gradx[i] << ", " << grady[i] << ")\n"; 
 
 		if (gradx[i] != 0.0) 
-			BOOST_CHECK_CLOSE(gradient[2*i], gradx[i], 0.1); 
+			BOOST_CHECK_CLOSE(gradient[3*i], gradx[i], 0.1); 
 		else 
-			BOOST_CHECK_SMALL(gradient[2*i], 1e-10); 
+			BOOST_CHECK_SMALL(gradient[3*i], 1e-10); 
+#if 0 
 		if (grady[i] != 0.0) 
-			BOOST_CHECK_CLOSE(gradient[2*i+1], grady[i], 0.1);
+			BOOST_CHECK_CLOSE(gradient[3*i+1], grady[i], 0.1);
 		else 
-			BOOST_CHECK_SMALL(gradient[2*i+1], 1e-10); 
-	}
+			BOOST_CHECK_SMALL(gradient[3*i+1], 1e-10); 
 #endif 
+	}
+
 }
 
 
