@@ -157,8 +157,8 @@ public:
 	typedef typename T3DDatafield<T>::size_type size_type;
 	typedef typename T3DDatafield<T>::range_iterator range_iterator; 
 	typedef typename T3DDatafield<T>::const_range_iterator const_range_iterator; 
-	typedef typename T3DDatafield<T>::range_iterator_with_boundary_flags range_iterator_with_boundary_flags; 
-	typedef typename T3DDatafield<T>::const_range_iterator_with_boundary_flags const_range_iterator_with_boundary_flags; 
+	typedef typename T3DDatafield<T>::range_iterator_with_boundary_flag range_iterator_with_boundary_flag; 
+	typedef typename T3DDatafield<T>::const_range_iterator_with_boundary_flag const_range_iterator_with_boundary_flag; 
 
 	typedef	typename T2DDatafield<T>::data_array data_array;
 	/// \endcond
@@ -290,24 +290,24 @@ public:
 
 
         /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries.  */
-        range_iterator_with_boundary_flags begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end){
+        range_iterator_with_boundary_flag begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end){
 		return m_image.begin_range_with_boundary_flags(begin, end); 
 	}
 
         /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
-        range_iterator_with_boundary_flags end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end){
+        range_iterator_with_boundary_flag end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end){
 		return m_image.end_range_with_boundary_flags(begin, end); 
 	}
 
 
         /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries. 
             The functions ensures, that the field uses a single referenced datafield */
-        const_range_iterator_with_boundary_flags begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const{
+        const_range_iterator_with_boundary_flag begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const{
 		return m_image.begin_range_with_boundary_flags(begin, end); 
 	}
 
         /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
-        const_range_iterator_with_boundary_flags end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const{
+        const_range_iterator_with_boundary_flag end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const{
 		return m_image.end_range_with_boundary_flags(begin, end); 
 	}
 

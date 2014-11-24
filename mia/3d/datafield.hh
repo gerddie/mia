@@ -93,8 +93,8 @@ public:
 	typedef range3d_iterator<iterator> range_iterator; 
 	typedef range3d_iterator<const_iterator> const_range_iterator; 
 
-	typedef range3d_iterator_with_boundary_flag<iterator> range_iterator_with_boundary_flags; 
-	typedef range3d_iterator_with_boundary_flag<const_iterator> const_range_iterator_with_boundary_flags; 
+	typedef range3d_iterator_with_boundary_flag<iterator> range_iterator_with_boundary_flag; 
+	typedef range3d_iterator_with_boundary_flag<const_iterator> const_range_iterator_with_boundary_flag; 
 
 	typedef C3DBounds dimsize_type;
 	/// \endcond 
@@ -400,17 +400,17 @@ public:
 
 
         /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries. */
-	range_iterator_with_boundary_flags begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end); 
+	range_iterator_with_boundary_flag begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end); 
 
         /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
-	range_iterator_with_boundary_flags end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end); 
+	range_iterator_with_boundary_flag end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end); 
 
 
         /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries.  */
-	const_range_iterator_with_boundary_flags begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const; 
+	const_range_iterator_with_boundary_flag begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const; 
 
         /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
-	const_range_iterator_with_boundary_flags end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const; 
+	const_range_iterator_with_boundary_flag end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const; 
 
 
 	/**

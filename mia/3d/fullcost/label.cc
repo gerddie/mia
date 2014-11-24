@@ -96,16 +96,15 @@ double C3DLabelFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 
         C3DFVectorfield force(get_current_size()); 
 
-	typedef C3DUBImage::const_range_with_boundary_flags Iterator; 
-
 	int idx = 0; 
 	auto i = temp_ubyte.begin_range_with_boundary_flags(C3DBounds::_0, temp_ubyte.get_size()); 
 	auto e = temp_ubyte.end_range_with_boundary_flags(C3DBounds::_0, temp_ubyte.get_size());
 	auto ig  = force.begin(); 
 	
 
+	double result = 0.0; 
 	while (i != e) {
-		value_and_gradient(idx, i, *ig); 
+		result += value_and_gradient(idx, i, *ig); 
 		++i; 
 		++ig; 
 	}
@@ -186,11 +185,11 @@ double C3DLabelFullCost::value(int idx, int label) const
         return m_ref_label_exists[label] ? m_ref_distances[label][idx] : 0.0;
 }
 
-double C3DLabelFullCost::value_and_gradient(int idx, const C3DUBImage::const_range_with_boundary_flags& i, C3DFVector& gradient) const
+double C3DLabelFullCost::value_and_gradient(int idx, const C3DUBImage::const_range_iterator_with_boundary_flag& i, C3DFVector& gradient) const
 {
         double result; 
         
-        if (m_ref_label_exists[label]) {
+        if (m_ref_label_exists[*i]) {
 		const auto & dref = m_ref_distances[*i]; 
                 result = dref[idx]; 
 		if (result > 0.0) {
@@ -198,37 +197,38 @@ double C3DLabelFullCost::value_and_gradient(int idx, const C3DUBImage::const_ran
 			if (boundaries == eb_none) 
 				gradient = dref.get_gradient(idx); 
 			else { // emulate repeat boundary conditions 
+				const auto&  pos = i.pos(); 
 				switch (boundaries & eb_x) {
 				case eb_xlow: 
-					gradient.x = 0.5 * (dref(pos.x + 1, pos.y) - dref(pos.x, pos.y)); 
+					gradient.x = 0.5 * (dref(pos.x + 1, pos.y, pos.z) - dref(pos.x, pos.y, pos.z)); 
 					break; 
 				case eb_xhigh: 
-					gradient.x = 0.5 * (dref(pos.x, pos.y) - dref(pos.x - 1, pos.y)); 
+					gradient.x = 0.5 * (dref(pos.x, pos.y, pos.z) - dref(pos.x - 1, pos.y, pos.z)); 
 					break; 
 				default:
-					gradient.x = 0.5 * (dref(pos.x + 1, pos.y) - dref(pos.x - 1, pos.y)); 
+					gradient.x = 0.5 * (dref(pos.x + 1, pos.y, pos.z) - dref(pos.x - 1, pos.y, pos.z)); 
 				}
 				
 				switch (boundaries & eb_y) {
 				case eb_ylow: 
-					gradient.y = 0.5 * (dref(pos.x, pos.y + 1) - dref(pos.x, pos.y)); 
+					gradient.y = 0.5 * (dref(pos.x, pos.y + 1, pos.z) - dref(pos.x, pos.y, pos.z)); 
 					break; 
 				case eb_yhigh: 
-					gradient.y = 0.5 * (dref(pos.x, pos.y) - dref(pos.x, pos.y - 1)); 
+					gradient.y = 0.5 * (dref(pos.x, pos.y, pos.z) - dref(pos.x, pos.y - 1, pos.z)); 
 					break; 
 				default:
-					gradient.y = 0.5 * (dref(pos.x, pos.y + 1) - dref(pos.x, pos.y - 1)); 
+					gradient.y = 0.5 * (dref(pos.x, pos.y + 1, pos.z) - dref(pos.x, pos.y - 1, pos.z)); 
 				}
 				
 				switch (boundaries & eb_z) {
 				case eb_zlow: 
-					gradient.z = 0.5 * (dref(pos.x, pos.z + 1) - dref(pos.x, pos.z)); 
+					gradient.z = 0.5 * (dref(pos.x, pos.y, pos.z + 1) - dref(pos.x, pos.y, pos.z)); 
 					break; 
 				case eb_zhigh: 
-					gradient.z = 0.5 * (dref(pos.x, pos.z) - dref(pos.x, pos.z - 1)); 
+					gradient.z = 0.5 * (dref(pos.x, pos.y, pos.z) - dref(pos.x, pos.y, pos.z - 1)); 
 					break; 
 				default:
-					gradient.z = 0.5 * (dref(pos.x, pos.z + 1) - dref(pos.x, pos.z - 1)); 
+					gradient.z = 0.5 * (dref(pos.x, pos.y, pos.z + 1) - dref(pos.x, pos.y, pos.z - 1)); 
 				}
 
 			}
@@ -256,19 +256,19 @@ void C3DLabelFullCost::do_reinit()
 	if (m_src->get_size() != m_ref->get_size()) 
 		throw runtime_error("C3DLabelFullCost only works with images of equal size"); 
 	
-	if (m_src->get_pixel_size() != m_ref->get_pixel_size()) {
-		cvwarn() << "C3DLabelFullCost: src and reference image are of differnet pixel dimensions:"
-			<< m_src->get_pixel_size() << " vs " << m_ref->get_pixel_size() 
+	if (m_src->get_voxel_size() != m_ref->get_voxel_size()) {
+		cvwarn() << "C3DLabelFullCost: src and reference image are of differnet voxel dimensions:"
+			<< m_src->get_voxel_size() << " vs " << m_ref->get_voxel_size() 
 			<< " This code doesn't honour this.\n"; 
 	}
         if (m_src->get_pixel_type() != it_ubyte) 
                 throw create_exception<runtime_error>("C3DLabelFullCost only works with (label) "
-                                                      "images of pixel type ubyte, but src has type ", 
+                                                      "images of voxel type ubyte, but src has type ", 
                                                       CPixelTypeDict.get_name(m_src->get_pixel_type()));
 
         if (m_ref->get_pixel_type() != it_ubyte) 
                 throw create_exception<runtime_error>("C3DLabelFullCost only works with (label) "
-                                                      "images of pixel type ubyte, but ref has type ", 
+                                                      "images of voxel type ubyte, but ref has type ", 
                                                       CPixelTypeDict.get_name(m_src->get_pixel_type()));
 }
 

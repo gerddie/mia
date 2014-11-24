@@ -29,7 +29,7 @@ NS_BEGIN(ngf_3dimage_cost)
 
 class FEvaluator {
 public:
-	typedef mia::C3DFVectorfield::const_range_iterator_with_boundary_flags field_range_iterator; 
+	typedef mia::C3DFVectorfield::const_range_iterator_with_boundary_flag field_range_iterator; 
 	typedef double result_type; 
         virtual ~FEvaluator(){};
 	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const = 0;

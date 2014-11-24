@@ -40,7 +40,7 @@ CGradnorm::result_type CGradnorm::operator () (const T3DImage<T>& data) const
 	TRACE("CGradnorm::operator ()");
 
 	C3DFVectorfield vf(data.get_size()); 
-	typedef typename T3DImage<T>::const_range_iterator_with_boundary_flags range_iterator_with_boundary; 
+	typedef typename T3DImage<T>::const_range_iterator_with_boundary_flag range_iterator_with_boundary; 
 	typedef typename range_iterator_with_boundary::EBoundary  EBoundary; 
 	int dx = data.get_size().x; 
 	int dxy = dx * data.get_size().y; 
