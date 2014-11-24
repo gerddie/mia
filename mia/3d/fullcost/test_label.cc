@@ -36,34 +36,15 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 {
         // create two images and do the thing 
         
-        const unsigned char ref_data[125] = {
-                1, 1, 1, 2, 2, 
-                1, 1, 1, 2, 2, 
-                1, 1, 1, 2, 2, 
-                5, 5, 5, 2, 2, 
-                5, 5, 2, 2, 2, 
 
-		1, 1, 1, 2, 2, 
-                1, 1, 1, 2, 2, 
-                1, 1, 1, 2, 2, 
-                5, 5, 5, 2, 2, 
-                5, 5, 2, 2, 2, 
-
-		1, 1, 1, 2, 2, 
-                1, 1, 1, 2, 2, 
-                1, 1, 1, 2, 2, 
-                5, 5, 2, 2, 2, 
-                5, 5, 2, 2, 2, 
-	}; 
-
-        const unsigned char mov_data[125] = {
+        const unsigned char mov_data[75] = {
                 1, 1, 2, 2, 2, 
-                1, 1, 2, 2, 2, 
-                1, 1, 2, 2, 2, 
+		1, 1, 2, 2, 2, 
+                1, 1, 1, 2, 2, 
                 1, 1, 5, 2, 2, 
                 5, 5, 5, 5, 2, 
 		
-		1, 1, 1, 2, 2, 
+		1, 1, 3, 2, 2, 
                 1, 1, 2, 2, 2, 
                 1, 1, 1, 2, 2, 
                 1, 5, 5, 2, 2, 
@@ -77,10 +58,17 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 
 	}; 
 
-        const float distances [125] = {
+        const unsigned char ref_data[75] = {
+                1, 1, 1, 2, 2,  1, 1, 1, 2, 2,  1, 1, 1, 2, 2,  5, 5, 5, 2, 2,  5, 5, 2, 2, 2, 
+		1, 1, 3, 2, 2,  1, 1, 1, 2, 2,  1, 1, 1, 2, 2,  5, 5, 5, 2, 2,  5, 5, 2, 2, 2, 
+		1, 1, 1, 2, 2,  1, 1, 1, 2, 2,  1, 1, 1, 2, 2,  5, 5, 2, 2, 2,  5, 5, 2, 2, 2, 
+	}; 
+
+#if 0 
+        const float distances [75] = {
 		0, 0, 1, 0, 0, 
                 0, 0, 1, 0, 0, 
-                0, 0, 1, 0, 0, 
+                0, 0, 0, 0, 0, 
                 1, 1, 0, 0, 0, 
                 0, 0, 1, sqrtf(2.0f), 0, 
 		
@@ -98,7 +86,15 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 
         }; 
 
-        const float grady [125] = {
+#endif 
+        const float gradz [75] = {
+                0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0,  0, 0, 0,   0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0,  0, 0, 0,   0, 0, 0, 0.5 * (sqrtf(2.0f) - sqrtf(3.0f)) , 0, 
+                0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0, 0, 0, 0,   0, 0,  0, 0, 0,   0, 0, 0, 0.5 * (sqrtf(2.0f) - sqrtf(3.0f)), 0 
+
+        }; 
+
+        const float grady [75] = {
                 0, 0,  0, 0, 0, 
                 0, 0,  0, 0, 0, 
 		0, 0,  0, 0, 0, 
@@ -108,21 +104,21 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
                 0, 0,  0, 0, 0, 
                 0, 0,  0, 0, 0, 
 		0, 0,  0, 0, 0, 
-                -1, -1,  0, 0, 0, 
+                -1,0,  0, 0, 0, 
 		0, 0,-.5f, -.5f * (sqrtf(2.0f) - 1.0f), 0, 
 
                 0, 0,  0, 0, 0, 
                 0, 0,  0, 0, 0, 
-		0, 0,  0, 0, 0, 
-                -1, -1,  0, 0, 0, 
+		0, 0,  0.5f, 0, 0, 
+                -1, -1, -1, 0, 0, 
 		0, 0, 0, -.5f * (sqrtf(3.0f) - sqrtf(2.0f)), 0 
 
         }; 
         
-	const float gradx [125] = {
+	const float gradx [75] = {
 		0, 0, 1, 0, 0, 
                 0, 0, 1, 0, 0, 
-                0, 0, 1, 0, 0, 
+                0, 0, 0, 0, 0, 
                 0, 0, 0, 0, 0, 
                 0, 0, -0.5f * sqrtf(2.0f), -0.5f * (sqrtf(5.0f) - 1.0f), 0, 
 
@@ -134,8 +130,8 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 
 		0, 0, 1, 0, 0, 
                 0, 0, 1, 0, 0, 
-                0, 0, 1, 0, 0, 
-                0, 0, 0, 0, 0, 
+                0, 0, 0.5f * sqrtf(2.0f), 0, 0, 
+                0, 0, -.5f * (sqrtf(2.0f) - 1.0f) , 0, 0, 
                 0, 0, -0.5f * sqrtf(3.0f), -0.5f * (sqrtf(6.0f) - 1.0f), 0 
 
 	}; 
@@ -143,7 +139,7 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 
 
 
-        const C3DBounds size(5,5,5);
+        const C3DBounds size(5,5,3);
         
         
         C3DUBImage *mov_image = new C3DUBImage(size, mov_data );
@@ -165,26 +161,33 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
         cost->reinit();
         cost->set_size(size); 
         
-        BOOST_CHECK_CLOSE(cost->cost_value(*t), 16 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
-        BOOST_CHECK_CLOSE(cost->cost_value(), 16 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
+        BOOST_CHECK_CLOSE(cost->cost_value(*t), 15 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
+        BOOST_CHECK_CLOSE(cost->cost_value(), 15 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
         
 
 	CDoubleVector gradient(t->degrees_of_freedom()); 
 	double cost_value = cost->evaluate(*t, gradient);
-        BOOST_CHECK_CLOSE(cost_value, 16 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
+        BOOST_CHECK_CLOSE(cost_value, 15 + 2 * sqrt(2.0) + sqrt(3.0), 0.01); 
 
-	for(int i = 0; i < 25; ++i) {
-		cvdebug() << "[" << i << "]: (" << gradient[3*i] << ", " << gradient[3*i+1]
-			  << ") expect ("<< gradx[i] << ", " << grady[i] << ")\n"; 
+	for(int i = 0; i < 75; ++i) {
+		cvdebug() << "[" << i << "]: (" << gradient[3*i] << ", " << gradient[3*i+1] << ", " << gradient[3*i+2]
+			  << ") expect ("<< gradx[i] << ", " << grady[i] << ", " << gradz[i] << ")\n"; 
 
 		if (gradx[i] != 0.0) 
 			BOOST_CHECK_CLOSE(gradient[3*i], gradx[i], 0.1); 
 		else 
 			BOOST_CHECK_SMALL(gradient[3*i], 1e-10); 
+
 		if (grady[i] != 0.0) 
 			BOOST_CHECK_CLOSE(gradient[3*i+1], grady[i], 0.1);
 		else 
 			BOOST_CHECK_SMALL(gradient[3*i+1], 1e-10); 
+
+		if (gradz[i] != 0.0) 
+			BOOST_CHECK_CLOSE(gradient[3*i+2], gradz[i], 0.1);
+		else 
+			BOOST_CHECK_SMALL(gradient[3*i+2], 1e-10); 
+
 
 	}
 
