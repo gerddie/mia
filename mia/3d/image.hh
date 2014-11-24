@@ -289,6 +289,27 @@ public:
 	}
 
 
+        /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries.  */
+        range_iterator_with_boundary_flags begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end){
+		return m_image.begin_range_with_boundary_flags(begin, end); 
+	}
+
+        /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
+        range_iterator_with_boundary_flags end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end){
+		return m_image.end_range_with_boundary_flags(begin, end); 
+	}
+
+
+        /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries. 
+            The functions ensures, that the field uses a single referenced datafield */
+        const_range_iterator_with_boundary_flags begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const{
+		return m_image.begin_range_with_boundary_flags(begin, end); 
+	}
+
+        /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
+        const_range_iterator_with_boundary_flags end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const{
+		return m_image.end_range_with_boundary_flags(begin, end); 
+	}
 
 	/// \returns the all over number of pixels/voxels
 	size_t size() const;

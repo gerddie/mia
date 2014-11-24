@@ -96,36 +96,21 @@ double C3DLabelFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 
         C3DFVectorfield force(get_current_size()); 
 
-	C3DBounds pos(0,0); 
-	
-	double result = value_and_gradient(0, temp_ubyte[0], force[0], pos, eb_xlow | eb_ylow | eb_zlow);
-	int idx = 1; 
-	
-	for (pos.x = 1; pos.x < temp_ubyte.get_size().x - 1; ++pos.x, ++idx) {
-		result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_ylow | eb_zlow);
-	}
-	result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xhigh | eb_ylow | eb_zlow);
-	++idx; 
-	
-	for (pos.y = 1; pos.y < temp_ubyte.get_size().y-1; ++pos.y) {
-		pos.x = 0; 
-		result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xlow);
-		++idx; 
-			
-		for (pos.x = 1; pos.x < temp_ubyte.get_size().x - 1; ++pos.x, ++idx) {
-			result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_none);
-		}
-		result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xhigh);
-		++idx; 
-	}
-	
-	result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xlow | eb_yhigh);
-	++idx; 
+	typedef C3DUBImage::const_range_with_boundary_flags Iterator; 
 
-	for (pos.x = 1; pos.x < temp_ubyte.get_size().x-1; ++pos.x, ++idx) {
-		result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_yhigh);
+	int idx = 0; 
+	auto i = temp_ubyte.begin_range_with_boundary_flags(C3DBounds::_0, temp_ubyte.get_size()); 
+	auto e = temp_ubyte.end_range_with_boundary_flags(C3DBounds::_0, temp_ubyte.get_size());
+	auto ig  = force.begin(); 
+	
+
+	while (i != e) {
+		value_and_gradient(idx, *i, *ig, i.pos(), i.get_boundary_flags()); 
+		++i; 
+		++ig; 
 	}
-	result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xhigh | eb_yhigh);
+
+
 	
 	// at this point one could inject a hole-filling algorithm to 
 	// add forces inside of the homogen overlapping label regions 

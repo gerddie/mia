@@ -600,6 +600,42 @@ T3DDatafield<T>::end_range(const C3DBounds& begin, const C3DBounds& end)const
 				    begin_at(end.x, end.y, end.z)); 
 }
 
+template <typename T>
+typename T3DDatafield<T>::range_iterator_with_boundary_flags 
+T3DDatafield<T>::begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)
+{
+	return range_iterator_with_boundary_flags(begin, get_size(), begin, end, 
+						  begin_at(begin.x, begin.y, begin.z)); 
+}
+
+
+
+template <typename T>
+typename T3DDatafield<T>::range_iterator_with_boundary_flags 
+T3DDatafield<T>::end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)
+{
+	return range_iterator_with_boundary_flags(end, get_size(), begin, end, 
+							begin_at(end.x, end.y, end.z)); 
+}
+
+
+
+template <typename T>
+typename T3DDatafield<T>::const_range_iterator_with_boundary_flags 
+T3DDatafield<T>::begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const
+{
+	return const_range_iterator_with_boundary_flags(begin, get_size(), begin, end, 
+							begin_at(begin.x, begin.y, begin.z)); 
+}
+
+template <typename T>
+typename T3DDatafield<T>::const_range_iterator_with_boundary_flags 
+T3DDatafield<T>::end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const
+{
+	return const_range_iterator_with_boundary_flags(end, get_size(), begin, end, 
+							begin_at(end.x, end.y, end.z)); 
+}
+
 
 NS_MIA_END
 
