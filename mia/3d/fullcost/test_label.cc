@@ -97,6 +97,27 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
                 0, 0, 1, sqrtf(3.0f), 0
 
         }; 
+
+        const float grady [125] = {
+                0, 0,  0, 0, 0, 
+                0, 0,  0, 0, 0, 
+		0, 0,  0, 0, 0, 
+                -1, -1,  0, 0, 0, 
+		0, 0,-.5f, -.5f * (sqrtf(2.0f) - 1.0f), 0, 
+
+                0, 0,  0, 0, 0, 
+                0, 0,  0, 0, 0, 
+		0, 0,  0, 0, 0, 
+                -1, -1,  0, 0, 0, 
+		0, 0,-.5f, -.5f * (sqrtf(2.0f) - 1.0f), 0, 
+
+                0, 0,  0, 0, 0, 
+                0, 0,  0, 0, 0, 
+		0, 0,  0, 0, 0, 
+                -1, -1,  0, 0, 0, 
+		0, 0, 0, -.5f * (sqrtf(3.0f) - sqrtf(2.0f)), 0 
+
+        }; 
         
 	const float gradx [125] = {
 		0, 0, 1, 0, 0, 
@@ -119,13 +140,6 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 
 	}; 
 
-        const float grady [125] = {
-                0, 0,  0, 0, 0, 
-                0, 0,  0, 0, 0, 
-		0, 0,  0, 0, 0, 
-                -1, -1,  0, 0, 0, 
-		0, 0,-.5f, -.5f * (sqrtf(2.0f) - 1.0f), 0 
-        }; 
 
 
 
@@ -167,12 +181,11 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 			BOOST_CHECK_CLOSE(gradient[3*i], gradx[i], 0.1); 
 		else 
 			BOOST_CHECK_SMALL(gradient[3*i], 1e-10); 
-#if 0 
 		if (grady[i] != 0.0) 
 			BOOST_CHECK_CLOSE(gradient[3*i+1], grady[i], 0.1);
 		else 
 			BOOST_CHECK_SMALL(gradient[3*i+1], 1e-10); 
-#endif 
+
 	}
 
 }
