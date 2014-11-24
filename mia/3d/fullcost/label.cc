@@ -105,7 +105,7 @@ double C3DLabelFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 	
 
 	while (i != e) {
-		value_and_gradient(idx, *i, *ig, i.pos(), i.get_boundary_flags()); 
+		value_and_gradient(idx, i, *ig); 
 		++i; 
 		++ig; 
 	}
@@ -186,15 +186,15 @@ double C3DLabelFullCost::value(int idx, int label) const
         return m_ref_label_exists[label] ? m_ref_distances[label][idx] : 0.0;
 }
 
-double C3DLabelFullCost::value_and_gradient(int idx, int label, C3DFVector& gradient, 
-					    const C3DBounds& pos, int boundaries) const
+double C3DLabelFullCost::value_and_gradient(int idx, const C3DUBImage::const_range_with_boundary_flags& i, C3DFVector& gradient) const
 {
         double result; 
         
         if (m_ref_label_exists[label]) {
-		const auto & dref = m_ref_distances[label]; 
+		const auto & dref = m_ref_distances[*i]; 
                 result = dref[idx]; 
 		if (result > 0.0) {
+			auto boundaries = i.get_boundary_flags(); 
 			if (boundaries == eb_none) 
 				gradient = dref.get_gradient(idx); 
 			else { // emulate repeat boundary conditions 

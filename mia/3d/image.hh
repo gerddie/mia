@@ -157,8 +157,8 @@ public:
 	typedef typename T3DDatafield<T>::size_type size_type;
 	typedef typename T3DDatafield<T>::range_iterator range_iterator; 
 	typedef typename T3DDatafield<T>::const_range_iterator const_range_iterator; 
-	typedef typename T3DDatafield<T>::range_iterator_with_boundary_flag range_iterator_with_boundary_flag; 
-	typedef typename T3DDatafield<T>::const_range_iterator_with_boundary_flag const_range_iterator_with_boundary_flag; 
+	typedef typename T3DDatafield<T>::range_iterator_with_boundary_flags range_iterator_with_boundary_flags; 
+	typedef typename T3DDatafield<T>::const_range_iterator_with_boundary_flags const_range_iterator_with_boundary_flags; 
 
 	typedef	typename T2DDatafield<T>::data_array data_array;
 	/// \endcond

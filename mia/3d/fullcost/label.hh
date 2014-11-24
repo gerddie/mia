@@ -44,7 +44,8 @@ private:
 	bool do_get_full_size(C3DBounds& size) const; 
 
         double value(int idx, int label) const; 
-        double value_and_gradient(int idx, int label, C3DFVector& gradient, const C3DBounds& pos, int boundaries) const; 
+        double value_and_gradient(int idx, const C3DUBImage::const_range_with_boundary_flags& i,
+				  C3DFVector& gradient) const; 
         void prepare_distance_fields(const C3DUBImage& image); 
         
 	double do_value() const; 
