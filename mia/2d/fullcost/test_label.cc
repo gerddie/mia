@@ -52,9 +52,6 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
                 5, 5, 5, 5, 2, 
 	}; 
 
-
-	
-
         const float distances [25] = {
                 0, 0, 1, 0,         0, 
                 0, 0, 1, 0,         0, 
@@ -79,10 +76,7 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
 		0, 0,-.5f, -.5f * (sqrtf(2.0f) - 1.0f), 0 
         }; 
 
-
-
         const C2DBounds size(5,5);
-        
         
         C2DUBImage *mov_image = new C2DUBImage(size, mov_data );
         C2DUBImage *ref_image = new C2DUBImage(size, ref_data );

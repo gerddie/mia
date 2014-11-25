@@ -89,6 +89,7 @@ double C2DLabelFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& 
 {
 	TRACE_FUNCTION; 
 	assert(m_src_scaled.size()); 
+
 	
 	P2DImage temp  = t(m_src_scaled);
         const C2DUBImage& temp_ubyte = static_cast<const C2DUBImage&>(*temp);
@@ -126,6 +127,7 @@ double C2DLabelFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& 
 	}
 	result += value_and_gradient(idx, temp_ubyte[idx], force[idx], pos, eb_xhigh | eb_yhigh);
 	
+
 	// at this point one could inject a hole-filling algorithm to 
 	// add forces inside of the homogen overlapping label regions 
         
@@ -149,7 +151,7 @@ void C2DLabelFullCost::do_set_size()
 			m_ref_scaled = static_cast<const C2DUBImage&>(*m_ref); 
 		}else{
 			stringstream filter_descr; 
-			filter_descr << "labelscale:s=[" << get_current_size()<<"]"; 
+			filter_descr << "labelscale:out-size=[" << get_current_size()<<"]"; 
 			auto scaler = C2DFilterPluginHandler::instance().produce(filter_descr.str()); 
 			assert(scaler); 
 			cvdebug() << "C2DLabelFullCost:scale images to " << get_current_size() << 
