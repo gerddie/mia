@@ -95,7 +95,7 @@ int CGDSAMinimizer::do_run(CDoubleVector& x)
                         tries = 0; 
                         copy(xwork.begin(), xwork.end(), x.begin()); 
                         
-                        if ( (f < 0.5 * f_old) && (step > m_max_step)) {
+                        if ( (f < 0.5 * f_old) && (step < m_max_step)) {
                                 step *= 1.5; 
                                 if (step > m_max_step) 
                                         step = m_max_step; 
@@ -114,8 +114,11 @@ int CGDSAMinimizer::do_run(CDoubleVector& x)
                                  << ", gmax = " << gmax << ", step=" << step << "\n"; 
                         
                         if (step > m_min_step) {
-                                // restore last solution 
-                                copy(x.begin(), x.end(), xwork.begin()); 
+				
+                                // restore last solution if current value larger 
+				if (f > f_old) 
+					copy(x.begin(), x.end(), xwork.begin()); 
+				
                                 step /= 2.0; 
                                 if (step < m_min_step)  
                                         step = m_min_step; 
