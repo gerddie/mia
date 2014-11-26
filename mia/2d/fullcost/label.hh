@@ -33,7 +33,8 @@ public:
 	C2DLabelFullCost(const std::string& src, 
                          const std::string& ref, 
                          double weight, 
-                         int maxlabels); 
+                         int maxlabels, 	
+			 int debug); 
 private: 
 	double do_evaluate(const C2DTransformation& t, CDoubleVector& gradient) const;
 	void do_set_size(); 
@@ -72,7 +73,7 @@ private:
 		eb_y = 12, /**< any y-boundary */
 	}; 
  
-
+	int m_debug; 
 }; 
 
 // plugin implementation 
@@ -87,6 +88,7 @@ private:
 	std::string m_src_name;
 	std::string m_ref_name;
         int m_maxlabel; 
+	int m_debug; 
 }; 
 
 

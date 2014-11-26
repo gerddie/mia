@@ -31,12 +31,13 @@ using namespace std;
 C2DLabelFullCost::C2DLabelFullCost(const std::string& src, 
 				   const std::string& ref, 
 				   double weight, 
-                                   int maxlabels):
+                                   int maxlabels, int debug):
 	C2DFullCost(weight), 
 	m_src_key(C2DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C2DImageIOPluginHandler::instance().load_to_pool(ref)),
         m_ref_label_exists(maxlabels), 
-        m_ref_distances(maxlabels)
+        m_ref_distances(maxlabels), 
+	m_debug(debug)
 {
 	add(::mia::property_gradient);
 }
@@ -168,8 +169,8 @@ void C2DLabelFullCost::prepare_distance_fields( const C2DUBImage &image )
 {
         assert(image.get_pixel_type() == it_ubyte); 
 
+	static int step = 0; 
         
-       
         for (size_t i = 0; i < m_ref_label_exists.size(); ++i) {
                 bool exist = false; 
                 
@@ -193,6 +194,16 @@ void C2DLabelFullCost::prepare_distance_fields( const C2DUBImage &image )
 			
                 }
         }
+	if (m_debug) {
+		for (size_t i = 0; i < m_ref_label_exists.size(); ++i) {
+			if (m_ref_label_exists[i]) {
+				stringstream ofname; 
+				ofname << "dt" << setw(3) << setfill('0') << step 
+				       << "_" << setw(3) << setfill('0') << i << ".v";
+				save_image(ofname.str(), m_ref_distances[i]); 
+			}
+		}
+	}
 }
 
 double C2DLabelFullCost::value(int idx, int label) const
@@ -291,7 +302,8 @@ C2DLabelFullCostPlugin::C2DLabelFullCostPlugin():
         C2DFullCostPlugin("labelimage"), 
 	m_src_name("src.@"), 
 	m_ref_name("ref.@"), 
-        m_maxlabel(256)
+        m_maxlabel(256), 
+	m_debug(0)
 {
 	add_parameter("src", new CStringParameter(m_src_name, CCmdOptionFlags::input, "Study image", 
 			      &C2DImageIOPluginHandler::instance()));
@@ -299,6 +311,9 @@ C2DLabelFullCostPlugin::C2DLabelFullCostPlugin():
 			      &C2DImageIOPluginHandler::instance()));
 	add_parameter("maxlabel", new CIntParameter(m_maxlabel, 2, 32000, false, 
 						    "maximum number of labels to consider"));
+	add_parameter("debug", new CIntParameter(m_debug, 0, 1, false, 
+						    "write the distance transforms to a 3D image"));
+
 }
 
 C2DFullCost *C2DLabelFullCostPlugin::do_create(float weight) const
@@ -307,7 +322,7 @@ C2DFullCost *C2DLabelFullCostPlugin::do_create(float weight) const
 		  << " src=" << m_src_name << " ref=" << m_ref_name 
 		  << " naxlabels=" << m_maxlabel << "\n";
 	return 	new C2DLabelFullCost(m_src_name, m_ref_name, 
-				     weight, m_maxlabel); 
+				     weight, m_maxlabel, m_debug); 
 }
 
 const std::string C2DLabelFullCostPlugin::do_get_descr() const
