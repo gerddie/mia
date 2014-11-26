@@ -24,6 +24,7 @@
 #include <sstream>
 #include <iomanip>
 #include <boost/algorithm/minmax_element.hpp>
+#include <mia/2d/transformfactory.hh>
 
 NS_MIA_USE
 using namespace boost;
@@ -37,9 +38,10 @@ const SProgramDescription g_description = {
 	 "The input images must be of the same dimensions and gray scale (whatever bit-depth)."}, 
 	{pdi_example_descr, "Evaluate the force normimage weighted sum of costs SSD and NGF of "
 	 "image1.v and image2.v. and store the result to force.v."}, 
-	{pdi_example_code, "-o force.v ssd:src=image1.v,ref=image2.v,weight=0.1 "
-	 "ngf:src=image1.v,ref=image2.v,weight=2.0"}
+	{pdi_example_code, "-o force.v image:cost=ssd,src=image1.v,ref=image2.v,weight=0.1 "
+	 "image:cost=ngf,src=image1.v,ref=image2.v,weight=2.0"}
 }; 
+
 
 struct FGetNorm  {
 	float operator ()(const C2DFVector& x) const {
@@ -71,23 +73,40 @@ int do_main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	C2DImageFatCostList cost_list;
+
+	C2DFullCostList cost_list;
 	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
-		P2DImageFatCost c = costcreator.produce(*i);
+		auto c = costcreator.produce(*i);
 		assert(c); 
-		cost_list.push_back(c);
+		cost_list.push(c);
 	}
 
-	C2DFVectorfield force(cost_list.get_size());
-
+	cost_list.reinit(); 
+	C2DBounds size; 
+	if (!cost_list.get_full_size(size)) {
+		throw invalid_argument("Input images given for the cost functions are no of the same size"); 
+	}
+	cost_list.set_size(size); 
+	
 	if ( out_filename.empty()) {
-		cout <<  cost_list.value() << endl;
+		cout <<  cost_list.cost_value() << endl;
 		return EXIT_SUCCESS;
 	}
+	
+	auto tff = C2DTransformCreatorHandler::instance().produce("vf:imgkernel=[bspline:d=0],imgboundary=zero"); 
+	auto t = tff->create(size); 
+	auto params = t->get_parameters(); 
+	std::fill(params.begin(), params.end(), 0.0); 
+	t->set_parameters(params); 
 
-	C2DFImage *result = new C2DFImage(force.get_size());
+	double cost_value = cost_list.evaluate(*t, params);
 
-	transform(force.begin(), force.end(), result->begin(), FGetNorm());
+	C2DFImage *result = new C2DFImage(size);
+	int i = 0; 
+	
+	for (auto ir = result->begin(); ir != result->end(); ++ir, i+=2){
+		*ir = sqrt(params[i] * params[i] + params[i+1] * params[i+1]); 
+	}
 
 	P2DImage norm_img(result);
 
@@ -97,11 +116,7 @@ int do_main(int argc, char **argv)
 	if (pts.find(it_float) == pts.end())
 		norm_img = C2DFilterPluginHandler::instance().produce("convert")->filter(*norm_img);
 
-	C2DImageIOPluginHandler::Instance::Data images;
-	images.push_back(norm_img);
-
-
-	if ( !imageio.save(out_filename, images) )
+	if ( !save_image(out_filename, norm_img) )
 		throw runtime_error(string("unable to save to: ") + out_filename);
 
 	return EXIT_SUCCESS;
