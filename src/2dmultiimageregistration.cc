@@ -47,7 +47,7 @@ const SProgramDescription g_description = {
 	 "Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
 	 "as transformation smoothness penalty. The resulting transformation is saved in reg.vf."},
 
-	{pdi_example_code, "-o reg.vf -l 2 -f spline:rate=3 image:cost=ssd,src=test.v,ref=ref.v divcurl:weight=10"}
+	{pdi_example_code, "-o reg.vf -l 2 -f spline:rate=3,penalty=divcurl image:cost=ssd,src=test.v,ref=ref.v"}
 };
 
 
@@ -65,7 +65,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_output, &transform2dio));
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( transform_creator, "spline:rate=10", "transForm", 'f', "transformation type"));
+	options.add(make_opt( transform_creator, "spline:rate=10,penalty=divcurl", "transForm", 'f', "transformation type"));
 	
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
