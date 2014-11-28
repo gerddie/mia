@@ -86,6 +86,8 @@ struct NiftiDeallocator {
 void copy_attributes(C3DImage& image, const nifti_image& ni)
 {
         // set position and orientation 
+	image.set_attribute(AttrID_nifti_qform_code, ni.qform_code);
+	
         if (ni.qform_code == 0) { // method 1
                 image.set_orientation(ior_default);
                 image.set_voxel_size(C3DFVector(ni.dx,  ni.dy, ni.dz)); 
@@ -97,7 +99,6 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
                                         ni.quatern_c * ni.quatern_c + 
                                         ni.quatern_d * ni.quatern_d)); 
                 image.set_rotation(Quaternion(qa, ni.quatern_b, ni.quatern_c, ni.quatern_d));
-                image.set_attribute(AttrID_nifti_qform_code, ni.qform_code); 
         }
         
         if (ni.sform_code > 0) { // method 3
@@ -342,29 +343,42 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 	// need to see whether to support this 
 	output->cal_min = 0.0f;
 	output->cal_max = 0.0f ;
-	
-	// here starts the orientation insanity 
-	// todo: re-check how this qfac is actually used
-	output->qfac = 1; 
-	switch (image.get_orientation()) {
-		// Coverty complains here. 
-		// flipped needs to sent an extra parameter and 
-		// then fall through to the next case 
-	case ior_xyz_flipped: output->qfac = -1; 
-	case ior_undefined:
-	case ior_xyz: {
-		output->qform_code = 1; 
+
+	if (image.has_attribute(AttrID_nifti_qform_code)) {
+		output->qform_code = image.get_attribute_as<int>(AttrID_nifti_qform_code); 
+	} else {
+		output->qform_code = 0; 
+	}
+
+	// Analyze 7.5 like data 
+	if (output->qform_code == 0) {
+		// here starts the orientation insanity 
+		// todo: re-check how this qfac is actually used
+
 		auto org = image.get_origin(); 
 		output->qoffset_x = org.x; 
 		output->qoffset_y = org.y; 
 		output->qoffset_z = org.z; 
-		auto rot = image.get_rotation().as_quaternion();
+		output->quatern_b = 0.0; 
+		output->quatern_c = 0.0; 
+		output->quatern_d = 0.0;
+		
+		switch (image.get_orientation()) {
+		case ior_undefined:
+		case ior_xyz: break; 
+		default: 
+			cvwarn() << __FUNCTION__ << "FIXME:manual set orientation detected, but ignored\n"; 
+		}
+	} else {
+		output->qfac = (image.get_orientation() == ior_xyz_flipped) ? -1 : 1; 
+		auto org = image.get_origin(); 
+		output->qoffset_x = org.x; 
+		output->qoffset_y = org.y; 
+		output->qoffset_z = org.z; 
+		auto rot = image.get_rotation().as_quaternion(); 
 		output->quatern_b = rot.x(); 
 		output->quatern_c = rot.y(); 
 		output->quatern_d = rot.z();
-	} break; 
-	default: 
-		cvwarn() << __FUNCTION__ << "FIXME:manual set orientation detected, but ignored\n";  
 	}
 	
 	// copy s-form if available 

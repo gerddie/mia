@@ -86,6 +86,12 @@ public:
 	/// \returns the behind-end  iterator to the plug-ins
 	const_iterator end()const; 
 
+	/**
+	   Add a given plug-in to the handler. The pointer must not be freed in client code. 
+	   @param plugin 
+	*/
+	void add_plugin(Interface *plugin); 
+
 protected: 
 	//! \name Constructors
         //@{
@@ -104,12 +110,6 @@ protected:
 	*/
 	typename TPluginHandler<I>::Interface *plugin(const char *plugin) const;
 
-
-	/**
-	   Add a given plug-in to the handler 
-	   @param plugin 
-	 */
-	void add_plugin(Interface *plugin); 
 
 	void initialise(CPathNameArray searchpath); 
 

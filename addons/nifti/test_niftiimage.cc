@@ -67,6 +67,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
 	pimage->set_voxel_size(voxel); 
 	pimage->set_origin(origin); 
         pimage->set_rotation(rot); 
+	pimage->set_attribute("nifti-qform-code", 1);
 
 	CNifti3DImageIOPlugin io; 
         CNifti3DImageIOPlugin::Data images;
