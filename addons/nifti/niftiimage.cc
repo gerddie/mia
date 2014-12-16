@@ -412,9 +412,9 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 	output->time_units = image.get_attribute_as<int>(AttrID_nifti_time_units, NIFTI_UNITS_SEC);
 
 	output->intent_code = image.get_attribute_as<int>(AttrID_nifti_intent_code, 0);
-	output->intent_p1 = image.get_attribute_as<int>(AttrID_nifti_intent_p1, 0);
-	output->intent_p2 = image.get_attribute_as<int>(AttrID_nifti_intent_p2, 0);
-	output->intent_p3 = image.get_attribute_as<int>(AttrID_nifti_intent_p3, 0);
+	output->intent_p1 = image.get_attribute_as<float>(AttrID_nifti_intent_p1, 0);
+	output->intent_p2 = image.get_attribute_as<float>(AttrID_nifti_intent_p2, 0);
+	output->intent_p3 = image.get_attribute_as<float>(AttrID_nifti_intent_p3, 0);
 	string intent_name = image.get_attribute_as<string>(AttrID_nifti_intent_name, ""); 
 	if (!intent_name.empty()) {
 		strncpy(output->intent_name, intent_name.c_str(),  14);
