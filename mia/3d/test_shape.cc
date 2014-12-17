@@ -26,7 +26,6 @@
 
 NS_MIA_USE
 using namespace std; 
-using namespace boost;
 namespace bfs=::boost::filesystem; 
 
 static void setup_filter_search_path()

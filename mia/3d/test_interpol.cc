@@ -31,7 +31,6 @@
 
 NS_MIA_USE
 using namespace std;
-using namespace boost;
 namespace bmpl=boost::mpl;
 
 template <typename T, typename  I, bool is_int>

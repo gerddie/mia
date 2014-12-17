@@ -24,7 +24,6 @@
 
 using namespace mia;
 using namespace std;
-using namespace ::boost;
 using namespace boost::unit_test;
 
 const size_t slices = 5;

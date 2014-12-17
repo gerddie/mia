@@ -30,7 +30,6 @@
 #include <mia/template/combiner.cxx>
 
 NS_MIA_BEGIN
-using namespace boost;
 using std::invalid_argument; 
 
 P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[])

@@ -28,8 +28,6 @@
 
 NS_MIA_BEGIN
 
-using namespace boost;
-
 template<> const  char * const 
 TPluginHandler<C3DFilterPlugin>::m_help = 
 	"These plug-ins provide 3D image filters. Unless otherwise noted, "

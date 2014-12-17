@@ -32,8 +32,6 @@
 
 
 NS_MIA_USE
-using namespace boost;
-
 
 class CCopyFilter: public TFilter<P2DImage >  {
 public:

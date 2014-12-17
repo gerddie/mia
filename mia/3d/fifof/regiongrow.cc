@@ -83,7 +83,7 @@ struct FTransform<T, true> {
 template <typename T>
 int C2DRegiongrowFifoFilter::operator ()( const T2DImage<T>& image)
 {
-	const bool is_float = is_floating_point<T>::value;
+	const bool is_float = std::is_floating_point<T>::value;
 	transform(image.begin(), image.end(), m_in_buffer.begin(),
 		  FTransform<T, is_float>(m_probmap[m_class]));
 

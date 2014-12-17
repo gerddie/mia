@@ -23,7 +23,6 @@
 #include <mia/3d/imagetest.hh>
 
 NS_MIA_BEGIN
-using namespace boost;
 
 template <typename T, typename R>
 struct __compare {

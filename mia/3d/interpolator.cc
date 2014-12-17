@@ -38,7 +38,6 @@
 
 NS_MIA_BEGIN
 
-//using namespace boost;
 using namespace std;
 
 CWeightCache::CWeightCache(int kernel_size, 

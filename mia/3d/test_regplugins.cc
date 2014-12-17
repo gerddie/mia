@@ -35,7 +35,6 @@ namespace bfs=::boost::filesystem;
 
 NS_MIA_USE
 using namespace std; 
-using namespace boost; 
 
 template <typename P>
 void test_plugin(const P& i)

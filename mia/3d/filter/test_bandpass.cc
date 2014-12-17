@@ -23,7 +23,6 @@
 
 NS_MIA_USE
 using namespace std;
-using namespace ::boost;
 using namespace ::boost::unit_test;
 
 BOOST_AUTO_TEST_CASE( test_bandpass )

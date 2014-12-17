@@ -29,7 +29,6 @@
 
 using namespace mia; 
 using namespace std;
-using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace xmlpp;
 namespace bfs=boost::filesystem;

@@ -25,7 +25,6 @@
 
 
 NS_MIA_USE
-using namespace boost;
 using namespace std;
 
 const float check_noise_level = sqrt((499.0 - 131.0 * 131.0 / 54.0) / 53.0 );

@@ -27,9 +27,6 @@
 
 NS_MIA_USE
 using namespace std;
-using namespace boost;
-
-using namespace boost::unit_test;
 
 static void run_test_read(const string& id, E3DImageOrientation test_orient, 
 			  const string& expect)

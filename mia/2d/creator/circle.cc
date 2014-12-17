@@ -29,7 +29,6 @@
 NS_BEGIN(creator_circle_2d);
 using namespace mia;
 using namespace std;
-using namespace boost;
 
 class C2DCircleCreator	: public C2DImageCreator {
 public:

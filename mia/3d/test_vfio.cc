@@ -31,9 +31,7 @@
 #include <mia/3d/vfiotest.hh>
 
 NS_MIA_USE
-using namespace boost; 
 using namespace std; 
-using namespace boost::unit_test;
 namespace bfs=::boost::filesystem; 
 
 static void prepare_handler()

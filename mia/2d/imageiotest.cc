@@ -30,7 +30,6 @@
 
 
 using namespace std;
-using namespace boost;
 using namespace boost::unit_test;
 
 NS_MIA_BEGIN

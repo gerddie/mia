@@ -28,10 +28,7 @@
 
 NS_MIA_USE
 using namespace std; 
-using namespace boost;
 namespace bfs=::boost::filesystem; 
-
-using namespace boost::unit_test;
 
 static void prepare_plugin_path()
 {

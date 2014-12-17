@@ -120,8 +120,8 @@ BOOST_AUTO_TEST_CASE( test_translator )
 
 
 	check_translate_type("bit", true, "1");
-	check_translate_type("double", 1.9, "1.9");
-	check_translate_type("float", 1.7f, "1.7");
+	check_translate_type("double", 1.8, "1.8");
+	check_translate_type("float", 1.75f, "1.75");
 	check_translate_type("ubyte", (unsigned char)129, "129");
 	check_translate_type("sbyte", (signed char)-120, "-120");
 	check_translate_type("sshort", (signed short)-1231, "-1231");

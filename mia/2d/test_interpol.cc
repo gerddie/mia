@@ -36,7 +36,6 @@
 
 NS_MIA_USE
 using namespace std;
-using namespace boost;
 
 namespace bmpl=boost::mpl;
 

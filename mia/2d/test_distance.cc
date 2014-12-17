@@ -26,7 +26,6 @@
 NS_MIA_USE
 
 using namespace std;
-using namespace ::boost;
 
 struct PointLineDistanceFixture {
 

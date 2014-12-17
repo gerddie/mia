@@ -34,9 +34,7 @@
 #include <mia/core/filter.hh>
 
 NS_MIA_BEGIN
-using namespace boost;
 using namespace std;
-using namespace boost::unit_test;
 namespace bfs=::boost::filesystem;
 
 #ifdef WIN32

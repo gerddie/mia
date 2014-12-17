@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <boost/any.hpp>
 #include <boost/ref.hpp>
+#include <boost/lexical_cast.hpp>
 #include <mia/core/attributetype.hh>
 
 NS_MIA_BEGIN
@@ -560,11 +561,12 @@ int TAttribute<T>::type_id() const
    \remark this should replace the parameter translation methods 
 */
 
+
 template <typename T>
 struct dispatch_attr_string {
 	static std::string val2string(const typename ::boost::reference_wrapper<T>::type value) {
 		std::stringstream sval;
-		sval << value;
+		sval << boost::lexical_cast<std::string>(value);
 		return sval.str();
 	}
 	static T string2val(const std::string& str) {
@@ -582,7 +584,7 @@ struct dispatch_attr_string<std::vector<T> > {
 		std::stringstream sval;
 		sval << value.size();
 		for (size_t i = 0; i < value.size(); ++i)
-			sval << " " << value[i];
+			sval << " " << boost::lexical_cast<std::string>(value[i]);
 		return sval.str();
 	}
 	static std::vector<T> string2val(const std::string& str) {

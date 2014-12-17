@@ -27,7 +27,6 @@
 
 
 NS_MIA_USE
-using namespace boost;
 using namespace std;
 namespace bfs=boost::filesystem; 
 

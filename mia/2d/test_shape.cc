@@ -26,7 +26,6 @@
 
 NS_MIA_USE
 using namespace std; 
-using namespace boost;
 
 
 BOOST_AUTO_TEST_CASE( test_2dshape_handler ) 

@@ -30,9 +30,8 @@
 #include <mia/3d/vfiotest.hh>
 
 NS_MIA_BEGIN
-using namespace boost;
 using namespace std;
-using namespace boost::unit_test;
+using boost::unit_test::test_suite;
 
 
 const 	C3DFVector voxel(1.0, 2.0, 3.0);

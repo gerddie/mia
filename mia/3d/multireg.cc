@@ -36,7 +36,6 @@
 #include <boost/algorithm/minmax_element.hpp>
 
 NS_MIA_BEGIN
-using namespace boost;
 using namespace std;
 
 

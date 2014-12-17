@@ -347,7 +347,7 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 	if (image.has_attribute(AttrID_nifti_qform_code)) {
 		output->qform_code = image.get_attribute_as<int>(AttrID_nifti_qform_code); 
 	} else {
-		output->qform_code = 0; 
+		output->qform_code = 0; // default to method 2 
 	}
 
 	// Analyze 7.5 like data 

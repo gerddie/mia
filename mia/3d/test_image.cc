@@ -31,7 +31,6 @@
 
 
 NS_MIA_USE
-using namespace boost;
 using namespace std;
 
 class CCopyFilter: public TFilter<std::shared_ptr<C3DImage>  > {

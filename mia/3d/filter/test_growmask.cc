@@ -25,7 +25,6 @@ namespace bfs=boost::filesystem;
 
 NS_MIA_USE
 using namespace std;
-using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace growmask_3dimage_filter;
 

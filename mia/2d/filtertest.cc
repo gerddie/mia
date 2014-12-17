@@ -32,7 +32,6 @@
 
 NS_MIA_BEGIN
 using namespace std;
-using namespace boost;
 namespace bfs=::boost::filesystem;
 using namespace boost::unit_test;
 
