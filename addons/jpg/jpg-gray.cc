@@ -20,13 +20,18 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <jpeglib.h>
+
 #include <sstream>
 #include <cassert>
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/imageio.hh>
+
+#include "jpeg-common.hh"
+
+
+
 
 NS_BEGIN(IMAGEIO_2D_JPG)
 
@@ -56,9 +61,14 @@ CJpeg2DImageIOPlugin::CJpeg2DImageIOPlugin():
 
 }
 
-METHODDEF(void) mia_jpeg_error_exit (j_common_ptr /*cinfo*/)
+METHODDEF(void) mia_jpeg_load_error_exit (j_common_ptr /*cinfo*/)
 {
-	throw create_exception<runtime_error>("Jpeg::load: error reading from input file"); 
+	throw mia::create_exception<runtime_error>("JpegGray::load: error reading from input file"); 
+}
+
+METHODDEF(void) mia_jpeg_save_error_exit (j_common_ptr /*cinfo*/)
+{
+	throw create_exception<runtime_error>("JpegGray::save: error reading from input file"); 
 }
 
 
@@ -68,53 +78,43 @@ C2DImageIOPlugin::PData CJpeg2DImageIOPlugin::do_load(const string& fname) const
 	if (!f)
 		throw create_exception<runtime_error>("C2DImageIOPlugin::load :unable to open input file '", fname, "'");
 
-	struct jpeg_decompress_struct cdecompress_info;
-	struct jpeg_error_mgr jerr;
-	
-	cdecompress_info.err = jpeg_std_error(&jerr);
+	miajpeg::JpegDecompress decompress; 
+	decompress.err.error_exit = mia_jpeg_load_error_exit;
 
-	jerr.error_exit = mia_jpeg_error_exit;
- 
-	jpeg_create_decompress(&cdecompress_info);
-	
-	jpeg_stdio_src(&cdecompress_info, f);
+	jpeg_stdio_src(&decompress.info, f);
 	
 	// is it a jpeg image? 
-	if (jpeg_read_header(&cdecompress_info, TRUE) != JPEG_HEADER_OK) 
+	if (jpeg_read_header(&decompress.info, TRUE) != JPEG_HEADER_OK) 
 		return C2DImageIOPlugin::PData(); 
 
-	(void) jpeg_start_decompress(&cdecompress_info);
+	jpeg_start_decompress(&decompress.info);
 	// only one component? 
-	if (cdecompress_info.output_components != 1) {
-		jpeg_destroy_decompress(&cdecompress_info);
+	if (decompress.info.output_components != 1) {
 		throw create_exception<runtime_error>(":MIA only supports gray scale images, but got an image with ", 
-					    cdecompress_info.output_components, " color components.");
+					    decompress.info.output_components, " color components.");
 	}
 
-	if (cdecompress_info.data_precision != 8) {
-		jpeg_destroy_decompress(&cdecompress_info);
+	if (decompress.info.data_precision != 8) {
 		throw create_exception<runtime_error>(":MIA only supports 8-bit per pixel images, but got an image with ", 
-						      cdecompress_info.data_precision, " bits data precision.");
+						      decompress.info.data_precision, " bits data precision.");
 	}
 
-
-	int row_stride = cdecompress_info.output_width * cdecompress_info.output_components;
+	int row_stride = decompress.info.output_width * decompress.info.output_components;
 	vector<JSAMPLE> buf(row_stride); 
 	
 	JSAMPROW buffer[1]; 
 	buffer[0] = &buf[0]; 
 
-	C2DUBImage *result = new C2DUBImage(C2DBounds(cdecompress_info.output_width, cdecompress_info.output_height)); 
+	C2DUBImage *result = new C2DUBImage(C2DBounds(decompress.info.output_width, decompress.info.output_height)); 
 	P2DImage presult(result); 
 	
-	while (cdecompress_info.output_scanline < cdecompress_info.output_height) {
-		(void) jpeg_read_scanlines(&cdecompress_info, buffer, 1);
+	while (decompress.info.output_scanline < decompress.info.output_height) {
+		(void) jpeg_read_scanlines(&decompress.info, buffer, 1);
 		copy(buf.begin(), buf.end(), 
-		     result->begin_at(0, cdecompress_info.output_scanline - 1)); 
+		     result->begin_at(0, decompress.info.output_scanline - 1)); 
 	}
 	
-	jpeg_destroy_decompress(&cdecompress_info);
-	
+
 	C2DImageIOPlugin::PData result_vector(new C2DImageIOPlugin::Data); 
 	result_vector->push_back(presult); 
 	return result_vector; 
@@ -123,34 +123,34 @@ C2DImageIOPlugin::PData CJpeg2DImageIOPlugin::do_load(const string& fname) const
 bool CJpeg2DImageIOPlugin::do_save_jpeg(FILE *f, const C2DUBImage& image) const 
 {
 
-	struct jpeg_compress_struct cinfo; 
-	struct jpeg_error_mgr       jerr; 
+	miajpeg::JpegCompress compress; 
 
-	cinfo.err = jpeg_std_error(&jerr);
-	jpeg_create_compress(&cinfo);
+	jpeg_create_compress(&compress.info);
+	compress.err.error_exit = mia_jpeg_save_error_exit;
+
 	
-	cinfo.image_width = image.get_size().x; 
-	cinfo.image_height = image.get_size().y; 
+	compress.info.image_width = image.get_size().x; 
+	compress.info.image_height = image.get_size().y; 
 	
 	vector<JSAMPLE> samples(image.get_size().x); 
 	JSAMPROW scanline[1]; 
 	scanline[0] = &samples[0]; 
 
-	cinfo.input_components = 1;
-	cinfo.in_color_space = JCS_GRAYSCALE; 
+	compress.info.input_components = 1;
+	compress.info.in_color_space = JCS_GRAYSCALE; 
 
-	jpeg_set_defaults(&cinfo);
-	jpeg_set_quality(&cinfo,100,1);
+	jpeg_set_defaults(&compress.info);
+	jpeg_set_quality(&compress.info,100,1);
 
-	jpeg_stdio_dest(&cinfo,f);
-	jpeg_start_compress(&cinfo,TRUE);
+	jpeg_stdio_dest(&compress.info,f);
+	jpeg_start_compress(&compress.info,TRUE);
 	
 	for (unsigned int y = 0; y < image.get_size().y; ++y) {
-		copy(image.begin_at(0,y), image.begin_at(0,y) + cinfo.image_width, scanline[0]); 
-		jpeg_write_scanlines(&cinfo,scanline,1); 
+		copy(image.begin_at(0,y), image.begin_at(0,y) + compress.info.image_width, scanline[0]); 
+		jpeg_write_scanlines(&compress.info,scanline,1); 
 	}
-	jpeg_finish_compress(&cinfo);
-	jpeg_destroy_compress(&cinfo);
+	jpeg_finish_compress(&compress.info);
+	jpeg_destroy_compress(&compress.info);
 	return true; 
 }
 

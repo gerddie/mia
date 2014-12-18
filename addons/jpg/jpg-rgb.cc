@@ -20,13 +20,14 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <jpeglib.h>
 #include <sstream>
 #include <cassert>
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/rgbimageio.hh>
+
+#include "jpeg-common.hh"
 
 NS_BEGIN(RGBIMAGEIO_2D_JPG)
 
@@ -55,9 +56,14 @@ CJpegRGB2DImageIOPlugin::CJpegRGB2DImageIOPlugin():
 	add_suffix(".JPEG");
 }
 
-METHODDEF(void) mia_jpeg_error_exit (j_common_ptr /*cinfo*/)
+METHODDEF(void) mia_jpeg_load_error_exit (j_common_ptr /*cinfo*/)
 {
-	throw create_exception<runtime_error>("Jpeg::load: error reading from input file"); 
+	throw create_exception<runtime_error>("JpegRGB::load: error reading from input file"); 
+}
+
+METHODDEF(void) mia_jpeg_save_error_exit (j_common_ptr /*cinfo*/)
+{
+	throw create_exception<runtime_error>("JpegRGB::save: error reading from input file"); 
 }
 
 
@@ -66,83 +72,73 @@ C2DRGBImageIOPlugin::PData CJpegRGB2DImageIOPlugin::do_load(const string& fname)
 
 	CInputFile f(fname);
 	if (!f)
-		throw create_exception<runtime_error>("CPNG2DImageIO::save:unable to open input file '", fname, "'");
+		throw create_exception<runtime_error>("CJpegRGB2DImageIO::save:unable to open input file '", fname, "'");
 
-	struct jpeg_decompress_struct cdecompress_info;
-	struct jpeg_error_mgr jerr;
+	miajpeg::JpegDecompress decompress; 
+	decompress.err.error_exit = mia_jpeg_load_error_exit;
 	
-	cdecompress_info.err = jpeg_std_error(&jerr);
-
-	jerr.error_exit = mia_jpeg_error_exit;
- 
-	jpeg_create_decompress(&cdecompress_info);
-	
-	jpeg_stdio_src(&cdecompress_info, f);
+	jpeg_stdio_src(&decompress.info, f);
 	
 	// is it a jpeg image? 
-	if (jpeg_read_header(&cdecompress_info, TRUE) != JPEG_HEADER_OK) 
+	if (jpeg_read_header(&decompress.info, TRUE) != JPEG_HEADER_OK) 
 		return C2DRGBImageIOPlugin::PData(); 
 
-	(void) jpeg_start_decompress(&cdecompress_info);
+	jpeg_start_decompress(&decompress.info);
 	// only one component? 
-	if (cdecompress_info.output_components != 3) {
-		jpeg_destroy_decompress(&cdecompress_info);
+	if (decompress.info.output_components != 3) {
 		throw create_exception<runtime_error>(":MIA this plugin only supports RGB images, but got an image with ", 
-					    cdecompress_info.output_components, " color components.");
+					    decompress.info.output_components, " color components.");
 	}
 
 
-	int row_stride = cdecompress_info.output_width * cdecompress_info.output_components * 3;
+	int row_stride = decompress.info.output_width * decompress.info.output_components * 3;
 	vector<JSAMPLE> buf(row_stride); 
 	
 	JSAMPROW buffer[1]; 
 	buffer[0] = &buf[0]; 
 
-	CRGB2DImage *result = new CRGB2DImage(C2DBounds(cdecompress_info.output_width, cdecompress_info.output_height)); 
+	CRGB2DImage *result = new CRGB2DImage(C2DBounds(decompress.info.output_width, decompress.info.output_height)); 
 	PRGB2DImage presult(result); 
 	
-	while (cdecompress_info.output_scanline < cdecompress_info.output_height) {
-		(void) jpeg_read_scanlines(&cdecompress_info, buffer, 1);
+	while (decompress.info.output_scanline < decompress.info.output_height) {
+		(void) jpeg_read_scanlines(&decompress.info, buffer, 1);
 		copy(buf.begin(), buf.end(), 
-		     result->pixel() + ((cdecompress_info.output_scanline - 1) * row_stride));  
+		     result->pixel() + ((decompress.info.output_scanline - 1) * row_stride));  
 	}
 	
-	jpeg_destroy_decompress(&cdecompress_info);
 	return presult; 
 }
 
 bool CJpegRGB2DImageIOPlugin::do_save_jpeg(FILE *f, const CRGB2DImage& image) const 
 {
 
-	struct jpeg_compress_struct cinfo; 
-	struct jpeg_error_mgr       jerr; 
+	miajpeg::JpegCompress compress; 
 
-	cinfo.err = jpeg_std_error(&jerr);
-	jpeg_create_compress(&cinfo);
+	jpeg_create_compress(&compress.info);
+	compress.err.error_exit = mia_jpeg_save_error_exit;
 	
-	cinfo.image_width = image.get_size().x; 
-	cinfo.image_height = image.get_size().y; 
+	compress.info.image_width = image.get_size().x; 
+	compress.info.image_height = image.get_size().y; 
 	
 	vector<JSAMPLE> samples(image.get_size().x * 3); 
 	JSAMPROW scanline[1]; 
 	scanline[0] = &samples[0]; 
 
-	cinfo.input_components = 3;
-	cinfo.in_color_space = JCS_RGB; 
+	compress.info.input_components = 3;
+	compress.info.in_color_space = JCS_RGB; 
 
-	jpeg_set_defaults(&cinfo);
-	jpeg_set_quality(&cinfo,80,1);
+	jpeg_set_defaults(&compress.info);
+	jpeg_set_quality(&compress.info,80,1);
 
-	jpeg_stdio_dest(&cinfo,f);
-	jpeg_start_compress(&cinfo,TRUE);
+	jpeg_stdio_dest(&compress.info,f);
+	jpeg_start_compress(&compress.info,TRUE);
 	int dx = image.get_size().x * 3; 
 
 	for (unsigned int y = 0; y < image.get_size().y; ++y) {
 		copy(image.pixel() + y * dx, image.pixel() + (y + 1) * dx, scanline[0]); 
-		jpeg_write_scanlines(&cinfo,scanline,1); 
+		jpeg_write_scanlines(&compress.info,scanline,1); 
 	}
-	jpeg_finish_compress(&cinfo);
-	jpeg_destroy_compress(&cinfo);
+	jpeg_finish_compress(&compress.info);
 	return true; 
 }
 
