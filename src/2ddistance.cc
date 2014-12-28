@@ -160,7 +160,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_input, &imageio)); 
 	options.add(make_opt( dist_filename, "distance-file", 'd', "distance field image (floating point)", 
 			      CCmdOptionFlags::required_input, &imageio)); 
-	options.add(make_opt(out_filename, "out-file", 'o', "output file, '-': write to stdout")); 
+	options.add(make_opt(out_filename, "out-file", 'o', "output file, '-': write to stdout", CCmdOptionFlags::required_output)); 
 
 	options.add(make_opt( scale, "scale", 's', "distance scaling factor")); 
 	options.add(make_opt( method, combine_option, "method", 'm', "distance measuring method")); 
