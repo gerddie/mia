@@ -453,18 +453,16 @@ ENDIF(PYTHONINTERP_FOUND)
 
 IF(CREATE_NIPYPE_INTERFACES) 
   IF(PYTHONINTERP_FOUND AND NOT LXML_ERR) 
-    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import nipype\nprint(nipype.get_info()['pkg_path'])"  
+    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import nipype\nimport sys\nsys.stdout.write(nipype.get_info()['pkg_path'])"  
       RESULT_VARIABLE NIPYPE_ERR
-      OUTPUT_VARIABLE NIPYPE_BASE_PATH
+      OUTPUT_VARIABLE NIPYPE_BASE_DIR
       )
     IF(NIPYPE_ERR) 
       MESSAGE("nipype not found, can  not create nipype interfaces") 
       SET(CREATE_NIPYPE_INTERFACES FALSE)
     ELSE()
-      
-      STRING(REGEX REPLACE "^/[a-z/]*\(python.*\)\n" "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/\\1/interfaces" 
-        NIPYPE_INTERFACE_DIR ${NIPYPE_BASE_PATH})
-      MESSAGE("Will create nipype interfaces and install to " ${NIPYPE_INTERFACE_DIR}) 
+      SET(NIPYPE_INTERFACE_DIR "${NIPYPE_BASE_DIR}/interfaces")
+      MESSAGE("Will create nipype interfaces and install to '${NIPYPE_INTERFACE_DIR}'") 
     ENDIF()
   ELSE()
     MESSAGE(python or  lxml not found, can  not create nipype interfaces) 
