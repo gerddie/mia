@@ -18,6 +18,7 @@
  *
  */
 
+#include <cmath>
 #include <mia/internal/autotest.hh>
 
 #include <mia/2d/ppmatrix.hh>
@@ -272,7 +273,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFix
 			ic->x += 0.001; 
 			double test_grad = (graddivp - graddivm)/ 0.002; 
 			cvdebug() << x << " " << y << " (x)\n"; 
-			if (abs(test_grad) > 0.0001)
+			if (fabs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[0], test_grad, 2);
 			
 			ic->y += 0.001; 
@@ -283,7 +284,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFix
 			test_grad = (graddivp - graddivm)/ 0.002; 
 			cvdebug() << x << " " << y << " (y)\n"; 
 			
-			if (abs(test_grad) > 0.0001)
+			if (fabs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[1], test_grad, 2);
 		}
 }
@@ -314,7 +315,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad, TransformSplineFixtu
 			ic->x += 0.001; 
 			double test_grad = (graddivp - graddivm)/ 0.002; 
 			cvdebug() << x << " " << y << " (x)\n"; 
-			if (abs(test_grad) > 0.0001)
+			if (fabs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[0], test_grad, 2);
 			
 			ic->y += 0.001; 
@@ -325,7 +326,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad, TransformSplineFixtu
 			test_grad = (graddivp - graddivm)/ 0.002; 
 			cvdebug() << x << " " << y << " (y)\n"; 
 			
-			if (abs(test_grad) > 0.0001)
+			if (fabs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[1], test_grad, 2);
 		}
 }
@@ -356,7 +357,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad_noiso, TransformSpl
 			ic->x += 0.001; 
 			double test_grad = (graddivp - graddivm)/ 0.002; 
 			cvdebug() << x << " " << y << " (x)\n"; 
-			if (abs(test_grad) > 0.0001)
+			if (fabs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[0], test_grad, 1);
 			
 			ic->y += 0.001; 
@@ -367,7 +368,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad_noiso, TransformSpl
 			test_grad = (graddivp - graddivm)/ 0.002; 
 			cvdebug() << x << " " << y << " (y)\n"; 
 			
-			if (abs(test_grad) > 0.0001)
+			if (fabs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[1], test_grad, 1);
 		}
 }
@@ -398,7 +399,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad_noiso, TransformSplin
 			ic->x += 0.001; 
 			double test_grad = (graddivp - graddivm)/ 0.002; 
 			cvdebug() << x << " " << y << " (x)\n"; 
-			if (abs(test_grad) > 0.0001)
+			if (fabs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[0], test_grad, 1);
 			
 			ic->y += 0.001; 
@@ -409,7 +410,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad_noiso, TransformSplin
 			test_grad = (graddivp - graddivm)/ 0.002; 
 			cvdebug() << x << " " << y << " (y)\n"; 
 			
-			if (abs(test_grad) > 0.0001)
+			if (fabs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[1], test_grad, 1);
 		}
 }
