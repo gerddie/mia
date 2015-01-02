@@ -1,3 +1,12 @@
+2.2.3
+
+  New features:
+
+  * Add some more speceliyed 3D image transformations
+  * Install the documentation tools
+  * Add nipype interfaces to all command line tools
+  * Add (localized) normalized cross correlation as cost function
+
 2.2.2
 
   Fixes:

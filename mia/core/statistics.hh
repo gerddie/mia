@@ -110,7 +110,7 @@ FMedianMAD::result_type FMedianMAD::operator()( const T& data) const
 	result.first = median(buffer); 
 
 	transform(buffer.begin(), buffer.end(), buffer.begin(), 
-		  [&result](double x) {return abs(x - result.first);});
+		  [&result](double x) {return fabs(x - result.first);});
 	result.second = median(buffer); 
 	return result; 
 }
