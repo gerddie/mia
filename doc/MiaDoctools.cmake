@@ -31,7 +31,6 @@ MACRO(MIA_PREPARE_AUTODOC prefix)
   
   OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml)" OFF)
   OPTION(MIA_CREATE_NIPYPE_INTERFACES "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype)" OFF)
-  ADD_CUSTOM_TARGET(xmldoc)  
   
   IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE)
     
@@ -89,9 +88,9 @@ ENDMACRO(MIA_PREPARE_AUTODOC)
 # TODO: add possible plug-ins that come directly from the software package 
 #
 MACRO(MIA_CREATE_EXE_XML_HELP prefix name)
-  ADD_CUSTOM_COMMAND(OUTPUT ${prefix}-${name}.xml
-    COMMAND ./${prefix}-${name} --help-xml ${prefix}-${name}.xml
-    DEPENDS ${prefix}-${name} )
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
+    COMMAND ./${prefix}-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
+    DEPENDS ${prefix}-${name} plugin_test_links)
     
   ADD_CUSTOM_TARGET(${prefix}-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml)
   ADD_DEPENDENCIES(xmldoc ${prefix}-${name}-xml)
@@ -109,8 +108,8 @@ MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
   SET(${prefix}-${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/${prefix}_${PythonName}.py)
   
   ADD_CUSTOM_COMMAND(OUTPUT ${${prefix}-${name}-nipype-interface} 
-    COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2nipype.py -i ${prefix}-${name}.xml -o ${${prefix}-${name}-nipype-interface}
-    MAIN_DEPENDENCY ${prefix}-${name}.xml)
+    COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2nipype.py -i ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml -o ${${prefix}-${name}-nipype-interface}
+    MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml)
 
   FILE(APPEND ${NIPYPE_INTERFACE_INIT_FILE} "from .${prefix}_${PythonName} import ${prefix}_${PythonName}\n")
   
@@ -128,8 +127,8 @@ ENDMACRO(MIA_CREATE_NIPYPE_FROM_XML)
 MACRO(MIA_CREATE_MANPAGE_FROM_XML prefix name)
   SET(${prefix}-${name}-manfile ${CMAKE_CURRENT_BINARY_DIR}/${prefix}-${name}.1)
   ADD_CUSTOM_COMMAND(OUTPUT   ${${prefix}-${name}-manfile}
-    COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2man.py ${prefix}-${name}.xml >${${prefix}-${name}-manfile}
-      MAIN_DEPENDENCY ${prefix}-${name}.xml
+    COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2man.py ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml >${${prefix}-${name}-manfile}
+      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
       )
     ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})
     add_dependencies(manpages ${prefix}-${name}-man)

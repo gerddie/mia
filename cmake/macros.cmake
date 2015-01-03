@@ -123,7 +123,7 @@ ENDMACRO(ASSERT_SIZE)
 
 
 #
-# This macro runs the program to create the XML program descrition 
+# This macro runs the program to create the XMLprogram descrition 
 # that is used to create documentation and interfaced 
 #
 MACRO(CREATE_EXE_XML_HELP name)
@@ -131,7 +131,7 @@ MACRO(CREATE_EXE_XML_HELP name)
     COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH} 
     ./mia-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     COMMAND rm -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
-    DEPENDS mia-${name} plugin_test_links )
+    DEPENDS mia-${name} )
     
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
   ADD_DEPENDENCIES(XMLDOC mia-${name}-xml)
@@ -192,7 +192,7 @@ MACRO(DEFEXE name libraries)
   
   TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
-  
+  ADD_DEPENDENCIES(mia-${name} plugin_test_links)
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia ${name})
 ENDMACRO(DEFEXE)
 
@@ -208,8 +208,8 @@ MACRO(DEFCHKEXE name deps)
   TARGET_LINK_LIBRARIES(mia-${name} ${BOOST_UNITTEST})
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
 
-  CREATE_EXE_XML_HELP(${name})
-  CREATE_MANPAGE_FROM_XML(${name})
+  MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia ${name})
+  ADD_DEPENDENCIES(mia-${name} plugin_test_links)
   ADD_TEST(${name} mia-${name} --selftest)
 ENDMACRO(DEFCHKEXE)
 
@@ -222,5 +222,6 @@ MACRO(NEW_TEST name libs)
   IF (NOT WIN32) 
     TARGET_LINK_LIBRARIES(${EXENAME} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
   ENDIF (NOT WIN32)
+  ADD_DEPENDENCIES(${EXENAME} plugin_test_links)
   ADD_TEST(${name} ${EXENAME})
 ENDMACRO(NEW_TEST)
