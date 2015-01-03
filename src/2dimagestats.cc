@@ -104,6 +104,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
 	options.add(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
+	options.set_stdout_is_result();
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

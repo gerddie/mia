@@ -125,8 +125,10 @@ int do_main( int argc, char *argv[] )
 			      "using the original segmentation of the reference on all images of the original series, "
 			      "the second column contains the values obtained by the registered segmentation of the "
 			      "reference on all images of the registered series, and the third column contains the "
-			      "values obtained by using the segmentations of each slice on the original images."));
-	options.add(make_opt( varcurves_filename, "varcurves", 'v', "region variation values, same formt as described above. "));
+			      "values obtained by using the segmentations of each slice on the original images.", 
+			      CCmdOptionFlags::output));
+	options.add(make_opt( varcurves_filename, "varcurves", 'v', "region variation values, same formt as described above. ", 
+			      CCmdOptionFlags::output));
 	options.add(make_opt( n_sections, "nsections", 'n', 
 			      "number of sections to use, 0=use as segmented, otherwise Otherwise, the LV myocardium is "
 			      "divided into n sections that enclose equal angles starting at the "

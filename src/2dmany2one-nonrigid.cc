@@ -142,7 +142,7 @@ int do_main( int argc, char *argv[] )
 			      "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
 			      "file name for registered images, numbering and pattern are deducted from the input data", 
-			      CCmdOptionFlags::required)); 
+			      CCmdOptionFlags::required_output)); 
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));

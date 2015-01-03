@@ -87,7 +87,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
-
+	options.set_stdout_is_result();
+	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 

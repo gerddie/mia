@@ -45,11 +45,13 @@ int do_main(int argc, char **argv)
 {
 
 	CCmdOptionList options(g_description);
-
+	options.set_stdout_is_result();
+	
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
+	
 	auto cost_chain = options.get_remaining();
 
 	if (cost_chain.empty()) {

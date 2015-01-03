@@ -24,6 +24,10 @@
 # target directory of the nipype interface 
 #
 MACRO(MIA_PREPARE_AUTODOC prefix)
+
+  IF(NOT MIA_DOCTOOLS_ROOT)
+    SET(MIA_DOCTOOLS_ROOT "${CMAKE_SOURCE_DIR}/doc")
+  ENDIF(NOT MIA_DOCTOOLS_ROOT)
   
   OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml)" OFF)
   OPTION(MIA_CREATE_NIPYPE_INTERFACES "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype)" OFF)
@@ -40,26 +44,43 @@ MACRO(MIA_PREPARE_AUTODOC prefix)
     IF(MIA_CREATE_MANPAGES) 
       ADD_CUSTOM_TARGET(manpages ALL)
     ENDIF()
-    IF(MIA_CREATE_NIPYPE_INTERFACES) 
-      EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import nipype\nprint(nipype.get_info()['pkg_path'])"  
-        RESULT_VARIABLE NIPYPE_ERR
-        OUTPUT_VARIABLE NIPYPE_BASE_PATH
-        )
+    
+    IF(MIA_CREATE_NIPYPE_INTERFACES)
+      file(WRITE ${NIPYPE_INTERFACE_INIT_FILE} "# Automatically generated file, do not edit\n")
+
+      STRING(COMPARE EQUAL "${CMAKE_INSTALL_PREFIX}" "/usr" INSTALLROOT_IS_USER)
       
-      IF(NIPYPE_ERR) 
-        MESSAGE(FATAL "nipype not found, can not create nipype interfaces") 
+      IF(INSTALLROOT_IS_USER)
+	EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib\nimport sys\nsys.stdout.write(get_python_lib())"
+	  RESULT_VARIABLE SITEPACKGE_ERR
+	  OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
+      ELSE()
+	EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import site\nimport sys\nsys.stdout.write(site.getusersitepackages())"
+	  RESULT_VARIABLE SITEPACKGE_ERR
+	  OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
       ENDIF()
+
+      IF(SITEPACKGE_ERR) 
+        MESSAGE(FATAL "Something went wrong identifying the nipype installation loaction") 
+      ENDIF()
+
+      SET(NIPYPE_INTERFACE_DIR "${SITEPACKGE_BASE_PATH}/${prefix}/nipype/interfaces/")
       
-      STRING(REGEX REPLACE "^/[a-z/]*\(python.*\)\n" "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/\\1/interfaces/${prefix}/" 
-        NIPYPE_INTERFACE_DIR ${NIPYPE_BASE_PATH})
-      MESSAGE("Will create nipype interfaces and install to " ${NIPYPE_INTERFACE_DIR}) 
+      
+      
+      MESSAGE(STATUS "Will create nipype interfaces and install to " ${NIPYPE_INTERFACE_DIR}) 
       
       ADD_CUSTOM_TARGET(nipypeinterfaces ALL)
-      INSTALL(FILES __init__.py DESTINATION ${NIPYPE_INTERFACE_DIR})
+      INSTALL(FILES ${NIPYPE_INTERFACE_INIT_FILE} DESTINATION ${NIPYPE_INTERFACE_DIR})
     ENDIF()
   ENDIF()
 
+  # install empty init files 
+  INSTALL(FILES ${MIA_DOCTOOLS_ROOT}/__init__.py DESTINATION ${SITEPACKGE_BASE_PATH}/${prefix})
+  INSTALL(FILES ${MIA_DOCTOOLS_ROOT}/__init__.py DESTINATION ${SITEPACKGE_BASE_PATH}/${prefix}/nipype)
+  
 ENDMACRO(MIA_PREPARE_AUTODOC) 
+
 
 #
 # INTERNAL USE 
@@ -88,8 +109,10 @@ MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
   SET(${prefix}-${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/${prefix}_${PythonName}.py)
   
   ADD_CUSTOM_COMMAND(OUTPUT ${${prefix}-${name}-nipype-interface} 
-    COMMAND  mia-xmldoc2nipype ${prefix}-${name}.xml ${${prefix}-${name}-nipype-interface}
+    COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2nipype.py -i ${prefix}-${name}.xml -o ${${prefix}-${name}-nipype-interface}
     MAIN_DEPENDENCY ${prefix}-${name}.xml)
+
+  FILE(APPEND ${NIPYPE_INTERFACE_INIT_FILE} "from .${prefix}_${PythonName} import ${prefix}_${PythonName}\n")
   
   ADD_CUSTOM_TARGET(${prefix}-${name}-nipype DEPENDS ${${prefix}-${name}-nipype-interface})
   ADD_DEPENDENCIES(nipypeinterfaces ${prefix}-${name}-nipype)
@@ -105,7 +128,7 @@ ENDMACRO(MIA_CREATE_NIPYPE_FROM_XML)
 MACRO(MIA_CREATE_MANPAGE_FROM_XML prefix name)
   SET(${prefix}-${name}-manfile ${CMAKE_CURRENT_BINARY_DIR}/${prefix}-${name}.1)
   ADD_CUSTOM_COMMAND(OUTPUT   ${${prefix}-${name}-manfile}
-    COMMAND mia-xmldoc2man ${prefix}-${name}.xml ${${prefix}-${name}-manfile}
+    COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2man.py ${prefix}-${name}.xml >${${prefix}-${name}-manfile}
       MAIN_DEPENDENCY ${prefix}-${name}.xml
       )
     ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})

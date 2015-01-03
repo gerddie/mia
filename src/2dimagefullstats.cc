@@ -52,6 +52,7 @@ int do_main( int argc, char *argv[] )
 
 	string in_filename;
 	CCmdOptionList options(g_general_help);
+	options.set_stdout_is_result();
 	options.add(make_opt( in_filename, "in-file", 'i', "input image", 
 			      CCmdOptionFlags::required_input, &C2DImageIOPluginHandler::instance()));
 	

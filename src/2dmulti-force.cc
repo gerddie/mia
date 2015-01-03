@@ -60,7 +60,7 @@ int do_main(int argc, char **argv)
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 	const auto& costcreator = C2DFullCostPluginHandler::instance(); 
 
-	options.add(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOptionFlags::required_output, &imageio));
 
 	if (options.parse(argc, argv, "cost", &costcreator) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

@@ -124,7 +124,11 @@ class  NipypeOutput:
         
 
     def create_trait_input_param_start(self, param, trait, enums=""):
-        self.out.write ( '\t{} = traits.{}({} desc="{}", '.format(dash_to_underscore(param.long), 
+        dash_removed_name = dash_to_underscore(param.long)
+        # this should be implemented for all python keywords 
+        if dash_removed_name == "lambda":
+            dash_removed_name = dash_removed_name + "_"
+        self.out.write ( "\t{} = traits.{}({} desc=\"\"\"{}\"\"\", ".format(dash_removed_name, 
                                                                   trait, enums, param.text)), 
 
     def create_param_tail(self, param):

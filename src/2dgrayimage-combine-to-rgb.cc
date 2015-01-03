@@ -94,7 +94,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( red_filename, "red", 'r', "input image for red channel", 
 			      CCmdOptionFlags::input, &imageio));
 
-	options.add(make_opt( out_filename, "out-file", 'o', "combined output image", CCmdOptionFlags::required_input, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "combined output image", CCmdOptionFlags::required_output, &imageio));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS;

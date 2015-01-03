@@ -99,8 +99,10 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 int do_main( int argc, char *argv[] )
 {
 	CCmdOptionList options(description);
+	options.set_stdout_is_result();
 	if (options.parse(argc, argv, "plugin-descriptor") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
+
 		
 	auto handlers = collect_handlers(); 
 		

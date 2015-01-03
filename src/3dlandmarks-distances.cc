@@ -57,7 +57,7 @@ int do_main(int argc, char **argv)
 
 	options.add(make_opt( src1_filename, "in-file-1", 'i', "input landmark set 1", CCmdOptionFlags::required_input, &lmxio));
 	options.add(make_opt( src2_filename, "in-file-2", 'o', "input landmark set 2", CCmdOptionFlags::required_input, &lmxio));
-
+	options.set_stdout_is_result();
 
         if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

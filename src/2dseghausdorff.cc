@@ -62,6 +62,7 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
 	options.add(make_opt( reference, "ref-frame", 'r', "reference frame", CCmdOptionFlags::required_input));
 	options.add(make_opt( skip, "skip", 'k', "skip frames at the beginning"));
+	options.set_stdout_is_result();
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 

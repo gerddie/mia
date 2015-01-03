@@ -75,6 +75,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( org_filename, "first", '1', "first segmentation set", CCmdOptionFlags::required_input));
 	options.add(make_opt( ref_filename, "second", '2', "second segmentation set", CCmdOptionFlags::required_input));
 	options.add(make_opt( skip, "skip", 'k', "images to skip atthe begin of the series")); 
+	options.set_stdout_is_result();
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

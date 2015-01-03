@@ -42,7 +42,7 @@ int do_main(int argc, char **argv)
 {
 
 	CCmdOptionList options(g_description);
-
+	options.set_stdout_is_result();
 	if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	

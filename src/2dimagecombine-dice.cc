@@ -92,7 +92,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_input, &imageio)); 
 	options.add(make_opt( in_filename2, "in-file-2", '2', "input image 2", 
 			      CCmdOptionFlags::required_input, &imageio)); 
-
+	options.set_stdout_is_result();
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

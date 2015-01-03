@@ -104,7 +104,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_input, &image2dio));
 	options.add(make_opt( mask_filename, "mask-file", 'm', "mask image, must be of type byte", 
 			      CCmdOptionFlags::required_input, &image2dio));
-
+	options.set_stdout_is_result();
 	if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
