@@ -89,7 +89,7 @@ ENDMACRO(MIA_PREPARE_AUTODOC)
 #
 MACRO(MIA_CREATE_EXE_XML_HELP prefix name)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
-    COMMAND ./${prefix}-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
+    COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH} ./${prefix}-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
     DEPENDS ${prefix}-${name})
     
   ADD_CUSTOM_TARGET(${prefix}-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml)
