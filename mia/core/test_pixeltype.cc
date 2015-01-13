@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( test_pixeltype_translation )
 {
 
 #ifdef LONG_64BIT
-	BOOST_CHECK(CPixelTypeDict.get_name_set().size() == 11);
+	BOOST_CHECK(CPixelTypeDict.get_name_set().size() == 12);
 	BOOST_CHECK(it_none == 11);
 #else
 	BOOST_CHECK(CPixelTypeDict.get_name_set().size() == 9);
@@ -54,6 +54,7 @@ BOOST_AUTO_TEST_CASE( test_pixeltype_translation )
 #endif
 	BOOST_CHECK(CPixelTypeDict.get_value("float")  == it_float);
 	BOOST_CHECK(CPixelTypeDict.get_value("double") == it_double);
+	BOOST_CHECK(CPixelTypeDict.get_value("none") == it_none);
 	try {
 		CPixelTypeDict.get_value("something");
 		BOOST_FAIL("pixel type name 'something' should throw");

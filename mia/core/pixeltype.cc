@@ -35,6 +35,7 @@ const TDictMap<EPixelType>::Table PixelTypeTable[] = {
 #endif
 	{"float", it_float, "floating point 32 bit"},
 	{"double",it_double, "floating point 64 bit"},
+	{"none", it_none, "no pixel type defined"}, 
 	{NULL, it_unknown, ""}
 };
 const TDictMap<EPixelType> CPixelTypeDict(PixelTypeTable);
