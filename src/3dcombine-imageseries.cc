@@ -58,15 +58,26 @@ struct pixel_max : public pixel_combiner{
         }
 };
 
+struct pixel_add : public pixel_combiner{
+        virtual double apply(double x, double y) {
+                return x + y; 
+        }
+        virtual double finalize(double x, double MIA_PARAM_UNUSED(n)) {
+                return x; 
+        }
+};
+
 enum ECombineops {
         co_mean, 
         co_max, 
+	co_add, 
         co_unknown
 }; 
 
 const TDictMap<ECombineops>::Table l_combops_table[] = {
 	{"mean", co_mean, "mean image intensities"}, 
-	{"max", co_max, "max intensities"}, 
+	{"max", co_max, "select max per pixel intensity"}, 
+	{"add", co_add, "add pixel intensities"}, 
 	{NULL, co_unknown, ""}
 }; 
 
@@ -90,6 +101,7 @@ FImageSeriesCombiner create_combiner(const C3DImage& prototype, ECombineops op)
         switch (op) { 
         case co_mean: return FImageSeriesCombiner(prototype, new pixel_mean());
         case co_max: return FImageSeriesCombiner(prototype, new pixel_max());
+        case co_add: return FImageSeriesCombiner(prototype, new pixel_add());
         default: 
                 throw invalid_argument("Unknown combiner requested"); 
         }
