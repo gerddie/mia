@@ -35,7 +35,7 @@ mia::P3DImage T3DImageCombiner<BO>::operator () ( const T3DImage<T>& a, const T3
 	BO bo; 
 	typedef decltype(bo(a[0], b[0])) R; 
 			
-	auto  r = new T3DImage<R>(a.get_size()); 
+	auto  r = new T3DImage<R>(a.get_size(), a); 
 	
 	P3DImage result(r);
 
