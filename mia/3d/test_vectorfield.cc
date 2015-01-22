@@ -24,6 +24,7 @@
 #include <mia/internal/autotest.hh>
 
 
+#include <set>
 #include <mia/core.hh>
 #include <mia/3d/vectorfield.hh>
 
@@ -128,25 +129,25 @@ C3DVectorfieldFixture::C3DVectorfieldFixture():
 typedef bmpl::vector<C3DSSELinearVectorfieldInterpolator,C3DLinearVectorfieldInterpolator>::type test_types; 
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
-{									
-	C3DBounds size(2,2,2); 
+{			
+	
+						
+	C3DBounds size(3,3,3); 
 	C3DFVectorfield f(size); 
 
-	f(0,0,0) = C3DFVector(1,2,3); 
-	f(0,1,0) = C3DFVector(10,20,30);
-	f(1,0,0) = C3DFVector(100,200,300);
-	f(1,1,0) = C3DFVector(1000,2000,3000);
+	
+	auto ifield = f.begin(); 
+	for (size_t iz = 0; iz < size.z; ++iz) 
+		for (size_t iy = 0; iy < size.y; ++iy) 
+			for (size_t ix = 0; ix < size.x; ++ix, ++ifield) {
+				*ifield = C3DFVector(2* ix+1, 3* iy +2, 4 * iz+1); 
+			}
 
-	f(0,0,1) = C3DFVector(2,3,4); 
-	f(0,1,1) = C3DFVector(20,30,40);
-	f(1,0,1) = C3DFVector(200,300,400);
-	f(1,1,1) = C3DFVector(2000,3000,4000);
-
-
+	
 	Interpolator ip(f); 
 
-	unsigned  n = 5; 
-	float d = n;
+	unsigned  n = 10; 
+	float d = n / 2.0;
 	
 
 	for (size_t iz = 1; iz < n; ++iz) 
@@ -155,165 +156,119 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 				C3DFVector dx(ix / d, iy / d,  iz / d); 
 				C3DFVector value = ip(dx);
 
-				
-				
-				dx.x = dx.x - floor(dx.x); 
-				dx.y = dx.y - floor(dx.y); 
-				dx.z = dx.z - floor(dx.z); 
-				
+				int x = static_cast<int>( floor(dx.x) ); 
+				int y = static_cast<int>( floor(dx.y) ); 
+				int z = static_cast<int>( floor(dx.z) ); 
+
+				dx.x = dx.x - x; 
+				dx.y = dx.y - y; 
+				dx.z = dx.z - z; 
+
 				C3DFVector px = C3DFVector::_1 - dx; 
 				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
+				cvdebug() << "X: " <<"(" << x << ", " << y << ", " << z <<")"
+					  << dx << ": " << px << ", " << value << "\n";  
 				
 				C3DFVector test_value = 
-					px.z * (px.y * ( px.x * f(0,0,0) + dx.x * f(1,0,0) ) + 
-						dx.y * ( px.x * f(0,1,0) + dx.x * f(1,1,0) )) + 
+					px.z * (px.y * ( px.x * f(x,y,z) + dx.x * f(x+1,y,z) ) + 
+						dx.y * ( px.x * f(x,y+1,z) + dx.x * f(x+1,y+1,z) )) + 
 					
-					dx.z * (px.y * ( px.x * f(0,0,1) + dx.x * f(1,0,1)) + 
-						dx.y * ( px.x * f(0,1,1) + dx.x * f(1,1,1))); 
+					dx.z * (px.y * ( px.x * f(x,y,z+1) + dx.x * f(x+1,y,z+1)) + 
+						dx.y * ( px.x * f(x,y+1,z+1) + dx.x * f(x+1,y+1,z+1))); 
 
 				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
 				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
 				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
 	
 			}
-	
-	// z \in {0,1}
-	for (size_t iy = 1; iy < n; ++iy) 
-		for (size_t ix = 1; ix < n; ++ix) {
-			{
-				C3DFVector dx(ix / d, iy / d,  0); 
-				C3DFVector value = ip(dx);
-				
-				dx.y = dx.y - floor(dx.y); 
-				dx.x = dx.x - floor(dx.x); 
-				
-				C3DFVector px = C3DFVector::_1 - dx; 
-				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
-				C3DFVector test_value = 
-					(px.y * ( px.x * f(0,0,0) + dx.x * f(1,0,0) ) + 
-					 dx.y * ( px.x * f(0,1,0) + dx.x * f(1,1,0) )); 
-				
-				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
-				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
-				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
-				
-			}
-			{
-				C3DFVector dx(ix / d, iy / d,  1); 
-				C3DFVector value = ip(dx);
-				
-				dx.y = dx.y - floor(dx.y); 
-				dx.x = dx.x - floor(dx.x); 
-				
-				C3DFVector px = C3DFVector::_1 - dx; 
-				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
-				C3DFVector test_value = 
-					(px.y * ( px.x * f(0,0,1) + dx.x * f(1,0,1) ) + 
-					 dx.y * ( px.x * f(0,1,1) + dx.x * f(1,1,1) )); 
-				
-				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
-				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
-				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
-				
-			}
-		}
 
+
+	std::set<int> index_set; 
+	index_set.insert(0); 
+	index_set.insert(2); 
+	
+
+	// z \in {0,2}
+	for (auto iz: index_set)
+		for (size_t iy = 1; iy < n; ++iy) 
+			for (size_t ix = 1; ix < n; ++ix) {
+				C3DFVector dx(ix / d, iy / d,  iz); 
+				C3DFVector value = ip(dx);
+
+				int x = static_cast<int>( floor(dx.x) ); 
+				int y = static_cast<int>( floor(dx.y) ); 
+
+				
+				dx.y = dx.y - y; 
+				dx.x = dx.x - x; 
+				
+				C3DFVector px = C3DFVector::_1 - dx; 
+				
+				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
+				
+				C3DFVector test_value = 
+					(px.y * ( px.x * f(x,y,iz)   + dx.x * f(x+1,y,iz) ) + 
+					 dx.y * ( px.x * f(x,y+1,iz) + dx.x * f(x+1,y+1,iz) )); 
+				
+				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
+				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
+				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
+				
+			}
+	
 	// y \in {0,1}
 	for (size_t iz = 1; iz < n; ++iz) 
-		for (size_t ix = 1; ix < n; ++ix) {
-			{
-				C3DFVector dx(ix / d, 0, iz / d); 
+		for (auto iy : index_set)
+			for (size_t ix = 1; ix < n; ++ix) {
+				
+				C3DFVector dx(ix / d, iy, iz / d); 
 				C3DFVector value = ip(dx);
 				
-				dx.z = dx.z - floor(dx.z); 
-				dx.x = dx.x - floor(dx.x); 
-				
-				C3DFVector px = C3DFVector::_1 - dx; 
-				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
-				C3DFVector test_value = 
-					(px.z * ( px.x * f(0,0,0) + dx.x * f(1,0,0) ) + 
-					 dx.z * ( px.x * f(0,0,1) + dx.x * f(1,0,1) )); 
-				
-				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
-				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
-				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
-				
-			}
-			{
-				C3DFVector dx(ix / d,  1, iz/ d); 
-				C3DFVector value = ip(dx);
-				
-				dx.z = dx.z - floor(dx.z); 
-				dx.x = dx.x - floor(dx.x); 
-				
-				C3DFVector px = C3DFVector::_1 - dx; 
-				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
-				C3DFVector test_value = 
-					(px.z * ( px.x * f(0,1,0) + dx.x * f(1,1,0) ) + 
-					 dx.z * ( px.x * f(0,1,1) + dx.x * f(1,1,1) )); 
-				
-				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
-				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
-				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
-				
-			}
-		}
+				int x = static_cast<int>( floor(dx.x) ); 
+				int z = static_cast<int>( floor(dx.z) ); 
 
-	// x \in {0,1}
+				dx.z = dx.z - z; 
+				dx.x = dx.x - x; 
+				
+				C3DFVector px = C3DFVector::_1 - dx; 
+				
+				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
+				
+				C3DFVector test_value = 
+					px.z * ( px.x * f(x,iy,z) + dx.x * f(x+1,iy,z) ) + 
+					dx.z * ( px.x * f(x,iy,z+1) + dx.x * f(x+1,iy,z+1)); 
+				
+				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
+				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
+				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
+				
+			}
+	
 	for (size_t iz = 1; iz < n; ++iz) 
-		for (size_t iy = 1; iy < n; ++iy) {
-			{
-				C3DFVector dx(0, iy / d, iz / d); 
+		for (size_t iy = 1; iy < n; ++iy) 
+			for (auto ix : index_set) {
+				C3DFVector dx(ix, iy / d, iz / d); 
 				C3DFVector value = ip(dx);
 				
-				dx.z = dx.z - floor(dx.z); 
-				dx.y = dx.y - floor(dx.y); 
-				
-				C3DFVector px = C3DFVector::_1 - dx; 
-				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
-				C3DFVector test_value = 
-					(px.z * ( px.y * f(0,0,0) + dx.y * f(0,1,0) ) + 
-					 dx.z * ( px.y * f(0,0,1) + dx.y * f(0,1,1) )); 
-				
-				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
-				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
-				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
-				
-			}
-			{
-				C3DFVector dx(1, iy / d, iz/ d); 
-				C3DFVector value = ip(dx);
-				
-				dx.z = dx.z - floor(dx.z); 
-				dx.y = dx.y - floor(dx.y); 
-				
-				C3DFVector px = C3DFVector::_1 - dx; 
-				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
-				C3DFVector test_value = 
-					(px.z * ( px.y * f(1,0,0) + dx.y * f(1,1,0) ) + 
-					 dx.z * ( px.y * f(1,0,1) + dx.y * f(1,1,1) )); 
+				int y = static_cast<int>( floor(dx.y) ); 
+				int z = static_cast<int>( floor(dx.z) ); 
 
+				dx.z = dx.z - z; 
+				dx.y = dx.y - y; 
+				
+				C3DFVector px = C3DFVector::_1 - dx; 
+				
+				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
+				
+				C3DFVector test_value = 
+					px.z * (px.y * f(ix,y,z) +  dx.y *  f(ix,y+1,z) ) + 
+					dx.z * (px.y * f(ix,y,z+1) + dx.y * f(ix,y+1,z+1) ); 
+				
 				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
 				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
 				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
 				
 			}
-		}
-	
-	
 }
 
 
