@@ -121,6 +121,29 @@ typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
  */
 EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& lhs, const C3DFVectorfield& rhs);
 
+EXPORT_3D  void vectorfield_as_inverse_of(C3DFVectorfield& me, const C3DFVectorfield& other, float tol, int maxiter); 
+
+class EXPORT_3D C3DLinearVectorfieldInterpolator {
+public: 
+	C3DLinearVectorfieldInterpolator(const C3DFVectorfield& field); 
+
+	C3DFVector operator () (const C3DFVector& x) const; 
+private: 
+	const C3DFVectorfield& m_field; 
+}; 
+
+#ifdef __SSE__
+class EXPORT_3D C3DSSELinearVectorfieldInterpolator {
+public: 
+	C3DSSELinearVectorfieldInterpolator(const C3DFVectorfield& field); 
+
+	C3DFVector operator ()(const C3DFVector& x) const; 
+private: 
+	const C3DFVectorfield& m_field; 
+}; 
+#endif 
+
+
 NS_MIA_END
 
 #endif

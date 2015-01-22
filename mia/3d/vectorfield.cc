@@ -28,6 +28,10 @@
 #include <mia/3d/iterator.cxx>
 #include <mia/2d/iterator.cxx>
 
+#ifdef __SSE2__
+#include <emmintrin.h>
+#endif 
+
 NS_MIA_BEGIN
 
 
@@ -53,6 +57,198 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 	}; 
 	tbb::parallel_for( tbb::blocked_range<size_t>(0, a.get_size().z, 1), callback); 
 	return a;
+}
+
+EXPORT_3D  void vectorfield_as_inverse_of(C3DFVectorfield& me, const C3DFVectorfield& other, float tol, int maxiter)
+{
+	assert(me.get_size() == other.get_size()); 
+
+#ifdef __SSE__
+	C3DSSELinearVectorfieldInterpolator t(other); 
+#else 
+	C3DLinearVectorfieldInterpolator t(other); 
+#endif 
+	auto process_lines = [&me, &t, tol, maxiter](const tbb::blocked_range<size_t>& range) {
+		for (auto z = range.begin(); z != range.end();  ++z)  {
+			auto i = me.begin_at(0,0,z);
+			for (size_t y = 0; y < me.get_size().y; ++y)  {
+				for (size_t x = 0; x < me.get_size().x; ++x, ++i)  {
+					*i = C3DFVector::_0; 
+				}
+			}
+		}
+	}; 
+	
+	
+}
+
+#ifdef __SSE__
+C3DSSELinearVectorfieldInterpolator::C3DSSELinearVectorfieldInterpolator(const C3DFVectorfield& field):
+        m_field(field)
+{
+	
+}
+
+C3DFVector C3DSSELinearVectorfieldInterpolator::operator()(const C3DFVector& x) const
+{
+	C3DFVector result = C3DFVector::_0;
+	
+	const C3DFVector h(floor(x.x), floor(x.y), floor(x.z)); 
+	
+	const C3DBounds ip(static_cast<unsigned int>(h.x), 
+			   static_cast<unsigned int>(h.y), 
+			   static_cast<unsigned int>(h.z));
+
+
+	if (ip < m_field.get_size()) {
+		size_t linear_index = ip.x + m_field.get_size().x * (ip.y  + ip.z * m_field.get_size().y); 
+		
+		const C3DFVector w1 = x - h;
+		
+		if (w1 == C3DFVector::_0) {
+			// early exist for this special case
+			result = m_field[linear_index]; 
+		}else{
+			
+			// we don't generally check for boundaries, or if we are on grid. 
+			// hitting the upper boundary when loading is very improbably 
+			// so that tests would just slow down the execution and 
+			// the interpolation weights will ensure that only the correct data 
+			// is used 
+			
+			// also note that the 4th value of the SSE register contains garbage, 
+			// i.e. loads the x value of the next vector in the field. 
+			// 
+			const C3DFVector w0 = C3DFVector::_1 - w1;
+			
+			const __m128 in000 = _mm_loadu_ps(&m_field[linear_index].x); 
+			const __m128 in001 = _mm_loadu_ps(&m_field[linear_index + 1].x); 
+			
+			size_t linear_index_y1 = linear_index + m_field.get_size().x; 
+			
+			const __m128 in010 = _mm_loadu_ps(&m_field[linear_index_y1].x); 
+			const __m128 in011 = _mm_loadu_ps(&m_field[linear_index_y1 + 1].x); 
+			
+			linear_index +=  m_field.get_plane_size_xy(); 
+			const __m128 in100 = _mm_loadu_ps(&m_field[linear_index].x); 
+			const __m128 in101 = _mm_loadu_ps(&m_field[linear_index + 1].x); 
+
+			
+			linear_index +=  m_field.get_size().x; 
+			const __m128 in110 = _mm_loadu_ps(&m_field[linear_index].x); 
+			
+			// here we have to check, because otherwise we might access 
+			// data outside the allocated memory. 
+			++linear_index; 
+			__m128 in111; 
+			
+			// we are somewhere inside the field, 
+			if (linear_index < m_field.size() - 1) {
+				in111 = _mm_loadu_ps(&m_field[linear_index].x); 
+				
+			} else 	if (linear_index < m_field.size()) {
+				// this is really the last element, take care to not access 
+				// outside the allowed range
+				const C3DFVector& v = m_field[linear_index];
+				float __attribute__((aligned(16))) help[4] = {v.x, v.y, v.z, 0.0f}; 
+				in111 = _mm_loadu_ps(help);
+			}else {
+				in111 = _mm_loadu_ps(&m_field[linear_index - 1].x); 
+			}
+			
+			const __m128 w0x = _mm_set1_ps(w0.x); 
+			const __m128 w1x = _mm_set1_ps(w1.x); 
+			
+			const __m128 w0y = _mm_set1_ps(w0.y); 
+			const __m128 w1y = _mm_set1_ps(w1.y); 
+			
+			const __m128 w0z = _mm_set1_ps(w0.z); 
+			const __m128 w1z = _mm_set1_ps(w1.z); 
+
+			const __m128 r = 
+				w0z * (w0y * ( w0x * in000 + w1x * in001) + 
+				       w1y * ( w0x * in010 + w1x * in011)) + 
+				w1z * (w0y * ( w0x * in100 + w1x * in101) + 
+				       w1y * ( w0x * in110 + w1x * in111)); 
+			
+			float __attribute__((aligned(16))) result_help[4]; 
+			_mm_store_ps(result_help, r); 
+			result.x = result_help[0]; 
+			result.y = result_help[1]; 
+			result.z = result_help[2]; 
+		}
+	}
+	return result;
+	
+}
+#endif 
+
+C3DLinearVectorfieldInterpolator::C3DLinearVectorfieldInterpolator(const C3DFVectorfield& field):
+        m_field(field)
+{
+	
+}
+
+
+C3DFVector C3DLinearVectorfieldInterpolator::operator ()(const C3DFVector& x) const
+{
+	C3DFVector result = C3DFVector::_0;
+	
+	const C3DFVector h(floor(x.x), floor(x.y), floor(x.z)); 
+	
+	const C3DBounds ip(static_cast<unsigned int>(h.x), 
+			   static_cast<unsigned int>(h.y), 
+			   static_cast<unsigned int>(h.z));
+
+
+	if (ip < m_field.get_size()) {
+		size_t linear_index = ip.x + m_field.get_size().x * (ip.y  + ip.z * m_field.get_size().y); 
+		
+		const C3DFVector& in000 = m_field[linear_index]; 
+		
+		const C3DFVector w1 = x - h;
+		
+		if (w1 == C3DFVector::_0) {
+			// early exist for this special case
+			result = in000; 
+		}else{
+
+			// we don't generally check for boundaries, or if we are on grid. 
+			// hitting the upper boundary when loading is very improbably 
+			// so that tests would just slow down the execution and 
+			// the interpolation weights will ensure that only the correct data 
+			// is used 
+			
+			const C3DFVector w0 = C3DFVector::_1 - w1;
+			
+			const C3DFVector& in001 = m_field[linear_index + 1]; 
+			
+			size_t linear_index_y1 = linear_index + m_field.get_size().x; 
+			const C3DFVector& in010 = m_field[linear_index_y1]; 
+			const C3DFVector& in011 = m_field[linear_index_y1 + 1]; 
+			
+			linear_index +=  m_field.get_plane_size_xy(); 
+			const C3DFVector& in100 = m_field[linear_index]; 
+			const C3DFVector& in101 = m_field[linear_index + 1]; 
+			
+			linear_index +=  m_field.get_size().x; 
+			const C3DFVector& in110 = m_field[linear_index]; 
+			
+			// here we have to check, because otherwise we might access 
+			// data outside the allocated memory. 
+			++linear_index; 
+			const C3DFVector& in111 = (linear_index < m_field.size()) ? 
+				m_field[linear_index] : C3DFVector::_0; 
+			
+			// now interpolate
+			result = w0.z * (w0.y * ( w0.x * in000 + w1.x * in001) + 
+					 w1.y * ( w0.x * in010 + w1.x * in011)) + 
+				w1.z * (w0.y * ( w0.x * in100 + w1.x * in101) + 
+					w1.y * ( w0.x * in110 + w1.x * in111)); 
+				
+		}
+	}
+	return result;
 }
 
 #define INSTANCIATE(TYPE) \
