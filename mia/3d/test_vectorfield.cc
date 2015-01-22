@@ -126,7 +126,11 @@ C3DVectorfieldFixture::C3DVectorfieldFixture():
 }
 
 
-typedef bmpl::vector<C3DSSELinearVectorfieldInterpolator,C3DLinearVectorfieldInterpolator>::type test_types; 
+typedef bmpl::vector<
+#ifdef __SSE__
+	C3DSSELinearVectorfieldInterpolator,
+#endif 
+	C3DLinearVectorfieldInterpolator>::type test_types; 
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 {			
