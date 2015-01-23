@@ -287,6 +287,7 @@ C3DSymScaledRegister::C3DSymScaledRegister(P3DImageCost cost, unsigned iter, dou
 
 void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const
 {
+	
         
         // deform the images with the input transformations
         C3DFImage src_tmp(src.get_size()); 
@@ -309,9 +310,9 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
                 m_cost->set_reference(ref_tmp); 
                 m_cost->evaluate_force(src_tmp, grad);
                 
-                float max_v = m_solver->optimize(grad, v); 
+                float max_v = m_regularizer->run(grad, v); 
                 
-                update_transform(*transforms.first, v, max_v);
+		transforms.first->update_by_velocity(v, m_current_step / max_v); 
 
 		vectorfield_as_inverse_of(*transforms.first, *transforms.second, 1e-5, 20);
 
@@ -321,9 +322,10 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
                 m_cost->set_reference(src_tmp); 
                 m_cost->evaluate_force(ref_tmp, grad);
 
-                max_v = m_solver->optimize(grad, v); 
+                max_v = m_regularizer->run(grad, v); 
                 
-                update_transform(*transforms.second, v, max_v, m_current_step, );
+		transforms.second->update_by_velocity(v, m_current_step / max_v); 
+
 		
 		vectorfield_as_inverse_of(*transforms.first, *transforms.second, 1e-5, 20);
                 
@@ -339,10 +341,3 @@ void C3DSymScaledRegister::deform(const C3DFImage& src, const C3DFVectorfield& t
         src_deformer(src,result); 
 }
 
-void C3DSymScaledRegister::update_transform(C3DFVectorfield& u, const C3DFVectorfield& v, float max_v)
-{
-	float step = max_v * m_current_step; 
-	
-	
-
-}

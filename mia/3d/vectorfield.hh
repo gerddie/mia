@@ -92,8 +92,9 @@ public:
 	
 	void update_as_inverse_of(const C3DFVectorfield& other, float tol, int maxiter);
 
+	void update_by_velocity(const C3DFVectorfield& v, float step); 
 	
-}; 
+};
 
 extern template class T3DVectorfield<C3DFVector>;
 extern template class EXPORT_3D T3DVectorfield<C3DDVector>;

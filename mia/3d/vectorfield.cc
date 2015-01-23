@@ -1,3 +1,6 @@
+
+
+#include <gsl/gsl_cblas.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
@@ -73,6 +76,12 @@ void C3DFVectorfield::update_as_inverse_of(const C3DFVectorfield& other, float t
 	};
 	
 	tbb::parallel_for( range, callback ); 
+}
+
+void C3DFVectorfield::update_by_velocity(const C3DFVectorfield& v, float step)
+{
+	// hoping that the cblas implementation takes care of threading
+	cblas_saxpy(v.size() * 3, step, &v[0].x, 1, &(*this)[0].x, 1); 
 }
 
 
