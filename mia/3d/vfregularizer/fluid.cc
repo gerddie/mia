@@ -34,16 +34,82 @@ double do_run(C3DFVectorfield& output, C3DFVectorfield& input) const
         float residuum;
         float thresh = 0.0;
         
-        size_t i = 0;
+        size_t iter = 0;
+
+        C3DBounds work_size = size - C3DBounds::_1; 
         
         // first iteration runs over the whole field 
         fill(update_flags.begin(), update_flags.end(), 1);
 
-        
+        do {
+                iter++; 
+                residuum == 0.0f; 
+                
+                size_t linear_index = m_dxy + m_dx + 1; 
+                for (unsigned z = 1; z < work_size.z; ++z) {
+                        for (unsigned y = 1; y < work_size.y; ++y) {
+                                for (unsigned x = 1; x < work_size.x; ++x, ++linear_index) {
+                                        float r = solve_at(&output[linear_index], input[linear_index]); 
+                                }
+                                linear_index += 2; 
+                        }
+                        linear_index += m_dx << 1; 
+                }
+                        
+                
+        } while (iter < m_maxiter && residuum > m_epsilon); 
         
         
 
         
+}
+
+float C3DFluidVectorfieldRegularizer::solve_at(C3DFVector *v, const C3DFVector& b) const 
+{
+        C3DFVector *vm = v - m_dxy; 
+
+        __m128 	Vp0m1m1 = _mm_loadu_ps(&vm[ -m_dx]);
+        __m128 	Vm1p0m1 = _mm_loadu_ps(&vm[ -1   ]);
+	__m128 	Vp0p0m1 = _mm_loadu_ps(&vm[  0   ]);
+	__m128 	Vp1p0m1 = _mm_loadu_ps(&vm[  1   ]);
+	__m128 	Vp0p1m1 = _mm_loadu_ps(&vm[  m_dx]);
+
+        vm = v - m_dx; 
+
+        __m128 	Vm1m1p0 = _mm_loadu_ps(&vm[ -1 ]);
+	__m128 	Vp0m1p0 = _mm_loadu_ps(&vm[  0 ]);
+	__m128 	Vp1m1p0 = _mm_loadu_ps(&vm[  1 ]);
+
+        __m128 Vp0p0m1 = _mm_loadu_ps(&v[-1]); 
+        __m128 Vp0p0p1 = _mm_loadu_ps(&v[1]); 
+
+        vm = v + m_dx; 
+
+        __m128 	Vm1p1p0 = _mm_loadu_ps(&vm[ -1 ]);
+	__m128 	Vp0p1p0 = _mm_loadu_ps(&vm[  0 ]);
+	__m128 	Vp1p1p0 = _mm_loadu_ps(&vm[  1 ]);
+        
+        vm = v + m_dxy; 
+
+        __m128 	Vp0m1p1 = _mm_loadu_ps(&vm[ -m_dx]);
+        __m128 	Vm1p0p1 = _mm_loadu_ps(&vm[ -1   ]);
+	__m128 	Vp0p0p1 = _mm_loadu_ps(&vm[  0   ]);
+	__m128 	Vp1p0p1 = _mm_loadu_ps(&vm[  1   ]);
+	__m128 	Vp0p1p1 = _mm_loadu_ps(&vm[  m_dx]);
+        
+        
+        __m128 	vdxy = Vm1m1p0 - Vp1m1p0 + Vp1p1p0 - Vm1p1p0; // only 1 and 2 of interest
+	__m128 	vdxz = Vm1p0m1 - Vp1p0m1 + Vp1p0p1 - Vm1p0p1; // only 1 and 3 of interest
+
+        __m128 vdxx = Vp0p0m1 + Vp0p0p1; 
+        __m128 vdyy = Vp0p1p0 + Vp0m1p0;
+	__m128 vdzz = Vp0p0p1 + Vp0p0m1;
+
+        __m128 vydyz = Vp0m1m1 - Vp0p1m1 + Vp0p1p1  - Vp0m1p1; // only 2 and 3 of interest 
+
+        
+        __m128 p1 = _mm_
+
 }
 
 void C3DFluidVectorfieldRegularizer::on_size_changed()
