@@ -59,9 +59,9 @@ public:
 	T3DVectorfield(const C3DBounds& size, const CAttributedData& data):
 		T3DDatafield<T>(size),
 		CAttributedData(data)
-	{
-	}
-
+		{
+		}
+	
 	C3DFVector get_voxel_size() const {
 		const PAttribute attr = get_attribute("voxel");
 		if (!attr) {
@@ -69,7 +69,7 @@ public:
 				"voxel size not defined, default to <1,1,1>\n";
 			return C3DFVector(1,1,1);
 		}
-
+		
 		const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
 		if (!vs){
 			cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size wrong type, "
@@ -78,11 +78,11 @@ public:
 		}
 		return *vs;
 	}
-
+	
 	void set_voxel_size(const C3DFVector& voxel){
 		set_attribute("voxel", PAttribute(new CVoxelAttribute(voxel)));
 	}
-
+	
 };
 
 extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
@@ -118,15 +118,14 @@ typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
    \param[in,out] lhs left input vector field and output 
    \param[in] rhs right input vector field and output 
    \returns lhs after processing 
- */
+*/
 EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& lhs, const C3DFVectorfield& rhs);
 
-EXPORT_3D  void vectorfield_as_inverse_of(C3DFVectorfield& me, const C3DFVectorfield& other, float tol, int maxiter); 
 
 class EXPORT_3D C3DLinearVectorfieldInterpolator {
 public: 
 	C3DLinearVectorfieldInterpolator(const C3DFVectorfield& field); 
-
+	
 	C3DFVector operator () (const C3DFVector& x) const; 
 private: 
 	const C3DFVectorfield& m_field; 
@@ -136,13 +135,15 @@ private:
 class EXPORT_3D C3DSSELinearVectorfieldInterpolator {
 public: 
 	C3DSSELinearVectorfieldInterpolator(const C3DFVectorfield& field); 
-
+	
 	C3DFVector operator ()(const C3DFVector& x) const; 
 private: 
 	const C3DFVectorfield& m_field; 
 }; 
 #endif 
 
+
+EXPORT_3D  void vectorfield_as_inverse_of(C3DFVectorfield& me, const C3DFVectorfield& other, float tol, int maxiter);
 
 NS_MIA_END
 

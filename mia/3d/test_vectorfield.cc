@@ -25,11 +25,13 @@
 
 
 #include <set>
+
 #include <mia/core.hh>
 #include <mia/3d/vectorfield.hh>
 
 #include <boost/mpl/vector.hpp>
 
+#include <cmath>
 
 namespace bmpl=boost::mpl;
 NS_MIA_USE; 
@@ -274,6 +276,24 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 				
 			}
 }
+
+BOOST_AUTO_TEST_CASE (test_vectorfield_as_inverse_of) 
+{
+	C3DBounds size(10,10,10); 
+	
+	C3DFVectorfield other(size); 
+	
+	for (auto io = other.begin_range(C3DBounds::_0, size); 
+	     io != other.end_range(C3DBounds::_0, size); ++io)  {
+		*io = C3DFVector(cos(io.pos().x * M_PI / 9), cos(io.pos().y * M_PI / 9), cos(io.pos().z * M_PI / 9));
+	}
+		
+	C3DFVectorfield me(size); 
+	vectorfield_as_inverse_of(me, other, 1e-5f, 30); 
+
+	
+}
+
 
 
 NS_MIA_USE

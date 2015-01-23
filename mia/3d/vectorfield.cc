@@ -1,23 +1,3 @@
-/* -*- mia-c++  -*-
- *
- * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
- *
- * MIA is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with MIA; if not, see <http://www.gnu.org/licenses/>.
- *
- */
-
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
@@ -63,23 +43,37 @@ EXPORT_3D  void vectorfield_as_inverse_of(C3DFVectorfield& me, const C3DFVectorf
 {
 	assert(me.get_size() == other.get_size()); 
 
+	float tol2 = tol * tol; 
+
 #ifdef __SSE__
 	C3DSSELinearVectorfieldInterpolator t(other); 
 #else 
 	C3DLinearVectorfieldInterpolator t(other); 
 #endif 
-	auto process_lines = [&me, &t, tol, maxiter](const tbb::blocked_range<size_t>& range) {
+	tbb::blocked_range<size_t> range(0, me.get_size().z, 1); 
+	
+	auto callback = [&me, &t, tol2, maxiter](const tbb::blocked_range<size_t>& range) {
+		
 		for (auto z = range.begin(); z != range.end();  ++z)  {
 			auto i = me.begin_at(0,0,z);
 			for (size_t y = 0; y < me.get_size().y; ++y)  {
 				for (size_t x = 0; x < me.get_size().x; ++x, ++i)  {
-					*i = C3DFVector::_0; 
+					int iter = 0; 
+					while (iter++ < maxiter) {
+						C3DFVector r(x,y,z);
+						C3DFVector i_delta = *i + t(r - *i); 
+						float dnorm = i_delta.norm2(); 
+						if ( dnorm < tol2)
+							break; 
+						*i -= 0.5 * i_delta; 
+						cvdebug() << "iter[" << iter << "]" << *i << ", dnorm=" << dnorm << "\n"; 
+					}
 				}
 			}
 		}
-	}; 
+	};
 	
-	
+	tbb::parallel_for( range, callback ); 
 }
 
 #ifdef __SSE__
