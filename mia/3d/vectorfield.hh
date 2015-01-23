@@ -85,19 +85,23 @@ public:
 	
 };
 
-extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
+
+class EXPORT_3D C3DFVectorfield : public T3DVectorfield<C3DFVector> {
+public: 
+	using T3DVectorfield<C3DFVector>::T3DVectorfield; 
+	
+	void update_as_inverse_of(const C3DFVectorfield& other, float tol, int maxiter);
+
+	
+}; 
+
+extern template class T3DVectorfield<C3DFVector>;
 extern template class EXPORT_3D T3DVectorfield<C3DDVector>;
 extern template class EXPORT_3D range3d_iterator<T3DDatafield<C3DFVector>::iterator>;
 extern template class EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<C3DFVector>::iterator>;
 extern template class EXPORT_3D range3d_iterator<T3DDatafield<C3DFVector>::const_iterator>;
 extern template class EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<C3DFVector>::const_iterator>;
 
-
-/**
-   @ingroup basic 
-   @brief a 3D field of floating point single accuracy 3D vectors 
-*/
-typedef T3DVectorfield<C3DFVector>  C3DFVectorfield;
 
 /**
    @ingroup basic 
@@ -122,9 +126,9 @@ typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
 EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& lhs, const C3DFVectorfield& rhs);
 
 
-class EXPORT_3D C3DLinearVectorfieldInterpolator {
+class EXPORT_3D C3DDefaultLinearVectorfieldInterpolator {
 public: 
-	C3DLinearVectorfieldInterpolator(const C3DFVectorfield& field); 
+	C3DDefaultLinearVectorfieldInterpolator(const C3DFVectorfield& field); 
 	
 	C3DFVector operator () (const C3DFVector& x) const; 
 private: 
@@ -140,10 +144,12 @@ public:
 private: 
 	const C3DFVectorfield& m_field; 
 }; 
+typedef C3DSSELinearVectorfieldInterpolator C3DLinearVectorfieldInterpolator; 
+#else 
+typedef C3DDefaultLinearVectorfieldInterpolator C3DLinearVectorfieldInterpolator; 
 #endif 
 
 
-EXPORT_3D  void vectorfield_as_inverse_of(C3DFVectorfield& me, const C3DFVectorfield& other, float tol, int maxiter);
 
 NS_MIA_END
 

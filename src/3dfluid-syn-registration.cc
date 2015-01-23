@@ -311,18 +311,21 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
                 
                 float max_v = m_solver->optimize(grad, v); 
                 
-                update_transform(v, m_current_step, *transforms.first);
-                update_as_inverse(*transforms.first, *transforms.second); 
+                update_transform(*transforms.first, v, max_v);
+
+		vectorfield_as_inverse_of(*transforms.first, *transforms.second, 1e-5, 20);
 
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.first, ref_tmp);
                 
                 m_cost->set_reference(src_tmp); 
                 m_cost->evaluate_force(ref_tmp, grad);
+
                 max_v = m_solver->optimize(grad, v); 
                 
-                update_transform(v, max_v, m_current_step, *transforms.second);
-                update_as_inverse(*transforms.second, *transforms.first);
+                update_transform(*transforms.second, v, max_v, m_current_step, );
+		
+		vectorfield_as_inverse_of(*transforms.first, *transforms.second, 1e-5, 20);
                 
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.first, ref_tmp);
@@ -334,4 +337,12 @@ void C3DSymScaledRegister::deform(const C3DFImage& src, const C3DFVectorfield& t
 {
         FDeformer3D src_deformer(t ,m_ipfac); 
         src_deformer(src,result); 
+}
+
+void C3DSymScaledRegister::update_transform(C3DFVectorfield& u, const C3DFVectorfield& v, float max_v)
+{
+	float step = max_v * m_current_step; 
+	
+	
+
 }

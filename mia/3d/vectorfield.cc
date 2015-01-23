@@ -2,6 +2,7 @@
 #include <tbb/blocked_range.h>
 
 
+#include <mia/core/threadedmsg.hh>
 #include <mia/3d/vectorfield.hh>
 #include <mia/3d/datafield.cxx>
 #include <mia/2d/datafield.cxx>
@@ -39,34 +40,32 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 	return a;
 }
 
-EXPORT_3D  void vectorfield_as_inverse_of(C3DFVectorfield& me, const C3DFVectorfield& other, float tol, int maxiter)
+void C3DFVectorfield::update_as_inverse_of(const C3DFVectorfield& other, float tol, int maxiter)
 {
-	assert(me.get_size() == other.get_size()); 
+	assert(get_size() == other.get_size()); 
 
 	float tol2 = tol * tol; 
 
-#ifdef __SSE__
-	C3DSSELinearVectorfieldInterpolator t(other); 
-#else 
 	C3DLinearVectorfieldInterpolator t(other); 
-#endif 
-	tbb::blocked_range<size_t> range(0, me.get_size().z, 1); 
+
+	tbb::blocked_range<size_t> range(0, get_size().z, 1); 
 	
-	auto callback = [&me, &t, tol2, maxiter](const tbb::blocked_range<size_t>& range) {
-		
+	auto callback = [this, &t, tol2, maxiter](const tbb::blocked_range<size_t>& range) {
 		for (auto z = range.begin(); z != range.end();  ++z)  {
-			auto i = me.begin_at(0,0,z);
-			for (size_t y = 0; y < me.get_size().y; ++y)  {
-				for (size_t x = 0; x < me.get_size().x; ++x, ++i)  {
+			auto i = begin_at(0,0,z);
+			for (size_t y = 0; y < get_size().y; ++y)  {
+				for (size_t x = 0; x < get_size().x; ++x, ++i)  {
 					int iter = 0; 
+					C3DFVector pos(x,y,z);
+					float dnorm = 0.0; 
 					while (iter++ < maxiter) {
-						C3DFVector r(x,y,z);
-						C3DFVector i_delta = *i + t(r - *i); 
-						float dnorm = i_delta.norm2(); 
+						C3DFVector r = pos - *i; 
+						C3DFVector ov = t(r); 
+						C3DFVector i_delta = r - ov - pos; 
+						dnorm = i_delta.norm2(); 
 						if ( dnorm < tol2)
 							break; 
-						*i -= 0.5 * i_delta; 
-						cvdebug() << "iter[" << iter << "]" << *i << ", dnorm=" << dnorm << "\n"; 
+						*i += 0.5 * i_delta; 
 					}
 				}
 			}
@@ -75,6 +74,7 @@ EXPORT_3D  void vectorfield_as_inverse_of(C3DFVectorfield& me, const C3DFVectorf
 	
 	tbb::parallel_for( range, callback ); 
 }
+
 
 #ifdef __SSE__
 C3DSSELinearVectorfieldInterpolator::C3DSSELinearVectorfieldInterpolator(const C3DFVectorfield& field):
@@ -177,14 +177,14 @@ C3DFVector C3DSSELinearVectorfieldInterpolator::operator()(const C3DFVector& x) 
 }
 #endif 
 
-C3DLinearVectorfieldInterpolator::C3DLinearVectorfieldInterpolator(const C3DFVectorfield& field):
+C3DDefaultLinearVectorfieldInterpolator::C3DDefaultLinearVectorfieldInterpolator(const C3DFVectorfield& field):
         m_field(field)
 {
 	
 }
 
 
-C3DFVector C3DLinearVectorfieldInterpolator::operator ()(const C3DFVector& x) const
+C3DFVector C3DDefaultLinearVectorfieldInterpolator::operator ()(const C3DFVector& x) const
 {
 	C3DFVector result = C3DFVector::_0;
 	

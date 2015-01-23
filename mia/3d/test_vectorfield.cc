@@ -172,9 +172,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 
 				C3DFVector px = C3DFVector::_1 - dx; 
 				
-				cvdebug() << "X: " <<"(" << x << ", " << y << ", " << z <<")"
-					  << dx << ": " << px << ", " << value << "\n";  
-				
 				C3DFVector test_value = 
 					px.z * (px.y * ( px.x * f(x,y,z) + dx.x * f(x+1,y,z) ) + 
 						dx.y * ( px.x * f(x,y+1,z) + dx.x * f(x+1,y+1,z) )) + 
@@ -209,9 +206,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 				dx.x = dx.x - x; 
 				
 				C3DFVector px = C3DFVector::_1 - dx; 
-				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
 				C3DFVector test_value = 
 					(px.y * ( px.x * f(x,y,iz)   + dx.x * f(x+1,y,iz) ) + 
 					 dx.y * ( px.x * f(x,y+1,iz) + dx.x * f(x+1,y+1,iz) )); 
@@ -237,9 +231,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 				dx.x = dx.x - x; 
 				
 				C3DFVector px = C3DFVector::_1 - dx; 
-				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
 				C3DFVector test_value = 
 					px.z * ( px.x * f(x,iy,z) + dx.x * f(x+1,iy,z) ) + 
 					dx.z * ( px.x * f(x,iy,z+1) + dx.x * f(x+1,iy,z+1)); 
@@ -264,8 +255,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 				
 				C3DFVector px = C3DFVector::_1 - dx; 
 				
-				cvdebug() << "X: " << dx << ": " << px << ", " << value << "\n";  
-				
 				C3DFVector test_value = 
 					px.z * (px.y * f(ix,y,z) +  dx.y *  f(ix,y+1,z) ) + 
 					dx.z * (px.y * f(ix,y,z+1) + dx.y * f(ix,y+1,z+1) ); 
@@ -285,11 +274,42 @@ BOOST_AUTO_TEST_CASE (test_vectorfield_as_inverse_of)
 	
 	for (auto io = other.begin_range(C3DBounds::_0, size); 
 	     io != other.end_range(C3DBounds::_0, size); ++io)  {
-		*io = C3DFVector(cos(io.pos().x * M_PI / 9), cos(io.pos().y * M_PI / 9), cos(io.pos().z * M_PI / 9));
+		*io = C3DFVector(sin(io.pos().x * M_PI / 9), sin(io.pos().y * M_PI / 9), sin(io.pos().z * M_PI / 9));
 	}
 		
 	C3DFVectorfield me(size); 
-	vectorfield_as_inverse_of(me, other, 1e-5f, 30); 
+	me.update_as_inverse_of(other, 1e-14f, 50); 
+	
+	C3DLinearVectorfieldInterpolator interp_me(me);
+	C3DLinearVectorfieldInterpolator interp_other(other);
+
+	for(unsigned z = 0; z < 10; ++z)
+		for(unsigned y = 0; y < 10; ++y)
+			for(unsigned x = 0; x < 10; ++x) {
+				
+				C3DFVector pos(x,y,z); 
+				C3DFVector pos_t = pos - interp_me(pos); 
+				C3DFVector pos_tt = pos_t - interp_other(pos_t) - pos; 
+				
+				cvdebug() << pos << ": delta = " << pos_tt << "\n";  
+
+				BOOST_CHECK_SMALL(pos_tt.x, 1e-5f); 
+				BOOST_CHECK_SMALL(pos_tt.y, 1e-5f); 
+				BOOST_CHECK_SMALL(pos_tt.z, 1e-5f); 
+
+
+				// test also the inverse, but with a higher tolerance, 
+				// since this was not optimized 
+				C3DFVector pos_it = pos - interp_other(pos); 
+				C3DFVector pos_itt = pos_it - interp_me(pos_it) - pos
+					;
+				cvdebug() << pos << ": inv delta = " << pos_itt << "\n";  				
+
+				BOOST_CHECK_SMALL(pos_itt.x, 0.05f); 
+				BOOST_CHECK_SMALL(pos_itt.y, 0.05f); 
+				BOOST_CHECK_SMALL(pos_itt.z, 0.05f); 
+				
+			}
 
 	
 }
