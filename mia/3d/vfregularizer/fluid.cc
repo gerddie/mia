@@ -101,14 +101,21 @@ float C3DFluidVectorfieldRegularizer::solve_at(C3DFVector *v, const C3DFVector& 
         __m128 	vdxy = Vm1m1p0 - Vp1m1p0 + Vp1p1p0 - Vm1p1p0; // only 1 and 2 of interest
 	__m128 	vdxz = Vm1p0m1 - Vp1p0m1 + Vp1p0p1 - Vm1p0p1; // only 1 and 3 of interest
 
-        __m128 vdxx = Vp0p0m1 + Vp0p0p1; 
+        __m128 vdxx = Vp1p0m0 + Vm1p0p0;
         __m128 vdyy = Vp0p1p0 + Vp0m1p0;
 	__m128 vdzz = Vp0p0p1 + Vp0p0m1;
 
         __m128 vydyz = Vp0m1m1 - Vp0p1m1 + Vp0p1p1  - Vp0m1p1; // only 2 and 3 of interest 
 
         
-        __m128 p1 = _mm_
+        
+        __m128 p1 = _mm_shuffle_ps(vdxx, vdyy, _MM_SHUFFLE(0, 1, 1, 0));
+        __m128 p2 = _mm_shuffle_ps(vdyy, vdzz, _MM_SHUFFLE(0, 1, 1, 0));
+                                   
+        p1 = _mm_shuffle_ps(p1, vdzz, _MM_SHUFFLE(0, 2, 2, 0));   // p1 should now contain (xx.x, yy.y, zz.z)
+                            
+        __m128 p2 = _mm_shuffle_ps(vdxx, vdzz, _MM_SHUFFLE(0, 2, 1, 3));
+        
 
 }
 
