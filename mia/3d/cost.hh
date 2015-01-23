@@ -52,6 +52,9 @@ typedef TFactory<C3DImageCost> C3DImageCostPlugin;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> > C3DImageCostPluginHandler;
 
+template <> const char *  const TPluginHandler<C3DImageCostPlugin>::m_help; 
+extern template class EXPORT_3D THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >; 
+
 /// @cond NEVER 
 FACTORY_TRAIT(C3DImageCostPluginHandler);
 /// @endcond 

@@ -53,8 +53,8 @@ public:
         /**
            The work routine for the regularizer
 
-           \param[out] output the vector field that contains the reguarlized field 
-           \param[in] on input the vector field containes the unregularized field, 
+           \param [out] output  the vector field that contains the reguarlized field 
+           \param[in] input  the vector field that containes the unregularized field, 
            e.g. a force field obtained from an image similarity measure. The field 
            may be overwritten by the regularization operation. 
            \returns the maximum of the norms of the vectors of the output field
