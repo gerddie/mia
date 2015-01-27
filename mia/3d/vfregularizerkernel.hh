@@ -59,6 +59,12 @@ public:
         float evaluate_row(unsigned y, unsigned z); 
 
         float evaluate_row_sparse(unsigned y, unsigned z); 
+ protected: 
+        C3DFVectorfield& get_output_field() const; 
+        const C3DFVectorfield& get_input_field() const; 
+        T3DDatafield<float>& get_residua() const;  
+        const T3DDatafield<unsigned char>& get_update_flags() const; 
+        T3DDatafield<unsigned char>& get_set_flags() const; 
  private: 
         virtual float do_evaluate_row(unsigned y, unsigned z) = 0; 
 

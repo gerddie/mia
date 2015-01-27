@@ -68,6 +68,33 @@ float C3DFVectorfieldRegularizerKernel::evaluate_row_sparse(unsigned y, unsigned
         return do_evaluate_row_sparse(y,z); 
 }
 
+C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_output_field() const
+{
+        return *m_output_field; 
+}
+
+const C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_input_field() const
+{
+        return *m_input_field; 
+}
+
+T3DDatafield<float>& C3DFVectorfieldRegularizerKernel::get_residua() const
+{
+        return *m_residua; 
+}
+
+const T3DDatafield<unsigned char>& C3DFVectorfieldRegularizerKernel::get_update_flags() const
+{
+        return *m_update_flags; 
+}
+
+
+T3DDatafield<unsigned char>& C3DFVectorfieldRegularizerKernel::get_set_flags() const
+{
+        return *m_set_flags; 
+}
+
+
 template <> const char *  const 
 TPluginHandler<C3DFVectorfieldRegularizerKernelPlugin>::m_help =  
         "This class of plug-ins implement various regularizations kernels for "
