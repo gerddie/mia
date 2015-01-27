@@ -18,7 +18,6 @@ C3DFluidVectorfieldRegularizer::C3DFluidVectorfieldRegularizer(float mu, float l
 	m_a = a * m_c;
 }
 
-
 double C3DFluidVectorfieldRegularizer::do_run(C3DFVectorfield& output, C3DFVectorfield& input) const
 {
         // reserve space for temporaries
@@ -36,26 +35,22 @@ double C3DFluidVectorfieldRegularizer::do_run(C3DFVectorfield& output, C3DFVecto
         
         size_t iter = 0;
 
-        C3DBounds work_size = size - C3DBounds::_1; 
-        
         // first iteration runs over the whole field 
         fill(update_flags.begin(), update_flags.end(), 1);
 
+        m_fluid_row_kernel->set_data_fields(output, input, residua);
+        
         do {
                 iter++; 
                 residuum == 0.0f; 
 
-                // implement blocks and local copy of accessed data 
+
+                m_fluid_row_kernel->set_update_fields(update_flags, dset_flags); 
                 
-                size_t linear_index = m_dxy + m_dx + 1; 
                 for (unsigned z = 1; z < work_size.z; ++z) {
                         for (unsigned y = 1; y < work_size.y; ++y) {
-                                for (unsigned x = 1; x < work_size.x; ++x, ++linear_index) {
-                                        float r = solve_at(&output[linear_index], input[linear_index]); 
-                                }
-                                linear_index += 2; 
+                                residuum += m_fluid_row_kernel->evaluate_row(y, z);
                         }
-                        linear_index += m_dx << 1; 
                 }
                         
                 
@@ -66,7 +61,10 @@ double C3DFluidVectorfieldRegularizer::do_run(C3DFVectorfield& output, C3DFVecto
         
 }
 
-float C3DFluidVectorfieldRegularizer::solve_at(C3DFVector *v, const C3DFVector& b) const 
+
+        
+
+float C3DFluidVectorfieldRegularizer::solve_at(C3DFVector_sse *v, const C3DFVector_sse& b) const 
 {
         C3DFVector *vm = v - m_dxy; 
 
