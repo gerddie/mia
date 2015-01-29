@@ -23,6 +23,8 @@
 
 using namespace mia; 
 
+
+
 BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation ) 
 {
 	float mu = 1.2; 
@@ -52,56 +54,53 @@ BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation )
 
 	b(1,1,1) = b111; 
 
+	const C3DFVector V0mm(0,2,7);
+	const C3DFVector Vm0m(2,3,6);
+	const C3DFVector V00m(3,6,9);
+	const C3DFVector Vp0m(-2,-4,-5);
+	const C3DFVector V0pm(2,3,3);
 
-	const C3DFVector Vm1m1p0(1,2,1);
-	const C3DFVector Vp1p1p0(2,3,3);
-	const C3DFVector Vp1m1p0(2,4,5);
-	const C3DFVector Vm1p1p0(0,2,7);
-
-	const C3DFVector Vm1p0m1(2,3,6);
-	const C3DFVector Vp1p0p1(3,2,1);
-	const C3DFVector Vp1p0m1(-2,-4,-5);
-	const C3DFVector Vm1p0p1(-3,-4,-8);
-
-	const C3DFVector Vp0m1m1(0,2,7);
-	const C3DFVector Vp0p1p1(1,2,1);
-	const C3DFVector Vp0p1m1(2,3,3);
-	const C3DFVector Vp0m1p1(2,-1,-7);
-
-	const C3DFVector Vp0p0m1(3,6,9);
-	const C3DFVector Vp0p0p1(6,2,4);
-
-	const C3DFVector Vp0m1p0(2,4,2);
-	const C3DFVector Vp0p1p0(9,5,1);
-
-	const C3DFVector Vm1p0p0(3,6,4);
-	const C3DFVector Vp1p0p0(5,1,3);
-
-	const C3DFVector Vp0p0p0(4,2,5); 
+	const C3DFVector Vmm0(1,2,1);
+	const C3DFVector V0m0(2,4,2);
+	const C3DFVector Vpm0(2,4,5);
 	
-	const C3DFVector V_fill_(1000,2000,3000); 
+	const C3DFVector Vm00(3,6,4);	
+	const C3DFVector V000(4,2,5); 	
+	const C3DFVector Vp00(5,1,3);	
+
+	const C3DFVector Vmp0(0,2,7);
+	const C3DFVector V0p0(9,5,1);
+	const C3DFVector Vpp0(2,3,3);
+	
+
+	const C3DFVector V0mp(2,-1,-7);
+	const C3DFVector Vm0p(-3,-4,-8);
+	const C3DFVector V00p(6,2,4);
+	const C3DFVector Vp0p(3,2,1);
+	const C3DFVector V0pp(1,2,1);
+
+	const C3DFVector fill(1000,2000,3000); 
 	
 	const std::vector<C3DFVector> v_init = {
-		V_fill_, Vp0m1m1, V_fill_, 
-		Vm1p0m1, Vp0p0m1, Vp1p0m1, 
-		V_fill_, Vp0p1m1, V_fill_, 
+		fill, V0mm, fill, 
+		Vm0m, V00m, Vp0m, 
+		fill, V0pm, fill, 
 
+		Vmm0, V0m0, Vpm0,
+		Vm00, V000, Vp00,
+		Vmp0, V0p0, Vpp0,
 
-		Vm1m1p0, Vp0m1p0, Vp1m1p0,
-		Vm1p0p0, Vp0p0p0, Vp1p0p0,
-		Vm1p1p0, Vp0p1p0, Vp1p1p0,
-
-		V_fill_, Vp0m1p1, V_fill_, 
-		Vm1p0p1, Vp0p0p1, Vp1p0p1, 
-		V_fill_, Vp0p1p1, V_fill_
+		fill, V0mp, fill, 
+		Vm0p, V00p, Vp0p, 
+		fill, V0pp, fill
 
 	}; 
 	
 	copy(v_init.begin(), v_init.end(), v.begin()); 
 
-	C3DFVector vdxx = Vm1p0p0 + Vp1p0p0; 
-	C3DFVector vdyy = Vp0m1p0 + Vp0p1p0; 
-	C3DFVector vdzz = Vp0p0m1 + Vp0p0p1; 
+	C3DFVector vdxx = Vm00 + Vp00; 
+	C3DFVector vdyy = V0m0 + V0p0; 
+	C3DFVector vdzz = V00m + V00p; 
 	
 	
 	C3DFVector p(a_b*vdxx.x + a*(vdyy.x+vdzz.x),
@@ -109,22 +108,22 @@ BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation )
 		     a_b*vdzz.z + a*(vdxx.z+vdyy.z));
 	
 	
-	float  vydxy = Vm1m1p0.y + Vp1p1p0.y - Vp1m1p0.y - Vm1p1p0.y;
-	float  vxdxy = Vm1m1p0.x + Vp1p1p0.x - Vp1m1p0.x - Vm1p1p0.x;
+	float  vydxy = Vmm0.y + Vpp0.y - Vpm0.y - Vmp0.y;
+	float  vxdxy = Vmm0.x + Vpp0.x - Vpm0.x - Vmp0.x;
 
-	float  vzdxz = Vm1p0m1.z + Vp1p0p1.z - Vp1p0m1.z - Vm1p0p1.z;
-	float  vxdxz = Vm1p0m1.x + Vp1p0p1.x - Vp1p0m1.x - Vm1p0p1.x;
+	float  vzdxz = Vm0m.z + Vp0p.z - Vp0m.z - Vm0p.z;
+	float  vxdxz = Vm0m.x + Vp0p.x - Vp0m.x - Vm0p.x;
 
-	float  vzdyz = Vp0m1m1.z + Vp0p1p1.z  - Vp0p1m1.z - Vp0m1p1.z;
-	float  vydyz = Vp0m1m1.y + Vp0p1p1.y  - Vp0p1m1.y - Vp0m1p1.y;
+	float  vzdyz = V0mm.z + V0pp.z  - V0pm.z - V0mp.z;
+	float  vydyz = V0mm.y + V0pp.y  - V0pm.y - V0mp.y;
 
 
 	C3DFVector q(vydxy+vzdxz,vxdxy+vzdyz,vxdxz+vydyz); 
 	
 	C3DFVector R = b111 + p + b_4 * q;
-	C3DFVector delta = relax * (R -  Vp0p0p0);
+	C3DFVector delta = relax * (R -  V000);
 
-	C3DFVector v000 = Vp0p0p0 + delta; 
+	C3DFVector v000 = V000 + delta; 
 	
 	kernel->set_data_fields(&v, &b);
 
