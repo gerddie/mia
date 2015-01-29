@@ -25,24 +25,26 @@
 
 NS_MIA_BEGIN
 
-class  C3DFVfFluidStandardRegularizerKernel public C3DFVectorfieldRegularizerKernel {
-        
+class  C3DFVfFluidStandardRegularizerKernel: public C3DFVectorfieldRegularizerKernel {
+public: 
         C3DFVfFluidStandardRegularizerKernel(float mu, float lambda, float relax); 
         
- private: 
+private: 
 	void post_set_data_fields(); 
 
         float do_evaluate_row(unsigned y, unsigned z); 
                 
         float do_evaluate_row_sparse(unsigned y, unsigned z); 
         
-        float set_update_flags(unsigned idx); 
+        void set_update_flags(unsigned idx); 
+
+	float solve_at(C3DFVector *v, const C3DFVector& b); 
 
         float m_a; 
         float m_a_b; 
         float m_b4; 
         float m_relax; 
-        
+        float m_c; 
         int m_dx;
 	int m_dxy;
 

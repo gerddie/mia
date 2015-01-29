@@ -87,13 +87,13 @@ public:
 inline 
 C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_output_field() const
 {
-        return *m_output_field; 
+        return *m_output; 
 }
 
 inline 
 const C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_input_field() const
 {
-        return *m_input_field; 
+        return *m_input; 
 }
 
 inline 
@@ -114,6 +114,7 @@ T3DDatafield<unsigned char>& C3DFVectorfieldRegularizerKernel::get_set_flags() c
         return *m_set_flags; 
 }
 
+inline 
 float C3DFVectorfieldRegularizerKernel::get_residual_thresh() const
 {
 	return m_residual_thresh; 

@@ -39,4 +39,5 @@ TFluidHomogenSolver::TFluidHomogenSolver(int _max_steps, float _rel_res, float _
 	c = 1/(6*a+2*b);
 	a_b = a + b;
 	b_4 = b * 0.25;
+
 }
