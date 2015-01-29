@@ -52,9 +52,11 @@ public:
         
         virtual ~C3DFVectorfieldRegularizerKernel(); 
 
-        void set_data_fields(C3DFVectorfield  *output, C3DFVectorfield *input, T3DDatafield<float> *residua);
+        void set_data_fields(C3DFVectorfield  *output, C3DFVectorfield *input);
         
-        void set_update_fields(const T3DDatafield<unsigned char> *update_flags, T3DDatafield<unsigned char> *set_flags); 
+        void set_update_fields(const T3DDatafield<unsigned char> *update_flags, 
+			       T3DDatafield<unsigned char> *set_flags, T3DDatafield<float> *residua, 
+			       float residual_thresh); 
         
         float evaluate_row(unsigned y, unsigned z); 
 
@@ -65,7 +67,10 @@ public:
         T3DDatafield<float>& get_residua() const;  
         const T3DDatafield<unsigned char>& get_update_flags() const; 
         T3DDatafield<unsigned char>& get_set_flags() const; 
+	float get_residual_thresh() const; 
  private: 
+	virtual void post_set_data_fields(); 
+
         virtual float do_evaluate_row(unsigned y, unsigned z) = 0; 
 
         virtual float do_evaluate_row_sparse(unsigned y, unsigned z) = 0; 
@@ -76,8 +81,43 @@ public:
         T3DDatafield<float> *m_residua; 
         const T3DDatafield<unsigned char> *m_update_flags; 
         T3DDatafield<unsigned char> *m_set_flags; 
+	float m_residual_thresh; 
 }; 
 
+inline 
+C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_output_field() const
+{
+        return *m_output_field; 
+}
+
+inline 
+const C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_input_field() const
+{
+        return *m_input_field; 
+}
+
+inline 
+T3DDatafield<float>& C3DFVectorfieldRegularizerKernel::get_residua() const
+{
+        return *m_residua; 
+}
+
+inline 
+const T3DDatafield<unsigned char>& C3DFVectorfieldRegularizerKernel::get_update_flags() const
+{
+        return *m_update_flags; 
+}
+
+inline 
+T3DDatafield<unsigned char>& C3DFVectorfieldRegularizerKernel::get_set_flags() const
+{
+        return *m_set_flags; 
+}
+
+float C3DFVectorfieldRegularizerKernel::get_residual_thresh() const
+{
+	return m_residual_thresh; 
+}
 
 typedef C3DFVectorfieldRegularizerKernel::Pointer P3DVectorfieldRegularizerKernel; 
 

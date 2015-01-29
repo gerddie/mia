@@ -34,26 +34,29 @@ C3DFVectorfieldRegularizerKernel::~C3DFVectorfieldRegularizerKernel()
 {
 }
 
-void C3DFVectorfieldRegularizerKernel::set_data_fields(C3DFVectorfield *output, C3DFVectorfield  *input, T3DDatafield<float> *residua)
+void C3DFVectorfieldRegularizerKernel::set_data_fields(C3DFVectorfield *output, C3DFVectorfield  *input)
 {
         m_output = output; 
         m_input = input; 
-        m_residua = residua; 
+	post_set_data_fields(); 
 }
 
 
 void C3DFVectorfieldRegularizerKernel::set_update_fields(const T3DDatafield<unsigned char> *update_flags, 
-                                                         T3DDatafield<unsigned char> *set_flags)
+                                                         T3DDatafield<unsigned char> *set_flags, 
+							 T3DDatafield<float> *residua, 
+							 float residual_thresh)
 {
         m_update_flags = update_flags; 
         m_set_flags = set_flags; 
+        m_residua = residua; 
+	m_residual_thresh = residual_thresh; 
 }
 
 float C3DFVectorfieldRegularizerKernel::evaluate_row(unsigned y, unsigned z)
 {
         assert(m_output); 
         assert(m_input); 
-        assert(m_residua); 
         
         return do_evaluate_row(y,z); 
 }
@@ -62,38 +65,18 @@ float C3DFVectorfieldRegularizerKernel::evaluate_row_sparse(unsigned y, unsigned
 {
         assert(m_output); 
         assert(m_input); 
+        assert(m_residua); 
         assert(m_update_flags); 
         assert(m_set_flags); 
 
         return do_evaluate_row_sparse(y,z); 
 }
 
-C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_output_field() const
+
+
+void C3DFVectorfieldRegularizerKernel::post_set_data_fields()
 {
-        return *m_output_field; 
 }
-
-const C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_input_field() const
-{
-        return *m_input_field; 
-}
-
-T3DDatafield<float>& C3DFVectorfieldRegularizerKernel::get_residua() const
-{
-        return *m_residua; 
-}
-
-const T3DDatafield<unsigned char>& C3DFVectorfieldRegularizerKernel::get_update_flags() const
-{
-        return *m_update_flags; 
-}
-
-
-T3DDatafield<unsigned char>& C3DFVectorfieldRegularizerKernel::get_set_flags() const
-{
-        return *m_set_flags; 
-}
-
 
 template <> const char *  const 
 TPluginHandler<C3DFVectorfieldRegularizerKernelPlugin>::m_help =  
