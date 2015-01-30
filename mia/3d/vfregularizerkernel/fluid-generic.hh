@@ -36,6 +36,8 @@ private:
                 
         float do_evaluate_row_sparse(unsigned y, unsigned z, CBuffers& buf); 
 
+	float do_evaluate_pertuberation_row(unsigned  y, unsigned  z, CBuffers& buffers) const; 
+
 	unsigned do_get_boundary_padding() const; 
         
         void set_update_flags(unsigned idx); 

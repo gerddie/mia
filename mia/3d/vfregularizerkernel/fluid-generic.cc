@@ -22,7 +22,9 @@
 
 NS_MIA_BEGIN
 
-C3DFVfFluidStandardRegularizerKernel::C3DFVfFluidStandardRegularizerKernel(float mu, float lambda, float relax):m_relax(relax), 
+C3DFVfFluidStandardRegularizerKernel::C3DFVfFluidStandardRegularizerKernel(float mu, float lambda, float relax):
+	C3DFVectorfieldRegularizerKernel(true), 
+	m_relax(relax), 
         m_dx(0), 
         m_dxy(0)
         
@@ -77,6 +79,32 @@ float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row_sparse(unsigned y, u
         }
         return residuum; 
 
+}
+
+float C3DFVfFluidStandardRegularizerKernel::do_evaluate_pertuberation_row(unsigned  y, unsigned  z, 
+									  CBuffers& MIA_PARAM_UNUSED(buffers)) const
+{
+        auto& v = get_output_field(); 
+        auto& u = get_input_field(); 
+	
+        
+	auto iu = get_input_field().begin_at(1, y, z); 
+	auto iv = get_output_field().begin_at(1, y, z); 
+
+	float max_pert = 0.0f; 
+	
+        for (int x = 1; x < m_dx - 1; ++x, ++iu, ++iv) {
+		
+		auto dux = iu[1] - iu[-1];  
+		auto duy = iu[m_dx] - iu[-m_dx];  
+		auto duz = iu[m_dxy] - iu[-m_dxy];  
+		
+		*iv -= 0.5f * (iv->x * dux + iv->y * duy + iv->z * duz);
+		float pert = iv->norm2(); 
+		if (max_pert < pert)
+			max_pert = pert; 
+        }
+	return max_pert; 
 }
 
 unsigned C3DFVfFluidStandardRegularizerKernel::do_get_boundary_padding() const

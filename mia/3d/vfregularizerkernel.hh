@@ -38,8 +38,6 @@ NS_MIA_BEGIN
    some regularization model on the input data. 
 */
 
-
-
 class EXPORT_3D C3DFVectorfieldRegularizerKernel : public CProductBase  {
 public: 
         typedef C3DFVectorfieldRegularizerKernel plugin_type; 
@@ -56,6 +54,10 @@ public:
 
         typedef std::shared_ptr< C3DFVectorfieldRegularizerKernel > Pointer; 
         
+	C3DFVectorfieldRegularizerKernel(bool has_pertuberation); 
+
+	float evaluate_pertuberation_row(unsigned  y, unsigned  z, CBuffers& buffers) const;
+
         virtual ~C3DFVectorfieldRegularizerKernel(); 
 
         void set_data_fields(C3DFVectorfield  *output, C3DFVectorfield *input);
@@ -73,6 +75,8 @@ public:
 	PBuffers get_buffers() const;
 	
 	void start_slice(unsigned z, CBuffers& buffers) const;
+
+	bool has_pertuberation() const; 
  protected: 
         C3DFVectorfield& get_output_field() const; 
         const C3DFVectorfield& get_input_field() const; 
@@ -93,6 +97,7 @@ public:
 	
 	virtual void do_start_slice(unsigned z, CBuffers& buffers) const;
 
+	virtual float do_evaluate_pertuberation_row(unsigned  y, unsigned  z, CBuffers& buffers) const;
 
         C3DFVectorfield *m_output; 
         C3DFVectorfield *m_input; 
@@ -100,7 +105,14 @@ public:
         const T3DDatafield<unsigned char> *m_update_flags; 
         T3DDatafield<unsigned char> *m_set_flags; 
 	float m_residual_thresh; 
+	bool m_has_pertuberation; 
 }; 
+
+inline 
+bool C3DFVectorfieldRegularizerKernel::has_pertuberation() const 
+{
+	return m_has_pertuberation; 
+}
 
 inline 
 C3DFVectorfield& C3DFVectorfieldRegularizerKernel::get_output_field() const
@@ -149,6 +161,14 @@ template <> const char *  const TPluginHandler<C3DFVectorfieldRegularizerKernelP
 extern template class EXPORT_3D  TFactory<C3DFVectorfieldRegularizerKernel>; 
 extern template class EXPORT_3D  TFactoryPluginHandler<C3DFVectorfieldRegularizerKernelPlugin>; 
 extern template class EXPORT_3D  THandlerSingleton<TFactoryPluginHandler<C3DFVectorfieldRegularizerKernelPlugin> >; 
+
+/**
+   @cond NEVER 
+   @ingroup traits 
+   @brief  Trait to make C3DFVectorfieldRegularizerPluginHandler available for creation by command line parsing 
+*/
+FACTORY_TRAIT(C3DFVectorfieldRegularizerKernelPluginHandler); 
+/// @endcond 
 
 
 
