@@ -35,6 +35,8 @@ private:
         float do_evaluate_row(unsigned y, unsigned z); 
                 
         float do_evaluate_row_sparse(unsigned y, unsigned z); 
+
+	unsigned do_get_boundary_padding() const; 
         
         void set_update_flags(unsigned idx); 
 

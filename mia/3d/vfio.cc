@@ -28,8 +28,6 @@
 
 NS_MIA_BEGIN
 
-const char *io_3dvf_data::data_descr = "3dvf";
-
 C3DIOVectorfield::C3DIOVectorfield()
 {
 }
@@ -60,8 +58,8 @@ template <> const char *  const
 TPluginHandler<C3DVFIOPlugin>::m_help =  
    "These plug-ins implement loading and saving of vector fields to certain file formats.";
 
-template class TPlugin<io_3dvf_data, io_plugin_type>;
-template class TIOPlugin<io_3dvf_data>;
+template class TPlugin<C3DIOVectorfield, io_plugin_type>;
+template class TIOPlugin<C3DIOVectorfield>;
 template class THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> >;
 template class TIOPluginHandler<C3DVFIOPlugin>;
 template class TPluginHandler<C3DVFIOPlugin>;

@@ -88,6 +88,8 @@ public:
 
 class EXPORT_3D C3DFVectorfield : public T3DVectorfield<C3DFVector> {
 public: 
+	static const char *data_descr;
+
 	using T3DVectorfield<C3DFVector>::T3DVectorfield; 
 	
 	void update_as_inverse_of(const C3DFVectorfield& other, float tol, int maxiter);

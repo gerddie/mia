@@ -19,7 +19,7 @@
  */
 
 #include <mia/core/export_handler.hh>
-#include <mia/3d/vectorfieldregularizer.hh>
+#include <mia/3d/vfregularizer.hh>
 
 #include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>
@@ -27,18 +27,18 @@
 NS_MIA_BEGIN
 
 const char *C3DFVectorfieldRegularizer::type_descr = "regularizer";
-const char *C3DFVectorfieldRegularizer::data_descr = "3dvf";
 
 C3DFVectorfieldRegularizer::~C3DFVectorfieldRegularizer()
 {
 }
 
-double C3DFVectorfieldRegularizer::run(C3DFVectorfield& output, C3DFVectorfield& input) const
+double C3DFVectorfieldRegularizer::run(C3DFVectorfield& velocity, C3DFVectorfield& force, const C3DFVectorfield& deform) const
 {
-        assert(output.get_size() == m_size); 
-        assert(input.get_size() == m_size); 
+        assert(velocity.get_size() == m_size); 
+        assert(force.get_size() == m_size); 
+        assert(deform.get_size() == m_size); 
 
-        return do_run(output, input); 
+        return do_run(velocity, force, deform); 
 }
 
 void C3DFVectorfieldRegularizer::set_size(const C3DBounds& size)

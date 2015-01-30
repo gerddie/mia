@@ -43,10 +43,9 @@ NS_MIA_BEGIN
 class EXPORT_3D C3DFVectorfieldRegularizerKernel : public CProductBase  {
 public: 
         typedef C3DFVectorfieldRegularizerKernel plugin_type; 
-        typedef C3DFVectorfieldRegularizerKernel plugin_data;
+        typedef C3DFVectorfield plugin_data;
 
         static const char *type_descr;
-        static const char *data_descr;
 
         typedef std::shared_ptr< C3DFVectorfieldRegularizerKernel > Pointer; 
         
@@ -61,6 +60,8 @@ public:
         float evaluate_row(unsigned y, unsigned z); 
 
         float evaluate_row_sparse(unsigned y, unsigned z); 
+
+	unsigned get_boundary_padding() const; 
  protected: 
         C3DFVectorfield& get_output_field() const; 
         const C3DFVectorfield& get_input_field() const; 
@@ -75,6 +76,7 @@ public:
 
         virtual float do_evaluate_row_sparse(unsigned y, unsigned z) = 0; 
 
+	virtual unsigned do_get_boundary_padding() const = 0; 
 
         C3DFVectorfield *m_output; 
         C3DFVectorfield *m_input; 

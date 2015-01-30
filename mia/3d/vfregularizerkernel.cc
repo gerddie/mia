@@ -28,7 +28,6 @@
 NS_MIA_BEGIN
 
 const char *C3DFVectorfieldRegularizerKernel::type_descr = "regularizerkernel";
-const char *C3DFVectorfieldRegularizerKernel::data_descr = "3dvf";
 
 C3DFVectorfieldRegularizerKernel::~C3DFVectorfieldRegularizerKernel()
 {
@@ -76,6 +75,11 @@ float C3DFVectorfieldRegularizerKernel::evaluate_row_sparse(unsigned y, unsigned
 
 void C3DFVectorfieldRegularizerKernel::post_set_data_fields()
 {
+}
+
+unsigned C3DFVectorfieldRegularizerKernel::get_boundary_padding() const
+{
+	return do_get_boundary_padding(); 
 }
 
 template <> const char *  const 

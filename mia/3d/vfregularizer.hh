@@ -41,10 +41,9 @@ NS_MIA_BEGIN
 class EXPORT_3D C3DFVectorfieldRegularizer : public CProductBase  {
 public: 
         typedef C3DFVectorfieldRegularizer plugin_type; 
-        typedef C3DFVectorfieldRegularizer plugin_data; 
+        typedef C3DFVectorfield plugin_data; 
         
         static const char *type_descr;
-        static const char *data_descr;
 
         typedef std::shared_ptr< C3DFVectorfieldRegularizer > Pointer; 
 
@@ -53,13 +52,14 @@ public:
         /**
            The work routine for the regularizer
 
-           \param [out] output  the vector field that contains the reguarlized field 
-           \param[in] input  the vector field that containes the unregularized field, 
+           \param [out] velocity  the vector field that contains the reguarlized field 
+           \param[in] force  the vector field that containes the unregularized field, 
            e.g. a force field obtained from an image similarity measure. The field 
            may be overwritten by the regularization operation. 
+	   \param[in] deform the currently valid deformation 
            \returns the maximum of the norms of the vectors of the output field
         */
-        double run(C3DFVectorfield& output, C3DFVectorfield& input) const; 
+        double run(C3DFVectorfield& velocity, C3DFVectorfield& force, const C3DFVectorfield& deform) const; 
 
         /**
            Sets the size of the vector fields that will be regularized. This method 
@@ -72,7 +72,7 @@ protected:
         const C3DBounds& get_size() const; 
 private: 
         
-        virtual double do_run(C3DFVectorfield& output, C3DFVectorfield& input) const =  0; 
+        virtual double do_run(C3DFVectorfield& velocity, C3DFVectorfield& force, const C3DFVectorfield& deform) const =  0; 
         
         virtual void on_size_changed(); 
         

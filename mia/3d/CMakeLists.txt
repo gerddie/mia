@@ -69,7 +69,7 @@ SET(MIA3D_SRC
   transformfactory.cc
   transformio.cc
   vectorfield.cc
-  vectorfieldregularizer.cc
+  vfregularizer.cc
   vfregularizerkernel.cc
   vfio.cc
   ${ITPP_SRC}
@@ -130,7 +130,7 @@ SET(MIA3D_HEADERS
   valueattributetranslator.hh
   vector.hh
   vectorfield.hh
-  vectorfieldregularizer.hh
+  vfregularizer.hh
   vfregularizerkernel.hh
   vfio.hh
   vfiotest.hh

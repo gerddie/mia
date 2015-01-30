@@ -77,6 +77,11 @@ float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row_sparse(unsigned y, u
 
 }
 
+unsigned C3DFVfFluidStandardRegularizerKernel::do_get_boundary_padding() const
+{
+	return 1; 
+}
+
 float C3DFVfFluidStandardRegularizerKernel::solve_at(C3DFVector *v, const C3DFVector& b)
 {
         C3DFVector *v_loc = &v[ -m_dxy ];

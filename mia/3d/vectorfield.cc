@@ -12,12 +12,14 @@
 #include <mia/3d/iterator.cxx>
 #include <mia/2d/iterator.cxx>
 
-#ifdef __SSE2__
-#include <emmintrin.h>
+#ifdef __SSE__
+#include <xmmintrin.h>
 #endif 
 
 NS_MIA_BEGIN
 
+
+const char *C3DFVectorfield::data_descr = "3dvf";
 
 EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfield& b)
 {
