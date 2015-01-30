@@ -127,7 +127,8 @@ BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation )
 	
 	kernel->set_data_fields(&v, &b);
 
-	float residuum = kernel->evaluate_row(1,1);
+	auto buf = kernel->get_buffers(); 
+	float residuum = kernel->evaluate_row(1,1, *buf);
 
 	auto test_v = v(1,1,1); 
 

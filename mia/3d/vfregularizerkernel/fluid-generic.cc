@@ -41,7 +41,8 @@ void C3DFVfFluidStandardRegularizerKernel::post_set_data_fields()
         m_dxy = m_dx * get_input_field().get_size().y; 
 }
 
-float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row(unsigned y, unsigned z)
+float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row(unsigned y, unsigned z, 
+							    CBuffers& MIA_PARAM_UNUSED(buf))
 {
         float residuum = 0.0f; 
         unsigned linear_index = 1 + y * m_dx + z * m_dxy; 
@@ -54,7 +55,8 @@ float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row(unsigned y, unsigned
         return residuum; 
 }
 
-float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row_sparse(unsigned y, unsigned z)
+float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row_sparse(unsigned y, unsigned z, 
+								   CBuffers& MIA_PARAM_UNUSED(buf))
 {
         float residuum = 0.0f; 
         unsigned linear_index = 1 + y * m_dx + z * m_dxy; 

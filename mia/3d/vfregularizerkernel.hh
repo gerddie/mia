@@ -45,6 +45,13 @@ public:
         typedef C3DFVectorfieldRegularizerKernel plugin_type; 
         typedef C3DFVectorfield plugin_data;
 
+	class CBuffers {
+	public: 
+		virtual ~CBuffers(); 
+	}; 
+
+	typedef std::unique_ptr<CBuffers> PBuffers; 
+
         static const char *type_descr;
 
         typedef std::shared_ptr< C3DFVectorfieldRegularizerKernel > Pointer; 
@@ -57,11 +64,15 @@ public:
 			       T3DDatafield<unsigned char> *set_flags, T3DDatafield<float> *residua, 
 			       float residual_thresh); 
         
-        float evaluate_row(unsigned y, unsigned z); 
+        float evaluate_row(unsigned y, unsigned z, CBuffers& buffers); 
 
-        float evaluate_row_sparse(unsigned y, unsigned z); 
+        float evaluate_row_sparse(unsigned y, unsigned z, CBuffers& buffers); 
 
 	unsigned get_boundary_padding() const; 
+
+	PBuffers get_buffers() const;
+	
+	void start_slice(unsigned z, CBuffers& buffers) const;
  protected: 
         C3DFVectorfield& get_output_field() const; 
         const C3DFVectorfield& get_input_field() const; 
@@ -72,11 +83,16 @@ public:
  private: 
 	virtual void post_set_data_fields(); 
 
-        virtual float do_evaluate_row(unsigned y, unsigned z) = 0; 
+        virtual float do_evaluate_row(unsigned y, unsigned z, CBuffers& buffers) = 0; 
 
-        virtual float do_evaluate_row_sparse(unsigned y, unsigned z) = 0; 
+        virtual float do_evaluate_row_sparse(unsigned y, unsigned z, CBuffers& buffers) = 0; 
 
 	virtual unsigned do_get_boundary_padding() const = 0; 
+
+	virtual PBuffers do_get_buffers() const;
+	
+	virtual void do_start_slice(unsigned z, CBuffers& buffers) const;
+
 
         C3DFVectorfield *m_output; 
         C3DFVectorfield *m_input; 

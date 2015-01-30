@@ -32,9 +32,9 @@ public:
 private: 
 	void post_set_data_fields(); 
 
-        float do_evaluate_row(unsigned y, unsigned z); 
+        float do_evaluate_row(unsigned y, unsigned z, CBuffers& buf); 
                 
-        float do_evaluate_row_sparse(unsigned y, unsigned z); 
+        float do_evaluate_row_sparse(unsigned y, unsigned z, CBuffers& buf); 
 
 	unsigned do_get_boundary_padding() const; 
         

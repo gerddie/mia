@@ -52,15 +52,15 @@ void C3DFVectorfieldRegularizerKernel::set_update_fields(const T3DDatafield<unsi
 	m_residual_thresh = residual_thresh; 
 }
 
-float C3DFVectorfieldRegularizerKernel::evaluate_row(unsigned y, unsigned z)
+float C3DFVectorfieldRegularizerKernel::evaluate_row(unsigned y, unsigned z, CBuffers& buffers)
 {
         assert(m_output); 
         assert(m_input); 
         
-        return do_evaluate_row(y,z); 
+        return do_evaluate_row(y, z, buffers); 
 }
 
-float C3DFVectorfieldRegularizerKernel::evaluate_row_sparse(unsigned y, unsigned z)
+float C3DFVectorfieldRegularizerKernel::evaluate_row_sparse(unsigned y, unsigned z, CBuffers& buffers)
 {
         assert(m_output); 
         assert(m_input); 
@@ -68,10 +68,31 @@ float C3DFVectorfieldRegularizerKernel::evaluate_row_sparse(unsigned y, unsigned
         assert(m_update_flags); 
         assert(m_set_flags); 
 
-        return do_evaluate_row_sparse(y,z); 
+        return do_evaluate_row_sparse(y, z, buffers); 
+}
+
+C3DFVectorfieldRegularizerKernel::PBuffers 
+C3DFVectorfieldRegularizerKernel::get_buffers() const
+{
+	return do_get_buffers(); 
+}
+
+void C3DFVectorfieldRegularizerKernel::start_slice(unsigned z, CBuffers& buffers) const
+{
+	do_start_slice(z, buffers); 
 }
 
 
+C3DFVectorfieldRegularizerKernel::PBuffers
+C3DFVectorfieldRegularizerKernel::do_get_buffers() const
+{
+	return PBuffers(new CBuffers()); 
+}
+
+void C3DFVectorfieldRegularizerKernel::do_start_slice(unsigned MIA_PARAM_UNUSED(z), 
+						      CBuffers& MIA_PARAM_UNUSED(buffers)) const
+{
+}
 
 void C3DFVectorfieldRegularizerKernel::post_set_data_fields()
 {
@@ -80,6 +101,10 @@ void C3DFVectorfieldRegularizerKernel::post_set_data_fields()
 unsigned C3DFVectorfieldRegularizerKernel::get_boundary_padding() const
 {
 	return do_get_boundary_padding(); 
+}
+
+C3DFVectorfieldRegularizerKernel::CBuffers::~CBuffers()
+{
 }
 
 template <> const char *  const 
