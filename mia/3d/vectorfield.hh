@@ -85,6 +85,7 @@ public:
 	
 };
 
+extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
 
 class EXPORT_3D C3DFVectorfield : public T3DVectorfield<C3DFVector> {
 public: 
@@ -98,7 +99,7 @@ public:
 	
 };
 
-extern template class T3DVectorfield<C3DFVector>;
+
 extern template class EXPORT_3D T3DVectorfield<C3DDVector>;
 extern template class EXPORT_3D range3d_iterator<T3DDatafield<C3DFVector>::iterator>;
 extern template class EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<C3DFVector>::iterator>;
