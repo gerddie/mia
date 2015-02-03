@@ -20,6 +20,7 @@
 
 #include <mia/3d/orientation.hh>
 #include <mia/core/utils.hh>
+#include <mia/core/attributes.cxx>
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -313,6 +314,9 @@ EXPORT_3D  std::istream& operator >> (std::istream& is, C3DOrientationAndPositio
 	return is; 
 }
 
+template class  EXPORT_3D TTranslator<E3DImageOrientation>;
+template class  EXPORT_3D TTranslator<E3DPatientPositioning>;
+template class  EXPORT_3D TTranslator<C3DOrientationAndPosition>; 
 
 
 NS_MIA_END

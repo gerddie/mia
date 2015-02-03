@@ -55,6 +55,11 @@ public:
 
 	/// \returns the module name
 	const std::string& get_name() const;
+
+	/// tell the loader that the library should be unloaded at destruction
+	void set_unload_library(); 
+
+	void set_keep_library(); 
 private:
 	struct CDLLoaderData *impl;
 };

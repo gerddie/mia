@@ -36,7 +36,7 @@ CDummy2::CDummy2():
 
 const std::string CDummy2::do_get_descr() const
 {
-  return "test module with no data";
+  return "test module with no data (2)";
 }
 
 class CDummy3 :public CTestPlugin {
@@ -52,9 +52,14 @@ CDummy3::CDummy3():
 	add_property(test_property);
 }
 
+const std::string test_dummy_symbol()
+{
+	return std::string("test_dummy_symbol from dummy3"); 
+}
+
 const std::string CDummy3::do_get_descr() const
 {
-  return "test module with no data";
+	return test_dummy_symbol(); 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

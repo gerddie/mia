@@ -30,8 +30,8 @@ NS_MIA_BEGIN
 
 C3DTransformIOPluginHandlerImpl::C3DTransformIOPluginHandlerImpl()
 {
-	TTranslator<C3DFVector>::register_for(C3DTransformation::input_spacing_attr);
-	TTranslator<C3DFVector>::register_for(C3DTransformation::output_spacing_attr);
+	C3DFVectorTranslator::register_for(C3DTransformation::input_spacing_attr);
+	C3DFVectorTranslator::register_for(C3DTransformation::output_spacing_attr);
 
 }
 

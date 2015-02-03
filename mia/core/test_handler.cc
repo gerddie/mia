@@ -41,7 +41,7 @@ namespace bfs = ::boost::filesystem;
 /*
    It is not quite clean whether BOOST test is thread save, therefore 
    the threaded function only counts the fails and uses MIA to report, 
-   and then ins ther serial code part the number of fails is tested via BOOST
+   and then in the serial code part the number of fails is tested via BOOST
 */
 BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 {
@@ -97,6 +97,68 @@ BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler )
 
 	BOOST_CHECK(handler.get_plugin("dummy3")->has_property(test_property));
 	BOOST_CHECK(!handler.get_plugin("dummy1")->has_property(test_property));
+
+	cvdebug() << handler.get_plugin("dummy3")->get_descr()  << "\n";  
+	cvdebug() << handler.get_plugin("dummy1")->get_descr()  << "\n";  
+
+	BOOST_CHECK_EQUAL(handler.get_plugin("dummy1")->get_descr(), 
+			  string("test_dummy_symbol from dummy1")); 
+	
+	BOOST_CHECK_EQUAL(handler.get_plugin("dummy3")->get_descr(), 
+			  std::string("test_dummy_symbol from dummy3")); 
+
+}
+
+
+class CDummy1Override :public CTestPlugin {
+public:
+	CDummy1Override();
+private:
+	virtual const string do_get_descr() const;
+};
+
+CDummy1Override::CDummy1Override():
+  CTestPlugin("dummy1")
+{
+	set_priority(1); 
+	add_property(test_property);
+}
+
+const std::string test_dummy_symbol()
+{
+	return "test_dummy_symbol from main application"; 
+}
+
+const string CDummy1Override::do_get_descr() const
+{
+	return test_dummy_symbol(); 
+}
+
+BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_override_plugin )
+{
+	CTestPluginHandler::set_search_path({bfs::path("testplug")});
+	
+	auto& handler = CTestPluginHandler::instance();
+	
+	shared_ptr<CDummy1Override> override(new CDummy1Override); 
+
+	BOOST_CHECK(CTestPluginHandler::add_plugin(override)); 
+
+	BOOST_CHECK(handler.size() == 3);
+
+	BOOST_CHECK(handler.get_plugin_names() == "dummy1 dummy2 dummy3 ");
+
+	BOOST_CHECK(handler.get_plugin("dummy3")->has_property(test_property));
+	BOOST_CHECK(handler.get_plugin("dummy1")->has_property(test_property));
+
+	cvdebug() << handler.get_plugin("dummy3")->get_descr()  << "\n";  
+	cvdebug() << handler.get_plugin("dummy1")->get_descr()  << "\n";  
+	
+	BOOST_CHECK_EQUAL(handler.get_plugin("dummy1")->get_descr(), 
+			  string("test_dummy_symbol from main application")); 
+	
+	BOOST_CHECK_EQUAL(handler.get_plugin("dummy3")->get_descr(), 
+			  std::string("test_dummy_symbol from dummy3")); 
 
 }
 

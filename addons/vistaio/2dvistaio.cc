@@ -202,7 +202,7 @@ const std::string CVista2DImageIOPlugin::do_get_preferred_suffix() const
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	TTranslator<C2DFVector>::register_for("pixel");
+	C2DFVectorTranslator::register_for("pixel");
 	return new CVista2DImageIOPlugin();
 }
 

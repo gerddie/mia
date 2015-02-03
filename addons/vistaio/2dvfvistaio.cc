@@ -131,7 +131,7 @@ const string CVista2DVFIOPlugin::do_get_descr() const
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	TTranslator<C2DFVector>::register_for("pixel");
+	C2DFVectorTranslator::register_for("pixel");
 	return new CVista2DVFIOPlugin();
 }
 
