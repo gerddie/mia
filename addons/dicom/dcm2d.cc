@@ -40,11 +40,11 @@ CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
 	add_supported_type(it_ushort);
 	add_supported_type(it_sshort);
 
-	TTranslator<float>::register_for("SliceLocation");
-	TTranslator<double>::register_for("AcquisitionTime"); 
-	TTranslator<int>::register_for("SeriesNumber");
-	TTranslator<int>::register_for("AcquisitionNumber");
-	TTranslator<int>::register_for("InstanceNumber");
+	CFloatTranslator::register_for("SliceLocation");
+	CDoubleTranslator::register_for("AcquisitionTime"); 
+	CSITranslator::register_for("SeriesNumber");
+	CSITranslator::register_for("AcquisitionNumber");
+	CSITranslator::register_for("InstanceNumber");
 	CPatientPositionTranslator::register_for(IDPatientPosition);
 	add_suffix(".dcm");
 	add_suffix(".DCM");

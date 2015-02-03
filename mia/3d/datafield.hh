@@ -490,6 +490,8 @@ typedef  CTParameter<C3DBounds> C3DBoundsParameter;
 /// 3D vector parameter type 
 typedef  CTParameter<C3DFVector> C3DFVectorParameter;
 
+typedef  TTranslator<C3DFVector> C3DFVectorTranslator; 
+
 /// @cond NEVER 
 DECLARE_TYPE_DESCR(C3DBounds); 
 DECLARE_TYPE_DESCR(C3DFVector); 

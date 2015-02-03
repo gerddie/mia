@@ -45,7 +45,8 @@ struct CDLLoaderData {
 		// valgrind will report reachable memory blocks on this call, 
 		// see destructor for a justification 
 	        m_module(dlopen(name, flags)),
-		m_name(name) 	{
+		m_name(name), 
+		m_unload (true){
 		if (!m_module) {
 			stringstream s;
 			s << name << ":'" << dlerror() << "'";
@@ -59,20 +60,32 @@ struct CDLLoaderData {
 		// the plugin-destructor is executing code within the module,
 		// after releasing it. Hence the module might be unloaded even though,
 		// the code is still needed.
-		// For now, the unloading is left to the final clean up when
+		// For now, the unloading is normally left to the final clean up when
 		// the program ends, this leaves some reachable memory blocks
+		// if the called knows that unloading is save, then 
+		// unloading can be explicitely specified.
 		//
-		// dlclose(m_module);
+		if (m_unload) 
+			dlclose(m_module);
 	}
+	
 	void *get_function(const char *name) {
 		return dlsym(m_module, name);
 	}
+	
 	const string& get_name() const {
 		return m_name;
 	}
+	
+	void set_unload_library(bool value) {
+		m_unload = value; 
+	}
+
+
 private:
 	ModuleHandle m_module;
 	string m_name;
+	bool m_unload; 
 };
 
 CDLLoader::CDLLoader(const char *name, int flags):
@@ -94,6 +107,17 @@ const string& CDLLoader::get_name() const
 {
 	return impl->get_name();
 }
+
+void CDLLoader::set_unload_library()
+{
+	impl->set_unload_library(true); 
+}
+
+void CDLLoader::set_keep_library() 
+{
+	impl->set_unload_library(false); 
+}
+
 
 NS_MIA_END
 

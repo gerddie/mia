@@ -62,6 +62,16 @@ const std::string& CPluginModule::get_name() const
 	return m_name; 
 }
 
+void CPluginModule::set_unload_library()
+{
+	m_loader.set_unload_library(); 
+}
+
+void CPluginModule::set_keep_library()
+{
+	m_loader.set_keep_library(); 
+}
+
 CPluginBase *CPluginModule::get_interface() const
 {
 	FPluginInterface f = reinterpret_cast<FPluginInterface>(m_loader.get_function("get_plugin_interface"));

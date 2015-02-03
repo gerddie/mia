@@ -29,7 +29,7 @@ using namespace vista_2dtrans_io;
 
 BOOST_AUTO_TEST_CASE(test_simple_io) 
 {
-	C2DTransformationIOPluginHandler::instance(); 
+	auto& io = C2DTransformationIOPluginHandler::instance(); 
 
         C2DBounds size(4,5); 
         auto tf =  produce_2dtransform_factory("affine");
@@ -47,7 +47,6 @@ BOOST_AUTO_TEST_CASE(test_simple_io)
         t->set_attribute(C2DTransformation::input_spacing_attr, PAttribute(new TAttribute<C2DFVector>(C2DFVector(2,3)))); 
         t->set_attribute(C2DTransformation::output_spacing_attr, PAttribute(new TAttribute<C2DFVector>(C2DFVector(1.1f,1)))); 
         
-        C2DVistaTransformationIO io; 
         
         io.save("transform.v2dt", *t); 
         

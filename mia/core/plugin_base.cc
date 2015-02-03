@@ -54,6 +54,17 @@ CPluginBase::CPluginBase(const char *name):
 {
 }
 
+void CPluginBase::set_priority(unsigned p)
+{
+	m_priority = p; 
+}
+
+unsigned CPluginBase::get_priority() const
+{
+	return m_priority; 
+}
+
+
 CPluginBase::~CPluginBase()
 {
 	TRACE("CPluginBase::~CPluginBase()");

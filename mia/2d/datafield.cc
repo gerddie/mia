@@ -22,6 +22,7 @@
 #include <mia/2d/datafield.cxx>
 #include <mia/2d/iterator.cxx>
 #include <mia/core/parameter.cxx>
+#include <mia/core/attributes.cxx>
 
 NS_MIA_BEGIN
 
@@ -51,10 +52,11 @@ INSTANCIATE(signed char);
 
 DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds"); 
 DEFINE_TYPE_DESCR2(C2DFVector, "2dfvector"); 
+
+
 template class EXPORT_2D  CTParameter<C2DFVector>;
 template class EXPORT_2D  CTParameter<C2DBounds>;
-
-
+template class EXPORT_2D  TTranslator<C2DFVector>; 
 
 NS_MIA_END
 

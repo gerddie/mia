@@ -22,6 +22,8 @@
 #include <mia/core/attributes.hh>
 #include <mia/core/msgstream.hh>
 
+#include <mia/core/attributes.cxx>
+
 NS_MIA_BEGIN
 using namespace std;
 
@@ -267,5 +269,8 @@ template class EXPORT_CORE  TTranslator<std::vector<signed char> >;
 
 template class EXPORT_CORE  TTranslator<bool>;
 template class EXPORT_CORE  TTranslator<std::vector<bool> >;
+
+
+
 
 NS_MIA_END
