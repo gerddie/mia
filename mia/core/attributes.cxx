@@ -18,41 +18,22 @@
  *
  */
 
-#include <mia/core/testplugin.hh>
+NS_MIA_BEGIN 
 
-NS_MIA_USE
-using namespace std;
-
-class EXPORT CDummy1 :public CTestPlugin {
-public:
-	CDummy1();
-private:
-	virtual const string do_get_descr() const;
-};
-
-CDummy1::CDummy1():
-  CTestPlugin("dummy1")
+template <typename T>
+bool TTranslator<T>::register_for(const std::string& key)
 {
+	TTranslator<T> * me = new TTranslator<T>();
+	if (!me->do_register(key)) {
+		delete me; 
+		return false; 
+	}
+	return true; 
 }
 
-const std::string test_dummy_symbol()
+template <typename T>
+PAttribute TTranslator<T>::do_from_string(const std::string& value) const
 {
-	return "test_dummy_symbol from dummy1"; 
+	return PAttribute(new TAttribute<T>(dispatch_attr_string<T>::string2val(value)));
 }
-
-const string CDummy1::do_get_descr() const
-{
-	return test_dummy_symbol();;
-}
-
-
-
-extern "C" EXPORT  CPluginBase *get_plugin_interface()
-{
-	return new CDummy1();
-}
-
-
-
-
-
+NS_MIA_END

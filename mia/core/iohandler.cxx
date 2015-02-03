@@ -72,7 +72,7 @@ TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 	cvdebug() << "looking up plugin for '" << fsuffix << "'\n"; 
 
 	if (fsuffix == ".datapool") 
-		return m_pool_plugin; 
+		return m_pool_plugin.get(); 
 
 	CSuffixmap::const_iterator p = m_suffixmap.find(fsuffix);
 	if (p != m_suffixmap.end())

@@ -162,7 +162,7 @@ private:
 		const std::string do_get_preferred_suffix() const; 
 			
 	}; 
-	CDatapoolPlugin *m_pool_plugin; 
+	std::shared_ptr<Interface> m_pool_plugin; 
 }; 
 
 /**

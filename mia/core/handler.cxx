@@ -166,14 +166,43 @@ void TPluginHandler<I>::initialise(CPathNameArray searchpath)
 				
 				if (p) {
 					cvdebug() << "add plugin '" << p->get_name() << "'\n"; 
-					if (m_plugins.find(p->get_name()) ==  m_plugins.end()) {
+
+					auto loaded_plugin_i = m_plugins.find(p->get_name()); 
+					if ( loaded_plugin_i ==  m_plugins.end()) {
 						p->set_module(*i);
-						add_plugin(p); 
+						add_plugin_internal(PInterface(p)); 
+
+						// since this module will be used 
+						// keep its module till the final cleanup 
+						(*i)->set_keep_library(); 
 					} else {
-						cvwarn() << "Plugin with name '" << p->get_name() 
-							 << "' already loaded, ignoring new one.\n"; 
-						delete p; 
+						auto loaded_plugin = loaded_plugin_i->second; 
+						if (loaded_plugin->get_priority() < p->get_priority()) {
+							cvwarn() << "Plugin with name '" << p->get_name() 
+								 << "' and priority '" <<  p->get_priority() 
+								 << "' overrides already loaded plugin\n"; 
+							p->set_module(*i);
+							
+							// since this module will be used 
+							// keep its module till the final cleanup 
+							(*i)->set_keep_library(); 
+								
+							*i = loaded_plugin->get_module(); 
+							add_plugin_internal(PInterface(p)); 
+						}else{
+							cvwarn() << "Plugin with name '" << p->get_name() 
+								 << "' already loaded, and new one has no higher priority.\n"; 
+							delete p;
+						}
+						
+						// since this module will not be used at all 
+						// unload the according library 
+						(*i)->set_unload_library(); 
 					}
+
+
+					
+
 					
 				}else {
 					cvdebug() << "discard '" << pold->get_name() << "'\n"; 
@@ -191,8 +220,42 @@ void TPluginHandler<I>::initialise(CPathNameArray searchpath)
 }
 
 template <typename I>
-void TPluginHandler<I>::add_plugin(Interface *p)
+bool TPluginHandler<I>::add_plugin(PInterface p)
 {
+	bool result = true; 
+	auto loaded_plugin_i = m_plugins.find(p->get_name()); 
+	if ( loaded_plugin_i ==  m_plugins.end()) {
+		add_plugin_internal(p); 
+	}else{
+		auto loaded_plugin = loaded_plugin_i->second; 
+		if (loaded_plugin->get_priority() < p->get_priority()) {
+			cvinfo() << "Plugin with name '" << p->get_name() 
+				 << "' and priority '" <<  p->get_priority() 
+				 << "' overrides already loaded plugin with priority '"
+				 << loaded_plugin->get_priority() << "'\n"; 
+			add_plugin_internal(p);
+
+			// if the plug-in was inported from a module, mark this module for removal
+			auto old_module = loaded_plugin->get_module(); 
+			if (old_module)
+				old_module->set_unload_library(); 
+			
+		}else{
+			cvinfo() << "Plugin with name '" << p->get_name() 
+				 << "' has lower or equal priority '" <<  p->get_priority() 
+				 << "' compared to already loaded plugin with priority '"
+				 << loaded_plugin->get_priority() << "' ... discarding\n"; 
+			result = false; 
+		}
+	}
+	return result; 
+}
+
+
+template <typename I>
+void TPluginHandler<I>::add_plugin_internal(PInterface p)
+{
+	
 	m_plugins[p->get_name()] = p;	
 }
 
@@ -221,10 +284,7 @@ typename TPluginHandler<I>::const_iterator TPluginHandler<I>::end() const
 template <typename I>
 TPluginHandler<I>::~TPluginHandler()
 {
-	for (typename CPluginMap::iterator i = m_plugins.begin(); 
-	     i != m_plugins.end(); ++i) {
-		delete i->second; 
-	}
+	
 }
 
 
@@ -271,7 +331,7 @@ typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plu
 		    << "    '" << get_plugin_root(); 
 		return nullptr; 
 	}
-	return p->second; 
+	return p->second.get(); 
 }
 
 template <typename I>
@@ -327,7 +387,13 @@ const T* THandlerSingleton<T>::pointer()
 }
 
 template <typename T> 
-const T& THandlerSingleton<T>::do_instance(bool require_initialization)
+bool THandlerSingleton<T>::add_plugin(typename T::PInterface p)
+{
+	return do_instance(true).add_plugin(p); 
+} 
+
+template <typename T> 
+T& THandlerSingleton<T>::do_instance(bool require_initialization)
 {
 	TRACE_FUNCTION; 
 	CScopedLock lock(m_creation_mutex); 

@@ -30,8 +30,8 @@ NS_MIA_BEGIN
 
 C2DTransformIOPluginHandlerImpl::C2DTransformIOPluginHandlerImpl()
 {
-	TTranslator<C2DFVector>::register_for(C2DTransformation::input_spacing_attr);
-	TTranslator<C2DFVector>::register_for(C2DTransformation::output_spacing_attr);
+	C2DFVectorTranslator::register_for(C2DTransformation::input_spacing_attr);
+	C2DFVectorTranslator::register_for(C2DTransformation::output_spacing_attr);
 }
 
 

@@ -725,23 +725,6 @@ bool TAttribute<T>::do_is_less(const CAttribute& other) const
 }
 
 template <typename T>
-bool TTranslator<T>::register_for(const std::string& key)
-{
-	TTranslator<T> * me = new TTranslator<T>();
-	if (!me->do_register(key)) {
-		delete me; 
-		return false; 
-	}
-	return true; 
-}
-
-template <typename T>
-PAttribute TTranslator<T>::do_from_string(const std::string& value) const
-{
-	return PAttribute(new TAttribute<T>(dispatch_attr_string<T>::string2val(value)));
-}
-
-template <typename T>
 const T CAttributedData::get_attribute_as(const std::string& key)const
 {
 	PAttribute attr = get_attribute(key);

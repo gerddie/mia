@@ -30,6 +30,7 @@
 #include <mia/2d/vector.hh>
 #include <mia/2d/iterator.hh>
 #include <mia/core/parameter.hh>
+#include <mia/core/attributes.hh>
 #include <mia/core/typedescr.hh>
 #include <miaconfig.h>
 
@@ -334,7 +335,12 @@ typedef  CTParameter<C2DBounds> C2DBoundsParameter;
 /// Parameter type for 2D vector
 typedef CTParameter<C2DFVector> C2DFVectorParameter; 
 
+/// typedef for the C2DFVector to std::string translator 
+typedef TTranslator<C2DFVector> C2DFVectorTranslator;
+
 /// @cond NEVER 
+
+
 DECLARE_TYPE_DESCR(C2DBounds);
 DECLARE_TYPE_DESCR(C2DFVector); 
 /// @endcond

@@ -56,8 +56,10 @@ public:
 	/// typedef for the plug-in interface provided by the class 
 	typedef I Interface; 
 
+	typedef std::shared_ptr<I> PInterface; 
+
 	/// a map containing the names and theavailabe plug-ins 
-	typedef std::map<std::string, Interface*> CPluginMap; 
+	typedef std::map<std::string, PInterface> CPluginMap; 
 
 	/// the iterator to walk over the available plug-ins 
 	typedef typename CPluginMap::const_iterator const_iterator; 
@@ -87,12 +89,23 @@ public:
 	const_iterator end()const; 
 
 	/**
+	   Add a given plug-in to the handler. 
+	   @param plugin 
+	   @returns true if the plug-in was added, false if a plug-in with a higher or equal 
+	   priority and the same name already existed. 
+	*/
+	bool add_plugin(PInterface plugin); 
+
+protected: 
+
+
+	/**
 	   Add a given plug-in to the handler. The pointer must not be freed in client code. 
 	   @param plugin 
 	*/
-	void add_plugin(Interface *plugin); 
+	void add_plugin_internal(PInterface plugin); 
 
-protected: 
+
 	//! \name Constructors
         //@{
 
@@ -163,6 +176,8 @@ public:
 	*/
 	static const T& instance(); 
 
+	static bool add_plugin(typename T::PInterface p); 
+
 	/**
 	   \returns a pointer to the only instance of the plugin handler, it is possible that 
 	   this instance is not yet initialized.   
@@ -180,7 +195,7 @@ private:
 	// template the singleton with the derived handler. 
 	THandlerSingleton(); 
 
-	static const T& do_instance(bool require_initialization); 
+	static T& do_instance(bool require_initialization); 
 
 	static CPathNameArray m_searchpath; 
 	static bool m_is_created; 

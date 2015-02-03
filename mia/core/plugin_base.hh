@@ -97,6 +97,19 @@ public:
 	void set_parameters(const CParsedOptions& options);
 
 	/**
+	   Set the plug-in priority, if two plug-ins of the same type and 
+	   name are loaded, then the one with the higher priority is kept. 
+	   \param p priority of this plugin 
+	 */
+	void set_priority(unsigned p); 
+
+	/**
+	   \returns the priority of the plug-in
+	 */
+	unsigned get_priority() const;
+	
+
+	/**
 	   This function checks, whether all requzired parameters have really been set.
 	   It throws an \a invalid_argument
 	*/
@@ -188,6 +201,8 @@ private:
 	  Specific properties of this plug in 
 	 */
 	CPropertyFlagHolder m_properties;
+
+	unsigned m_priority;  
 
 	/*
 	  The dynamically loadable module that holds the code of this plugin.  
