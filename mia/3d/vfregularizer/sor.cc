@@ -50,6 +50,7 @@ double C3DSORVectorfieldRegularizer::do_run(C3DFVectorfield& velocity, C3DFVecto
 
                 residuum == 0.0f; 
 
+		// to be parallized, needs reduce for residuum
                 auto buffers = m_kernel->get_buffers(); 
                 for (unsigned z = padding; z < work_size_z; ++z) {
                         m_kernel->start_slice(z, *buffers);
@@ -70,8 +71,10 @@ double C3DSORVectorfieldRegularizer::do_run(C3DFVectorfield& velocity, C3DFVecto
         float max_pert = 0.0f; 
         if (m_kernel->has_pertuberation()) {
                 m_kernel->set_data_fields(velocity, deform);
+
+		// to be parallized (reduce because of max ) 
                 auto buffers = m_kernel->get_buffers(); 
-                for (unsigned z = padding; z < work_size_z; ++z) {
+		for (unsigned z = padding; z < work_size_z; ++z) {
                         m_kernel->start_slice(z, *buffers);
                         for (unsigned y = padding; y < work_size_y; ++y) {
                                 float pert = m_kernel->evaluate_pertuberation_row(y, z, *buffers);
@@ -109,7 +112,7 @@ C3DFVfFluidStandardRegularizerKernel *C3DSORVectorfieldRegularizerPlugin::do_cre
         
         // there should be some method to select the arch optimized version 
         // 
-        add_parameter(make_param(m_kernel, "fluid-generic", "solver kernel to be used")); 
+        add_parameter(make_param(m_kernel, "fluid", "solver kernel to be used")); 
 
         return new C3DSORVectorfieldRegularizer(m_abs_epsilon, m_rel_epsilon, 
                                                 m_maxiter, m_kernel); 
@@ -120,6 +123,7 @@ const std::string C3DSORVectorfieldRegularizerPlugin::do_get_descr() const
         return "This plugin implements successive (over-)relaxation as a solver "
                 "to regularize the vector field."; 
 }
+
 
 
 NS_MIA_END

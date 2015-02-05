@@ -162,7 +162,7 @@ float C3DFVfFluidStandardRegularizerKernel::solve_at(C3DFVector *v, const C3DFVe
 	const C3DFVector delta = m_relax * ( R - *v );              // 3A 3M
 	*v += delta;                                                // 3A
 
-	return delta.norm2();
+	return delta.norm();
 
 }
 
@@ -206,7 +206,7 @@ void C3DFVfFluidStandardRegularizerKernel::set_update_flags(unsigned idx)
 }
 
 C3DFVfFluidStandardRegularizerKernelPlugin::C3DFVfFluidStandardRegularizerKernelPlugin():
-        C3DFVectorfieldRegularizerKernelPlugin("fluid-generic"),
+        C3DFVectorfieldRegularizerKernelPlugin("fluid"),
         m_mu(1.0f), 
         m_lambda(1.0f), 
         m_relax(1.0)
