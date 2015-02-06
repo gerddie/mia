@@ -57,6 +57,28 @@ const C2DBounds& C2DImage::get_size() const
 }
 
 
+C2DFVector C2DImage::get_origin() const
+{
+       const PAttribute attr = get_attribute("origin");
+        if (!attr) {
+                cvinfo() << "C2DImage::get_origin(): origin size not defined, returning default (0,0)\n";
+                return C2DFVector::_0;
+        }
+	
+        const TAttribute<C2DFVector> * vs = dynamic_cast<TAttribute<C2DFVector> *>(attr.get());
+        if (!vs){
+                cvinfo() << "C2DImage::get_origin(): pixel size wrong type, returning default (0,0)\n";
+                return C2DFVector::_0;
+        }
+        return *vs;
+}
+
+
+void C2DImage::set_origin(const C2DFVector& origin)
+{
+        set_attribute("origin", PAttribute(new TAttribute<C2DFVector>(origin)));	
+}
+
 
 C2DFVector C2DImage::get_pixel_size() const
 {

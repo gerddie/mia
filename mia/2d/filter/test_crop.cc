@@ -82,6 +82,7 @@ BOOST_FIXTURE_TEST_CASE(test_crop_reduce,  STestFicture)
 			BOOST_CHECK_EQUAL((*crop_image)(x,y), (*src_image)(x+b.x, y+b.y));
 	
 	BOOST_CHECK_EQUAL( crop_image->get_pixel_size(), test_pixelsize); 
+	BOOST_CHECK_EQUAL( crop_image->get_origin(), C2DFVector(b) * test_pixelsize); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_crop_enlarge,  STestFicture)

@@ -70,6 +70,13 @@ public:
         /// \param  pixel set the pixel real world size to the given value
 	void set_pixel_size(const C2DFVector& pixel);
 
+
+        /// \returns the origin in real-world units
+	C2DFVector get_origin() const;
+
+        /// \param  origin set the origin in world coordinates 
+	void set_origin(const C2DFVector& origin);
+
         /**
         returns a copy of this image
         Abstract method
