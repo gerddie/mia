@@ -53,6 +53,9 @@ C3DCrop::result_type C3DCrop::operator () (const T3DImage<T>& data) const
 	cvdebug() << "crop (" << begin << " - " << end << "\n";
 
 	T3DImage<T> * result = new T3DImage<T>(size, data);
+	if (!result) 
+		throw create_exception<runtime_error>("crop: unable to allocate image of size ", size);
+	result->set_origin(C3DFVector(begin) * data.get_voxel_size());
 
 	for (size_t z = 0; z < size.z; ++z)
 		for (size_t y = 0; y < size.y; ++y) {
