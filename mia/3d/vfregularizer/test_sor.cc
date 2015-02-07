@@ -32,28 +32,35 @@ private:
 BOOST_AUTO_TEST_CASE(test_sor_solver) 
 {
 	C3DBounds size(5, 6, 7); 
+	C3DBounds rbe = size - C3DBounds::_1;
 	
 	C3DFVectorfield v(size); 
 	C3DFVectorfield b(size); 
 
-	auto iv = v.begin(); 
-	auto ib = b.begin(); 
-	
-	for (unsigned  z = 0; z < size.z; ++z) {
-		float fz = z - 3.5; 
+	auto irv = v.range_begin(C3DBounds::_1, rbe);
+	auto erv = v.range_end(C3DBounds::_1, rbe);
+
+	while ( irv != erv ) {
+		C3DFVector x(irv.pos());
+		
+		float fz = x.z - 3.5; 
 		fz = 1.0 / (1 + fz * fz); 
-		for (unsigned  y = 0; y < size.y; ++y) {
-			float fy = fz * cos((y - 3.0)/6.0 * M_PI); 
-			for (unsigned  x = 0; x < size.x; ++x, ++iv, ++ib) {
-				float fx = x - 2.5f; 
-				
-				*ib = C3DFVector( fy *  1.0 / (1 + fx * fx), 
-						  fy * fy *  1.0 / (1 + fx * fx), 
-						  fz * fy *  2.0 / (1 + fx * fx)); 
-			}
-		}
+		float fy = fz * cos((x.y - 3.0)/6.0 * M_PI);
+		float fx = x.x - 2.5f;
+
+		*irv = C3DFVector( fy *  1.0 / (1 + fx * fx), 
+				   fy * fy *  1.0 / (1 + fx * fx), 
+				   fz * fy *  2.0 / (1 + fx * fx)); 
+		
+		++irv; 
 	}
 
+	
+
+	auto iib = b.begin_range(
+	
+	
+	
 }
 
 
