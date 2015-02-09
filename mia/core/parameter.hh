@@ -222,6 +222,55 @@ private:
 
 /**
    \ingroup cmdline
+   \brief Scalar parameter with a expected value boundaries 
+
+   A scalar parameter that supports specifying boundaries. These boundaries can be one-sided 
+   or on both sides, and the boundaries can be included in the range or not. 
+   If the user tries to set the parameter to a value outside the range, 
+   the set method will throw an \a invalid_argument exception
+*/
+
+template <typename T>
+class EXPORT_CORE TBoundedParameter : public CTParameter<T> {
+
+public:
+	static const int bf_min = 1; 
+	static const int bf_min_open = 3; 
+	static const int bf_min_closed = 5; 
+	static const int bf_max = 0x10;
+	static const int bf_max_open = 0x30; 
+	static const int bf_max_closed =  0x50;
+
+	static const int bf_closed_interval = bf_min_closed | bf_max_closed; 
+	static const int bf_open_interval = bf_min_open | bf_max_open; 
+
+	/** Constructor
+	   \param value reference to the parameter handled by this parameter object
+	   \param flags boundary flags 
+	   \param boundaries the boundaries of the parameter. Depending on the flags 
+	   it expects one or two values. If two values are given the first value is interpreted 
+	   as the lower boundary, 
+	   \param flags boundary flags 
+	   \param required set to \a true if the parameter has to be set by the user
+	   \param descr a description of the parameter
+	 */
+	TBoundedParameter(T& value, int flags, const std::vector<T>& boundaries, bool required, const char *descr);
+protected:
+	/**
+	   the implementation of the description-function
+	 */
+	void do_descr(std::ostream& os) const;
+private:
+	virtual void adjust(T& value);
+	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	T m_min;
+	T m_max;
+	int m_flags; 
+};
+
+
+/**
+   \ingroup cmdline
    \brief Dictionary paramater
 
    The (templated) parameter that takes its value froma restricted Dictionary.
@@ -427,6 +476,26 @@ typedef TRangeParameter<float> CFloatParameter;
 typedef TRangeParameter<double> CDoubleParameter;
 /// boolean parameter
 typedef CTParameter<bool> CBoolParameter;
+
+
+/// an unsigned short parameter (with possible boundaries)
+typedef TBoundedParameter<unsigned short> CUSBoundedParameter;
+/// an unsigned int parameter (with possible boundaries)
+typedef TBoundedParameter<unsigned int> CUIBoundedParameter;
+/// an unsigned long parameter (with possible boundaries)
+typedef TBoundedParameter<unsigned long> CULBoundedParameter;
+
+/// an signed short parameter (with possible boundaries)
+typedef TBoundedParameter<short> CSSBoundedParameter;
+/// an signed int parameter (with possible boundaries)
+typedef TBoundedParameter<int>   CSIBoundedParameter;
+/// an signed long parameter (with possible boundaries)
+typedef TBoundedParameter<long>  CSLBoundedParameter;
+
+/// an float parameter, single accuracy (with possible boundaries)
+typedef TBoundedParameter<float> CFBoundedParameter;
+/// an float parameter, double accuracy (with possible boundaries)
+typedef TBoundedParameter<double> CDBoundedParameter; 
 
 /**    
       \ingroup cmdline
@@ -778,6 +847,7 @@ std::string TParameter<T>::do_get_value_as_string() const
 {
 	return __dispatch_param_translate<T>::apply(m_value);	
 }
+
 
 NS_MIA_END
 

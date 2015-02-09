@@ -462,17 +462,22 @@ class CRangeParam(CParam):
         
         for r in node:
             if r.tag == "range":
+                self.min = "[" + r.get("min")
+                self.max = r.get("max") + "]"
+            if r.tag == "bounded":
                 self.min = r.get("min")
                 self.max = r.get("max")
+                
 
     def do_print_man(self):
         if (self.min is not None) and (self.max is not None):
-            print "in [%s, %s]" % (escape_dash(self.min), escape_dash(self.max))
+            print "in %s, %s" % (escape_dash(self.min), escape_dash(self.max))
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
         e = etree.SubElement(row, "entry", align="left", valign="top")
-        e.text = self.text + " in [%s, %s]" % (self.min, self.max)
+        e.text = self.text + " in %s, %s" % (self.min, self.max)
+
 
 
 class CDictParam(CParam):

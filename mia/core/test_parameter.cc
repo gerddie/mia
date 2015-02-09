@@ -159,5 +159,27 @@ BOOST_AUTO_TEST_CASE( test_vector_param)
 }
 
 
+BOOST_AUTO_TEST_CASE( test_bounded_param_float)
+{
+	float v; 
+	CFBoundedParameter testv(v, CFBoundedParameter::bf_closed_interval, 
+				 {2.0, 4.0}, false, "a bounded test value"); 
+	
+	
+	BOOST_CHECK(testv.set("2.5"));
+	BOOST_CHECK_EQUAL(v, 2.5);
+	
+	BOOST_CHECK(testv.set("4.0"));
+	BOOST_CHECK_EQUAL(v, 4.0);
+
+	BOOST_CHECK(testv.set("2.0"));
+	BOOST_CHECK_EQUAL(v, 2.0);
+	
+
+	BOOST_CHECK_THROW(testv.set("1.0"), std::invalid_argument);
+	BOOST_CHECK_THROW(testv.set("5.0"), std::invalid_argument);
+}
+
+
 
 
