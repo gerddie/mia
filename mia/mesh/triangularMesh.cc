@@ -140,15 +140,25 @@ void CTriangleMeshData::evaluate_normals()
 	auto t = ctriangles.begin();
 	auto et = ctriangles.end();
 
+	auto normalize = [](C3DFVector& x) {
+		float xn = x.norm(); 
+		if (xn > 0) 
+			x /= xn; 
+	}; 
+
 	int i = 0; 
 	while (t != et) {
 		C3DFVector e1 = (*m_vertices)[t->x] - (*m_vertices)[t->y];
 		C3DFVector e2 = (*m_vertices)[t->z] - (*m_vertices)[t->y];
 		C3DFVector e3 = (*m_vertices)[t->z] - (*m_vertices)[t->x];
-		C3DFVector help_normal = e2 ^ e1;
+		C3DFVector help_normal = cross(e2, e1);
 		if (help_normal.norm2() > 0) {
-			float weight1 = acos((dot(e1,e2)) / (e1.norm() * e2.norm()));
-			float weight2 = acos((dot(e3,e2)) / (e3.norm() * e2.norm()));
+			normalize(e1); 
+			normalize(e2); 
+			normalize(e3); 
+			float weight1 = acos(dot(e1,e2));
+			float weight2 = acos(dot(e3,e2));
+
 			(*m_normals)[t->y] += weight1 * help_normal;
 			(*m_normals)[t->z] += weight2 * help_normal;
 			
@@ -165,13 +175,7 @@ void CTriangleMeshData::evaluate_normals()
 
 	cvdebug() << "normalize " << m_normals->size() << " normals\n"; 
 	// normalize the normals
-	for_each(m_normals->begin(), m_normals->end(), 
-		 [](C3DFVector& n) -> void {
-			 float norm = n.norm();
-			 if (norm > 0) {
-				 n /= norm;
-			 }
-		 }); 
+	for_each(m_normals->begin(), m_normals->end(), normalize); 
 }
 
 
