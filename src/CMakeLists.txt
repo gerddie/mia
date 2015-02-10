@@ -167,6 +167,7 @@ DEFEXE(3dlandmarks-distances mia3d)
 DEFEXE(plugin-help miamesh )
 DEFEXE(meshdistance-to-stackmask miamesh )
 DEFEXE(meshfilter miamesh )
+DEFEXE(mesh-deformable-model miamesh )
 
 ADD_EXECUTABLE(mia-test-plugins-as-installed test_plugins_as_installed.cc)  
 TARGET_LINK_LIBRARIES(mia-test-plugins-as-installed miamesh)
