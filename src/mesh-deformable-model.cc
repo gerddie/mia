@@ -25,6 +25,11 @@
 #include <mia/3d/interpolator.hh>
 #include <mia/internal/main.hh>
 
+#include <mia/core/threadedmsg.hh>
+#include <mia/core/nccsum.hh>
+#include <tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
+
 NS_MIA_USE;
 using namespace std;
 
@@ -72,7 +77,7 @@ private:
         float m_intensity_scaling; 
         unsigned m_maxiter; 
         float m_epsilon; 
-
+	bool m_reorient_mesh; 
 }; 
 
 DeformableModel::DeformableModel():
@@ -82,7 +87,8 @@ DeformableModel::DeformableModel():
         m_intensity_weight(.02f), 
         m_intensity_scaling(1.0f),
         m_maxiter(200),
-        m_epsilon(0.001f)
+        m_epsilon(0.001f), 
+	m_reorient_mesh(false)
 {
 }
 
@@ -100,84 +106,104 @@ void DeformableModel::add_options(CCmdOptionList& options)
         options.add(make_opt(m_intensity_scaling, EParameterBounds::bf_min_open, {0}, "intensity-scaling", 0, 
                              "Scaling of the raw intensity difference."));
         options.add(make_opt(m_iso_value, "iso", 's', "Intensity value the mesh verices should adapt to.")); 
-        
+
+       
         options.set_group("Processing"); 
         options.add(make_opt(m_maxiter, EParameterBounds::bf_min_open, {0}, "maxiter", 'm', 
                              "Maximum number of iterations."));
         options.add(make_opt(m_epsilon, EParameterBounds::bf_min_open, {0}, "epsilon", 'e', 
                              "Stop iteration when the maximum shift of the vertices falls below this value")); 
+	options.add(make_opt(m_reorient_mesh, "reorient", 0, "Reorientate the mesh triangles")); 
 }
 
 PTriangleMesh DeformableModel::run(const CTriangleMesh& mesh, const C3DFImage& reference)
 {
-        C3DInterpolatorFactory ipf("bspline:d=1", "zero");
 
+	C3DInterpolatorFactory ipf("bspline:d=1", "zero");
+	
         unique_ptr<T3DConvoluteInterpolator<float>> R(ipf.create(reference.data())); 
         const auto gradient = get_gradient(reference);
 
 
         PTriangleMesh result(new CTriangleMesh(mesh)); 
+	if (m_reorient_mesh) {
+		for_each(result->triangles_begin(), result->triangles_end(), 
+			  [](CTriangleMesh::triangle_type& t) {swap(t.x, t.y);}); 
+	}
+
         result->evaluate_normals();
         
         CModel model = prepare_model(*result); 
         
-	double  sum_dist = 0.0; 
         float max_shift = numeric_limits<float>::max(); 
         unsigned  iter = 0; 
 
         vector<C3DFVector> out_vertex(model.size()); 
-        
-        while (iter++ < m_maxiter && max_shift > m_epsilon) {
-                
-                sum_dist = 0.0; 
-		max_shift = 0.0; 
 
-
-                for (unsigned i = 0; i < model.size(); ++i) {
+	typedef pair<float, float> result_t; 
+	
+	auto apply =[this, &out_vertex, &result, &model, &gradient, &R]
+		(const tbb::blocked_range<size_t>& range, result_t res) -> result_t {
+		CThreadMsgStream msks; 
+		for (auto i = range.begin(); i != range.end(); ++i) {
+			auto& vertex = result->vertex_at(i); 
+			const auto& n = model[i].normal(); 
 			
-                        auto& vertex = result->vertex_at(i); 
-                        
 			// values for external forces
 			float iso_delta = (m_iso_value - (*R)(vertex))/m_intensity_scaling; 
 			
-			float grad_scale =  dot(gradient(vertex), model[i].normal());
+			float grad_scale =  dot(gradient(vertex), n);
 			float f3 = tanh( iso_delta );
 			float f2 = grad_scale * f3 / 100.0;
 			float f1 = m_gradient_weight * f2 + m_intensity_weight * f3;
-
-                        C3DFVector shift = f1 * model[i].normal(); 
+			
+                        C3DFVector shift = f1 * n; 
                         
                         // evaluate internal force 
 			C3DFVector center = C3DFVector::_0; 
-
+			
                         int n_neightbors = model[i].vertices.size(); 
                         if ( n_neightbors > 0) {
-                                
+				
                                 for (auto iv : model[i].vertices)
                                         center += result->vertex_at(iv); 
                                 
 				center /= n_neightbors; 
-                                shift += m_smoothing_weight * center; 
+                                shift += m_smoothing_weight * (center - vertex); 
 			}
                         
-			sum_dist += iso_delta > 0 ? iso_delta : -iso_delta;
+			res.first += iso_delta > 0 ? iso_delta : -iso_delta;
 			
 			out_vertex[i] = vertex + shift; 
 			
 			float snorm = shift.norm();
 			
-			if (max_shift < snorm)
-				max_shift = snorm;
-			
+			if (res.second < snorm)
+				res.second = snorm;
 		}
+		return res; 
+	}; 
+        
+        while (iter++ < m_maxiter && max_shift > m_epsilon) {
                 
-                // copy resulting vertices and re-evaluate normales 
+		result_t r{0.0f, 0.0f}; 
+
+		
+		r = parallel_reduce(tbb::blocked_range<size_t>(0, model.size(), model.size() / 1000 ), r, apply, 
+				[](const result_t& a, const result_t& b) -> result_t {
+					result_t r; 
+					r.first = a.first + b.first; 
+					r.second = a.second > b.second ? a.second : b.second; 
+					return r; 
+				});
+                
                 copy(out_vertex.begin(), out_vertex.end(), result->vertices_begin()); 
 		result->evaluate_normals();
                 
 		cvmsg() << "[" << iter << "]: distance = " 
-                        << sum_dist << "; max shift = " 
-                        << max_shift << "                    \r"; 
+                        << r.first << "; max shift = " 
+                        << r.second << "\n"; 
+		max_shift = r.second; 
 	}
 	cvmsg() << endl; 
         return result; 
@@ -199,15 +225,18 @@ DeformableModel::CModel DeformableModel::prepare_model(CTriangleMesh& mesh)
 	while (tb != te) {
 		SLocation& nx = model[tb->x];
 		nx.vertices.insert(tb->x); 
+		nx.vertices.insert(tb->y); 
 		nx.vertices.insert(tb->z);
 		
 		SLocation& ny = model[tb->y];
  		ny.vertices.insert(tb->x); 
+ 		ny.vertices.insert(tb->y); 
 		ny.vertices.insert(tb->z);
 
                 SLocation& nz = model[tb->z];
 		nz.vertices.insert(tb->x); 
-		nz.vertices.insert(tb->y);
+ 		nz.vertices.insert(tb->y); 
+		nz.vertices.insert(tb->z);
 		
 		++tb; 
 	}
