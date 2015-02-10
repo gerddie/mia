@@ -91,6 +91,7 @@ class CTextNode:
         self.entry = node.tag
         self.flags = set()
         self.text  = ""
+
         if node.text is not None:
             self.text = self.text + node.text
 
@@ -134,6 +135,14 @@ class COption(CTextNode):
 #        self.required = int(node.get("required")) 
         self.default = node.get("default")
         self.type = node.get("type")
+        self.value_range = None
+       
+        for r in node:
+            if r.tag == "range":
+                self.value_range  = "[" + r.get("min") + ', ' + r.get("max") + "]"
+            if r.tag == "bounded":
+                self.value_range  = r.get("min") + ', ' + r.get("max")
+
 
     def print_man(self):
         if len(self.short) > 0:
@@ -149,10 +158,19 @@ class COption(CTextNode):
                         flagstring = f
                     else:
                         flagstring = flagstring + ', ' + f
-            print ".IP \"%s \-\-%s=(%s)\""% (short, self.long, flagstring)
+            if self.value_range is not None: 
+                print ".IP \"%s \-\-%s=(%s); %s in %s\""% (short, self.long, flagstring, self.type, self.value_range)
+            else:
+                if not self.type == "bool":
+                    print ".IP \"%s \-\-%s=(%s); %s\""% (short, self.long, flagstring, self.type)
+                else:
+                    print ".IP \"%s \-\-%s\""% (short, self.long)
         else:
             if not self.type == "bool":
-                print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
+                if self.value_range is not None: 
+                    print ".IP \"%s \-\-%s=%s; %s in %s\""% (short, self.long, escape_dash(self.default), self.type, self.value_range)
+                else:
+                    print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
             else:
                 print ".IP \"%s \-\-%s\""% (short, self.long)
         print escape_dash(self.text), 
@@ -160,7 +178,7 @@ class COption(CTextNode):
 
 
     def do_print_man(self):
-        print "" 
+            print "" 
 
     def write_xml(self, entry):
         # create the terminal text 
@@ -179,11 +197,16 @@ class COption(CTextNode):
                         first=False
                     else:
                         termtext = termtext + ", " + f
-            termtext = termtext + ")"
+            if self.type is not None: 
+                termtext = termtext + "); " + self.type
+            if self.value_range is not None: 
+                termtext = termtext + " in "  + self.value_range
         elif self.type != "bool":
             termtext = termtext + "="
             if len(self.default)>0:
-                termtext = termtext + self.default
+                termtext = termtext + self.default + "; " + self.type
+            if self.value_range is not None: 
+                termtext = termtext + " in "  + self.value_range
             elif self.type == "string":
                 termtext = termtext + "STRING"
 
@@ -410,9 +433,9 @@ class CParam:
             termtext = termtext + ", %s)"
             print termtext % (self.type)
         elif self.required:
-            print "= (required, %s) " % (self.type)
+            print "= (required); %s " % (self.type)
         else:
-            print "= %s (%s) " % (escape_dash(self.default), self.type)
+            print "= %s; %s " % (escape_dash(self.default), self.type)
         print ".RS 2"
         print "%s." % (escape_dash(self.text))
         self.do_print_man()
@@ -457,26 +480,18 @@ class CParam:
 class CRangeParam(CParam):
     def __init__(self, node):
         CParam.__init__(self,node)
-        self.min = None
-        self.max = None
+        self.value_range = None
         
         for r in node:
             if r.tag == "range":
-                self.min = "[" + r.get("min")
-                self.max = r.get("max") + "]"
+                self.type = self.type + " in [" + r.get("min") + ", " + r.get("max") + "]"
             if r.tag == "bounded":
-                self.min = r.get("min")
-                self.max = r.get("max")
+                self.type = self.type + " in " + r.get("min") + ", " + r.get("max")
                 
-
-    def do_print_man(self):
-        if (self.min is not None) and (self.max is not None):
-            print "in %s, %s" % (escape_dash(self.min), escape_dash(self.max))
-        CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
         e = etree.SubElement(row, "entry", align="left", valign="top")
-        e.text = self.text + " in %s, %s" % (self.min, self.max)
+        e.text = self.text
 
 
 
@@ -654,9 +669,9 @@ class CPlugin:
                 table = etree.SubElement(node, "informaltable", frame="all", role="pluginparms", pgwide="1")
                 tgroup = etree.SubElement(table, "tgroup", cols="3", colsep="0", rowsep ="0")
                 colspec = etree.SubElement(tgroup, "colspec", colname="c1", colwidth="10%")
-                colspec = etree.SubElement(tgroup, "colspec", colname="c2", colwidth="10%")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c2", colwidth="20%")
                 colspec = etree.SubElement(tgroup, "colspec", colname="c3", colwidth="10%")
-                colspec = etree.SubElement(tgroup, "colspec", colname="c4", colwidth="70%")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c4", colwidth="60%")
                 thead = etree.SubElement(tgroup, "thead")
                 row = etree.SubElement(thead, "row"); 
                 e = etree.SubElement(row, "entry", align="center", valign="top")
