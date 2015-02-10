@@ -198,19 +198,20 @@ void CStringParameter::do_add_dependend_handler(HandlerHelpMap& handler_map)cons
 }
 
 template <typename T> 
-TBoundedParameter<T>::TBoundedParameter(T& value, int flags, const vector<T>& boundaries, 
-				     bool required, const char *descr): 
+TBoundedParameter<T>::TBoundedParameter(T& value, EParameterBounds flags, 
+					const vector<T>& boundaries, 
+					bool required, const char *descr): 
 	CTParameter<T>(value, required, descr),
 	m_flags(flags)
 {
 	assert(!boundaries.empty());
 	unsigned idx = 0; 
 
-	if (flags & bf_min) {
+	if (has_flag(flags, EParameterBounds::bf_min)) {
 		m_min = boundaries[0]; 
 		++idx; 
 	}
-	if (flags & bf_max) {
+	if (has_flag(flags, EParameterBounds::bf_max)) {
 		assert(boundaries.size() > idx); 
 		m_max = boundaries[idx]; 
 	}
@@ -219,23 +220,23 @@ TBoundedParameter<T>::TBoundedParameter(T& value, int flags, const vector<T>& bo
 template <typename T> 
 void TBoundedParameter<T>::adjust(T& value)
 {
-	if ((m_flags & bf_min_closed) == bf_min_closed && value < m_min) {
+	if (has_flag(m_flags, EParameterBounds::bf_min_closed)&& value < m_min) {
 		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ", 
 							 "expected a value >= ", m_min, ". Parameter is ", 
 							 this->get_descr(), " flags=", m_flags); 
 	}
-	if ((m_flags & bf_min_open) == bf_min_open && value <= m_min) {
+	if (has_flag(m_flags, EParameterBounds::bf_min_open) && value <= m_min) {
 		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ",
 							 "expected a value > ", m_min, ". Parameter is ", 
 							 this->get_descr(), " flags=", m_flags); 
 	}
 
-	if ((m_flags & bf_max_closed) == bf_max_closed && value > m_max) {
+	if (has_flag(m_flags, EParameterBounds::bf_max_closed)&& value > m_max) {
 		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ",
 							 "expected a value <= ", m_max, ". Parameter is ", 
 							 this->get_descr(), " flags=", m_flags); 
 	}
-	if ((m_flags & bf_max_open) == bf_max_open && value >= m_max) {
+	if (has_flag(m_flags, EParameterBounds::bf_max_open) && value >= m_max) {
 		throw create_exception<invalid_argument>("Parameters value ", value, " given, but "
 							 "expected a value < ", m_max, ". Parameter is ", 
 							 this->get_descr(), " flags=", m_flags ); 
@@ -250,9 +251,9 @@ void TBoundedParameter<T>::do_get_help_xml(xmlpp::Element& self) const
 
 	stringstream min_str; 
 	
-	if (bf_min_closed)
+	if (has_flag(m_flags, EParameterBounds::bf_min_closed))
 		min_str << "[" << m_min; 
-	else if (bf_min_open)
+	else if (has_flag(m_flags,EParameterBounds::bf_min_open))
 		min_str << "(" << m_min; 
 	else if (numeric_limits<T>::is_signed) 
 		min_str << "(-inf"; 
@@ -262,9 +263,9 @@ void TBoundedParameter<T>::do_get_help_xml(xmlpp::Element& self) const
 	dict->set_attribute("min", min_str.str()); 
 
 	stringstream max_str; 
-	if (bf_max_closed)
+	if (has_flag(m_flags,EParameterBounds::bf_max_closed))
 		max_str << m_max << "]"; 
-	else if (bf_max_open)
+	else if (has_flag(m_flags,EParameterBounds::bf_max_open))
 		max_str << m_max << ")"; 
 	else 
 		max_str << "inf)";
@@ -279,9 +280,9 @@ void TBoundedParameter<T>::do_descr(std::ostream& os) const
 	CTParameter<T>::do_descr(os); 
 	
 	os << " in "; 
-	if (bf_min_closed)
+	if (has_flag(m_flags, EParameterBounds::bf_min_closed))
 		os << "[" << m_min; 
-	else if (bf_min_open)
+	else if (has_flag(m_flags, EParameterBounds::bf_min_open))
 		os << "(" << m_min; 
 	else if (numeric_limits<T>::is_signed) 
 		os << "(-inf"; 
@@ -290,12 +291,28 @@ void TBoundedParameter<T>::do_descr(std::ostream& os) const
 
 	os << ", "; 
 	
-	if (bf_max_closed)
+	if (has_flag(m_flags, EParameterBounds::bf_max_closed))
 		os << m_max << "]"; 
-	else if (bf_max_open)
+	else if (has_flag(m_flags, EParameterBounds::bf_max_open))
 		os << m_max << ")"; 
 	else 
 		os << "inf)";
+}
+
+EXPORT_CORE std::ostream& operator << (std::ostream& os, EParameterBounds flags)
+{
+	auto min_flags = flags & EParameterBounds::bf_min_flags; 
+	if (min_flags == EParameterBounds::bf_min_open) 
+		os << "min(o) "; 
+	if (min_flags == EParameterBounds::bf_min_closed) 
+		os << "min[c] ";
+	
+	auto max_flags = flags & EParameterBounds::bf_max_flags; 
+	if (max_flags == EParameterBounds::bf_max_open) 
+		os << "max(o)"; 
+	if (max_flags == EParameterBounds::bf_max_closed) 
+		os << "max[c]";
+	return os; 
 }
 
 

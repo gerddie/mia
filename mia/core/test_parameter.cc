@@ -159,10 +159,10 @@ BOOST_AUTO_TEST_CASE( test_vector_param)
 }
 
 
-BOOST_AUTO_TEST_CASE( test_bounded_param_float)
+BOOST_AUTO_TEST_CASE( test_bounded_param_float_closed)
 {
-	float v; 
-	CFBoundedParameter testv(v, CFBoundedParameter::bf_closed_interval, 
+	float v = 0.0; 
+	CFBoundedParameter testv(v, EParameterBounds::bf_closed_interval, 
 				 {2.0, 4.0}, false, "a bounded test value"); 
 	
 	
@@ -178,6 +178,92 @@ BOOST_AUTO_TEST_CASE( test_bounded_param_float)
 
 	BOOST_CHECK_THROW(testv.set("1.0"), std::invalid_argument);
 	BOOST_CHECK_THROW(testv.set("5.0"), std::invalid_argument);
+}
+
+BOOST_AUTO_TEST_CASE( test_bounded_param_float_open)
+{
+	float v = 0.0; 
+	CFBoundedParameter testv(v, EParameterBounds::bf_open_interval, 
+				 {2.0, 4.0}, false, "a bounded test value"); 
+	
+	
+	BOOST_CHECK(testv.set("2.5"));
+	BOOST_CHECK_EQUAL(v, 2.5);
+	
+	BOOST_CHECK_THROW(testv.set("4.0"), std::invalid_argument); 
+	BOOST_CHECK_THROW(testv.set("2.0"), std::invalid_argument);
+	BOOST_CHECK_THROW(testv.set("1.0"), std::invalid_argument);
+	BOOST_CHECK_THROW(testv.set("5.0"), std::invalid_argument);
+}
+
+BOOST_AUTO_TEST_CASE( test_bounded_param_int_min_open)
+{
+	int v = 0; 
+	CSIBoundedParameter testv(v, EParameterBounds::bf_min_open, 
+				  {-2}, false, "a bounded test value"); 
+	
+	
+	BOOST_CHECK(testv.set("-1"));
+	BOOST_CHECK_EQUAL(v, -1);
+	
+	BOOST_CHECK_THROW(testv.set("-2"), std::invalid_argument); 
+	BOOST_CHECK_THROW(testv.set("-3"), std::invalid_argument); 
+}
+
+BOOST_AUTO_TEST_CASE( test_bounded_param_int_min_close)
+{
+	int v = 0; 
+	CSIBoundedParameter testv(v, EParameterBounds::bf_min_closed, 
+				  {-2}, false, "a bounded test value"); 
+	
+	
+	BOOST_CHECK(testv.set("-2"));
+	BOOST_CHECK_EQUAL(v, -2);
+
+	BOOST_CHECK(testv.set("2"));
+	BOOST_CHECK_EQUAL(v, 2);
+	
+	BOOST_CHECK_THROW(testv.set("-3"), std::invalid_argument); 
+}
+
+
+BOOST_AUTO_TEST_CASE( test_bounded_param_unsignedshort_min_open)
+{
+	unsigned short v = 0; 
+	CUSBoundedParameter testv(v, EParameterBounds::bf_min_open, 
+				  {2}, false, "a bounded test value"); 
+	
+	
+	BOOST_CHECK(testv.set("3"));
+	BOOST_CHECK_EQUAL(v, 3);
+	
+	BOOST_CHECK_THROW(testv.set("2"), std::invalid_argument); 
+	BOOST_CHECK_THROW(testv.set("1"), std::invalid_argument); 
+}
+
+BOOST_AUTO_TEST_CASE( test_bounded_param_unsignedshort_min_close)
+{
+	unsigned short v = 0; 
+	CUSBoundedParameter testv(v, EParameterBounds::bf_min_closed, 
+				  {2}, false, "a bounded test value"); 
+	
+	
+	BOOST_CHECK(testv.set("2"));
+	BOOST_CHECK_EQUAL(v, 2);
+
+	BOOST_CHECK(testv.set(" 3"));
+	BOOST_CHECK_EQUAL(v, 3);
+	
+	BOOST_CHECK_THROW(testv.set("1"), std::invalid_argument); 
+}
+
+BOOST_AUTO_TEST_CASE( test_bounded_param_unsignedshort_min_close_negative_input)
+{
+	unsigned short v = 0; 
+	CUSBoundedParameter testv(v, EParameterBounds::bf_min_closed, 
+				  {2}, false, "a bounded test value"); 
+	
+	BOOST_CHECK_THROW(testv.set(" -1"), std::invalid_argument); 
 }
 
 

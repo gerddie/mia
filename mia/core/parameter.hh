@@ -26,6 +26,7 @@
 #include <ostream>
 #include <istream>
 #include <sstream>
+#include <mia/core/flags.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/handlerbase.hh>
@@ -230,19 +231,28 @@ private:
    the set method will throw an \a invalid_argument exception
 */
 
+enum class EParameterBounds : int {
+	bf_min = 1,  
+	bf_min_open = 3, 
+	bf_min_closed = 5, 
+	bf_min_flags = 7, 
+	bf_max = 0x10, 
+	bf_max_open = 0x30, 
+	bf_max_closed =  0x50, 
+	bf_max_flags = 0x70, 
+	bf_closed_interval = 0x55, 
+	bf_open_interval = 0x33 
+}; 
+
+IMPLEMENT_FLAG_OPERATIONS(EParameterBounds); 
+
+
+EXPORT_CORE std::ostream& operator << (std::ostream& os, EParameterBounds flags); 
+
 template <typename T>
 class EXPORT_CORE TBoundedParameter : public CTParameter<T> {
 
 public:
-	static const int bf_min = 1; 
-	static const int bf_min_open = 3; 
-	static const int bf_min_closed = 5; 
-	static const int bf_max = 0x10;
-	static const int bf_max_open = 0x30; 
-	static const int bf_max_closed =  0x50;
-
-	static const int bf_closed_interval = bf_min_closed | bf_max_closed; 
-	static const int bf_open_interval = bf_min_open | bf_max_open; 
 
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
@@ -254,7 +264,7 @@ public:
 	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
-	TBoundedParameter(T& value, int flags, const std::vector<T>& boundaries, bool required, const char *descr);
+	TBoundedParameter(T& value, EParameterBounds flags, const std::vector<T>& boundaries, bool required, const char *descr);
 protected:
 	/**
 	   the implementation of the description-function
@@ -265,7 +275,7 @@ private:
 	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	T m_min;
 	T m_max;
-	int m_flags; 
+	EParameterBounds m_flags; 
 };
 
 
