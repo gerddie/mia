@@ -100,12 +100,10 @@ C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 	m_s(0,0)
 
 {
-	add_parameter("sx", new CUIntParameter(m_s.x, 0,
-					       numeric_limits<unsigned int>::max(), false,
+	add_parameter("sx", make_lc_param(m_s.x, 0, false,
 					       "target size in x direction, 0: use input size"));
 	
-	add_parameter("sy", new CUIntParameter(m_s.y, 0,
-					       numeric_limits<unsigned int>::max(), false,
+	add_parameter("sy", make_lc_param(m_s.y, 0, false,
 					       "target size in y direction, 0: use input size"));
 	
 	add_parameter("s", new C2DBoundsParameter(m_s, false, "target size as 2D vector"));

@@ -135,8 +135,7 @@ C2DAdaptMedianImageFilterFactory::C2DAdaptMedianImageFilterFactory():
 	C2DFilterPlugin(plugin_name), 
 	m_hw(2)
 {
-	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
-					     false, "half filter width"));
+	add_parameter("w", make_lc_param(m_hw, 1, false, "half filter width"));
 }
 
 C2DFilter *C2DAdaptMedianImageFilterFactory::do_create()const

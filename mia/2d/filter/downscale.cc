@@ -101,13 +101,9 @@ C2DDownscaleFilterPlugin::C2DDownscaleFilterPlugin():
 	m_b(1,1), 
 	m_filter("gauss")
 {
-	add_parameter("bx", new CUIntParameter(m_b.x, 1,
-					      numeric_limits<int>::max(), false,
-					      "blocksize in x direction"));
+	add_parameter("bx", make_lc_param(m_b.x, 1u, false, "blocksize in x direction"));
 
-	add_parameter("by", new CUIntParameter(m_b.y, 1,
-					      numeric_limits<int>::max(), false,
-					      "blocksize in y direction"));
+	add_parameter("by", make_lc_param(m_b.y, 1u, false, "blocksize in y direction"));
 
 	add_parameter("b", new C2DBoundsParameter(m_b, false, "blocksize"));
 

@@ -316,33 +316,32 @@ CNLOptMinimizerPlugin::CNLOptMinimizerPlugin():
 						  "local minimization algorithm that may be required for the"
 						  " main minimization algorithm."));
 	
-	add_parameter("stop", new CTParameter<double>(m_options.stopval, false, 
-				  "Stopping criterion: function value falls below this value")); 
-	add_parameter("xtola", new CDBoundedParameter(m_options.abs_xtol, EParameterBounds::bf_min_closed, {0.0}, false, 
+	add_parameter("stop", make_param(m_options.stopval, false,
+					 "Stopping criterion: function value falls below this value"));
+	
+	add_parameter("xtola", make_lc_param(m_options.abs_xtol, 0.0, false, 
 				  "Stopping criterion: the absolute change of all x-values is below "
 				  " this value")); 
-	add_parameter("xtolr", new CDBoundedParameter(m_options.rel_xtol, EParameterBounds::bf_min_closed, {0.0}, false, 
+	add_parameter("xtolr", make_lc_param(m_options.rel_xtol, 0.0, false, 
 				  "Stopping criterion: the relative change of all x-values is below "
 				  " this value")); 
 
-	add_parameter("ftola", new CDBoundedParameter(m_options.abs_ftol, EParameterBounds::bf_min_closed, {0.0}, false, 
-				  "Stopping criterion: the absolute change of the objective value is below "
-						    " this value")); 
-	add_parameter("ftolr", new CDBoundedParameter(m_options.rel_ftol, EParameterBounds::bf_min_closed, {0.0}, false, 
+	add_parameter("ftola", make_lc_param(m_options.abs_ftol, 0.0, false, 
+					      "Stopping criterion: the absolute change of the objective value is below "
+					      " this value")); 
+	add_parameter("ftolr", make_lc_param(m_options.rel_ftol, 0.0, false, 
 				  "Stopping criterion: the relative change of the objective value is below "
 						    " this value")); 
 
-	add_parameter("maxiter", new CUIBoundedParameter(m_options.maxiter, EParameterBounds::bf_min_closed, {1}, false, 
-						   "Stopping criterion: the maximum number of iterations")); 
+	add_parameter("maxiter", make_lc_param(m_options.maxiter, 1, false, 
+						"Stopping criterion: the maximum number of iterations")); 
 	
-	add_parameter("step", new CDoubleParameter(m_options.step, EParameterBounds::bf_min_closed, {0.0}, false, 
-					 "Initial step size for gradient free methods")); 
-
-	add_parameter("lower", new CTParameter<double>(m_options.min_boundary, false, 
-					 "Lower boundary (equal for all parameters)")); 
-
-	add_parameter("higher", new CTParameter<double>(m_options.max_boundary, false, 
-					 "Higher boundary (equal for all parameters)")); 
+	add_parameter("step", make_lc_param(m_options.step, 0.0, false, 
+					     "Initial step size for gradient free methods")); 
+	
+	add_parameter("lower", make_param(m_options.min_boundary, false, "Lower boundary (equal for all parameters)")); 
+	
+	add_parameter("higher", make_param(m_options.max_boundary, false, "Higher boundary (equal for all parameters)")); 
 
 }
 	

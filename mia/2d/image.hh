@@ -429,6 +429,7 @@ struct Binder<C2DImage> {
 	typedef __bind_all<T2DImage> Derived;
 };
 
+//@endcond INTERNAL 
 
 /**
    \brief functor to convert an image with an abitrary pixel type to single floating point pixels 

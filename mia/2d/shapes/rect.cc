@@ -46,7 +46,7 @@ CSquare2DShapePlugin::CSquare2DShapePlugin():
 	m_width(2), 
 	m_filled(true)
 {
-	add_parameter("width", new CIntParameter(m_width, 0, numeric_limits<int>::max(), false, "width of rectangle"));
+	add_parameter("width", make_lc_param(m_width, 1, false, "width of rectangle"));
 	add_parameter("fill", new CBoolParameter(m_filled, false, "create a filled shape"));
 }
 
@@ -68,8 +68,8 @@ CRectangle2DShapePlugin::CRectangle2DShapePlugin():
 	m_height(2), 
 	m_filled(true)
 {
-	add_parameter("width", new CIntParameter(m_width, 0, numeric_limits<int>::max(), false, "width of rectangle"));
-	add_parameter("height", new CIntParameter(m_height, 0, numeric_limits<int>::max(), false, "height of rectangle"));
+	add_parameter("width", make_lc_param(m_width, 1, false, "width of rectangle"));
+	add_parameter("height", make_lc_param(m_height, 1, false, "height of rectangle"));
 	add_parameter("fill", new CBoolParameter(m_filled, false, "create a filled shape"));
 }
 

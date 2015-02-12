@@ -168,11 +168,10 @@ TSSDAutomaskCostPlugin<CP,C>::TSSDAutomaskCostPlugin():
 {
 	TRACE("TSSDAutomaskCostPlugin<CP,C>::TSSDAutomaskCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
-	const double limits = std::numeric_limits<double>::max(); 
-	this->add_parameter("rthresh", new mia::CDoubleParameter(m_ref_mask_thresh, -limits, limits, false, 
-								 "Threshold intensity value for reference image")); 
-
-	this->add_parameter("sthresh", new mia::CDoubleParameter(m_src_mask_thresh, -limits, limits, false, 
+	this->add_parameter("rthresh", new mia::CTParameter<double>(m_ref_mask_thresh, false, 
+								    "Threshold intensity value for reference image")); 
+	
+	this->add_parameter("sthresh", new mia::CTParameter<double>(m_src_mask_thresh, false, 
 								    "Threshold intensity value for source image")); 
 
 }

@@ -739,8 +739,8 @@ C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	m_rate2d(0, 0)
 {
 	add_parameter("kernel", make_param(m_interpolator, "bspline:d=3", false, "transformation spline kernel."));
-	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
-						    "isotropic coefficient rate in pixels"));
+	add_parameter("rate",   make_lc_param(m_rate, 1, false,
+					      "isotropic coefficient rate in pixels"));
 	add_parameter("anisorate",   new C2DFVectorParameter(m_rate2d, false, "anisotropic coefficient rate in pixels, "
 							     "nonpositive values will be overwritten by the 'rate' value."));
 	add_parameter("penalty", make_param(m_penalty, "", false, "Transformation penalty term")); 

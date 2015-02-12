@@ -124,7 +124,7 @@ C2DMeanFilterPlugin::C2DMeanFilterPlugin():
 	C2DFilterPlugin("mean"), 
 	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "half filter width"));
+	add_parameter("w", make_lc_param(m_hw, 1, false, "half filter width"));
 }
 
 C2DFilter *C2DMeanFilterPlugin::do_create()const

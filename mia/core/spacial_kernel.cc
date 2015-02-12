@@ -33,7 +33,7 @@ const char *spacial_kernel_data::data_descr = "1d";
 const char *kernel_plugin_type::type_descr = "spacialkernel";
 
 
-C1DFilterKernel::C1DFilterKernel(int fsize):
+C1DFilterKernel::C1DFilterKernel(unsigned fsize):
 	m_fsize(fsize)
 {
 }

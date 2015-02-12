@@ -24,7 +24,7 @@ NS_MIA_USE
 using namespace std;
 using namespace gauss_1d_folding_kernel;
 
-C1DGaussFilterKernel::C1DGaussFilterKernel(int fsize):
+C1DGaussFilterKernel::C1DGaussFilterKernel(unsigned fsize):
 	C1DFoldingKernel(fsize)
 {
 	size_t n = size();
@@ -59,7 +59,7 @@ C1DSpacialGaussKernelPlugin::C1DSpacialGaussKernelPlugin():
 	C1DSpacialKernelPlugin("gauss"),
 	m_w(1)
 {
-	add_parameter("w", new CUIBoundedParameter(m_w, EParameterBounds::bf_min_closed, {1}
+	add_parameter("w", new CUIBoundedParameter(m_w, EParameterBounds::bf_min_closed, {1}, 
 						   false, "half filter width"));
 }
 

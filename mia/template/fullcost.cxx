@@ -104,8 +104,7 @@ TFullCostPlugin<T>::TFullCostPlugin(const char *name):
 	TFactory<TFullCost<T> >(name), 
 	m_weight(1.0)
 {
-	this->add_parameter("weight", new CFloatParameter(m_weight, -1e+10f, 1e+10f,
-						    false, "weight of cost function"));
+	this->add_parameter("weight", new CTParameter<float>(m_weight, false, "weight of cost function"));
 }
 	
 template <typename T> 

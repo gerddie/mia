@@ -156,8 +156,8 @@ C2DThinningFilterFactory::C2DThinningFilterFactory():
 	C2DFilterPlugin("thinning"),
 	m_max_iterations(0)
 {
-	add_parameter("iter", new CIntParameter(m_max_iterations, 1, 1000000, false,  
-						"Number of iterations to run, 0=until convergence"));
+	add_parameter("iter", make_ci_param(m_max_iterations, 1, 1000000, false,  
+					    "Number of iterations to run, 0=until convergence"));
 }
 
 mia::C2DFilter *C2DThinningFilterFactory::do_create()const
@@ -175,8 +175,8 @@ C2DPruningFilterFactory::C2DPruningFilterFactory():
 	C2DFilterPlugin("pruning"),
 	m_max_iterations(0)
 {
-	add_parameter("iter", new CIntParameter(m_max_iterations, 1, 1000000, false,  
-						"Number of iterations to run, 0=until convergence"));
+	add_parameter("iter", make_ci_param(m_max_iterations, 1, 1000000, false,  
+					    "Number of iterations to run, 0=until convergence"));
 }
 
 mia::C2DFilter *C2DPruningFilterFactory::do_create()const

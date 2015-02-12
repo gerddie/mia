@@ -112,8 +112,7 @@ C2DGaussFilterPlugin::C2DGaussFilterPlugin():
 	C2DFilterPlugin("gauss"),
 	m_w(1)
 {
-	add_parameter("w", new CIntParameter(m_w, 0, numeric_limits<int>::max(),
-					     false, "filter width parameter"));
+	add_parameter("w", make_lc_param(m_w, 1, false, "filter width parameter"));
 }
 
 C2DFilter *C2DGaussFilterPlugin::do_create()const

@@ -588,8 +588,8 @@ PCmdOption make_opt(T& value, Tmin min, Tmax max,  const char *long_opt, char sh
    If the given value does not fit into the range an exception will be thrown 
    \tparam T type of the value to be parsed, supported are float, double, long, int, short, unsigned long, unsigned int, unsigned short. 
    \param value value variable to hold the parsed option value - pass in the default value -
-   \param flags boundary flags 
-   \param max end of the value range the option can be set to 
+   \param bflags boundary flags 
+   \param bounds vector containing the boundaries of the allowed parameter range (depends on bflags) 
    \param short_opt short option name (or 0)
    \param long_opt long option name (must not be NULL)
    \param help long help string (must not be NULL)

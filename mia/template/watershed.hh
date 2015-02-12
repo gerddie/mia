@@ -322,10 +322,11 @@ TWatershedFilterPlugin<dim>::TWatershedFilterPlugin():
 {
 	this->add_parameter("n", make_param(m_neighborhood, "sphere:r=1", false, "Neighborhood for watershead region growing")); 
 	this->add_parameter("mark", new mia::CBoolParameter(m_with_borders, false, "Mark the segmented watersheds with a special gray scale value")); 
-	this->add_parameter("thresh", new mia::CFloatParameter(m_thresh, 0, 1.0, false, "Relative gradient norm threshold. The actual value threshhold value "
-							       "is thresh * (max_grad - min_grad) + min_grad. Bassins separated by gradients "
-							       "with a lower norm will be joined"));  
-	this->add_parameter("evalgrad", new mia::CBoolParameter(m_eval_grad, false, "Set to 1 if the input image does not represent a gradient norm image")); 
+	this->add_parameter("thresh", make_coi_param(m_thresh, 0, 1.0, false, "Relative gradient norm threshold. The actual value "
+						     "threshhold value is thresh * (max_grad - min_grad) + min_grad. Bassins "
+						     "separated by gradients with a lower norm will be joined"));  
+	this->add_parameter("evalgrad", new mia::CBoolParameter(m_eval_grad, false, "Set to 1 if the input image does "
+								"not represent a gradient norm image")); 
 }
 
 template <int dim>

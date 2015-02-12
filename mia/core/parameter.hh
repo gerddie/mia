@@ -278,6 +278,84 @@ private:
 	EParameterBounds m_flags; 
 };
 
+template <typename T>
+CParameter *make_param(T& value, bool required, const char *descr)
+{
+	return new CTParameter<T>(value, required, descr); 
+}
+
+
+template <typename T, typename S>
+CParameter *make_lo_param(T& value, S lower_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_open,
+		{static_cast<T>(lower_bound)}, required, descr); 
+}
+
+template <typename T>
+CParameter *make_positive_param(T& value, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_open, {T()}, required, descr); 
+}
+
+template <typename T, typename S>
+CParameter *make_lc_param(T& value, S lower_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_closed,
+		{static_cast<T>(lower_bound)}, required, descr); 
+}
+
+
+template <typename T>
+CParameter *make_nonnegative_param(T& value, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_closed, {T()}, required, descr); 
+}
+
+
+template <typename T, typename S>
+CParameter *make_uo_param(T& value, S upper_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_open,
+		{static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S>
+CParameter *make_uc_param(T& value, S upper_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_closed,
+		{static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S1, typename S2>
+CParameter *make_ci_param(T& value, S1 lower_bound, S2 upper_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_closed_interval,
+		{static_cast<T>(lower_bound), static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S1, typename S2>
+CParameter *make_oi_param(T& value, S1 lower_bound, S2 upper_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_open_interval,
+		{static_cast<T>(lower_bound), static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S1, typename S2>
+CParameter *make_coi_param(T& value, S1 lower_bound, S2 upper_bound,bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
+		{static_cast<T>(lower_bound), static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S1, typename S2>
+CParameter *make_oci_param(T& value, S1 lower_bound, S2 upper_bound,bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_max_closed | EParameterBounds::bf_min_open,
+		{static_cast<T>(lower_bound), static_cast<T>(upper_bound)}, required, descr); 
+}
+
+
 
 /**
    \ingroup cmdline
@@ -552,12 +630,6 @@ CParameter *make_param(std::unique_ptr<T>& value, const std::string& init,  bool
 	
 }
 
-
-template <typename T> 
-CParameter *make_param(T& value, bool required, const char *descr) 
-{                       
-	return new TParameter<T>(value, required, descr);
-}
 
 
 
