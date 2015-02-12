@@ -854,7 +854,7 @@ void CCmdFlagOption::do_write_value(std::ostream& os) const
 
 void CCmdFlagOption::do_get_long_help(std::ostream& os) const
 {
-	os << " supported flags:(" <<m_map.get_flagnames() << os << ")";
+	os << " supported flags:(" <<m_map.get_flagnames() << ")";
 }
 
 const std::string CCmdFlagOption::do_get_value_as_string() const
