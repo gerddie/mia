@@ -75,7 +75,7 @@ int do_main( int argc, char *argv[] )
         options.set_group("Parameters"); 
 	options.add(make_opt( prefilter, "", "filter", 'f', "Filter to be applied to the image before the "
                               "bounding box is evaluated. Must return a bit-valued image."));
-        options.add(make_opt( padding, 0, numeric_limits<unsigned>::max(), "padding", 'p', 
+        options.add(make_opt( padding, EParameterBounds::bf_min_closed, {0}, "padding", 'p', 
                               "Padding of boundaries."));
         
 	options.set_stdout_is_result(); 

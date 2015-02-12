@@ -208,8 +208,8 @@ CLNCC2DImageCostPlugin::CLNCC2DImageCostPlugin():
 C2DMaskedImageCostPlugin("lncc"), 
      m_hw(5)
 {
-	this->add_parameter("w", make_ci_parameter(m_hw, 1, 256, false, 
-						   "half width of the window used for evaluating the localized cross correlation")); 
+	this->add_parameter("w", make_ci_param(m_hw, 1, 256, false, 
+					       "half width of the window used for evaluating the localized cross correlation")); 
 }
 
 C2DMaskedImageCost *CLNCC2DImageCostPlugin::do_create() const
