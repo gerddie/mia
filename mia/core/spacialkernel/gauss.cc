@@ -59,8 +59,7 @@ C1DSpacialGaussKernelPlugin::C1DSpacialGaussKernelPlugin():
 	C1DSpacialKernelPlugin("gauss"),
 	m_w(1)
 {
-	add_parameter("w", new CUIBoundedParameter(m_w, EParameterBounds::bf_min_closed, {1}, 
-						   false, "half filter width"));
+	add_parameter("w", make_lc_param(m_w, 0, false, "half filter width"));
 }
 
 C1DFoldingKernel *C1DSpacialGaussKernelPlugin::do_create() const

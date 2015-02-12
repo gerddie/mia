@@ -176,16 +176,11 @@ C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 	m_epsilon(0.0001),
 	m_maxiter(100)
 {
-	add_parameter("mu", new CFloatParameter(m_mu, 0.0, numeric_limits<float>::max(),
-							   false, "isotropic compliance"));
-	add_parameter("lambda", new CFloatParameter(m_lambda, 0.0, numeric_limits<float>::max(),
-							       false, "isotropic compression"));
-	add_parameter("omega", new CFloatParameter(m_omega, 0.1, 10,
-							      false, "relexation parameter"));
-	add_parameter("epsilon", new CFloatParameter(m_epsilon, 0.000001, 0.1,
-								false, "stopping parameter"));
-	add_parameter("iter", new CIntParameter(m_maxiter, 10, 10000,
-							   false, "maximum number of iterations"));
+	add_parameter("mu", make_nonnegative_param(m_mu, false, "isotropic compliance"));
+	add_parameter("lambda", make_nonnegative_param(m_lambda, false, "isotropic compression"));
+	add_parameter("omega", make_ci_param(m_omega, 0.1, 10, false, "relexation parameter"));
+	add_parameter("epsilon", make_oci_param(m_epsilon, 0.0, 0.1, false, "stopping parameter"));
+	add_parameter("iter", make_lc_param(m_maxiter, 1, false, "maximum number of iterations"));
 }
 
 C3DRegModel *C3DNavierRegModelPlugin::do_create()const

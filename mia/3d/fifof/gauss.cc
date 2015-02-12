@@ -156,8 +156,7 @@ C2DGaussStackFilterFactory::C2DGaussStackFilterFactory():
 	C2DFifoFilterPlugin("gauss"),
 	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
-					     false, "filter width parameter (2*w+1)"));
+	add_parameter("w", make_lc_param(m_hw, 1, false, "filter width parameter (2*w+1)"));
 }
 
 const string C2DGaussStackFilterFactory::do_get_descr() const

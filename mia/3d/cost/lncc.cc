@@ -196,8 +196,8 @@ CLNCC3DImageCostPlugin::CLNCC3DImageCostPlugin():
         C3DImageCostPlugin("lncc"), 
 	m_hw(5)
 {
-	this->add_parameter("w", new CUIntParameter(m_hw, 1, 256, false, 
-						    "half width of the window used for evaluating the localized cross correlation")); 
+	this->add_parameter("w", make_ci_param(m_hw, 1, 256, false, 
+					       "half width of the window used for evaluating the localized cross correlation")); 
 }
 
 C3DImageCost *CLNCC3DImageCostPlugin::do_create() const

@@ -189,15 +189,13 @@ C2DRegiongrowFifoFilterPlugin::C2DRegiongrowFifoFilterPlugin():
 	m_depth(10)
 {
 	add_parameter("map", new CStringParameter(m_map, CCmdOptionFlags::required_input, "seed class map"));
-	add_parameter("low", new CFloatParameter(m_low, .0f, 1.0f, false,
+	add_parameter("low", make_oci_param(m_low, .0f, 1.0f, false,
 						 "low threshold for acceptance probability"));
-	add_parameter("seed", new CFloatParameter(m_seed, .0f, 1.0f, false,
+	add_parameter("seed", make_oci_param(m_seed, .0f, 1.0f, false,
 						 "threshold for seed probability"));
 
-	add_parameter("class", new CIntParameter(m_class, 0, numeric_limits<int>::max(), false,
-						 "class to be segmented"));
-	add_parameter("depth", new CIntParameter(m_depth, 5, numeric_limits<int>::max(), false,
-						 "number of slices to keep during processing"));
+	add_parameter("class", make_lc_param(m_class, 0, false, "class to be segmented"));
+	add_parameter("depth", make_lc_param(m_depth, 1, false, "number of slices to keep during processing"));
 }
 
 

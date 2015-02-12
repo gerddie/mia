@@ -63,8 +63,7 @@ C3DKMeansFilterPluginFactory::C3DKMeansFilterPluginFactory():
 	C3DFilterPlugin("kmeans"),
 	m_classes(3)
 {
-	add_parameter("c", new CIntParameter(m_classes, 0, numeric_limits<unsigned char>::max(),
-					     false, "number of classes"));
+	add_parameter("c", make_lc_param(m_classes, 2, false, "number of classes"));
 }
 
 C3DFilter *C3DKMeansFilterPluginFactory::do_create()const

@@ -156,16 +156,13 @@ C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 {
 	add_parameter("s", new C3DBoundsParameter(m_s, 0,"target size to set all components at once (component 0:use input image size)"));
 
-	add_parameter("sx", new CUIntParameter(m_s.x, 0,
-					      numeric_limits<unsigned int>::max(), false,
-					      "target size in x direction (0:use input image size)"));
+	add_parameter("sx", make_nonnegative_param(m_s.x, false,
+					  "target size in x direction (0:use input image size)"));
 
-	add_parameter("sy", new CUIntParameter(m_s.y, 0,
-					      numeric_limits<unsigned int>::max(), false,
+	add_parameter("sy", make_nonnegative_param(m_s.y, false,
 					      "target size in y direction (0:use input image size)"));
 
-	add_parameter("sz", new CUIntParameter(m_s.z, 0,
-					      numeric_limits<unsigned int>::max(), false,
+	add_parameter("sz", make_nonnegative_param(m_s.z, false,
 					      "target size in y direction (0:use input image size)"));
 
 	add_parameter("interp", make_param(m_kernel, "bspline:d=3",  false, "interpolation kernel to be used "));
@@ -222,16 +219,11 @@ C3DScaleFactorFilterPlugin::C3DScaleFactorFilterPlugin():
 	C3DFilterPlugin("fscale"),
 	m_factor(1,1,1)
 {
-	add_parameter("fx", new CFloatParameter(m_factor.x, 0.0001,
-						numeric_limits<unsigned int>::max(), false,
-						"scaling factor in x direction"));
+	add_parameter("fx", make_positive_param(m_factor.x, false, "scaling factor in x direction"));
 
-	add_parameter("fy", new CFloatParameter(m_factor.y, 0.0001, 10000, false,
-					       "scaling factor in y direction"));
+	add_parameter("fy", make_positive_param(m_factor.y, false, "scaling factor in y direction"));
 
-	add_parameter("fz", new CFloatParameter(m_factor.z, 0.0001,
-						numeric_limits<unsigned int>::max(), false,
-						"scaling factor in z direction"));
+	add_parameter("fz", make_positive_param(m_factor.z, false, "scaling factor in z direction"));
 
 	add_parameter("interp", make_param(m_kernel, "bspline:d=3",  false, "interpolation kernel to be used "));
 	
@@ -279,7 +271,7 @@ CIsoVoxelFilterPlugin::CIsoVoxelFilterPlugin():
 	C3DFilterPlugin("isovoxel"),
 	m_voxelsize(1.0)
 {
-	add_parameter("size", new CFloatParameter(m_voxelsize, 0.001, 1e+6, false,"isometric target voxel size"));
+	add_parameter("size", make_positive_param(m_voxelsize, false,"isometric target voxel size"));
 	add_parameter("interp", make_param(m_kernel, "bspline:d=3",  false, "interpolation kernel to be used "));
 }
 

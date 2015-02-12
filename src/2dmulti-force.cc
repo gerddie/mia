@@ -99,7 +99,7 @@ int do_main(int argc, char **argv)
 	std::fill(params.begin(), params.end(), 0.0); 
 	t->set_parameters(params); 
 
-	double cost_value = cost_list.evaluate(*t, params);
+	cost_list.evaluate(*t, params);
 
 	C2DFImage *result = new C2DFImage(size);
 	int i = 0; 

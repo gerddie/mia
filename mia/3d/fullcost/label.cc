@@ -293,7 +293,7 @@ C3DLabelFullCostPlugin::C3DLabelFullCostPlugin():
 			      &C3DImageIOPluginHandler::instance()));
 	add_parameter("ref", new CStringParameter(m_ref_name, CCmdOptionFlags::input, "Reference image", 
 			      &C3DImageIOPluginHandler::instance()));
-	add_parameter("maxlabel", new CIntParameter(m_maxlabel, 2, 32000, false, 
+	add_parameter("maxlabel", make_ci_param(m_maxlabel, 2, 32000, false, 
 						    "maximum number of labels to consider"));
 }
 

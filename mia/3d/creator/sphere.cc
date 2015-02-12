@@ -116,8 +116,8 @@ C3DSphereCreatorPlugin::C3DSphereCreatorPlugin():
 	m_f(2.0),
 	m_p(2.0)
 {
-	add_parameter("f", new CFloatParameter(m_f, 0, 10, false, "spherical change frequency"));
-	add_parameter("p", new CFloatParameter(m_p, 0.1, 100, false, "spherical shape parameter (2.0 = sphere)"));
+	add_parameter("f", make_ci_param(m_f, 0, 10, false, "spherical change frequency"));
+	add_parameter("p", make_ci_param(m_p, 0.1, 100, false, "spherical shape parameter (2.0 = sphere)"));
 }
 
 C3DImageCreator *C3DSphereCreatorPlugin::do_create()const
