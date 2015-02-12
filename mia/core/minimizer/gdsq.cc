@@ -132,17 +132,21 @@ CGDSQMinimizerPlugin::CGDSQMinimizerPlugin():
 	m_step_scale(2.0), 
 	m_min_step(1e-6)
 {
-	add_parameter("maxiter", new CUIntParameter(m_maxiter, 1, numeric_limits<int>::max(), false, 
-						   "Stopping criterion: the maximum number of iterations")); 
+	add_parameter("maxiter", new CUIBoundedParameter(m_maxiter, EParameterBounds::bf_min_closed, {1}, false,
+							 "Stopping criterion: the maximum number of iterations")); 
 	
-	add_parameter("step", new CDoubleParameter(m_start_step, 0.0, HUGE_VAL, false, "Initial step size")); 
-	add_parameter("scale", new CDoubleParameter(m_step_scale, 1.0, HUGE_VAL, false, "Fallback fixed step size scaling")); 
-	add_parameter("xtola", new CDoubleParameter(m_xtol, 0.0, HUGE_VAL, false, 
-						    "Stop if the inf-norm of x-update is below this value.")); 
-	add_parameter("gtola", new CDoubleParameter(m_gtol, 0.0, HUGE_VAL, false, 
-						    "Stop if the inf-norm of the gradient is below this value."));
-	add_parameter("ftolr", new CDoubleParameter(m_ftolr, 0.0, HUGE_VAL, false, 
-						    "Stop if the relative change of the criterion is below."));
+	add_parameter("step", new CDBoundedParameter(m_start_step, EParameterBounds::bf_min_open, {0.0f},
+						     false, "Initial step size"));
+	
+	add_parameter("scale", new CDBoundedParameter(m_step_scale, EParameterBounds::bf_min_open, {1.0f},
+						      false, "Fallback fixed step size scaling"));
+	
+	add_parameter("xtola", new CDBoundedParameter(m_xtol, EParameterBounds::bf_min_closed, {0.0}, false, 
+						      "Stop if the inf-norm of x-update is below this value.")); 
+	add_parameter("gtola", new CDBoundedParameter(m_gtol, EParameterBounds::bf_min_closed, {0.0}, false, 
+						      "Stop if the inf-norm of the gradient is below this value."));
+	add_parameter("ftolr", new CDBoundedParameter(m_ftolr, EParameterBounds::bf_min_closed, {0.0}, false, 
+						      "Stop if the relative change of the criterion is below."));
 }
 
 	

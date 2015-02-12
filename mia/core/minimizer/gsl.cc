@@ -210,7 +210,7 @@ void CGSLFMinimizer::do_set_problem()
 
 int CGSLFMinimizer::do_run(CDoubleVector& x)
 {
-	int iter = 0; 
+	unsigned iter = 0; 
 	int status;  
 	shared_ptr<gsl_vector> init_x(gsl_vector_alloc(x.size()), DeallocGSLVector()); 
 	copy(x.begin(), x.end(), init_x->data);  
@@ -260,17 +260,19 @@ CGSLMinimizerPlugin::CGSLMinimizerPlugin():
 	add_parameter("opt", new CGSLMinimizerParam(m_ot, CGSLMinimizerDict(minimizer_table), 
 						    "Specific optimizer to be used."));
 	
-	add_parameter("tol", new CDoubleParameter(m_gorth_tolerance, 0.001, 10.0, false, 
-						"some tolerance parameter"));
+	add_parameter("tol", new CDBoundedParameter(m_gorth_tolerance, EParameterBounds::bf_min_open, {0.0f}, false, 
+						    "some tolerance parameter"));
 	
-	add_parameter("eps", new CDoubleParameter(m_stop_eps, 1e-10, 10.0, false, 
-						  "gradient based optimizers: stop when |grad| < eps, "
-						  "simplex: stop when simplex size < eps."));
+	add_parameter("eps", new CDBoundedParameter(m_stop_eps, EParameterBounds::bf_min_open, {0.0f}, 
+						    false, 
+						    "gradient based optimizers: stop when |grad| < eps, "
+						    "simplex: stop when simplex size < eps."));
 	
-	add_parameter("iter", new CIntParameter(m_maxiter, 1, numeric_limits<int>::max(), 
-						false, "maximum number of iterations"));
-	add_parameter("step", new CDoubleParameter(m_start_step, 0, 10, false, 
-						 "initial step size"));
+	add_parameter("iter", new CUIBoundedParameter(m_maxiter, EParameterBounds::bf_min_closed, {1},
+						      false, "maximum number of iterations"));
+	
+	add_parameter("step", new CDBoundedParameter(m_start_step, EParameterBounds::bf_min_open, {0.0f},  false, 
+						     "initial step size"));
 }						
 
 const std::string CGSLMinimizerPlugin::do_get_descr() const

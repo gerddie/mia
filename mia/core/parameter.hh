@@ -206,7 +206,7 @@ public:
 	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
-	TRangeParameter(T& value, T min, T max, bool required, const char *descr);
+	TRangeParameter(T& value, T min, T max, bool required, const char *descr) __attribute__((deprecated));
 protected:
 	/**
 	   the implementation of the description-function

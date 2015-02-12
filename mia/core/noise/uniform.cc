@@ -50,15 +50,11 @@ CUniformNoiseGeneratorFactory::CUniformNoiseGeneratorFactory():
 	m_param_a(0),
 	m_param_b(1)
 {
-	add_parameter("a", new CFloatParameter(m_param_a, -numeric_limits<float>::max(),
-								       numeric_limits<float>::max(),
-								       false, "lower bound if noise range"));
+	add_parameter("a", new CTParameter<float>(m_param_a, false, "lower bound if noise range"));
 
-	add_parameter("b", new CFloatParameter(m_param_b, -numeric_limits<float>::max(),
-								       numeric_limits<float>::max(),
-								       false, "higher bound if noise range"));
-	add_parameter("seed", new CUIntParameter(m_param_seed, 0,   numeric_limits<unsigned int>::max(),
-						  false, "set random seed (0=init based on system time)"));
+	add_parameter("b", new CTParameter<float>(m_param_b, false, "higher bound if noise range"));
+	add_parameter("seed", new CUIBoundedParameter(m_param_seed, EParameterBounds::bf_min_closed, {0}, 
+						     false, "set random seed (0=init based on system time)"));
 
 }
 
