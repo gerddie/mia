@@ -33,7 +33,7 @@ using std::fabs;
 
 C3DDrawBox::C3DDrawBox(const C3DBounds& size, const C3DFVector& origin, const C3DFVector& spacing):
         m_size(size), 
-        m_fsize(size - C3DBounds::_1), 
+        m_fsize(size), 
         m_origin(origin)
 {
         assert(spacing > C3DFVector::_0); 
@@ -42,10 +42,12 @@ C3DDrawBox::C3DDrawBox(const C3DBounds& size, const C3DFVector& origin, const C3
 
 void C3DDrawBox::draw_point(const C3DFVector& p)
 {
+       
         C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
                      static_cast<unsigned>(floor(p.y + 0.5)), 
                      static_cast<unsigned>(floor(p.z + 0.5)));
-        
+       
+	cvdebug() << "about to draw " << ip << " from " << p << "\n"; 
         if (ip < m_size) 
                 do_draw_point(ip);
 }
@@ -92,10 +94,12 @@ bool C3DDrawBox::make_inside(C3DFVector& p, const C3DFVector& searchdir) const
 
 void C3DDrawBox::draw_line_pivot_x(C3DFVector& x, C3DFVector& y, C3DFVector& v)
 {
+	cvdebug() << "C3DDrawBox::draw_line_pivot_x: " << x << " - " << y <<   " > " << v << "\n"; 
         if (v.x < 0) {
                 swap(x,y); 
-                v /= v.x; 
+		v *= -1.0f; 
         }
+	v /= v.x; 
         while (x.x <= y.x) {
                 draw_point(x); 
                 x += v; 
@@ -104,10 +108,12 @@ void C3DDrawBox::draw_line_pivot_x(C3DFVector& x, C3DFVector& y, C3DFVector& v)
 
 void C3DDrawBox::draw_line_pivot_y(C3DFVector& x, C3DFVector& y, C3DFVector& v)
 {
+	cvdebug() << "C3DDrawBox::draw_line_pivot_y: " << x << " - " << y <<   " > " << v << "\n"; 
         if (v.y < 0) {
                 swap(x,y); 
-                v /= v.y; 
+		v *= -1.0f; 
         }
+	v /= v.y; 
         while (x.y <= y.y) {
                 draw_point(x); 
                 x += v; 
@@ -116,10 +122,15 @@ void C3DDrawBox::draw_line_pivot_y(C3DFVector& x, C3DFVector& y, C3DFVector& v)
 
 void C3DDrawBox::draw_line_pivot_z(C3DFVector& x, C3DFVector& y, C3DFVector& v)
 {
+	cvdebug() << "C3DDrawBox::draw_line_pivot_z: " << x << " - " << y <<   " > " << v << "\n"; 
+	
         if (v.z < 0) {
                 swap(x,y); 
-                v /= v.z; 
+		v *= -1.0f; 
         }
+	v /= v.z; 
+	cvdebug() << "C3DDrawBox::draw_line_pivot_z: vstep = " <<  v << "\n"; 
+
         while (x.z <= y.z) {
                 draw_point(x); 
                 x += v; 
@@ -135,7 +146,8 @@ void C3DDrawBox::draw_line(const C3DFVector& a, const C3DFVector& b)
 }
 
 void C3DDrawBox::draw_line_internal(const C3DFVector& _x, const C3DFVector& _y)
-{        
+{       
+	cvdebug() << "C3DDrawBox::draw_line_internal: " << _x << " - " << _y << "\n"; 
         C3DFVector x = _x;
         C3DFVector y = _y;
         

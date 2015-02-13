@@ -20,8 +20,10 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/imagedraw.hh>
+#include <set>
 
 using namespace mia; 
+using std::set; 
 
 class SimpleBitImageDrawFixture {
         
@@ -97,6 +99,117 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_point_corners, SimpleBitImageDrawFixtu
                         BOOST_CHECK(!*i);
         }
 }
+
+
+struct compare_coordinate  {
+	bool operator () (const C3DBounds& lhs, const C3DBounds& rhs) {
+		return (lhs.z < rhs.z) || 
+			((lhs.z == rhs.z) && ((lhs.y < rhs.y) ||
+					      ((lhs.y == rhs.y) && (lhs.x < rhs.x)))); 
+	}
+}; 
+
+BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_z_pivot, SimpleBitImageDrawFixture ) 
+{
+        output.draw_line(C3DFVector(0,0,0), C3DFVector(10,11,12)); 
+        auto& img = output.get_image(); 
+                
+        auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
+        auto e = img.end_range(C3DBounds::_0, img.get_size()); 
+
+
+	set<C3DBounds, compare_coordinate> pixels; 
+
+	pixels.insert(C3DBounds::_0); 
+	pixels.insert(img.get_size() - C3DBounds::_1);
+	
+	C3DFVector dir(10.0 / 12, 11.0 / 12, 1.0f);
+	
+	C3DFVector p(0,0,0);
+	for (int k = 0; k < 12; ++k, p += dir) {
+		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
+			     static_cast<unsigned>(floor(p.y + 0.5)), 
+			     static_cast<unsigned>(floor(p.z + 0.5))); 
+		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
+		pixels.insert(ip); 
+	}
+        
+	cvdebug() << "Expect " << pixels.size() << " pixels to be set\n"; 
+        for(; i != e; ++i) {
+		cvdebug() << i.pos() <<" = "  <<*i << "\n"; 
+                if (pixels.find(i.pos()) == pixels.end())
+                        BOOST_CHECK(!*i); 
+                else 
+                        BOOST_CHECK(*i);
+        }
+}
+
+BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_x, SimpleBitImageDrawFixture ) 
+{
+        output.draw_line(C3DFVector(0,4,5), C3DFVector(10,10,12)); 
+        auto& img = output.get_image(); 
+                
+        auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
+        auto e = img.end_range(C3DBounds::_0, img.get_size()); 
+
+
+	set<C3DBounds, compare_coordinate> pixels; 
+
+
+	C3DFVector dir(1.0, 0.6, 0.7f);
+	
+	C3DFVector p(0,4,5);
+	for (int k = 0; k < 11; ++k, p += dir) {
+		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
+			     static_cast<unsigned>(floor(p.y + 0.5)), 
+			     static_cast<unsigned>(floor(p.z + 0.5))); 
+		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
+		pixels.insert(ip); 
+	}
+        
+	cvdebug() << "Expect " << pixels.size() << " pixels to be set\n"; 
+        for(; i != e; ++i) {
+		cvdebug() << i.pos() <<" = "  <<*i << "\n"; 
+                if (pixels.find(i.pos()) == pixels.end())
+                        BOOST_CHECK(!*i); 
+                else 
+                        BOOST_CHECK(*i);
+        }
+}
+
+BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_y, SimpleBitImageDrawFixture ) 
+{
+        output.draw_line(C3DFVector(4,0,5), C3DFVector(10,10,9)); 
+        auto& img = output.get_image(); 
+                
+        auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
+        auto e = img.end_range(C3DBounds::_0, img.get_size()); 
+
+
+	set<C3DBounds, compare_coordinate> pixels; 
+
+
+	C3DFVector dir(0.6, 1.0, 0.4f);
+	
+	C3DFVector p(4,0,5);
+	for (int k = 0; k < 11; ++k, p += dir) {
+		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
+			     static_cast<unsigned>(floor(p.y + 0.5)), 
+			     static_cast<unsigned>(floor(p.z + 0.5))); 
+		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
+		pixels.insert(ip); 
+	}
+        
+	cvdebug() << "Expect " << pixels.size() << " pixels to be set\n"; 
+        for(; i != e; ++i) {
+		cvdebug() << i.pos() <<" = "  <<*i << "\n"; 
+                if (pixels.find(i.pos()) == pixels.end())
+                        BOOST_CHECK(!*i); 
+                else 
+                        BOOST_CHECK(*i);
+        }
+}
+
 
 
 
