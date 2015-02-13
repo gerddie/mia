@@ -20,6 +20,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/imagedraw.hh>
+#include <mia/3d/imageio.hh>
 #include <set>
 
 using namespace mia; 
@@ -311,6 +312,78 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_z_outside_ends, SimpleBitImageDraw
                 else 
                         BOOST_CHECK(*i);
         }
+}
+
+BOOST_FIXTURE_TEST_CASE( test_draw_line_triangle_inside, SimpleBitImageDrawFixture ) 
+{
+	C3DFVector a(4, 4, 4); 
+	C3DFVector b(9, 10, 11); 
+	C3DFVector c(5, 8, 1); 
+
+        output.draw_triangle(a, b, c);
+        auto img = output.get_image(); 
+                
+        auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
+        auto e = img.end_range(C3DBounds::_0, img.get_size()); 
+
+
+	set<C3DBounds, compare_coordinate> pixels; 
+
+	
+	pixels.insert(C3DBounds(9,10,11)); 
+	
+	pixels.insert(C3DBounds(8,9,10)); 
+	pixels.insert(C3DBounds(9,10,10)); 	
+
+	pixels.insert(C3DBounds(8,9,9)); 
+	pixels.insert(C3DBounds(8,10,9)); 
+
+	pixels.insert(C3DBounds(8,9,8)); 
+	pixels.insert(C3DBounds(7,8,8)); 
+
+	pixels.insert(C3DBounds(6,7,7)); 
+	pixels.insert(C3DBounds(7,9,7)); 
+	pixels.insert(C3DBounds(7,8,7)); 
+
+	pixels.insert(C3DBounds(7,9,6)); 
+	pixels.insert(C3DBounds(6,7,6)); 
+	pixels.insert(C3DBounds(6,8,6)); 
+	pixels.insert(C3DBounds(6,6,6)); 
+
+	pixels.insert(C3DBounds(7,9,5)); 
+	pixels.insert(C3DBounds(6,8,5)); 
+	pixels.insert(C3DBounds(6,7,5)); 
+	pixels.insert(C3DBounds(5,5,5)); 
+	pixels.insert(C3DBounds(5,6,5)); 
+
+
+	pixels.insert(C3DBounds(6,8,4)); 
+	pixels.insert(C3DBounds(6,9,4)); 
+	pixels.insert(C3DBounds(5,5,4)); 
+	pixels.insert(C3DBounds(5,6,4)); 
+	pixels.insert(C3DBounds(5,7,4)); 
+	pixels.insert(C3DBounds(4,4,4)); 
+	
+	pixels.insert(C3DBounds(4,5,3)); 
+	pixels.insert(C3DBounds(4,6,3)); 
+	pixels.insert(C3DBounds(5,7,3)); 
+	pixels.insert(C3DBounds(6,8,3)); 
+
+	pixels.insert(C3DBounds(5,7,2)); 
+	pixels.insert(C3DBounds(5,8,2)); 
+
+	pixels.insert(C3DBounds(5,8,1)); 
+
+        
+	cvdebug() << "Expect " << pixels.size() << " pixels to be set\n"; 
+        for(; i != e; ++i) {
+		cvdebug() << i.pos() <<" = "  <<*i << "\n"; 
+                if (pixels.find(i.pos()) == pixels.end())
+                        BOOST_CHECK(!*i); 
+                else 
+                        BOOST_CHECK(*i);
+        }
+	save_image("drawtest.v", img);  
 }
 
 
