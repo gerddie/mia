@@ -94,12 +94,11 @@ bool C3DDrawBox::make_inside(C3DFVector& p, const C3DFVector& searchdir) const
 
 void C3DDrawBox::draw_line_pivot_x(C3DFVector& x, C3DFVector& y, C3DFVector& v)
 {
-	cvdebug() << "C3DDrawBox::draw_line_pivot_x: " << x << " - " << y <<   " > " << v << "\n"; 
         if (v.x < 0) {
                 swap(x,y); 
 		v *= -1.0f; 
         }
-	v /= v.x; 
+	v /= 2.0 * v.x; 
         while (x.x <= y.x) {
                 draw_point(x); 
                 x += v; 
@@ -113,7 +112,7 @@ void C3DDrawBox::draw_line_pivot_y(C3DFVector& x, C3DFVector& y, C3DFVector& v)
                 swap(x,y); 
 		v *= -1.0f; 
         }
-	v /= v.y; 
+	v /= 2.0 * v.y; 
         while (x.y <= y.y) {
                 draw_point(x); 
                 x += v; 
@@ -122,15 +121,11 @@ void C3DDrawBox::draw_line_pivot_y(C3DFVector& x, C3DFVector& y, C3DFVector& v)
 
 void C3DDrawBox::draw_line_pivot_z(C3DFVector& x, C3DFVector& y, C3DFVector& v)
 {
-	cvdebug() << "C3DDrawBox::draw_line_pivot_z: " << x << " - " << y <<   " > " << v << "\n"; 
-	
         if (v.z < 0) {
                 swap(x,y); 
 		v *= -1.0f; 
         }
-	v /= v.z; 
-	cvdebug() << "C3DDrawBox::draw_line_pivot_z: vstep = " <<  v << "\n"; 
-
+	v /= 2.0 * v.z; 
         while (x.z <= y.z) {
                 draw_point(x); 
                 x += v; 
@@ -253,7 +248,7 @@ void C3DDrawBox::draw_triangle_internal(const C3DFVector& a, const C3DFVector& b
                 C3DFVector e1 = (c - a) / dist; 
                 C3DFVector e2 = (c - b) / dist; 
                 
-                for (float d = 0; d < dist; d += 0.9) {
+                for (float d = 0; d < dist; d += 0.5) {
                         draw_line_internal(a + d * e1, b + d * e2);
                 }
         }

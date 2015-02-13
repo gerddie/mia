@@ -124,10 +124,10 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_z_pivot, SimpleBitImageDrawFixtur
 	pixels.insert(C3DBounds::_0); 
 	pixels.insert(img.get_size() - C3DBounds::_1);
 	
-	C3DFVector dir(10.0 / 12, 11.0 / 12, 1.0f);
+	C3DFVector dir(10.0 / 24, 11.0 / 24, 0.5f);
 	
 	C3DFVector p(0,0,0);
-	for (int k = 0; k < 12; ++k, p += dir) {
+	for (int k = 0; k < 24; ++k, p += dir) {
 		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
 			     static_cast<unsigned>(floor(p.y + 0.5)), 
 			     static_cast<unsigned>(floor(p.z + 0.5))); 
@@ -157,10 +157,10 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_x, SimpleBitImageDrawFixtur
 	set<C3DBounds, compare_coordinate> pixels; 
 
 
-	C3DFVector dir(1.0, 0.6, 0.7f);
+	C3DFVector dir(0.5, 0.3, 0.35f);
 	
 	C3DFVector p(0,4,5);
-	for (int k = 0; k < 11; ++k, p += dir) {
+	for (int k = 0; k < 22; ++k, p += dir) {
 		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
 			     static_cast<unsigned>(floor(p.y + 0.5)), 
 			     static_cast<unsigned>(floor(p.z + 0.5))); 
@@ -190,10 +190,10 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_y, SimpleBitImageDrawFixtur
 	set<C3DBounds, compare_coordinate> pixels; 
 
 
-	C3DFVector dir(0.6, 1.0, 0.4f);
+	C3DFVector dir(0.3, .5, 0.2f);
 	
 	C3DFVector p(4,0,5);
-	for (int k = 0; k < 11; ++k, p += dir) {
+	for (int k = 0; k < 22; ++k, p += dir) {
 		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
 			     static_cast<unsigned>(floor(p.y + 0.5)), 
 			     static_cast<unsigned>(floor(p.z + 0.5))); 
@@ -223,10 +223,10 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_x_outside_ends, SimpleBitImageDraw
 	set<C3DBounds, compare_coordinate> pixels; 
 
 
-	C3DFVector dir(1.0, 0.6, 0.2f);
+	C3DFVector dir(0.5, 0.3, 0.1f);
 	
 	C3DFVector p(-4,2,5);
-	for (int k = 0; k < 21; ++k, p += dir) {
+	for (int k = 0; k < 42; ++k, p += dir) {
 		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
 			     static_cast<unsigned>(floor(p.y + 0.5)), 
 			     static_cast<unsigned>(floor(p.z + 0.5))); 
@@ -258,10 +258,10 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_y_outside_ends, SimpleBitImageDraw
 	set<C3DBounds, compare_coordinate> pixels; 
 
 
-	C3DFVector dir(0.3, 1.0, 0.2f);
+	C3DFVector dir(0.15, 0.5, 0.1f);
 	
 	C3DFVector p(4,-6,5);
-	for (int k = 0; k < 21; ++k, p += dir) {
+	for (int k = 0; k < 42; ++k, p += dir) {
 		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
 			     static_cast<unsigned>(floor(p.y + 0.5)), 
 			     static_cast<unsigned>(floor(p.z + 0.5))); 
@@ -292,10 +292,10 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_z_outside_ends, SimpleBitImageDraw
 	set<C3DBounds, compare_coordinate> pixels; 
 
 
-	C3DFVector dir(0.3, 0.5, 1.0f);
+	C3DFVector dir(0.15, 0.25, 0.5f);
 	
-	C3DFVector p(4, 4,-5);
-	for (int k = 0; k < 21; ++k, p += dir) {
+	C3DFVector p(5.5, 6.5, 0);
+	for (int k = 0; k < 41 && p.z < 12; ++k, p += dir) {
 		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
 			     static_cast<unsigned>(floor(p.y + 0.5)), 
 			     static_cast<unsigned>(floor(p.z + 0.5))); 
@@ -327,29 +327,39 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_triangle_inside, SimpleBitImageDrawFixtu
         auto e = img.end_range(C3DBounds::_0, img.get_size()); 
 
 
-	set<C3DBounds, compare_coordinate> pixels; 
-
+	// visually inspecting the pixels shows that this is 
+	// indeed the approximation of a triangle in 3D 
 	
+	set<C3DBounds, compare_coordinate> pixels; 
 	pixels.insert(C3DBounds(9,10,11)); 
 	
+
 	pixels.insert(C3DBounds(8,9,10)); 
+	pixels.insert(C3DBounds(8,10,10));
 	pixels.insert(C3DBounds(9,10,10)); 	
 
 	pixels.insert(C3DBounds(8,9,9)); 
 	pixels.insert(C3DBounds(8,10,9)); 
 
+	pixels.insert(C3DBounds(7,7,8));
+	pixels.insert(C3DBounds(7,9,8));
 	pixels.insert(C3DBounds(8,9,8)); 
 	pixels.insert(C3DBounds(7,8,8)); 
 
 	pixels.insert(C3DBounds(6,7,7)); 
 	pixels.insert(C3DBounds(7,9,7)); 
 	pixels.insert(C3DBounds(7,8,7)); 
+	pixels.insert(C3DBounds(7,7,7));
 
 	pixels.insert(C3DBounds(7,9,6)); 
 	pixels.insert(C3DBounds(6,7,6)); 
 	pixels.insert(C3DBounds(6,8,6)); 
 	pixels.insert(C3DBounds(6,6,6)); 
+	pixels.insert(C3DBounds(5,6,6));
+	pixels.insert(C3DBounds(7,8,6));
 
+
+	pixels.insert(C3DBounds(6,9,5));
 	pixels.insert(C3DBounds(7,9,5)); 
 	pixels.insert(C3DBounds(6,8,5)); 
 	pixels.insert(C3DBounds(6,7,5)); 
@@ -357,18 +367,24 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_triangle_inside, SimpleBitImageDrawFixtu
 	pixels.insert(C3DBounds(5,6,5)); 
 
 
+	pixels.insert(C3DBounds(4,5,4));
+	pixels.insert(C3DBounds(6,7,4));
 	pixels.insert(C3DBounds(6,8,4)); 
 	pixels.insert(C3DBounds(6,9,4)); 
 	pixels.insert(C3DBounds(5,5,4)); 
 	pixels.insert(C3DBounds(5,6,4)); 
 	pixels.insert(C3DBounds(5,7,4)); 
 	pixels.insert(C3DBounds(4,4,4)); 
-	
+
+	pixels.insert(C3DBounds(5,6,3));
+	pixels.insert(C3DBounds(5,8,3));
+
 	pixels.insert(C3DBounds(4,5,3)); 
 	pixels.insert(C3DBounds(4,6,3)); 
 	pixels.insert(C3DBounds(5,7,3)); 
 	pixels.insert(C3DBounds(6,8,3)); 
 
+	pixels.insert(C3DBounds(5,6,2));
 	pixels.insert(C3DBounds(5,7,2)); 
 	pixels.insert(C3DBounds(5,8,2)); 
 
@@ -378,12 +394,12 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_triangle_inside, SimpleBitImageDrawFixtu
 	cvdebug() << "Expect " << pixels.size() << " pixels to be set\n"; 
         for(; i != e; ++i) {
 		cvdebug() << i.pos() <<" = "  <<*i << "\n"; 
-                if (pixels.find(i.pos()) == pixels.end())
+                if (pixels.find(i.pos()) == pixels.end()) {
                         BOOST_CHECK(!*i); 
-                else 
+                }else 
                         BOOST_CHECK(*i);
         }
-	save_image("drawtest.v", img);  
+
 }
 
 

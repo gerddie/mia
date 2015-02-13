@@ -19,8 +19,10 @@
  */
 
 #include <mia/core.hh>
+#include <mia/internal/main.hh>
 #include <mia/mesh/triangularMesh.hh>
 #include <mia/3d/imageio.hh>
+#include <mia/3d/imagedraw.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -38,89 +40,6 @@ const SProgramDescription g_general_help = {
 
 
 
-void fill_flat_bottom_triangle(C3DBitImage& target, const C3DFVector& c1, 
-                               const C3DFVector& c2, const C3DFVector& c3)
-{
-        float invslope1 = (c2.x - c1.x) / (c2.y - c1.y);
-        float invslope2 = (c3.x - c1.x) / (c3.y - c1.y);
-        
-        float curx1 = v1.x;
-        float curx2 = v1.x;
-        
-        for (int scanlineY = v1.y; scanlineY <= v2.y; scanlineY++)
-                {
-                        drawLine((int)curx1, scanlineY, (int)curx2, scanlineY);
-                        curx1 += invslope1;
-                        curx2 += invslope2;
-  }
-}
-
-
-void fill_flat_top_triangle(C3DBitImage& target, const C3DFVector& c1, 
-                            const C3DFVector& c2, const C3DFVector& c3)
-{
-        float invslope1 = (c2.x - c1.x) / (c2.y - c1.y);
-        float invslope2 = (c3.x - c1.x) / (c3.y - c1.y);
-        
-        float curx1 = c1.x;
-        float curx2 = c2.x;
-        
-        for (int scanlineY = c1.y; scanlineY <= c2.y; scanlineY++) {
-                drawLine(target, (int)curx1, scanlineY, (int)curx2, scanlineY, c1.z);
-                curx1 += invslope1;
-                curx2 += invslope2;
-        }
-}
-
-
-void fill_triangle_y(C3DBitImage& target, const CTriangleMesh::triangle_type& triangle)
-{
-        C3DFVector c1 = triangle.x; 
-        C3DFVector c2 = triangle.y; 
-        C3DFVector c3 = triangle.z; 
-
-        if (c1.y < c3.y) swap(c1,c3); 
-        if (c1.y < c2.y) swap(c1,c2);
-        if (c2.y < c3.y) swap(c2,c3);
-
-        if (c2.y == c1.y)  {
-                
-                fill_flat_bottom_triangle_y(target, c1, c2, c3);
-        
-        } else if (c2.y == c3.y) {
-                
-                fill_flat_top_triangle_y(target, c1, c2, c3);
-        } else {
-                C3DVector c4(c1.x + ((c2.y - c1.y) / (c3.y - c1.y)) * (c3.x - c1.x), c2.y, c1.z);
-                
-                fillBottomFlatTriangle(target, c1, c2, c4);
-                fillTopFlatTriangle(target, c2, c4, c3);
-        }
-
-}
-
-void fill_triangle(C3DBitImage& target, const CTriangleMesh::triangle_type& triangle) 
-{
-        if (triangle.x.z == triangle.y.z && triangle.y.z == triangle.z.z)
-                fill_triangle_xy(target, triangle); 
-
-        C3DFVector c1 = triangle.x; 
-        C3DFVector c2 = triangle.y; 
-        C3DFVector c3 = triangle.z; 
-
-        if (c1.z < c3.z) swap(c1,c3); 
-        if (c1.z < c2.z) swap(c1,c2);
-        if (c2.z < c3.z) swap(c2,c3);
-        
-
-                
-
-        
-
-
-        
-
-}
 
 
 int do_main( int argc, char *argv[] )
@@ -160,11 +79,14 @@ int do_main( int argc, char *argv[] )
         if (spacing.x <= 0.0f || spacing.y <= 0.0f || spacing.z <= 0.0f) 
                 throw create_exception<invalid_argument>("Voxel spacing must  be positive, but you gave ", spacing); 
 
+	
+
+
         if (size == C3DBounds::_0) {
                 // evaluate required output size i.e. find larest vertex coordinates and their 
                 // distance from the origin, and multipyl this with the spacing. 
                 C3DFVector d = origin; 
-                for_each(mesh->vertices_begin(), mesh->vertices_end(), [&origin](const C3DFVector v) {
+                for_each(mesh->vertices_begin(), mesh->vertices_end(), [&origin, &d](const C3DFVector v) {
                                 if (d.x < v.x) d.x = v.x; 
                                 if (d.z < v.z) d.z = v.z; 
                                 if (d.y < v.y) d.y = v.y; 
@@ -177,11 +99,18 @@ int do_main( int argc, char *argv[] )
                 size = C3DBounds(d) + C3DBounds::_1;
         }
         
-        C3DBitImage output(size); 
-        
-        
+        C3DBitImageDrawTarget output(size, origin, spacing);
+	
+	typedef CTriangleMesh::triangle_type CTriangle; 
 
-        
+	for_each(mesh->triangles_begin(), mesh->triangles_end(), 
+		 [&output, &mesh](const CTriangle& t) {
+			 output.draw_triangle(mesh->vertex_at(t.x), 
+					      mesh->vertex_at(t.y), 
+					      mesh->vertex_at(t.z));});
+	
+	auto image = output.get_image(); 
+	save_image(out_filename, image); 
         
 	return EXIT_SUCCESS;
 
