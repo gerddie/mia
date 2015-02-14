@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation )
 	cvdebug() << "a=" << a << ", b4=" << b_4 << ", a+b=" << a_b << ", c=" << c << "\n"; 
 
 	std::stringstream test_kernel; 
-	test_kernel << "fluid-generic:mu=" << mu << ",lambda="<<lambda<<",relax="<< relax; 
+	test_kernel << "fluid:mu=" << mu << ",lambda="<<lambda<<",relax="<< relax; 
 
         auto kernel = BOOST_TEST_create_from_plugin<C3DFVfFluidStandardRegularizerKernelPlugin>(test_kernel.str().c_str());
 	
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation )
 
 	auto test_v = v(1,1,1); 
 
-	BOOST_CHECK_CLOSE(residuum, delta.norm2(), 0.1); 
+	BOOST_CHECK_CLOSE(residuum, delta.norm(), 0.1); 
 
 	BOOST_CHECK_CLOSE(test_v.x, v000.x, 0.1); 
 	BOOST_CHECK_CLOSE(test_v.y, v000.y, 0.1); 

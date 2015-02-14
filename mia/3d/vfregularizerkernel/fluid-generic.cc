@@ -84,9 +84,7 @@ float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row_sparse(unsigned y, u
 float C3DFVfFluidStandardRegularizerKernel::do_evaluate_pertuberation_row(unsigned  y, unsigned  z, 
 									  CBuffers& MIA_PARAM_UNUSED(buffers)) const
 {
-        auto& v = get_output_field(); 
-        auto& u = get_input_field(); 
-	
+
         
 	auto iu = get_input_field().begin_at(1, y, z); 
 	auto iv = get_output_field().begin_at(1, y, z); 
@@ -211,9 +209,9 @@ C3DFVfFluidStandardRegularizerKernelPlugin::C3DFVfFluidStandardRegularizerKernel
         m_lambda(1.0f), 
         m_relax(1.0)
 {
-        this->add_parameter("mu", new mia::CFloatParameter(m_mu, 1e-10, 10000.0, false, "dynamic viscosity (shear)"));  
-        this->add_parameter("lambda", new mia::CFloatParameter(m_lambda, 1e-10, 10000.0, false, "bulk viscosity (compressibility)"));  
-        this->add_parameter("relax", new mia::CFloatParameter(m_relax, 0.1, 2.0, false, "Relaxation parameter for the solver"));  
+        this->add_parameter("mu", make_oci_param(m_mu, 0.0, 10000.0, false, "dynamic viscosity (shear)"));  
+        this->add_parameter("lambda", make_ci_param(m_lambda, 0.0, 10000.0, false, "bulk viscosity (compressibility)"));  
+        this->add_parameter("relax", make_ci_param(m_relax, 0.1, 2.0, false, "Relaxation parameter for the solver"));  
 }
          
 C3DFVfFluidStandardRegularizerKernel *C3DFVfFluidStandardRegularizerKernelPlugin::do_create() const
