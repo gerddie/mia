@@ -32,6 +32,7 @@ SET(MIACORE_SRC_BASE
   distance.cc
   dlloader.cc
   dummyhandler.cc
+  errormacro.cc
   file.cc 
   filetools.cc 
   filter.cc
