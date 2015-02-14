@@ -72,6 +72,7 @@ INCLUDE (TestBigEndian)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/pluginmacro.cmake)
 INCLUDE (CheckTypeSize)
+INCLUDE (CheckIncludeFileCXX)
 
 include(CheckCXXCompilerFlag)
 
@@ -126,6 +127,11 @@ ENDIF(${LONG_TYPE_SIZE} EQUAL 8)
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 CHECK_INCLUDE_FILES (unistd.h HAVE_UNISTD_H)
 CHECK_INCLUDE_FILES (sys/ioctl.h HAVE_SYS_IOCTL_H)
+CHECK_INCLUDE_FILES (execinfo.h HAVE_EXEINFO_H)
+
+
+CHECK_INCLUDE_FILE_CXX (cxxabi.h HAVE_CXXABI_H)
+
 
 # find additional packages
 #

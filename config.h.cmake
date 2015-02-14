@@ -32,7 +32,8 @@
 #endif
 
 #cmakedefine HAVE_SYS_IOCTL_H 1
-
+#cmakedefine HAVE_CXXABI_H 1
+#cmakedefine HAVE_EXECINFO_h 1
 
 #cmakedefine HAVE_DCMTK 1
 #cmakedefine HAVE_VISTAIO 1
