@@ -141,6 +141,23 @@ T3DDatafield<T>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
         }
 }
 
+
+template <typename T>
+typename T3DDatafield<T>::Range
+T3DDatafield<T>::get_range(const C3DBounds& start, const C3DBounds& end)
+{
+	this->make_single_ref(); 
+	return Range(start, end, *this); 
+}
+
+template <typename T>
+typename T3DDatafield<T>::ConstRange
+T3DDatafield<T>::get_range(const C3DBounds& start, const C3DBounds& end) const
+{
+	return ConstRange(start, end, *this); 
+}
+
+
 template <typename T>
 struct __copy_dispatch {
 	typedef typename atomic_data<T>::type atomic_type; 
@@ -635,6 +652,83 @@ T3DDatafield<T>::end_range_with_boundary_flags(const C3DBounds& begin, const C3D
 	return const_range_iterator_with_boundary_flag(end, get_size(), begin, end, 
 							begin_at(end.x, end.y, end.z)); 
 }
+
+
+template <typename T>
+typename T3DDatafield<T>::Range::iterator T3DDatafield<T>::Range::begin()
+{
+	return m_field.begin_range(m_start, m_end); 
+}
+
+template <typename T>
+typename T3DDatafield<T>::Range::iterator T3DDatafield<T>::Range::end()
+{
+	return m_field.end_range(m_start, m_end); 
+}
+
+template <typename T>
+typename 
+T3DDatafield<T>::Range::iterator_with_boundary_flag
+T3DDatafield<T>::Range::begin_with_boundary_flags()
+{
+	return m_field.begin_range_with_boundary_flags(m_start, m_end); 
+}
+
+template <typename T>
+typename T3DDatafield<T>::Range::iterator_with_boundary_flag
+T3DDatafield<T>::Range::end_with_boundary_flags()
+{
+	return m_field.end_range_with_boundary_flags(m_start, m_end); 
+}
+
+template <typename T>
+T3DDatafield<T>::Range::Range(const C3DBounds& start, const C3DBounds& end, T3DDatafield<T>& field):
+	m_start(start), m_end(end), m_field(field)
+{
+}
+					    
+
+template <typename T>
+typename T3DDatafield<T>::ConstRange::iterator T3DDatafield<T>::ConstRange::begin() const 
+{
+	return m_field.begin_range(m_start, m_end); 
+}
+
+template <typename T>
+typename T3DDatafield<T>::ConstRange::iterator T3DDatafield<T>::ConstRange::end() const 
+{
+	return m_field.end_range(m_start, m_end); 
+}
+
+template <typename T>
+typename T3DDatafield<T>::ConstRange::iterator_with_boundary_flag
+T3DDatafield<T>::ConstRange::begin_with_boundary_flags() const 
+{
+	return m_field.begin_range_with_boundary_flags(m_start, m_end); 
+}
+
+template <typename T>
+typename T3DDatafield<T>::ConstRange::iterator_with_boundary_flag
+T3DDatafield<T>::ConstRange::end_with_boundary_flags()const 
+{
+	return m_field.end_range_with_boundary_flags(m_start, m_end); 
+}
+
+
+
+
+template <typename T>
+T3DDatafield<T>::ConstRange::ConstRange(const C3DBounds& start, const C3DBounds& end, const T3DDatafield<T>& field):
+	m_start(start), m_end(end), m_field(field)
+{
+}
+
+template <typename T>
+T3DDatafield<T>::ConstRange::ConstRange(const Range& range):
+	m_start(range.m_start), m_end(range.m_end), m_field(range.m_field)
+{
+}
+
 
 
 NS_MIA_END

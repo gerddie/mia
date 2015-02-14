@@ -63,6 +63,7 @@ class  EXPORT_3D T3DDatafield {
 	static const unsigned int m_elements; 
 
 public:
+	
 
         /** makes a single reference of the data, after calling this, it is save to write to the data field
          */
@@ -99,6 +100,65 @@ public:
 	typedef C3DBounds dimsize_type;
 	/// \endcond 
 
+	/**
+	   \brief This class provides access to a sub-range of the input data field
+
+	   This class provides iterator access to a axis-aligned 3D sub-range of the 
+	   corresponding data field. 
+	*/
+
+	
+	class Range {
+		friend class T3DDatafield<T>;
+		friend class ConstRange;
+	public:
+		
+		typedef T3DDatafield<T>::range_iterator iterator;
+		typedef T3DDatafield<T>::range_iterator_with_boundary_flag iterator_with_boundary_flag; 
+		
+		iterator begin();
+		
+		iterator end();
+		
+		iterator_with_boundary_flag begin_with_boundary_flags();
+		
+		iterator_with_boundary_flag end_with_boundary_flags();
+
+	private:
+		Range(const C3DBounds& start, const C3DBounds& end, T3DDatafield<T>& field); 
+		
+		C3DBounds m_start;
+		C3DBounds m_end;
+		T3DDatafield<T>& m_field;
+	}; 
+	
+	class ConstRange {
+	public:
+		friend class T3DDatafield<T>;
+
+		typedef T3DDatafield<T>::const_range_iterator iterator;
+		typedef T3DDatafield<T>::const_range_iterator_with_boundary_flag iterator_with_boundary_flag; 
+
+		
+		iterator begin() const;
+		
+		iterator end() const;
+
+		iterator_with_boundary_flag begin_with_boundary_flags() const;
+		
+		iterator_with_boundary_flag end_with_boundary_flags() const;
+
+	private:
+		ConstRange(const C3DBounds& start, const C3DBounds& end, const T3DDatafield<T>& field);
+
+		ConstRange(const Range& range); 
+		
+		C3DBounds m_start;
+		C3DBounds m_end;
+		const T3DDatafield<T>& m_field;
+	}; 
+
+	
 	T3DDatafield();
 
         /** Constructor to create empty Datafield if given size */
@@ -382,8 +442,12 @@ public:
                 make_single_ref();
                 return m_data->begin();
         }
+	
+	Range get_range(const C3DBounds& start, const C3DBounds& end);
 
-        /** \returns an read/write forward iterator over a subset of the data. 
+	ConstRange get_range(const C3DBounds& start, const C3DBounds& end) const; 
+	
+/** \returns an read/write forward iterator over a subset of the data. 
             The functions ensures, that the field uses a single referenced datafield */
         range_iterator begin_range(const C3DBounds& begin, const C3DBounds& end); 
 
