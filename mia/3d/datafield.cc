@@ -71,8 +71,8 @@ T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 	return  (dz * b1 + fz * b2) > 0.5;
 }
 
-#define INSTANCIATE(TYPE) \
-	template class  T3DDatafield<TYPE>;			\
+#define INSTANCIATE(TYPE)						\
+	template class  T3DDatafield<TYPE>;				\
 	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::iterator>; \
 	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::const_iterator>; \
 	template class  EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::iterator>; \
