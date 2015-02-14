@@ -87,10 +87,10 @@ C2DRegTimeStepPlugin::C2DRegTimeStepPlugin(const char *name):
 	m_min(0.1),
 	m_max(2.0)
 {
-	add_parameter("min", new CFloatParameter(m_min, 0.001, numeric_limits<float>::max(),
-							   false, "minimum time step allowed"));
-	add_parameter("max", new CFloatParameter(m_max, 0.002, numeric_limits<float>::max(),
-							       false, "maximum time step allowed"));
+	add_parameter("min", new CFBoundedParameter(m_min, EParameterBounds::bf_min_open, {0.0},
+						    false, "minimum time step allowed"));
+	add_parameter("max", new CFBoundedParameter(m_max, EParameterBounds::bf_min_open, {0.0},
+						    false, "maximum time step allowed"));
 }
 
 float C2DRegTimeStepPlugin::get_min_timestep() const

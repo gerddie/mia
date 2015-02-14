@@ -62,7 +62,7 @@ class CFactoryMockPluginHandler : public TFactoryPluginHandler<CFactoryMock> {
 public: 
 	CFactoryMockPluginHandler()
 	{
-		add_plugin(TFactoryPluginHandler<CFactoryMock>::PInterface(new CFactoryMock())); 
+		assert(add_plugin(TFactoryPluginHandler<CFactoryMock>::PInterface(new CFactoryMock()))); 
 	}
 }; 
 

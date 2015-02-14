@@ -54,7 +54,7 @@ protected:
 	/** constructs the kernel
 	    \param fsize width parameter of the kernel
 	*/
-	C1DFilterKernel(int fsize);
+	C1DFilterKernel(unsigned fsize);
 
 	virtual ~C1DFilterKernel();
 public:
@@ -87,7 +87,7 @@ private:
 
 	virtual std::vector<double> do_apply(const std::vector<double>& data) const = 0;
 
-	int m_fsize;
+	unsigned m_fsize;
 
 };
 

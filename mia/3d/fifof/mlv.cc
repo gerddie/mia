@@ -304,8 +304,7 @@ C2DMLVnFifoFilterPlugin::C2DMLVnFifoFilterPlugin():
 	C2DFifoFilterPlugin("mlv"),
 	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
-					     false, "filter width parameter"));
+	add_parameter("w", make_lc_param(m_hw, 1, false, "filter width parameter"));
 }
 
 const string C2DMLVnFifoFilterPlugin::do_get_descr() const

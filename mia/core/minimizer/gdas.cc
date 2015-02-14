@@ -153,15 +153,20 @@ CGDSAMinimizerPlugin::CGDSAMinimizerPlugin():
 	m_xtol( 0.01 ), 
 	m_maxiter( 200 )
 {
-	add_parameter("maxiter", new CUIntParameter(m_maxiter, 1, numeric_limits<int>::max(), false, 
-                                                    "Stopping criterion: the maximum number of iterations")); 
+	add_parameter("maxiter", new CUIBoundedParameter(m_maxiter, EParameterBounds::bf_min_closed, {1}, false, 
+							 "Stopping criterion: the maximum number of iterations")); 
 	
-	add_parameter("min-step", new CDoubleParameter(m_min_step, 1e-10, HUGE_VAL, false, "Maximal absolute step size")); 
-	add_parameter("max-step", new CDoubleParameter(m_max_step, 1.0, HUGE_VAL, false, "Minimal absolute step size")); 
-	add_parameter("xtola", new CDoubleParameter(m_xtol, 0.0, HUGE_VAL, false, 
-						    "Stop if the inf-norm of the change applied to x is below this value."));
-	add_parameter("ftolr", new CDoubleParameter(m_ftolr, 0.0, HUGE_VAL, false, 
-						    "Stop if the relative change of the criterion is below."));
+	add_parameter("min-step", new CDBoundedParameter(m_min_step, EParameterBounds::bf_min_open, {0.0}, false,
+							 "Minimal absolute step size"));
+	
+	add_parameter("max-step", new CDBoundedParameter(m_max_step, EParameterBounds::bf_min_open, {0.0}, false,
+							 "Maximal absolute step size"));
+	
+	add_parameter("xtola", new CDBoundedParameter(m_xtol, EParameterBounds::bf_min_closed, {0.0}, false, 
+						      "Stop if the inf-norm of the change applied to x is below this value."));
+	
+	add_parameter("ftolr", new CDBoundedParameter(m_ftolr, EParameterBounds::bf_min_closed, {0.0},false, 
+						      "Stop if the relative change of the criterion is below."));
 }
 
 

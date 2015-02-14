@@ -865,7 +865,7 @@ CBSplineKernelPlugin::CBSplineKernelPlugin():
 	CSplineKernelPlugin("bspline"), 
 	m_degree(3)
 {
-	add_parameter("d", new CIntParameter(m_degree, 0, 5, false, "Spline degree"));
+	add_parameter("d", make_ci_param(m_degree, 0, 5, false, "Spline degree"));
 }
 	
 CSplineKernel *CBSplineKernelPlugin::do_create() const
@@ -893,7 +893,7 @@ COMomsSplineKernelPlugin::COMomsSplineKernelPlugin():
 	CSplineKernelPlugin("omoms"), 
 	m_degree(3)
 {
-	add_parameter("d", new CIntParameter(m_degree, 3, 3, false, "Spline degree"));
+	add_parameter("d", make_ci_param(m_degree, 3, 3, false, "Spline degree"));
 }
 
 CSplineKernel *COMomsSplineKernelPlugin::do_create() const

@@ -67,10 +67,8 @@ C2DDivcurlSplinePenaltyPlugin::C2DDivcurlSplinePenaltyPlugin():
 	m_div_weight(1.0), 
 	m_curl_weight(1.0)
 {
-	this->add_parameter("div", new CFloatParameter(m_div_weight, 0.0f, std::numeric_limits<float>::max(), 
-						       false, "penalty weight on divergence"));
-	this->add_parameter("curl", new CFloatParameter(m_curl_weight, 0.0f, std::numeric_limits<float>::max(), 
-							false, "penalty weight on curl"));
+	this->add_parameter("div", make_nonnegative_param(m_div_weight, false, "penalty weight on divergence"));
+	this->add_parameter("curl", make_nonnegative_param(m_curl_weight, false, "penalty weight on curl"));
 	
 }
 

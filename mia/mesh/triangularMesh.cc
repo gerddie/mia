@@ -24,9 +24,16 @@
 #include <cmath>
 #include <mia/mesh/triangularMesh.hh>
 
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
+
+#include <mia/core/threadedmsg.hh>
+
 
 NS_MIA_BEGIN
 
+using namespace tbb;
 using namespace std;
 using namespace boost;
 
@@ -127,7 +134,6 @@ void CTriangleMeshData::evaluate_normals()
 		// before overwriting the normales, make sure we work on this set
 		ensure_single_refered(m_normals);
 	// zero out normals
-	fill(m_normals->begin(), m_normals->end(), C3DFVector::_0); 
 
 	// the writable iterators, index operators  do check against multiple referencing of the data.
 	// We only need read access, therefore a const reference makes sure,
@@ -136,42 +142,73 @@ void CTriangleMeshData::evaluate_normals()
 	//const CTriangleMesh::vertexfield&    cvertices = *m_vertices;
 
 	cvdebug() << "Mesh has " << ctriangles.size() << " triangles\n";
-	// run overall triangles
-	auto t = ctriangles.begin();
-	auto et = ctriangles.end();
 
-	int i = 0; 
-	while (t != et) {
-		C3DFVector e1 = (*m_vertices)[t->x] - (*m_vertices)[t->y];
-		C3DFVector e2 = (*m_vertices)[t->z] - (*m_vertices)[t->y];
-		C3DFVector e3 = (*m_vertices)[t->z] - (*m_vertices)[t->x];
-		C3DFVector help_normal = e2 ^ e1;
-		if (help_normal.norm2() > 0) {
-			float weight1 = acos((dot(e1,e2)) / (e1.norm() * e2.norm()));
-			float weight2 = acos((dot(e3,e2)) / (e3.norm() * e2.norm()));
-			(*m_normals)[t->y] += weight1 * help_normal;
-			(*m_normals)[t->z] += weight2 * help_normal;
-			
-			float weight3 = M_PI - weight1  - weight2;
-			
-			(*m_normals)[t->x] += weight3 * help_normal;
-		}else {
-			cverr() <<"CTriangleMeshData::evaluate_normals(): triangle " << i << ":" << *t << " with corners [" 
-				<< e1 << e2 << e3 << "] has zero normal\n";
+
+	auto normalize = [](C3DFVector& x) {
+		float xn = x.norm(); 
+		if (xn > 0) 
+			x /= xn; 
+	}; 
+
+	typedef CTriangleMesh::normal_type normal_type; 
+	typedef CTriangleMesh::triangle_type triangle_type; 
+
+	auto run_triangles = [this, &ctriangles, &normalize](const blocked_range<unsigned>& range, 
+						 const vector<normal_type>& cnormals) {
+		vector<normal_type> normals(cnormals); 
+		CThreadMsgStream thread_stream;
+		for (auto i = range.begin(); i != range.end(); ++i) {
+			triangle_type t = ctriangles[i]; 
+			C3DFVector e1 = (*m_vertices)[t.x] - (*m_vertices)[t.y];
+			C3DFVector e2 = (*m_vertices)[t.z] - (*m_vertices)[t.y];
+			C3DFVector e3 = (*m_vertices)[t.z] - (*m_vertices)[t.x];
+			C3DFVector help_normal = cross(e2, e1);
+			if (help_normal.norm2() > 0) {
+				normalize(e1); 
+				normalize(e2); 
+				normalize(e3); 
+				float weight1 = acos(dot(e1,e2));
+				float weight2 = acos(dot(e3,e2));
+				
+				normals[t.y] += weight1 * help_normal;
+				normals[t.z] += weight2 * help_normal;
+				
+				float weight3 = M_PI - weight1  - weight2;
+				
+				normals[t.x] += weight3 * help_normal;
+			}else {
+				cverr() <<"CTriangleMeshData::evaluate_normals(): triangle " << i 
+					<< ":" << t << " with corners [" 
+					<< e1 << e2 << e3 << "] has zero normal\n";
+			}
 		}
-		++t;
-		++i; 
-	}
+		return normals; 
+	}; 
+	
+	auto reduce_normals = [](const vector<normal_type>& lhs, const vector<normal_type>& rhs) -> vector<normal_type> {
+		vector<normal_type> result(lhs); 
+		parallel_for(blocked_range<unsigned>(0,result.size()), 
+			     [&result, &rhs](const blocked_range<unsigned>& range) {
+				     for (auto i= range.begin(); i != range.end(); ++i) 
+					     result[i] += rhs[i]; 
+			     }); 
+		return result; 
+	}; 
 
-	cvdebug() << "normalize " << m_normals->size() << " normals\n"; 
-	// normalize the normals
-	for_each(m_normals->begin(), m_normals->end(), 
-		 [](C3DFVector& n) -> void {
-			 float norm = n.norm();
-			 if (norm > 0) {
-				 n /= norm;
-			 }
-		 }); 
+	vector<normal_type> normals_accumulator(m_normals->size());
+	
+	normals_accumulator = parallel_reduce(blocked_range<unsigned>(0, ctriangles.size(), 100), normals_accumulator, 
+					      run_triangles, reduce_normals);
+
+	parallel_for(blocked_range<unsigned>(0, normals_accumulator.size()),
+		     [this, &normals_accumulator](const blocked_range<unsigned>& range){
+			     for (auto i= range.begin(); i != range.end(); ++i) {
+				     C3DFVector n = normals_accumulator[i];
+				     auto nn = n.norm2();
+				     (*m_normals)[i] = (nn > 0) ? n / sqrt(nn) : C3DFVector::_0; 
+			     }
+		     });
+	
 }
 
 

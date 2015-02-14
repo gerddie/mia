@@ -113,9 +113,7 @@ C3DGrowmaskImageFilterFactory::C3DGrowmaskImageFilterFactory():
 						  "reference image for mask region growing", 
 			      &C3DImageIOPluginHandler::instance()));
 	add_parameter("shape", make_param(m_shape, "6n", false, "neighborhood mask"));
-	add_parameter("min", new CFloatParameter(m_min, -numeric_limits<float>::max(),
-						 numeric_limits<float>::max(), false,
-						 "lower threshold for mask growing"));
+	add_parameter("min", make_param(m_min, false, "lower threshold for mask growing"));
 }
 
 /* The factory create function creates and returns the filter with the given options*/

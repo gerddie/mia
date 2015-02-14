@@ -164,7 +164,7 @@ C3DMeanFilterPlugin::C3DMeanFilterPlugin():
         C3DFilterPlugin("mean"), 
         m_hw(1)
 {
-        add_parameter("w", new CIntParameter(m_hw, 1, std::numeric_limits<int>::max(), false, "half filter width"));
+        add_parameter("w", make_lc_param(m_hw, 1, false, "half filter width"));
 }
                        
 C3DFilter *C3DMeanFilterPlugin::do_create()const
@@ -230,7 +230,7 @@ C3DVarianceFilterPlugin::C3DVarianceFilterPlugin():
 C3DFilterPlugin("variance"), 
         m_hw(1)
 {
-        add_parameter("w", new CIntParameter(m_hw, 1, std::numeric_limits<int>::max(), false, "half filter width"));        
+        add_parameter("w", make_lc_param(m_hw, 1, false, "half filter width"));        
 }
         
 mia::C3DFilter *C3DVarianceFilterPlugin::do_create()const

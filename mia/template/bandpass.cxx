@@ -63,10 +63,8 @@ TBandPassFilterPlugin<Image>::TBandPassFilterPlugin():
 	m_min(0), 
 	m_max(std::numeric_limits<float>::max())
 {
-	this->add_parameter("min", new CFloatParameter(m_min, -std::numeric_limits<float>::max(), 
-						       std::numeric_limits<float>::max(), false, "minimum of the band")); 
-	this->add_parameter("max", new CFloatParameter(m_max, -std::numeric_limits<float>::max(), 
-						       std::numeric_limits<float>::max(), false, "maximum of the band")); 
+	this->add_parameter("min", make_param(m_min, false, "minimum of the band")); 
+	this->add_parameter("max", make_param(m_max, false, "maximum of the band")); 
 }
 
 template <class Image> 

@@ -55,6 +55,14 @@ void CTParameter<T>::do_descr(std::ostream& /*os*/) const
 template <typename T>
 struct __dispatch_parameter_do_set {
 	static bool apply (const std::string& str_value, T& value) {
+		if (std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed) {
+			size_t startpos = str_value.find_first_not_of(" \t");
+			if (str_value[startpos] == '-') {
+				throw create_exception<std::invalid_argument>("Try setting an unsigned value with negative value ", str_value); 
+			}
+		}
+		
+
 		char c; 
 		std::istringstream s(str_value); 
 		s >> value; 
@@ -115,6 +123,7 @@ struct __dispatch_parameter_do_set<std::string> {
 template <typename T> 
 bool CTParameter<T>::do_set(const std::string& str_value)
 {
+	
 	bool retval = __dispatch_parameter_do_set<T>::apply(str_value, m_value); 
 	adjust(m_value); 
 	return retval; 

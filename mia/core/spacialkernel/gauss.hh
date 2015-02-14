@@ -30,7 +30,7 @@ class C1DGaussFilterKernel: public mia::C1DFoldingKernel {
 public:
 	/** contructor creates a kernel with the width = 2 * fsize +1
 	    \param fsize is the filter with parameter */
-	C1DGaussFilterKernel(int fsize);
+	C1DGaussFilterKernel(unsigned fsize);
 private:
 	virtual std::vector<double> do_apply(const std::vector<double>& data) const;
 };
@@ -41,7 +41,7 @@ public:
 	virtual mia::C1DFoldingKernel *do_create() const;
 	virtual const std::string do_get_descr()const;
 private:
-	int m_w;
+	unsigned  m_w;
 };
 
 struct equal_double {

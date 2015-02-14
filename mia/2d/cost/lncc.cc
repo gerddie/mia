@@ -186,8 +186,8 @@ CLNCC2DImageCostPlugin::CLNCC2DImageCostPlugin():
         C2DImageCostPlugin("lncc"), 
 	m_hw(5)
 {
-	this->add_parameter("w", new CUIntParameter(m_hw, 1, 256, false, 
-						    "half width of the window used for evaluating the localized cross correlation")); 
+	this->add_parameter("w", new CUIBoundedParameter(m_hw, EParameterBounds::bf_closed_interval, {1, 256}, false, 
+							 "half width of the window used for evaluating the localized cross correlation")); 
 }
 
 C2DImageCost *CLNCC2DImageCostPlugin::do_create() const

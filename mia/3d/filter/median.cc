@@ -112,7 +112,7 @@ C3DMedianFilterFactory::C3DMedianFilterFactory():
 	C3DFilterPlugin("median"),
 	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
+	add_parameter("w", make_lc_param(m_hw, 1, false, "filter width parameter"));
 }
 
 const string  C3DMedianFilterFactory::do_get_descr() const
@@ -166,8 +166,8 @@ C3DSaltAndPepperFilterFactory::C3DSaltAndPepperFilterFactory():
 	m_hw(1),
 	m_thresh(100)
 {
-	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
-	add_parameter("thresh", new CFloatParameter(m_thresh, 0, numeric_limits<float>::max(), false, "thresh value"));
+	add_parameter("w", make_lc_param(m_hw, 1, false, "filter width parameter"));
+	add_parameter("thresh", make_nonnegative_param(m_thresh, false, "thresh value"));
 }
 
 C3DFilter *C3DSaltAndPepperFilterFactory::do_create()const

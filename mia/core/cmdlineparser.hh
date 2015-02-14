@@ -580,6 +580,32 @@ PCmdOption make_opt(T& value, Tmin min, Tmax max,  const char *long_opt, char sh
 					    new TRangeParameter<T>(value, min, max, required, help)));
 }
 
+
+/**
+   \ingroup cmdline
+   \brief Create an option of a scalar value that can have boundaries 
+   
+   If the given value does not fit into the range an exception will be thrown 
+   \tparam T type of the value to be parsed, supported are float, double, long, int, short, unsigned long, unsigned int, unsigned short. 
+   \param value value variable to hold the parsed option value - pass in the default value -
+   \param bflags boundary flags 
+   \param bounds vector containing the boundaries of the allowed parameter range (depends on bflags) 
+   \param short_opt short option name (or 0)
+   \param long_opt long option name (must not be NULL)
+   \param help long help string (must not be NULL)
+   \param flags add flags like whether the optionis required to be set 
+   \returns the option warped into a \a boost::shared_ptr
+*/
+template <typename T>
+PCmdOption make_opt(T& value, EParameterBounds bflags, const std::vector<T>& bounds, 
+		    const char *long_opt, char short_opt, 
+		    const char *help, CCmdOptionFlags flags = CCmdOptionFlags::none)
+{
+	bool required = has_flag(flags, CCmdOptionFlags::required); 
+	return PCmdOption(new CParamOption( short_opt, long_opt, 
+					    new TBoundedParameter<T>(value, bflags, bounds, required, help)));
+}
+
 /**
    \ingroup cmdline
    \brief Create an option to set a vector of values, 

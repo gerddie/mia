@@ -309,10 +309,10 @@ C2DLabelFullCostPlugin::C2DLabelFullCostPlugin():
 			      &C2DImageIOPluginHandler::instance()));
 	add_parameter("ref", new CStringParameter(m_ref_name, CCmdOptionFlags::input, "Reference image", 
 			      &C2DImageIOPluginHandler::instance()));
-	add_parameter("maxlabel", new CIntParameter(m_maxlabel, 2, 32000, false, 
-						    "maximum number of labels to consider"));
-	add_parameter("debug", new CIntParameter(m_debug, 0, 1, false, 
-						    "write the distance transforms to a 3D image"));
+	add_parameter("maxlabel", make_ci_param(m_maxlabel, 2, 32000, false, 
+						 "maximum number of labels to consider"));
+	add_parameter("debug", make_ci_param(m_debug, 0, 1, false, 
+					      "write the distance transforms to a 3D image"));
 
 }
 

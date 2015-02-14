@@ -152,7 +152,7 @@ C3DMSNormalizerFilterPlugin::C3DMSNormalizerFilterPlugin():
 C3DFilterPlugin("msnormalizer"), 
         m_hw(1)
 {
-        add_parameter("w", new CIntParameter(m_hw, 1, std::numeric_limits<int>::max(), false, "half filter width"));        
+        add_parameter("w", make_lc_param(m_hw, 1, false, "half filter width"));        
 }
 
 mia::C3DFilter *C3DMSNormalizerFilterPlugin::do_create()const

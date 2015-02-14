@@ -70,11 +70,7 @@ C2DThreshNImageFilterFactory::C2DThreshNImageFilterFactory():
 	m_thresh(5.0)
 {
 	add_parameter("shape", make_param(m_shape, "4n", false, "neighborhood shape to take into account")); 
-	
-	add_parameter("thresh", new CDoubleParameter(m_thresh, 
-						     -numeric_limits<double>::max(), 
-						     numeric_limits<double>::max(),
-						     false, "The threshhold value"));
+	add_parameter("thresh", make_param(m_thresh, false, "The threshhold value"));
 }
 
 C2DFilter *C2DThreshNImageFilterFactory::do_create()const

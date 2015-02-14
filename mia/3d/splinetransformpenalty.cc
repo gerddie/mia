@@ -110,8 +110,7 @@ C3DSplineTransformPenaltyPlugin::C3DSplineTransformPenaltyPlugin(char const * co
 	m_weight(1.0), 
 	m_normalize(false)
 {
-	add_parameter("weight", new CFloatParameter(m_weight, 0.0f, std::numeric_limits<float>::max(), 
-						    false, "weight of penalty energy"));
+	add_parameter("weight", make_positive_param(m_weight, false, "weight of penalty energy"));
 	add_parameter("norm", new CBoolParameter(m_normalize, false, "Set to 1 if the penalty should be normalized " 
 						 "with respect to the image size")); 
 	
