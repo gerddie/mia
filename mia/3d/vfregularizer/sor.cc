@@ -104,11 +104,11 @@ C3DSORVectorfieldRegularizerPlugin::C3DSORVectorfieldRegularizerPlugin():
 
 C3DFVfFluidStandardRegularizerKernel *C3DSORVectorfieldRegularizerPlugin::do_create() const
 {
-        add_parameter("rel_f", new mia::CFloatParameter(m_rel_epsilon, 1e-10, 1.0, false, 
+        add_parameter("rel_f", make_oi_param(m_rel_epsilon, 0.0, 1.0, false, 
                                                         "breaking condition: relative residuum"));  
-        add_parameter("abs_f", new mia::CFloatParameter(m_abs_epsilon, 1e-10, 1.0, false, 
+        add_parameter("abs_f", make_lc_param(m_abs_epsilon, 0.0, false, 
                                                         "breaking condition: absolute residuum"));  
-        add_parameter("maxiter", new mia::CUIntParameter(m_maxiter, 1, 3000000, false, "maximum number of iterations"));  
+        add_parameter("maxiter", make_lc_param(m_maxiter, 0, false, "maximum number of iterations"));  
         
         // there should be some method to select the arch optimized version 
         // 
