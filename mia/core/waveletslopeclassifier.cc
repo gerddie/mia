@@ -197,12 +197,15 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	cvdebug() << "Movement coeff weights:" << movement_pos << "\n"; 
 	
 	int skip_idx = 0; 
-	bool ifree_breathing = false; 
+	bool ifree_breathing = false;
+
+	// usually we test for free breathing. By setting the min_freq to 0.0, we assume some kind of breath hold. 
 	if (min_freq != 0.0) {
-		((movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin]) &&
-		 (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]));
+		ifree_breathing = 
+			((movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin]) &&
+			 (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end])); 
 		
-		// handle free breathing and series that only end with breath holding in the same way 
+			// handle free breathing and series that only end with breath holding in the same way 
 		if  ((!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]))
 			ifree_breathing = true; 
 	}else 
