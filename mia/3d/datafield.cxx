@@ -657,33 +657,18 @@ T3DDatafield<T>::end_range_with_boundary_flags(const C3DBounds& begin, const C3D
 template <typename T>
 typename T3DDatafield<T>::Range::iterator T3DDatafield<T>::Range::begin()
 {
-	return m_field.begin_range(m_start, m_end); 
+	return m_begin; 
 }
 
 template <typename T>
 typename T3DDatafield<T>::Range::iterator T3DDatafield<T>::Range::end()
 {
-	return m_field.end_range(m_start, m_end); 
-}
-
-template <typename T>
-typename 
-T3DDatafield<T>::Range::iterator_with_boundary_flag
-T3DDatafield<T>::Range::begin_with_boundary_flags()
-{
-	return m_field.begin_range_with_boundary_flags(m_start, m_end); 
-}
-
-template <typename T>
-typename T3DDatafield<T>::Range::iterator_with_boundary_flag
-T3DDatafield<T>::Range::end_with_boundary_flags()
-{
-	return m_field.end_range_with_boundary_flags(m_start, m_end); 
+	return m_end; 
 }
 
 template <typename T>
 T3DDatafield<T>::Range::Range(const C3DBounds& start, const C3DBounds& end, T3DDatafield<T>& field):
-	m_start(start), m_end(end), m_field(field)
+	m_begin(field.begin_range(start, end)), m_end(field.end_range(start, end))
 {
 }
 					    
@@ -691,41 +676,25 @@ T3DDatafield<T>::Range::Range(const C3DBounds& start, const C3DBounds& end, T3DD
 template <typename T>
 typename T3DDatafield<T>::ConstRange::iterator T3DDatafield<T>::ConstRange::begin() const 
 {
-	return m_field.begin_range(m_start, m_end); 
+	return m_begin; 
 }
 
 template <typename T>
 typename T3DDatafield<T>::ConstRange::iterator T3DDatafield<T>::ConstRange::end() const 
 {
-	return m_field.end_range(m_start, m_end); 
+	return m_end; 
 }
-
-template <typename T>
-typename T3DDatafield<T>::ConstRange::iterator_with_boundary_flag
-T3DDatafield<T>::ConstRange::begin_with_boundary_flags() const 
-{
-	return m_field.begin_range_with_boundary_flags(m_start, m_end); 
-}
-
-template <typename T>
-typename T3DDatafield<T>::ConstRange::iterator_with_boundary_flag
-T3DDatafield<T>::ConstRange::end_with_boundary_flags()const 
-{
-	return m_field.end_range_with_boundary_flags(m_start, m_end); 
-}
-
-
 
 
 template <typename T>
 T3DDatafield<T>::ConstRange::ConstRange(const C3DBounds& start, const C3DBounds& end, const T3DDatafield<T>& field):
-	m_start(start), m_end(end), m_field(field)
+	m_begin(field.begin_range(start, end)), m_end(field.end_range(start, end))
 {
 }
 
 template <typename T>
 T3DDatafield<T>::ConstRange::ConstRange(const Range& range):
-	m_start(range.m_start), m_end(range.m_end), m_field(range.m_field)
+	m_begin(range.m_begin), m_end(range.m_end)
 {
 }
 

@@ -114,7 +114,6 @@ private:
 	float m_min;
 	float m_max;
 	float m_current;
-	float m_step;
 };
 
 /// pointer type for the 2D registration time step 

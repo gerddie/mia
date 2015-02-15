@@ -267,8 +267,8 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 	assert(coefficients.size() == m_nodes); 
 	assert(gradient.size() == coefficients.size() * 2); 
 #if defined(__SSE2__)
-	register __m128d result_a = {0.0, 0.0}; 
-	register __m128d result_b = result_a; 
+	__m128d result_a = {0.0, 0.0}; 
+	__m128d result_b = result_a; 
 	
 	auto p = m_P.begin(); 
 	auto pe = m_P.end(); 
@@ -330,9 +330,9 @@ double C2DPPDivcurlMatrixImpl::evaluate(const C2DFVectorfield& coefficients,
 {
 	assert(coefficients.size() == m_nodes); 
 	assert(gradient.size() == coefficients.size() * 2); 
-	register double result_1 = 0.0; 
-	register double result_2 = 0.0; 
-	register double result_3 = 0.0; 
+	double result_1 = 0.0; 
+	double result_2 = 0.0; 
+	double result_3 = 0.0; 
 	for (auto p = m_P.begin(); p != m_P.end();++p) {
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 

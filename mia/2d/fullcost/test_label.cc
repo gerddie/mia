@@ -101,7 +101,7 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
         BOOST_CHECK_CLOSE(cost->cost_value(), 6 + sqrt(2.0), 0.01); 
         
 	CDoubleVector gradient(t->degrees_of_freedom()); 
-	double cost_value = cost->evaluate(*t, gradient);
+	cost->evaluate(*t, gradient);
 
 	for(int i = 0; i < 25; ++i) {
 		cvdebug() << "[" << i << "]: (" << gradient[2*i] << ", " << gradient[2*i+1]

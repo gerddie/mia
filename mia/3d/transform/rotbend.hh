@@ -115,7 +115,7 @@ public:
 	const std::string do_get_descr() const;
 private:
 	mia::C3DFVector m_origin; 
-	int m_norot; 
+	bool m_norot; 
 };
 
 

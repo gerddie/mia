@@ -37,9 +37,10 @@ BOOST_AUTO_TEST_CASE(test_sor_solver)
 	C3DFVectorfield v(size); 
 	C3DFVectorfield b(size); 
 
-	auto irv = v.range_begin(C3DBounds::_1, rbe);
-	auto erv = v.range_end(C3DBounds::_1, rbe);
 
+	auto useful_range = v.get_range(C3DBounds::_1, rbe);
+	
+	
 	while ( irv != erv ) {
 		C3DFVector x(irv.pos());
 		
@@ -56,7 +57,8 @@ BOOST_AUTO_TEST_CASE(test_sor_solver)
 	}
 
 	
-
+	
+	
 	auto iib = b.begin_range(
 	
 	

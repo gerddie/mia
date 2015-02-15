@@ -32,8 +32,7 @@ using std::numeric_limits;
 C2DRegTimeStep::C2DRegTimeStep(float min, float max):
 	m_min(min),
 	m_max(max),
-	m_current((max - min)/ 2.0 + min ),
-	m_step((max-min) / 20)
+	m_current((max - min)/ 2.0 + min )
 {
 }
 

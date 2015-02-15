@@ -58,27 +58,27 @@ T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
         float  dy = 1-fy;
         float  dz = 1-fz;
 
-        register float a1,a3,a5,a7;
+        float a1,a3,a5,a7;
 
 	a1 = (dx * (*this)(x  , y  , z  ) + fx * (*this)(x+1, y  , z  ));
 	a3 = (dx * (*this)(x  , y+1, z  ) + fx * (*this)(x+1, y+1, z  ));
 	a5 = (dx * (*this)(x  , y  , z+1) + fx * (*this)(x+1, y  , z+1));
 	a7 = (dx * (*this)(x  , y+1, z+1) + fx * (*this)(x+1, y+1, z+1));
 
-        register float b1 = dy * a1 + fy * a3;
-        register float b2 = dy * a5 + fy * a7;
+        float b1 = dy * a1 + fy * a3;
+	float b2 = dy * a5 + fy * a7;
 
 	return  (dz * b1 + fz * b2) > 0.5;
 }
 
 #define INSTANCIATE(TYPE)						\
 	template class  T3DDatafield<TYPE>;				\
-	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::const_iterator>; \
-	template class  EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::const_iterator>; \
-	template class  EXPORT_3D range2d_iterator<T3DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range2d_iterator<T3DDatafield<TYPE>::const_iterator>;
+	template class  range3d_iterator<T3DDatafield<TYPE>::iterator>; \
+	template class  range3d_iterator<T3DDatafield<TYPE>::const_iterator>; \
+	template class  range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::iterator>; \
+	template class  range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::const_iterator>; \
+	template class  range2d_iterator<T3DDatafield<TYPE>::iterator>; \
+	template class  range2d_iterator<T3DDatafield<TYPE>::const_iterator>;
 
 
 
@@ -96,6 +96,10 @@ INSTANCIATE(unsigned short);
 INSTANCIATE(unsigned char );
 INSTANCIATE(signed char);
 INSTANCIATE(bool);
+
+INSTANCIATE(C3DFVector)
+INSTANCIATE(C3DDVector)
+
 
 DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
 DEFINE_TYPE_DESCR2(C3DFVector, "3dfvector"); 

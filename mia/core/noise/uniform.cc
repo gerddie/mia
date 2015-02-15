@@ -29,8 +29,6 @@ NS_BEGIN(uniform_noise_generator)
 using namespace std;
 using namespace mia;
 
-static const size_t center = 1024;
-
 CUniformNoiseGenerator::CUniformNoiseGenerator(unsigned int seed, double a, double b):
 	CNoiseGenerator(seed),
 	m_a(a),

@@ -180,7 +180,7 @@ float C3DRotBendTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float
 	DEBUG_ASSERT_RELEASE_THROW(false, "C3DRotBendTransformation doesn't implement a jacobian."); 
 }
 
-void C3DRotBendTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
+void C3DRotBendTransformation::translate(const C3DFVectorfield& MIA_PARAM_UNUSED(gradient), CDoubleVector& MIA_PARAM_UNUSED(params)) const
 {
 	
 	assert(0 && !"not yet implemented"); 
@@ -281,10 +281,10 @@ P3DTransformation C3DRotBendTransformCreator::do_create(const C3DBounds& size,
 
 C3DRotBendTransformCreatorPlugin::C3DRotBendTransformCreatorPlugin():
 C3DTransformCreatorPlugin("rotbend"), 
-	m_norot(0)
+	m_norot(false)
 {
 	add_parameter("origin", new C3DFVectorParameter(m_origin, true, "center of the transformation"));
-	add_parameter("norot", new CIntParameter(m_norot, 0, 1, false, "Don't optimize the rotation"));
+	add_parameter("norot", make_param(m_norot, false, "Don't optimize the rotation"));
 }
 
 

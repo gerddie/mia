@@ -310,12 +310,12 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 {
 	assert(coefficients.size() == m_nodes); 
 
-	register double result_1 = 0.0; 
-	register double result_2 = 0.0; 
-	register double result_3 = 0.0; 
-	register double result_4 = 0.0; 
-	register double result_5 = 0.0; 
-	register double result_6 = 0.0; 
+	double result_1 = 0.0; 
+	double result_2 = 0.0; 
+	double result_3 = 0.0; 
+	double result_4 = 0.0; 
+	double result_5 = 0.0; 
+	double result_6 = 0.0; 
 
 	const int nx = m_size.x;
 	const int ny = m_size.y;

@@ -367,6 +367,7 @@ float C3DGridTransformation::pertuberate(C3DFVectorfield& v) const
 float C3DGridTransformation::get_jacobian(const C3DFVectorfield& v, float delta) const
 {
 	assert(v.get_size() == get_size());
+	assert(0 && "this function needs to be fixed"); 
 	const int dx = v.get_size().x;
 	const int dxy = v.get_size().x * v.get_size().y;
 	
@@ -381,7 +382,7 @@ float C3DGridTransformation::get_jacobian(const C3DFVectorfield& v, float delta)
 				C3DFVector jy((iu[dx] - iu[-dx]) + (delta * (iv[dx] - iv[-dx])));
 				C3DFVector jz((iu[dxy] - iu[-dxy]) + (delta * (iv[dxy] - iv[-dxy])));
 				
-				const float j = (2.0 - jx.x) * (2.0 - jy.y) * (2.0 - jy.z) - jx.y * jy.x * jy.z;
+				const float j = (2.0 - jx.x) * (2.0 - jy.y) * (2.0 - jz.z) - jx.y * jy.x * jy.z;
 				if ( j_min > j) {
 					j_min = j;
 				}

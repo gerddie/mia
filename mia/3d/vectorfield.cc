@@ -7,6 +7,7 @@
 
 #include <mia/core/threadedmsg.hh>
 #include <mia/3d/vectorfield.hh>
+
 #include <mia/3d/datafield.cxx>
 #include <mia/2d/datafield.cxx>
 #include <mia/3d/iterator.cxx>
@@ -265,8 +266,8 @@ C3DFVector C3DDefaultLinearVectorfieldInterpolator::operator ()(const C3DFVector
 
 #define INSTANCIATE2D(TYPE)						\
 	template class  EXPORT_3D T2DDatafield<TYPE>;			\
-	template class  EXPORT_3D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range2d_iterator<T2DDatafield<TYPE>::const_iterator>;
+	template class  range2d_iterator<T2DDatafield<TYPE>::iterator>; \
+	template class  range2d_iterator<T2DDatafield<TYPE>::const_iterator>;
 
 
 INSTANCIATE2D(C3DFVector); 
