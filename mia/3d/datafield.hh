@@ -37,6 +37,33 @@
 
 NS_MIA_BEGIN
 
+
+#define DECLARE_EXTERN_ITERATORS(TYPE)						\
+	extern template class  EXPORT_3D range3d_iterator<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_3D range3d_iterator<std::vector<TYPE>::const_iterator>; \
+	extern template class  EXPORT_3D range3d_iterator_with_boundary_flag<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_3D range3d_iterator_with_boundary_flag<std::vector<TYPE>::const_iterator>; \
+	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::const_iterator>;
+
+DECLARE_EXTERN_ITERATORS(double);
+DECLARE_EXTERN_ITERATORS(float);
+DECLARE_EXTERN_ITERATORS(unsigned int);
+DECLARE_EXTERN_ITERATORS(int);
+DECLARE_EXTERN_ITERATORS(short);
+DECLARE_EXTERN_ITERATORS(unsigned short);
+DECLARE_EXTERN_ITERATORS(unsigned char );
+DECLARE_EXTERN_ITERATORS(signed char);
+
+#ifdef LONG_64BIT
+DECLARE_EXTERN_ITERATORS(signed long);
+DECLARE_EXTERN_ITERATORS(unsigned long);
+#endif
+
+DECLARE_EXTERN_ITERATORS(C3DFVector)
+DECLARE_EXTERN_ITERATORS(C3DDVector)
+
+
 /**
    @ingroup basic 
    \brief A templated class of a 3D data field.
@@ -108,54 +135,42 @@ public:
 	*/
 
 	
-	class Range {
+	
+	class EXPORT_3D Range {
 		friend class T3DDatafield<T>;
 		friend class ConstRange;
 	public:
 		
 		typedef T3DDatafield<T>::range_iterator iterator;
-		typedef T3DDatafield<T>::range_iterator_with_boundary_flag iterator_with_boundary_flag; 
 		
 		iterator begin();
 		
 		iterator end();
 		
-		iterator_with_boundary_flag begin_with_boundary_flags();
-		
-		iterator_with_boundary_flag end_with_boundary_flags();
-
 	private:
-		Range(const C3DBounds& start, const C3DBounds& end, T3DDatafield<T>& field); 
-		
-		C3DBounds m_start;
-		C3DBounds m_end;
-		T3DDatafield<T>& m_field;
+		Range(const C3DBounds& start, const C3DBounds& end, T3DDatafield<T>& field);
+
+		iterator m_begin;
+		iterator m_end;
 	}; 
 	
-	class ConstRange {
+	class EXPORT_3D ConstRange {
 	public:
 		friend class T3DDatafield<T>;
 
 		typedef T3DDatafield<T>::const_range_iterator iterator;
-		typedef T3DDatafield<T>::const_range_iterator_with_boundary_flag iterator_with_boundary_flag; 
-
 		
 		iterator begin() const;
 		
 		iterator end() const;
-
-		iterator_with_boundary_flag begin_with_boundary_flags() const;
-		
-		iterator_with_boundary_flag end_with_boundary_flags() const;
 
 	private:
 		ConstRange(const C3DBounds& start, const C3DBounds& end, const T3DDatafield<T>& field);
 
 		ConstRange(const Range& range); 
 		
-		C3DBounds m_start;
-		C3DBounds m_end;
-		const T3DDatafield<T>& m_field;
+		iterator m_begin;
+		iterator m_end;
 	}; 
 
 	
@@ -525,7 +540,6 @@ public:
 private:
 };
 
-
 /// a data field of float values
 typedef T3DDatafield<float>  C3DFDatafield;
 
@@ -698,6 +712,40 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
         return T3DVector<Out>();
 
 }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
+#define DECLARE_EXTERN(TYPE)						\
+	extern template class  EXPORT_3D T3DDatafield<TYPE>; 
+
+
+DECLARE_EXTERN(double);
+DECLARE_EXTERN(float);
+DECLARE_EXTERN(unsigned int);
+DECLARE_EXTERN(int);
+DECLARE_EXTERN(short);
+DECLARE_EXTERN(unsigned short);
+DECLARE_EXTERN(unsigned char );
+DECLARE_EXTERN(signed char);
+
+#ifdef LONG_64BIT
+DECLARE_EXTERN(signed long);
+DECLARE_EXTERN(unsigned long);
+#endif
+
+DECLARE_EXTERN(C3DFVector);
+DECLARE_EXTERN(C3DDVector);
+
+#undef DECLARE_EXTERN
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 
 NS_MIA_END
 

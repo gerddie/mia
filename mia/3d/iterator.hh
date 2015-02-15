@@ -40,7 +40,7 @@ NS_MIA_BEGIN
  */
 
 template <typename I> 
-class range3d_iterator_with_boundary_flag: public std::forward_iterator_tag {
+class EXPORT_3D range3d_iterator_with_boundary_flag: public std::forward_iterator_tag {
 public: 
 	/// data type reference 
 	typedef typename I::reference reference; 
@@ -186,7 +186,7 @@ private:
  */
 
 template <typename I> 
-class range3d_iterator: public std::forward_iterator_tag {
+class EXPORT_3D range3d_iterator: public std::forward_iterator_tag {
 public: 
 	/// data type reference 
 	typedef typename I::reference reference; 

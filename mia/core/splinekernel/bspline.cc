@@ -34,7 +34,7 @@ using std::runtime_error;
 
 template <int sd, int degree>
 struct bspline {
-	static double apply(double x) {
+	static double apply(double MIA_PARAM_UNUSED(x)) {
 		throw create_exception<invalid_argument>( "Spline ", sd , ":derivative degree "
 		      ,  degree , " not supported for spline of degree 2");
 	}
@@ -71,7 +71,7 @@ double CBSplineKernel0::get_weight_at(double x, int degree) const
 		throw create_exception<invalid_argument>( "CBSplineKernel0::get_weight_at: degree " ,  degree , 
 		      "not supported for Haar spline"); 
 	}
-	return abs(x) < 0.5 ? 1.0 : 0.0; 
+	return std::abs(x) < 0.5 ? 1.0 : 0.0; 
 }
 void CBSplineKernel0::get_derivative_weights(double /*x*/, VWeight& weight, int degree) const
 {

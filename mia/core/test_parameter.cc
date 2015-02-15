@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( test_set_params)
 
 	BOOST_CHECK_THROW(testp1.set("3"), std::invalid_argument);
 
-	BOOST_CHECK_THROW(!testp1.set("gjhgjhdf"), std::invalid_argument);
+	BOOST_CHECK_THROW(testp1.set("gjhgjhdf"), std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE( test_vector_param)

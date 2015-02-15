@@ -294,7 +294,7 @@ inline static float  solve_at(const xchg& b, xchg *v, const xchg& param, const i
 	const int S_A  = 0xD5; // 1 1 1 3
 	const int S_B4 = 0xEA; // 2 2 2 3
 
-	register const v4sf p = param.xmm;
+	const v4sf p = param.xmm;
 
 	const  xchg *vm = v - dxy;
 	sse_prefetch(vm, 0, SSE_HINT_T1);
@@ -306,10 +306,10 @@ inline static float  solve_at(const xchg& b, xchg *v, const xchg& param, const i
 	const  xchg *vdp = v + dx;
 	sse_prefetch(vdp, 0, SSE_HINT_T1);
 
-	register v4sf a, m;
-	register v4sf r   = sse_addps (v[-1].xmm, v[ 1].xmm);
-	register v4sf vs2 = sse_addps (vdm[ 0 ].xmm, vdp[ 0 ].xmm);
-	register v4sf vs3 = sse_addps (vm[ 0 ].xmm, vp[ 0 ].xmm);
+	v4sf a, m;
+	v4sf r   = sse_addps (v[-1].xmm, v[ 1].xmm);
+	v4sf vs2 = sse_addps (vdm[ 0 ].xmm, vdp[ 0 ].xmm);
+	v4sf vs3 = sse_addps (vm[ 0 ].xmm, vp[ 0 ].xmm);
 
 	const  xchg *vdmm = vdm - 1;
 	sse_prefetch(vdmm, 0, SSE_HINT_T1);
@@ -318,7 +318,7 @@ inline static float  solve_at(const xchg& b, xchg *v, const xchg& param, const i
 	sse_prefetch(vdpm, 0, SSE_HINT_T1);
 
 
-	register v4sf help = sse_shufps( p, p, S_AB);
+	v4sf help = sse_shufps( p, p, S_AB);
 	r = sse_mulps(r, help);
 	vs2 = sse_addps (vs2, vs3);
 
@@ -335,11 +335,11 @@ inline static float  solve_at(const xchg& b, xchg *v, const xchg& param, const i
 	vs2 = sse_addps(vm[-1].xmm, vp[ 1 ].xmm);
 	a = sse_shufps( a, a, S_XY);
 
-	register v4sf vs4 = sse_addps(vm[1].xmm, vp[ -1 ].xmm);
+	v4sf vs4 = sse_addps(vm[1].xmm, vp[ -1 ].xmm);
 	vs3 = sse_addps(vm[-dx].xmm, vp[dx].xmm);
 	vs2 = sse_shufps( vs2, vs2, S_XZ);
 
-	register v4sf vs5 = sse_addps(vm[dx].xmm, vp[-dx].xmm);
+	v4sf vs5 = sse_addps(vm[dx].xmm, vp[-dx].xmm);
 
 	vs3 = sse_shufps( vs3, vs3, S_YZ);
 	m = sse_shufps( m, m, S_XY);

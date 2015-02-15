@@ -41,8 +41,6 @@ NS_BEGIN(gauss_noise_generator)
 using namespace std;
 using namespace mia;
 
-static const size_t center = 1024;
-
 double CGaussNoiseGenerator::box_muller()const	/* normal random variate generator */
 {
 	double x1, x2, w, y1;
