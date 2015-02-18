@@ -35,7 +35,7 @@ struct PluginTestFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_C3DFullCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "image", "maskedimage", "taggedssd"}; 
+	set<string> test_data = { "image", "maskedimage", "taggedssd", "labelimage"}; 
 
 	test(C3DFullCostPluginHandler::instance().get_set(), test_data); 
 }
@@ -51,7 +51,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 	set<string> test_data = {
 		"binarize", "bandpass", "combiner", "convert","close", "crop", "dilate", "distance", "downscale", 
 		"erode", "gauss", "gradnorm", "growmask", "invert", "isovoxel", "kmeans",  
-		"label", "load", "lvdownscale", "mask", "mean", "median", "mlv", "msnormalizer", "open",  "resize",
+		"label", "labelmap", "labelscale", "load", "lvdownscale", "mask", "mean", "median", "mlv", "msnormalizer", "open",  "resize",
 		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", 
 		"transform", "variance", "ws" 
 	}; 
