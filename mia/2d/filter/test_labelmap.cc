@@ -21,7 +21,6 @@
 #include <mia/internal/autotest.hh>
 #include <mia/2d/filter/labelmap.hh>
 
-using namespace labelmap_2dimage_filter; 
 NS_MIA_USE;
 using namespace std; 
 

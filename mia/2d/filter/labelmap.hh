@@ -20,30 +20,11 @@
 
 #include <mia/2d/filter.hh>
 #include <mia/core/labelmap.hh>
+#include <mia/template/labelmap.hh>
 
-NS_BEGIN(labelmap_2dimage_filter)
-      
-class C2DLabelMapFilter: public mia::C2DFilter {
-	std::vector<size_t>  m_map;
-public:
-	C2DLabelMapFilter(const mia::CLabelMap& lmap); 
-	
-	template <class Data2D>
-	typename C2DLabelMapFilter::result_type operator () (const Data2D& data) const ;
+NS_MIA_BEGIN
 
-private: 
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+typedef TLabelMapFilter<C2DImage> C2DLabelMapFilter;  
+typedef TLabelMapFilterPlugin<C2DImage> C2DLabelMapFilterPlugin;  
 
-};
-
-class C2DLabelMapFilterPlugin: public mia::C2DFilterPlugin {
-public: 
-	C2DLabelMapFilterPlugin();
-	virtual mia::C2DFilter *do_create()const; 
-	virtual const std::string do_get_descr()const; 
-
-private: 
-	std::string m_map; 
-};
-
-NS_END
+NS_MIA_END

@@ -35,6 +35,8 @@ fullcost.hh
 invert.cxx
 invert.hh
 lsd.hh
+labelmap.hh
+labelmap.cxx
 masked_cost.hh
 masked_cost.cxx
 mi.hh

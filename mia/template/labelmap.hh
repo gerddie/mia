@@ -18,46 +18,43 @@
  *
  */
 
-#ifndef __mia_internal_bandpass_hh
-#define __mia_internal_bandpass_hh
+#ifndef mia_template_labelmap_hh
+#define mia_template_labelmap_hh
 
-#include <limits>
 #include <mia/core/filter.hh>
-#include <mia/core/msgstream.hh>
+#include <mia/core/labelmap.hh>
+#include <map>
 
 NS_MIA_BEGIN
 
-///  @cond DOC_PLUGINS 
+template <class Image>       
+class TLabelMapFilter: public TDataFilter<Image> {
+	std::map<size_t, size_t>  m_map;
+public:
 
-template <class Image> 
-class TBandPass: public TDataFilter<Image> {
-public: 	
 	typedef typename TDataFilter<Image>::result_type result_type; 
-	TBandPass(float min, float max); 
-
-	template <class  T>
-	typename TBandPass::result_type operator () (const T& data) const;
+	
+	TLabelMapFilter(const CLabelMap& lmap); 
+	
+	template <class TImage>
+	typename TLabelMapFilter<Image>::result_type operator () (const TImage& data) const ;
 
 private: 
-	typename TBandPass::result_type do_filter(const Image& image) const;
-	
-	float m_min; 
-	float m_max; 
+	virtual typename TLabelMapFilter<Image>::result_type do_filter(const Image& image) const;
+
 };
 
 template <class Image> 
-class TBandPassFilterPlugin: public TDataFilterPlugin<Image>  {
+class TLabelMapFilterPlugin: public TDataFilterPlugin<Image> {
 public: 
-	TBandPassFilterPlugin();
-	virtual TDataFilter<Image> *do_create()const;
+	TLabelMapFilterPlugin();
+	virtual TDataFilter<Image> *do_create()const; 
 	virtual const std::string do_get_descr()const; 
+
 private: 
-	float m_min; 
-	float m_max; 
+	std::string m_map; 
 };
 
-NS_MIA_END
+NS_END
 
-///  @endcond DOC_PLUGINS 
-
-#endif
+#endif 
