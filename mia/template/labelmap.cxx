@@ -46,7 +46,9 @@ struct dispatch_label_map {
 	typedef typename Image::value_type value_type; 
 	typedef std::map<size_t, size_t> LabelMap; 
 
-	static P2DImage apply(const Image& /*image*/, const LabelMap& /*lmap*/){
+	static 
+	typename TLabelMapFilter<Image>::result_type 
+	apply(const Image& /*image*/, const LabelMap& /*lmap*/){
 		throw std::invalid_argument("Labelmap: Floating pount values are nor supported");
 	}
 };
@@ -55,14 +57,16 @@ template <typename Image>
 struct dispatch_label_map<Image, true> {
 	typedef  typename Image::value_type value_type; 
 	typedef std::map<size_t, size_t> LabelMap; 
-	static P2DImage apply(const Image& image, const LabelMap& lmap){
+	typedef typename TLabelMapFilter<Image>::result_type result_type; 
+
+	static result_type apply(const Image& image, const LabelMap& lmap){
 		Image *result = new Image(image.get_size(), image); 
 		transform(image.begin(), image.end(), result->begin(), 
 			  [&lmap](value_type x){ 
 				  auto iy = lmap.find(x); 
 				  return iy != lmap.end() ? static_cast<value_type>(iy->second) : x;
 			  });
-		return P2DImage(result); 
+		return result_type(result); 
 	}
 };
 
@@ -76,7 +80,7 @@ typename TLabelMapFilter<Image>::result_type TLabelMapFilter<Image>::operator ()
 
 template <class Image>
 TLabelMapFilterPlugin<Image>::TLabelMapFilterPlugin():
-	C2DFilterPlugin("labelmap")
+	TDataFilterPlugin<Image>("labelmap")
 {
 	this->add_parameter("map", new CStringParameter(m_map, CCmdOptionFlags::required_input, "Label mapping file")) ;
 }

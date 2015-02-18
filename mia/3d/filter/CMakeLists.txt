@@ -29,6 +29,7 @@ SET(filters3dNew
   invert
   kmeans 
   label
+  labelmap
   labelscale
   load
   lvdownscale
