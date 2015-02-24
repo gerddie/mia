@@ -20,6 +20,7 @@
 
 #include <sstream>
 #include <mia/core.hh>
+#include <mia/core/meanvar.hh>
 #include <mia/2d.hh>
 #include <mia/internal/main.hh>
 
@@ -86,6 +87,33 @@ private:
 	float m_max; 
 };
 
+struct FFullAccumulater: public TFilter<bool> {
+	FFullAccumulater(float thresh):m_thresh(thresh){}; 
+
+	template <typename T>
+	bool operator () (const T2DImage<T>& image) {
+		for (auto i = image.begin(); i != image.end(); ++i) {
+			if (*i > m_thresh)
+				m_acc.push_back(*i);
+		}
+		return true;
+	}
+	void print_stats()
+	{
+		sort( m_acc.begin(), m_acc.end()); 
+		auto mv = mean_var(m_acc.begin(), m_acc.end()); 
+		auto minmax = minmax_element(m_acc.begin(), m_acc.end()); 
+		cout << mv.first << " " 
+		     << mv.second << " " 
+		     << m_acc[m_acc.size() / 2] << " " 
+		     << *minmax.first << " " 
+		     << *minmax.second << "\n"; 
+	}
+	
+private: 
+	float m_thresh; 
+	vector<float> m_acc; 
+}; 
 
 
 int do_main( int argc, char *argv[] )
@@ -94,7 +122,7 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	float thresh = 10.0;
 	float high_thresh = 0.05;
-
+	bool use_histogram = false; 
 	
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 	
@@ -104,6 +132,8 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
 	options.add(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
+	options.add(make_opt( use_histogram, "use-histogram", 0, "Use a histogram to accumulate statistics"));
+
 	options.set_stdout_is_result();
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -112,11 +142,19 @@ int do_main( int argc, char *argv[] )
 	
 	C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
 	if (in_image_list.get() && in_image_list->size()) {
-		CHistAccumulator histo(0, 4096, 1024, thresh);
-		for (C2DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-		     i != in_image_list->end(); ++i)
-			accumulate(histo, **i);
-		histo.print_stats(high_thresh);
+		if (use_histogram) {
+			CHistAccumulator histo(0, 4096, 1024, thresh);
+			for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
+				accumulate(histo, **i);
+			histo.print_stats(high_thresh);
+		}else{
+			vector<float> result;
+			FFullAccumulater acc(thresh); 
+			for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
+				accumulate(acc, **i);
+			acc.print_stats();
+			
+		}
 	}else
 		throw runtime_error(string("No errors found in ") + in_filename);
 	
