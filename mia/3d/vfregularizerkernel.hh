@@ -60,7 +60,7 @@ public:
 
         virtual ~C3DFVectorfieldRegularizerKernel(); 
 
-        void set_data_fields(C3DFVectorfield  *output, C3DFVectorfield *input);
+        void set_data_fields(C3DFVectorfield  *output, const C3DFVectorfield *input);
         
         void set_update_fields(const T3DDatafield<unsigned char> *update_flags, 
 			       T3DDatafield<unsigned char> *set_flags, T3DDatafield<float> *residua, 
@@ -100,7 +100,7 @@ public:
 	virtual float do_evaluate_pertuberation_row(unsigned  y, unsigned  z, CBuffers& buffers) const;
 
         C3DFVectorfield *m_output; 
-        C3DFVectorfield *m_input; 
+        const C3DFVectorfield *m_input; 
         T3DDatafield<float> *m_residua; 
         const T3DDatafield<unsigned char> *m_update_flags; 
         T3DDatafield<unsigned char> *m_set_flags; 

@@ -22,6 +22,7 @@
 #define mia_3d_vfregularizer_sor_hh
 
 #include <mia/3d/vfregularizer.hh>
+#include <mia/3d/vfregularizerkernel.hh>
 
 NS_MIA_BEGIN
 
@@ -49,7 +50,7 @@ public:
         
 private:
         
-        C3DFVfFluidStandardRegularizerKernel *do_create() const;
+        C3DFVectorfieldRegularizer *do_create() const;
         
         const std::string do_get_descr() const;
 

@@ -43,7 +43,7 @@ float C3DFVectorfieldRegularizerKernel::evaluate_pertuberation_row(unsigned  y, 
 	return do_evaluate_pertuberation_row(z,y,buffers); 
 }
 
-void C3DFVectorfieldRegularizerKernel::set_data_fields(C3DFVectorfield *output, C3DFVectorfield  *input)
+void C3DFVectorfieldRegularizerKernel::set_data_fields(C3DFVectorfield *output, const C3DFVectorfield  *input)
 {
         m_output = output; 
         m_input = input; 

@@ -34,7 +34,7 @@ C3DSORVectorfieldRegularizer::C3DSORVectorfieldRegularizer(float abs_epsilon, fl
 
 double C3DSORVectorfieldRegularizer::do_run(C3DFVectorfield& velocity, C3DFVectorfield& force, const C3DFVectorfield& deform) const
 {
-        m_kernel->set_data_fields(velocity, force);
+        m_kernel->set_data_fields(&velocity, &force);
 
         unsigned padding = m_kernel->get_boundary_padding(); 
 
@@ -48,7 +48,7 @@ double C3DSORVectorfieldRegularizer::do_run(C3DFVectorfield& velocity, C3DFVecto
         do {
                 iter++; 
 
-                residuum == 0.0f; 
+                residuum = 0.0f; 
 
 		// to be parallized, needs reduce for residuum
                 auto buffers = m_kernel->get_buffers(); 
@@ -63,14 +63,14 @@ double C3DSORVectorfieldRegularizer::do_run(C3DFVectorfield& velocity, C3DFVecto
                         first_rel_residuum = m_rel_epsilon * residuum; 
                 
                 
-
+		cvmsg() << "[" << iter << "] res=" << residuum << "\n"; 
         } while (iter < m_maxiter && 
                  residuum > m_abs_epsilon && 
                  residuum > first_rel_residuum); 
         
         float max_pert = 0.0f; 
         if (m_kernel->has_pertuberation()) {
-                m_kernel->set_data_fields(velocity, deform);
+                m_kernel->set_data_fields(&velocity, &deform);
 
 		// to be parallized (reduce because of max ) 
                 auto buffers = m_kernel->get_buffers(); 
@@ -84,7 +84,7 @@ double C3DSORVectorfieldRegularizer::do_run(C3DFVectorfield& velocity, C3DFVecto
                 }
         }else{
                 // find maximum in velocity field 
-                for (v : velocity) {
+                for (auto v : velocity) {
                         float pert = v.norm2(); 
                         if (max_pert < pert) 
                                 max_pert = pert; 
@@ -99,11 +99,6 @@ C3DSORVectorfieldRegularizerPlugin::C3DSORVectorfieldRegularizerPlugin():
         m_rel_epsilon(1e-5), 
         m_maxiter(100)
 {
-}
-        
-
-C3DFVfFluidStandardRegularizerKernel *C3DSORVectorfieldRegularizerPlugin::do_create() const
-{
         add_parameter("rel_f", make_oi_param(m_rel_epsilon, 0.0, 1.0, false, 
                                                         "breaking condition: relative residuum"));  
         add_parameter("abs_f", make_lc_param(m_abs_epsilon, 0.0, false, 
@@ -112,7 +107,13 @@ C3DFVfFluidStandardRegularizerKernel *C3DSORVectorfieldRegularizerPlugin::do_cre
         
         // there should be some method to select the arch optimized version 
         // 
-        add_parameter(make_param(m_kernel, "fluid", "solver kernel to be used")); 
+        add_parameter("kernel", make_param(m_kernel, "fluid", false, "solver kernel to be used")); 
+
+}
+        
+
+C3DFVectorfieldRegularizer *C3DSORVectorfieldRegularizerPlugin::do_create() const
+{
 
         return new C3DSORVectorfieldRegularizer(m_abs_epsilon, m_rel_epsilon, 
                                                 m_maxiter, m_kernel); 

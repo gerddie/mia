@@ -253,4 +253,5 @@ ADD_SUBDIRECTORY(splinepenalty  )
 ADD_SUBDIRECTORY(transform)
 ADD_SUBDIRECTORY(transio)
 ADD_SUBDIRECTORY(vfregularizerkernel)
+ADD_SUBDIRECTORY(vfregularizer)
 
