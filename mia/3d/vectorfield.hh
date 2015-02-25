@@ -81,8 +81,13 @@ public:
 		set_attribute("voxel", PAttribute(new CVoxelAttribute(voxel)));
 	}
 	
+
 };
 
+/**
+   @ingroup basic 
+   @brief a 3D field of floating point single accuracy 3D vectors 
+*/
 class EXPORT_3D C3DFVectorfield : public T3DVectorfield<C3DFVector> {
 public: 
 	static const char *data_descr;
@@ -98,10 +103,6 @@ public:
 extern template class EXPORT_3D T3DVectorfield<C3DDVector>;
 
 
-/**
-   @ingroup basic 
-   @brief a 3D field of floating point single accuracy 3D vectors 
-*/
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 
 /**

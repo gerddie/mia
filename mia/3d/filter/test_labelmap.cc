@@ -19,18 +19,18 @@
  */
 
 #include <mia/internal/autotest.hh>
-#include <mia/2d/filter/labelmap.hh>
+#include <mia/3d/filter/labelmap.hh>
 
 NS_MIA_USE;
 using namespace std; 
 
 BOOST_AUTO_TEST_CASE (test_labelmap) 
 {
-	C2DUSImage *src = new C2DUSImage(C2DBounds(8,32));
-	C2DUSImage ref(C2DBounds(8,32));
+	C3DUSImage *src = new C3DUSImage(C3DBounds(8,32, 2));
+	C3DUSImage ref(C3DBounds(8,32, 2));
 	
-	C2DUSImage::iterator is = src->begin();
-	C2DUSImage::iterator ir = ref.begin();
+	C3DUSImage::iterator is = src->begin();
+	C3DUSImage::iterator ir = ref.begin();
 	
 	for (size_t i = 0; i < src->size(); ++i, ++is, ++ir)
 		*is = *ir = i;
@@ -41,17 +41,17 @@ BOOST_AUTO_TEST_CASE (test_labelmap)
 	map[23] = 7;
 	map[189] = 10;
 	
-	ref(1,0) = 2; 
-	ref(2,0) = 4;
-	ref(7,2) = 7; 
-	ref(5,23) = 10; 
+	ref(1,0, 0) = 2; 
+	ref(2,0, 0) = 4;
+	ref(7,2, 0) = 7; 
+	ref(5,23, 0) = 10; 
 	
-	P2DImage wsrc(src); 
+	P3DImage wsrc(src); 
 
-	C2DLabelMapFilter filter(map); 
+	C3DLabelMapFilter filter(map); 
 	
-	P2DImage wres = filter.filter(*wsrc); 
-	const C2DUSImage& result = dynamic_cast<const C2DUSImage&>(*wres); 
+	P3DImage wres = filter.filter(*wsrc); 
+	const C3DUSImage& result = dynamic_cast<const C3DUSImage&>(*wres); 
 	
 	BOOST_CHECK_EQUAL(result.get_size(), ref.get_size()); 
 	BOOST_CHECK(equal(result.begin(), result.end(), ref.begin())); 

@@ -122,6 +122,7 @@ SET(MIACORE_HEADER_BASE
   filetools.hh
   filter.hh
   fixedwidthoutput.hh
+  flags.hh
   flagstring.hh
   fullstats.hh
   handlerbase.hh

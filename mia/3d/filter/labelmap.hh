@@ -18,13 +18,13 @@
  *
  */
 
-#include <mia/2d/filter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/core/labelmap.hh>
 #include <mia/template/labelmap.hh>
 
 NS_MIA_BEGIN
 
-typedef TLabelMapFilter<C2DImage> C2DLabelMapFilter;  
-typedef TLabelMapFilterPlugin<C2DImage> C2DLabelMapFilterPlugin;  
+typedef TLabelMapFilter<C3DImage> C3DLabelMapFilter;  
+typedef TLabelMapFilterPlugin<C3DImage> C3DLabelMapFilterPlugin;  
 
 NS_MIA_END
