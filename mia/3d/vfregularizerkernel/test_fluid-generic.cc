@@ -25,7 +25,7 @@ using namespace mia;
 
 
 
-BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation ) 
+BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation_one_element ) 
 {
 	float mu = 1.2; 
 	float lambda = 1.1; 
@@ -141,3 +141,122 @@ BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation )
 	
 }
 
+BOOST_AUTO_TEST_CASE( test_evaluate_row_evaluation ) 
+{
+
+	float mu = 1.2; 
+	float lambda = 1.1; 
+	float relax = 1.8; 
+
+
+	float c = 1 / (6.0f * mu + 2.0f * (mu + lambda));
+	float a = mu * c; 
+	float _b = (mu + lambda) * c; 
+
+	float a_b = a + _b; // mu + lambda
+	float b_4 = 0.25 * _b; // 0.25 * (mu + lambda)
+
+	cvdebug() << "a=" << a << ", b4=" << b_4 << ", a+b=" << a_b << ", c=" << c << "\n"; 
+
+	std::stringstream test_kernel; 
+	test_kernel << "fluid:mu=" << mu << ",lambda="<<lambda<<",relax="<< relax; 
+
+        auto kernel = BOOST_TEST_create_from_plugin<C3DFVfFluidStandardRegularizerKernelPlugin>(test_kernel.str().c_str());
+	
+	C3DBounds size(5, 3, 3); 
+	C3DFVectorfield v(size); 
+	C3DFVectorfield b(size); 
+
+	C3DFVector b111(2,1,1); 
+	C3DFVector b211(2,2,1); 
+	C3DFVector b311(1,2,2); 
+
+	b(1,1,1) = b111; 
+	b(2,1,1) = b211; 
+	b(3,1,1) = b311; 
+
+	const C3DFVector fill(1000,2000,3000); 
+
+	const C3DFVector Vmm[5] = {fill, C3DFVector(2,3,6), C3DFVector(3,6,9), C3DFVector(1, 2,-1), fill}; 
+	const C3DFVector V0m[5] = {C3DFVector(-1, 1,-1), C3DFVector(1,8,1), C3DFVector(1,1,3), C3DFVector(2, 5, 1), C3DFVector(1, 2, 1)}; 
+	const C3DFVector Vpm[5] = {fill, C3DFVector(4,2,3), C3DFVector(4,5,2), C3DFVector(4, 6,-2), fill}; 
+
+	const C3DFVector Vm0[5] = {C3DFVector(2,6,3), C3DFVector(1,3,4), C3DFVector(4,6,1), C3DFVector(2, 2, -3), C3DFVector(5,2,7)}; 
+	const C3DFVector V00[5] = {C3DFVector(3,2,3), C3DFVector(2,1,6), C3DFVector(3,1,9), C3DFVector(1, 3, -3), C3DFVector(3,1,6)}; 
+	C3DFVector T00[5]       = {C3DFVector(3,2,3), C3DFVector(2,1,6), C3DFVector(3,1,9), C3DFVector(1, 3, -3), C3DFVector(3,1,6)}; 
+	const C3DFVector Vp0[5] = {C3DFVector(1,4,4), C3DFVector(7,3,1), C3DFVector(1,6,3), C3DFVector(3, 2, -2), C3DFVector(1,2,3)}; 
+
+	const C3DFVector Vmp[5] = {fill, C3DFVector(4,3,6), C3DFVector(3,6,5), C3DFVector(-5, 2, 2), fill}; 
+	const C3DFVector V0p[5] = {C3DFVector(1,1,1), C3DFVector(2,2,1), C3DFVector(2,2,3), C3DFVector(2, 3, 2), C3DFVector(2,-2, 3)}; 
+	const C3DFVector Vpp[5] = {fill, C3DFVector(2,3,4), C3DFVector(8,5,9), C3DFVector(1, 4, -3), fill}; 
+
+
+	copy(Vmm, Vmm + 5, v.begin_at(0,0,0));
+	copy(V0m, V0m + 5, v.begin_at(0,1,0));
+	copy(Vpm, Vpm + 5, v.begin_at(0,2,0));
+
+	copy(Vm0, Vm0 + 5, v.begin_at(0,0,1));
+	copy(V00, V00 + 5, v.begin_at(0,1,1));
+	copy(Vp0, Vp0 + 5, v.begin_at(0,2,1));
+
+	copy(Vmp, Vmp + 5, v.begin_at(0,0,2));
+	copy(V0p, V0p + 5, v.begin_at(0,1,2));
+	copy(Vpp, Vpp + 5, v.begin_at(0,2,2));
+
+	float test_residuum = 0.0f; 
+
+	for (int x = 1; x < 4; ++x) {
+		C3DFVector vdxx = T00[x+1] + T00[x-1]; 
+		C3DFVector vdyy = Vm0[x] + Vp0[x]; 
+		C3DFVector vdzz = V0m[x] + V0p[x]; 
+		
+		
+		C3DFVector p(a_b*vdxx.x + a*(vdyy.x+vdzz.x),
+			     a_b*vdyy.y + a*(vdxx.y+vdzz.y),
+			     a_b*vdzz.z + a*(vdxx.z+vdyy.z));
+		
+		
+		float  vydxy = Vm0[x-1].y + Vp0[x+1].y - Vm0[x+1].y - Vp0[x-1].y;
+		float  vxdxy = Vm0[x-1].x + Vp0[x+1].x - Vm0[x+1].x - Vp0[x-1].x;
+		
+		float  vzdxz = V0m[x-1].z + V0p[x+1].z - V0m[x+1].z - V0p[x-1].z;
+		float  vxdxz = V0m[x-1].x + V0p[x+1].x - V0m[x+1].x - V0p[x-1].x;
+		
+		float  vzdyz = Vmm[x].z + Vpp[x].z  - Vpm[x].z - Vmp[x].z;
+		float  vydyz = Vmm[x].y + Vpp[x].y  - Vpm[x].y - Vmp[x].y;
+		
+		
+		C3DFVector q(vydxy+vzdxz,vxdxy+vzdyz,vxdxz+vydyz); 
+		
+		C3DFVector R = b(x,1,1) + p + b_4 * q;
+		C3DFVector delta = relax * (R -  T00[x]);
+
+		cvdebug() << "vdxx="<< vdxx << ", vdyy=" << vdyy << ", vdzz=" << vdzz << "\n"; 
+		cvdebug() << "p="<< p << ", q=" << q << ", delta=" << delta << "\n"; 
+
+		test_residuum += delta.norm(); 
+
+		T00[x] += delta;
+		
+	}
+
+	
+	kernel->set_data_fields(&v, &b);
+
+	auto buf = kernel->get_buffers(); 
+	float residuum = kernel->evaluate_row(1,1, *buf);
+	
+	BOOST_CHECK_CLOSE(residuum, test_residuum, 0.1); 
+
+
+	for (int x = 1; x < 4; ++x) {
+		BOOST_CHECK_CLOSE(v(x,1,1).x, T00[x].x, 0.1); 
+		BOOST_CHECK_CLOSE(v(x,1,1).y, T00[x].y, 0.1); 
+		BOOST_CHECK_CLOSE(v(x,1,1).z, T00[x].z, 0.1); 
+	}
+	
+	
+
+	
+	
+}

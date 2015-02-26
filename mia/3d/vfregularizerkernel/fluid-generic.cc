@@ -208,12 +208,14 @@ float C3DFVfFluidStandardRegularizerKernel::solve_at(C3DFVector *v, const C3DFVe
 	const float  vydyz = Vp0m1m1.y - Vp0p1m1.y + Vp0p1p1.y  - Vp0m1p1.y;
 	const float  vzdyz = Vp0m1m1.z - Vp0p1m1.z + Vp0p1p1.z  - Vp0m1p1.z;
 
+
 	const C3DFVector p(m_a_b*vdxx.x + m_a*(vdyy.x+vdzz.x),        // 6A 6M
 			   m_a_b*vdyy.y + m_a*(vdxx.y+vdzz.y),
 			   m_a_b*vdzz.z + m_a*(vdxx.z+vdyy.z));
 
 	const C3DFVector q(vydxy+vzdxz,vxdxy+vzdyz,vxdxz+vydyz);   // 3A
 	const C3DFVector R = b + p + m_b4 * q;                // 6A 3M
+
 
 	const C3DFVector delta = m_relax * ( R - *v );              // 3A 3M
 	*v += delta;                                                // 3A
