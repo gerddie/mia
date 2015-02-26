@@ -30,6 +30,8 @@
 #include <gsl++/gsldefines.hh>
 #include <tbb/mutex.h>
 
+// 
+#define STD_VECTOR_BOOL_NOT_SPECIAL
 
 /// The mutex renamed to MIA style
 typedef tbb::mutex CMutex; 
