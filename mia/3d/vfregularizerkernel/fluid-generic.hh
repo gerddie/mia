@@ -28,7 +28,9 @@ NS_MIA_BEGIN
 class  C3DFVfFluidStandardRegularizerKernel: public C3DFVectorfieldRegularizerKernel {
 public: 
         C3DFVfFluidStandardRegularizerKernel(float mu, float lambda, float relax); 
-        
+	
+	void multiply_with_matrix(C3DFVectorfield& out, const C3DFVectorfield& in);  
+
 private: 
 	void post_set_data_fields(); 
 

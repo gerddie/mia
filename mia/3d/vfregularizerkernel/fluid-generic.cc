@@ -81,6 +81,64 @@ float C3DFVfFluidStandardRegularizerKernel::do_evaluate_row_sparse(unsigned y, u
 
 }
 
+void C3DFVfFluidStandardRegularizerKernel::multiply_with_matrix(C3DFVectorfield& out, const C3DFVectorfield& in)
+{
+	assert(out.get_size() == in.get_size()); 
+	auto size = out.get_size(); 
+
+	const C3DBounds rbe = size - C3DBounds::_1;
+	auto in_useful_range = in.get_range(C3DBounds::_1, rbe);
+	auto out_useful_range = out.get_range(C3DBounds::_1, rbe);
+	
+	auto iiv = in_useful_range.begin(); 
+	auto eiv = in_useful_range.end(); 
+
+	auto iov = out_useful_range.begin(); 
+	
+	while ( iiv != eiv ) {
+
+		C3DFVector xx = iiv[-1] + iiv[1]; 
+		C3DFVector yy = iiv[-m_dx] + iiv[m_dx]; 
+		C3DFVector zz = iiv[-m_dxy] + iiv[m_dxy]; 
+		
+		const C3DFVector p(m_a_b*xx.x + m_a*(yy.x+zz.x),        // 6A 6M
+				   m_a_b*yy.y + m_a*(xx.y+zz.y),
+				   m_a_b*zz.z + m_a*(xx.z+yy.z));
+
+		
+		const C3DFVector& Vm1m1p0 = iiv[ -1 - m_dx]; 
+		const C3DFVector& Vp1m1p0 = iiv[  1 - m_dx]; 
+		const C3DFVector& Vm1p1p0 = iiv[ -1 + m_dx]; 
+		const C3DFVector& Vp1p1p0 = iiv[  1 + m_dx]; 
+
+		const float  vxdxy = Vm1m1p0.x - Vp1m1p0.x + Vp1p1p0.x - Vm1p1p0.x;
+		const float  vydxy = Vm1m1p0.y - Vp1m1p0.y + Vp1p1p0.y - Vm1p1p0.y;
+
+		const C3DFVector& Vm1p0m1 = iiv[ -1 - m_dxy]; 
+		const C3DFVector& Vp1p0m1 = iiv[  1 - m_dxy]; 
+		const C3DFVector& Vm1p0p1 = iiv[ -1 + m_dxy]; 
+		const C3DFVector& Vp1p0p1 = iiv[  1 + m_dxy]; 
+		
+		const float  vxdxz = Vm1p0m1.x - Vp1p0m1.x + Vp1p0p1.x  - Vm1p0p1.x;
+		const float  vzdxz = Vm1p0m1.z - Vp1p0m1.z + Vp1p0p1.z  - Vm1p0p1.z;
+	
+		const C3DFVector& Vp0m1m1 = iiv[ -m_dx - m_dxy]; 
+		const C3DFVector& Vp0p1m1 = iiv[  m_dx - m_dxy]; 
+		const C3DFVector& Vp0m1p1 = iiv[ -m_dx + m_dxy]; 
+		const C3DFVector& Vp0p1p1 = iiv[  m_dx + m_dxy]; 
+		
+		const float  vydyz = Vp0m1m1.y - Vp0p1m1.y + Vp0p1p1.y  - Vp0m1p1.y;
+		const float  vzdyz = Vp0m1m1.z - Vp0p1m1.z + Vp0p1p1.z  - Vp0m1p1.z;
+		
+		const C3DFVector q(vydxy+vzdxz,vxdxy+vzdyz,vxdxz+vydyz); 
+		
+		*iov = *iiv + p + m_b4 * q;
+		
+		++iiv; ++iov; 
+	}
+
+}
+
 float C3DFVfFluidStandardRegularizerKernel::do_evaluate_pertuberation_row(unsigned  y, unsigned  z, 
 									  CBuffers& MIA_PARAM_UNUSED(buffers)) const
 {
