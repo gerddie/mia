@@ -74,9 +74,9 @@ P3DImage C3DDistanceFilter::operator () ( const T3DImage<T>& image) const
 		}
 	}; 
 	
-	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().x, 1), transform_x); 
-	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().y, 1), transform_y); 
-	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), transform_z); 
+	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), transform_x); 
+	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), transform_y); 
+	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().y, 1), transform_z); 
 	
 	return P3DImage(result); 
 }
