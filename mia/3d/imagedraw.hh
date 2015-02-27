@@ -77,6 +77,9 @@ private:
 	void draw_triangle_internal(const C3DFVector& a, const C3DFVector& b, const C3DFVector& c); 
 	void draw_line_internal(const C3DFVector& x, const C3DFVector& y); 
 
+	// check wether the bounding box enclosing the triangle overlaps with the drawing area
+	bool has_overlap(const C3DFVector& x, const C3DFVector& y, const C3DFVector& z); 
+
 	virtual void do_draw_point(const C3DBounds& p) = 0; 
 	
 	C3DBounds m_size; 

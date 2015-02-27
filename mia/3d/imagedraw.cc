@@ -182,11 +182,63 @@ void C3DDrawBox::draw_line_internal(const C3DFVector& _x, const C3DFVector& _y)
         }
 }
 
+bool C3DDrawBox::has_overlap(const C3DFVector& x, const C3DFVector& y, const C3DFVector& z) 
+{
+	// check if at least one corner is inside 
+	// 
+	if (x >= C3DFVector::_0 &&  x <= m_fsize) 
+		return true; 
+
+	if (y >= C3DFVector::_0 &&  y <= m_fsize) 
+		return true; 
+	
+	if (z >= C3DFVector::_0 &&  z <= m_fsize) 
+		return true; 
+
+	C3DFVector c0(x); 
+	C3DFVector c1(x); 
+
+	if (y.x < c0.x) c0.x = y.x; 
+	if (y.y < c0.y) c0.y = y.y; 
+	if (y.z < c0.z) c0.z = y.z; 
+
+	if (y.x > c1.x) c1.x = y.x; 
+	if (y.y > c1.y) c1.y = y.y; 
+	if (y.z > c1.z) c1.z = y.z; 
+
+	if (z.x < c0.x) c0.x = z.x; 
+	if (z.y < c0.y) c0.y = z.y; 
+	if (z.z < c0.z) c0.z = z.z; 
+
+	if (z.x > c1.x) c1.x = z.x; 
+	if (z.y > c1.y) c1.y = z.y; 
+	if (z.z > c1.z) c1.z = z.z; 
+
+	if (c1.x < 0.0 || c0.x > m_fsize.x) 
+		return false; 
+	
+	if (c1.y < 0.0 || c1.y > m_fsize.y) 
+		return false; 
+
+	if (c1.z < 0.0 || c1.z > m_fsize.z) 
+		return false; 
+
+	return true; 
+	
+}
+
 void C3DDrawBox::draw_triangle(const C3DFVector& a, const C3DFVector& b, const C3DFVector& c)
 {
+	cvdebug() << "C3DDrawBox::draw_triangle: [" << a << "],[" << b << "],[" << c << "]\n"; 
+
         C3DFVector x = (a - m_origin ) * m_stepping; 
         C3DFVector y = (b - m_origin ) * m_stepping; 
         C3DFVector z = (c - m_origin ) * m_stepping; 
+
+	if (!has_overlap(x,y,z)) {
+		cvdebug() << "skip triangle (["<< a <<"]["<< b <<"]["<< c <<"]) since it it doesn't overlap \n"; 
+		return; 
+	}
         
         C3DFVector e1 = x - y; 
         C3DFVector e2 = y - z; 
