@@ -76,7 +76,7 @@ public:
                 while (ii != ie) {
                         if (*im)
                                 m_pixels.push_back(*ii); 
-                                
+			++ii; ++im; 
                 }
                 sort(m_pixels.begin(), m_pixels.end()); 
                 return m_pixels.size(); 
