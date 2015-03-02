@@ -20,9 +20,17 @@ PROJECT("mia")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5 FATAL_ERROR)
 
+# This is only for ninja, because it has problem s with re-linking without it. 
+STRING(COMPARE EQUAL "${CMAKE_GENERATOR}" "Ninja" GENERATOR_IS_NINJA)
+IF(${GENERATOR_IS_NINJA})
+  MESSAGE(STATUS "Generator is Ninja, Working around linking problems by setting CMAKE_PLATFORM_HAS_INSTALLNAME")
+  set(CMAKE_PLATFORM_HAS_INSTALLNAME 1)
+ENDIF()
+
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
   cmake_policy(SET CMP0012 NEW)
+  cmake_policy(SET CMP0042 NEW)
 endif(COMMAND cmake_policy)
 
 include(FindPkgConfig)
