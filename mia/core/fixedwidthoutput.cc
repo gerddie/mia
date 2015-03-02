@@ -65,7 +65,7 @@ void CFixedWidthOutput::newline()
 {
 	if (m_line_continue) 
 		m_os << '\\'; 
-	m_os << '\n'; 
+	m_os << std::endl; 
 	if ( m_offset )
 		m_os << setw(m_offset) << " "; 
 	m_pos = m_offset;
