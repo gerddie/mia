@@ -17,11 +17,13 @@
 #
 
 SET(MIAMESH_SRC
+  triangle_neighbourhood.cc
   triangularMesh.cc
   filter.cc
 ) 
 
 SET(MIAMESH_HEADERS
+  triangle_neighbourhood.hh
   triangularMesh.hh
   triangulate.hh
   filter.hh
@@ -48,5 +50,6 @@ SET(MIAMESHLIBS miamesh)
 ADD_SUBDIRECTORY(io)
 ADD_SUBDIRECTORY(filter)
 
-
 TEST_MESH(triangulate)
+TEST_MESH(triangle_neighbourhood)
+
