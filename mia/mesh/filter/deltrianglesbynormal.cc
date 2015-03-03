@@ -19,10 +19,13 @@
  */
 
 #include <mia/mesh/filter/deltrianglesbynormal.hh>
+#include <mia/mesh/triangle_neighbourhood.hh>
 
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 #include <mia/core/threadedmsg.hh>
+
+
 
 #include <cmath>
 #include <set>
@@ -101,6 +104,18 @@ PTriangleMesh CDeleteTriangleByNormalMeshFilter::do_filter(const CTriangleMesh& 
 	
 	// estimate which triangles to keep 
 	parallel_for(blocked_range<unsigned>(0, mesh.triangle_size()), run_triangles); 
+
+	// re-add all triangles that have all neighbours within the keep 
+	CTrianglesWithAdjacentList trineigh(mesh); 
+	for (size_t i = 0; i < mesh.triangle_size(); ++i) {
+		if (!keep[i]) {
+			auto& ajd =  trineigh[i]; 
+			bool k = true; 
+			for ( auto a: ajd) 
+				k &= keep[a]; 
+			keep[i] = k; 
+		}
+	}
 	
 	auto new_triangles = make_shared<CTriangleMesh::CTrianglefield>(); 
 	for (size_t i = 0; i < mesh.triangle_size(); ++i) {
