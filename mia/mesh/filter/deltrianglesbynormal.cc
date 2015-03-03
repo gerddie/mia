@@ -116,6 +116,17 @@ PTriangleMesh CDeleteTriangleByNormalMeshFilter::do_filter(const CTriangleMesh& 
 			keep[i] = k; 
 		}
 	}
+
+	// remove isolated triangles 
+	for (size_t i = 0; i < mesh.triangle_size(); ++i) {
+		if (keep[i]) {
+			auto& ajd =  trineigh[i]; 
+			bool k = false; 
+			for ( auto a: ajd) 
+				k |= keep[a];
+			keep[i] = k;
+		}
+	}
 	
 	auto new_triangles = make_shared<CTriangleMesh::CTrianglefield>(); 
 	for (size_t i = 0; i < mesh.triangle_size(); ++i) {
