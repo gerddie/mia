@@ -28,8 +28,13 @@ if(COMMAND cmake_policy)
   ENDIF()
 endif(COMMAND cmake_policy)
 
-SET(CMAKE_EXECUTABLE_FORMAT ELF)
-
+# This test is added for the Ninja generator, since it 
+# has problems with relinking when installing 
+# 
+STRING(COMPARE EQUAL "${CMAKE_SYSTEM_NAME}" "Linux" SYSTEM_IS_LINUX)
+IF(${SYSTEM_IS_LINUX})
+  SET(CMAKE_EXECUTABLE_FORMAT "ELF")
+ENDIF()
 
 include(FindPkgConfig)
 include(CheckCXXSourceCompiles)
