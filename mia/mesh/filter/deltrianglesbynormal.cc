@@ -36,26 +36,6 @@ using namespace std;
 using tbb::blocked_range; 
 using tbb::parallel_for; 
 
-struct VertexWithIndex {
-	unsigned idx;
-	C3DFVector v; 
-
-	VertexWithIndex(const CTriangleMesh& mesh, unsigned i):
-		idx(i), 
-		v(mesh.vertex_at(i)){
-		
-	}
-}; 
-
-struct compare_vertex  {
-	bool operator () (const VertexWithIndex& lhs, const VertexWithIndex& rhs) {
-		return (lhs.v.z < rhs.v.z) || 
-			((lhs.v.z == rhs.v.z) && ((lhs.v.y < rhs.v.y) ||
-						  ((lhs.v.y == rhs.v.y) && (lhs.v.x < rhs.v.x)))); 
-	}
-}; 
-
-
 
 CDeleteTriangleByNormalMeshFilter::CDeleteTriangleByNormalMeshFilter(const C3DFVector& point_direction, float angle):
 	m_point_direction(point_direction), 
@@ -128,41 +108,13 @@ PTriangleMesh CDeleteTriangleByNormalMeshFilter::do_filter(const CTriangleMesh& 
 		}
 	}
 	
-	auto new_triangles = make_shared<CTriangleMesh::CTrianglefield>(); 
+	vector<unsigned> triangle_indices; 
 	for (size_t i = 0; i < mesh.triangle_size(); ++i) {
 		if (keep[i]) 
-			new_triangles->push_back(mesh.triangle_at(i)); 
+			triangle_indices.push_back(i);
 	}
 	
-	// collect the vertices 
-	set<VertexWithIndex, compare_vertex> vtxset;
-	for (auto t = new_triangles->begin(); new_triangles->end() != t; ++t) {
-		vtxset.insert(VertexWithIndex(mesh, t->x)); 
-		vtxset.insert(VertexWithIndex(mesh, t->y)); 
-		vtxset.insert(VertexWithIndex(mesh, t->z)); 
-	}
-
-	vector<unsigned> reindex(mesh.vertices_size(), mesh.vertices_size()); 
-	unsigned out_index = 0; 
-
-	auto new_vertices = make_shared<CTriangleMesh::CVertexfield>(); 
-	new_vertices->reserve(vtxset.size()); 
-	
-	for (auto iv = vtxset.begin(); iv != vtxset.end(); ++iv) {
-		new_vertices->push_back(iv->v); 
-		cvdebug() << "vertex[" << out_index << "]=" <<iv->v << "\n"; 
-		reindex[iv->idx] = out_index++; 
-	}
-	
-	// re-index the triangles 
-	for_each(new_triangles->begin(), new_triangles->end(), [&reindex](CTriangleMesh::triangle_type& t){
-			t.x = reindex[t.x]; 
-			t.y = reindex[t.y]; 
-			t.z = reindex[t.z]; 
-			cvdebug() << "triangle:" << t << "\n"; 
-		}); 
-	
-	return make_shared<CTriangleMesh>(new_triangles, new_vertices);
+	return get_sub_mesh(mesh, triangle_indices); 
 }
 
 CDeleteTriangleByNormalMeshFilterPlugin::CDeleteTriangleByNormalMeshFilterPlugin():

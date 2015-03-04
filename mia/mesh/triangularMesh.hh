@@ -278,6 +278,10 @@ private:
 /// Pointer type of the CTriangle mesh class
 typedef CTriangleMesh::Pointer PTriangleMesh;
 
+
+PTriangleMesh EXPORT_MESH get_sub_mesh(const CTriangleMesh& mesh, const std::vector<unsigned>& triangle_indices); 
+	
+
 /** This function is used to generate  the deformation scale of a mesh as the
     scalar product of the surface normal and a deformation field.
     if neccessary the normals are evaluated
