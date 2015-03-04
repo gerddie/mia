@@ -19,6 +19,7 @@
 SET(filtersMesh
   deltrianglesbynormal
   scale
+  selectbig
   vtxsort
   )
 
