@@ -69,6 +69,8 @@ P3DImage C3DDistanceFilter::operator () ( const T3DImage<T>& image) const
 			for (size_t x = 0; x < result->get_size().x; ++x) {
 				result->get_data_line_z(x, y, buffer);
 				distance_transform_inplace(buffer); 
+				transform(buffer.begin(), buffer.end(), buffer.begin(), 
+					  [](float x) { return sqrtf(x);}); 
 				result->put_data_line_z(x, y, buffer);
 			}
 		}

@@ -54,7 +54,7 @@ BOOST_FIXTURE_TEST_CASE( test_distance_full3d_inf, Distance3DInfFixture )
 
 	int k = 0; 
 	for(auto i = result.begin(); i != result.end(); ++i, ++k ) {
-		BOOST_CHECK_CLOSE(*i, test_val[k], 0.1); 
+		BOOST_CHECK_CLOSE(*i, sqrtf(test_val[k]), 0.1); 
 	}
 }
 
@@ -70,7 +70,7 @@ BOOST_FIXTURE_TEST_CASE( test_distance_full3d_func,  Distance3DFuncFixture )
 	int k = 0; 
 	for(auto i = result.begin(); i != result.end(); ++i, ++k ) {
 		cvdebug() << "k=" << k << ":" << *i << ", vs " << test_val[k] << "\n"; 
-		BOOST_CHECK_CLOSE(*i, test_val[k], 0.1); 
+		BOOST_CHECK_CLOSE(*i, sqrtf(test_val[k]), 0.1); 
 	}
 }
 
