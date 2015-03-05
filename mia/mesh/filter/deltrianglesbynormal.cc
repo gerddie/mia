@@ -85,17 +85,28 @@ PTriangleMesh CDeleteTriangleByNormalMeshFilter::do_filter(const CTriangleMesh& 
 	// estimate which triangles to keep 
 	parallel_for(blocked_range<unsigned>(0, mesh.triangle_size()), run_triangles); 
 
-	// re-add all triangles that have all neighbours within the keep 
+	// iteratively re-add all triangles that have at least two neighbours within the keep 
 	CTrianglesWithAdjacentList trineigh(mesh); 
-	for (size_t i = 0; i < mesh.triangle_size(); ++i) {
-		if (!keep[i]) {
-			auto& ajd =  trineigh[i]; 
-			bool k = true; 
-			for ( auto a: ajd) 
-				k &= keep[a]; 
-			keep[i] = k; 
-		}
-	}
+
+	int changed;
+	do {
+		changed = 0; 
+		for (size_t i = 0; i < mesh.triangle_size(); ++i) {
+			if (!keep[i]) {
+				auto& ajd =  trineigh[i]; 
+				int k = 0; 
+				for ( auto a: ajd) 
+					if (keep[a]) 
+						++k; 
+				
+				if (k >= 2) {
+					++changed; 
+					keep[i] = true; 
+				}
+			}
+		} 
+		cvdebug() << "readded " << changed << " triangles, because of neighbourhood\n"; 
+	} while (changed > 0); 
 
 	// remove isolated triangles 
 	for (size_t i = 0; i < mesh.triangle_size(); ++i) {

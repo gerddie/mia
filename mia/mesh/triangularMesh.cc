@@ -549,8 +549,31 @@ PTriangleMesh EXPORT_MESH get_sub_mesh(const CTriangleMesh& mesh, const vector<u
 			t.z = reindex[t.z]; 
 			cvdebug() << "triangle:" << t << "\n"; 
 		}); 
+
+	auto result = make_shared<CTriangleMesh>(new_triangles, new_vertices);
+
+	if (mesh.get_available_data() & CTriangleMesh::ed_normal) {
+		auto in = result->normals_begin(); 
+		for (auto iv = vtxset.begin(); iv != vtxset.end(); ++iv, ++in) {
+			*in = mesh.normal_at(iv->idx); 
+		}
+	}
+
+	if (mesh.get_available_data() & CTriangleMesh::ed_scale) {
+		auto is = result->scale_begin(); 
+		for (auto iv = vtxset.begin(); iv != vtxset.end(); ++iv, ++is) {
+			*is = mesh.scale_at(iv->idx); 
+		}
+	}
+
+	if (mesh.get_available_data() & CTriangleMesh::ed_color) {
+		auto ic = result->color_begin(); 
+		for (auto iv = vtxset.begin(); iv != vtxset.end(); ++iv, ++ic) {
+			*ic = mesh.color_at(iv->idx); 
+		}
+	}
 	
-	return make_shared<CTriangleMesh>(new_triangles, new_vertices);
+	return result; 
 }
 
 
