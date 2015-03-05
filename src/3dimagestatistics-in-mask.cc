@@ -139,7 +139,7 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt( summary_filename, "summary", 's', "File to write the summary statistics to as plain text.", 
 			      CCmdOptionFlags::output));
-        options.add(make_opt( in_filename, "histogram", 'H', "File to write the histogram to",
+        options.add(make_opt( histogram_filename, "histogram", 'H', "File to write the histogram to",
                               CCmdOptionFlags::output));
         
         options.set_group("Parameters");
