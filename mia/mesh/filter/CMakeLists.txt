@@ -17,6 +17,7 @@
 #
 
 SET(filtersMesh
+  addscale
   deltrianglesbynormal
   scale
   selectbig
