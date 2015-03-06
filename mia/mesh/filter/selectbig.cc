@@ -37,6 +37,7 @@ PTriangleMesh CSelectBigMeshFilter::do_filter(const CTriangleMesh& mesh) const
         CTrianglesWithAdjacentList tri_neigh(mesh); 
         
         vector<bool> taken(mesh.triangle_size(), false); 
+        vector<bool> added(mesh.triangle_size(), false); 
         
         size_t remaining = mesh.triangle_size(); 
         
@@ -52,10 +53,12 @@ PTriangleMesh CSelectBigMeshFilter::do_filter(const CTriangleMesh& mesh) const
                 cvdebug() << "Start section at " << idx << "\n"; 
                 queue<unsigned> next_triangle; 
                 next_triangle.push(idx); 
+		added[idx] = true; 
                 while (!next_triangle.empty()) {
                         unsigned t = next_triangle.front(); 
                         next_triangle.pop(); 
                         if (!taken[t]) {
+				cvdebug() << "Add " << t << "\n"; 
                                 section.push_back(t); 
                                 taken[t] = true; 
                                 --remaining; 
@@ -63,8 +66,10 @@ PTriangleMesh CSelectBigMeshFilter::do_filter(const CTriangleMesh& mesh) const
                         
                         auto& ajd =  tri_neigh[t]; 
                         for ( auto a: ajd) {
-                                if (!taken[a])
+                                if (!taken[a] && !added[a]) {
                                         next_triangle.push(a); 
+					added[a] = true; 
+				}
                         }
                 }
                 if (section.size() > largest_section.size()) {
