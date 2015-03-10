@@ -29,8 +29,8 @@ MACRO(MIA_PREPARE_AUTODOC prefix)
     SET(MIA_DOCTOOLS_ROOT "${CMAKE_SOURCE_DIR}/doc")
   ENDIF(NOT MIA_DOCTOOLS_ROOT)
   
-  OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml)" OFF)
-  OPTION(MIA_CREATE_NIPYPE_INTERFACES "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype)" OFF)
+  OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml), Recommended" ON)
+  OPTION(MIA_CREATE_NIPYPE_INTERFACES "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype), Recommended" ON)
   
   IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE)
     
