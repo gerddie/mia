@@ -87,7 +87,7 @@ class  EXPORT_3D T3DDatafield {
         /** helper: represents the zero-value */
         static const T Zero;
 	
-	static const unsigned int m_elements; 
+	static const size_t m_elements; 
 
 public:
 	

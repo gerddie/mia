@@ -31,7 +31,7 @@
 NS_MIA_BEGIN
 
 template <typename T>
-const unsigned int T3DDatafield<T>::m_elements = 
+const size_t T3DDatafield<T>::m_elements = 
 	sizeof(T) / sizeof(typename T3DDatafield<T>::atomic_type); 
 
 template <typename T>
@@ -53,16 +53,16 @@ void T3DDatafield<T>::swap(T3DDatafield& other)
 template <typename T>
 T3DDatafield<T>::T3DDatafield(const C3DBounds& size ):
 	m_size(size),
-	m_xy(size.x * size.y), 
-	m_data(new std::vector<T>(size.x * size.y * size.z))
+	m_xy(static_cast<size_t>(size.x) * static_cast<size_t>(size.y)), 
+	m_data(new std::vector<T>(m_xy * static_cast<size_t>(size.z)))
 {
 }
 
 template <typename T>
 T3DDatafield<T>::T3DDatafield(const C3DBounds& size, const T *data):
 	m_size(size), 
-	m_xy(size.x * size.y), 
-	m_data(new std::vector<T>(size.x * size.y * size.z))
+	m_xy(static_cast<size_t>(size.x) * static_cast<size_t>(size.y)), 
+	m_data(new std::vector<T>(m_xy * static_cast<size_t>(size.z)))
 {
 	std::copy(data, data + m_data->size(), m_data->begin()); 
 }
@@ -244,7 +244,7 @@ template <typename T>
 void T3DDatafield<T>::get_data_line_x(int y, int z, std::vector<T>& result)const
 {
         result.resize(m_size.x);
-	const int start = m_size.x * (y + z * m_size.y); 
+	const size_t start = m_xy * z + static_cast<size_t>(m_size.x) * y; 
 	__mia_copy_dispatch<T>::apply_read(result, *m_data, start, m_size.x); 
 }
 
@@ -252,9 +252,7 @@ template <typename T>
 void T3DDatafield<T>::get_data_line_y(int x, int z, std::vector<T>& result)const
 {
         result.resize(m_size.y);
-	size_t start = x + m_size.x * m_size.y * z;
-
-	typename std::vector<T>::const_iterator i = m_data->begin() + start; 
+	auto i = m_data->begin() + static_cast<size_t>(x) + m_xy * z; 
 	
 	for (typename std::vector<T>::iterator k = result.begin(); k != result.end(); ++k, i += m_size.x)
                 *k = *i;
@@ -264,7 +262,7 @@ template <typename T>
 void T3DDatafield<T>::get_data_line_z(int x, int y, std::vector<T>& result)const
 {
         result.resize(m_size.z);
-	size_t start = x + m_size.x * y;
+	size_t start = static_cast<size_t>(x) + static_cast<size_t>(m_size.x) * y;
 
 
 	typename std::vector<T>::const_iterator i = m_data->begin() + start;

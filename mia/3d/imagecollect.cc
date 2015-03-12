@@ -46,8 +46,14 @@ void C3DImageCollector::operator ()(const T2DImage<T>& image) {
 		    out_image->get_size().y != image.get_size().y)
 			throw invalid_argument("input images are not all of the same size");
 		
+		size_t offset = image.get_size().x; 
+		offset *= image.get_size().y; 
+		offset *= m_cur_slice; 
+		
+		cvdebug() << "offset=" << offset << "\n"; 
 		auto out = out_image->begin() + image.get_size().x * image.get_size().y * m_cur_slice;
 		
+
 		copy(image.begin(), image.end(), out);
 		++m_cur_slice; 
 	}else

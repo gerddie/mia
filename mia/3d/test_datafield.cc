@@ -236,3 +236,62 @@ BOOST_AUTO_TEST_CASE( test_3ddatafield_get_put_yz )
 			BOOST_CHECK(plane_yz(y, z) == data(1, y, z));
 }
 
+
+#ifdef LONG_64BIT
+
+BOOST_AUTO_TEST_CASE( test_3ddatafield_larger_than_4GB )
+{
+	
+	
+	C3DBounds size(2048, 2048, 1048); 
+	
+	try {
+		// allocate 4GB+ of data 
+		C3DUBDatafield data(size); 
+		
+		// check successfull writing the data 
+		fill(data.begin() + 0xFFFFF000U, data.begin() + 0x100000000U, 1);
+		fill(data.begin() + 0x100000000U, data.end(), 2);
+		
+
+		BOOST_CHECK_EQUAL(data(2047, 2047, 1047), 2u); 
+
+		BOOST_CHECK_EQUAL(data(2047, 2045, 1023), 0u); 
+		BOOST_CHECK_EQUAL(data(0, 2046, 1023), 1u); 
+		BOOST_CHECK_EQUAL(data(2047, 2047, 1023), 1u); 
+		BOOST_CHECK_EQUAL(data(0, 0, 1024), 2u); 
+		
+		// test the line get and set routines 
+
+		vector<unsigned char> row(2048); 
+		data.get_data_line_x(10,1025, row); 
+		for (unsigned i = 0; i < row.size(); ++i) 
+			BOOST_CHECK_EQUAL(row[i], 2u); 
+
+		data.get_data_line_y(10,1025, row); 
+		for (unsigned i = 0; i < row.size(); ++i) 
+			BOOST_CHECK_EQUAL(row[i], 2u); 
+
+
+		data.get_data_line_z(10,2046, row); 
+		for (unsigned i = 0; i < 1023; ++i) 
+			BOOST_CHECK_EQUAL(row[i], 0u); 
+		for (unsigned i = 1023; i < 1024; ++i) 
+			BOOST_CHECK_EQUAL(row[i], 1u); 
+		for (unsigned i = 1025; i < 1048; ++i) 
+			BOOST_CHECK_EQUAL(row[i], 2u); 
+
+
+		
+	}
+	// if the memory can not be allocated then the test can not be run. 
+	catch (	std::bad_alloc& ba) {
+		cvdebug()  << "Unable to allocate memory for data field of size " << size 
+			   << ": " << ba.what() << "\n"
+			   << "test_3ddatafield_larger_than_4GB not exectuted\n"; 
+	}
+	
+}
+
+
+#endif 
