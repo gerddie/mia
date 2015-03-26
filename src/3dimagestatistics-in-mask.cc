@@ -49,6 +49,7 @@ const SProgramDescription g_description = {
 }; 
 
 struct SHistogramParams {
+	string struct_name; 
         size_t bins; 
         float range_min; 
         float range_max; 
@@ -100,6 +101,7 @@ public:
                 THistogram<THistogramFeeder<double > > histo(THistogramFeeder<double >(params.range_min, params.range_max, params.bins)); 
                 histo.push_range(m_pixels.begin(), m_pixels.end());
                 os << "#histogram\n"; 
+                os << "struct=" << params.struct_name << '\n'; 
                 os << "min=" << params.range_min << '\n'; 
                 os << "max=" << params.range_max << '\n'; 
                 os << "step=" << ( params.range_max - params.range_min ) / double(params.bins - 1) << '\n';
@@ -125,7 +127,7 @@ int do_main( int argc, char *argv[] )
 
         unsigned pixel_limit = 20; 
 
-        SHistogramParams hparams = {8, 0.0f, 0.0f}; 
+        SHistogramParams hparams = {"undefined", 8, 0.0f, 0.0f}; 
         
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
@@ -144,8 +146,9 @@ int do_main( int argc, char *argv[] )
         
         options.set_group("Parameters");
 
+	options.add(make_opt(hparams.struct_name, "struct-name", 0, "Name of the structure the statistics are evaluated for")); 
         options.add(make_opt(pixel_limit, EParameterBounds::bf_min_closed, {20}, "limit", 'l', 
-                             "Number of pixels teh mask should at least contain.")); 
+                             "Number of pixels the mask should at least contain.")); 
         options.add(make_opt(hparams.bins, EParameterBounds::bf_min_closed, {4}, "bins", 'b', 
                              "number of histogram bins to be used")); 
         options.add(make_opt(hparams.range_min, "hmin", 0, "lower bound for the histogram mapping. All values below this value"
