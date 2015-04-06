@@ -1,6 +1,6 @@
 #!/usr/bin/env python 
 #
-# Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -140,7 +140,7 @@ def write_man_file(descr):
     print clean(descr.author)
     
     print ".SH COPYRIGHT"
-    print """This software is Copyright (c) 1999\(hy2013 Leipzig, Germany and Madrid, Spain.
+    print """This software is Copyright (c) 1999\(hy2015 Leipzig, Germany and Madrid, Spain.
 It comes  with  ABSOLUTELY  NO WARRANTY  and  you  may redistribute it under the terms of the GNU 
 GENERAL PUBLIC LICENSE Version 3 (or later). For more 
 information run the program with the option '\-\-copyright'."""
