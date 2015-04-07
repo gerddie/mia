@@ -28,9 +28,8 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include <mia/core/defines.hh>
+#include <mia/core/paramtranslator.hh>
 #include <mia/core/module.hh>
-#include <mia/core/optparam.hh>
 #include <mia/core/property_flags.hh>
 
 #include <mia/core/import_handler.hh>
@@ -64,7 +63,7 @@ struct EXPORT_CORE PrepareTestPluginPath {
    and a provides a help interface. 
 */
 
-class EXPORT_CORE CPluginBase {
+class EXPORT_CORE CPluginBase: public CParamTranslator {
 public:
 	/**
 	   The constructor  initialises the plug-in with its name and sets
@@ -78,23 +77,6 @@ public:
 	*/
 	virtual ~CPluginBase();
 
-	/**
-	   Add a parameter to the parameter list. If the name of
-	   the parameter already exists this function throws an \a
-	   invalid_argument exception.
-	   \param name Name of the new parameter
-	   \param param the actual parameter
-	*/
-	void add_parameter(const std::string& name, CParameter *param);
-
-	/**
-	   Set the parameter according to the given option map. If the
-	   parameter name does not exists, the function will throw an
-	   \a invalid_argument exception. Depending on the parameter type
-	   setting it might also throw an \a invalid_argument exception.
-	   \param options the options map
-	*/
-	void set_parameters(const CParsedOptions& options);
 
 	/**
 	   Set the plug-in priority, if two plug-ins of the same type and 
@@ -108,35 +90,6 @@ public:
 	 */
 	unsigned get_priority() const;
 	
-
-	/**
-	   This function checks, whether all requzired parameters have really been set.
-	   It throws an \a invalid_argument
-	*/
-	void check_parameters();
-
-	/// \returns the name of the plug-in
-	const char *get_name() const;
-
-	/// \returns the name of the plug-in
-	const std::string get_descr() const;
-
-
-	/**
-	   Write a help regarding the plugin to the output stream
-	   \param os
-	 */
-	void get_short_help(std::ostream& os) const;
-
-	/** prints out a help text to the given output stream
-	    \param os
-	*/
-	virtual void get_help(std::ostream& os) const;
-
-	/** Adds the help for this plug-in to an XML tree 
-	    \param root node to add the help to
-	*/
-	void get_help_xml(xmlpp::Element& root) const;
 
 	/**
 	   link up another plug-in in order to be able to put several
@@ -180,22 +133,12 @@ public:
 	void add_property(const char *property);
 
 private:
-	virtual const std::string do_get_descr() const = 0;
 
-	virtual void do_get_help_xml(xmlpp::Element& root) const;
-
-	// plugin name 
-	const char *m_name;
 
 	/* pointer to the next interface in a plugin chain 
 	   NULL indicates end of chain
 	*/
 	CPluginBase *m_next_interface;
-
-	/*
-	  List of paramaters understudd by this plugin 
-	 */
-	CParamList  m_parameters;
 
 	/*
 	  Specific properties of this plug in 

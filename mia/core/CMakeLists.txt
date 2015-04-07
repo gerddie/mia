@@ -59,6 +59,7 @@ SET(MIACORE_SRC_BASE
   optparam.cc 
   paramoption.cc  
   parameter.cc  
+  paramtranslator.cc  
   pixeltype.cc 
   plugin_base.cc  
   product_base.cc
@@ -146,6 +147,7 @@ SET(MIACORE_HEADER_BASE
   optparam.hh
   parameter.cxx parameter.hh
   paramoption.hh
+  paramtranslator.hh
   pixeltype.hh
   plugin_base.cxx plugin_base.hh
   probmap.hh
