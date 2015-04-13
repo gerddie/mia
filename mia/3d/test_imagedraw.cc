@@ -314,6 +314,77 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_z_outside_ends, SimpleBitImageDraw
         }
 }
 
+
+BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_x_outside_ends_dz_is_zero, SimpleBitImageDrawFixture ) 
+{
+        output.draw_line(C3DFVector(-4, 2, 5), C3DFVector(16, 14, 5)); 
+        auto& img = output.get_image(); 
+                
+        auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
+        auto e = img.end_range(C3DBounds::_0, img.get_size()); 
+
+
+	set<C3DBounds, compare_coordinate> pixels; 
+
+
+	C3DFVector dir(0.5, 0.3, 0.0);
+	
+	C3DFVector p(-4,2,5);
+	for (int k = 0; k < 42; ++k, p += dir) {
+		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
+			     static_cast<unsigned>(floor(p.y + 0.5)), 
+			     static_cast<unsigned>(floor(p.z + 0.5))); 
+		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
+		if (ip.x < img.get_size().x) 
+			pixels.insert(ip); 
+	}
+        
+	cvdebug() << "Expect " << pixels.size() << " pixels to be set\n"; 
+        for(; i != e; ++i) {
+		cvdebug() << i.pos() <<" = "  <<*i << "\n"; 
+                if (pixels.find(i.pos()) == pixels.end())
+                        BOOST_CHECK(!*i); 
+                else 
+                        BOOST_CHECK(*i);
+        }
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_z_outside_ends_dy_is_zero, SimpleBitImageDrawFixture ) 
+{
+        output.draw_line(C3DFVector(4, 4, -5), C3DFVector(10, 4, 15)); 
+        auto& img = output.get_image(); 
+                
+        auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
+        auto e = img.end_range(C3DBounds::_0, img.get_size()); 
+
+
+	set<C3DBounds, compare_coordinate> pixels; 
+
+
+	C3DFVector dir(0.15, 0.0, 0.5f);
+	
+	C3DFVector p(5.5, 4, 0);
+	for (int k = 0; k < 41 && p.z < 12; ++k, p += dir) {
+		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
+			     static_cast<unsigned>(floor(p.y + 0.5)), 
+			     static_cast<unsigned>(floor(p.z + 0.5))); 
+		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
+		if (ip.z < img.get_size().z) 
+			pixels.insert(ip); 
+	}
+        
+	cvdebug() << "Expect " << pixels.size() << " pixels to be set\n"; 
+        for(; i != e; ++i) {
+		cvdebug() << i.pos() <<" = "  <<*i << "\n"; 
+                if (pixels.find(i.pos()) == pixels.end())
+                        BOOST_CHECK(!*i); 
+                else 
+                        BOOST_CHECK(*i);
+        }
+}
+
+
 BOOST_FIXTURE_TEST_CASE( test_draw_line_triangle_inside, SimpleBitImageDrawFixture ) 
 {
 	C3DFVector a(4, 4, 4); 
