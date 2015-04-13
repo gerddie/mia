@@ -316,6 +316,34 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_y_outside_ends_dx_is_zero, SimpleB
         }
 }
 
+
+BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_y_outside_ends_dN_is_zero_and_N_outside, SimpleBitImageDrawFixture ) 
+{
+	// x outside and parallel 
+        output.draw_line(C3DFVector(-1,-6, 5), C3DFVector(-1,14,9)); 
+        output.draw_line(C3DFVector(30,6, 5), C3DFVector(30,6,5)); 
+
+	// y outside and parallel 
+        output.draw_line(C3DFVector(1,-6, 5), C3DFVector(1,-6,9)); 
+        output.draw_line(C3DFVector(1, 40, 5), C3DFVector(1,40,9)); 
+
+	// z outside and parallel 
+        output.draw_line(C3DFVector(1,6, -5), C3DFVector(1,6,-5)); 
+        output.draw_line(C3DFVector(1,6, 22), C3DFVector(1,14,22)); 
+
+        auto& img = output.get_image(); 
+                
+        auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
+        auto e = img.end_range(C3DBounds::_0, img.get_size()); 
+
+        
+	cvdebug() << "Expect 0  pixels to be set\n"; 
+        for(; i != e; ++i) {
+		cvdebug() << i.pos() <<" = "  <<*i << "\n"; 
+		BOOST_CHECK(!*i); 
+        }
+}
+
 BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_z_outside_ends, SimpleBitImageDrawFixture ) 
 {
         output.draw_line(C3DFVector(4, 4, -5), C3DFVector(10, 14, 15)); 
