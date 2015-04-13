@@ -63,7 +63,7 @@ const SProgramDescription g_description = {
 
 class CSegment3d  {
 public: 
-	typedef C3DImageVector result_type; 
+	typedef pair<P3DImage, C3DImageVector> result_type; 
 
 	CSegment3d(bool bg_correct, int ncc,
 		   const vector<float>& icc, float k); 
@@ -72,9 +72,9 @@ public:
 	CSegment3d::result_type operator()(const T3DImage<T>& image); 
 
 private: 
-	void process(const C3DFImage& image, 
-		     vector<float>& class_centers, 
-		     C3DFImageVec& prob)const; 
+	P3DImage process(const C3DFImage& image, 
+			 vector<float>& class_centers, 
+			 C3DFImageVec& prob)const; 
 
 	float update_class_centers(C3DFImage& image, C3DFImageVec& prob, vector<float>& class_centers)const; 
 	
@@ -112,7 +112,7 @@ struct CLogTransform {
 
 	float operator() (float x) const 
 	{
-		return (x - _M_minh) / _M_div;
+		return log((x - _M_minh) / _M_div + 1.0);
 	}
 private: 
 	float _M_minh;
@@ -128,7 +128,7 @@ struct CExpTransform {
 	}
 	float operator() (float x) const 
 	{
-		return x *  _M_div + _M_minh;
+		return (exp(x) - 1.0) *  _M_div + _M_minh;
 	}
 private: 
 	float _M_minh;
@@ -225,22 +225,22 @@ CSegment3d::result_type CSegment3d::operator()(const T3DImage<T>& image)
 	}
 
 	
-	process(log_image, log_class_centers, prob); 
+	auto b0_image = process(log_image, log_class_centers, prob); 
 	
 	
 	CExpTransform exptrans(minh, maxh); 
 	transform(log_class_centers.begin(), log_class_centers.end(), 
 		       _M_class_centers.begin(), exptrans); 
 
-	C3DImageVector result;  
+	C3DImageVector class_images;  
 
 	for (size_t j = 0; j < _M_nClasses; ++j) {
 		C3DFImage *r = new C3DFImage(image.get_size(), image); 
 		transform(prob[j].begin(), prob[j].end(), r->begin(), 
 			  [](float x){return sqrt(x);}); 
-		result.push_back(P3DImage(r)); 
+		class_images.push_back(P3DImage(r)); 
 	}
-	return result; 
+	return make_pair(b0_image, class_images); 
 }
 		
 
@@ -327,8 +327,7 @@ float CSegment3d::update_class_centers(C3DFImage& image, C3DFImageVec& prob, vec
 
 
 
-void
-CSegment3d::process(const C3DFImage& image, 
+P3DImage CSegment3d::process(const C3DFImage& image, 
 			 vector<float>& class_centers, 
 			 C3DFImageVec& prob)const
 {
@@ -339,11 +338,12 @@ CSegment3d::process(const C3DFImage& image,
 	
 	C3DFImage tmp(image.get_size());                                        // 4Bpp
 
-	unique_ptr<C3DFImage> bg_image;
-
+	C3DFImage *bg_image = nullptr;
+	P3DImage pbg_image; 
 	
 	if (_M_bg_correct) {
-		bg_image.reset(new C3DFImage(image.get_size())); 
+		bg_image = new C3DFImage(image.get_size()); 
+		pbg_image.reset(bg_image); 
 		fill(bg_image->begin(), bg_image->end(), 1.0); 
 	}
 
@@ -426,6 +426,7 @@ CSegment3d::process(const C3DFImage& image,
 		}// end update bg field
 
 	} // end main while loop
+	return pbg_image; 
 }
 
 int do_main(int argc, char *argv[])
@@ -470,13 +471,13 @@ int do_main(int argc, char *argv[])
 	
 	auto in_image = load_image3d(in_filename); 
 	
-	auto seg_list = mia::accumulate (Segment, *in_image);
-	C3DImageIOPluginHandler::Instance::Data out_image_list(seg_list);
+	auto result = mia::accumulate (Segment, *in_image);
+//	C3DImageIOPluginHandler::Instance::Data out_image_list(result.second);
 	
 	
 		//CHistory::instance().append(argv[0], revision, opts);
 	
-	if ( !C3DImageIOPluginHandler::instance().save(cls_filename, seg_list) ){
+	if ( !C3DImageIOPluginHandler::instance().save(cls_filename, result.second) ){
 		string not_save = ("unable to save result to ") + cls_filename;
 		throw runtime_error(not_save);
 	}
