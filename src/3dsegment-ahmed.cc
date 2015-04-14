@@ -72,7 +72,7 @@ public:
 	CSegment3d::result_type operator()(const T3DImage<T>& image); 
 
 private: 
-	P3DImage process(const C3DFImage& image, 
+	C3DFImage process(const C3DFImage& image, 
 			 vector<float>& class_centers, 
 			 C3DFImageVec& prob)const; 
 
@@ -112,7 +112,7 @@ struct CLogTransform {
 
 	float operator() (float x) const 
 	{
-		return log((x - _M_minh) / _M_div + 1.0);
+		return (x - _M_minh) / _M_div;
 	}
 private: 
 	float _M_minh;
@@ -128,7 +128,7 @@ struct CExpTransform {
 	}
 	float operator() (float x) const 
 	{
-		return (exp(x) - 1.0) *  _M_div + _M_minh;
+		return x *  _M_div + _M_minh;
 	}
 private: 
 	float _M_minh;
@@ -232,6 +232,19 @@ CSegment3d::result_type CSegment3d::operator()(const T3DImage<T>& image)
 	transform(log_class_centers.begin(), log_class_centers.end(), 
 		       _M_class_centers.begin(), exptrans); 
 
+	P3DImage pb0_corrected; 
+	if ( _M_bg_correct ) {
+		T3DImage<T> *b0_corrected = new T3DImage<T>(image);
+		transform(b0_image.begin(), b0_image.end(), b0_corrected->begin(), 
+			  [&exptrans](float x){
+				  return mia_round_clamped<T>(exptrans(x)); 
+			  }); 
+		pb0_corrected.reset(b0_corrected); 
+	}
+		
+	transform(log_class_centers.begin(), log_class_centers.end(), 
+		       _M_class_centers.begin(), exptrans); 
+
 	C3DImageVector class_images;  
 
 	for (size_t j = 0; j < _M_nClasses; ++j) {
@@ -240,7 +253,7 @@ CSegment3d::result_type CSegment3d::operator()(const T3DImage<T>& image)
 			  [](float x){return sqrt(x);}); 
 		class_images.push_back(P3DImage(r)); 
 	}
-	return make_pair(b0_image, class_images); 
+	return make_pair(pb0_corrected, class_images); 
 }
 		
 
@@ -327,7 +340,7 @@ float CSegment3d::update_class_centers(C3DFImage& image, C3DFImageVec& prob, vec
 
 
 
-P3DImage CSegment3d::process(const C3DFImage& image, 
+C3DFImage CSegment3d::process(const C3DFImage& image, 
 			 vector<float>& class_centers, 
 			 C3DFImageVec& prob)const
 {
@@ -338,15 +351,12 @@ P3DImage CSegment3d::process(const C3DFImage& image,
 	
 	C3DFImage tmp(image.get_size());                                        // 4Bpp
 
-	C3DFImage *bg_image = nullptr;
-	P3DImage pbg_image; 
+	unique_ptr<C3DFImage> bg_image;
 	
 	if (_M_bg_correct) {
-		bg_image = new C3DFImage(image.get_size()); 
-		pbg_image.reset(bg_image); 
+		bg_image.reset(new C3DFImage(image.get_size())); 
 		fill(bg_image->begin(), bg_image->end(), 1.0); 
 	}
-
 	
 	float residuum = 100; 
 	// these conditions have to be exported 
@@ -426,7 +436,7 @@ P3DImage CSegment3d::process(const C3DFImage& image,
 		}// end update bg field
 
 	} // end main while loop
-	return pbg_image; 
+	return tmp; 
 }
 
 int do_main(int argc, char *argv[])
@@ -434,7 +444,7 @@ int do_main(int argc, char *argv[])
 
 	string in_filename; 
 	string cls_filename; 
-	string out_filename; 
+	string bias_filename; 
 	int n_classes = 3; 
 	bool bg_correct = false; 
 	string neighborhood_filter; 
@@ -444,12 +454,20 @@ int do_main(int argc, char *argv[])
 	const auto& image3dio = C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList opts(g_description);
+
+	opts.set_group("File-IO"); 
 	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOptionFlags::required_input, &image3dio )); 
-	opts.add(make_opt( cls_filename, "out-file", 'o', "class probability images, the image type "
-			   "must support multiple images and floating point values", CCmdOptionFlags::required_output, &image3dio )); 
-	opts.add(make_opt( n_classes, "no-of-classes", 'a', "number of classes"));
-	opts.add(make_opt( bg_correct, "bias-correct", 'b', "apply bias field correction"));
-	opts.add(make_opt( initial_class_centres, "class-centres", 'c', "initial class centers"));
+	opts.add(make_opt( cls_filename, "class-file", 'c', "class probability images, the image type "
+			   "must support multiple images and floating point values", 
+			   CCmdOptionFlags::required_output, &image3dio )); 
+	opts.add(make_opt( bias_filename, "out-file", 'b', "Bias corrected image will be of the same type like "
+			   "the input image. If this parameter is not given, then the bias correction will not be applied.", 
+			   CCmdOptionFlags::output, &image3dio )); 
+		 
+	opts.set_group("Parameters"); 
+	opts.add(make_opt( n_classes, "no-of-classes", 'n', "number of classes"));
+	opts.add(make_opt( initial_class_centres, "class-centres", 'C', "initial class centers, this parameter overrides "
+			   "'no-of-clases'."));
 	opts.add(make_opt( spread, "spread", 's', "spread parameter describing the strength of mattar distinction")); 
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -464,6 +482,8 @@ int do_main(int argc, char *argv[])
 		cvdebug() << "Initially classes: " << initial_class_centres.size() << "\n"; 
 	}
 	
+	bg_correct = !bias_filename.empty(); 
+
 	// initialize the functor
 	CSegment3d Segment(bg_correct, n_classes, 
 			   initial_class_centres, spread);
@@ -475,11 +495,15 @@ int do_main(int argc, char *argv[])
 //	C3DImageIOPluginHandler::Instance::Data out_image_list(result.second);
 	
 	
-		//CHistory::instance().append(argv[0], revision, opts);
+	//CHistory::instance().append(argv[0], revision, opts);
 	
-	if ( !C3DImageIOPluginHandler::instance().save(cls_filename, result.second) ){
-		string not_save = ("unable to save result to ") + cls_filename;
-		throw runtime_error(not_save);
+	if ( !image3dio.save(cls_filename, result.second) ) {
+		throw create_exception<runtime_error>("unable to save class images to '", cls_filename, "'");
+	}
+
+	if (!bias_filename.empty()) {
+		if (!save_image(bias_filename, result.first)) 
+			throw create_exception<runtime_error>("unable to save bias-corrected image '", bias_filename, "'");
 	}
 	
 	return EXIT_SUCCESS; 
