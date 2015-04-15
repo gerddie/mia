@@ -280,7 +280,7 @@ void CSegment3d::evaluate_probabilities(C3DFImageVec& prob)const
 		else {// must be a bright value, otherwise, class[0] would catch it
 			for (size_t i = 0; i < _M_nClasses - 1; ++i)
 				*pi[i]++ = 0.0;
-			*pi[_M_nClasses - 1] = 1.0; 
+			*pi[_M_nClasses - 1]++ = 1.0; 
 		}
 	}
 }
@@ -391,7 +391,8 @@ C3DFImage CSegment3d::process(const C3DFImage& image,
 		evaluate_probabilities(prob);
 
 		if (_M_bg_correct)
-			transform(image.begin(), image.end(), bg_image->begin(), tmp.begin(), minus<float>()); 
+			transform(image.begin(), image.end(), bg_image->begin(), tmp.begin(), 
+				  [](float x, float y){return x * y;}); 
 		else
 			copy(image.begin(), image.end(), tmp.begin()); 
 		
