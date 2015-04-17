@@ -203,10 +203,7 @@ CSegment3d::result_type CSegment3d::operator()(const T3DImage<T>& image)
 		
 		// print out the new class centers
 	}
-	cvmsg() << " initial classes ["; 
-	for (size_t j = 0; j < _M_nClasses; ++j)
-		cvmsg() << _M_class_centers[j] << " "; 
-	cvmsg() << "]" << endl;
+	cvmsg() << " initial classes [" << _M_class_centers << "\n"; 
 	
 	C3DFImage log_image(image.get_size()); 	                                 // 4 Bpp
 	vector<float> log_class_centers(_M_nClasses); 
@@ -401,8 +398,8 @@ C3DFImage CSegment3d::process(const C3DFImage& image,
 		// print out the new class centers
 		cvmsg() << n_iterations << ": classes ["; 
 		for (size_t j = 0; j < _M_nClasses; ++j)
-			cvmsg() << exptrans(class_centers[j]) << " "; 
-		cvmsg() << "]" << endl; 
+			cverb << exptrans(class_centers[j]) << " "; 
+		cverb << "]" << endl; 
 		
 		// update field correction 
 		// this certainly needs a methodological review
@@ -481,6 +478,7 @@ int do_main(int argc, char *argv[])
 			throw invalid_argument("at least two classes need to be requested"); 
 	}else {
 		cvdebug() << "Initially classes: " << initial_class_centres.size() << "\n"; 
+		n_classes = initial_class_centres.size(); 
 	}
 	
 	bg_correct = !bias_filename.empty(); 
