@@ -66,13 +66,11 @@ C2DFullCostList create_costs(const std::vector<string>& costs, int idx)
 	for (auto c = costs.begin(); c != costs.end(); ++c) {
 		string cc(*c); 
 
-		if (cc.find("image") == 0) {
-			if (cc.find("src") != string::npos  || cc.find("ref") != string::npos) {
-				throw create_exception<invalid_argument>( "image cost functions '", cc, 
-								"' must not set the 'src' or 'ref' parameter explicitly");
-			}
-			cc.append(cost_descr.str()); 
+		if (cc.find("src") != string::npos  || cc.find("ref") != string::npos) {
+			throw create_exception<invalid_argument>( "image cost functions '", cc, 
+								  "' must not set the 'src' or 'ref' parameter explicitly");
 		}
+		cc.append(cost_descr.str()); 
 		cvdebug() << "create cost:"  << *c << " as " << cc << "\n"; 
 		auto imagecost = C2DFullCostPluginHandler::instance().produce(cc);
 		result.push(imagecost); 
