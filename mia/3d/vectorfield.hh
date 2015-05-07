@@ -37,7 +37,7 @@ NS_MIA_BEGIN
 template <typename T>
 class EXPORT_3D  T3DVectorfield: public T3DDatafield<T>, public CAttributedData {
 public:
-	T3DVectorfield()  = default;
+	T3DVectorfield() {};
 	T3DVectorfield(const T3DVectorfield<T>& org):
 		T3DDatafield<T>(org),
 		CAttributedData(org)

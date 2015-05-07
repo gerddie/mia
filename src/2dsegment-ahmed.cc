@@ -267,7 +267,7 @@ void CSegment2d::evaluate_probabilities(C2DFImageVec& prob)const
 		else {// must be a bright value, otherwise, class[0] would catch it
 			for (size_t i = 0; i < _M_nClasses - 1; ++i)
 				*pi[i]++ = 0.0;
-			*pi[_M_nClasses - 1] = 1.0; 
+			*pi[_M_nClasses - 1]++ = 1.0; 
 		}
 	}
 }

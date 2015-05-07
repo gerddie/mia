@@ -64,20 +64,56 @@ bool C3DDrawBox::is_inside(const C3DFVector& p) const
 // http://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
 // our AABB is [(0,0,0), box_size )
 // 
+inline bool evaluate_t(float& _min, float& _max, float size, float p, float dir, bool t_initialized)
+{
+	if (dir != 0.0f)  {
+		float invx = 1.0f / dir; 
+		float p0 = - p * invx; 
+		float p1 = (size - p) * invx; 
+		if (!t_initialized) {
+			_min = min(p0, p1); 
+			_max = max(p0, p1); 
+		}else{
+			_min = max(min(p0, p1), _min); 
+			_max = min(max(p0, p1), _max); 
+		}
+		return true; 
+	}else{
+		return false; 
+	}
+} 
+
 bool C3DDrawBox::make_inside(C3DFVector& p, const C3DFVector& searchdir) const 
 {
         if (is_inside(p))
                 return true; 
 
         // find intersection of the ray with the box
-        auto inv_searchdir = C3DFVector::_1 / searchdir; 
-        
-        auto p0 = (-1.0f * p) * inv_searchdir;
-        auto p1 = (m_fsize - p) * inv_searchdir; 
-        
-        auto tmin = max(max(min(p0.x, p1.x), min(p0.y, p1.y)), min(p0.z, p1.z)); 
-        auto tmax = min(min(max(p0.x, p1.x), max(p0.y, p1.y)), max(p0.z, p1.z)); 
+	float  tmin = 0; 
+	float  tmax = 0;  
 
+	// check if we move parallel to the box and are outside
+	if (searchdir.x == 0.0) {
+		if (p.x < 0 || p.x > m_size.x) 
+			return false; 
+	}
+	if (searchdir.y == 0.0) {
+		if (p.y < 0 || p.y > m_size.y) 
+			return false; 
+	}
+	if (searchdir.x == 0.0) {
+		if (p.z < 0 || p.z > m_size.z) 
+			return false; 
+	}
+	
+	
+	bool t_initialized = evaluate_t(tmin, tmax, m_fsize.x, p.x, searchdir.x, false);
+	t_initialized = evaluate_t(tmin, tmax, m_fsize.y, p.y, searchdir.y, t_initialized); 
+	t_initialized = evaluate_t(tmin, tmax, m_fsize.z, p.z, searchdir.z, t_initialized);
+
+	cvdebug() << "search = " << p << " -> " <<  searchdir
+		  << "; tmin = " << tmin << ", tmax= "<< tmax 
+		  << "\n"; 
 
         // the ray would hit, but the box is behind us 
         if (tmax < 0) 
@@ -89,6 +125,7 @@ bool C3DDrawBox::make_inside(C3DFVector& p, const C3DFVector& searchdir) const
         
         // ray intersects, adjust point 
         p += tmin * searchdir; 
+	cvdebug() << "boundary point = " << p << "\n"; 
         return true; 
 }
 

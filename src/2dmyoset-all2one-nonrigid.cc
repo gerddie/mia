@@ -64,9 +64,7 @@ C2DFullCostList create_costs(const vector<string>& costs, int idx)
 
 	for (auto c = costs.begin(); c != costs.end(); ++c) {
 		string cc(*c); 
-
-		if (cc.find("image") == 0) 
-			cc.append(cost_descr.str()); 
+		cc.append(cost_descr.str()); 
 		cvdebug() << "create cost:"  << *c << " as " << cc << "\n"; 
 		auto imagecost = C2DFullCostPluginHandler::instance().produce(cc);
 		result.push(imagecost); 
