@@ -56,8 +56,8 @@ template <typename T>
 struct __dispatch_parameter_do_set {
 	static bool apply (const std::string& str_value, T& value) {
 		if (std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed) {
-			int startpos = str_value.find_first_not_of(" \t");
-			if (startpos  == string::npos) {
+			std::string::size_type startpos = str_value.find_first_not_of(" \t");
+			if (startpos  == std::string::npos) {
 				throw create_exception<std::invalid_argument>("Trying to set a paramater from an string "
 									      "that is comprised of whitespaces only"); 
 			}
