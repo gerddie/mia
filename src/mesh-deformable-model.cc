@@ -58,7 +58,7 @@ private:
         struct SLocation {
                 SLocation(CTriangleMesh::normal_type& n):m_normal(&n){}; 
                 SLocation(const SLocation& other) = default; 
-                SLocation() = default; 
+                SLocation():m_normal(nullptr){}
                 
                 const CTriangleMesh::normal_type& normal()const {return *m_normal;}
                 CTriangleMesh::normal_type *m_normal; 
