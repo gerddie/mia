@@ -202,7 +202,9 @@ TBoundedParameter<T>::TBoundedParameter(T& value, EParameterBounds flags,
 					const vector<T>& boundaries, 
 					bool required, const char *descr): 
 	CTParameter<T>(value, required, descr),
-	m_flags(flags)
+	m_flags(flags),
+	// this silences coverty warnings but it should actually not be necessary 
+	m_min(T()), m_max(T())
 {
 	assert(!boundaries.empty());
 	unsigned idx = 0; 
