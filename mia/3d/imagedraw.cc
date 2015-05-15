@@ -101,7 +101,7 @@ bool C3DDrawBox::make_inside(C3DFVector& p, const C3DFVector& searchdir) const
 		if (p.y < 0 || p.y > m_size.y) 
 			return false; 
 	}
-	if (searchdir.x == 0.0) {
+	if (searchdir.z == 0.0) {
 		if (p.z < 0 || p.z > m_size.z) 
 			return false; 
 	}
