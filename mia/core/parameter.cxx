@@ -168,47 +168,4 @@ std::string CTParameter<T>::do_get_default_value() const
 	return str; 
 }
 
-template <typename T> 
-TRangeParameter<T>::TRangeParameter(T& value, T min, T max, bool required, const char *descr):
-	CTParameter<T>(value, required, descr),
-	m_min(min), 
-	m_max(max)
-{
-	if (m_min > m_max) 
-		throw create_exception<std::invalid_argument>("Parameter '",descr,"' TRangeParameter<T,", __type_descr<T>::value , ">: min(" 
-						    , m_min ,") > max (", m_max , ")  not allowed"); 
-}
-
-template <typename T> 
-void TRangeParameter<T>::adjust(T& value)
-{
-	if (value < m_min) {
-		cvwarn() << "TRangeParameter<T>: adjust " << value <<" to lower bound " << m_min << "\n"; 
-		value = m_min; 
-	}
-
-	
-	if (value > m_max) {
-		cvwarn() << "TRangeParameter<T>: adjust " << value <<" to upper bound " << m_max << "\n"; 
-		value = m_max; 
-	}
-}
-
-template <typename T> 
-void TRangeParameter<T>::do_descr(std::ostream& os) const
-{
-	CTParameter<T>::do_descr(os); 
-	os << " in [" << m_min << "," << m_max << "] ";
-}
-
-template <typename T> 
-void TRangeParameter<T>::do_get_help_xml(xmlpp::Element& self) const
-{
-	TRACE_FUNCTION; 
-	auto dict = self.add_child("range"); 
-	dict->set_attribute("min", to_string<T>(m_min)); 
-	dict->set_attribute("max", to_string<T>(m_max)); 
-}
-
-
 NS_MIA_END

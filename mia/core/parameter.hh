@@ -4,7 +4,8 @@
  * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Pub
+lic License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -195,30 +196,6 @@ private:
    to a value outside the range, the set method will throw an \a invalid_argument exception
 */
 
-template <typename T>
-class EXPORT_CORE TRangeParameter : public CTParameter<T> {
-
-public:
-	/** Constructor
-	   \param value reference to the parameter handled by this parameter object
-	   \param min minimum of the parameter value range
-	   \param max maximum of the parameter value range
-	   \param required set to \a true if the parameter has to be set by the user
-	   \param descr a description of the parameter
-	 */
-	TRangeParameter(T& value, T min, T max, bool required, const char *descr) __attribute__((deprecated));
-protected:
-	/**
-	   the implementation of the description-function
-	 */
-	void do_descr(std::ostream& os) const;
-private:
-	virtual void adjust(T& value);
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
-	T m_min;
-	T m_max;
-
-};
 
 
 /**
@@ -554,14 +531,6 @@ private:
 }; 
 
 
-/// an integer parameter (with range)
-typedef TRangeParameter<int> CIntParameter;
-/// an unsigned integer parameter (with range)
-typedef TRangeParameter<unsigned int> CUIntParameter;
-/// a float parameter (with range)
-typedef TRangeParameter<float> CFloatParameter;
-/// a double parameter (with range)
-typedef TRangeParameter<double> CDoubleParameter;
 /// boolean parameter
 typedef CTParameter<bool> CBoolParameter;
 

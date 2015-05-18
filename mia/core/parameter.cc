@@ -317,15 +317,6 @@ EXPORT_CORE std::ostream& operator << (std::ostream& os, EParameterBounds flags)
 
 
 
-template class TRangeParameter<unsigned short>;
-template class TRangeParameter<unsigned int>;
-template class TRangeParameter<unsigned long>;
-template class TRangeParameter<short>;
-template class TRangeParameter<int>;
-template class TRangeParameter<long>;
-template class TRangeParameter<float>;
-template class TRangeParameter<double>; 
-
 template class TBoundedParameter<unsigned short>;
 template class TBoundedParameter<unsigned int>;
 template class TBoundedParameter<unsigned long>;

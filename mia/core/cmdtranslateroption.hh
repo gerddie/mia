@@ -40,9 +40,9 @@ public:
                 
                 void write_value(std::ostream& os) const;
                 
-                static instance() 
-                        private: 
-                        virtual void post_add_translator(CTranslator& t) = 0; 
+                static instance(); 
+	private: 
+		virtual void post_add_translator(CTranslator& t) = 0; 
                 virtual bool do_set_value(const CTranslator& t, const CComplexOptionParser::CParts& options) = 0; 
                 virtual void do_write_value(std::ostream& os) const = 0;
                 
