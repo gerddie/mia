@@ -50,7 +50,8 @@ const std::string plugin_help("help");
 
 CPluginBase::CPluginBase(const char *name):
 	CParamTranslator(name),
-	m_next_interface(NULL)
+	m_next_interface(NULL),
+	m_priority(0)
 {
 }
 

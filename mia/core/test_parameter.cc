@@ -39,8 +39,6 @@ using namespace std;
 BOOST_AUTO_TEST_CASE( test_params )
 {
 
-	int int_val = 1;
-	float float_val = 2.1;
 	bool bool_val = false;
 	string string_val("initial");
 	string sval("replaced");

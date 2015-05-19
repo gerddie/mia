@@ -164,7 +164,9 @@ double TSSDAutomaskCost<TCost>::do_evaluate_force(const Data& a, const Data& b, 
 */
 template <typename CP, typename C> 
 TSSDAutomaskCostPlugin<CP,C>::TSSDAutomaskCostPlugin():
-	CP("ssd-automask")
+	CP("ssd-automask"),
+	m_src_mask_thresh(0.0), 
+	m_ref_mask_thresh(0.0)
 {
 	TRACE("TSSDAutomaskCostPlugin<CP,C>::TSSDAutomaskCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
