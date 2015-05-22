@@ -65,9 +65,9 @@ public:
 
         void get_help(std::ostream& os) const; 
 
-        void get_help_xml(xmlpp::Element& root) const; 
+        void get_help_xml(CXMLElement& root) const; 
         
-        virtual void do_get_help_xml(xmlpp::Element& root) const; 
+        virtual void do_get_help_xml(CXMLElement& root) const; 
 
 	/// \returns the name of the translator 
 	const char *get_name() const;

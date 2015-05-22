@@ -86,14 +86,14 @@ void CParamTranslator::get_help(std::ostream& os) const
 	m_parameters.print_help(os);
 }
 
-void CParamTranslator::get_help_xml(xmlpp::Element& root) const
+void CParamTranslator::get_help_xml(CXMLElement& root) const
 {
 	cvdebug() << "Get help for " << m_name << "\n"; 
 	root.set_child_text(get_descr()); 
 	do_get_help_xml(root); 
 }
 
-void CParamTranslator::do_get_help_xml(xmlpp::Element& root) const
+void CParamTranslator::do_get_help_xml(CXMLElement& root) const
 {
 	TRACE_FUNCTION; 
 	m_parameters.get_help_xml(root);

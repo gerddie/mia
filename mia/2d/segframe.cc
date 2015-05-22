@@ -61,6 +61,23 @@ CSegFrame::CSegFrame(const string& image, const CSegStar& star, const Sections& 
 }
 
 
+template <typename T>
+void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required = false)
+{
+	auto attr = elm.get_attribute(key);
+	if (!attr) {
+		if (required) 
+			throw create_exception<std::runtime_error>( elm.get_name(), ":required attribute '", key, "' not found"); 
+		else 
+			return; 
+	}
+	
+	if (!from_string(attr->get_value(), out_value)) 
+		throw create_exception<std::runtime_error>( elm.get_name(), ":attribute '", key, "' has bogus value '", 
+						       attr->get_value(), "'");
+}
+
+
 CSegFrame::CSegFrame(const Node& node, int version):
 	m_has_star(false), 
 	m_quality(0),

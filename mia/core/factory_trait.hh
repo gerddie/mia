@@ -22,6 +22,7 @@
 #define mia_core_factory_trait_hh
 
 #include <mia/core/defines.hh>
+#include <memory>
 
 NS_MIA_BEGIN
 /**

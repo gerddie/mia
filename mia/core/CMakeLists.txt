@@ -84,6 +84,7 @@ SET(MIACORE_SRC_BASE
   utils.cc 
   watch.cc 
   waveletslopeclassifier.cc
+  xmlinterface.cc
   )
 
 SET(MIACORE_HEADER_BASE
@@ -183,6 +184,7 @@ SET(MIACORE_HEADER_BASE
   vector.hh
   watch.hh
   waveletslopeclassifier.hh
+  xmlinterface.hh
   )
 
 SET(MIACORETEST_SRC 
@@ -329,6 +331,7 @@ NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
 #NEW_TEST(watch miacore)
 NEW_TEST(waveletslopeclassifier miacore)
+NEW_TEST(xmlinterface miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

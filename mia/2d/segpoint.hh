@@ -21,13 +21,14 @@
 #ifndef mia_2d_SegPoint_hh
 #define mia_2d_SegPoint_hh
 
-namespace xmlpp {
-	class Node;
-};
-
 #include <mia/2d/vector.hh>
 #include <mia/2d/defines2d.hh>
 #include <mia/2d/transform.hh>
+
+namespace xmlpp {
+class Node;
+class Element; 
+}
 
 NS_MIA_BEGIN
 
@@ -83,21 +84,7 @@ public:
 
 
 template <typename T>
-void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required = false)
-{
-	auto attr = elm.get_attribute(key);
-	if (!attr) {
-		if (required) 
-			throw create_exception<std::runtime_error>( elm.get_name(), ":required attribute '", key, "' not found"); 
-		else 
-			return; 
-	}
-	
-	if (!from_string(attr->get_value(), out_value)) 
-		throw create_exception<std::runtime_error>( elm.get_name(), ":attribute '", key, "' has bogus value '", 
-						       attr->get_value(), "'");
-}
-
+void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required = false); 
 
 void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, bool& out_value, bool required = false); 
 

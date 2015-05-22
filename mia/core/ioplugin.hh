@@ -128,7 +128,7 @@ private:
 	 */
 	virtual PData do_load(const std::string& fname) const = 0;
 
-	void do_get_help_xml(xmlpp::Element& root) const; 
+	void do_get_help_xml(CXMLElement& root) const; 
 
 
 	/**

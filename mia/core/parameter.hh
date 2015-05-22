@@ -27,16 +27,13 @@ lic License as published by
 #include <ostream>
 #include <istream>
 #include <sstream>
+#include <memory>
 #include <mia/core/flags.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/handlerbase.hh>
 #include <mia/core/factory_trait.hh>
 #include <mia/core/cmdoptionflags.hh>
-
-namespace xmlpp {
-	class Element; 
-}
 
 NS_MIA_BEGIN
 
@@ -117,7 +114,7 @@ q	*/
 	   Add the help for this parameter to a given XML tree
 	   \param root the root node to add the help entry to. 
 	 */
-	void get_help_xml(xmlpp::Element& root) const;
+	void get_help_xml(CXMLElement& root) const;
 
 
 	/**
@@ -146,7 +143,7 @@ private:
 	virtual void do_reset() = 0;
 	virtual std::string do_get_default_value() const = 0;
 	virtual std::string do_get_value_as_string() const = 0;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	bool m_required;
 	bool m_is_required; 
 	const char *m_type;
@@ -249,7 +246,7 @@ protected:
 	void do_descr(std::ostream& os) const;
 private:
 	virtual void adjust(T& value);
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	T m_min;
 	T m_max;
 	EParameterBounds m_flags; 
@@ -363,7 +360,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	T& m_value;
 	T m_default_value; 
 	const TDictMap<T> m_dict;
@@ -415,7 +412,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 
 	typename F::ProductPtr dummy_shared_value; 
 	typename F::UniqueProduct dummy_unique_value; 
@@ -465,7 +462,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	void do_get_help_xml(xmlpp::Element& self) const; 
+	void do_get_help_xml(CXMLElement& self) const; 
 	T& m_value;
 	T m_default_value; 
 	const std::set<T> m_valid_set;
@@ -520,7 +517,7 @@ private:
 	virtual std::string do_get_value_as_string() const; 
 
 	virtual void do_descr(std::ostream& os) const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map)const; 
 
 
@@ -650,7 +647,7 @@ void CDictParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void CDictParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void CDictParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	TRACE_FUNCTION; 
 	auto dict = self.add_child("dict"); 
@@ -719,7 +716,7 @@ void TFactoryParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void TFactoryParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void TFactoryParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	auto dict = self.add_child("factory"); 
 	dict->set_attribute("name", T::instance().get_descriptor());
@@ -817,7 +814,7 @@ void CSetParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void CSetParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void CSetParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	auto set = self.add_child("set"); 
 	for (auto i = m_valid_set.begin(); i != m_valid_set.end(); ++i) {

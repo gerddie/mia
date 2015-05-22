@@ -36,6 +36,7 @@
 #include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/transformfactory.hh>
 
+#include <libxml++/libxml++.h> 
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_reduce.h>
 #include <tbb/blocked_range.h>

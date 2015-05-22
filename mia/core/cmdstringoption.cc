@@ -64,7 +64,7 @@ void CCmdStringOption::do_write_value(std::ostream& os) const
 		os << "=" << m_value;
 }
 
-void CCmdStringOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const
+void CCmdStringOption::do_get_long_help_xml(std::ostream& os, CXMLElement& parent, HandlerHelpMap& handler_map) const
 {
 	if (m_plugin_hint) {
 		m_plugin_hint->add_dependend_handlers(handler_map); 

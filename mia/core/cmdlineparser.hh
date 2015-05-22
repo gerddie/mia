@@ -117,7 +117,7 @@ public:
                    const char *short_help, CCmdOptionFlags flags = CCmdOptionFlags::none);
 
 private:
-	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
+	virtual void do_get_long_help_xml(std::ostream& os, CXMLElement& parent, HandlerHelpMap& handler_map) const; 
 	virtual bool do_set_value(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
@@ -517,7 +517,7 @@ void TCmdOption<T>::do_write_value(std::ostream& os) const
 }
 
 template <typename T>
-void TCmdOption<T>::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, 
+void TCmdOption<T>::do_get_long_help_xml(std::ostream& os, CXMLElement& parent, 
 					 HandlerHelpMap& /*handler_map*/) const
 {
 	do_get_long_help(os);

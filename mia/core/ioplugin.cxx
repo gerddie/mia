@@ -70,7 +70,7 @@ std::string get_values_as_string(I begin, I end, T translate)
 }
 
 template <typename D> 
-void TIOPlugin<D>::do_get_help_xml(xmlpp::Element& root) const
+void TIOPlugin<D>::do_get_help_xml(CXMLElement& root) const
 {
 	//flag that docu should not print help about non-existent parameters 
 	root.add_child("noparam"); 

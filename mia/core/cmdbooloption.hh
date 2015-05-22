@@ -49,7 +49,7 @@ class EXPORT_CORE CCmdBoolOption : public CCmdOption {
  private: 
 	bool do_set_value(const char *str_value);
 	void do_write_value(std::ostream& os) const;
-	void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
+	void do_get_long_help_xml(std::ostream& os, CXMLElement& parent, HandlerHelpMap& handler_map) const; 
 	const std::string do_get_value_as_string() const; 
 	size_t do_get_needed_args() const;
 

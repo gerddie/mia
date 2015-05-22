@@ -26,7 +26,7 @@
 
 #include <mia/core/parameter.hh>
 #include <mia/core/optionparser.hh>
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
 
 
 NS_MIA_BEGIN
@@ -82,7 +82,7 @@ public:
 	   Append the help for this parameter list to the given root node
 	   \param[in,out] root the root node of the XML tree 
 	 */
-	void get_help_xml(xmlpp::Element& root)const;  
+	void get_help_xml(CXMLElement& root)const;  
 
 	/**
 	   Add all plug-in handlers that may be called by processing this parameter list 

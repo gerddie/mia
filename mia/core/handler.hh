@@ -137,7 +137,7 @@ private:
 
 	virtual void do_print_short_help(std::ostream& os) const; 
 	virtual void do_print_help(std::ostream& os) const; 
-	virtual void do_get_xml_help(xmlpp::Element *root) const; 	
+	virtual void do_get_xml_help(CXMLElement *root) const; 	
 
 	static const char * const m_help; 
 
