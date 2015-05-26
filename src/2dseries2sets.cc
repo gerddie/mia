@@ -22,7 +22,6 @@
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/segsetwithimages.hh>
@@ -145,7 +144,7 @@ bool save_series(int index, const C2DImageVectorWithName& series, const string& 
 			frame.set_imagename(i->second);
 		else {
 			bfs::path infile(i->second); 
-			string filename = __bfs_get_filename(infile);
+			string filename = infile.filename().string();
 			frame.set_imagename(filename);
 			mia_copy_file(infile, outpath / bfs::path(filename)); 
 		}

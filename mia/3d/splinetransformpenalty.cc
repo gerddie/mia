@@ -134,9 +134,6 @@ EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C3DSplineTransformPenalty, C3DSplineTr
 
 C3DSplineTransformPenaltyPluginHandlerTest::C3DSplineTransformPenaltyPluginHandlerTest()
 {
-	CPathNameArray plugpath({bfs::path("splinepenalty")});
-	C3DSplineTransformPenaltyPluginHandler::set_search_path(plugpath);
-
 }
 
 NS_MIA_END

@@ -32,7 +32,6 @@
 
 
 #include <mia/core.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>

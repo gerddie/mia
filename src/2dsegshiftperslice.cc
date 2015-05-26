@@ -30,7 +30,6 @@
 #include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/segset.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
@@ -68,7 +67,7 @@ CSegSet load_segmentation(const string& s)
 static string get_number(const string& fname)
 {
 	bfs::path f(fname);
-	string the_stem = __bfs_get_stem(f);
+	string the_stem = f.stem().string();
 	auto rs = the_stem.rbegin();
 	string result;
 	while (rs != the_stem.rend() && isdigit(*rs))

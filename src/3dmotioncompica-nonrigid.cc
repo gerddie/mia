@@ -31,7 +31,6 @@
 #include <mia/core/filetools.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/filter.hh>

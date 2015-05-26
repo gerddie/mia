@@ -44,10 +44,6 @@ static void do_test_label(const C2DImage& inp, const char* filter_descr, unsigne
 BOOST_AUTO_TEST_CASE( test_label )
 {
 
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("shapes"));
-	C2DShapePluginHandler::set_search_path(kernelsearchpath);
-
 	bool input[9] = { 1, 1, 0,
 			  0, 0, 1,
 			  0, 1, 1 };

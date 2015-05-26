@@ -36,10 +36,6 @@ struct HandlerTestFixture {
 
 HandlerTestFixture::HandlerTestFixture()
 {
-
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("transform"));
-	C3DTransformCreatorHandler::set_search_path(kernelsearchpath);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)

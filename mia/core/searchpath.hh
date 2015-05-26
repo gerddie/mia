@@ -18,42 +18,35 @@
  *
  */
 
-#ifndef mia_core_bfsv23dispatch_hh
-#define mia_core_bfsv23dispatch_hh
+#include <mia/core/module.hh>
+#include <vector>
 
-#include <boost/filesystem/path.hpp>
-#include <mia/core/defines.hh>
+namespace boost {
+namespace filesystem {
+class path;
+}
+}
 
 NS_MIA_BEGIN
 
-inline std::string __bfs_get_filename(const boost::filesystem::path& path) 
-{
-#if BOOST_FILESYSTEM_VERSION==3
-	return path.filename().string(); 
-#else 
-	return path.filename(); 
-#endif
-}
+class EXPORT_CORE CPluginSearchpath {
+public:
+        CPluginSearchpath(bool no_subpath=false);
 
-inline std::string __bfs_get_extension(const boost::filesystem::path& path) 
-{
-#if BOOST_FILESYSTEM_VERSION==3
-	return path.extension().string(); 
-#else 
-	return path.extension(); 
-#endif
-}
+	CPluginSearchpath(const CPluginSearchpath& other); 
+	CPluginSearchpath& operator = (const CPluginSearchpath& other); 
 
-inline std::string __bfs_get_stem(const boost::filesystem::path& path) 
-{
-#if BOOST_FILESYSTEM_VERSION==3
-	return path.stem().string(); 
-#else 
-	return path.stem(); 
-#endif
-}
+        ~CPluginSearchpath();
 
+        void add(const char *path);
+	
+        void add(const boost::filesystem::path& path)__attribute__((deprecated));
+        
+        std::vector<PPluginModule> find_modules(const std::string& data, const std::string& type) const; 
+
+private:
+        struct CPluginSearchpathData *impl; 
+        
+}; 
 
 NS_MIA_END
-
-#endif

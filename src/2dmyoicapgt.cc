@@ -28,7 +28,6 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
@@ -37,6 +36,7 @@
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
 #include <libxml++/libxml++.h> 
+#include <boost/filesystem/path.hpp>
 
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_reduce.h>
@@ -561,7 +561,7 @@ int do_main( int argc, char *argv[] )
 	if (!cropped_filename.empty()) {
 		bfs::path cf(cropped_filename);
 		cf.replace_extension(); 
-		input_set.rename_base(__bfs_get_filename(cf)); 
+		input_set.rename_base(cf.filename().string()); 
 		input_set.save_images(cropped_filename);
 
 		unique_ptr<xmlpp::Document> test_cropset(input_set.write());

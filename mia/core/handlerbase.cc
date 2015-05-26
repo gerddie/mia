@@ -20,11 +20,14 @@
 
 #include <mia/core/handlerbase.hh>
 #include <mia/core/msgstream.hh>
+#include <boost/filesystem/path.hpp>
 
 NS_MIA_BEGIN
 
-CPluginHandlerBase::CPluginHandlerBase(const std::string& descriptor):
-	m_descriptor(descriptor)
+using boost::filesystem::path; 
+
+CPluginHandlerBase::CPluginHandlerBase(const char *data_descr, const char *type_descr):
+	m_descriptor((path(data_descr) / path(type_descr)).string())
 {
 }
 

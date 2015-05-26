@@ -22,8 +22,6 @@
 #define mia_3d_landmarklist_hh
 
 #include <map> 
-#include <boost/filesystem.hpp>
-
 #include <mia/core/iodata.hh>
 #include <mia/3d/landmark.hh>
 
@@ -95,7 +93,7 @@ public:
 	   Set the root path of the document (used to read the images) 
 	   \param path
 	 */
-	void set_path(const boost::filesystem::path& path); 
+	void set_path(const std::string& path); 
 
 	/**
 	   Set the name of the landmark list
@@ -113,7 +111,7 @@ public:
 private: 
 	CMap m_list; 
 
-	boost::filesystem::path m_path; 
+	std::string m_path; 
 	std::string m_name; 
 }; 
 

@@ -21,6 +21,8 @@
 #include <mia/3d/landmark.hh>
 #include <mia/2d/imageio.hh>
 
+#include <boost/filesystem/path.hpp>
+
 NS_MIA_BEGIN
 
 using boost::filesystem::path; 

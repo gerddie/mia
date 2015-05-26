@@ -408,17 +408,5 @@ const C3DTransformCreatorHandler::Instance& PrepareFullcostTests::transform_hand
 
 PrepareFullcostTests::PrepareFullcostTests()
 {
-	CPathNameArray cost_kernel_plugpath;
-	cost_kernel_plugpath.push_back(bfs::path("cost"));
-	C3DImageCostPluginHandler::set_search_path(cost_kernel_plugpath);
-	
-	CPathNameArray cost_plugpath;
-	cost_plugpath.push_back(bfs::path("fullcost"));
-	C3DFullCostPluginHandler::set_search_path(cost_plugpath);
-
-	CPathNameArray transform_searchpath;
-	transform_searchpath.push_back(bfs::path("transform"));
-	C3DTransformCreatorHandler::set_search_path(transform_searchpath);
-
 }
 

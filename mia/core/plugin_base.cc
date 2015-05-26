@@ -124,6 +124,8 @@ PrepareTestPluginPath::~PrepareTestPluginPath()
 	g_plugin_root = nullptr; 
 }
 
+
+
 #ifdef WIN32
 
 EXPORT_CORE const string get_plugin_root()

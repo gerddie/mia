@@ -41,8 +41,9 @@ struct DummyPluginFixture {
 
 DummyPluginFixture::DummyPluginFixture()
 {
-	TRACE_FUNCTION; 
-	CPathNameArray sp{bfs::path("testplug")}; 
+	TRACE_FUNCTION;
+	CPluginSearchpath sp(true);
+	sp.add("testplug"); 
 	CTestIOPluginHandler::set_search_path(sp);
 }
 

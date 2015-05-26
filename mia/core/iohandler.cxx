@@ -19,7 +19,6 @@
  */
 
 #include <stdexcept>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/handler.cxx>
 
 
@@ -55,13 +54,13 @@ TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 	TRACE_FUNCTION; 
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
-	std::string fsuffix = __bfs_get_extension(fpath); 
+	std::string fsuffix = fpath.extension().string();
 	if (!fsuffix.empty()) {
 		if (m_compress_sfx.find(fsuffix) != m_compress_sfx.end()) {
 			cvdebug() << "Got compression suffix '" << fsuffix << "\n"; 
 			// remove the last extension and get the one before
 			bfs::path help(fpath.stem()); 
-			fsuffix = __bfs_get_extension(help); 
+			fsuffix = help.extension().string(); 
 		}
 	}else 
 		fsuffix = fname; 
@@ -122,10 +121,10 @@ TIOPluginHandler<I>::preferred_plugin(const std::string& fname) const
 	TRACE_FUNCTION; 
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
-	auto fsuffix = __bfs_get_extension(fpath); 
+	auto fsuffix = fpath.extension().string(); 
 	if (m_compress_sfx.find(fsuffix) != m_compress_sfx.end()) {
 		bfs::path  help(fpath.stem()); 
-		fsuffix = __bfs_get_extension(help); 
+		fsuffix = help.extension().string(); 
 	}
 	cvdebug() << "Got suffix '" << fsuffix << "'\n"; 
 	auto p = m_suffixmap.find(fsuffix);

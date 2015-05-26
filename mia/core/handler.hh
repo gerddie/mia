@@ -35,7 +35,7 @@
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
 #include <mia/core/handlerbase.hh>
-
+#include <mia/core/searchpath.hh>
 #include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
@@ -124,11 +124,10 @@ protected:
 	typename TPluginHandler<I>::Interface *plugin(const char *plugin) const;
 
 
-	void initialise(CPathNameArray searchpath); 
+	void initialise(const CPluginSearchpath& searchpath); 
 
 private: 
 	virtual void do_initialise(); 
-	void global_searchpath(CPathNameArray& searchpath); 
 
 	void do_add_dependend_handlers(HandlerHelpMap& handler_map) const; 	
 	
@@ -160,7 +159,7 @@ public:
 	   Set the plugin search path for the plug-in - throws "runtime_error" if the 
 	   plugin handler is already instanciated. 
 	 */
-	static void set_search_path(const CPathNameArray& searchpath);
+	static void set_search_path(const CPluginSearchpath& searchpath);
 	
 	/// The instance of the plugin handler 
 	typedef T Instance;
@@ -197,7 +196,7 @@ private:
 
 	static T& do_instance(bool require_initialization); 
 
-	static CPathNameArray m_searchpath; 
+	static CPluginSearchpath m_searchpath; 
 	static bool m_is_created; 
 	static CMutex m_initialization_mutex;
 	static bool m_is_initialized; 

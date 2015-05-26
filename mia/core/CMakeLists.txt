@@ -69,6 +69,7 @@ SET(MIACORE_SRC_BASE
   regmodel.cc
   revision.cc 
   scaler1d.cc
+  searchpath.cc
   seriesstats.cc 
   selftestcmdoption.cc
   shape.cc 
@@ -92,7 +93,6 @@ SET(MIACORE_HEADER_BASE
   attribute_names.hh 
   attributetype.hh
   boundary_conditions.hh
-  bfsv23dispatch.hh
   callback.hh
   cmdbooloption.hh
   cmdlineparser.hh
@@ -159,6 +159,7 @@ SET(MIACORE_HEADER_BASE
   regmodel.hh
   scaler1d.hh
   shape.hh shape.cxx
+  searchpath.hh
   seriesstats.hh
   selftestcmdoption.hh
   singular_refobj.hh

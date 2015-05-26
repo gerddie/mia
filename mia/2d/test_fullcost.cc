@@ -387,17 +387,5 @@ const C2DTransformCreatorHandler::Instance& PrepareFullcostTests::transform_hand
 
 PrepareFullcostTests::PrepareFullcostTests()
 {
-	CPathNameArray cost_kernel_plugpath;
-	cost_kernel_plugpath.push_back(bfs::path("cost"));
-	C2DImageCostPluginHandler::set_search_path(cost_kernel_plugpath);
-	
-	CPathNameArray cost_plugpath;
-	cost_plugpath.push_back(bfs::path("fullcost"));
-	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
-
-	CPathNameArray transform_searchpath;
-	transform_searchpath.push_back(bfs::path("transform"));
-	C2DTransformCreatorHandler::set_search_path(transform_searchpath);
-
 }
 

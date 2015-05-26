@@ -36,12 +36,4 @@ namespace bfs=::boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_found_filters )
 {
-	CPathNameArray searchpath;
-	searchpath.push_back( bfs::path("fifof"));
-	C2DFifoFilterPluginHandler::set_search_path(searchpath);
-	BOOST_CHECK_EQUAL(C2DFifoFilterPluginHandler::instance().size(), 10u);
-
-	BOOST_CHECK_EQUAL(C2DFifoFilterPluginHandler::instance().get_plugin_names(),
-			  "byslice close dilate erode gauss label median mlv open regiongrow ");
-
 }

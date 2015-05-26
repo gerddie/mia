@@ -33,7 +33,6 @@
 
 
 #include <mia/core.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
@@ -190,7 +189,7 @@ int do_main( int argc, char *argv[] )
 		bfs::path reff(reference_filename);
 		reff.replace_extension(); 
 		input_set.set_images(references);  
-		input_set.rename_base(__bfs_get_filename(reff)); 
+		input_set.rename_base(reff.filename().string()); 
 		input_set.save_images(reference_filename);
 		
 		

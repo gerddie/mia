@@ -26,8 +26,6 @@
 #include <string>
 #include <ostream>
 
-#include <boost/filesystem/path.hpp>
-
 #include <mia/core/paramtranslator.hh>
 #include <mia/core/module.hh>
 #include <mia/core/property_flags.hh>
@@ -132,6 +130,7 @@ public:
 	*/
 	void add_property(const char *property);
 
+
 private:
 
 
@@ -151,6 +150,7 @@ private:
 	  The dynamically loadable module that holds the code of this plugin.  
 	 */
 	PPluginModule  m_module;
+
 };
 
 
@@ -189,10 +189,11 @@ public:
 	virtual void get_help(std::ostream& os) const;
 
 
-
-	/// \returns the plugin specific part of the plugin search path
-	static ::boost::filesystem::path search_path();
-
+	static const char * get_data_path_part();
+	
+	static const char * get_type_path_part(); 
+	
+	
 	/// @returns the long name of the plug in consisting of its name, its type, and data descriptors 
 	const std::string get_long_name() const;
 

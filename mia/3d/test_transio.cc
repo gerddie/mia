@@ -118,14 +118,6 @@ const C3DTransformCreatorHandler::Instance& PrepareTransIOTests::transform_handl
 
 PrepareTransIOTests::PrepareTransIOTests()
 {
-	CPathNameArray transformio_plugpath;
-	transformio_plugpath.push_back(bfs::path("transio"));
-	C3DTransformationIOPluginHandler::set_search_path(transformio_plugpath);
-	
-	CPathNameArray transform_searchpath;
-	transform_searchpath.push_back(bfs::path("transform"));
-	C3DTransformCreatorHandler::set_search_path(transform_searchpath);
-
 }
 
 

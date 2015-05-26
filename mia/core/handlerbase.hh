@@ -59,9 +59,10 @@ class EXPORT_CORE CPluginHandlerBase  {
 
 	/**
 	   Constructor 
-	   \param descriptor plugin search  path descriptor, used to identify the plugin type for users
+	   \param data_descr plugin search  path descriptor, used to identify the plugin data
+	   \param type_descr plugin search  path descriptor, used to identify the plugin type
 	*/
-	CPluginHandlerBase(const std::string& descriptor); 
+	CPluginHandlerBase(const char *data_descr, const char *type_descr); 
 
 	/**
 	   forbid copying - doxygen should drop these from the documentation 
@@ -96,6 +97,7 @@ class EXPORT_CORE CPluginHandlerBase  {
 	/// \returns the plug-in handler descriptor
 	const std::string& get_descriptor() const; 
 
+	
 	/** add all plug-in handler that may be called by this plug-in handler
 	    \param [in,out] handler_map plug in handler map to add to 
 	 */

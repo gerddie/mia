@@ -37,16 +37,6 @@ using namespace boost::unit_test;
 
 EXPORT_2DTEST void imagefiltertest2d_prepare_plugin_path()
 {
-	CPathNameArray filtersearchpath;
-	filtersearchpath.push_back( bfs::path("2d") / bfs::path("filter"));
-	filtersearchpath.push_back( bfs::path("filter"));
-	C2DFilterPluginHandler::set_search_path(filtersearchpath);
-
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("core")/bfs::path("spacialkernel"));
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("core")/bfs::path("spacialkernel"));
-
-	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 }
 
 NS_MIA_END

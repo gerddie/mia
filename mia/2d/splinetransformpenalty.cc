@@ -135,8 +135,6 @@ EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DSplineTransformPenalty, C2DSplineTr
 
 C2DSplineTransformPenaltyPluginHandlerTest::C2DSplineTransformPenaltyPluginHandlerTest()
 {
-	CPathNameArray plugpath({bfs::path("splinepenalty")});
-	C2DSplineTransformPenaltyPluginHandler::set_search_path(plugpath);
 
 }
 

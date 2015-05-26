@@ -32,6 +32,7 @@
 #include <tbb/parallel_reduce.h>
 #include <tbb/blocked_range.h>
 
+#include <boost/filesystem/path.hpp>
 
 NS_MIA_USE
 using namespace std;
@@ -45,7 +46,9 @@ namespace bfs = ::boost::filesystem;
 */
 BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 {
-	CTestPluginHandler::set_search_path({bfs::path("testplug")});
+	CPluginSearchpath sp(true);
+	sp.add("testplug"); 
+	CTestPluginHandler::set_search_path(sp);
 	auto callback = [](const tbb::blocked_range<int>& range, int init){
 		
 		CThreadMsgStream thread_stream;
@@ -87,7 +90,9 @@ BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 
 BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler )
 {
-	CTestPluginHandler::set_search_path({bfs::path("testplug")});
+	CPluginSearchpath sp(true);
+	sp.add("testplug"); 
+	CTestPluginHandler::set_search_path(sp);
 	
 	const CTestPluginHandler::Instance& handler = CTestPluginHandler::instance();
 
@@ -136,7 +141,10 @@ const string CDummy1Override::do_get_descr() const
 
 BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_override_plugin )
 {
-	CTestPluginHandler::set_search_path({bfs::path("testplug")});
+	CPluginSearchpath sp(true);
+	sp.add("testplug"); 
+	CTestPluginHandler::set_search_path(sp);
+
 	
 	auto& handler = CTestPluginHandler::instance();
 	
