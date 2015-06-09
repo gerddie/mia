@@ -71,7 +71,7 @@ def clean (text):
 
 def write_man_file(descr):
     name = escape_dash(descr.name)
-    print ".TH %s 1 \"%s\" \"v%s\"  \"USER COMMANDS\"" %(escape_dash(descr.name), get_date_string(), descr.version)
+    print ".TH %s 1 \"v%s\"  \"USER COMMANDS\"" %(escape_dash(descr.name), descr.version)
     print ".SH NAME"
     print name, 
     print "\- %s" % (clean(descr.whatis))
