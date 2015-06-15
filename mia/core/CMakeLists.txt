@@ -27,6 +27,7 @@ SET(MIACORE_SRC_BASE
   cmdoption.cc
   cmdstringoption.cc
   cmdbooloption.cc
+  cmeans.cc
   creator.cc
   datapool.cc
   distance.cc
@@ -99,6 +100,7 @@ SET(MIACORE_HEADER_BASE
   cmdoption.hh
   cmdoptionflags.hh
   cmdstringoption.hh
+  cmeans.hh
   combiner.hh
   cost.hh
   cost.cxx
@@ -295,6 +297,7 @@ NEW_TEST(boundary_conditions  miacore)
 NEW_TEST(callback miacore)
 NEW_TEST(cmdoptionflags miacore)
 NEW_TEST(cmdlineparser miacore)
+NEW_TEST(cmeans miacore)
 NEW_TEST(datapool miacore)
 NEW_TEST(delayedparameter miacore)
 NEW_TEST(distance miacore)

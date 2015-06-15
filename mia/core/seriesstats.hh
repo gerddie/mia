@@ -63,7 +63,7 @@ public:
 	/**
 	   This function gets called for each entity from the input that the statistics is 
 	   evaluated for. 
-	   \param @data the data container to be processed
+	   \param data the data container to be processed
 	 */
 	template <typename Container> 
 	void operator () ( const Container& data); 
