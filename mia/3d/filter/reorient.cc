@@ -55,7 +55,7 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 		copy(data.begin(), data.end(), result->begin());
 		break;
 	}
-	case xzy: {
+	case flip_xzy: {
 		C3DBounds out_size(data.get_size().xzy() );
 		result = new T3DImage<T>(out_size, data);
 		result->set_voxel_size(data.get_voxel_size().xzy());
@@ -67,7 +67,7 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 		}
 		break;
 	}
-	case yxz: {
+	case flip_yxz: {
 		C3DBounds out_size(data.get_size().yxz() );
 		result = new T3DImage<T>(out_size, data);
 		result->set_voxel_size(data.get_voxel_size().yxz());
@@ -106,7 +106,7 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 		}
 		break;
 	}
-	case zyx: {
+	case flip_zyx: {
 		C3DBounds out_size(data.get_size().zyx() );
 		result = new T3DImage<T>(out_size, data);
 		result->set_voxel_size(data.get_voxel_size().zyx());
@@ -119,6 +119,52 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 		}
 		break;
 	}
+	case rotate_x90:{
+		// rotate around x-axis by 90 degree 
+		C3DBounds out_size(data.get_size().yxz() );
+		result = new T3DImage<T>(out_size, data);
+		result->set_voxel_size(data.get_voxel_size().yxz());
+		for (size_t z = 0; z < data.get_size().z; ++z) {
+			for (size_t y = 0; y < data.get_size().y; ++y) {
+				copy(data.begin_at(0,y,z), data.begin_at(0,y,z) + data.get_size().x,
+				     result->begin_at(0,result->get_size().z - z - 1,y));
+			}
+		}
+		break;
+	}
+	case rotate_x180:
+		// rotate around x-axis by 180 degree 
+		C3DBounds out_size(data.get_size());
+		result = new T3DImage<T>(out_size, data);
+		result->set_voxel_size(data.get_voxel_size());
+		for (size_t z = 0; z < data.get_size().z; ++z) {
+			for (size_t y = 0; y < data.get_size().y; ++y) {
+				copy(data.begin_at(0,y,z), data.begin_at(0,y,z) + data.get_size().x,
+				     result->begin_at(0,result->get_size().y - 1 - y,
+						      result->get_size().z - 1 - z));
+			}
+		}
+		break;
+	case rotate_x270:
+		// rotate around x-axis by 270 degree 
+		C3DBounds out_size(data.get_size().yxz() );
+		result = new T3DImage<T>(out_size, data);
+		result->set_voxel_size(data.get_voxel_size().yxz());
+		for (size_t z = 0; z < data.get_size().z; ++z) {
+			for (size_t y = 0; y < data.get_size().y; ++y) {
+				copy(data.begin_at(0,y,z), data.begin_at(0,y,z) + data.get_size().x,
+				     result->begin_at(0,z,result->get_size().y - 1 - y));
+			}
+		}
+		break;
+
+	case rotate_y90:
+	case rotate_y180:
+	case rotate_y270:
+	case rotate_z90:
+	case rotate_z180:
+	case rotate_z270:
+		
 	default:
 		throw invalid_argument("Unknown reorientation requested");
 	}
@@ -141,13 +187,8 @@ E3DImageOrientation C3DReorient::get_new_orientation(EOrientations strategy, E3D
 		default:
 			return old_orientation;
 		}
-	case yxz:switch (old_orientation) {
-		case ior_axial:    return ior_axial;
-		case ior_saggital: return ior_saggital;
-		case ior_coronal:  return ior_coronal;
-		default:
-			return old_orientation;
-		}
+	case yxz:
+		return old_orientation;
 	case yzx:switch (old_orientation) {
 		case ior_axial:    return ior_saggital;
 		case ior_saggital: return ior_coronal;
@@ -241,7 +282,7 @@ const string C3DReorientImageFilterFactory::do_get_descr()const
 const TDictMap<C3DReorient::EOrientations>::Table
 C3DReorientImageFilterFactory::table[] = {
 	{"xyz", C3DReorient::xyz, "keep orientation"},
-	{"xzy", C3DReorient::xzy, "switch y-z" },
+	{"flip-xzy", C3DReorient::xzy, "switch y-z" },
 	{"yxz", C3DReorient::yzx, "switch x-y" },
 	{"yzx", C3DReorient::yxz, "rotate x->z->y->x" },
 	{"zxy", C3DReorient::zxy, "rotate x->y->z->x" },

@@ -40,7 +40,22 @@ NS_BEGIN(reorient_3dimage_filter)
  */
 class C3DReorient: public mia::C3DFilter {
 public:
-	enum EOrientations {xyz, xzy, yxz, yzx, zxy, zyx, axial, coronal, saggital, ooo};
+	enum EOrientations {xyz,
+			    yzx, // permutate axes
+			    zxy, // permutate axes
+			    flip_xzy, 
+			    flip_yxz,
+			    flip_zyx,
+			    rotate_x90,
+			    rotate_x180,
+			    rotate_x270,
+			    rotate_y90,
+			    rotate_y180,
+			    rotate_y270,
+			    rotate_z90,
+			    rotate_z180,
+			    rotate_z270,
+			    axial, coronal, saggital, ooo};
 
 	C3DReorient(EOrientations strategy);
 
