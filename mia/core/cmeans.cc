@@ -83,6 +83,7 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 	
 	const double bin_shift = histogram[0].first;
 	const double bin_scale = 1.0 / double(histogram[histogram.size() - 1].first - bin_shift);
+	const double inv_bin_scale = double(histogram[histogram.size() - 1].first - bin_shift);
 
 	size_t n = 0;
 	for(auto h: histogram)
@@ -105,8 +106,11 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 		  [](const SparseProbmap::value_type& p, const SparseHistogram::value_type& h) -> SparseProbmap::value_type {
 			  return make_pair(h.first, p.second); 
 		  }); 
-
 	
+	transform(class_centers.begin(), class_centers.end(), class_centers.begin(),
+		  [inv_bin_scale, bin_shift](double x) {
+			  return inv_bin_scale * x +  bin_shift; 
+		  });
 	
 	return result; 
 }
@@ -165,7 +169,7 @@ double CMeansImpl::update_class_centers(CMeans::DVector& class_center,
 		}
 		
 		if (sum_prob  != 0.0) // move slowly in the direction of new center
-			cc += 0.1 * (sum_weight / sum_prob - cc); 
+			cc = sum_weight / sum_prob; 
 		else {
 			cvwarn() << "class[" << i << "] has no probable members, keeping old value:" << 
 				sum_prob << ":" <<sum_weight <<"\n"; 

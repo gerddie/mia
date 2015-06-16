@@ -30,10 +30,11 @@ using namespace mia;
 
 using std::vector; 
 
-double gauss(double x , double c, double sigma2)
+double gauss(double x , double c, double sigma)
 {
+	const double f = sqrt(2 * 3.1415926); 
 	double d = x - c;
-	return 100 * exp(- d * d / sigma2); 
+	return 100000 * exp(- d * d / (2 * sigma * sigma)) / (sigma * f); 
 }
 
 class CTestFixedInitializer: public CMeans::Initializer
@@ -94,10 +95,10 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 		436,438,441,442,443,444,448,449,450,452
 	}; 
 
-	vector<double> centers{30, 120, 250, 300, 390};
+	vector<double> centers{30, 120, 220, 300, 390};
 	vector<double> weights{2.0, 0.9, 1.3, 1.1, 0.9};
 
-	double k = 50*50;
+	double k = 20;
 	for (int i = 0; i < 250; ++i) {
 		sh[i].first = x[i];
 		for (int j = 0; j < 5; ++j) {
@@ -108,7 +109,7 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 	}
 
 	CMeans::PInitializer cci(new CTestFixedInitializer({0, 0.25, 0.5, 0.75, 1}));
-	CMeans cm(1, 0.0001, cci);
+	CMeans cm(0.01, 0.0001, cci);
 
 
 	CMeans::DVector result_cci(5); 
