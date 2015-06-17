@@ -250,7 +250,7 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 		for (size_t z = 0; z < data.get_size().z; ++z) {
 			for (size_t y = 0; y < data.get_size().y; ++y) {
 				unsigned  ox = data.get_size().x - 1; 
-				for (size_t x = 0; x < data.get_size().x; ++x) {
+				for (size_t x = 0; x < data.get_size().x; ++x, --ox) {
 					(*result)(y,ox,z) = data(x,y,z);
 				}
 				
