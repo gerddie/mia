@@ -43,9 +43,9 @@ public:
 	enum EOrientations {xyz,
 			    yzx, // permutate axes
 			    zxy, // permutate axes
-			    flip_xzy, 
-			    flip_yxz,
-			    flip_zyx,
+			    flip_yz, 
+			    flip_xy,
+			    flip_xz,
 			    rotate_x90,
 			    rotate_x180,
 			    rotate_x270,
@@ -55,7 +55,7 @@ public:
 			    rotate_z90,
 			    rotate_z180,
 			    rotate_z270,
-			    axial, coronal, saggital, ooo};
+			    ooo};
 
 	C3DReorient(EOrientations strategy);
 
@@ -63,7 +63,6 @@ public:
 	C3DReorient::result_type operator () (const mia::T3DImage<T>& data) const;
 private:
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	EOrientations get_strategy(mia::E3DImageOrientation old_orientation) const;
 	mia::E3DImageOrientation get_new_orientation(EOrientations strategy, mia::E3DImageOrientation old_orientation)const;
 	EOrientations m_strategy;
 };

@@ -39,7 +39,7 @@ SET(filters3dNew
   mlv 
   morphological 
   msnormalizer
-#  reorient 
+  reorient 
   resize
   scale
   seededwatershed
