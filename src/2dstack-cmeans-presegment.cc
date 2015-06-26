@@ -167,6 +167,32 @@ vector<pair<int, unsigned long>> CFullHistogram::get_compressed_histogram()const
         return result; 
 }
 
+typedef map<double, unsigned char> CLabelSeedMapper;
+class FSetLabels: public TFilter<P2DImage> {
+	FSetLabels(const CLabelSeedMapper& map);
+
+	template <typename T> 
+	P2DImage operator() (const T2DImage<T>& image) const;   
+private:
+	const CLabelSeedMapper& m_map; 
+
+}; 
+
+FSetLabels::FSetLabels(const CLabelSeedMapper& map):m_map(map)
+{
+}
+						    
+
+template <typename T> 
+P2DImage FSetLabels::operator() (const T2DImage<T>& image) const
+{
+	C2DUBImage *labels = new C2DUBImage(image.get_size(), image);
+
+	transform(image.begin(), image.end(), labels.begin(), [&m_map](T x) {
+			return m_map[x]; 
+		}); 
+	return labels; 
+}
 
 int do_main( int argc, char *argv[] )
 {
@@ -174,6 +200,7 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
         string out_filetype("png");
 
+	float seed_threshold = 0.9; 
         float histogram_thresh = 30;
 	PInitializer class_center_initializer; 
 		
@@ -250,15 +277,43 @@ int do_main( int argc, char *argv[] )
 
 	// now create the label map.
 
-	
-	
+	for (int i = 0; i < pv.size(); ++i) {
+		int result = 0; 
+		for (auto k = 0; k < class_centers.size(); ++k) {
+			if (pv[i].second[k] > seed_threshold)
+				result = k + 1; 
+		}
+		value_map[pv[i].first] = result; 
+	}
 
+	// created the labeled images
+	FSetLabels  set_labels(value_map);
+
+	P2DFilter seeded_ws = produce_2dimage_filter("sws:seed=labelseed.@"); 
 	
+        for (size_t i = start_filenum; i < end_filenum; ++i) {
+                string src_name = create_filename(src_basename.c_str(), i);
+                C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(src_name);
+                cvmsg() << "Read:" << src_name << "\r";
+                if (in_image_list.get() && in_image_list->size()) {
+                        for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k) {
+				// create label image
+				auto label_seed = mia::filter (set_labels, **k);
+				save_image("labelseed.@");
 
-        
-        
-        
+				auto label = seeded_ws->filter(**k);
+				*k = label; 
+			}
+                }
+		string trgt_name = create_filename(out_filename.c_str(), i);
+		stringstream ss;
+		ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_filetype;
 
+		imageio.save(ss.str(), in_image_list);
+        }
+	return EXIT_SUCCESS;
 }
+
+MIA_MAIN(do_main); 
 
         
