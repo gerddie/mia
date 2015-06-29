@@ -116,6 +116,8 @@ DEFEXE(2dtrackpixelmovement mia2d )
 
 DEFCHKEXE(3dlerp mia3d )
 
+DEFEXE(2dstack-cmeans-presegment  mia3d )
+
 DEFEXE(2dmultiimageto3d   mia3d )
 DEFEXE(3dimagestats       mia3d )
 DEFEXE(3dcost             mia3d )

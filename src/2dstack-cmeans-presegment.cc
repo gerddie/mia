@@ -22,6 +22,9 @@
 #include <ostream>
 #include <fstream>
 #include <mia/core.hh>
+#include <mia/core/cmeans.hh>
+#include <mia/core/cmdlineparser.hh>
+#include <mia/internal/main.hh>
 #include <mia/2d.hh>
 
 NS_MIA_USE;
@@ -69,15 +72,14 @@ private:
 
 template <typename T> 
 struct dispatch_by_pixeltype {
-        static void apply(const T2DImage<T>& MIA_PARAM_UNUSED(image),
-                          int MIA_PARAM_UNUSED(shift), vector<long>& MIA_PARAM_UNUSED(histogram)){
+        static void apply(const T2DImage<T>& MIA_PARAM_UNUSED(image), vector<unsigned long>& MIA_PARAM_UNUSED(histogram)){
                 throw invalid_argument("Input pixel type not supported"); 
         }
 }; 
 
 template <> 
 struct dispatch_by_pixeltype<unsigned char> {
-        static void apply(const C2DUBImage& image, int MIA_PARAM_UNUSED(shift), vector<long>& histogram){
+        static void apply(const C2DUBImage& image, vector<unsigned long>& histogram){
                 for (auto p: image) {
                         ++histogram[p]; 
                 }
@@ -86,7 +88,7 @@ struct dispatch_by_pixeltype<unsigned char> {
 
 template <> 
 struct dispatch_by_pixeltype<unsigned short> {
-        static void apply(const C2DUSImage& image, int MIA_PARAM_UNUSED(shift), vector<long>& histogram){
+        static void apply(const C2DUSImage& image, vector<unsigned long>& histogram){
                 for (auto p: image) {
                         ++histogram[p]; 
                 }
@@ -95,7 +97,8 @@ struct dispatch_by_pixeltype<unsigned short> {
 
 template <> 
 struct dispatch_by_pixeltype<signed char> {
-        static void apply(const C2DSBImage& image, int shift, vector<long>& histogram){
+        static void apply(const C2DSBImage& image, vector<unsigned long>& histogram){
+		int shift = -numeric_limits<signed char>::min(); 
                 for (auto p: image) {
                         ++histogram[shift + p]; 
                 }
@@ -103,8 +106,8 @@ struct dispatch_by_pixeltype<signed char> {
 }; 
 
 template <> 
-struct dispatch_by_pixeltype<unsigned short> {
-        static void apply(const C2DSSImage& image, int shift, vector<long>& histogram){
+struct dispatch_by_pixeltype<signed short> {
+        static void apply(const C2DSSImage& image, vector<unsigned long>& histogram){
                 int shift = -numeric_limits<signed short>::min(); 
                 for (auto p: image) {
                         ++histogram[shift + p]; 
@@ -123,7 +126,7 @@ size_t CFullHistogram::operator ()(const T2DImage<T>& image)
 {
         if (m_pixeltype ==it_none) {
                 m_pixeltype = image.get_pixel_type();
-                m_shift = numeric_limits<T>::min();
+		m_shift = -numeric_limits<T>::min(); 
                 switch (m_pixeltype) {
                 case it_sbyte:
                 case it_ubyte:
@@ -144,7 +147,7 @@ size_t CFullHistogram::operator ()(const T2DImage<T>& image)
                                                          CPixelTypeDict.get_name(image.get_pixel_type())); 
         }
 
-        dispatch_by_pixeltype<T>::apply(image, m_shift, m_histogram);
+        dispatch_by_pixeltype<T>::apply(image, m_histogram);
 
         return image.size(); 
 }
@@ -160,7 +163,7 @@ vector<pair<int, unsigned long>> CFullHistogram::get_compressed_histogram()const
 
         vector<pair<int, unsigned long>> result;
         result.reserve(nonzero_bins);
-        for (int i = 0; i < m_histogram.size(); ++i) {
+        for (unsigned i = 0; i < m_histogram.size(); ++i) {
                 if (m_histogram[i] != 0)
                         result.push_back(make_pair(i - m_shift, m_histogram[i])); 
         }
@@ -169,6 +172,7 @@ vector<pair<int, unsigned long>> CFullHistogram::get_compressed_histogram()const
 
 typedef map<double, unsigned char> CLabelSeedMapper;
 class FSetLabels: public TFilter<P2DImage> {
+public: 
 	FSetLabels(const CLabelSeedMapper& map);
 
 	template <typename T> 
@@ -188,21 +192,23 @@ P2DImage FSetLabels::operator() (const T2DImage<T>& image) const
 {
 	C2DUBImage *labels = new C2DUBImage(image.get_size(), image);
 
-	transform(image.begin(), image.end(), labels.begin(), [&m_map](T x) {
-			return m_map[x]; 
+	transform(image.begin(), image.end(), labels->begin(), [this](T x) {
+			return m_map.at(x); 
 		}); 
-	return labels; 
+	return P2DImage(labels); 
 }
 
 int do_main( int argc, char *argv[] )
 {
         string out_filename;
 	string in_filename;
-        string out_filetype("png");
+        string out_type("png");
 
 	float seed_threshold = 0.9; 
         float histogram_thresh = 30;
-	PInitializer class_center_initializer; 
+	CMeans::PInitializer class_center_initializer;
+
+	int nclasses; 
 		
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
@@ -215,19 +221,19 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_output));
         options.add(make_opt( out_type, "type", 't', "output file name type", 
 			      CCmdOptionFlags::required_output));
-
+	
         options.set_group("Classes");
-        options.add(make_opt( histogram_thresh, bf_closed_interval, {0,50}, "histogram-thresh", 'T',
+        options.add(make_opt( histogram_thresh, EParameterBounds::bf_closed_interval, {0,50}, "histogram-thresh", 'T',
                               "Percent of the extrem parts of the histogram to be collapsed into the respective last histogram bin."));
         
-        options.add(make_opt( nclasses, bf_min_open, {0}, "classes", 'C', "Number of classes the non-zero pixels "
+        options.add(make_opt( nclasses, EParameterBounds::bf_min_open, {0}, "classes", 'C', "Number of classes the non-zero pixels "
                               "should be classified in"));
 
 	
         
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
+	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
 	size_t format_width = 0;
@@ -249,19 +255,20 @@ int do_main( int argc, char *argv[] )
                                 n_pixels += accumulate(histo, **k);
                 }
         }
-
+	
         auto chistogram = histo.get_compressed_histogram();
-
+	
         size_t n_cut_off = static_cast<size_t>(floor(n_pixels / 100.0 * histogram_thresh));
-
-
-
+	
+	
+	size_t ni = 0; 
 	auto ii = chistogram.begin(); 
         while ( ni < n_cut_off && ii != chistogram.end()) {
 		ni += ii->second;
                 ++ii; 
         }
 	
+	size_t ne = 0; 
 	auto ie = chistogram.end() - 1;
         while ( ne < n_cut_off && ie !=  ii) {
 		ne += ie->second;
@@ -270,16 +277,17 @@ int do_main( int argc, char *argv[] )
 
         vector<pair<int, unsigned long>> threshed_histo(ii, ie);
 
-	DVector class_centers; 
+	CMeans::DVector class_centers; 
 	
 	CMeans cmeans(0.01, 0.00001, class_center_initializer);
-	SparseProbmap pv = cmeans.run(threshed_histo,  class_centers);
+	CMeans::SparseProbmap pv = cmeans.run(threshed_histo,  class_centers);
 
 	// now create the label map.
-
-	for (int i = 0; i < pv.size(); ++i) {
+	CLabelSeedMapper value_map; 
+	
+	for (size_t i = 0; i < pv.size(); ++i) {
 		int result = 0; 
-		for (auto k = 0; k < class_centers.size(); ++k) {
+		for (size_t k = 0; k < class_centers.size(); ++k) {
 			if (pv[i].second[k] > seed_threshold)
 				result = k + 1; 
 		}
@@ -299,17 +307,17 @@ int do_main( int argc, char *argv[] )
                         for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k) {
 				// create label image
 				auto label_seed = mia::filter (set_labels, **k);
-				save_image("labelseed.@");
-
+				save_image("labelseed.@", label_seed);
+				
 				auto label = seeded_ws->filter(**k);
 				*k = label; 
 			}
                 }
 		string trgt_name = create_filename(out_filename.c_str(), i);
 		stringstream ss;
-		ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_filetype;
-
-		imageio.save(ss.str(), in_image_list);
+		ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_type;
+		
+		imageio.save(ss.str(), *in_image_list);
         }
 	return EXIT_SUCCESS;
 }

@@ -213,10 +213,10 @@ enum class EParameterBounds : int {
 	bf_max = 0x10, 
 	bf_max_open = 0x30, 
 	bf_max_closed =  0x50, 
-	bf_max_flags = 0x70, 
+	bf_max_flags = 0x70,
 	bf_closed_interval = 0x55, 
 	bf_open_interval = 0x33 
-}; 
+	}; 
 
 IMPLEMENT_FLAG_OPERATIONS(EParameterBounds); 
 
