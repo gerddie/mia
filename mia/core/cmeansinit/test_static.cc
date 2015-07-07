@@ -19,7 +19,42 @@
  */
 
 #include <mia/internal/plugintester.hh>
-#include <mia/core/cmeansinit/kmeans.hh>
+#include <mia/core/cmeansinit/static.hh>
 
-NS_MIA_USING
+NS_MIA_USE
+
+BOOST_AUTO_TEST_CASE (test_even)
+{
+	
+	auto initializer = BOOST_TEST_create_from_plugin<CEqualInitializerPlugin>("even:nc=3");
+
+	CMeans::NormalizedHistogram nh;
+
+	auto classes = initializer->run(nh);
+
+	BOOST_CHECK_EQUAL(classes.size(), 3u);
+
+	BOOST_CHECK_EQUAL(classes[0], 0.0f);
+	BOOST_CHECK_EQUAL(classes[1], 0.5f);
+	BOOST_CHECK_EQUAL(classes[2], 1.0f);
+}
+
+BOOST_AUTO_TEST_CASE (test_predefined)
+{
+	
+	auto initializer = BOOST_TEST_create_from_plugin<CPredefinedInitializerPlugin>("predefined:cc=[0.1,0.2,0.3,0.9]");
+
+	CMeans::NormalizedHistogram nh;
+
+	auto classes = initializer->run(nh);
+
+	BOOST_CHECK_EQUAL(classes.size(), 4u);
+
+	BOOST_CHECK_CLOSE(classes[0], 0.1f, 0.1);
+	BOOST_CHECK_CLOSE(classes[1], 0.2f, 0.1);
+	BOOST_CHECK_CLOSE(classes[2], 0.3f, 0.1);
+	BOOST_CHECK_CLOSE(classes[3], 0.9f, 0.1);
+}
+
+
 

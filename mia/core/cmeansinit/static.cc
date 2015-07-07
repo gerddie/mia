@@ -19,7 +19,8 @@
  */
 
 
-#include <mia/core/cmeansinit/cmeansinit.hh>
+#include <mia/core/cmeansinit/static.hh>
+#include <mia/core/parameter.cxx>
 
 
 NS_MIA_BEGIN
@@ -28,11 +29,11 @@ CEqualInitializer::CEqualInitializer(size_t nclasses):m_nclasses(nclasses)
 {
 }
 
-CMeans::DVector CEqualInitializer::run(const NormalizedHistogram& nh) const
+CMeans::DVector CEqualInitializer::run(const CMeans::NormalizedHistogram& nh) const
 {
         CMeans::DVector result(m_nclasses);
 
-        for (int i = 0; i < m_nclasses; ++i)
+        for (unsigned i = 0; i < m_nclasses; ++i)
                 result[i] = static_cast<double>(i) / ( m_nclasses - 1); 
         
         return result; 
@@ -43,7 +44,7 @@ CPredefinedInitializer::CPredefinedInitializer(const CMeans::DVector& init):m_in
         // should check that this is in normalized range ? 
 }
 
-CMeans::DVector CPredefinedInitializer::run(const NormalizedHistogram& nh) const
+CMeans::DVector CPredefinedInitializer::run(const CMeans::NormalizedHistogram& nh) const
 {
         
         
@@ -51,25 +52,11 @@ CMeans::DVector CPredefinedInitializer::run(const NormalizedHistogram& nh) const
 }
 
 
-
-// the class that has only the size as a paramater
-CMeansInitializerSizedPlugin::CMeansInitializerSizedPlugin(const char *name):
-        CMeansInitializerPlugin(name)
-{
-        add_parameter("nc", make_lo_param(m_size, 2, true, "Number of classes to use for the fuzzy-cmeans classification")); 
-}
-
-size_t CMeansInitializerSizedPlugin::get_size_param() const
-{
-        return m_size; 
-}
-
-
 CPredefinedInitializerPlugin::CPredefinedInitializerPlugin():
         CMeansInitializerPlugin("predefined")
         
 {
-        add_parameter("cc", make_lo_param(m_init, true,
+        add_parameter("cc", make_param(m_init, true,
                                           "Initial class centers fuzzy-cmeans classification (normalized to range [0,1])")); 
 }
 
@@ -85,7 +72,7 @@ const std::string CPredefinedInitializerPlugin::do_get_descr() const
 
 
 CEqualInitializerPlugin::CEqualInitializerPlugin():
-        CMeansInitializerPlugin("even")
+        CMeansInitializerSizedPlugin("even")
 {
 }
 

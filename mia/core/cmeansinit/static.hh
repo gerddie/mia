@@ -28,34 +28,26 @@ class CEqualInitializer : public CMeans::Initializer {
 public:
         CEqualInitializer(size_t nclasses);
 
-        CMeans::DVector run(const NormalizedHistogram& nh) const; 
+        CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const; 
         
 private:
 
         size_t m_nclasses; 
         
-}: 
+}; 
+
 
 class CPredefinedInitializer : public CMeans::Initializer {
 public: 
-        CPredefinedInitializer(const CMeans::DVector& init);
 
-        CMeans::DVector run(const NormalizedHistogram& nh) const;
-private: 
-        CMeans::DVector m_init; 
-}: 
-
-
-// the class that has only the size as a paramater
-class CMeansInitializerSizedPlugin : public CMeansInitializerPlugin {
-public: 
-        CMeansInitializerSizedPlugin(const char *name);
-protected:
-        size_t get_size_param() const; 
+	CPredefinedInitializer(const CMeans::DVector& init); 
+	CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const;
 private:
-        size_t m_size; 
-       
+	CMeans::DVector m_init; 
 }; 
+
+
+
 
 class CPredefinedInitializerPlugin : public CMeansInitializerPlugin {
 public: 

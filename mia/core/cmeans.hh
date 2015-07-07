@@ -60,7 +60,18 @@ private:
 
 
 
+typedef TFactory<CMeans::Initializer> CMeansInitializerPlugin;
 
+// the class that has only the size as a paramater
+class EXPORT_CORE CMeansInitializerSizedPlugin : public CMeansInitializerPlugin {
+public: 
+        CMeansInitializerSizedPlugin(const char *name);
+protected:
+        size_t get_size_param() const; 
+private:
+        size_t m_size; 
+       
+}; 
 
 extern template class EXPORT_CORE TPlugin<CMeans::Initializer, CMeans::Initializer>; 
 extern template class EXPORT_CORE TFactory<CMeans::Initializer>;
@@ -73,7 +84,7 @@ extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<TFacto
 
 
 
-typedef TFactory<CMeans::Initializer> CMeansInitializerPlugin;
+
 typedef THandlerSingleton<TFactoryPluginHandler<CMeansInitializerPlugin> >CMeansInitializerPluginHandler;
 
 /// @cond NEVER

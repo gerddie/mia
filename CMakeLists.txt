@@ -471,7 +471,7 @@ ENDIF(PYTHONINTERP_FOUND)
 # define plug-in related values and directories and add the test directory link target 
 # 
 
-DEFINE_PLUGIN_NAMES( 1d  "spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 1d  "cmeans;spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dmyocardsegset "io" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dsplinepenalty  "transform" ${PLUGIN_INSTALL_PATH})
