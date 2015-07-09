@@ -219,7 +219,8 @@ P2DImage FSetLabels::operator() (const T2DImage<T>& image) const
 
 int do_main( int argc, char *argv[] )
 {
-        string out_filename;
+        string out_labels;
+	string out_probmap;
 	string in_filename;
         string out_type("png");
 
@@ -235,9 +236,11 @@ int do_main( int argc, char *argv[] )
         options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 			      CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( out_filename, "out-seeds", 'o', "output file name base", 
-			      CCmdOptionFlags::required_output));
-        options.add(make_opt( out_type, "type", 't', "output file name type", 
+	options.add(make_opt( out_probmap, "out-probmap", 'p', "Save probability map to this file", 
+			      CCmdOptionFlags::output));
+        options.add(make_opt( out_type, "type", 't', "output file name type"));
+
+	options.add(make_opt( out_labels, "out-labels", 'o', "output file name base", 
 			      CCmdOptionFlags::required_output));
 	
         options.set_group("Classes");
@@ -299,6 +302,14 @@ int do_main( int argc, char *argv[] )
 	CMeans cmeans(0.01, 0.00001, class_center_initializer);
 	CMeans::SparseProbmap pv = cmeans.run(threshed_histo,  class_centers);
 
+
+	if ( ! out_probmap.empty() ) {
+		ofstream outstr(out_probmap.c_str());
+		for (auto ipv: pv) {
+			outstr << ipv.first << " " << ipv.second << "\n"; 
+		}
+	}
+	
 	
 	// now create the label map.
 	CLabelSeedMapper value_map; 
@@ -331,9 +342,8 @@ int do_main( int argc, char *argv[] )
 				*k = label; 
 			}
                 }
-		string trgt_name = create_filename(out_filename.c_str(), i);
 		stringstream ss;
-		ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_type;
+		ss << out_labels << setw(format_width) << setfill('0') << i << "." << out_type;
 		
 		imageio.save(ss.str(), *in_image_list);
         }
