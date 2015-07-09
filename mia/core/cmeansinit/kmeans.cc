@@ -21,13 +21,15 @@
 
 #include <mia/core/cmeansinit/kmeans.hh>
 
+#include <iomanip>
+
 NS_MIA_BEGIN
 
 CKMeansInitializer::CKMeansInitializer(size_t nclasses):m_nclasses(nclasses)
 {
 }
 
-bool kmeans_step(const CMeans::NormalizedHistogram& nh, vector<int>& classification,
+bool kmeans_step(const CMeans::NormalizedHistogram& nh, std::vector<int>& classification,
 		 CMeans::DVector& classes, size_t l, int& biggest_class )
 {
 	cvdebug()<<  "kmeans enter: ";
@@ -110,17 +112,16 @@ CMeans::DVector CKMeansInitializer::run(const CMeans::NormalizedHistogram& nh) c
 		throw create_exception<std::invalid_argument>("cmeans: requested ", m_nclasses, 
 						    "class(es), required are at least two");
 	
-	const size_t nclusters = classes.size(); 
-	if ( nh.size() < nclusters ) 
-		throw create_exception<std::invalid_argument>("kmeans: insufficient input: want ", nclusters , 
+	if ( nh.size() < m_nclasses ) 
+		throw create_exception<std::invalid_argument>("kmeans: insufficient input: want ", m_nclasses , 
 						    " classes, but git only ",  nh.size(), " distinct input values"); 
 
 	CMeans::DVector classes(m_nclasses);
 
-	vector<int> classification(nh.size(), 0);
+	std::vector<int> classification(nh.size(), 0);
 	
 	double sum = 0.0;
-	for_each (auto h : nh) {
+	for(auto h : nh) {
 		sum += h.first * h.second; 
 	}; 
 
@@ -134,7 +135,7 @@ CMeans::DVector CKMeansInitializer::run(const CMeans::NormalizedHistogram& nh) c
 	kmeans_step(nh, classification, classes, 1, biggest_class);
 	
 	// further clustering always splits biggest class 
-	for (size_t  l = 2; l < nclusters; l++) {
+	for (size_t  l = 2; l < m_nclasses; l++) {
 		const size_t pos = biggest_class > 0 ? biggest_class - 1 : biggest_class + 1; 
 		classes[l] = 0.5 * (classes[biggest_class] + classes[pos]);
 		kmeans_step(nh, classification, classes, l, biggest_class); 
@@ -142,7 +143,7 @@ CMeans::DVector CKMeansInitializer::run(const CMeans::NormalizedHistogram& nh) c
 	
 	// some post iteration until centers no longer change 
 	for (size_t  l = 1; l < 3; l++) {
-		if (kmeans_step(nh, classification, classes, nclusters - 1, biggest_class)) 
+		if (kmeans_step(nh, classification, classes, m_nclasses - 1, biggest_class)) 
 			break; 
 	}
 	return classes; 
@@ -150,7 +151,7 @@ CMeans::DVector CKMeansInitializer::run(const CMeans::NormalizedHistogram& nh) c
 }
 
 CKMeansInitializerPlugin::CKMeansInitializerPlugin():
-        CMeansInitializerPlugin("k-means")
+	CMeansInitializerSizedPlugin("kmeans")
 {
 }
 
@@ -160,9 +161,16 @@ CMeansInitializerPlugin::Product * CKMeansInitializerPlugin::do_create() const
         return new CKMeansInitializer(get_size_param());
 }
 
-const std::string CMeansInitializerPlugin::do_get_descr() const
+const std::string CKMeansInitializerPlugin::do_get_descr() const
 {
         return "C-Means initializer that sets the initial class centers by using a k-means classification";
 }
+
+extern "C" EXPORT CPluginBase  *get_plugin_interface()
+{
+
+	return new CKMeansInitializerPlugin(); 
+}
+
 
 NS_MIA_END

@@ -28,7 +28,7 @@ class CKMeansInitializer : public CMeans::Initializer {
 public: 
         CKMeansInitializer(size_t nclasses);
         
-        CMeans::DVector run(const NormalizedHistogram& nh) const;
+        CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const;
 private: 
         size_t m_nclasses; 
         

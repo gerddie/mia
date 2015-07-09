@@ -88,5 +88,12 @@ const std::string CEqualInitializerPlugin::do_get_descr() const
 }
 
 
+extern "C" EXPORT CPluginBase  *get_plugin_interface()
+{
+	auto retval = new CEqualInitializerPlugin();
+	retval->append_interface(new CPredefinedInitializerPlugin());
+	return retval; 
+}
+
 
 NS_MIA_END
