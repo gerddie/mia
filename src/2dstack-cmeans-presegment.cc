@@ -173,27 +173,46 @@ vector<pair<int, unsigned long>> CFullHistogram::get_compressed_histogram()const
 typedef map<double, unsigned char> CLabelSeedMapper;
 class FSetLabels: public TFilter<P2DImage> {
 public: 
-	FSetLabels(const CLabelSeedMapper& map);
+	FSetLabels(const CLabelSeedMapper& map, int low_end, int low_label, int high_end, int high_label);
 
 	template <typename T> 
 	P2DImage operator() (const T2DImage<T>& image) const;   
 private:
-	const CLabelSeedMapper& m_map; 
+	const CLabelSeedMapper& m_map;
+
+	int m_low_end;
+	int m_low_label;
+	int m_high_end;
+	int m_high_label; 
 
 }; 
 
-FSetLabels::FSetLabels(const CLabelSeedMapper& map):m_map(map)
+FSetLabels::FSetLabels(const CLabelSeedMapper& map, int low_end, int low_label, int high_end, int high_label):
+	m_map(map),
+	m_low_end(low_end),
+	m_low_label(low_label),
+	m_high_end(high_end),
+	m_high_label(high_label)
 {
 }
 						    
-
 template <typename T> 
 P2DImage FSetLabels::operator() (const T2DImage<T>& image) const
 {
 	C2DUBImage *labels = new C2DUBImage(image.get_size(), image);
 
-	transform(image.begin(), image.end(), labels->begin(), [this](T x) {
-			return m_map.at(x); 
+	transform(image.begin(), image.end(), labels->begin(), [this](T x) -> unsigned char{
+			if (x <= m_low_end)
+				return m_low_label;
+			if (x >= m_high_end)
+				return m_high_label;
+			auto l = m_map.find(x);
+			if (l != m_map.end())  
+				return l->second;
+			else {
+				cvdebug() << "Unmapped value " << x << "\n"; 
+				return 255; 
+			}
 		}); 
 	return P2DImage(labels); 
 }
@@ -280,6 +299,7 @@ int do_main( int argc, char *argv[] )
 	CMeans cmeans(0.01, 0.00001, class_center_initializer);
 	CMeans::SparseProbmap pv = cmeans.run(threshed_histo,  class_centers);
 
+	
 	// now create the label map.
 	CLabelSeedMapper value_map; 
 	
@@ -289,11 +309,11 @@ int do_main( int argc, char *argv[] )
 			if (pv[i].second[k] > seed_threshold)
 				result = k + 1; 
 		}
-		value_map[pv[i].first] = result; 
+		value_map[threshed_histo[i].first] = result; 
 	}
 
 	// created the labeled images
-	FSetLabels  set_labels(value_map);
+	FSetLabels  set_labels(value_map, ii->first, 1, ie->first, class_centers.size());
 
 	P2DFilter seeded_ws = produce_2dimage_filter("sws:seed=labelseed.@"); 
 	
