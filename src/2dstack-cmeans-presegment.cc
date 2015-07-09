@@ -208,8 +208,7 @@ int do_main( int argc, char *argv[] )
         float histogram_thresh = 30;
 	CMeans::PInitializer class_center_initializer;
 
-	int nclasses; 
-		
+	
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
@@ -226,8 +225,7 @@ int do_main( int argc, char *argv[] )
         options.add(make_opt( histogram_thresh, EParameterBounds::bf_closed_interval, {0,50}, "histogram-thresh", 'T',
                               "Percent of the extrem parts of the histogram to be collapsed into the respective last histogram bin."));
         
-        options.add(make_opt( nclasses, EParameterBounds::bf_min_open, {0}, "classes", 'C', "Number of classes the non-zero pixels "
-                              "should be classified in"));
+        options.add(make_opt( class_center_initializer, "kmeans:nc=3", "classes", 'C', "C-means class initializer"));
 
 	
         
