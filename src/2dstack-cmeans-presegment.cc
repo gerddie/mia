@@ -225,7 +225,7 @@ int do_main( int argc, char *argv[] )
         string out_type("png");
 
 	float seed_threshold = 0.9; 
-        float histogram_thresh = 30;
+        float histogram_thresh = 5;
 	CMeans::PInitializer class_center_initializer;
 
 	
@@ -243,12 +243,16 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( out_labels, "out-labels", 'o', "output file name base", 
 			      CCmdOptionFlags::required_output));
 	
-        options.set_group("Classes");
+        options.set_group("Parameters");
         options.add(make_opt( histogram_thresh, EParameterBounds::bf_closed_interval, {0,50}, "histogram-thresh", 'T',
                               "Percent of the extrem parts of the histogram to be collapsed into the respective last histogram bin."));
         
         options.add(make_opt( class_center_initializer, "kmeans:nc=3", "classes", 'C', "C-means class initializer"));
+	
+	options.add(make_opt( seed_threshold, EParameterBounds::bf_open_interval, {0.0f,1.0f}, "seed-threshold", 'S',
+                              "Probability threshold value to consider a pixel as seed pixel."));
 
+	
 	
         
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
