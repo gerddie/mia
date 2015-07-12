@@ -31,7 +31,7 @@ using namespace mia;
 BOOST_AUTO_TEST_CASE( test_gncc_zero ) 
 {
         C2DBounds size(4,4); 
-        auto ncc = BOOST_TEST_create_from_plugin<CNCC2DImageCostPlugin>("gnncc");
+        auto ncc = BOOST_TEST_create_from_plugin<CNCC2DImageCostPlugin>("gncc");
         
         C2DFImage a(size); 
         C2DFImage b(size); 
@@ -50,14 +50,13 @@ BOOST_AUTO_TEST_CASE( test_gncc_zero )
         BOOST_CHECK_SMALL(ncc->value(b), 1e-7); 
 
         BOOST_CHECK_SMALL(ncc->value(a), 1e-7); 
-        
-        
 }
+
 
 BOOST_AUTO_TEST_CASE( test_ncc_nonzero ) 
 {
         C2DBounds size(4,4); 
-        auto ncc = BOOST_TEST_create_from_plugin<CNCC2DImageCostPlugin>("ncc");
+        auto ncc = BOOST_TEST_create_from_plugin<CNCC2DImageCostPlugin>("gncc");
         
         C2DFImage a(size); 
         C2DFImage b(size); 

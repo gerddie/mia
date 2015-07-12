@@ -58,29 +58,42 @@ double CGNCC2DImageCost::do_value(const mia::C2DImage& a,
 	auto& nagx = dynamic_cast<const C2DFImage&>(*agx);
 	auto& nagy = dynamic_cast<const C2DFImage&>(*agy);
 	
-	auto inagx = nagx.begin();
-	auto enagx = nagx.end();
-	auto inagy = nagy.begin();
-	auto inbgx = m_grad_x.begin();
-	auto inbgy = m_grad_y.begin();
+	auto sumup = [nagx, nagy, this](const tbb::blocked_range<size_t>& range,
+					const NCCSums& sumacc) const -> NCCSums {
+		for (auto y = range.begin(); y != range.end(); ++y) {
+			auto inagx = nagx.begin_at(0,y);
+			auto enagx = nagx.begin_at(0,y+1);
+			auto inagy = nagy.begin_at(0,y+1);
+			auto inbgx = m_grad_x.begin();
+			auto inbgy = m_grad_y.begin();
 
-	NCCSums nccsum; 
-	
-	while (inagx != enagx) {
-		nccsum.add(*inagx++, inbgx++);
-		nccsum.add(*inagy++, inbgy++);
-		++inagx;
-		++inbgx; 
-		++inagy;
-		++inbgy; 
+			while (inagx != enagx) {
+				nccsum.add(*inagx++, inbgx++);
+				nccsum.add(*inagy++, inbgy++);
+				++inagx;
+				++inbgx; 
+				++inagy;
+				++inbgy; 
+			}
+		}
+		return sum + sumacc; 
 	}
-	return nccsum.value(); 
+	
+	NCCSums sum; 
+	sum = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), sum, sumup, 
+			      [](const NCCSums& x, const NCCSums& y){
+				      return x + y;
+			      });
+	return sum.value(); 
 }       
 
 double CGNCC2DImageCost::do_evaluate_force(const mia::C2DImage& a,
 					   const mia::C2DImage& MIA_PARAM_UNUSED(b),
 					   mia::C2DFVectorfield& force) const
 {
+
+	
+
 	
 }       
         
