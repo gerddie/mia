@@ -27,6 +27,8 @@ using namespace cdiff_1d_folding_kernel;
 C1DCDiffFilterKernel::C1DCDiffFilterKernel():
 	C1DFoldingKernel(1)
 {
+	(*this)[0] = -1;
+	(*this)[2] = 1; 
 }
 
 C1DSpacialCDiffKernelPlugin::C1DSpacialCDiffKernelPlugin():

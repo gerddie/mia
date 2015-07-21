@@ -36,14 +36,14 @@ BOOST_AUTO_TEST_CASE( test_cdiff )
         BOOST_CHECK_EQUAL(kernel[2],  1);
 
 
-        vector<double> input = {0,1,0,-1,0 }; 
+        vector<double> input = {0,1,2,-1,0 }; 
         
         kernel.apply_inplace(input);
 
         BOOST_CHECK_SMALL(input[0], 1e-10);
-        BOOST_CHECK_CLOSE(input[1], 1.0, 0.1);
-        BOOST_CHECK_SMALL(input[2], 1e-10);
-        BOOST_CHECK_CLOSE(input[3],-1.0, 0.1);
+        BOOST_CHECK_CLOSE(input[1], 1, 0.1);
+        BOOST_CHECK_CLOSE(input[2], -1, 0.1);
+	BOOST_CHECK_CLOSE(input[3], -1, 0.1);
         BOOST_CHECK_SMALL(input[4], 1e-10); 
 
 }
