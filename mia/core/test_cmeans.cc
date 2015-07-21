@@ -98,6 +98,8 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 	vector<double> centers{30, 120, 220, 300, 390};
 	vector<double> weights{2.0, 0.9, 1.3, 1.1, 0.9};
 
+	vector<double> expect{34.34, 105.31, 214.627, 278.295, 383.15};
+
 	double k = 20;
 	for (int i = 0; i < 250; ++i) {
 		sh[i].first = x[i];
@@ -118,7 +120,7 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 
 	
 	for (int i = 0; i < 5; ++i) {
-		BOOST_CHECK_CLOSE(result_cci[i], centers[i], 0.1); 
+		BOOST_CHECK_CLOSE(result_cci[i], expect[i], 0.1); 
 	}
         
 }
