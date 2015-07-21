@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(test_available_filters)
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", "close", "combiner", "convert", "crop", 
 		"dilate", "distance", "downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
-		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sort-label", 
+		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sobel", "sort-label", 
 		"sws", "tee", "thinning", "thresh", "transform", "ws"}; 
 
 	test_availabe_plugins(handler, test_data); 
