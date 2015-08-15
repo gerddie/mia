@@ -61,7 +61,7 @@ CSegFrame::CSegFrame(const string& image, const CSegStar& star, const Sections& 
 
 
 template <typename T>
-void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required = false)
+void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required)
 {
 	auto attr = elm.get_attribute(key);
 	if (!attr) {

@@ -84,9 +84,9 @@ public:
 
 
 template <typename T>
-void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required = false); 
+void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required); 
 
-void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, bool& out_value, bool required = false); 
+void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, bool& out_value, bool required); 
 
 NS_MIA_END
 
