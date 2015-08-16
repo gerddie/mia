@@ -54,8 +54,8 @@ C2DFImage load_flow_image(const string& imagefile, const string& type, const C2D
 // this needs to become tunable
 
 class FGradToFlow {
-
-	FGradFlow grad_to_flow(float vmin, float vmax)
+public: 
+<	FGradFlow(float vmin, float vmax)
 	{
 		if (vmax <= vmin) {
 			throw create_exception<invalid_argument>("Maxflow: input image seems to be of one value only"); 
@@ -131,7 +131,7 @@ typename C2DMaxflow::result_type C2DMaxflow::operator () (const mia::T2DImage<T>
 		*ir = g.what_segment(idx) == Graph_III::SOURCE; 
 	}
        
-	return PImage(result);
+	return P2DImage(result);
 	
 }
 
