@@ -19,10 +19,12 @@
  */
 
 #include <mia/internal/plugintester.hh>
+#include <mia/2d/imageio.hh>
 
-
+#include <addons/maxflow/2dmaxflow.hh>
 using namespace std;
 using namespace mia; 
+using maxflow_2dimage_filter::C2DMaxflowFilterPluginFactory; 
 
 BOOST_AUTO_TEST_CASE ( test_2d_simple_maxflow )
 {
@@ -56,15 +58,15 @@ BOOST_AUTO_TEST_CASE ( test_2d_simple_maxflow )
 	// max flow = 1
 	// min flow = 0
 
-	C2DImage *fimage = new C2DFImage(size, image);
-	(*fimage)(simk) = 1.0f;  
+	C2DFImage *fimage = new C2DFImage(size);
+	(*fimage)(sink) = 1.0f;  
 	P2DImage sink_image(fimage);
 
-	fimage = new C2DFImage(size, image);
+	fimage = new C2DFImage(size);
 	(*fimage)(source) = 1.0f; 
 	P2DImage source_image(fimage);
 
-       	auto maxflow = BOOST_TEST_create_from_plugin<C2DMaxflowFilterPlugin>("maxflow:src-flow=src.@,sink-flow=sink.@");
+       	auto maxflow = BOOST_TEST_create_from_plugin<C2DMaxflowFilterPluginFactory>("maxflow:src-flow=src.@,sink-flow=sink.@");
 
 	save_image("src.@", source_image);
 	save_image("sink.@", sink_image);
@@ -80,7 +82,7 @@ BOOST_AUTO_TEST_CASE ( test_2d_simple_maxflow )
 	auto& bit_result = dynamic_cast<const C2DBitImage&>(*result); 
 	
 	auto iexp = expect.begin(); 
-	for(auto ires = bit_result.begin(); ires != bit_result.end(); ++ires, +iexp) {
+	for(auto ires = bit_result.begin(); ires != bit_result.end(); ++ires, ++iexp) {
 		BOOST_CHECK_EQUAL(*ires, *iexp); 
 	}
 }

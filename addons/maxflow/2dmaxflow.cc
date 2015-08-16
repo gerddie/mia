@@ -19,7 +19,9 @@
  */
 
 #include <mia/core/filter.hh>
+#include <mia/2d/imageio.hh>
 #include <addons/maxflow/2dmaxflow.hh>
+#include <maxflow.h>
 
 NS_BEGIN( maxflow_2dimage_filter)
 
@@ -27,6 +29,8 @@ using namespace mia;
 using std::string;
 using std::invalid_argument; 
 using std::minmax_element; 
+using maxflow::Graph_FFF;
+
 
 C2DMaxflow::C2DMaxflow(const std::string& sink_flow_imagefile, const std::string& source_flow_imagefile):
         m_sink_flow_imagefile(sink_flow_imagefile), 
@@ -55,7 +59,7 @@ C2DFImage load_flow_image(const string& imagefile, const string& type, const C2D
 
 class FGradToFlow {
 public: 
-<	FGradFlow(float vmin, float vmax)
+	FGradToFlow(float vmin, float vmax)
 	{
 		if (vmax <= vmin) {
 			throw create_exception<invalid_argument>("Maxflow: input image seems to be of one value only"); 
@@ -81,8 +85,8 @@ typename C2DMaxflow::result_type C2DMaxflow::operator () (const mia::T2DImage<T>
 {
 	// load the sink and source flow images
 	// throws if file not available 
-	auto sink = load_flow_image(m_sink_flow_imagefile);
-	auto source = load_flow_image(m_source_flow_imagefile);
+	auto sink = load_flow_image(m_sink_flow_imagefile, "sink", data.get_size());
+	auto source = load_flow_image(m_source_flow_imagefile, "source", data.get_size() );
 
 	// create the maxflow object
 	Graph_FFF graph(data.size(), 2*(data.get_size().x -1) * (data.get_size().y -1));
@@ -97,7 +101,7 @@ typename C2DMaxflow::result_type C2DMaxflow::operator () (const mia::T2DImage<T>
 
 	while (isink != esink) {
 		if (*isink > 0 || *esink > 0) {
-			graph.add_tweighs(idx, *isource, isink);  
+			graph.add_tweights(idx, *isource, *isink);  
 		}
 		++isink;
 		++isource;
@@ -115,20 +119,20 @@ typename C2DMaxflow::result_type C2DMaxflow::operator () (const mia::T2DImage<T>
 			auto flow = grad_to_flow(data(x,y), data(x+1,y));
 			graph.add_edge(idx,idx +1, flow, flow);  
 			
-			auto flow = grad_to_flow(data(x,y), data(x,y+1));
+		        flow = grad_to_flow(data(x,y), data(x,y+1));
 			graph.add_edge(idx,idx + data.get_size().x, flow, flow);  
 
 		}
 		++idx;
 	}
 
-	int flow = g.maxflow();
+	int flow = graph.maxflow();
 
 	C2DBitImage *result = new C2DBitImage(data.get_size(), data);
 
 	idx = 0; 
 	for (auto ir = result->begin(); ir != result->end(); ++ir, ++idx) {
-		*ir = g.what_segment(idx) == Graph_III::SOURCE; 
+		*ir = graph.what_segment(idx) == Graph_FFF::SOURCE; 
 	}
        
 	return P2DImage(result);
@@ -141,16 +145,37 @@ mia::P2DImage C2DMaxflow::do_filter(const mia::C2DImage& image) const
 }
 
 
+C2DMaxflowFilterPluginFactory::C2DMaxflowFilterPluginFactory():
+	C2DFilterPlugin("maxflow")
+{
+	add_parameter("sink-flow",
+		      new CStringParameter(m_sink_flow_imagefile,
+					   CCmdOptionFlags::required_input, 
+					   "Image of float type to define the per-pixel flow to the sink", 
+					   &C2DImageIOPluginHandler::instance()));
+	add_parameter("source-flow",
+		      new CStringParameter(m_source_flow_imagefile,
+					   CCmdOptionFlags::required_input, 
+					   "Image of float type to define the per-pixel flow to the source", 
+					   &C2DImageIOPluginHandler::instance()));
+}
 
-class C2DMaxflowFilterPluginFactory: public mia::C2DFilterPlugin {
-public:
-	C2DMaxflowFilterPluginFactory();
-private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
 
-	std::string m_sink_flow_imagefile;
-	std::string m_source_flow_imagefile;
-};
+mia::C2DFilter *C2DMaxflowFilterPluginFactory::do_create()const
+{
+	return new C2DMaxflow(m_sink_flow_imagefile, m_source_flow_imagefile);
+}
+
+const std::string C2DMaxflowFilterPluginFactory::do_get_descr()const
+{
+	return "This filter implements the uses the max-flow min-cut algorithm"
+		"for image segmentation"; 
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C2DMaxflowFilterPluginFactory();
+}
+
 
 NS_END
