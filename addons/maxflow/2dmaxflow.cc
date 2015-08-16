@@ -23,6 +23,8 @@
 #include <addons/maxflow/2dmaxflow.hh>
 #include <maxflow.h>
 
+#include <mia/core/msgstream.hh>
+
 NS_BEGIN( maxflow_2dimage_filter)
 
 using namespace mia; 
@@ -34,8 +36,10 @@ using maxflow::Graph_FFF;
 
 C2DMaxflow::C2DMaxflow(const std::string& sink_flow_imagefile, const std::string& source_flow_imagefile):
         m_sink_flow_imagefile(sink_flow_imagefile), 
-	m_source_flow_imagefile(sink_flow_imagefile)
+	m_source_flow_imagefile(source_flow_imagefile)
 {
+
+	
 }
 
 
@@ -72,7 +76,9 @@ public:
 	float operator() (float x, float y) const
 	{
 		float delta = (x - y) * m_scale;
-		return 1.0f / (delta * delta + 1.0f); 
+		float v = 1 - delta * delta;
+		return v * v; 
+
 	}
 private:
 	float m_scale; 
@@ -87,20 +93,20 @@ typename C2DMaxflow::result_type C2DMaxflow::operator () (const mia::T2DImage<T>
 	// throws if file not available 
 	auto sink = load_flow_image(m_sink_flow_imagefile, "sink", data.get_size());
 	auto source = load_flow_image(m_source_flow_imagefile, "source", data.get_size() );
-
+	
 	// create the maxflow object
-	Graph_FFF graph(data.size(), 2*(data.get_size().x -1) * (data.get_size().y -1));
-
+	Graph_FFF graph(data.size(), 2*data.get_size().size());
+	
 	graph.add_node(data.size());
 
-	// add the capacities towards sinks ans sources 
+// add the capacities towards sinks ans sources 
 	int idx = 0;
 	auto isink = sink.begin();
 	auto esink = sink.end(); 
 	auto isource = source.begin();
 
 	while (isink != esink) {
-		if (*isink > 0 || *esink > 0) {
+		if (*isink > 0 || *isource > 0) {
 			graph.add_tweights(idx, *isource, *isink);  
 		}
 		++isink;
@@ -114,25 +120,30 @@ typename C2DMaxflow::result_type C2DMaxflow::operator () (const mia::T2DImage<T>
 
 	// add the inter-pixel capacities
 	idx = 0;
-	for (unsigned y = 0; y < data.get_size().y - 1; ++y) {
+	for (unsigned y = 0; y < data.get_size().y; ++y) {
 		for (unsigned x = 0; x < data.get_size().x - 1; ++x, ++idx) {
-			auto flow = grad_to_flow(data(x,y), data(x+1,y));
-			graph.add_edge(idx,idx +1, flow, flow);  
-			
-		        flow = grad_to_flow(data(x,y), data(x,y+1));
-			graph.add_edge(idx,idx + data.get_size().x, flow, flow);  
+			auto xflow = grad_to_flow(data(x,y), data(x+1,y));
+			graph.add_edge(idx,idx +1, xflow, xflow);
 
 		}
 		++idx;
 	}
+	idx = 0; 
+	for (unsigned y = 0; y < data.get_size().y - 1; ++y) {
+		for (unsigned x = 0; x < data.get_size().x; ++x, ++idx) {
+			auto yflow = grad_to_flow(data(x,y), data(x,y+1));
+			graph.add_edge(idx,idx + data.get_size().x, yflow, yflow);	
+		}
+	}
 
-	int flow = graph.maxflow();
-
+	float flow = graph.maxflow();
+	cvinfo() << "get flow " << flow << "\n"; 
+	
 	C2DBitImage *result = new C2DBitImage(data.get_size(), data);
 
 	idx = 0; 
 	for (auto ir = result->begin(); ir != result->end(); ++ir, ++idx) {
-		*ir = graph.what_segment(idx) == Graph_FFF::SOURCE; 
+		*ir = (graph.what_segment(idx) == Graph_FFF::SOURCE); 
 	}
        
 	return P2DImage(result);

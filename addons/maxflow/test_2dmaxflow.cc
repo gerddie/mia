@@ -35,9 +35,9 @@ BOOST_AUTO_TEST_CASE ( test_2d_simple_maxflow )
 
 	vector<unsigned char> image = {
 		255, 255, 245, 233,
-		200, 120, 120, 100,
+		200, 170, 170, 150,
 		20,   30,  40,  30,
-		40,   20,  50,  80
+		40,   20,  50,  10
 	};
 
 	vector<bool> expect = {
@@ -59,14 +59,14 @@ BOOST_AUTO_TEST_CASE ( test_2d_simple_maxflow )
 	// min flow = 0
 
 	C2DFImage *fimage = new C2DFImage(size);
-	(*fimage)(sink) = 1.0f;  
+	(*fimage)(sink) = 16.0f;  
 	P2DImage sink_image(fimage);
 
 	fimage = new C2DFImage(size);
-	(*fimage)(source) = 1.0f; 
+	(*fimage)(source) = 16.0f; 
 	P2DImage source_image(fimage);
 
-       	auto maxflow = BOOST_TEST_create_from_plugin<C2DMaxflowFilterPluginFactory>("maxflow:src-flow=src.@,sink-flow=sink.@");
+       	auto maxflow = BOOST_TEST_create_from_plugin<C2DMaxflowFilterPluginFactory>("maxflow:source-flow=src.@,sink-flow=sink.@");
 
 	save_image("src.@", source_image);
 	save_image("sink.@", sink_image);
@@ -83,6 +83,7 @@ BOOST_AUTO_TEST_CASE ( test_2d_simple_maxflow )
 	
 	auto iexp = expect.begin(); 
 	for(auto ires = bit_result.begin(); ires != bit_result.end(); ++ires, ++iexp) {
+		
 		BOOST_CHECK_EQUAL(*ires, *iexp); 
 	}
 }
