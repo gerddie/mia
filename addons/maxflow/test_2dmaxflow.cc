@@ -22,13 +22,14 @@
 #include <mia/2d/imageio.hh>
 
 #include <addons/maxflow/2dmaxflow.hh>
+
 using namespace std;
 using namespace mia; 
 using maxflow_2dimage_filter::C2DMaxflowFilterPluginFactory; 
 
 BOOST_AUTO_TEST_CASE ( test_2d_simple_maxflow )
 {
-	// one source, one sink and a pretty simple 4x4 image
+// one source, one sink and a pretty simple 4x4 image
 
 	// sink and source
 
@@ -86,5 +87,47 @@ BOOST_AUTO_TEST_CASE ( test_2d_simple_maxflow )
 		
 		BOOST_CHECK_EQUAL(*ires, *iexp); 
 	}
+}
+
+
+BOOST_AUTO_TEST_CASE( test_throw_missing_or_wrong_parameter )
+{
+	C2DUBImage in_image(C2DBounds(4,4));
+	save_image("test.@", in_image); 
+
+	BOOST_CHECK_THROW(BOOST_TEST_create_from_plugin<C2DMaxflowFilterPluginFactory>("maxflow"),
+			  invalid_argument);
+	
+	BOOST_CHECK_THROW(BOOST_TEST_create_from_plugin<C2DMaxflowFilterPluginFactory>("maxflow:sink-flow=test.@"),
+			  invalid_argument); 
+	
+	BOOST_CHECK_THROW(BOOST_TEST_create_from_plugin<C2DMaxflowFilterPluginFactory>("maxflow:source-flow=test.@"),
+			  invalid_argument); 
+
+	auto maxflow = BOOST_TEST_create_from_plugin<C2DMaxflowFilterPluginFactory>("maxflow:source-flow=test.@,sink-flow=test.@");
+
+	// should throw because we don't accept non-float flow images 
+	BOOST_CHECK_THROW(maxflow->filter(in_image), invalid_argument); 
+
+}
+
+BOOST_AUTO_TEST_CASE( test_throw_wrong_sizes )
+{
+	C2DFImage flow_image(C2DBounds(4,4));
+	save_image("test.@", flow_image);
+
+	C2DFImage wrong_image_size(C2DBounds(4,5));
+
+	wrong_image_size(0,0) = 1.0;
+	
+	auto maxflow = BOOST_TEST_create_from_plugin<C2DMaxflowFilterPluginFactory>("maxflow:source-flow=test.@,sink-flow=test.@");
+
+	BOOST_CHECK_THROW(maxflow->filter(wrong_image_size), invalid_argument);	
+
+	C2DFImage flat_image(C2DBounds(4,4));
+
+	BOOST_CHECK_THROW(maxflow->filter(flat_image), invalid_argument);
+	
+	
 }
 
