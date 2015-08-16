@@ -115,9 +115,9 @@ CSegFrame::CSegFrame(const Node& node, int version):
 		if (version == 2 && m_sections.size() > 2)
 			cvwarn() << "CSegFrame: gor a version 2 segmentation, but more then two sections, this may be bogus\n";
 			
-		read_attribute_from_node(elm, "quality", m_quality);  
-		read_attribute_from_node(elm, "brightness", m_brightness);  
-		read_attribute_from_node(elm, "contrast", m_contrast);  
+		read_attribute_from_node(elm, "quality", m_quality, false);  
+		read_attribute_from_node(elm, "brightness", m_brightness, false);  
+		read_attribute_from_node(elm, "contrast", m_contrast, false);  
 	}
 }
 
