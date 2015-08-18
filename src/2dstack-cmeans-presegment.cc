@@ -170,51 +170,97 @@ vector<pair<int, unsigned long>> CFullHistogram::get_compressed_histogram()const
         return result; 
 }
 
-typedef map<double, unsigned char> CLabelSeedMapper;
-class FSetLabels: public TFilter<P2DImage> {
+typedef map<double, CMeans::DVector> Probmap; 
+
+class FGetFlowImages: public TFilter<pair<C2DFImage, C2DFImage>> {
 public: 
-	FSetLabels(const CLabelSeedMapper& map, int low_end, int low_label, int high_end, int high_label);
+	FGetFlowImages(const Probmap& map,
+		       int low_end, int low_label, int high_end, int high_label,  
+		       const vector<int>& sink_labels,
+		       const vector<int>& source_labels, float thresh_prob);
 
 	template <typename T> 
-	P2DImage operator() (const T2DImage<T>& image) const;   
+	pair<C2DFImage, C2DFImage> operator() (const T2DImage<T>& image) const;   
 private:
-	const CLabelSeedMapper& m_map;
+	template <typename T>
+	void add_flows(C2DFImage& flow, int label, const T2DImage<T>& image) const;
+
+	const Probmap& m_map;
 
 	int m_low_end;
 	int m_low_label;
 	int m_high_end;
-	int m_high_label; 
-
+	int m_high_label;  
+	
+	vector<int> m_sink_labels;
+	vector<int> m_source_labels; 
+	
+	float m_thresh_prob; 
 }; 
 
-FSetLabels::FSetLabels(const CLabelSeedMapper& map, int low_end, int low_label, int high_end, int high_label):
+
+FGetFlowImages::FGetFlowImages(const Probmap& map,
+			       int low_end, int low_label, int high_end, int high_label,
+			       const vector<int>& sink_labels,
+			       const vector<int>& source_labels, float thresh_prob):
 	m_map(map),
 	m_low_end(low_end),
 	m_low_label(low_label),
 	m_high_end(high_end),
-	m_high_label(high_label)
+	m_high_label(high_label),  
+	m_sink_labels(sink_labels),
+	m_source_labels(source_labels),
+	m_thresh_prob(thresh_prob)
 {
+}
+
+template <typename T>
+void FGetFlowImages::add_flows(C2DFImage& flow, int label, const T2DImage<T>& image) const
+{
+	auto iflow = flow.begin();
+	auto ii = image.begin();
+	auto ie = image.end();
+
+	while (ii != ie) {
+		if (*ii <= m_low_end && m_low_label == label)
+			*iflow = 1.0f;
+		else if (*ii <= m_high_end && m_high_label == label)
+			*iflow = 1.0f;
+		else {
+			auto l = m_map.find(*ii);
+			if (l != m_map.end()) {
+				if (l->second[label] >= m_thresh_prob && l->second[label] > *iflow)
+					*iflow = l->second[label];			       
+			} else {
+				// this should not happen and 
+				cvwarn() << "Unmapped value " << *ii << "\n";
+			}
+		}
+			
+		++iflow;
+		++ii; 
+	}
+	
 }
 						    
 template <typename T> 
-P2DImage FSetLabels::operator() (const T2DImage<T>& image) const
+pair<C2DFImage, C2DFImage> FGetFlowImages::operator() (const T2DImage<T>& image) const
 {
-	C2DUBImage *labels = new C2DUBImage(image.get_size(), image);
+	
+	C2DFImage sink_flow(image.get_size());
+	C2DFImage source_flow(image.get_size());
 
-	transform(image.begin(), image.end(), labels->begin(), [this](T x) -> unsigned char{
-			if (x <= m_low_end)
-				return m_low_label;
-			if (x >= m_high_end)
-				return m_high_label;
-			auto l = m_map.find(x);
-			if (l != m_map.end())  
-				return l->second;
-			else {
-				cvdebug() << "Unmapped value " << x << "\n"; 
-				return 255; 
-			}
-		}); 
-	return P2DImage(labels); 
+
+	for (auto sink_label: m_sink_labels) {
+		add_flows(sink_flow, sink_label, image); 
+	}
+
+	for (auto source_label: m_source_labels) {
+		add_flows(source_flow, source_label, image); 
+	}
+	
+	return make_pair(sink_flow, source_flow); 
+	
 }
 
 int do_main( int argc, char *argv[] )
@@ -226,6 +272,8 @@ int do_main( int argc, char *argv[] )
 
 	float seed_threshold = 0.9; 
         float histogram_thresh = 5;
+	float flow_prob_thresh = 0.5; 
+
 	CMeans::PInitializer class_center_initializer;
 
 	
@@ -252,7 +300,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( seed_threshold, EParameterBounds::bf_open_interval, {0.0f,1.0f}, "seed-threshold", 'S',
                               "Probability threshold value to consider a pixel as seed pixel."));
 
-	
+	options.add(make_opt( flow_prob_thresh, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
+			      {0.0f, 1.0f}, "flow-prob-thresh", 'F', "Class probability threshold to cut the flow "
+			      "to zero for the source/sink flow connectivity creation")); 
 	
         
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -306,7 +356,12 @@ int do_main( int argc, char *argv[] )
 	CMeans cmeans(0.01, 0.00001, class_center_initializer);
 	CMeans::SparseProbmap pv = cmeans.run(threshed_histo,  class_centers);
 
-
+	Probmap pmap; 
+	for(auto ipv : pv) {
+		pmap[ipv.first] = ipv.second; 
+	}
+	
+	
 	if ( ! out_probmap.empty() ) {
 		ofstream outstr(out_probmap.c_str());
 		for (auto ipv: pv) {
@@ -314,23 +369,11 @@ int do_main( int argc, char *argv[] )
 		}
 	}
 	
-	
-	// now create the label map.
-	CLabelSeedMapper value_map; 
-	
-	for (size_t i = 0; i < pv.size(); ++i) {
-		int result = 0; 
-		for (size_t k = 0; k < class_centers.size(); ++k) {
-			if (pv[i].second[k] > seed_threshold)
-				result = k + 1; 
-		}
-		value_map[threshed_histo[i].first] = result; 
-	}
-
 	// created the labeled images
-	FSetLabels  set_labels(value_map, ii->first, 1, ie->first, class_centers.size());
-
-	P2DFilter seeded_ws = produce_2dimage_filter("sws:seed=labelseed.@"); 
+	FGetFlowImages  get_flow_images(pmap, ii->first, 1, ie->first, class_centers.size(),
+					{0,2 }, {1}, flow_prob_thresh);
+	
+	P2DFilter maxflow = produce_2dimage_filter("maxflow:sink-flow=sink.@,source-flow=source.@"); 
 	
         for (size_t i = start_filenum; i < end_filenum; ++i) {
                 string src_name = create_filename(src_basename.c_str(), i);
@@ -339,10 +382,11 @@ int do_main( int argc, char *argv[] )
                 if (in_image_list.get() && in_image_list->size()) {
                         for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k) {
 				// create label image
-				auto label_seed = mia::filter (set_labels, **k);
-				save_image("labelseed.@", label_seed);
+				auto flow_images = mia::filter (get_flow_images, **k);
+				save_image("sink.@", flow_images.first);
+				save_image("source.@", flow_images.second);
 				
-				auto label = seeded_ws->filter(**k);
+				auto label = maxflow->filter(**k);
 				*k = label; 
 			}
                 }
