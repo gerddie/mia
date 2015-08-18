@@ -224,10 +224,10 @@ void FGetFlowImages::add_flows(C2DFImage& flow, int label, const T2DImage<T>& im
 	while (ii != ie) {
 		if (*ii <= m_low_end)  {
 			if (m_low_label == label)
-				*iflow = 10000.0f;
+				*iflow = 1.0f;
 		} else if (*ii >= m_high_end){
 			if (m_high_label == label)
-				*iflow = 10000.0f;
+				*iflow = 1.0f;
 		} else {
 			auto l = m_map.find(*ii);
 			if (l != m_map.end()) {
@@ -238,7 +238,9 @@ void FGetFlowImages::add_flows(C2DFImage& flow, int label, const T2DImage<T>& im
 				cvwarn() << "Unmapped value " << *ii << "\n";
 			}
 		}
-			
+		//  should be a parameter
+		*iflow *= 1000.0f; 
+		
 		++iflow;
 		++ii; 
 	}
