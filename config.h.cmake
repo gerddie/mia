@@ -34,6 +34,8 @@
 #cmakedefine HAVE_SYS_IOCTL_H 1
 
 
+#cmakedefine HAVE_MAXFLOW 1
+
 #cmakedefine HAVE_DCMTK 1
 #cmakedefine HAVE_VISTAIO 1
 #cmakedefine HAVE_VTK 1

@@ -29,6 +29,10 @@
 #include <mia/2d/filtertest.hh>
 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif 
+
 NS_MIA_USE
 using namespace std; 
 
@@ -41,8 +45,11 @@ BOOST_AUTO_TEST_CASE(test_available_filters)
 		"dilate", "distance", "downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
 		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sobel", "sort-label", 
-		"sws", "tee", "thinning", "thresh", "transform", "ws"}; 
+		"sws", "tee", "thinning", "thresh", "transform", "ws"};
 
+#ifdef HAVE_MAXFLOW
+	test_data.insert("maxflow"); 
+#endif 
 	test_availabe_plugins(handler, test_data); 
 }
 
