@@ -51,7 +51,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 	set<string> test_data = {
 		"binarize", "bandpass", "combiner", "convert","close", "crop", "dilate", "distance", "downscale", 
 		"erode", "gauss", "gradnorm", "growmask", "invert", "isovoxel", "kmeans",  
-		"label", "labelmap", "labelscale", "load", "lvdownscale", "mask", "mean", "median", "mlv", "msnormalizer", "open",  "resize",
+		"label", "labelmap", "labelscale", "load", "lvdownscale", "mask", "mean", "median", "mlv", "msnormalizer", "open",  "resize", "reorient", 
 		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", 
 		"transform", "variance", "ws" 
 	}; 
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(test_CNoiseGeneratorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C1DSpacialKernelPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"gauss"
+		"gauss", "cdiff"
 	}; 
 	test(C1DSpacialKernelPluginHandler::instance().get_set(), test_data); 
 }
@@ -264,9 +264,14 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture)
 		"downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", 
 		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", 
-		"scale", "selectbig", "sepconv", "shmean", "sort-label", "sws", 
-		"tee", "thinning", "thresh", "transform", "ws"
-	}; 
+		"scale", "selectbig", "sepconv", "shmean", "sobel",
+		"sort-label", "sws", "tee", "thinning", "thresh",
+		"transform", "ws"
+	};
+#ifdef HAVE_MAXFLOW
+	test_data.insert("maxflow"); 
+#endif 
+
 	test(C2DFilterPluginHandler::instance().get_set(), test_data); 
 }
 
