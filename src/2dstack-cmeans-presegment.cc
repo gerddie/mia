@@ -222,11 +222,13 @@ void FGetFlowImages::add_flows(C2DFImage& flow, int label, const T2DImage<T>& im
 	auto ie = image.end();
 
 	while (ii != ie) {
-		if (*ii <= m_low_end && m_low_label == label)
-			*iflow = 1.0f;
-		else if (*ii <= m_high_end && m_high_label == label)
-			*iflow = 1.0f;
-		else {
+		if (*ii <= m_low_end)  {
+			if (m_low_label == label)
+				*iflow = 10000.0f;
+		} else if (*ii >= m_high_end){
+			if (m_high_label == label)
+				*iflow = 10000.0f;
+		} else {
 			auto l = m_map.find(*ii);
 			if (l != m_map.end()) {
 				if (l->second[label] >= m_thresh_prob && l->second[label] > *iflow)
@@ -370,7 +372,7 @@ int do_main( int argc, char *argv[] )
 	}
 	
 	// created the labeled images
-	FGetFlowImages  get_flow_images(pmap, ii->first, 1, ie->first, class_centers.size(),
+	FGetFlowImages  get_flow_images(pmap, ii->first, 0, ie->first, class_centers.size(),
 					{0,2 }, {1}, flow_prob_thresh);
 	
 	P2DFilter maxflow = produce_2dimage_filter("maxflow:sink-flow=sink.@,source-flow=source.@"); 
