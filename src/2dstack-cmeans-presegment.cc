@@ -375,7 +375,7 @@ int do_main( int argc, char *argv[] )
 	
 	// created the labeled images
 	FGetFlowImages  get_flow_images(pmap, ii->first, 0, ie->first, class_centers.size(),
-					{0,2 }, {1}, flow_prob_thresh);
+					{2 }, {1}, flow_prob_thresh);
 	
 	P2DFilter maxflow = produce_2dimage_filter("maxflow:sink-flow=sink.@,source-flow=source.@"); 
 	
