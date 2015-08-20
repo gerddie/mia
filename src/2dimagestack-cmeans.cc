@@ -255,8 +255,6 @@ int do_main( int argc, char *argv[] )
 
 	pv.save(out_probmap); 
 	
-	
-
 	return EXIT_SUCCESS;
 }
 
