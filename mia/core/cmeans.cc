@@ -369,7 +369,7 @@ CMeans::DVector CMeans::SparseProbmap::get_fuzzy(double x) const
 	transform(m_map[idx].second.begin(), m_map[idx].second.end(),
 		  m_map[idx+1].second.begin(), result.begin(), 
 		  [f](double l, double h) {
-			  return f * (l-h) + l;
+			  return f * (h-l) + l;
 		  });
 	
 	return result; 

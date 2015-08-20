@@ -154,3 +154,61 @@ BOOST_AUTO_TEST_CASE( test_store_load_probmap )
 	}
 	
 }
+
+
+BOOST_AUTO_TEST_CASE( test_get_fuzzy )
+{
+	CMeans::SparseProbmap my_map(3);
+
+	my_map[0].first = 1.0;
+	my_map[1].first = 2.0;
+	my_map[2].first = 4.0;
+	
+	my_map[0].second = CMeans::DVector({1,2,3});
+	my_map[1].second = CMeans::DVector({4,5,6});
+	my_map[2].second = CMeans::DVector({6,9,9});
+
+
+	auto fuzzy0 = my_map.get_fuzzy(0.0);
+
+	BOOST_CHECK_EQUAL(fuzzy0[0], 1.0);
+	BOOST_CHECK_EQUAL(fuzzy0[1], 2.0);
+	BOOST_CHECK_EQUAL(fuzzy0[2], 3.0);
+
+	fuzzy0 = my_map.get_fuzzy(1.0);
+	
+	BOOST_CHECK_EQUAL(fuzzy0[0], 1.0);
+	BOOST_CHECK_EQUAL(fuzzy0[1], 2.0);
+	BOOST_CHECK_EQUAL(fuzzy0[2], 3.0);
+
+	fuzzy0 = my_map.get_fuzzy(1.2);
+
+	BOOST_CHECK_CLOSE(fuzzy0[0], 1.6, 0.01);
+	BOOST_CHECK_CLOSE(fuzzy0[1], 2.6, 0.01);
+	BOOST_CHECK_CLOSE(fuzzy0[2], 3.6, 0.01);
+
+	fuzzy0 = my_map.get_fuzzy(2.0);
+
+	BOOST_CHECK_EQUAL(fuzzy0[0], 4.0);
+	BOOST_CHECK_EQUAL(fuzzy0[1], 5.0);
+	BOOST_CHECK_EQUAL(fuzzy0[2], 6.0);
+
+	fuzzy0 = my_map.get_fuzzy(3.4);
+
+	BOOST_CHECK_CLOSE(fuzzy0[0], 5.4, 0.01);
+	BOOST_CHECK_CLOSE(fuzzy0[1], 7.8, 0.01);
+	BOOST_CHECK_CLOSE(fuzzy0[2], 8.1, 0.01);
+
+	fuzzy0 = my_map.get_fuzzy(4.0);
+
+	BOOST_CHECK_CLOSE(fuzzy0[0], 6, 0.01);
+	BOOST_CHECK_CLOSE(fuzzy0[1], 9, 0.01);
+	BOOST_CHECK_CLOSE(fuzzy0[2], 9, 0.01);
+
+	fuzzy0 = my_map.get_fuzzy(4.4);
+
+	BOOST_CHECK_CLOSE(fuzzy0[0], 6, 0.01);
+	BOOST_CHECK_CLOSE(fuzzy0[1], 9, 0.01);
+	BOOST_CHECK_CLOSE(fuzzy0[2], 9, 0.01);	
+	
+}
