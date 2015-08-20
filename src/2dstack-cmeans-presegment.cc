@@ -177,7 +177,7 @@ public:
 	FGetFlowImages(const Probmap& map,
 		       int low_end, int low_label, int high_end, int high_label,  
 		       const vector<int>& sink_labels,
-		       const vector<int>& source_labels, float thresh_prob);
+		       const vector<int>& source_labels, float thresh_prob, float flow_scale);
 
 	template <typename T> 
 	pair<C2DFImage, C2DFImage> operator() (const T2DImage<T>& image) const;   
@@ -196,13 +196,14 @@ private:
 	vector<int> m_source_labels; 
 	
 	float m_thresh_prob; 
+	float m_flow_scale; 
 }; 
 
 
 FGetFlowImages::FGetFlowImages(const Probmap& map,
 			       int low_end, int low_label, int high_end, int high_label,
 			       const vector<int>& sink_labels,
-			       const vector<int>& source_labels, float thresh_prob):
+			       const vector<int>& source_labels, float thresh_prob, float flow_scale):
 	m_map(map),
 	m_low_end(low_end),
 	m_low_label(low_label),
@@ -210,7 +211,8 @@ FGetFlowImages::FGetFlowImages(const Probmap& map,
 	m_high_label(high_label),  
 	m_sink_labels(sink_labels),
 	m_source_labels(source_labels),
-	m_thresh_prob(thresh_prob)
+	m_thresh_prob(thresh_prob), 
+	m_flow_scale(flow_scale)
 {
 }
 
@@ -239,7 +241,7 @@ void FGetFlowImages::add_flows(C2DFImage& flow, int label, const T2DImage<T>& im
 			}
 		}
 		//  should be a parameter
-		*iflow *= 1000.0f; 
+		*iflow *= m_flow_scale; 
 		
 		++iflow;
 		++ii; 
@@ -272,12 +274,14 @@ int do_main( int argc, char *argv[] )
         string out_labels;
 	string out_probmap;
 	string in_filename;
+	string flow_fileprefix; 
         string out_type("png");
 
 	float seed_threshold = 0.9; 
         float histogram_thresh = 5;
 	float flow_prob_thresh = 0.5; 
-
+	float flow_scale = 100.0f; 
+	
 	CMeans::PInitializer class_center_initializer;
 
 	
@@ -294,6 +298,9 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt( out_labels, "out-labels", 'o', "output file name base", 
 			      CCmdOptionFlags::required_output));
+
+	options.add(make_opt( flow_fileprefix, "out-flow", 'f',
+			      "prefix for flow initialization images", CCmdOptionFlags::output)); 
 	
         options.set_group("Parameters");
         options.add(make_opt( histogram_thresh, EParameterBounds::bf_closed_interval, {0,50}, "histogram-thresh", 'T',
@@ -307,6 +314,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( flow_prob_thresh, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
 			      {0.0f, 1.0f}, "flow-prob-thresh", 'F', "Class probability threshold to cut the flow "
 			      "to zero for the source/sink flow connectivity creation")); 
+	options.add(make_opt( flow_scale, EParameterBounds::bf_min_open, {0.0f}, "flow-scale", 'W',
+                              "Scaling factor to adjust the flow evaluated from the initial c-means segmentation."));
+
 	
         
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -375,7 +385,7 @@ int do_main( int argc, char *argv[] )
 	
 	// created the labeled images
 	FGetFlowImages  get_flow_images(pmap, ii->first, 0, ie->first, class_centers.size(),
-					{2 }, {1}, flow_prob_thresh);
+					{class_centers.size()-1}, {1}, flow_prob_thresh, flow_scale);
 	
 	P2DFilter maxflow = produce_2dimage_filter("maxflow:sink-flow=sink.@,source-flow=source.@"); 
 	
@@ -386,7 +396,23 @@ int do_main( int argc, char *argv[] )
                 if (in_image_list.get() && in_image_list->size()) {
                         for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k) {
 				// create label image
+
 				auto flow_images = mia::filter (get_flow_images, **k);
+				if (!flow_fileprefix.empty()) {
+					stringstream ssinkfn; 
+					ssinkfn << flow_fileprefix << "-sink"
+						<< setw(format_width) << setfill('0') << i
+						<< ".v";
+					save_image(ssinkfn.str(), flow_images.first);
+
+					stringstream sssourcefn; 
+					sssourcefn << flow_fileprefix << "-source"
+						   << setw(format_width) << setfill('0') << i
+						   << ".v";
+					save_image(sssourcefn.str(), flow_images.second);
+					
+				}
+				
 				save_image("sink.@", flow_images.first);
 				save_image("source.@", flow_images.second);
 				

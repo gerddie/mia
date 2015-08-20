@@ -76,7 +76,7 @@ public:
 	float operator() (float x, float y) const
 	{
 		float delta = (x - y) * m_scale;
-		float v = 1 - delta * delta;
+		float v = 1 - delta * delta / 0.9;
 		return v * v; 
 
 	}
