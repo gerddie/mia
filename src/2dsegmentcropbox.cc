@@ -123,7 +123,7 @@ int do_main(int argc, char *argv[])
 	}
 
 	// save output
-	auto_ptr<xmlpp::Document> outset(cropped.write());
+	unique_ptr<xmlpp::Document> outset(cropped.write());
 
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())

@@ -93,7 +93,7 @@ int do_main(int argc, char *argv[])
 	cvinfo() << "shift by " << shift << ", skip " << skip << " and rename to base " << shift_filename << "\n";
 	CSegSet shifted = src_segset.shift_and_rename(skip, shift, shift_filename);
 
-	auto_ptr<xmlpp::Document> outset(shifted.write());
+	unique_ptr<xmlpp::Document> outset(shifted.write());
 
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())

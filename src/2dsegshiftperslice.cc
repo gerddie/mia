@@ -110,7 +110,7 @@ int do_main(int argc, char *argv[])
 	}
 
 
-	auto_ptr<xmlpp::Document> outset(src_segset.write());
+	unique_ptr<xmlpp::Document> outset(src_segset.write());
 
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
