@@ -339,7 +339,7 @@ CSegment2d::process(const C2DFImage& image,
 	
 	C2DFImage tmp(image.get_size());                                        // 4Bpp
 
-	unique_ptr<C2DFImage> bg_image(NULL);                                              
+	unique_ptr<C2DFImage> bg_image;                                              
 
 	
 	if (_M_bg_correct) {
