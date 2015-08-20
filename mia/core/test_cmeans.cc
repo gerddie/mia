@@ -125,3 +125,32 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
         
 }
 
+
+BOOST_AUTO_TEST_CASE( test_store_load_probmap )
+{
+	CMeans::SparseProbmap my_map(2);
+
+	my_map[0].first = 1.0;
+	my_map[1].first = 2.0;
+	
+	my_map[0].second = CMeans::DVector({1,2,3});
+	my_map[1].second = CMeans::DVector({4,5,6});
+
+	my_map.save("/tmp/tempmap.mia");
+
+	CMeans::SparseProbmap loaded_map("/tmp/tempmap.mia");
+
+	BOOST_CHECK_EQUAL(loaded_map.size(), my_map.size()); 
+
+	BOOST_CHECK_EQUAL(loaded_map[0].first, my_map[0].first);
+	BOOST_CHECK_EQUAL(loaded_map[1].first, my_map[1].first); 
+
+	BOOST_CHECK_EQUAL(loaded_map[0].second.size(), my_map[0].second.size());
+	BOOST_CHECK_EQUAL(loaded_map[1].second.size(), my_map[1].second.size()); 
+
+	for (int i = 0; i < 3; ++i) {
+		BOOST_CHECK_EQUAL(loaded_map[0].second[i], my_map[0].second[i]);
+		BOOST_CHECK_EQUAL(loaded_map[1].second[i], my_map[1].second[i]);
+	}
+	
+}

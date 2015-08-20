@@ -31,9 +31,50 @@ public:
 	typedef std::vector<double> DVector;
 	typedef std::vector<std::pair<int, unsigned long>> SparseHistogram;
 	typedef std::vector<std::pair<double, double>> NormalizedHistogram;
-	typedef std::vector<std::pair<double, DVector>> SparseProbmap;
-       
-	
+
+	class EXPORT_CORE SparseProbmap { 
+	public: 
+		typedef std::pair<double, DVector> value_type;  
+		typedef std::vector<std::pair<double, DVector>> Map;
+
+		SparseProbmap() = delete; 
+		SparseProbmap (size_t size);
+		SparseProbmap (const std::string& filename); 
+		
+		value_type& operator [](int i){
+			return m_map[i]; 
+		}
+
+		const value_type& operator [](int i) const{
+			return m_map[i]; 
+		}
+
+		Map::const_iterator begin() const {
+			return m_map.begin(); 
+		}
+		Map::iterator begin() {
+			return m_map.begin(); 
+		}
+
+		Map::const_iterator end() const {
+			return m_map.end(); 
+		}
+		Map::iterator end() {
+			return m_map.end(); 
+		}
+		
+		bool save(const std::string& filename) const;
+
+	   
+		DVector get_fuzzy(double x) const; 
+
+		size_t size() const {
+			return m_map.size(); 
+		}
+	private: 
+		Map m_map; 
+
+	}; 
         
 
 	class EXPORT_CORE Initializer : public CProductBase {

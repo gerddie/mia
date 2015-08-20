@@ -20,17 +20,18 @@
 
 #define VSTREAM_DOMAIN "CMEANS"
 
+#include <algorithm>
 #include <mia/core/export_handler.hh>
 
 #include <mia/core/cmeans.hh>
-
 #include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>
 
 NS_MIA_BEGIN
 
 
-using std::make_pair; 
+using namespace std; 
+
 
 struct CMeansImpl {
 
@@ -235,6 +236,147 @@ size_t CMeansInitializerSizedPlugin::get_size_param() const
         return m_size; 
 }
 
+
+static const string map_signature("#sparse-probability-map");
+
+
+CMeans::SparseProbmap::SparseProbmap(size_t size):m_map(size)
+{
+	if (!size)  {
+		throw invalid_argument("CMeans::SparseProbmap must have at least one element"); 
+	}
+}
+
+
+bool CMeans::SparseProbmap::save(const std::string& filename) const
+{
+	ostream* os = &std::cout; 
+
+	unique_ptr<ofstream> ofs;
+		
+	if (filename != "-" ) {
+		ofs.reset(new ofstream(filename)); 
+		if (!ofs->good()) {
+			throw create_exception<runtime_error>("CMeans::SparseProbmap::save:",
+							      "Unable to open file ", filename,
+							      " for saving\n");   
+		}
+		os = ofs.get(); 
+	}
+	
+	*os << map_signature <<"\n";
+	*os << m_map.size() << " " << m_map[0].second.size() << '\n';
+
+	for (size_t i = 0; i < m_map.size(); ++i) {
+		auto & row = m_map[i];
+		*os << row.first << " : "; 
+		
+		for
+			(auto d: row.second) {
+			*os << d << " ";
+		}
+		*os <<'\n';
+	}
+	return os->good();
+
+}
+
+CMeans::SparseProbmap::SparseProbmap(const std::string& filename)
+{
+	istream* is = &std::cin; 
+
+	unique_ptr<ifstream> ifs;
+		
+	if (filename != "-" ) {
+		ifs.reset(new ifstream(filename)); 
+		if (!ifs->good()) {
+			throw create_exception<runtime_error>("CMeans::SparseProbmap::load:",
+							      "Unable to open file ", filename,
+							      " for reading\n");   
+		}
+		is = ifs.get(); 
+	}
+	
+	string buf;
+	*is >> buf;
+	size_t hsize, nclasses;
+
+	if (buf != map_signature) {
+		throw create_exception<runtime_error>("CMeans::SparseProbmap::load: Input file '",
+						      filename, "'is not a sparse probability map: signature:'",
+						      buf, "'");
+	}
+
+	*is  >> hsize >> nclasses;
+
+	if (!is->good())
+		throw create_exception<runtime_error>("CMeans::SparseProbmap::load: error reading from input file '",
+						      filename, "'");
+
+	m_map.resize(hsize);
+
+	char c; 
+	for(auto& r: m_map) {
+		*is >> r.first >> c;
+		r.second.resize(nclasses); 
+		for(auto& prob: r.second) {
+			*is >> prob; 
+		}
+	}
+
+	if (!is->good())
+		throw create_exception<runtime_error>("CMeans::SparseProbmap::load: error reading from input file '",
+						      filename, "'");
+}
+
+CMeans::DVector CMeans::SparseProbmap::get_fuzzy(double x) const
+{
+	if (x <= m_map[0].first)
+		return m_map[0].second;
+	if (x >= m_map[m_map.size() - 1].first)
+		return m_map[m_map.size() - 1].second; 
+	
+	int idx = m_map.size() / 2;
+	int next_step = idx / 4; 
+	
+	while (next_step > 0 ) {
+		if (m_map[idx].first == x)
+			return m_map[idx].second;  
+		
+		if ( x < m_map[idx].first) {
+			idx -= next_step;
+		}else{
+			idx += next_step;
+		}
+
+		next_step /= 2; 
+	}
+	
+	if (m_map[idx].first == x)
+		return m_map[idx].second;  
+	
+	if ( x < m_map[idx].first) {
+		--idx;
+	}
+
+	double base = m_map[idx].first; 
+	double delta = m_map[idx+1].first - base;
+
+	double f = (x - base) / delta;
+
+	CMeans::DVector result( m_map[idx].second.size());
+
+	transform(m_map[idx].second.begin(), m_map[idx].second.end(),
+		  m_map[idx+1].second.begin(), result.begin(), 
+		  [f](double l, double h) {
+			  return f * (l-h) + l;
+		  });
+	
+	return result; 
+		
+}
+
+		
 
 
 NS_MIA_END
