@@ -188,7 +188,7 @@ int do_main( int argc, char *argv[] )
         options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 			      CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( out_probmap, "out-probmap", 'p', "Save probability map to this file", 
+	options.add(make_opt( out_probmap, "out-probmap", 'o', "Save probability map to this file", 
 			      CCmdOptionFlags::required_output));
 
 	
