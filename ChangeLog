@@ -1,3 +1,42 @@
+2.2.4
+
+  New features:
+
+  * Add programs for 
+      - cmeans on sparse input data
+      - combining an abitrary number of images with an comutative operation
+      - estimating a bounding box around the data in an image
+      - applying a deformabale model to a mesh
+      - evaluating statistics in a masked area of an 3d image
+  * Add mesh filters
+      - remove triangles based on normal direction
+      - select largest connected mesh part
+      - add a scale value taken from a 3D image to each vertex
+
+  * enable use of parallel gzip/xz in IO if available 
+  * Add image filters
+      - 3D labelmap filter 
+      - 3D re-orientation filter re-enabled
+      - 2D maxflow/mincut segmentation filter 
+      - 2D sobel filter  
+  
+  * Cleanups
+      - remove eigen3 from public interface 
+      - remove libxml++ from public interface (Closes: #178)
+      - remove boost/filesystem from public interface (Closes: #177)
+      
+  * Coverity fixes 
+  * Implement 2d gradient normalized cross correlation 
+  * Parallize some filter for speedup 
+  * Add new bounded parameter type that replaces ranged parameter 
+  * Add cmeans class with different initializers given by plug-ins 
+  * correct evaluation of normalization filter in nonlinearregistration 
+    (Closes #185) 
+  *  Remove cost name test from s/2dmany-to-one.cc (Related to #186)
+  * Add a 3D to image drawtool
+  * remove time stamp from man pages for reproducible builds
+  * Lots of minor changes and fixes (see git log for details) 
+
 2.2.3
 
   New features:
