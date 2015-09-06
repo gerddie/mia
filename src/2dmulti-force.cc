@@ -38,7 +38,7 @@ const SProgramDescription g_description = {
 	 "The input images must be of the same dimensions and gray scale (whatever bit-depth)."}, 
 	{pdi_example_descr, "Evaluate the force normimage weighted sum of costs SSD and NGF of "
 	 "image1.v and image2.v. and store the result to force.v."}, 
-	{pdi_example_code, "-o force.v image:cost=ssd,src=image1.v,ref=image2.v,weight=0.1 "
+	{pdi_example_code, "-o force.v \n image:cost=ssd,src=image1.v,ref=image2.v,weight=0.1\n "
 	 "image:cost=ngf,src=image1.v,ref=image2.v,weight=2.0"}
 }; 
 

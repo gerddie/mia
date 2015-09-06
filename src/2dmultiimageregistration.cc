@@ -47,7 +47,7 @@ const SProgramDescription g_description = {
 	 "Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
 	 "as transformation smoothness penalty. The resulting transformation is saved in reg.vf."},
 
-	{pdi_example_code, "-o reg.vf -l 2 -f spline:rate=3,penalty=divcurl image:cost=ssd,src=test.v,ref=ref.v"}
+	{pdi_example_code, "-o reg.vf -l 2\n -f spline:rate=3,penalty=divcurl\n image:cost=ssd,src=test.v,ref=ref.v"}
 };
 
 
