@@ -27,7 +27,7 @@ ADD_DEFINITIONS(-DVSTREAM_DOMAIN=\"fluid3d\")
 ADD_EXECUTABLE(mia-3dfluid ${fluid3d_SOURCES})
 TARGET_LINK_LIBRARIES(mia-3dfluid mia3d)
 INSTALL(TARGETS mia-3dfluid RUNTIME DESTINATION "bin")
-
+ADD_DEPENDENCIES(mia-2dfluid plugin_test_links)
 MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia 3dfluid)
 
 
