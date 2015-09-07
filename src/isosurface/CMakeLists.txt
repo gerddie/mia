@@ -38,11 +38,13 @@ IF(GTS_FOUND)
 
   # add the ISO-surface programs 
   ADD_EXECUTABLE(mia-3disosurface-from-volume iso.cc)
+  ADD_DEPENDENCIES(mia-3disosurface-from-volume plugin_test_links)
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia 3disosurface-from-volume)
   TARGET_LINK_LIBRARIES(mia-3disosurface-from-volume miagts)
   INSTALL(TARGETS mia-3disosurface-from-volume RUNTIME DESTINATION "bin")
 
   ADD_EXECUTABLE(mia-3disosurface-from-stack iso_from_slices.cc)
+  ADD_DEPENDENCIES(3disosurface-from-stack plugin_test_links)
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia 3disosurface-from-stack)
   TARGET_LINK_LIBRARIES(mia-3disosurface-from-stack miagts)
   INSTALL(TARGETS mia-3disosurface-from-stack RUNTIME DESTINATION "bin")
