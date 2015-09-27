@@ -223,6 +223,7 @@ void FGetFlowImages::add_flows(C2DFImage& flow, int label, const T2DImage<T>& im
 	auto ii = image.begin();
 	auto ie = image.end();
 
+	// here two signed-unsigned comparisong warnings are issued that should be silenced. 
 	while (ii != ie) {
 		if (*ii <= m_low_end)  {
 			if (m_low_label == label)
@@ -382,10 +383,14 @@ int do_main( int argc, char *argv[] )
 			outstr << ipv.first << " " << ipv.second << "\n"; 
 		}
 	}
+
+	if (class_centers.size() > 65535) {
+		throw create_exception<runtime_error>("This code only allows 65535 classes, initializer created ",  class_centers.size()); 
+	}
 	
 	// created the labeled images
 	FGetFlowImages  get_flow_images(pmap, ii->first, 0, ie->first, class_centers.size(),
-					{class_centers.size()-1}, {1}, flow_prob_thresh, flow_scale);
+					{static_cast<int>(class_centers.size()-1)}, {1}, flow_prob_thresh, flow_scale);
 	
 	P2DFilter maxflow = produce_2dimage_filter("maxflow:sink-flow=sink.@,source-flow=source.@"); 
 	
