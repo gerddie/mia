@@ -90,10 +90,10 @@ BOOST_AUTO_TEST_CASE( test_fullcost )
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	c.set_size(t.get_size()); 
 	
-	BOOST_CHECK_EQUAL(c.evaluate(t,gradient), 0.5 * mcost);
+	BOOST_CHECK_CLOSE(c.evaluate(t,gradient), 0.5 * mcost, 0.01);
 
-	BOOST_CHECK_EQUAL(gradient[0], 0.5 * mgx);
-	BOOST_CHECK_EQUAL(gradient[1], 0.5 * mgy);
+	BOOST_CHECK_CLOSE(gradient[0], 0.5 * mgx, 0.01);
+	BOOST_CHECK_CLOSE(gradient[1], 0.5 * mgy, 0.01);
 }
 
 BOOST_AUTO_TEST_CASE( test_multicost ) 
@@ -117,10 +117,10 @@ BOOST_AUTO_TEST_CASE( test_multicost )
 	CDoubleVector gradient(t.degrees_of_freedom(), true); 
 	costs.set_size(t.get_size()); 
 	
-	BOOST_CHECK_EQUAL(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2);
+	BOOST_CHECK_CLOSE(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2, 0.1);
 
-	BOOST_CHECK_EQUAL(gradient[0], 0.5 * mgx1 + 0.2 * mgx2);
-	BOOST_CHECK_EQUAL(gradient[1], 0.5 * mgy1 + 0.2 * mgy2);
+	BOOST_CHECK_CLOSE(gradient[0], 0.5 * mgx1 + 0.2 * mgx2, 0.1);
+	BOOST_CHECK_CLOSE(gradient[1], 0.5 * mgy1 + 0.2 * mgy2, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( test_multicost2 ) 
@@ -145,10 +145,10 @@ BOOST_AUTO_TEST_CASE( test_multicost2 )
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	costs.set_size(t.get_size()); 
 	
-	BOOST_CHECK_EQUAL(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2);
+	BOOST_CHECK_CLOSE(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2, 0.1);
 
-	BOOST_CHECK_EQUAL(gradient[0], 0.5 * mgx1 + 0.2 * mgx2);
-	BOOST_CHECK_EQUAL(gradient[1], 0.5 * mgy1 + 0.2 * mgy2);
+	BOOST_CHECK_CLOSE(gradient[0], 0.5 * mgx1 + 0.2 * mgx2, 0.1);
+	BOOST_CHECK_CLOSE(gradient[1], 0.5 * mgy1 + 0.2 * mgy2, 0.1);
 }
 
 
