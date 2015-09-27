@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE( test_fullcost )
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	c.set_size(t.get_size()); 
 	
-	BOOST_CHECK_CLOSE(c.evaluate(t,gradient), 0.5 * mcost);
+	BOOST_CHECK_CLOSE(c.evaluate(t,gradient), 0.5 * mcost, 0.01);
 
 	BOOST_CHECK_CLOSE(gradient[0], 0.5 * mgx, 0.01);
 	BOOST_CHECK_CLOSE(gradient[1], 0.5 * mgy, 0.01);
