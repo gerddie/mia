@@ -46,6 +46,7 @@ NS_MIA_BEGIN
 	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::iterator>; \
 	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::const_iterator>;
 
+
 DECLARE_EXTERN_ITERATORS(double);
 DECLARE_EXTERN_ITERATORS(float);
 DECLARE_EXTERN_ITERATORS(unsigned int);
@@ -54,6 +55,7 @@ DECLARE_EXTERN_ITERATORS(short);
 DECLARE_EXTERN_ITERATORS(unsigned short);
 DECLARE_EXTERN_ITERATORS(unsigned char );
 DECLARE_EXTERN_ITERATORS(signed char);
+DECLARE_EXTERN_ITERATORS(bool);
 
 #ifdef LONG_64BIT
 DECLARE_EXTERN_ITERATORS(signed long);
