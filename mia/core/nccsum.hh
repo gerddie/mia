@@ -64,7 +64,7 @@ class EXPORT_CORE NCCSums {
 public: 
 	NCCSums():m_sumab(0.0), m_n(0.0) {
                 double zero[2] = {0.0, 0.0}; 
-                m_sum = _mm_load_pd(zero); 
+                m_sum = _mm_loadu_pd(zero); 
                 m_sum2 = m_sum; 
         }
         
