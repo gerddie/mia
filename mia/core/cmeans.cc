@@ -228,7 +228,7 @@ CMeans::SparseProbmap CMeansImpl::run(const CMeans::NormalizedHistogram& nh, CMe
 }
 
 
-// the class that has only the size as a paramater
+// the class that has only the size as a parameter
 CMeansInitializerSizedPlugin::CMeansInitializerSizedPlugin(const char *name):
         CMeansInitializerPlugin(name)
 {

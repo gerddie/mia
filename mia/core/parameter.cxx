@@ -58,7 +58,7 @@ struct __dispatch_parameter_do_set {
 		if (std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed) {
 			std::string::size_type startpos = str_value.find_first_not_of(" \t");
 			if (startpos  == std::string::npos) {
-				throw create_exception<std::invalid_argument>("Trying to set a paramater from an string "
+				throw create_exception<std::invalid_argument>("Trying to set a parameter from an string "
 									      "that is comprised of whitespaces only"); 
 			}
 			if (str_value[startpos] == '-') {

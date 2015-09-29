@@ -103,7 +103,7 @@ private:
 
 typedef TFactory<CMeans::Initializer> CMeansInitializerPlugin;
 
-// the class that has only the size as a paramater
+// the class that has only the size as a parameter
 class EXPORT_CORE CMeansInitializerSizedPlugin : public CMeansInitializerPlugin {
 public: 
         CMeansInitializerSizedPlugin(const char *name);

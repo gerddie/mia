@@ -333,7 +333,7 @@ CParameter *make_oci_param(T& value, S1 lower_bound, S2 upper_bound,bool require
 
 /**
    \ingroup cmdline
-   \brief Dictionary paramater
+   \brief Dictionary parameter
 
    The (templated) parameter that takes its value froma restricted Dictionary.
    \tparam the enumerate that is used by the dictionary 
