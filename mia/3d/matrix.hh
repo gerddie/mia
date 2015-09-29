@@ -160,7 +160,8 @@ template <typename I>
 T3DMatrix<T>::T3DMatrix(const T3DMatrix<I>& o):
 	T3DVector<T3DVector<T> >(T3DVector<T>(o.x), 
 				 T3DVector<T>(o.y), 
-				 T3DVector<T>(o.z))
+				 T3DVector<T>(o.z)),
+	m_ev_type(0)
 {
 }
 
