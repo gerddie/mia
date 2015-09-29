@@ -356,6 +356,12 @@ int do_main( int argc, char *argv[] )
 		ni += ii->second;
                 ++ii; 
         }
+
+	if (ii == chistogram.end()) {
+		// should be impossible but just be on the save side
+		throw create_exception<invalid_argument>("The provided histogram thresh ", histogram_thresh,
+							 " results in an empty histogram, select a lower value"); 
+	}
 	
 	size_t ne = 0; 
 	auto ie = chistogram.end() - 1;
