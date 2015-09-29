@@ -65,7 +65,7 @@ CAddScaleMeshFilterPlugin::CAddScaleMeshFilterPlugin():
 	CMeshFilterPlugin("addscale")
 {
 	add_parameter("img", make_param(m_image_filename, true, 
-					"3DImage that containes the scale values as a volume image."));
+					"3DImage that contains the scale values as a volume image."));
 }
 
 mia::CMeshFilter *CAddScaleMeshFilterPlugin::do_create()const
