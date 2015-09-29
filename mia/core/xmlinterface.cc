@@ -29,12 +29,15 @@ NS_MIA_BEGIN
 
 using std::string;
 using std::stringstream; 
+using std::make_shared; 
+using std::vector; 
 
 struct CXMLElementImpl {
         CXMLElementImpl(const char *name);
         ~CXMLElementImpl();
         
         xmlNodePtr element;
+	vector<CXMLElement::Pointer> children; 
 }; 
 
 CXMLElementImpl::CXMLElementImpl(const char *name)
@@ -61,9 +64,10 @@ CXMLElement::~CXMLElement()
 }
 
 
-CXMLElement* CXMLElement::add_child(const char *name)
+CXMLElement::Pointer CXMLElement::add_child(const char *name)
 {
-        CXMLElement *result = new CXMLElement(name);
+        Pointer result = make_shared<CXMLElement>(name);
+	impl->children.push_back(result); 
         xmlAddChild(impl->element, result->impl->element); 
         return result; 
 }
@@ -120,9 +124,9 @@ CXMLDocument::~CXMLDocument()
 }
 
 	
-CXMLElement* CXMLDocument::create_root_node(const char *name)
+CXMLElement::Pointer CXMLDocument::create_root_node(const char *name)
 {
-        CXMLElement *result = new CXMLElement(name);
+        auto result = make_shared<CXMLElement>(name);
         xmlDocSetRootElement(impl->doc, result->impl->element);
         return result; 
 }

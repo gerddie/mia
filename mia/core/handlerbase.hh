@@ -92,7 +92,7 @@ class EXPORT_CORE CPluginHandlerBase  {
 	   Add the help for all plug-ins to the xml tree 
 	   \param root toot element the documentation is added to 
 	 */
-	void get_xml_help(CXMLElement *root) const; 
+	void get_xml_help(CXMLElement& root) const; 
 
 	/// \returns the plug-in handler descriptor
 	const std::string& get_descriptor() const; 
@@ -108,7 +108,7 @@ class EXPORT_CORE CPluginHandlerBase  {
 	   @param os stream to write additional descriptions to. 
 	   @param root the parent node the information is added to 
 	*/
-	void get_string_help_description_xml(std::ostream& os, CXMLElement *root) const; 
+	void get_string_help_description_xml(std::ostream& os, CXMLElement& root) const; 
 	
 	
 	/**
@@ -128,7 +128,7 @@ private:
 	
 	virtual void do_print_short_help(std::ostream& os) const = 0; 
 	virtual void do_print_help(std::ostream& os) const = 0; 
-	virtual void do_get_xml_help(CXMLElement *root) const = 0; 
+	virtual void do_get_xml_help(CXMLElement& root) const = 0; 
 	virtual void do_add_dependend_handlers(HandlerHelpMap& handler_map) const = 0;  
 	virtual std::string get_handler_type_string_and_help(std::ostream& os) const; 
 	virtual std::string do_get_handler_type_string() const; 

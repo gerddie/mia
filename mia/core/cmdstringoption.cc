@@ -68,7 +68,7 @@ void CCmdStringOption::do_get_long_help_xml(std::ostream& os, CXMLElement& paren
 {
 	if (m_plugin_hint) {
 		m_plugin_hint->add_dependend_handlers(handler_map); 
-		m_plugin_hint->get_string_help_description_xml(os, &parent); 
+		m_plugin_hint->get_string_help_description_xml(os, parent); 
 	}else
 		parent.set_attribute("type", __type_descr<string>::value);
 }

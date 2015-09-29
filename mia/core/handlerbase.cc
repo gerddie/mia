@@ -47,11 +47,11 @@ void CPluginHandlerBase::print_help(std::ostream& os) const
 	do_print_help(os); 
 }
 
-void CPluginHandlerBase::get_xml_help(CXMLElement *root) const
+void CPluginHandlerBase::get_xml_help(CXMLElement& root) const
 {
-	CXMLElement* handlerRoot = root->add_child("handler");
+	auto handlerRoot = root.add_child("handler");
 	handlerRoot->set_attribute("name", get_descriptor());
-	do_get_xml_help(handlerRoot); 
+	do_get_xml_help(*handlerRoot); 
 }
 
 const std::string& CPluginHandlerBase::get_descriptor() const
@@ -69,12 +69,12 @@ void CPluginHandlerBase::add_dependend_handlers(HandlerHelpMap& handler_map) con
 	do_add_dependend_handlers(handler_map);
 }
 
-void CPluginHandlerBase::get_string_help_description_xml(std::ostream& os, CXMLElement *parent) const
+void CPluginHandlerBase::get_string_help_description_xml(std::ostream& os, CXMLElement& parent) const
 {
 	auto type = get_handler_type_string_and_help(os); 
-	auto factory = parent->add_child(type.c_str());
+	auto factory = parent.add_child(type.c_str());
 	factory->set_attribute("name", get_descriptor());
-	parent->set_attribute("type", type);
+	parent.set_attribute("type", type);
 }
 
 std::string CPluginHandlerBase::get_handler_type_string_and_help(std::ostream& MIA_PARAM_UNUSED(os)) const

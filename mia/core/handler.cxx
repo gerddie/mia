@@ -264,11 +264,11 @@ void TPluginHandler<I>::do_print_help(std::ostream& os) const
 }
 
 template <typename I>
-void TPluginHandler<I>::do_get_xml_help(CXMLElement *handlerRoot) const
+void TPluginHandler<I>::do_get_xml_help(CXMLElement& handlerRoot) const
 {
-	handlerRoot->set_child_text(m_help);
+	handlerRoot.set_child_text(m_help);
 	for (auto i = begin(); i != end(); ++i) {
-		auto* pluginRoot = handlerRoot->add_child("plugin");
+		auto pluginRoot = handlerRoot.add_child("plugin");
 		pluginRoot->set_attribute("name", i->first);
 		i->second->get_help_xml(*pluginRoot); 
 	}

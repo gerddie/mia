@@ -39,6 +39,8 @@ NS_MIA_BEGIN
 
 class EXPORT_CORE CXMLElement {
 public:
+	typedef std::shared_ptr<CXMLElement> Pointer; 
+
 	CXMLElement(const char *name);
 	~CXMLElement(); 
 	
@@ -46,8 +48,10 @@ public:
 	CXMLElement(const CXMLElement& orig) = delete;
 	CXMLElement& operator = (const CXMLElement& orig) = delete;
 
+
+
 	
-	CXMLElement* add_child(const char *name);
+	CXMLElement::Pointer add_child(const char *name);
 	void set_attribute(const char *name, const std::string& value);
 	void set_child_text(const std::string& value);
 private:
@@ -66,7 +70,7 @@ public:
 	CXMLDocument& operator = (const CXMLDocument& other) = delete;
 		
 	
-	CXMLElement* create_root_node(const char *);
+	CXMLElement::Pointer create_root_node(const char *);
 	std::string write_to_string_formatted() const;
 
 private:

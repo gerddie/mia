@@ -374,7 +374,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	basic_usage->set_child_text(usage_text.str()); 
 
 	for (auto h = handler_help_map.begin(); h != handler_help_map.end(); ++h)
-		h->second->get_xml_help(nodeRoot);
+		h->second->get_xml_help(*nodeRoot);
 	
 	auto example = nodeRoot->add_child("Example");
 	example->set_child_text(m_program_example_descr); 

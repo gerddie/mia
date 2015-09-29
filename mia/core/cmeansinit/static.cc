@@ -29,7 +29,7 @@ CEqualInitializer::CEqualInitializer(size_t nclasses):m_nclasses(nclasses)
 {
 }
 
-CMeans::DVector CEqualInitializer::run(const CMeans::NormalizedHistogram& nh) const
+CMeans::DVector CEqualInitializer::run(const CMeans::NormalizedHistogram& MIA_PARAM_UNUSED(nh)) const
 {
         CMeans::DVector result(m_nclasses);
 
@@ -44,7 +44,7 @@ CPredefinedInitializer::CPredefinedInitializer(const CMeans::DVector& init):m_in
         // should check that this is in normalized range ? 
 }
 
-CMeans::DVector CPredefinedInitializer::run(const CMeans::NormalizedHistogram& nh) const
+CMeans::DVector CPredefinedInitializer::run(const CMeans::NormalizedHistogram& MIA_PARAM_UNUSED(nh)) const
 {
         
         

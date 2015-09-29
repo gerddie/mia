@@ -30,13 +30,13 @@ BOOST_AUTO_TEST_CASE( test_nested_xml_doc_string )
         
         auto root_node = doc.create_root_node("root");
  
-        CXMLElement* child1 = root_node->add_child("child1");
+        auto child1 = root_node->add_child("child1");
         child1->set_attribute("attribute1", "1");
         child1->set_attribute("attribute2", "2");
 	child1->set_attribute("attribute2", "2");
         child1->set_child_text("Some <text>&");
 
-        CXMLElement* child2 = root_node->add_child("child2");
+        auto child2 = root_node->add_child("child2");
         child2->set_attribute("attribute21", "3");
         child2->set_attribute("attribute22", "4");
 
@@ -62,11 +62,11 @@ BOOST_AUTO_TEST_CASE( test_simple_xml_doc_string )
         
         auto root_node = doc.create_root_node("root");
  
-        CXMLElement* child1 = root_node->add_child("child1");
+        auto child1 = root_node->add_child("child1");
         child1->set_attribute("attribute1", "1");
         child1->set_attribute("attribute2", "2");
 
-        CXMLElement* child2 = child1->add_child("child2");
+        auto child2 = child1->add_child("child2");
         child2->set_attribute("attribute21", "3");
         child2->set_attribute("attribute22", "4");
 
