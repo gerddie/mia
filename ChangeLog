@@ -1,3 +1,20 @@
+2.2.5 
+   
+   Bug Fixes: 
+   
+    * Fix SSE2 alignment bugs on 32 bit x86 
+    * Correct test to use BOOST_CHECK_CLOSE for floating point numbers 
+    * Fix a series of Coverity reported bugs 
+      - Change the CXMLElement to track ist children 
+      - fix past-end access in histograms 
+      - check for empty histogram in new CMeans implementation 
+    * Correct explicite instanciation of 3diterator, clang++ needed this
+
+    Other fixes
+
+    * Remove outdate documentation files 
+    * Correct licenses
+
 2.2.4
 
   New features:
