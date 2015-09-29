@@ -90,6 +90,10 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 	for(auto h: histogram)
 		n += h.second;
 
+	if (n == 0) {
+		throw create_exception<invalid_argument>("CMeans::run: the provided histogram was empty"); 
+	}
+	
 	double normalizer = 1.0/n; 
 
 	transform(histogram.begin(), histogram.end(), nhist.begin(),
