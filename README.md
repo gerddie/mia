@@ -1,9 +1,17 @@
+If you are reading this on GITHUB:
+
+This repository is a mirror of the master branch of
+
+    git://git.code.sf.net/p/mia/mia2
+
+
+
 SYNOPSIS: 
 
 MIA is a collection of libraries and command line tools for the processing 
 of gray scale images.
 
-For details, help, etc see http://mia.sourceforge.net
+For details, help, etc, see http://mia.sourceforge.net
 
 If you use this software for scientific research, please cite it as 
 
