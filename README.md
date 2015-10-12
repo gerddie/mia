@@ -1,5 +1,3 @@
-If you are reading this on GITHUB:
-
 This repository is a mirror of the master branch of
 
     git://git.code.sf.net/p/mia/mia2
