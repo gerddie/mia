@@ -37,16 +37,16 @@ const SProgramDescription g_description = {
 	
 	
 	{pdi_description, "This program first evaluates a sparse histogram of an input image "
-         "series, then runs a c-means classification over the histogram, and then estimates a "
-         "per image seeds for later segmentation based on class probabilities. "
+         "series, then runs a c-means classification over the histogram, and then estimates the "
+         "mask for one (given) class based on class probabilities. "
          "This program accepts only images of eight or 16 bit integer pixels."
         }, 
 	
 	{pdi_example_descr,"Run the program over images imageXXXX.png with the sparse histogram, "
          "threshold the lower 30% bins (if available), run cmeans with two classes on the non-zero "
-         "pixels and then create the seeds mask as seedXXXX.png."}, 
+         "pixels and then create the mask for class 1 as foregroundXXXX.png."}, 
 	
-	{pdi_example_code, "-i image.png -o seed -t png --histogram-tresh=30 --classes 2"}
+	{pdi_example_code, "-i imageXXXX.png -o foreground -t png --histogram-tresh=30 --classes 2 --label 1"}
 }; 
 
 class CFullHistogram : public TFilter<size_t> {
@@ -172,116 +172,83 @@ vector<pair<int, unsigned long>> CFullHistogram::get_compressed_histogram()const
 
 typedef map<double, CMeans::DVector> Probmap; 
 
-class FGetFlowImages: public TFilter<pair<C2DFImage, C2DFImage>> {
+class FGetClassSeedMask: public TFilter<P2DImage> {
 public: 
-	FGetFlowImages(const Probmap& map,
-		       int low_end, int low_label, int high_end, int high_label,  
-		       const vector<int>& sink_labels,
-		       const vector<int>& source_labels, float thresh_prob, float flow_scale);
+	FGetClassSeedMask(const Probmap& map,
+			  int low_end, int low_label, int high_end, int high_label,
+			  const int label, float prob_thresh);
 
 	template <typename T> 
-	pair<C2DFImage, C2DFImage> operator() (const T2DImage<T>& image) const;   
+	P2DImage operator() (const T2DImage<T>& image) const;   
 private:
-	template <typename T>
-	void add_flows(C2DFImage& flow, int label, const T2DImage<T>& image) const;
-
 	const Probmap& m_map;
 
 	int m_low_end;
 	int m_low_label;
 	int m_high_end;
-	int m_high_label;  
-	
-	vector<int> m_sink_labels;
-	vector<int> m_source_labels; 
-	
-	float m_thresh_prob; 
-	float m_flow_scale; 
+	int m_high_label;
+	int m_label;
+	float m_prob_thresh; 
 }; 
 
 
-FGetFlowImages::FGetFlowImages(const Probmap& map,
-			       int low_end, int low_label, int high_end, int high_label,
-			       const vector<int>& sink_labels,
-			       const vector<int>& source_labels, float thresh_prob, float flow_scale):
+FGetClassSeedMask::FGetClassSeedMask(const Probmap& map,
+				     int low_end, int low_label, int high_end, int high_label,
+				     const int label, float prob_thresh):
 	m_map(map),
 	m_low_end(low_end),
 	m_low_label(low_label),
 	m_high_end(high_end),
 	m_high_label(high_label),  
-	m_sink_labels(sink_labels),
-	m_source_labels(source_labels),
-	m_thresh_prob(thresh_prob), 
-	m_flow_scale(flow_scale)
+	m_label(label),
+	m_prob_thresh(prob_thresh)
 {
 }
 
-template <typename T>
-void FGetFlowImages::add_flows(C2DFImage& flow, int label, const T2DImage<T>& image) const
-{
-	auto iflow = flow.begin();
-	auto ii = image.begin();
-	auto ie = image.end();
-
-	// here two signed-unsigned comparisong warnings are issued that should be silenced. 
-	while (ii != ie) {
-		if (*ii <= m_low_end)  {
-			if (m_low_label == label)
-				*iflow = 1.0f;
-		} else if (*ii >= m_high_end){
-			if (m_high_label == label)
-				*iflow = 1.0f;
-		} else {
-			auto l = m_map.find(*ii);
-			if (l != m_map.end()) {
-				if (l->second[label] >= m_thresh_prob && l->second[label] > *iflow)
-					*iflow = l->second[label];			       
-			} else {
-				// this should not happen and 
-				cvwarn() << "Unmapped value " << *ii << "\n";
-			}
-		}
-		//  should be a parameter
-		*iflow *= m_flow_scale; 
-		
-		++iflow;
-		++ii; 
-	}
-	
-}
-						    
+					    
 template <typename T> 
-pair<C2DFImage, C2DFImage> FGetFlowImages::operator() (const T2DImage<T>& image) const
+P2DImage FGetClassSeedMask::operator() (const T2DImage<T>& image) const
 {
+	C2DBitImage *result = new C2DBitImage(image.get_size(), image);
+	P2DImage presult(result);
 	
-	C2DFImage sink_flow(image.get_size());
-	C2DFImage source_flow(image.get_size());
+	auto run_pixel = [this](T pixel) -> bool {
 
+		// 
+		// check boundaries of probability map whether they 
+		// correspond to the label
+		// outside the range probability of that label is always 1.0 
+		if (pixel <= m_low_end)
+			return (m_label == m_low_label);
+		if (pixel >= m_high_end)
+			return (m_label == m_high_label);
 
-	for (auto sink_label: m_sink_labels) {
-		add_flows(sink_flow, sink_label, image); 
-	}
+		auto l = m_map.find(pixel);
+		if (l != m_map.end()) {
+			return (l->second[m_label] >= m_prob_thresh);                          
+		} else {
+			// this should not happen
+			cvwarn() << "Unmapped value " << pixel << "\n";
+			return false; 
+		}
 
-	for (auto source_label: m_source_labels) {
-		add_flows(source_flow, source_label, image); 
-	}
+	}; 
 	
-	return make_pair(sink_flow, source_flow); 
-	
+	transform(image.begin(), image.end(), result->begin(), run_pixel); 
+	return presult; 
 }
 
 int do_main( int argc, char *argv[] )
 {
-        string out_labels;
+        string out_mask;
 	string out_probmap;
 	string in_filename;
-	string flow_fileprefix; 
         string out_type("png");
 
-	float seed_threshold = 0.9; 
+	float seed_threshold = 0.95; 
         float histogram_thresh = 5;
-	float flow_prob_thresh = 0.5; 
-	float flow_scale = 100.0f; 
+
+	int label = -1; 
 	
 	CMeans::PInitializer class_center_initializer;
 
@@ -297,12 +264,10 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::output));
         options.add(make_opt( out_type, "type", 't', "output file name type"));
 
-	options.add(make_opt( out_labels, "out-labels", 'o', "output file name base", 
+	options.add(make_opt( out_mask, "out-mask", 'o', "output file name base", 
 			      CCmdOptionFlags::required_output));
 
-	options.add(make_opt( flow_fileprefix, "out-flow", 'f',
-			      "prefix for flow initialization images", CCmdOptionFlags::output)); 
-	
+
         options.set_group("Parameters");
         options.add(make_opt( histogram_thresh, EParameterBounds::bf_closed_interval, {0,50}, "histogram-thresh", 'T',
                               "Percent of the extrem parts of the histogram to be collapsed into the respective last histogram bin."));
@@ -312,13 +277,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( seed_threshold, EParameterBounds::bf_open_interval, {0.0f,1.0f}, "seed-threshold", 'S',
                               "Probability threshold value to consider a pixel as seed pixel."));
 
-	options.add(make_opt( flow_prob_thresh, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
-			      {0.0f, 1.0f}, "flow-prob-thresh", 'F', "Class probability threshold to cut the flow "
-			      "to zero for the source/sink flow connectivity creation")); 
-	options.add(make_opt( flow_scale, EParameterBounds::bf_min_open, {0.0f}, "flow-scale", 'W',
-                              "Scaling factor to adjust the flow evaluated from the initial c-means segmentation."));
+	options.add(make_opt( label, EParameterBounds::bf_closed_interval, {-1,10}, "label", 'L',
+                              "Class label to create the mask from"));
 
-	
         
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -393,12 +354,15 @@ int do_main( int argc, char *argv[] )
 	if (class_centers.size() > 65535) {
 		throw create_exception<runtime_error>("This code only allows 65535 classes, initializer created ",  class_centers.size()); 
 	}
+
+	if (class_centers.size() <= label) {
+		throw create_exception<runtime_error>("Try to segment class ", label, " but only ",
+						      class_centers.size(), "classes available"); 
+	}
+
 	
-	// created the labeled images
-	FGetFlowImages  get_flow_images(pmap, ii->first, 0, ie->first, class_centers.size(),
-					{static_cast<int>(class_centers.size()-1)}, {1}, flow_prob_thresh, flow_scale);
-	
-	P2DFilter maxflow = produce_2dimage_filter("maxflow:sink-flow=sink.@,source-flow=source.@"); 
+	FGetClassSeedMask seeder(pmap, ii->first, 0, ie->first, class_centers.size() - 1,
+				 label, seed_threshold);
 	
         for (size_t i = start_filenum; i < end_filenum; ++i) {
                 string src_name = create_filename(src_basename.c_str(), i);
@@ -407,32 +371,11 @@ int do_main( int argc, char *argv[] )
                 if (in_image_list.get() && in_image_list->size()) {
                         for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k) {
 				// create label image
-
-				auto flow_images = mia::filter (get_flow_images, **k);
-				if (!flow_fileprefix.empty()) {
-					stringstream ssinkfn; 
-					ssinkfn << flow_fileprefix << "-sink"
-						<< setw(format_width) << setfill('0') << i
-						<< ".v";
-					save_image(ssinkfn.str(), flow_images.first);
-
-					stringstream sssourcefn; 
-					sssourcefn << flow_fileprefix << "-source"
-						   << setw(format_width) << setfill('0') << i
-						   << ".v";
-					save_image(sssourcefn.str(), flow_images.second);
-					
-				}
-				
-				save_image("sink.@", flow_images.first);
-				save_image("source.@", flow_images.second);
-				
-				auto label = maxflow->filter(**k);
-				*k = label; 
+				*k = mia::filter (seeder, **k);
 			}
                 }
 		stringstream ss;
-		ss << out_labels << setw(format_width) << setfill('0') << i << "." << out_type;
+		ss << out_mask << setw(format_width) << setfill('0') << i << "." << out_type;
 		
 		imageio.save(ss.str(), *in_image_list);
         }
