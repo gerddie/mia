@@ -214,13 +214,15 @@ P2DImage FGetClassSeedMask::operator() (const T2DImage<T>& image) const
 	
 	auto run_pixel = [this](T pixel) -> bool {
 
+		const T low_end = static_cast<T>(m_low_end);
+		const T high_end = static_cast<T>(m_high_end); 
 		// 
 		// check boundaries of probability map whether they 
 		// correspond to the label
 		// outside the range probability of that label is always 1.0 
-		if (pixel <= m_low_end)
+		if (pixel <= low_end)
 			return (m_label == m_low_label);
-		if (pixel >= m_high_end)
+		if (pixel >= high_end)
 			return (m_label == m_high_label);
 
 		auto l = m_map.find(pixel);
@@ -277,8 +279,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( seed_threshold, EParameterBounds::bf_open_interval, {0.0f,1.0f}, "seed-threshold", 'S',
                               "Probability threshold value to consider a pixel as seed pixel."));
 
-	options.add(make_opt( label, EParameterBounds::bf_closed_interval, {-1,10}, "label", 'L',
-                              "Class label to create the mask from"));
+	options.add(make_opt( label, EParameterBounds::bf_closed_interval, {0,10}, "label", 'L',
+                              "Class label to create the mask from", CCmdOptionFlags::required));
 
         
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -355,7 +357,7 @@ int do_main( int argc, char *argv[] )
 		throw create_exception<runtime_error>("This code only allows 65535 classes, initializer created ",  class_centers.size()); 
 	}
 
-	if (class_centers.size() <= label) {
+	if (class_centers.size() <= static_cast<unsigned>(label)) {
 		throw create_exception<runtime_error>("Try to segment class ", label, " but only ",
 						      class_centers.size(), "classes available"); 
 	}
