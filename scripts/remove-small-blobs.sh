@@ -33,14 +33,14 @@ thresh=$3
 mkdir -p $temp_dir
 
 
-number_pattern=$(mia-filenumber-pattern "$1")
+number_pattern=$(mia-filenumberpattern -i "$1")
 
 # label the images 
 mia-2dstackfilter -i "$in_images" -t v -o "$temp_dir/labeled" "label:map=$temp_dir/labelmap.txt" 
 
 #relabel joined labels 
 mia-2dimagefilterstack -i "$temp_dir/labeled${number_pattern}.v" -o $temp_dir/relabeled -t v \
-                        "relabel:map=$temp_dir/labelmap.txt"
+                        "labelmap:map=$temp_dir/labelmap.txt"
 
 # evaluate the histogram
 mia-multihist -i "$temp_dir/relabeled${number_pattern}.v" -o "$temp_dir/labelcount.txt"
@@ -50,11 +50,21 @@ mia-multihist -i "$temp_dir/relabeled${number_pattern}.v" -o "$temp_dir/labelcou
 echo "MiaLabelmap" > "$temp_dir/labelbinarizationmap.txt"
 awk -v thresh=$thresh <"$temp_dir/labelcount.txt" >> "$temp_dir/labelbinarizationmap.txt" '{if ($2 > thresh){ print $1 " 1"}else{ print $1 " 0"} }'
 
-mia-create-labelbinarization -i "$temp_dir/labelcount.txt" -o "$temp_dir/labelbinarizationmap.txt" \
-                             --thresh ${min_blobsize}
+mia-2dimagefilterstack -i "$temp_dir/relabeled${number_pattern}.v" -o "$temp_dir/inverse" -t v \
+                       "labelmap:map=$temp_dir/labelbinarizationmap.txt" binarize:min=1 invert 
 
-mia-2dimagefilterstack -i "$temp_dir/relabeled${number_pattern}.v" -o "$out_images" \
-                       "relabel:map=$temp_dir/labelbinarizationmap.txt" binarize:min=1
+mia-2dstackfilter -i "$temp_dir/inverse${number_pattern}.v" -t v -o "$temp_dir/ilabeled" "label:map=$temp_dir/ilabelmap.txt"
+
+mia-2dimagefilterstack -i "$temp_dir/ilabeled${number_pattern}.v" -o $temp_dir/irelabeled -t v \
+                       "labelmap:map=$temp_dir/ilabelmap.txt"
+
+mia-multihist -i "$temp_dir/irelabeled${number_pattern}.v" -o "$temp_dir/ilabelcount.txt"
+
+echo "MiaLabelmap" > "$temp_dir/ilabelbinarizationmap.txt"
+awk -v thresh=$thresh <"$temp_dir/ilabelcount.txt" >> "$temp_dir/ilabelbinarizationmap.txt" '{if ($2 > thresh){ print $1 " 1"}else{ print $1 " 0"} }'
+
+mia-2dimagefilterstack -i "$temp_dir/irelabeled${number_pattern}.v" -o "$out_images" -t png \
+                       "labelmap:map=$temp_dir/ilabelbinarizationmap.txt" binarize:min=1 invert 
 
 rm -rf $temp_dir
 

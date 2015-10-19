@@ -69,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_label , fifof_Fixture )
 
 	};
 
-	unsigned short test_data[n_slices * 4 * 4] = {
+	unsigned int test_data[n_slices * 4 * 4] = {
 		  0, 0, 0, 0,  
 		  1, 0, 0, 0,   
 		  0, 0, 0, 0,
@@ -148,20 +148,20 @@ BOOST_AUTO_TEST_CASE( test_labelremap )
 
 BOOST_AUTO_TEST_CASE( test_overflow ) 
 {
-	const C2DBounds size(300,300);
+	const C2DBounds size(40,40);
 	C2DBitImage *img(new C2DBitImage(size)); 
 	fill(img->begin(), img->end(), 1); 
 	P2DImage pimg(img); 
 	
 	P2DShape shape(new C1n2DShape()); 
 	
-	C2DLabelStackFilter filter("", shape ); 
+	C2DLabelStackFilter filter("", shape );
+	filter.set_start_label(numeric_limits<unsigned int>::max() - 10); 
 
 	typedef TFifoFilterSink<P2DImage> C2DImageFifoFilterSink;
 
 	C2DImageFifoFilterSink::Pointer sink(new C2DImageFifoFilterSink());
 	filter.append_filter(sink);
-	
 	BOOST_CHECK_THROW(filter.push(pimg), invalid_argument); 
 
 }

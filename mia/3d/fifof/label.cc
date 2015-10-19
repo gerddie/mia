@@ -35,7 +35,8 @@ using namespace std;
 
 C2DLabelStackFilter::C2DLabelStackFilter(const string& mapfile, P2DShape n):
 	C2DImageFifoFilter(1, 1, 0), 
-	m_neigbourhood(n), 
+	m_neigbourhood(n),
+	m_start_label(1), 
 	m_last_label(1), 
 	m_map_file(mapfile), 
 	m_first_pass(true)
@@ -51,11 +52,17 @@ void C2DLabelStackFilter::do_initialize(::boost::call_traits<mia::P2DImage>::par
 {
 	m_first_pass = true; 
 	m_joints.clear(); 
-	m_out_buffer = C2DUSImage(x->get_size()); 
-	m_last_label = 1; 
+	m_out_buffer = C2DUIImage(x->get_size()); 
+	m_last_label = m_start_label; 
 }
 
-void C2DLabelStackFilter::grow( int x, int y, C2DBitImage& input, unsigned short l)
+void C2DLabelStackFilter::set_start_label(unsigned int start_label)
+{
+	m_start_label = start_label; 
+}
+	
+
+void C2DLabelStackFilter::grow( int x, int y, C2DBitImage& input, unsigned int l)
 {
 	vector<C2DBounds> seed; 
 	seed.push_back(C2DBounds(x,y)); 
@@ -71,7 +78,7 @@ void C2DLabelStackFilter::grow( int x, int y, C2DBitImage& input, unsigned short
 			    py >= input.get_size().y) 
 				continue; 
 			
-			unsigned short lold = m_out_buffer(px, py); 
+			unsigned int lold = m_out_buffer(px, py); 
 			if (lold) {
 				if (l != lold) {
 					m_joints.add_pair(l, lold); 
@@ -86,6 +93,7 @@ void C2DLabelStackFilter::grow( int x, int y, C2DBitImage& input, unsigned short
 	}
 }
 
+
 void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 {
 	auto ii = input.begin();
@@ -96,12 +104,12 @@ void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 			if (*ii) {
 				cvdebug() << "("<< x << ", " << y <<"," << slice <<  "):" 
 					  << m_last_label << "\n"; 
-				if (m_last_label < numeric_limits<unsigned short>::max()) 
+				if (m_last_label < numeric_limits<unsigned int>::max()) 
 					*usi = m_last_label++;
 				else 
 					throw create_exception<invalid_argument>("C2DLabelStackFilter: number of connected components is about to "
 								       "exeed the  supported limit of ",
-								       numeric_limits<unsigned short>::max(), 
+								       numeric_limits<unsigned int>::max(), 
 								       ", sorry can't continue\n");
 				*ii = false; 
 				grow(x,y,input,*usi); 
@@ -125,7 +133,7 @@ void C2DLabelStackFilter::label(C2DBitImage& input)
 
 void C2DLabelStackFilter::new_label(C2DBitImage& input)
 {
-	m_out_buffer = C2DUSImage(input.get_size(), input); 
+	m_out_buffer = C2DUIImage(input.get_size(), input); 
 	label_new_regions(input); 
 }
 
@@ -176,21 +184,21 @@ void CLabelRemapper::clear()
 
 P2DImage C2DLabelStackFilter::do_filter()
 {
-	return P2DImage(new C2DUSImage(m_out_buffer)); 
+	return P2DImage(new C2DUIImage(m_out_buffer)); 
 }
 
-void CLabelRemapper::add_pair(unsigned short a, unsigned short b)
+void CLabelRemapper::add_pair(unsigned int a, unsigned int b)
 {
 	if (a > b) 
-		m_raw_map.insert(T2DVector<unsigned short>(a,b));
+		m_raw_map.insert(T2DVector<unsigned int>(a,b));
 	else 
-		m_raw_map.insert(T2DVector<unsigned short>(b,a)); 
+		m_raw_map.insert(T2DVector<unsigned int>(b,a)); 
 }
 
 struct greater_than {
-	typedef T2DVector<unsigned short> value_type; 
-	bool operator() (const T2DVector<unsigned short>& lhs, 
-			 const T2DVector<unsigned short>& rhs) {
+	typedef T2DVector<unsigned int> value_type; 
+	bool operator() (const T2DVector<unsigned int>& lhs, 
+			 const T2DVector<unsigned int>& rhs) {
 		return lhs.x > rhs.x || ((lhs.x  == rhs.x)  && lhs.y > rhs.y); 
 	}
 };
@@ -198,7 +206,7 @@ struct greater_than {
 CLabelMap CLabelRemapper::get_map() const
 {
 	CLabelMap result; 
-	priority_queue<T2DVector<unsigned short>, vector<T2DVector<unsigned short>>, greater_than> sorted; 
+	priority_queue<T2DVector<unsigned int>, vector<T2DVector<unsigned int>>, greater_than> sorted; 
 	cvdebug()<< "got " << m_raw_map.size() << " joints\n"; 
 
 	for (auto i = m_raw_map.begin();  i != m_raw_map.end();  ++i)
