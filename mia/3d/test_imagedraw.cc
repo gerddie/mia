@@ -147,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_z_pivot, SimpleBitImageDrawFixtur
 
 BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_x, SimpleBitImageDrawFixture ) 
 {
-        output.draw_line(C3DFVector(0,4,5), C3DFVector(10,10,12)); 
+        output.draw_line(C3DFVector(0.1,4.2,5.3), C3DFVector(10.1,10.2,12.3)); 
         auto& img = output.get_image(); 
                 
         auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
@@ -159,7 +159,7 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_x, SimpleBitImageDrawFixtur
 
 	C3DFVector dir(0.5, 0.3, 0.35f);
 	
-	C3DFVector p(0,4,5);
+	C3DFVector p(0.1,4.2,5.3);
 	for (int k = 0; k < 22; ++k, p += dir) {
 		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
 			     static_cast<unsigned>(floor(p.y + 0.5)), 
@@ -180,7 +180,7 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_x, SimpleBitImageDrawFixtur
 
 BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_y, SimpleBitImageDrawFixture ) 
 {
-        output.draw_line(C3DFVector(4,0,5), C3DFVector(10,10,9)); 
+        output.draw_line(C3DFVector(4,0.1,5.2), C3DFVector(10,10.1,9.2)); 
         auto& img = output.get_image(); 
                 
         auto i = img.begin_range(C3DBounds::_0, img.get_size()); 
@@ -192,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_y, SimpleBitImageDrawFixtur
 
 	C3DFVector dir(0.3, .5, 0.2f);
 	
-	C3DFVector p(4,0,5);
+	C3DFVector p(4,0.1,5.2);
 	for (int k = 0; k < 22; ++k, p += dir) {
 		C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
 			     static_cast<unsigned>(floor(p.y + 0.5)), 
