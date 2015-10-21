@@ -378,12 +378,10 @@ ENDIF(WITH_FFTWD)
 #
 # add xml library for loading/storing segmentations and document creation  
 #
-pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
+pkg_check_modules(XMLPP libxml-2.0 REQUIRED)
 IF (XMLPP_FOUND)
   INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
   LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
-  SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} libxml++-2.6")
-  SET(HAVE_LIBXMLPP 1)
 ENDIF (XMLPP_FOUND)
 
 #
