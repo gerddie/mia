@@ -48,17 +48,44 @@ public:
 	CXMLElement(const CXMLElement& orig) = delete;
 	CXMLElement& operator = (const CXMLElement& orig) = delete;
 
+	/**
+	   \brief add a new child element 
 
+	   This method adds a new child element to this node
+	   \param name name tag of the new child element 
+	   \returns the newly created node 
 
-	
+	 */
 	CXMLElement::Pointer add_child(const char *name);
+
+	/**
+	   \brief Set an attribute of the node 
+
+	   This method sets an attribute of a node 
+	   \param name attribute name 
+	   \param value (string) value of the attribute 
+	 */
 	void set_attribute(const char *name, const std::string& value);
+
+	/**
+	   Set the child text of the node 
+	   \param value text value to be set 
+	 */
 	void set_child_text(const std::string& value);
 private:
 	friend class CXMLDocument; 
 	struct CXMLElementImpl *impl; 
 }; 
 
+
+/**
+   \brief facate for an XML document 
+
+   This class implements a facade for a XML document.  
+   
+   
+
+*/
 
 class EXPORT_CORE CXMLDocument {
 public: 
