@@ -23,6 +23,8 @@
 #define mia_core_xmlinterface_hh
 
 #include <mia/core/defines.hh>
+#include <memory> 
+
 
 NS_MIA_BEGIN
 
