@@ -317,18 +317,18 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_y_outside_ends_dx_is_zero, SimpleB
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_y_outside_ends_dN_is_zero_and_N_outside, SimpleBitImageDrawFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_draw_line_dN_is_zero_and_N_outside, SimpleBitImageDrawFixture ) 
 {
 	// x outside and parallel 
         output.draw_line(C3DFVector(-1,-6, 5), C3DFVector(-1,14,9)); 
-        output.draw_line(C3DFVector(30,6, 5), C3DFVector(30,6,5)); 
+        output.draw_line(C3DFVector(30,-3, 2), C3DFVector(30,6,5)); 
 
 	// y outside and parallel 
         output.draw_line(C3DFVector(1,-6, 5), C3DFVector(1,-6,9)); 
         output.draw_line(C3DFVector(1, 40, 5), C3DFVector(1,40,9)); 
 
 	// z outside and parallel 
-        output.draw_line(C3DFVector(1,6, -5), C3DFVector(1,6,-5)); 
+        output.draw_line(C3DFVector(1,6, -5), C3DFVector(8,7,-5)); 
         output.draw_line(C3DFVector(1,6, 22), C3DFVector(1,14,22)); 
 
         auto& img = output.get_image(); 
