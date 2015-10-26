@@ -29,7 +29,7 @@ NS_MIA_BEGIN
 using std::max; 
 using std::min; 
 using std::swap; 
-using std::fabs; 
+using std::fabs;
 
 C3DDrawBox::C3DDrawBox(const C3DBounds& size, const C3DFVector& origin, const C3DFVector& spacing):
         m_size(size), 
@@ -43,9 +43,9 @@ C3DDrawBox::C3DDrawBox(const C3DBounds& size, const C3DFVector& origin, const C3
 void C3DDrawBox::draw_point(const C3DFVector& p)
 {
        
-        C3DBounds ip(static_cast<unsigned>(floor(p.x + 0.5)), 
-                     static_cast<unsigned>(floor(p.y + 0.5)), 
-                     static_cast<unsigned>(floor(p.z + 0.5)));
+        C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
+                     static_cast<unsigned>(roundf(p.y)), 
+                     static_cast<unsigned>(roundf(p.z)));
        
 	cvdebug() << "about to draw " << ip << " from " << p << "\n"; 
         if (ip < m_size) 
