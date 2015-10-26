@@ -56,12 +56,13 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 	return a;
 }
 
-#define INSTANCIATE(TYPE) \
-	template class  T3DDatafield<TYPE>;			\
+#define INSTANCIATE(TYPE)						\
+	template class  T3DDatafield<TYPE>;				\
 	template class  range3d_iterator<T3DDatafield<TYPE>::iterator>; \
 	template class  range3d_iterator<T3DDatafield<TYPE>::const_iterator>; \
 	template class  range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::iterator>; \
 	template class  range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::const_iterator>; 
+
 
 #define INSTANCIATE2D(TYPE)						\
 	template class  EXPORT_3D T2DDatafield<TYPE>;			\

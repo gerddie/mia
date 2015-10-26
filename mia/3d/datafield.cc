@@ -97,10 +97,6 @@ INSTANCIATE(unsigned char );
 INSTANCIATE(signed char);
 INSTANCIATE(bool);
 
-INSTANCIATE(C3DFVector)
-INSTANCIATE(C3DDVector)
-
-
 DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
 DEFINE_TYPE_DESCR2(C3DFVector, "3dfvector"); 
 
