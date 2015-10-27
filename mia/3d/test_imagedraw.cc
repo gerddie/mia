@@ -61,10 +61,16 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_point_outside, SimpleBitImageDrawFixtu
 
         auto& img = output.get_image(); 
         
-        
-        for(auto i : img) {
-                BOOST_CHECK(!i);
-        }
+        auto i = img.begin_range(C3DBounds::_0, img.get_size());
+	auto e = img.end_range(C3DBounds::_0, img.get_size());
+			      
+	while (i != e) {
+		if (*i) {
+			cvdebug() << "Unexpected pixel at " << i.pos() << "\n"; 
+		}
+		BOOST_CHECK(!*i);
+		++i; 
+	}
 }
 
 BOOST_FIXTURE_TEST_CASE( test_simple_draw_point_corners, SimpleBitImageDrawFixture ) 
@@ -126,9 +132,9 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_z_pivot, SimpleBitImageDrawFixtur
 	
 	C3DFVector p(0,0,0);
 	for (int k = 0; k < 24; ++k, p += dir) {
-		C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-			     static_cast<unsigned>(roundf(p.y)), 
-			     static_cast<unsigned>(roundf(p.z))); 
+		C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+			     static_cast<signed>(roundf(p.y)), 
+			     static_cast<signed>(roundf(p.z))); 
 		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 		pixels.insert(ip); 
 	}
@@ -159,9 +165,9 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_x, SimpleBitImageDrawFixtur
 	
 	C3DFVector p(0.1,4.2,5.3);
 	for (int k = 0; k < 22; ++k, p += dir) {
-		C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-			     static_cast<unsigned>(roundf(p.y)), 
-			     static_cast<unsigned>(roundf(p.z))); 
+		C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+			     static_cast<signed>(roundf(p.y)), 
+			     static_cast<signed>(roundf(p.z))); 
 		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 		pixels.insert(ip); 
 	}
@@ -192,9 +198,9 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_line_pivot_y, SimpleBitImageDrawFixtur
 	
 	C3DFVector p(4,0.1,5.2);
 	for (int k = 0; k < 22; ++k, p += dir) {
-		C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-			     static_cast<unsigned>(roundf(p.y)), 
-			     static_cast<unsigned>(roundf(p.z))); 
+		C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+			     static_cast<signed>(roundf(p.y)), 
+			     static_cast<signed>(roundf(p.z))); 
 		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 		pixels.insert(ip); 
 	}
@@ -226,9 +232,9 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_x_outside_ends, SimpleBitImageDraw
 	C3DFVector p(-4,2,5);
 	for (int k = 0; k < 40; ++k, p += dir) {
 		if (p.x >= 0 || p.x < img.get_size().x) {
-			C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-				     static_cast<unsigned>(roundf(p.y)), 
-				     static_cast<unsigned>(roundf(p.z))); 
+			C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+				     static_cast<signed>(roundf(p.y)), 
+				     static_cast<signed>(roundf(p.z))); 
 			cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 			if (ip.x < img.get_size().x) 
 				pixels.insert(ip); 
@@ -263,9 +269,9 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_y_outside_ends, SimpleBitImageDraw
 	
 	C3DFVector p(4,-6,5);
 	for (int k = 0; k < 42; ++k, p += dir) {
-		C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-			     static_cast<unsigned>(roundf(p.y)), 
-			     static_cast<unsigned>(roundf(p.z))); 
+		C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+			     static_cast<signed>(roundf(p.y)), 
+			     static_cast<signed>(roundf(p.z))); 
 		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 		if (ip.y < img.get_size().y) 
 			pixels.insert(ip); 
@@ -298,9 +304,9 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_y_outside_ends_dx_is_zero, SimpleB
 	
 	C3DFVector p(4,-6,5);
 	for (int k = 0; k < 42; ++k, p += dir) {
-		C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-			     static_cast<unsigned>(roundf(p.y)), 
-			     static_cast<unsigned>(roundf(p.z))); 
+		C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+			     static_cast<signed>(roundf(p.y)), 
+			     static_cast<signed>(roundf(p.z))); 
 		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 		if (ip.y < img.get_size().y) 
 			pixels.insert(ip); 
@@ -360,9 +366,9 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_z_outside_ends, SimpleBitImageDraw
 	
 	C3DFVector p(5.5, 6.5, 0);
 	for (int k = 0; k < 41 && p.z < 12; ++k, p += dir) {
-		C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-			     static_cast<unsigned>(roundf(p.y)), 
-			     static_cast<unsigned>(roundf(p.z))); 
+		C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+			     static_cast<signed>(roundf(p.y)), 
+			     static_cast<signed>(roundf(p.z))); 
 		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 		if (ip.z < img.get_size().z) 
 			pixels.insert(ip); 
@@ -395,9 +401,9 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_x_outside_ends_dz_is_zero, SimpleB
 	
 	C3DFVector p(-4,2,5);
 	for (int k = 0; k < 42; ++k, p += dir) {
-		C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-			     static_cast<unsigned>(roundf(p.y)), 
-			     static_cast<unsigned>(roundf(p.z))); 
+		C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+			     static_cast<signed>(roundf(p.y)), 
+			     static_cast<signed>(roundf(p.z))); 
 		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 		if (ip.x < img.get_size().x) 
 			pixels.insert(ip); 
@@ -430,9 +436,9 @@ BOOST_FIXTURE_TEST_CASE( test_draw_line_pivot_z_outside_ends_dy_is_zero, SimpleB
 	
 	C3DFVector p(5.5, 4, 0);
 	for (int k = 0; k < 41 && p.z < 12; ++k, p += dir) {
-		C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-			     static_cast<unsigned>(roundf(p.y)), 
-			     static_cast<unsigned>(roundf(p.z))); 
+		C3DBounds ip(static_cast<signed>(roundf(p.x)), 
+			     static_cast<signed>(roundf(p.y)), 
+			     static_cast<signed>(roundf(p.z))); 
 		cvdebug() << "test about to draw " << ip << " from " << p << "\n"; 
 		if (ip.z < img.get_size().z) 
 			pixels.insert(ip); 

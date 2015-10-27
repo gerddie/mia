@@ -43,9 +43,9 @@ C3DDrawBox::C3DDrawBox(const C3DBounds& size, const C3DFVector& origin, const C3
 void C3DDrawBox::draw_point(const C3DFVector& p)
 {
        
-        C3DBounds ip(static_cast<unsigned>(roundf(p.x)), 
-                     static_cast<unsigned>(roundf(p.y)), 
-                     static_cast<unsigned>(roundf(p.z)));
+        C3DBounds ip(static_cast<short>(roundf(p.x)), 
+                     static_cast<short>(roundf(p.y)), 
+                     static_cast<short>(roundf(p.z)));
        
 	cvdebug() << "about to draw " << ip << " from " << p << "\n"; 
         if (ip < m_size) 
