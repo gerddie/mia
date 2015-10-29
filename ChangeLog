@@ -1,3 +1,7 @@
+2.2.7
+
+    * Correct tests that fail on arm64, armhf and ppc64el
+
 2.2.6
 
     * Correct pkg-config dependencies
