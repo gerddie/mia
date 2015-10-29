@@ -1,6 +1,7 @@
 2.2.7
 
     * Correct tests that fail on arm64, armhf and ppc64el
+    * Make the m/2d/mlv use always the same random seed
 
 2.2.6
 

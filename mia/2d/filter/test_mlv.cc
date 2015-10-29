@@ -30,7 +30,8 @@ using namespace mlv_2dimage_filter;
 BOOST_AUTO_TEST_CASE( test_mlv )
 {
 #ifndef WIN32
-	srand48(time(NULL));
+	// deterministic test, aleays use the same seed 
+	srand48(0);
 #endif
 
 	for (int width = 2; width < 12; ++width) {
