@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(test_available_filters)
 		"dilate", "distance", "downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
 		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sobel", "sort-label", 
-		"sws", "tee", "thinning", "thresh", "transform", "ws"};
+		"sws", "tee", "thinning", "thresh", "tmean", "transform", "ws"};
 
 #ifdef HAVE_MAXFLOW
 	test_data.insert("maxflow"); 

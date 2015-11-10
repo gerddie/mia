@@ -265,7 +265,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture)
 		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", 
 		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", 
 		"scale", "selectbig", "sepconv", "shmean", "sobel",
-		"sort-label", "sws", "tee", "thinning", "thresh",
+		"sort-label", "sws", "tee", "thinning", "thresh", "tmean", 
 		"transform", "ws"
 	};
 #ifdef HAVE_MAXFLOW

@@ -69,6 +69,7 @@ SET(filters2dNew_base
   tee
   thinning 
   thresh
+  tmean
   transform
   watershed
 )
