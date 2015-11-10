@@ -22,6 +22,9 @@
 #include <mia/2d/filter/tmean.hh>
 #include <boost/type_traits/is_floating_point.hpp>
 
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
 NS_BEGIN(tmean_2dimage_filter)
 NS_MIA_USE;
 using namespace std;
@@ -85,16 +88,20 @@ C2DTmean::result_type C2DTmean::operator () (const T2DImage<T>& data) const
 	T2DImage<T> *tresult = new T2DImage<T>(data.get_size(), data);
 	P2DImage result(tresult);
 
-	auto i = tresult->begin();
-        auto id = data.begin(); 
 
-	for (size_t y = 0; y < data.get_size().y; ++y)
-		for (size_t x = 0; x < data.get_size().x; ++x, ++i, ++id) {
-                        if (*id > m_thresh) 
+        auto run_line  = [this, data, tresult](const tbb::blocked_range<size_t>& range) {
+		for (auto y = range.begin(); y !=  range.end(); ++y) {
+			auto  i = tresult->begin_at(0, y);
+			auto id = data.begin_at(0, y);
+			for (size_t x = 0; x < data.get_size().x; ++x, ++i, ++id) {
+				if (*id > m_thresh) 
                                 *i = __dispatch_filter<T, is_floating_point>::apply(data, x, y, m_hw, m_thresh);
                         else
-                                *i = 0; 
-                }
+                                *i = 0;
+			}
+		}
+	};
+	tbb::parallel_for(tbb::blocked_range<size_t>(0, data.get_size().y, 1), run_line);
 
 	return result;
 }
