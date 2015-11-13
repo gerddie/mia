@@ -41,6 +41,7 @@ CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
 	add_supported_type(it_sshort);
 
 	CFloatTranslator::register_for("SliceLocation");
+	CFloatTranslator::register_for(IDSpacingBetweenSlices);
 	CDoubleTranslator::register_for("AcquisitionTime"); 
 	CSITranslator::register_for("SeriesNumber");
 	CSITranslator::register_for("AcquisitionNumber");

@@ -49,6 +49,7 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 	add_supported_type(it_sshort);
 
 	CFloatTranslator::register_for("SliceLocation");
+	CFloatTranslator::register_for(IDSpacingBetweenSlices);
 	CDoubleTranslator::register_for("AcquisitionTime"); 
 	CSITranslator::register_for("SeriesNumber");
 	CSITranslator::register_for("AcquisitionNumber");
@@ -125,6 +126,7 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 		if (m_size2d != image.get_size()) {
 			throw invalid_argument("Series input images have different slice size");
 		}
+		// This should use IDSpacingBetweenSlices
 		if (m_has_slice_location) {
 			float new_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
 			m_delta_z = new_slice_pos - m_slice_pos;
