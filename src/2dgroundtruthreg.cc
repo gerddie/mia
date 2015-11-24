@@ -166,7 +166,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( pgt_params.beta, "beta", 'B', "temporal second derivative penalty weight", 
 				    CCmdOptionFlags::required));
 	options.add(make_opt( pgt_params.rho_thresh, "rho_thresh", 'R', 
-				    "crorrelation threshhold for neighborhood analysis", CCmdOptionFlags::required));
+				    "correlation threshold for neighborhood analysis", CCmdOptionFlags::required));
 
 
 	

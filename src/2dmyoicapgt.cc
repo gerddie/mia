@@ -480,7 +480,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( pgt_alpha, "alpha", 'A', "spacial neighborhood penalty weight"));
 	options.add(make_opt( pgt_beta, "beta", 'B', "temporal second derivative penalty weight"));
 	options.add(make_opt( pgt_rho_thresh, "rho-thresh", 'T', 
-				    "crorrelation threshhold for neighborhood analysis"));
+				    "correlation threshold for neighborhood analysis"));
 
 	
 		

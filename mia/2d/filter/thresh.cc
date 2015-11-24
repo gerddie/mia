@@ -70,7 +70,7 @@ C2DThreshNImageFilterFactory::C2DThreshNImageFilterFactory():
 	m_thresh(5.0)
 {
 	add_parameter("shape", make_param(m_shape, "4n", false, "neighborhood shape to take into account")); 
-	add_parameter("thresh", make_param(m_thresh, false, "The threshhold value"));
+	add_parameter("thresh", make_param(m_thresh, false, "The threshold value"));
 }
 
 C2DFilter *C2DThreshNImageFilterFactory::do_create()const
@@ -81,7 +81,7 @@ C2DFilter *C2DThreshNImageFilterFactory::do_create()const
 const std::string C2DThreshNImageFilterFactory::do_get_descr() const
 {
 	return  "This filter sets all pixels of an image to zero that fall below a certain threshhold and "
-		"whose neighbours in a given neighborhood shape also fall below a this threshhold"; 
+		"whose neighbours in a given neighborhood shape also fall below a this threshold"; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
