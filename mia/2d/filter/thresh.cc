@@ -80,7 +80,7 @@ C2DFilter *C2DThreshNImageFilterFactory::do_create()const
 
 const std::string C2DThreshNImageFilterFactory::do_get_descr() const
 {
-	return  "This filter sets all pixels of an image to zero that fall below a certain threshhold and "
+	return  "This filter sets all pixels of an image to zero that fall below a certain threshold and "
 		"whose neighbours in a given neighborhood shape also fall below a this threshold"; 
 }
 
