@@ -26,5 +26,5 @@ addons:
       version: 2.2.7+
       description: Medical imaga analysis library
     notification_email: gw.fossdev@gmail.com
-    build_command: make
+    build_command: make -j3 
     branch_pattern: coverity_scan
