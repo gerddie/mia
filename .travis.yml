@@ -1,43 +1,11 @@
 sudo: required
 dist: trusty
 language: generic
+
 install:
 - sudo add-apt-repository ppa:gert-die/trusty-mia -y 
 - sudo apt-get update -qq
-- sudo apt-get install libmaxflow-dev -qq
-
-
-addons:
-  apt:
-    packages:
-    - docbook-xsl,
-    - doxygen,
-    - doxygen-latex,
-    - graphviz,
-    - libblas-dev,
-    - libboost-filesystem-dev,
-    - libboost-regex-dev,
-    - libboost-serialization-dev,
-    - libboost-system-dev,
-    - libboost-test-dev,
-    - libdcmtk2-dev,
-    - libeigen3-dev,
-    - libfftw3-dev,
-    - libgsl0-dev,
-    - libgts-dev,
-    - libhdf5-dev,
-    - libitpp-dev,
-    - libnifti-dev,
-    - libnlopt-dev,
-    - libopenexr-dev,
-    - libpng-dev,
-    - libtbb-dev,
-    - libtiff-dev,
-    - libvtk6-dev,
-    - libvistaio-dev,
-    - libxml++2.6-dev,
-    - python-lxml,
-    - xsltproc
+- sudo apt-get install -y libmaxflow-dev libdcmtk2-dev libeigen3-dev libfftw3-dev libgsl0-dev libgts-dev libhdf5-dev libitpp-dev libnifti-dev libnlopt-dev libopenexr-dev libpng-dev libtbb-dev libtiff-dev libvtk6-dev libvistaio-dev libxml++2.6-dev python-lxml xsltproc docbook-xsl doxygen doxygen-latex graphviz libblas-dev libboost-filesystem-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev
 
 before_script:
 - mkdir build
