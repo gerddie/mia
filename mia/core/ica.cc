@@ -402,6 +402,7 @@ CICAAnalysisImpl::CICAAnalysisImpl(const itpp::mat& ic, const itpp::mat& mix, co
 	// Coverty may complain here, but the order is correct
 	// the signal is a matrix of the number of columns of the mixing matrix = time points 
 	// by rows of the independent components - each row constitutes th epixel ogf a feature image
+	// coverity[SWAPPED_ARGUMENTS]
 	m_Signal(mix.cols(), ic.rows()),
 	m_ICs(ic),
 	m_Mix(mix),

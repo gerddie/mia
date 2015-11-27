@@ -65,12 +65,6 @@ struct __dispatch_filter {
 	static T apply(const T3DImage<T>& data, int cx, int cy, int cz, int hw, int freedom) {
 		double result = 0.0; 
 		int n = freedom;
-		// 
-		// Coverty complains about this: 1128688, 1128687 
-		// 
-		// hw >= 1, cy >= 0 && cy < data.get_size().y
-		// therefore n>=8
-		// 
 		auto range = prepare_range(data.get_size(), cx, cy, cz, hw); 
 		auto rb = data.begin_range(range.first,range.second); 
 		auto re = data.end_range(range.first,range.second); 
@@ -80,6 +74,10 @@ struct __dispatch_filter {
 			++rb;
 			++n; 
 		}
+		
+		// hw >= 0, cy >= 0 && cy < data.get_size().y
+		// therefore n >=1, hence the override 
+		// coverity[DIVIDE_BY_ZERO] 
 		return mia_round_clamped<T>(rint(result/n)); 
 	}
 }; 
@@ -101,6 +99,10 @@ struct __dispatch_filter<T, true> {
 			++rb; 
 			++n; 
 		}
+	 
+		// hw >= 0, cy >= 0 && cy < data.get_size().y
+		// therefore n >=1, hence the override 
+		// coverity[DIVIDE_BY_ZERO] 
 		return static_cast<T>(result/n); 
 	}
 }; 

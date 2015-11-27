@@ -112,7 +112,9 @@ BOOST_AUTO_TEST_CASE( run_self_test )
 
 	const C3DFImage* result = dynamic_cast<const C3DFImage*>(R.get());
 	BOOST_REQUIRE(result);
-
+	
+	// the model for BOOST_REQUIRE schould have caught this .... 
+	// coverity[FORWARD_NULL]
 	BOOST_CHECK_CLOSE( (*result)(0,0,0), 1.5f, 0.1f);
 	BOOST_CHECK_CLOSE( (*result)(0,1,0), 2.5f, 0.1f);
 

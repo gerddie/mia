@@ -622,6 +622,15 @@ struct dispatch_attr_string<std::vector<bool> > {
 		std::istringstream svalue(str);
 		svalue >> s;
 		std::vector<bool> v(s);
+
+		// Added override for coverity
+		// 
+		// Since s is used as the size for the new vector, a large
+		// value will result in a std::bad_alloc exception. This
+		// is not worse than bailing out because s is larger than
+		// an abitrary set boundary that youle be cheked here.
+		// 
+		// coverity[TAINTED_SCALAR] 
 		for (size_t i = 0; i < s; ++i) {
 			bool value;
 			svalue >> value;

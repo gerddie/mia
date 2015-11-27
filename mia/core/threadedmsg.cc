@@ -117,6 +117,7 @@ int thread_streamredir::m_next_id = 0;
 
 
 CThreadMsgStream::CThreadMsgStream():
+	// coverity[RESOURCE_LEAK] explanation below in destructor 
 	std::ostream(new thread_streamredir()), 
 	m_old(vstream::instance().set_stream(*this))
 {
@@ -126,6 +127,8 @@ CThreadMsgStream::~CThreadMsgStream()
 {
 	flush(); 
 	vstream::instance().set_stream(m_old);
+	// At this point we delete the thread_streamredir object that is
+	// created in the constructor 
 	delete rdbuf();
 }
 

@@ -56,6 +56,9 @@ int do_main( int argc, char *argv[] )
 
 	size_t format_width = get_filename_number_pattern_width(in_filename);
 	cout << setw(format_width) << setfill('0') << 0;
+
+	// end of program, so it's not important to restore the stream state
+	// coverity[STREAM_FORMAT_STATE] 
 	return 0;
 }
 

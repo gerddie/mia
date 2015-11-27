@@ -283,12 +283,23 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 		
 		__m128d cjpv = cj * pv; 
 		__m128d cjpv12 = cj * pv12; 
-		cjpv12 = _mm_shuffle_pd(cjpv12, cjpv12, 0x1); 
+		cjpv12 = _mm_shuffle_pd(cjpv12, cjpv12, 0x1);
+
+		// coverity is complaining about variables of type __m128d
+		// being pointers where they are indeed to interpreted as
+		// arrays of two elements 
 		
-		result_a = result_a + ci * cjpv; 
-		cjpv = cjpv + cjpv; 
+		//coverity[ARRAY_VS_SINGLETON]
+		result_a = result_a + ci * cjpv;
+		
+		//coverity[ARRAY_VS_SINGLETON]
+		cjpv = cjpv + cjpv;
+		
+		//coverity[ARRAY_VS_SINGLETON]
 		g = g + cjpv12; 
-		result_b = _mm_add_sd(result_b, _mm_mul_sd(ci, cjpv12)); 
+		result_b = _mm_add_sd(result_b, _mm_mul_sd(ci, cjpv12));
+
+		//coverity[ARRAY_VS_SINGLETON]
 		g = g + cjpv; 
 		
 		_mm_storeu_pd(&gradient[2*p->i], g); 

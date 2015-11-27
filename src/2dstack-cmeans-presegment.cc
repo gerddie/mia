@@ -179,7 +179,9 @@ public:
 			  const int label, float prob_thresh);
 
 	template <typename T> 
-	P2DImage operator() (const T2DImage<T>& image) const;   
+	P2DImage operator() (const T2DImage<T>& image) const;
+
+	P2DImage operator() (const C2DBitImage& image) const;
 private:
 	const Probmap& m_map;
 
@@ -205,6 +207,10 @@ FGetClassSeedMask::FGetClassSeedMask(const Probmap& map,
 {
 }
 
+P2DImage FGetClassSeedMask::operator() (const C2DBitImage& image) const
+{
+	throw invalid_argument("Unsupported input pixel type: This classification doesn't make sense for binary images"); 
+}
 					    
 template <typename T> 
 P2DImage FGetClassSeedMask::operator() (const T2DImage<T>& image) const

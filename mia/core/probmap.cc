@@ -101,6 +101,11 @@ void CProbabilityVector::do_load(istream& is)
 	}
 
 
+	/* hsize is first used to allocate a vector. If it is too big
+	   a std.:bad_alloc exception will be thrown. This is not worse 
+	   than a check for size that would restrict hsize to an abitrary 
+	   value */
+	// coverity[TAINTED_SCALAR]
 	for (size_t i = 0; i < hsize; ++i) {
 		for (size_t k = 0; k < size(); ++k) {
 			is >> (*this)[k][i];
@@ -183,6 +188,11 @@ void CLabelMap::do_load(istream& is)
 
 	size_t src, trgt;
 
+	/* hsize is first used to allocate a vector. If it is too big
+	   a std.:bad_alloc exception will be thrown. This is not worse 
+	   than a check for size that would restrict hsize to an abitrary 
+	   value */
+	// coverity[TAINTED_SCALAR]
 	for (size_t i = 0; i < hsize; ++i) {
 		is >> src >> trgt;
 		(*this)[src] = trgt;

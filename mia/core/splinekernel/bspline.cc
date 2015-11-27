@@ -247,6 +247,10 @@ void CBSplineKernel3::get_weights(double x, VWeight&  weight)const
 	v2df W30 = W03; 
 	W30 = _mm_shuffle_pd(W30, W30, 0x1); 
 
+	// coverity is complaining about variables of type __m128d
+	// being pointers where they are indeed to interpreted as
+	// arrays of two elements 
+	// coverity[ARRAY_VS_SINGLETON]
 	const v2df W12 = X - W03 - W03 + W30; 
 	
 	_mm_storel_pd(&weight[0], W03); 
