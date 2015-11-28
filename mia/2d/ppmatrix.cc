@@ -289,17 +289,17 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 		// being pointers where they are indeed to interpreted as
 		// arrays of two elements 
 		
-		//coverity[ARRAY_VS_SINGLETON]
+		// coverity[array_vs_singleton]
 		result_a = result_a + ci * cjpv;
 		
-		//coverity[ARRAY_VS_SINGLETON]
+		// coverity[array_vs_singleton]
 		cjpv = cjpv + cjpv;
 		
-		//coverity[ARRAY_VS_SINGLETON]
+		// coverity[array_vs_singleton]
 		g = g + cjpv12; 
 		result_b = _mm_add_sd(result_b, _mm_mul_sd(ci, cjpv12));
 
-		//coverity[ARRAY_VS_SINGLETON]
+		// coverity[array_vs_singleton]
 		g = g + cjpv; 
 		
 		_mm_storeu_pd(&gradient[2*p->i], g); 

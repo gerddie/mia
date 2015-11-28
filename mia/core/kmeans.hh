@@ -154,7 +154,7 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<InputIterator>))
 	// coverity is completely off here, the 1UL is actually a class index
 	// and has nothing to do with the size of the type pointed to by ibegin
 	// 
-	// coverity[SIZEOF_MISMATCH]
+	// coverity[sizeof_mismatch]
 	kmeans_step(ibegin, iend, obegin, classes, 1, biggest_class); 
 	
 	// further clustering always splits biggest class 

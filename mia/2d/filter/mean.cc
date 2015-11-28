@@ -52,7 +52,7 @@ struct __dispatch_filter {
 		
 		// hw >= 0, cy >= 0 && cy < data.get_size().y
 		// therefore n >=1, hence the override 
-		// coverity[DIVIDE_BY_ZERO] 
+		// coverity[divide_by_zero] 
 		return static_cast<T>(rint(result/n)); 
 	}
 }; 
@@ -75,7 +75,7 @@ struct __dispatch_filter<T, true> {
 		
 		// hw >= 0, cy >= 0 && cy < data.get_size().y
 		// therefore n >=1, hence the override 
-		// coverity[DIVIDE_BY_ZERO] 
+		// coverity[divide_by_zero] 
 		return static_cast<T>(result/n); 
 	}
 }; 

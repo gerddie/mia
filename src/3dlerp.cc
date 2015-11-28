@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE( run_self_test )
 	BOOST_REQUIRE(result);
 	
 	// the model for BOOST_REQUIRE schould have caught this .... 
-	// coverity[FORWARD_NULL]
+	// coverity[forward_null]
 	BOOST_CHECK_CLOSE( (*result)(0,0,0), 1.5f, 0.1f);
 	BOOST_CHECK_CLOSE( (*result)(0,1,0), 2.5f, 0.1f);
 

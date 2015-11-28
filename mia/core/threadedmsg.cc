@@ -117,7 +117,7 @@ int thread_streamredir::m_next_id = 0;
 
 
 CThreadMsgStream::CThreadMsgStream():
-	// coverity[RESOURCE_LEAK] explanation below in destructor 
+	// coverity[resource_leak] explanation below in destructor 
 	std::ostream(new thread_streamredir()), 
 	m_old(vstream::instance().set_stream(*this))
 {
