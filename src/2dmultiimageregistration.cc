@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ const SProgramDescription g_description = {
 	 "Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
 	 "as transformation smoothness penalty. The resulting transformation is saved in reg.vf."},
 
-	{pdi_example_code, "-o reg.vf -l 2 -f spline:rate=3,penalty=divcurl image:cost=ssd,src=test.v,ref=ref.v"}
+	{pdi_example_code, "-o reg.vf -l 2\n -f spline:rate=3,penalty=divcurl\n image:cost=ssd,src=test.v,ref=ref.v"}
 };
 
 

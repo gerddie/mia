@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,18 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5 FATAL_ERROR)
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
   cmake_policy(SET CMP0012 NEW)
+  IF(${CMAKE_VERSION} VERSION_GREATER 3.0.0) 
+    cmake_policy(SET CMP0042 NEW)
+  ENDIF()
 endif(COMMAND cmake_policy)
+
+# This test is added for the Ninja generator, since it 
+# has problems with relinking when installing 
+# 
+STRING(COMPARE EQUAL "${CMAKE_SYSTEM_NAME}" "Linux" SYSTEM_IS_LINUX)
+IF(${SYSTEM_IS_LINUX})
+  SET(CMAKE_EXECUTABLE_FORMAT "ELF")
+ENDIF()
 
 include(FindPkgConfig)
 include(CheckCXXSourceCompiles)
@@ -41,9 +52,12 @@ SET(VENDOR "Gert Wollny")
 SET(PACKAGE_NAME "mia")
 SET(MAJOR_VERSION 2)
 SET(MINOR_VERSION 2)
-SET(MICRO_VERSION 4)
-SET(INTERFACE_AGE 0)
-SET(BINARY_AGE    0)
+SET(MICRO_VERSION 7)
+SET(INTERFACE_AGE 3)
+SET(BINARY_AGE    3)
+
+#
+#SET(CMAKE_BUILD_WITH_INSTALL_RPATH 1)
 
 SET(PACKAGE_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}")
 SET(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}")
@@ -145,6 +159,8 @@ ELSE(MSVC)
 ENDIF (MSVC)
 
 
+
+
 # Taken from ITK:
 # On Visual Studio 8 MS deprecated C. This removes all 1.276E1265 security
 # warnings
@@ -200,7 +216,7 @@ IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
 ENDIF(WIN32)
 
-FIND_PACKAGE( Boost 1.46.1 COMPONENTS
+FIND_PACKAGE( Boost 1.50.0 COMPONENTS
   ${BOOST_COMPONENTS}
   REQUIRED)
 
@@ -372,8 +388,6 @@ pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
 IF (XMLPP_FOUND)
   INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
   LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
-  SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} libxml++-2.6")
-  SET(HAVE_LIBXMLPP 1)
 ENDIF (XMLPP_FOUND)
 
 #
@@ -461,7 +475,7 @@ ENDIF(PYTHONINTERP_FOUND)
 # define plug-in related values and directories and add the test directory link target 
 # 
 
-DEFINE_PLUGIN_NAMES( 1d  "spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 1d  "cmeans;spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dmyocardsegset "io" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dsplinepenalty  "transform" ${PLUGIN_INSTALL_PATH})
@@ -485,10 +499,6 @@ ADD_SUBDIRECTORY(testdata)
 IF(BUILD_EXAMPLES)
   ADD_SUBDIRECTORY(examples)
 ENDIF(BUILD_EXAMPLES)
-
-ADD_SUBDIRECTORY(src)
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(doc)
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/miacore.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/miacore-${VERSION}.pc)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mia2d.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/mia2d-${VERSION}.pc)
@@ -516,6 +526,8 @@ GET_PROPERTY(HAVE_TIFF GLOBAL PROPERTY HAVE_TIFF_PROP DEFINED)
 GET_PROPERTY(HAVE_JPG GLOBAL PROPERTY HAVE_JPG_PROP DEFINED)
 GET_PROPERTY(HAVE_NLOPT GLOBAL PROPERTY HAVE_NLOPT_PROP DEFINED)
 
+GET_PROPERTY(HAVE_MAXFLOW GLOBAL PROPERTY HAVE_MAXFLOW_PROP DEFINED)
+
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/miaconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/miaconfig.h)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
@@ -527,3 +539,7 @@ INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COP
 
  
 ADD_CUSTOM_TARGET(dist bash ${CMAKE_SOURCE_DIR}/create_package "${PACKAGE_NAME}" "${PACKAGE_VERSION}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
+
+ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(test)
+ADD_SUBDIRECTORY(doc)

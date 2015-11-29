@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,12 +89,12 @@ void CParamList::print_help(std::ostream& os) const
 	os << "\n"; 
 }
 
-void CParamList::get_help_xml(xmlpp::Element& root)const
+void CParamList::get_help_xml(CXMLElement& root)const
 {
 	TRACE_FUNCTION; 
 	for( auto i = m_params.begin();i != m_params.end(); ++i ) {
 		cvdebug()<< "   param '" << i->first << "'\n"; 
-		xmlpp::Element *p = root.add_child("param"); 
+		auto p = root.add_child("param"); 
 		p->set_attribute("name", i->first); 
 		i->second->get_help_xml(*p); 
 	}

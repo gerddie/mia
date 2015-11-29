@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE( test_reorient_traversal_to_traversal, ReorientMock )
 
 BOOST_FIXTURE_TEST_CASE( test_reorient_xzy, ReorientMock )
 {
-	C3DReorient f(C3DReorient::xzy);
+	C3DReorient f(C3DReorient::flip_yz);
 	C3DBounds test_size(size.x, size.z, size.y);
 
 	C3DUSImage  test_image(test_size, src);
@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE( test_reorient_xzy, ReorientMock )
 
 BOOST_FIXTURE_TEST_CASE( test_reorient_yxz, ReorientMock )
 {
-	C3DReorient f(C3DReorient::yxz);
+	C3DReorient f(C3DReorient::flip_xy);
 	C3DBounds test_size(size.y, size.x, size.z);
 
 	C3DUSImage  test_image(test_size, src);
@@ -133,7 +133,7 @@ BOOST_FIXTURE_TEST_CASE( test_reorient_zxy, ReorientMock )
 
 BOOST_FIXTURE_TEST_CASE( test_reorient_zyx, ReorientMock )
 {
-	C3DReorient f(C3DReorient::zyx);
+	C3DReorient f(C3DReorient::flip_xz);
 	C3DBounds test_size(size.z, size.y, size.x);
 
 	C3DUSImage  test_image(test_size, src);
@@ -191,14 +191,3 @@ void ReorientFromAxialMock::check_result(const C3DReorient& f, E3DImageOrientati
 
 
 
-BOOST_FIXTURE_TEST_CASE( test_reorient_axial_to_axial, ReorientFromAxialMock )
-{
-	C3DReorient f(C3DReorient::axial);
-	check_result(f, ior_axial, "lrfbud");
-}
-
-BOOST_FIXTURE_TEST_CASE( test_reorient_axial_to_saggital, ReorientFromAxialMock )
-{
-	C3DReorient f(C3DReorient::saggital);
-	check_result(f, ior_saggital, "udfblr");
-}

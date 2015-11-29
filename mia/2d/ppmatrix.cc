@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -283,12 +283,23 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 		
 		__m128d cjpv = cj * pv; 
 		__m128d cjpv12 = cj * pv12; 
-		cjpv12 = _mm_shuffle_pd(cjpv12, cjpv12, 0x1); 
+		cjpv12 = _mm_shuffle_pd(cjpv12, cjpv12, 0x1);
+
+		// coverity is complaining about variables of type __m128d
+		// being pointers where they are indeed to interpreted as
+		// arrays of two elements 
 		
-		result_a = result_a + ci * cjpv; 
-		cjpv = cjpv + cjpv; 
+		// coverity[array_vs_singleton]
+		result_a = result_a + ci * cjpv;
+		
+		// coverity[array_vs_singleton]
+		cjpv = cjpv + cjpv;
+		
+		// coverity[array_vs_singleton]
 		g = g + cjpv12; 
-		result_b = _mm_add_sd(result_b, _mm_mul_sd(ci, cjpv12)); 
+		result_b = _mm_add_sd(result_b, _mm_mul_sd(ci, cjpv12));
+
+		// coverity[array_vs_singleton]
 		g = g + cjpv; 
 		
 		_mm_storeu_pd(&gradient[2*p->i], g); 

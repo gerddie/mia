@@ -1,5 +1,5 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -211,6 +211,10 @@ MACRO(DEFCHKEXE name deps)
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia ${name})
   ADD_DEPENDENCIES(mia-${name} plugin_test_links)
   ADD_TEST(${name} mia-${name} --selftest)
+
+  SET_TESTS_PROPERTIES(${name}
+    PROPERTIES ENVIRONMENT "MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}")
+
 ENDMACRO(DEFCHKEXE)
 
 

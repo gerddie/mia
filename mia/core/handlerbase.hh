@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include <ostream>
 #include <fstream>
 #include <map>
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
 
 #include <mia/core/defines.hh>
 
@@ -59,9 +59,10 @@ class EXPORT_CORE CPluginHandlerBase  {
 
 	/**
 	   Constructor 
-	   \param descriptor plugin search  path descriptor, used to identify the plugin type for users
+	   \param data_descr plugin search  path descriptor, used to identify the plugin data
+	   \param type_descr plugin search  path descriptor, used to identify the plugin type
 	*/
-	CPluginHandlerBase(const std::string& descriptor); 
+	CPluginHandlerBase(const char *data_descr, const char *type_descr); 
 
 	/**
 	   forbid copying - doxygen should drop these from the documentation 
@@ -91,11 +92,12 @@ class EXPORT_CORE CPluginHandlerBase  {
 	   Add the help for all plug-ins to the xml tree 
 	   \param root toot element the documentation is added to 
 	 */
-	void get_xml_help(xmlpp::Element *root) const; 
+	void get_xml_help(CXMLElement& root) const; 
 
 	/// \returns the plug-in handler descriptor
 	const std::string& get_descriptor() const; 
 
+	
 	/** add all plug-in handler that may be called by this plug-in handler
 	    \param [in,out] handler_map plug in handler map to add to 
 	 */
@@ -106,7 +108,7 @@ class EXPORT_CORE CPluginHandlerBase  {
 	   @param os stream to write additional descriptions to. 
 	   @param root the parent node the information is added to 
 	*/
-	void get_string_help_description_xml(std::ostream& os, xmlpp::Element *root) const; 
+	void get_string_help_description_xml(std::ostream& os, CXMLElement& root) const; 
 	
 	
 	/**
@@ -126,7 +128,7 @@ private:
 	
 	virtual void do_print_short_help(std::ostream& os) const = 0; 
 	virtual void do_print_help(std::ostream& os) const = 0; 
-	virtual void do_get_xml_help(xmlpp::Element *root) const = 0; 
+	virtual void do_get_xml_help(CXMLElement& root) const = 0; 
 	virtual void do_add_dependend_handlers(HandlerHelpMap& handler_map) const = 0;  
 	virtual std::string get_handler_type_string_and_help(std::ostream& os) const; 
 	virtual std::string do_get_handler_type_string() const; 

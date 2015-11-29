@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
 	add_supported_type(it_sshort);
 
 	CFloatTranslator::register_for("SliceLocation");
+	CFloatTranslator::register_for(IDSpacingBetweenSlices);
 	CDoubleTranslator::register_for("AcquisitionTime"); 
 	CSITranslator::register_for("SeriesNumber");
 	CSITranslator::register_for("AcquisitionNumber");

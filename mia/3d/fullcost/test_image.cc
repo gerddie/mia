@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,15 +98,5 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 
 ImagefullcostFixture::ImagefullcostFixture()
 {
-	CPathNameArray cost_plugpath;
-	cost_plugpath.push_back(bfs::path("../cost"));
-	C3DImageCostPluginHandler::set_search_path(cost_plugpath);
 
-	CPathNameArray filter_plugpath;
-	filter_plugpath.push_back(bfs::path("../filter"));
-	C3DFilterPluginHandler::set_search_path(filter_plugpath);
-
-	CPathNameArray io_plugpath;
-	io_plugpath.push_back(bfs::path("../io"));
-	C3DImageIOPluginHandler::set_search_path(io_plugpath);
 }

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,9 @@ using namespace std;
 const std::string plugin_help("help");
 
 CPluginBase::CPluginBase(const char *name):
-	m_name(name),
-	m_next_interface(NULL)
+	CParamTranslator(name),
+	m_next_interface(NULL),
+	m_priority(0)
 {
 }
 
@@ -70,85 +71,13 @@ CPluginBase::~CPluginBase()
 	TRACE("CPluginBase::~CPluginBase()");
 }
 
-void CPluginBase::add_parameter(const std::string& name, CParameter *param)
-{
-	CParamList::PParameter p(param);
-	if ( m_parameters.has_key(name) ) {
-		stringstream errmsg;
-		errmsg << get_name() << ": Parameter name '" << name << "' already in use'";
-		throw invalid_argument(errmsg.str());
-	}
-	m_parameters[name] = p;
-}
-
-
-void CPluginBase::set_parameters(const CParsedOptions& options)
-{
-	try {
-		m_parameters.set(options);
-	}
-	catch (invalid_argument& x) {
-		stringstream errmsg;
-		errmsg << get_name() << ":" << x.what();
-		throw invalid_argument(errmsg.str());
-	}
-}
-
-void CPluginBase::check_parameters()
-{
-	try {
-		m_parameters.check_required();
-	}
-	catch (invalid_argument& x) {
-		stringstream errmsg;
-		errmsg << get_name() << ":" << x.what();
-		throw invalid_argument(errmsg.str());
-	}
-}
-
 void CPluginBase::add_dependend_handlers(HandlerHelpMap& handler_map)
 {
 	TRACE_FUNCTION; 
-	cvdebug() << "Add dependend handler for plugin '" << m_name << "'\n"; 
-	m_parameters.add_dependend_handlers(handler_map); 
+	cvdebug() << "Add dependend handler for plugin '" << get_name() << "'\n"; 
+	get_parameters().add_dependend_handlers(handler_map); 
 }
 
-const char *CPluginBase::get_name() const
-{
-	return m_name;
-}
-
-
-const std::string CPluginBase::get_descr() const
-{
-	return do_get_descr();
-}
-
-
-void CPluginBase::get_short_help(std::ostream& os) const
-{
-	os << get_name() << ": " << get_descr() << "\n";
-	m_parameters.print_help(os);
-	os  << "\n";
-}
-
-void CPluginBase::get_help(std::ostream& os) const
-{
-	m_parameters.print_help(os);
-}
-
-void CPluginBase::get_help_xml(xmlpp::Element& root) const
-{
-	cvdebug() << "Get help for " << m_name << "\n"; 
-	root.set_child_text(get_descr()); 
-	do_get_help_xml(root); 
-}
-
-void CPluginBase::do_get_help_xml(xmlpp::Element& root) const
-{
-	TRACE_FUNCTION; 
-	m_parameters.get_help_xml(root);
-}
 
 void CPluginBase::append_interface(CPluginBase *plugin)
 {
@@ -194,6 +123,8 @@ PrepareTestPluginPath::~PrepareTestPluginPath()
 {
 	g_plugin_root = nullptr; 
 }
+
+
 
 #ifdef WIN32
 

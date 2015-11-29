@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,72 @@ const SProgramDescription g_description = {
 	{pdi_example_code, "-i input0000.exr -o histo.txt --min 0 --max 256 --bins 64"}
 }; 
 
+class CAutoHistogramAccumulator : public TFilter<bool> {
+public: 
+	template <typename T>
+	bool operator () (const T2DImage<T>& image) {
+		for(auto i = image.begin(); i != image.end(); ++i) {
+			auto slot = m_hist.find(*i);
+			if (slot == m_hist.end()) {
+				m_hist[*i] = 1; 
+			}else{
+				++m_hist[*i];
+			}
+		}
+		return true;
+	}
+
+	bool save(const string& fname)const
+	{
+		ofstream file(fname.c_str());
+		for (auto ih :m_hist) {
+			file << ih.first << " " << ih.second << "\n";
+		}
+		return file.good();
+	}
+
+	int propose_threshold()const {
+		assert(!m_hist.empty());
+		
+		float min_val = m_hist.begin()->first; 
+		float max_val = m_hist.rbegin()->first; 
+
+		float down_start_search = (max_val - min_val) / 10 + min_val; 
+		float up_end_search = (max_val - min_val) / 6 + min_val; 
+
+		auto i = m_hist.begin(); 
+		
+		while (i->first < down_start_search) 
+			++i; 
+		
+		auto val = i->second;
+		
+		auto pos = i; 
+		while (i !=  m_hist.begin()) {
+			if (val > i->second) {
+				val = i->second; 
+				pos = i; 
+			}
+			--i; 
+		}
+		
+		while (i->first < up_end_search) {
+			if (val > i->second) {
+				val = i->second; 
+				pos = i; 
+			}
+			++i; 
+		}
+		
+		return pos->first; 
+	}
+	
+private: 
+	map<float, size_t> m_hist; 
+}; 
+
 class CHistAccumulator : public TFilter<bool> {
+
 public:
 	CHistAccumulator(float min, float max, size_t bins):
 		m_histo(THistogramFeeder<float>(min, max, bins)), 
@@ -119,7 +184,9 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_output));
 	options.add(make_opt( hmin, "min", 0, "minimum of histogram range"));
 	options.add(make_opt( hmax, "max", 0, "maximum of histogram range"));
-	options.add(make_opt( bins, "bins", 0, "number of histogram bins"));
+	options.add(make_opt( bins, "bins", 0, "number of histogram bins, set to zero to create a bin for "
+			      "each intensity value availabe in the input data. In this case the histogram "
+			      "range is also evaluated automatically"));
 		
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -136,27 +203,45 @@ int do_main( int argc, char *argv[] )
 	if (start_filenum >= end_filenum)
 		throw invalid_argument(string("no files match pattern ") + src_basename);
 
-
-	CHistAccumulator histo_accu(hmin, hmax, bins);
-	for (size_t i = start_filenum; i < end_filenum; ++i) {
-		string src_name = create_filename(src_basename.c_str(), i);
-		C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(src_name);
-		cvmsg() << "Read:" << src_name << "\r";
-		if (in_image_list.get() && in_image_list->size()) {
-			for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k)
-				accumulate(histo_accu, **k);
+	if (bins > 0) {
+		CHistAccumulator histo_accu(hmin, hmax, bins);
+		for (size_t i = start_filenum; i < end_filenum; ++i) {
+			string src_name = create_filename(src_basename.c_str(), i);
+			C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(src_name);
+			cvmsg() << "Read:" << src_name << "\r";
+			if (in_image_list.get() && in_image_list->size()) {
+				for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k)
+					accumulate(histo_accu, **k);
+			}
 		}
+		cvmsg() << "\n";
+		
+		histo_accu.resize(); 
+		
+		if (!histo_accu.save(out_filename))
+			throw runtime_error(string("Error writing output file:") + out_filename);
+		cout << histo_accu.propose_threshold(); 
+		
+	}else{
+		CAutoHistogramAccumulator histo; 
+		for (size_t i = start_filenum; i < end_filenum; ++i) {
+			string src_name = create_filename(src_basename.c_str(), i);
+			C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(src_name);
+			cvmsg() << "Read:" << src_name << "\r";
+			if (in_image_list.get() && in_image_list->size()) {
+				for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k)
+					accumulate(histo, **k);
+			}
+		}
+		cvmsg() << "\n";
+		
+		
+		if (!histo.save(out_filename))
+			throw runtime_error(string("Error writing output file:") + out_filename);
+		
+		cout << histo.propose_threshold(); 
 	}
-	cvmsg() << "\n";
-		
-	histo_accu.resize(); 
-		
-	if (!histo_accu.save(out_filename))
-		throw runtime_error(string("Error writing output file:") + out_filename);
-		
-		
-
-	cout << histo_accu.propose_threshold(); 
+	
 	return EXIT_SUCCESS;
 
 }

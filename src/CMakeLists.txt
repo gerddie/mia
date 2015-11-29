@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -116,6 +116,8 @@ DEFEXE(2dtrackpixelmovement mia2d )
 
 DEFCHKEXE(3dlerp mia3d )
 
+DEFEXE(2dstack-cmeans-presegment  mia3d )
+
 DEFEXE(2dmultiimageto3d   mia3d )
 DEFEXE(3dimagestats       mia3d )
 DEFEXE(3dcost             mia3d )
@@ -124,6 +126,7 @@ DEFEXE(3dimagefilter      mia3d )
 DEFEXE(3dimagecombine     mia3d )
 DEFEXE(3dimagecreator     mia3d )
 DEFEXE(3dimagefilterstack mia3d )
+DEFEXE(2dimagestack-cmeans mia3d )
 DEFEXE(raw2volume         mia3d )
 DEFEXE(3dcrispsegment     mia3d )
 DEFEXE(3ddeform           mia3d )
@@ -160,6 +163,7 @@ DEFEXE(3dsegment-ahmed    mia3d)
 DEFEXE(3dcombine-mr-segmentations mia3d)
 DEFEXE(3dcombine-imageseries mia3d)
 DEFEXE(3dpropose-boundingbox mia3d)
+DEFEXE(3dimagestatistics-in-mask mia3d)
 
 DEFEXE(3dlandmarks-transform mia3d)
 DEFEXE(3dlandmarks-distances mia3d)

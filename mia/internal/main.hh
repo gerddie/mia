@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,19 +36,19 @@
   	              return callback(argc, argv);			\
 	        }                                                       \
 		catch (const std::runtime_error &e){			\
-			std::cerr << argv[0] << " runtime error: " << e.what() << std::endl; \
+			std::cerr << "\n" << argv[0] << " runtime error: " << e.what() << std::endl; \
  	        }							\
  	        catch (const std::invalid_argument &e){			\
-		        std::cerr << argv[0] << " invalid argument: " << e.what() << std::endl;	\
+		        std::cerr << "\n"  << argv[0] << " invalid argument: " << e.what() << std::endl;	\
 	        }							\
  	        catch (const std::logic_error &e){			\
-		        std::cerr << argv[0] << " logic error: " << e.what() << std::endl; \
+		        std::cerr << "\n"  << argv[0] << " logic error: " << e.what() << std::endl; \
 	        }							\
 	        catch (const std::exception& e){			\
-		        std::cerr << argv[0] << " error: " << e.what() << std::endl; \
+		        std::cerr << "\n"  << argv[0] << " error: " << e.what() << std::endl; \
 	        }							\
 	        catch (...){						\
-			std::cerr << argv[0] << " unknown exception" << std::endl; \
+			std::cerr << "\n"  << argv[0] << " unknown exception" << std::endl; \
 		}							\
 		return EXIT_FAILURE;					\
 	}

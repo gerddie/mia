@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,7 @@ const SLookupInit lookup_init[] = {
 	{IDImageType, DCM_ImageType, false, tr_no, NULL},
 	{IDSliceLocation, DCM_SliceLocation, false, tr_no, NULL},
 	{IDSliceThickness, DCM_SliceThickness, false, tr_no, NULL},
+	{IDSpacingBetweenSlices, DCM_SpacingBetweenSlices, false, tr_no, NULL},
 	{IDPatientOrientation, DCM_PatientOrientation, false, tr_no, NULL},
 	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, tr_no, NULL},
 	{IDSOPClassUID, DCM_SOPClassUID, false, tr_no, NULL},

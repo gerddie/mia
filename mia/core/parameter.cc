@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 #define VSTREAM_DOMAIN "core-parameter"
 #include <sstream>
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
 #include <mia/core/parameter.hh>
 #include <mia/core/parameter.cxx>
 
@@ -51,7 +51,7 @@ const char *CParameter::type() const
 	return m_type;
 }
 
-void CParameter::get_help_xml(xmlpp::Element& param) const
+void CParameter::get_help_xml(CXMLElement& param) const
 {
 	TRACE_FUNCTION; 
 	param.set_attribute("type", m_type); 
@@ -65,7 +65,7 @@ void CParameter::get_help_xml(xmlpp::Element& param) const
 	}
 }
 
-void CParameter::do_get_help_xml(xmlpp::Element& /*param*/) const
+void CParameter::do_get_help_xml(CXMLElement& /*param*/) const
 {
 }
 
@@ -167,12 +167,12 @@ void CStringParameter::do_descr(std::ostream& os) const
 		m_plugin_hint->print_help(os); 
 }
 
-void CStringParameter::do_get_help_xml(xmlpp::Element& self) const
+void CStringParameter::do_get_help_xml(CXMLElement& self) const
 {
 	TRACE_FUNCTION; 
 	if (m_plugin_hint)  {
 		auto type = m_plugin_hint->get_handler_type_string(); 
-		auto dict = self.add_child(type); 
+		auto dict = self.add_child(type.c_str()); 
 		dict->set_attribute("name", m_plugin_hint->get_descriptor());
 		self.set_attribute("type", type); 
 	}
@@ -202,6 +202,9 @@ TBoundedParameter<T>::TBoundedParameter(T& value, EParameterBounds flags,
 					const vector<T>& boundaries, 
 					bool required, const char *descr): 
 	CTParameter<T>(value, required, descr),
+	// this silences coverty warnings but it should actually not be necessary 
+	m_min(T()),
+	m_max(T()),
 	m_flags(flags)
 {
 	assert(!boundaries.empty());
@@ -244,7 +247,7 @@ void TBoundedParameter<T>::adjust(T& value)
 }
 
 template <typename T> 
-void TBoundedParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void TBoundedParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	TRACE_FUNCTION; 
 	auto dict = self.add_child("bounded"); 
@@ -316,15 +319,6 @@ EXPORT_CORE std::ostream& operator << (std::ostream& os, EParameterBounds flags)
 }
 
 
-
-template class TRangeParameter<unsigned short>;
-template class TRangeParameter<unsigned int>;
-template class TRangeParameter<unsigned long>;
-template class TRangeParameter<short>;
-template class TRangeParameter<int>;
-template class TRangeParameter<long>;
-template class TRangeParameter<float>;
-template class TRangeParameter<double>; 
 
 template class TBoundedParameter<unsigned short>;
 template class TBoundedParameter<unsigned int>;

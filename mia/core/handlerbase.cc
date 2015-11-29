@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,14 @@
 
 #include <mia/core/handlerbase.hh>
 #include <mia/core/msgstream.hh>
+#include <boost/filesystem/path.hpp>
 
 NS_MIA_BEGIN
 
-CPluginHandlerBase::CPluginHandlerBase(const std::string& descriptor):
-	m_descriptor(descriptor)
+using boost::filesystem::path; 
+
+CPluginHandlerBase::CPluginHandlerBase(const char *data_descr, const char *type_descr):
+	m_descriptor((path(data_descr) / path(type_descr)).string())
 {
 }
 
@@ -44,11 +47,11 @@ void CPluginHandlerBase::print_help(std::ostream& os) const
 	do_print_help(os); 
 }
 
-void CPluginHandlerBase::get_xml_help(xmlpp::Element *root) const
+void CPluginHandlerBase::get_xml_help(CXMLElement& root) const
 {
-	xmlpp::Element* handlerRoot = root->add_child("handler");
+	auto handlerRoot = root.add_child("handler");
 	handlerRoot->set_attribute("name", get_descriptor());
-	do_get_xml_help(handlerRoot); 
+	do_get_xml_help(*handlerRoot); 
 }
 
 const std::string& CPluginHandlerBase::get_descriptor() const
@@ -66,12 +69,12 @@ void CPluginHandlerBase::add_dependend_handlers(HandlerHelpMap& handler_map) con
 	do_add_dependend_handlers(handler_map);
 }
 
-void CPluginHandlerBase::get_string_help_description_xml(std::ostream& os, xmlpp::Element *parent) const
+void CPluginHandlerBase::get_string_help_description_xml(std::ostream& os, CXMLElement& parent) const
 {
 	auto type = get_handler_type_string_and_help(os); 
-	auto factory = parent->add_child(type);
+	auto factory = parent.add_child(type.c_str());
 	factory->set_attribute("name", get_descriptor());
-	parent->set_attribute("type", type);
+	parent.set_attribute("type", type);
 }
 
 std::string CPluginHandlerBase::get_handler_type_string_and_help(std::ostream& MIA_PARAM_UNUSED(os)) const

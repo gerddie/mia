@@ -144,7 +144,7 @@ INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES
 CALL_GRAPH             = NO
 GRAPHICAL_HIERARCHY    = YES
-DOT_IMAGE_FORMAT       = png
+DOT_IMAGE_FORMAT       = svg
 DOT_PATH               = 
 DOTFILE_DIRS           = 
 MAX_DOT_GRAPH_DEPTH    = 0
@@ -153,4 +153,6 @@ DOT_CLEANUP            = YES
 SEARCHENGINE           = NO
 SHOW_NAMESPACES        = NO
 DOT_GRAPH_MAX_NODES    = 100 
+HTML_TIMESTAMP         = NO
+
 

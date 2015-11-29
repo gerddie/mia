@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -622,6 +622,15 @@ struct dispatch_attr_string<std::vector<bool> > {
 		std::istringstream svalue(str);
 		svalue >> s;
 		std::vector<bool> v(s);
+
+		// Added override for coverity
+		// 
+		// Since s is used as the size for the new vector, a large
+		// value will result in a std::bad_alloc exception. This
+		// is not worse than bailing out because s is larger than
+		// an abitrary set boundary that youle be cheked here.
+		// 
+		// coverity[tainted_scalar] 
 		for (size_t i = 0; i < s; ++i) {
 			bool value;
 			svalue >> value;

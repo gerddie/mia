@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,8 +122,6 @@ SplineMutualInformationFixture::SplineMutualInformationFixture():
         moving(moving_init_data, moving_init_data + size), 
         bins(128)
 {        
-	CPathNameArray sksearchpath({bfs::path("splinekernel")});
-	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
 
         rkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=0");  
         mkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=3"); 

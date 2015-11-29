@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ void CFixedWidthOutput::newline()
 {
 	if (m_line_continue) 
 		m_os << '\\'; 
-	m_os << '\n'; 
+	m_os << std::endl; 
 	if ( m_offset )
 		m_os << setw(m_offset) << " "; 
 	m_pos = m_offset;

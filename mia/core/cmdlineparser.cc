@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 #endif
 #include <tbb/task_scheduler_init.h>
 
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdstringoption.hh>
@@ -193,7 +193,7 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_default_author = "Gert Wollny"; 
 const char *g_basic_copyright1 = "This software is Copyright (c) "; 
-const char *g_basic_copyright2 = " 1999-2014 Leipzig, Germany and Madrid, Spain. "
+const char *g_basic_copyright2 = " 1999-2015 Leipzig, Germany and Madrid, Spain. "
 	      "It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
 	      "under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
 	      "For more information run the program with the option '--copyright'.\n"; 
@@ -308,26 +308,25 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 }
 
 
-using xmlpp::Element; 
 void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHandlerBase *additional_help) const
 {
 	HandlerHelpMap handler_help_map; 
 	if (additional_help) 
 		additional_help->add_dependend_handlers(handler_help_map); 
 		
-	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
+	unique_ptr<CXMLDocument> doc(new CXMLDocument);
 	
-	Element* nodeRoot = doc->create_root_node("program");
-	Element* program_name = nodeRoot->add_child("name"); 
+	auto nodeRoot = doc->create_root_node("program");
+	auto program_name = nodeRoot->add_child("name"); 
 	program_name->set_child_text(name_help); 
-	Element*  version_string = nodeRoot->add_child("version"); 
+	auto  version_string = nodeRoot->add_child("version"); 
 	version_string->set_child_text(get_revision()); 
-	Element* program_group = nodeRoot->add_child("section"); 
+	auto program_group = nodeRoot->add_child("section"); 
 	program_group->set_child_text(m_program_group); 
-	Element* description = nodeRoot->add_child("description"); 
+	auto description = nodeRoot->add_child("description"); 
 	description->set_child_text(m_general_help); 
-	Element* basic_usage = nodeRoot->add_child("basic_usage"); 
-	Element*  short_descr = nodeRoot->add_child("whatis"); 
+	auto basic_usage = nodeRoot->add_child("basic_usage"); 
+	auto  short_descr = nodeRoot->add_child("whatis"); 
 	short_descr->set_child_text(m_short_descr); 
 
 
@@ -339,7 +338,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 		if (g->second.empty()) 
 			continue; 
 		
-		Element* group = nodeRoot->add_child("group"); 
+		auto group = nodeRoot->add_child("group"); 
 		group->set_attribute("name", g->first); 
 		
 		for (auto iopt= g->second.begin(); iopt != g->second.end(); ++iopt) {
@@ -351,16 +350,16 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 			
 			if (opt.is_required()) {
 				if (opt.get_short_option())
-					usage_text << "-" << opt.get_short_option() << " &lt;" 
-						   << opt.get_long_option() << "&gt; "; 
+					usage_text << "-" << opt.get_short_option() << " <" 
+						   << opt.get_long_option() << "> "; 
 				else
 					usage_text << "--" << opt.get_long_option() 
-						   << " &lt;value&gt; ";
+						   << " <value> ";
 			}
 		}
 	}
 	if (additional_help) {
-		Element* free_parameters = nodeRoot->add_child("freeparams"); 
+		auto free_parameters = nodeRoot->add_child("freeparams"); 
 		free_parameters->set_attribute("name", additional_help->get_descriptor()); 
 		free_parameters->set_attribute("type", "factory"); 
 	}
@@ -371,18 +370,18 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 		
 	usage_text << "[options]"; 
 	if (additional_help) 
-		usage_text << " &lt;PLUGINS:" << additional_help->get_descriptor() <<"&gt;"; 
+		usage_text << " <PLUGINS:" << additional_help->get_descriptor() <<">"; 
 	basic_usage->set_child_text(usage_text.str()); 
 
 	for (auto h = handler_help_map.begin(); h != handler_help_map.end(); ++h)
-		h->second->get_xml_help(nodeRoot);
+		h->second->get_xml_help(*nodeRoot);
 	
-	Element* example = nodeRoot->add_child("Example");
+	auto example = nodeRoot->add_child("Example");
 	example->set_child_text(m_program_example_descr); 
-	Element* example_code = example->add_child("Code"); 
+	auto example_code = example->add_child("Code"); 
 	example_code->set_child_text(m_program_example_code); 
 	
-	Element* cr = nodeRoot->add_child("Author");
+	auto cr = nodeRoot->add_child("Author");
 	cr->set_child_text(m_author); 
 
 	ofstream xmlfile(help_xml.c_str());  

@@ -1,10 +1,11 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Pub
+lic License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -26,16 +27,13 @@
 #include <ostream>
 #include <istream>
 #include <sstream>
+#include <memory>
 #include <mia/core/flags.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/handlerbase.hh>
 #include <mia/core/factory_trait.hh>
 #include <mia/core/cmdoptionflags.hh>
-
-namespace xmlpp {
-	class Element; 
-}
 
 NS_MIA_BEGIN
 
@@ -116,7 +114,7 @@ q	*/
 	   Add the help for this parameter to a given XML tree
 	   \param root the root node to add the help entry to. 
 	 */
-	void get_help_xml(xmlpp::Element& root) const;
+	void get_help_xml(CXMLElement& root) const;
 
 
 	/**
@@ -145,7 +143,7 @@ private:
 	virtual void do_reset() = 0;
 	virtual std::string do_get_default_value() const = 0;
 	virtual std::string do_get_value_as_string() const = 0;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	bool m_required;
 	bool m_is_required; 
 	const char *m_type;
@@ -195,30 +193,6 @@ private:
    to a value outside the range, the set method will throw an \a invalid_argument exception
 */
 
-template <typename T>
-class EXPORT_CORE TRangeParameter : public CTParameter<T> {
-
-public:
-	/** Constructor
-	   \param value reference to the parameter handled by this parameter object
-	   \param min minimum of the parameter value range
-	   \param max maximum of the parameter value range
-	   \param required set to \a true if the parameter has to be set by the user
-	   \param descr a description of the parameter
-	 */
-	TRangeParameter(T& value, T min, T max, bool required, const char *descr) __attribute__((deprecated));
-protected:
-	/**
-	   the implementation of the description-function
-	 */
-	void do_descr(std::ostream& os) const;
-private:
-	virtual void adjust(T& value);
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
-	T m_min;
-	T m_max;
-
-};
 
 
 /**
@@ -239,10 +213,10 @@ enum class EParameterBounds : int {
 	bf_max = 0x10, 
 	bf_max_open = 0x30, 
 	bf_max_closed =  0x50, 
-	bf_max_flags = 0x70, 
+	bf_max_flags = 0x70,
 	bf_closed_interval = 0x55, 
 	bf_open_interval = 0x33 
-}; 
+	}; 
 
 IMPLEMENT_FLAG_OPERATIONS(EParameterBounds); 
 
@@ -272,7 +246,7 @@ protected:
 	void do_descr(std::ostream& os) const;
 private:
 	virtual void adjust(T& value);
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	T m_min;
 	T m_max;
 	EParameterBounds m_flags; 
@@ -359,7 +333,7 @@ CParameter *make_oci_param(T& value, S1 lower_bound, S2 upper_bound,bool require
 
 /**
    \ingroup cmdline
-   \brief Dictionary paramater
+   \brief Dictionary parameter
 
    The (templated) parameter that takes its value froma restricted Dictionary.
    \tparam the enumerate that is used by the dictionary 
@@ -386,7 +360,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	T& m_value;
 	T m_default_value; 
 	const TDictMap<T> m_dict;
@@ -438,7 +412,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 
 	typename F::ProductPtr dummy_shared_value; 
 	typename F::UniqueProduct dummy_unique_value; 
@@ -488,7 +462,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	void do_get_help_xml(xmlpp::Element& self) const; 
+	void do_get_help_xml(CXMLElement& self) const; 
 	T& m_value;
 	T m_default_value; 
 	const std::set<T> m_valid_set;
@@ -543,7 +517,7 @@ private:
 	virtual std::string do_get_value_as_string() const; 
 
 	virtual void do_descr(std::ostream& os) const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map)const; 
 
 
@@ -554,14 +528,6 @@ private:
 }; 
 
 
-/// an integer parameter (with range)
-typedef TRangeParameter<int> CIntParameter;
-/// an unsigned integer parameter (with range)
-typedef TRangeParameter<unsigned int> CUIntParameter;
-/// a float parameter (with range)
-typedef TRangeParameter<float> CFloatParameter;
-/// a double parameter (with range)
-typedef TRangeParameter<double> CDoubleParameter;
 /// boolean parameter
 typedef CTParameter<bool> CBoolParameter;
 
@@ -681,7 +647,7 @@ void CDictParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void CDictParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void CDictParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	TRACE_FUNCTION; 
 	auto dict = self.add_child("dict"); 
@@ -750,7 +716,7 @@ void TFactoryParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void TFactoryParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void TFactoryParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	auto dict = self.add_child("factory"); 
 	dict->set_attribute("name", T::instance().get_descriptor());
@@ -848,7 +814,7 @@ void CSetParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void CSetParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void CSetParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	auto set = self.add_child("set"); 
 	for (auto i = m_valid_set.begin(); i != m_valid_set.end(); ++i) {

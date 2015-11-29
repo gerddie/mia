@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
 #include <mia/core/tools.hh>
-
+#include <boost/filesystem.hpp>
 
 
 namespace
@@ -214,7 +214,7 @@ P3DLandmarklist C3DLMXLandmarklistIOPlugin::do_load(string const&  filename)cons
 	P3DLandmarklist result(new C3DLandmarklist);
 
 	bfs::path bfsfilename(filename); 
-	result->set_path(bfsfilename.root_path()); 
+	result->set_path(bfsfilename.root_path().string()); 
 
 	// get name of the set 
 	string name;  

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,7 +164,9 @@ double TSSDAutomaskCost<TCost>::do_evaluate_force(const Data& a, const Data& b, 
 */
 template <typename CP, typename C> 
 TSSDAutomaskCostPlugin<CP,C>::TSSDAutomaskCostPlugin():
-	CP("ssd-automask")
+	CP("ssd-automask"),
+	m_src_mask_thresh(0.0), 
+	m_ref_mask_thresh(0.0)
 {
 	TRACE("TSSDAutomaskCostPlugin<CP,C>::TSSDAutomaskCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 

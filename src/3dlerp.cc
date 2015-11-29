@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,7 +112,9 @@ BOOST_AUTO_TEST_CASE( run_self_test )
 
 	const C3DFImage* result = dynamic_cast<const C3DFImage*>(R.get());
 	BOOST_REQUIRE(result);
-
+	
+	// the model for BOOST_REQUIRE schould have caught this .... 
+	// coverity[forward_null]
 	BOOST_CHECK_CLOSE( (*result)(0,0,0), 1.5f, 0.1f);
 	BOOST_CHECK_CLOSE( (*result)(0,1,0), 2.5f, 0.1f);
 

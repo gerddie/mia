@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ ADD_SUBDIRECTORY( dicom )
 ADD_SUBDIRECTORY( jpg )
 ADD_SUBDIRECTORY( hdf5 )
 ADD_SUBDIRECTORY( openexr )
+ADD_SUBDIRECTORY( maxflow )
 ADD_SUBDIRECTORY( nifti )
 ADD_SUBDIRECTORY( nlopt )
 ADD_SUBDIRECTORY( png )

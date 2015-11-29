@@ -35,6 +35,8 @@
 #cmakedefine HAVE_CXXABI_H 1
 #cmakedefine HAVE_EXECINFO_h 1
 
+#cmakedefine HAVE_MAXFLOW 1
+
 #cmakedefine HAVE_DCMTK 1
 #cmakedefine HAVE_VISTAIO 1
 #cmakedefine HAVE_VTK 1

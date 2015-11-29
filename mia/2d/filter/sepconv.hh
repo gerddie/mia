@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/spacial_kernel.hh>
+#include <mia/core/dictmap.hh>
 #include <mia/2d/filter.hh>
 
 
@@ -65,6 +66,23 @@ public:
 private:
 	int m_w;
 };
+
+
+class C2DSobelFilterPlugin: public mia::C2DFilterPlugin {
+public:
+	C2DSobelFilterPlugin();
+	virtual mia::C2DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+private:
+	enum EGradientDirection {gd_x, gd_y, gd_undefined};
+
+	static const mia::TDictMap<EGradientDirection>::Table dir_dict[];
+	static const mia::TDictMap<C2DSobelFilterPlugin::EGradientDirection> Ddirection;
+
+	EGradientDirection m_direction; 
+};
+
+
 
 NS_END
 

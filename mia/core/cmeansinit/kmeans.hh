@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,42 +18,29 @@
  *
  */
 
-#ifndef mia_core_bfsv23dispatch_hh
-#define mia_core_bfsv23dispatch_hh
 
-#include <boost/filesystem/path.hpp>
-#include <mia/core/defines.hh>
+#include <mia/core/cmeans.hh>
+
 
 NS_MIA_BEGIN
 
-inline std::string __bfs_get_filename(const boost::filesystem::path& path) 
-{
-#if BOOST_FILESYSTEM_VERSION==3
-	return path.filename().string(); 
-#else 
-	return path.filename(); 
-#endif
-}
+class CKMeansInitializer : public CMeans::Initializer {
+public: 
+        CKMeansInitializer(size_t nclasses);
+        
+        CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const;
+private: 
+        size_t m_nclasses; 
+        
+}; 
 
-inline std::string __bfs_get_extension(const boost::filesystem::path& path) 
-{
-#if BOOST_FILESYSTEM_VERSION==3
-	return path.extension().string(); 
-#else 
-	return path.extension(); 
-#endif
-}
-
-inline std::string __bfs_get_stem(const boost::filesystem::path& path) 
-{
-#if BOOST_FILESYSTEM_VERSION==3
-	return path.stem().string(); 
-#else 
-	return path.stem(); 
-#endif
-}
+class CKMeansInitializerPlugin : public CMeansInitializerSizedPlugin {
+public: 
+        CKMeansInitializerPlugin();
+private:
+        CMeansInitializerPlugin::Product * do_create() const;
+        virtual const std::string do_get_descr() const;
+}; 
 
 
 NS_MIA_END
-
-#endif

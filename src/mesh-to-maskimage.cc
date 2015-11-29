@@ -105,6 +105,7 @@ int do_main( int argc, char *argv[] )
 
 	for_each(mesh->triangles_begin(), mesh->triangles_end(), 
 		 [&output, &mesh](const CTriangle& t) {
+			 cvdebug() << "Prepare triangle " << t << "\n"; 
 			 output.draw_triangle(mesh->vertex_at(t.x), 
 					      mesh->vertex_at(t.y), 
 					      mesh->vertex_at(t.z));});

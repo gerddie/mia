@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ NS_MIA_BEGIN
 	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::iterator>; \
 	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::const_iterator>;
 
+
 DECLARE_EXTERN_ITERATORS(double);
 DECLARE_EXTERN_ITERATORS(float);
 DECLARE_EXTERN_ITERATORS(unsigned int);
@@ -54,6 +55,7 @@ DECLARE_EXTERN_ITERATORS(short);
 DECLARE_EXTERN_ITERATORS(unsigned short);
 DECLARE_EXTERN_ITERATORS(unsigned char );
 DECLARE_EXTERN_ITERATORS(signed char);
+DECLARE_EXTERN_ITERATORS(bool);
 
 #ifdef LONG_64BIT
 DECLARE_EXTERN_ITERATORS(signed long);
@@ -87,7 +89,7 @@ class  EXPORT_3D T3DDatafield {
         /** helper: represents the zero-value */
         static const T Zero;
 	
-	static const unsigned int m_elements; 
+	static const size_t m_elements; 
 
 public:
 	

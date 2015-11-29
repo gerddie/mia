@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,13 +158,15 @@ public:
 		auto ia = a.begin(); 
 		
 		for(auto ib = b.begin(); ia != a.end(); ++ia, ++ib) {
-			sum += *ia + *ib; 
-			sum2 += *ia * *ia + *ib * *ib;
+			double fa = *ia; 
+			double fb = *ib; 
+			sum += fa + fb; 
+			sum2 += fa * fa + fb * fb;
 		}
 		
 		double mean = sum / n; 
 		double sigma = sqrt((sum2 - sum * sum / n) / (n - 1));
-
+		
 		// both images are of the same single color 
 		if (sigma == 0.0) 
 			return result_type(); 

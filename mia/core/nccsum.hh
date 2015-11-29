@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ class EXPORT_CORE NCCSums {
 public: 
 	NCCSums():m_sumab(0.0), m_n(0.0) {
                 double zero[2] = {0.0, 0.0}; 
-                m_sum = _mm_load_pd(zero); 
+                m_sum = _mm_loadu_pd(zero); 
                 m_sum2 = m_sum; 
         }
         

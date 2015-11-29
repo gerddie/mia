@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ SET(MIACORE_SRC_BASE
   cmdoption.cc
   cmdstringoption.cc
   cmdbooloption.cc
+  cmeans.cc
   creator.cc
   datapool.cc
   distance.cc
@@ -60,6 +61,7 @@ SET(MIACORE_SRC_BASE
   optparam.cc 
   paramoption.cc  
   parameter.cc  
+  paramtranslator.cc  
   pixeltype.cc 
   plugin_base.cc  
   product_base.cc
@@ -69,6 +71,7 @@ SET(MIACORE_SRC_BASE
   regmodel.cc
   revision.cc 
   scaler1d.cc
+  searchpath.cc
   seriesstats.cc 
   selftestcmdoption.cc
   shape.cc 
@@ -84,6 +87,7 @@ SET(MIACORE_SRC_BASE
   utils.cc 
   watch.cc 
   waveletslopeclassifier.cc
+  xmlinterface.cc
   )
 
 SET(MIACORE_HEADER_BASE
@@ -91,13 +95,13 @@ SET(MIACORE_HEADER_BASE
   attribute_names.hh 
   attributetype.hh
   boundary_conditions.hh
-  bfsv23dispatch.hh
   callback.hh
   cmdbooloption.hh
   cmdlineparser.hh
   cmdoption.hh
   cmdoptionflags.hh
   cmdstringoption.hh
+  cmeans.hh
   combiner.hh
   cost.hh
   cost.cxx
@@ -147,6 +151,7 @@ SET(MIACORE_HEADER_BASE
   optparam.hh
   parameter.cxx parameter.hh
   paramoption.hh
+  paramtranslator.hh
   pixeltype.hh
   plugin_base.cxx plugin_base.hh
   probmap.hh
@@ -157,6 +162,7 @@ SET(MIACORE_HEADER_BASE
   regmodel.hh
   scaler1d.hh
   shape.hh shape.cxx
+  searchpath.hh
   seriesstats.hh
   selftestcmdoption.hh
   singular_refobj.hh
@@ -182,6 +188,7 @@ SET(MIACORE_HEADER_BASE
   vector.hh
   watch.hh
   waveletslopeclassifier.hh
+  xmlinterface.hh
   )
 
 SET(MIACORETEST_SRC 
@@ -278,12 +285,13 @@ ENDIF(WIN32)
 #ENDIF (NOT WIN32)
 #CORE_TEST(noisegen)
 
-ADD_SUBDIRECTORY(testplug      )
+ADD_SUBDIRECTORY(cmeansinit    )
 ADD_SUBDIRECTORY(spacialkernel )
 ADD_SUBDIRECTORY(noise         ) 
 ADD_SUBDIRECTORY(minimizer     ) 
 ADD_SUBDIRECTORY(splinekernel  ) 
 ADD_SUBDIRECTORY(splinebc  ) 
+ADD_SUBDIRECTORY(testplug      )
 
 NEW_TEST(Vector miacore)
 NEW_TEST(attributes miacore)
@@ -291,6 +299,7 @@ NEW_TEST(boundary_conditions  miacore)
 NEW_TEST(callback miacore)
 NEW_TEST(cmdoptionflags miacore)
 NEW_TEST(cmdlineparser miacore)
+NEW_TEST(cmeans miacore)
 NEW_TEST(datapool miacore)
 NEW_TEST(delayedparameter miacore)
 NEW_TEST(distance miacore)
@@ -328,6 +337,7 @@ NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
 #NEW_TEST(watch miacore)
 NEW_TEST(waveletslopeclassifier miacore)
+NEW_TEST(xmlinterface miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -267,7 +267,7 @@ void CSegment2d::evaluate_probabilities(C2DFImageVec& prob)const
 		else {// must be a bright value, otherwise, class[0] would catch it
 			for (size_t i = 0; i < _M_nClasses - 1; ++i)
 				*pi[i]++ = 0.0;
-			*pi[_M_nClasses - 1] = 1.0; 
+			*pi[_M_nClasses - 1]++ = 1.0; 
 		}
 	}
 }
@@ -339,7 +339,7 @@ CSegment2d::process(const C2DFImage& image,
 	
 	C2DFImage tmp(image.get_size());                                        // 4Bpp
 
-	auto_ptr<C2DFImage> bg_image(NULL);                                              
+	unique_ptr<C2DFImage> bg_image;                                              
 
 	
 	if (_M_bg_correct) {

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,10 +43,6 @@ static void do_test_label(const C2DImage& inp, const char* filter_descr, unsigne
 
 BOOST_AUTO_TEST_CASE( test_label )
 {
-
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("shapes"));
-	C2DShapePluginHandler::set_search_path(kernelsearchpath);
 
 	bool input[9] = { 1, 1, 0,
 			  0, 0, 1,

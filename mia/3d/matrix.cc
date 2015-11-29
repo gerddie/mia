@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,29 +20,34 @@
 
 #include <mia/3d/matrix.hh>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__ 
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#else
+#pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif 
+#endif 
+
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues> 
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 
 
 NS_MIA_BEGIN
 
+
 template <typename T> 
-T3DMatrix<T>::T3DMatrix(const T3DMatrix<T>& o):
-	T3DVector< T3DVector<T> >
-        (o.x, o.y, o.z)
+T3DMatrix<T>::T3DMatrix():
+        m_ev_type(0),
+	m_evectors(3),
+	m_ev_order(3)
 {
 }
 
-
-template <typename T> 
-T3DMatrix<T>& T3DMatrix<T>::operator = (const T3DMatrix<T>& o)
-{
-	this->x = o.x; 
-	this->y = o.y; 
-	this->z = o.z; 
-
-	this->m_esolver.reset(nullptr); 
-	return *this; 
-
-}
 
 template <typename T> 
 T3DMatrix<T> T3DMatrix<T>::diagonal(T v)
@@ -62,13 +67,19 @@ T3DMatrix<T> T3DMatrix<T>::diagonal(const T3DVector<T>& v)
 
 template <typename T> 
 T3DMatrix<T>::T3DMatrix(const T3DVector< T3DVector<T> >& other):
-	T3DVector<T3DVector<T> >(other.x, other.y, other.z)
+	T3DVector<T3DVector<T> >(other.x, other.y, other.z),
+	m_ev_type(0),
+	m_evectors(3),
+	m_ev_order(3)
 {
 }
 
 template <typename T> 
 T3DMatrix<T>::T3DMatrix(const T3DVector< T >& x, const T3DVector< T >& y, const T3DVector< T >& z ):
-	T3DVector<T3DVector<T> >(x, y, z)
+	T3DVector<T3DVector<T> >(x, y, z),
+	m_ev_type(0),
+	m_evectors(3),
+	m_ev_order(3)
 {
 }
 template <typename T> 
@@ -88,12 +99,18 @@ T3DMatrix<T>  T3DMatrix<T>::transposed()const
 template <typename T> 
 void T3DMatrix<T>::evaluate_ev() const
 {
-	EMatrix3  matrix; 
-	matrix << this->x.x, this->x.y, this->x.z, /**/ this->y.x, this->y.y, this->y.z, /**/  this->z.x, this->z.y, this->
-z.z; 
-	m_esolver.reset( new ESolver3(matrix, true)); 
+	typedef Eigen::Matrix<T, 3, 3> EMatrix3; 
+	typedef Eigen::EigenSolver<EMatrix3>  ESolver3;
 
-	auto eval = m_esolver->eigenvalues(); 
+	EMatrix3  matrix; 
+	// fill the matrix with the 
+	matrix << this->x.x, this->x.y, this->x.z, /**/
+		this->y.x, this->y.y, this->y.z, /**/
+		this->z.x, this->z.y, this->z.z; 
+
+	ESolver3 esolver(matrix, true); 
+	
+	auto eval = esolver.eigenvalues(); 
 
 	// check if there are complex eigenvalues
 	bool complex = false; 
@@ -104,80 +121,105 @@ z.z;
 	}
 	
 	if (complex) {
+		m_ev_type = 1; 
 		for (int i = 0; i < 3; ++i) {
 			if (eval[i].imag() == 0.0) {
 				m_ev_order[0] = i; 
 				// in the complex case, the two complex evalues are 
 				// conjugated complex 
 				m_ev_order[1] = i+1 % 3; 
-				m_ev_order[2] = i+1 % 3; 
-				return; 
+				m_ev_order[2] = i+1 % 3;  
+			}
+		}
+	}else {
+	       
+		// not complex, just sort the eval indices
+		double evnorms[3]; 
+		for (int i = 0; i < 3; ++i)
+			evnorms[i] = std::norm(eval(i)); 
+		
+		
+		
+		if (evnorms[0] < evnorms[1]) {
+			if (evnorms[0] < evnorms[2]) {
+				m_ev_order[2] = 0; 
+				if (evnorms[1] < evnorms[2]) {
+					m_ev_order[0] = 2; 
+					m_ev_order[1] = 1; 
+					
+				}else{
+					m_ev_order[0] = 1; 
+					m_ev_order[1] = 2; 
+				}
+			}else {
+				m_ev_order[0] = 1; 
+				m_ev_order[1] = 0; 
+				m_ev_order[2] = 2; 
+			}
+                        
+		} else { 
+			
+			if (evnorms[0] > evnorms[2]) {
+				m_ev_order[0] = 0; 
+				
+				if (evnorms[1] < evnorms[2]) {
+					m_ev_order[1] = 2; 
+					m_ev_order[2] = 1; 
+				}else{
+					m_ev_order[1] = 1; 
+					m_ev_order[2] = 2; 
+				}
+				
+			}else{ 
+				m_ev_order[0] = 2; 
+				m_ev_order[1] = 0; 
+				m_ev_order[2] = 1; 
 			}
 		}
 	}
+	 
+	
+	// copy results over
+	m_evalues.x = eval[m_ev_order[0]].real(); 
+	
+	if (m_ev_order[1] == m_ev_order[2]) {
+		// complex case
+		m_evalues.y = eval[m_ev_order[1]].real(); 
+		m_evalues.z = eval[m_ev_order[2]].imag(); 
+	} else {
 
-	// not complex, just sort the eval indices
-	double evnorms[3]; 
-	for (int i = 0; i < 3; ++i)
-		evnorms[i] = std::norm(eval(i)); 
-
-
+		m_evalues.y = eval[m_ev_order[1]].real(); 
+		m_evalues.z = eval[m_ev_order[2]].real();
 		
-	if (evnorms[0] < evnorms[1]) {
-                if (evnorms[0] < evnorms[2]) {
-			m_ev_order[2] = 0; 
-                        if (evnorms[1] < evnorms[2]) {
-				m_ev_order[0] = 2; 
-				m_ev_order[1] = 1; 
-		
-                        }else{
-				m_ev_order[0] = 1; 
-				m_ev_order[1] = 2; 
-			}
-                }else {
-			m_ev_order[0] = 1; 
-			m_ev_order[1] = 0; 
-			m_ev_order[2] = 2; 
-		}
-                        
-        } else { 
-                
-                if (evnorms[0] > evnorms[2]) {
-			m_ev_order[0] = 0; 
-			
-                        if (evnorms[1] < evnorms[2]) {
-				m_ev_order[1] = 2; 
-				m_ev_order[2] = 1; 
-			}else{
-				m_ev_order[1] = 1; 
-				m_ev_order[2] = 2; 
-			}
-
-                }else{ 
-			m_ev_order[0] = 2; 
-			m_ev_order[1] = 0; 
-			m_ev_order[2] = 1; 
-		}
+		if (m_evalues.x == m_evalues.y || m_evalues.y == m_evalues.z) 
+			m_ev_type = 2;
+		else 
+			m_ev_type = 3; 
+	}
+	assert(m_ev_type);
+	for (int i = 0; i < 3; ++i) {
+		const auto evec = esolver.eigenvectors().col(m_ev_order[i]);
+		m_evectors[i] = C3DFVector(evec(0).real(), evec(1).real(), evec(2).real());
 	}
 }
 
 template <typename T> 
 int T3DMatrix<T>::get_rank()const
 {
-	C3DFVector ev; 
-	auto type = this->get_eigenvalues(ev); 
-	cvdebug()<< "Matrix = "<< *this <<", Rank: eigenvalues: " << ev << "\n"; 
 	
-	switch (type) {
-	case 1: return (ev.x != 0.0) ? 3 : 2; 
-	case 3: return (ev.z != 0.0) ? 3 : 2; 
+	if (!m_ev_type)
+		evaluate_ev(); 
+		
+	switch (m_ev_type) {
+	case 1: return (m_evalues.x != 0.0) ? 3 : 2; 
+	case 3: return (m_evalues.z != 0.0) ? 3 : 2;
 	default: {
 		int rank = 0; 
-		if (ev.x != 0.0)  
+		if (m_evalues.x != 0.0)  
 			rank++; 
-		if (ev.y != 0.0)  
+		if (m_evalues.y != 0.0)  
 			rank++; 
-		if (ev.z != 0.0)  
+		if (m_evalues.z != 0.0)  
 			rank++; 
 		return rank; 
 	}
@@ -197,37 +239,20 @@ T T3DMatrix<T>::get_det()  const
 template <typename T> 
 int T3DMatrix<T>::get_eigenvalues(C3DFVector& result)const
 {
-	if (!m_esolver) 
+	if (m_ev_type == 0) 
 		evaluate_ev(); 
 
-	auto eval = m_esolver->eigenvalues(); 
-
-	result.x = eval[m_ev_order[0]].real(); 
-	
-	if (m_ev_order[1] == m_ev_order[2]) {
-		// complex case
-		result.y = eval[m_ev_order[1]].real(); 
-		result.y = eval[m_ev_order[2]].imag(); 
-		return 1;
-	}
-
-	result.y = eval[m_ev_order[1]].real(); 
-	result.z = eval[m_ev_order[2]].real();
-
-	if (result.x == result.y || result.y == result.z) 
-		return 2; 
-	return 3; 
+	result = m_evalues;
+	return m_ev_type;
 }
 
 template <typename T> 
 C3DFVector T3DMatrix<T>::get_eigenvector(int i)const
 {
-	if (!m_esolver) 
+	if (m_ev_type == 0) 
 		evaluate_ev(); 
 	
-
-	const auto evec = m_esolver->eigenvectors().col(m_ev_order[i]); 
-	return C3DFVector(evec(0).real(), evec(1).real(), evec(2).real()); 
+	return m_evectors[i];
 }
 
 template class T3DMatrix<float>; 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ void CCmdBoolOption::do_write_value(std::ostream& /*os*/) const
 {
 }									
 
-void CCmdBoolOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& /*handler_map*/) const
+void CCmdBoolOption::do_get_long_help_xml(std::ostream& os, CXMLElement& parent, HandlerHelpMap& /*handler_map*/) const
 {
 	do_get_long_help(os);
 	parent.set_attribute("type", __type_descr<bool>::value);

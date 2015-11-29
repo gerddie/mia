@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,7 +149,12 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<InputIterator>))
 	classes[1] = sum / (size + 1);
 	
 	// first run calles directly 
-	int biggest_class = 0; 
+	int biggest_class = 0;
+
+	// coverity is completely off here, the 1UL is actually a class index
+	// and has nothing to do with the size of the type pointed to by ibegin
+	// 
+	// coverity[sizeof_mismatch]
 	kmeans_step(ibegin, iend, obegin, classes, 1, biggest_class); 
 	
 	// further clustering always splits biggest class 

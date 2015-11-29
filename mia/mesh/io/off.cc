@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -290,8 +290,8 @@ bool COffMeshIO::read_polygon(istream& inp, vector<CTriangleMesh::triangle_type>
 
 	}else {
 		vector<unsigned int> poly(nvert);
-
-		for (int k = 0; k < nvert; ++k) {
+		
+		for (int k = 0; k < poly.size(); ++k) {
 			inp >> ws >> poly[k];
 			if (poly[k] >= nvertices) {
 				cverr() << "COffMeshIO::load_triangles: index out of range\n";

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/imageio.hh>
 
 NS_BEGIN(IMAGEIO_3D_DICOM)
@@ -50,6 +49,7 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 	add_supported_type(it_sshort);
 
 	CFloatTranslator::register_for("SliceLocation");
+	CFloatTranslator::register_for(IDSpacingBetweenSlices);
 	CDoubleTranslator::register_for("AcquisitionTime"); 
 	CSITranslator::register_for("SeriesNumber");
 	CSITranslator::register_for("AcquisitionNumber");
@@ -126,6 +126,7 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 		if (m_size2d != image.get_size()) {
 			throw invalid_argument("Series input images have different slice size");
 		}
+		// This should use IDSpacingBetweenSlices
 		if (m_has_slice_location) {
 			float new_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
 			m_delta_z = new_slice_pos - m_slice_pos;
@@ -213,7 +214,7 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 {
 	TRACE_FUNCTION;
 	bfs::path dir(fname);
-	string ext = __bfs_get_extension(dir);
+	string ext = dir.extension().string();
 	dir.remove_filename();
 
 	if (dir.filename().empty())
@@ -231,8 +232,8 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 	bfs::directory_iterator di(dir);
 	bfs::directory_iterator dend;
 	while (di != dend) {
-		if (boost::regex_match(__bfs_get_filename(di->path()), pat_expr) &&
-		    __bfs_get_filename(di->path()) != fname) {
+		if (boost::regex_match(di->path().filename().string(), pat_expr) &&
+		    di->path().filename().string() != fname) {
 			bfs::path f =  di->path();
 			cvdebug() << "read file '" << f << "'\n";
 			CDicomReader reader(f.string().c_str());
@@ -298,8 +299,8 @@ CSliceSaver::CSliceSaver(const string& fname):
 {
 	// filename split the
 	bfs::path fullname(fname);
-	m_extension = __bfs_get_extension(fullname);
-	m_fnamebase = __bfs_get_stem(fullname);
+	m_extension = fullname.extension().string();
+	m_fnamebase = fullname.stem().string();
 }
 
 void CSliceSaver::set_instance(size_t series, size_t slice)

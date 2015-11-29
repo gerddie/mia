@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,6 +117,7 @@ int thread_streamredir::m_next_id = 0;
 
 
 CThreadMsgStream::CThreadMsgStream():
+	// coverity[resource_leak] explanation below in destructor 
 	std::ostream(new thread_streamredir()), 
 	m_old(vstream::instance().set_stream(*this))
 {
@@ -126,6 +127,8 @@ CThreadMsgStream::~CThreadMsgStream()
 {
 	flush(); 
 	vstream::instance().set_stream(m_old);
+	// At this point we delete the thread_streamredir object that is
+	// created in the constructor 
 	delete rdbuf();
 }
 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,10 @@
 #include <mia/2d/filtertest.hh>
 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif 
+
 NS_MIA_USE
 using namespace std; 
 
@@ -40,9 +44,12 @@ BOOST_AUTO_TEST_CASE(test_available_filters)
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", "close", "combiner", "convert", "crop", 
 		"dilate", "distance", "downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
-		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sort-label", 
-		"sws", "tee", "thinning", "thresh", "transform", "ws"}; 
+		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sobel", "sort-label", 
+		"sws", "tee", "thinning", "thresh", "tmean", "transform", "ws"};
 
+#ifdef HAVE_MAXFLOW
+	test_data.insert("maxflow"); 
+#endif 
 	test_availabe_plugins(handler, test_data); 
 }
 
