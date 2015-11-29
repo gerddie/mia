@@ -24,6 +24,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/transformio.hh>
+#include <mia/3d/vfregularizer.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -58,14 +59,17 @@ class C3DSymFluidReistration {
 public: 
         C3DSymFluidReistration(P3DImageCost cost, unsigned mg_levels, 
                                const vector<unsigned>& iterations_per_level, 
-                               const vector<double>& epsilon_per_level); 
+                               const vector<double>& epsilon_per_level,
+			       P3DVectorfieldRegularizer regularizer
+		);
         
         TransformPair run(const C3DFImage& src, const C3DFImage& ref) const; 
 private: 
         P3DImageCost m_cost; 
         unsigned m_mg_levels; 
         const vector<unsigned>& m_iterations_per_level; 
-        const vector<double>& m_epsilon_per_level; 
+        const vector<double>& m_epsilon_per_level;
+	P3DVectorfieldRegularizer m_regularizer; 
 }; 
 
 P3DTransformation wrap_vectorfield_in_transformation(const C3DFVectorfield& field, 
@@ -108,7 +112,9 @@ int do_main( int argc, char *argv[] )
         P3DImageCost cost;
 
         vector<unsigned> iterations_per_level; 
-        vector<double>   epsilon_per_level; 
+        vector<double>   epsilon_per_level;
+
+	P3DVectorfieldRegularizer regularizer; 
 
         const auto& imageio = C3DImageIOPluginHandler::instance();
         const auto& transio = C3DTransformationIOPluginHandler::instance();
@@ -133,7 +139,10 @@ int do_main( int argc, char *argv[] )
                               "If only one value is given, the this will be used foe all levels, "
                               "otherwise the number of values must coincide with the number of registration levels."
                               "(default=100)"));
-        
+
+	options.add(make_opt( regularizer, "sor:kernel=fluid", 'R', "regularizer",
+			      "Regularization for the force to transformation update")); 
+	
         options.add(make_opt( epsilon_per_level, "frel", 0, 
                               "Breaking condition: relative change of the cost function. "
                               "If only one value is given, the this will be used foe all levels, "
@@ -157,7 +166,7 @@ int do_main( int argc, char *argv[] )
         P3DImage src = load_image3d(src_filename); 
         P3DImage ref = load_image3d(ref_filename); 
         
-        C3DSymFluidReistration registration(cost, mg_levels, iterations_per_level, epsilon_per_level); 
+        C3DSymFluidReistration registration(cost, mg_levels, iterations_per_level, epsilon_per_level, regularizer); 
         
         auto result = registration.run(get_asfloat_pixel(src), get_asfloat_pixel(ref));
         
@@ -184,10 +193,14 @@ MIA_MAIN(do_main);
 
 C3DSymFluidReistration::C3DSymFluidReistration(P3DImageCost cost, unsigned mg_levels, 
                                                const vector<unsigned>& iterations_per_level, 
-                                               const vector<double>& epsilon_per_level):m_cost(cost),
-        m_mg_levels(mg_levels),
-        m_iterations_per_level(iterations_per_level), 
-        m_epsilon_per_level(epsilon_per_level)
+                                               const vector<double>& epsilon_per_level,
+					       P3DVectorfieldRegularizer regularizer):
+	m_cost(cost),
+	m_mg_levels(mg_levels),
+	m_iterations_per_level(iterations_per_level), 
+	m_epsilon_per_level(epsilon_per_level),
+	m_regularizer(regularizer)
+											
 {
 }
 
@@ -221,7 +234,7 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 
 class C3DSymScaledRegister {
 public: 
-        C3DSymScaledRegister(P3DImageCost cost, unsigned iter, double epsilon); 
+        C3DSymScaledRegister(P3DImageCost cost, unsigned iter, double epsilon, P3DVectorfieldRegularizer regularizer); 
         void run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const; 
 private: 
         void deform(const C3DFImage& src, const C3DFVectorfield& t, C3DFImage& result) const;
@@ -230,7 +243,8 @@ private:
         unsigned m_iter; 
         double m_epsilon;
         C3DInterpolatorFactory m_ipfac; 
-        float m_current_step; 
+        float m_current_step;
+	P3DVectorfieldRegularizer m_regularizer; 
 }; 
 
 TransformPair
@@ -268,7 +282,7 @@ C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref)
                 unsigned level_epsilon = m_epsilon_per_level.size() == 1 ? m_epsilon_per_level[0]:
                         m_epsilon_per_level[l]; 
 
-                C3DSymScaledRegister level_worker(m_cost, level_iter, level_epsilon); 
+                C3DSymScaledRegister level_worker(m_cost, level_iter, level_epsilon, regularizer); 
                 
                 level_worker.run(scaled_src, scaled_ref, transforms);
                 
@@ -276,11 +290,13 @@ C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref)
         return transforms; 
 }
 
-C3DSymScaledRegister::C3DSymScaledRegister(P3DImageCost cost, unsigned iter, double epsilon):m_cost(cost), 
-    m_iter(level_iter), 
-    m_epsilon(level_epsilon), 
-    m_ipfac("bspline:d=0", "zero"), 
-    m_current_step(0.25)
+C3DSymScaledRegister::C3DSymScaledRegister(P3DImageCost cost, unsigned iter, double epsilon, P3DVectorfieldRegularizer regularizer):
+	m_cost(cost), 
+	m_iter(level_iter), 
+	m_epsilon(level_epsilon), 
+	m_ipfac("bspline:d=0", "zero"), 
+	m_current_step(0.25),
+	m_regularizer(regularizer)
 {
 
 }
