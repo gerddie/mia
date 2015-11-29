@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -310,7 +310,7 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
                 m_cost->set_reference(ref_tmp); 
                 m_cost->evaluate_force(src_tmp, grad);
                 
-                float max_v = m_regularizer->run(grad, v); 
+                float max_v = m_regularizer->run(v, grad, *transforms.first); 
                 
 		transforms.first->update_by_velocity(v, m_current_step / max_v); 
 
@@ -322,7 +322,7 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
                 m_cost->set_reference(src_tmp); 
                 m_cost->evaluate_force(ref_tmp, grad);
 
-                max_v = m_regularizer->run(grad, v); 
+                max_v = m_regularizer->run(v, grad, *transforms.second); 
                 
 		transforms.second->update_by_velocity(v, m_current_step / max_v); 
 
