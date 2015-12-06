@@ -35,6 +35,9 @@ static const char *AttrID_nifti_intent_name = "nifti-intent-name";
 static const char *AttrID_nifti_intent_p1 = "nifti-intent_p1"; 
 static const char *AttrID_nifti_intent_p2 = "nifti-intent_p2"; 
 static const char *AttrID_nifti_intent_p3 = "nifti-intent_p3"; 
+static const char *AttrID_nifti_scl_slope = "nifti-scl_slope"; 
+static const char *AttrID_nifti_scl_inter = "nifti-scl_inter"; 
+
 
 static const char *AttrID_nifti_toffset = "nifti-toffset";       // float 
 static const char *AttrID_nifti_xyz_units = "nifti-xyz_units";   // int 
@@ -71,6 +74,9 @@ C3DImageIOPlugin("nifti")
 	CFloatTranslator::register_for("nifti-intent_p2"); 
 	CFloatTranslator::register_for("nifti-intent_p3"); 
 
+	CFloatTranslator::register_for("nifti-scl_slope");
+	CFloatTranslator::register_for("nifti-scl_inter"); 
+	
         CFloatTranslator::register_for(AttrID_nifti_toffset); 
 	CSITranslator::register_for(AttrID_nifti_xyz_units);
 	CSITranslator::register_for(AttrID_nifti_time_units);
@@ -119,7 +125,9 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
 	image.set_attribute(AttrID_nifti_intent_p1, ni.intent_p1);
 	image.set_attribute(AttrID_nifti_intent_p2, ni.intent_p2);
 	image.set_attribute(AttrID_nifti_intent_p3, ni.intent_p3);
-	image.set_attribute(AttrID_nifti_intent_name, string(ni.intent_name)); 
+	image.set_attribute(AttrID_nifti_intent_name, string(ni.intent_name));
+	image.set_attribute(AttrID_nifti_scl_slope, ni.scl_slope);
+	image.set_attribute(AttrID_nifti_scl_inter, ni.scl_inter); 
 }
 
 
@@ -196,50 +204,28 @@ CNifti3DImageIOPlugin::PData CNifti3DImageIOPlugin::do_load(const std::string&  
                                                          image->intent_code, " that is not supported by MIA."); 
         }
 
-	
-
-	
         if (image->ndim < 3 || image->ndim > 4)
 		throw create_exception<invalid_argument>("Nifti: 3D(+t) image expected but ", 
 							 image->ndim, " dimensions available in '", filename); 
         
         C3DBounds size(image->nx, image->ny, image->nz);
 
-        if (image->scl_slope != 0.0) { // data must be scaled
-                switch (image->datatype) {
-                case DT_UINT8:  return read_images<C3DFImage, unsigned char>(size, *image); 
-                case DT_INT16:  return read_images<C3DFImage, signed short>(size, *image); 
-                case DT_INT32:  return read_images<C3DDImage, signed int>(size, *image); 
-                case DT_FLOAT32:return read_images<C3DFImage, float>(size,  *image); 
-                case DT_FLOAT64:return read_images<C3DDImage, double>(size,  *image); 
-                case DT_INT8:   return read_images<C3DFImage, signed char>(size, *image); 
-                case DT_UINT16: return read_images<C3DFImage, unsigned short>(size, *image); 
-                case DT_UINT32: return read_images<C3DDImage, unsigned int>(size, *image); 
+	switch (image->datatype) {
+	case DT_UINT8:  return read_images<C3DUBImage>(size, *image); 
+	case DT_INT16:  return read_images<C3DSSImage>(size, *image); 
+	case DT_INT32:  return read_images<C3DSIImage>(size, *image); 
+	case DT_FLOAT32:return read_images<C3DFImage>(size,  *image); 
+	case DT_FLOAT64:return read_images<C3DDImage>(size,  *image); 
+	case DT_INT8:   return read_images<C3DSBImage>(size, *image); 
+	case DT_UINT16: return read_images<C3DUSImage>(size, *image); 
+	case DT_UINT32: return read_images<C3DUIImage>(size, *image); 
 #ifdef LONG_64BIT
-                case DT_INT64:  return read_images<C3DDImage, signed long>(size, *image); 
-                case DT_UINT64: return read_images<C3DDImage, unsigned short>(size, *image); 
+	case DT_INT64:  return read_images<C3DSLImage>(size, *image); 
+	case DT_UINT64: return read_images<C3DULImage>(size, *image); 
 #endif
-                default:
-                        throw create_exception<invalid_argument>("NIFTI: input format ", image->datatype, " not supported"); 
-                }
-        } else {  // the true pixel values are stored
-                switch (image->datatype) {
-                case DT_UINT8:  return read_images<C3DUBImage>(size, *image); 
-                case DT_INT16:  return read_images<C3DSSImage>(size, *image); 
-                case DT_INT32:  return read_images<C3DSIImage>(size, *image); 
-                case DT_FLOAT32:return read_images<C3DFImage>(size,  *image); 
-                case DT_FLOAT64:return read_images<C3DDImage>(size,  *image); 
-                case DT_INT8:   return read_images<C3DSBImage>(size, *image); 
-                case DT_UINT16: return read_images<C3DUSImage>(size, *image); 
-                case DT_UINT32: return read_images<C3DUIImage>(size, *image); 
-#ifdef LONG_64BIT
-                case DT_INT64:  return read_images<C3DSLImage>(size, *image); 
-                case DT_UINT64: return read_images<C3DULImage>(size, *image); 
-#endif
-                default:
-                        throw create_exception<invalid_argument>("NIFTI: input format ", image->datatype, " not supported");
-                }
-        }
+	default:
+		throw create_exception<invalid_argument>("NIFTI: input format ", image->datatype, " not supported");
+	}
 	
 }
 
