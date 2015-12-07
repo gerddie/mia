@@ -97,7 +97,9 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
         if (ni.qform_code == 0) { // method 1
                 image.set_orientation(ior_default);
                 image.set_voxel_size(C3DFVector(ni.dx,  ni.dy, ni.dz)); 
-        } else { // Method 2 
+        } else { // Method 2
+
+		cvwarn() << "NIFTI reading orientation is not correct"; 
                 image.set_orientation(ni.qfac == 1 ? ior_xyz : ior_xyz_flipped);
                 image.set_voxel_size(C3DFVector(ni.dx,  ni.dy, ni.dz)); 
                 image.set_origin(C3DFVector(ni.qoffset_x, ni.qoffset_y, ni.qoffset_z)); 
@@ -364,7 +366,7 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 		output->qoffset_z = org.z; 
 		
 		auto rot = image.get_rotation().as_matrix_3x3();; 
-		output->qto_xyz = nifti_make_orthog_mat44(- rot.x.x,
+		output->qto_xyz = nifti_make_orthog_mat44(- rot.x.x, 
 							  - rot.x.y,
 							  + rot.x.z,
 							  - rot.y.x,
@@ -401,24 +403,9 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 		output->sto_xyz.m[1][1] = am[13]; 
 		output->sto_xyz.m[1][2] = am[14]; 
 		output->sto_xyz.m[1][3] = am[15]; 
-
-	
-	}else{
-		int q = image.get_orientation() == ior_xyz;
-		output->sform_code = 1; 
 		
-		// create s-form code /dicomtonifti als write this
-		auto rot = image.get_rotation().as_quaternion();
-		auto org = image.get_origin();
-
-		output->sto_xyz  =
-
-			nifti_quatern_to_mat44(
-				rot.x(), rot.y(), rot.z(),
-				org.x, org.y, org.z,
-				scale.x, scale.y, scale.z, q ); 
-		
-
+	}else{ // without a sform code leave it empty (for now) 
+		output->sform_code = 0; 
 	}
 	
 	output->toffset = image.get_attribute_as<float>(AttrID_nifti_toffset, 0.0f);
