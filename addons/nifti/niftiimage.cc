@@ -322,9 +322,8 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 	output->dv = output->pixdim[6] = 1;
 	output->dw = output->pixdim[7] = 1;
 	
-	// we don't do scaling 
-	output->scl_slope = 0.0f;
-	output->scl_inter = 0.0f;
+	output->scl_slope = image.get_attribute_as<float>(AttrID_nifti_scl_slope, 0.0f);
+	output->scl_inter = image.get_attribute_as<float>(AttrID_nifti_scl_inter, 0.0f);
 
 	// need to see whether to support this 
 	output->cal_min = 0.0f;
@@ -360,8 +359,8 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 		output->qform_code = NIFTI_XFORM_SCANNER_ANAT;
 		
 		auto org = image.get_origin();
-		output->qoffset_x = org.x; 
-		output->qoffset_y = org.y; 
+		output->qoffset_x = -org.x; 
+		output->qoffset_y = -scale.y * (size.y-1) - org.y ; 
 		output->qoffset_z = org.z; 
 		
 		auto rot = image.get_rotation().as_matrix_3x3();; 
