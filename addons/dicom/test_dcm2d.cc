@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_CASE( test_dicom_load, DicomLoaderFixture )
 	check_attribute("ImageType", "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
 	check_attribute("SliceLocation", 15.088232007086f);
 	check_attribute("MediaStorageSOPClassUID","1.2.840.10008.5.1.4.1.1.4");
-
+	
 	C2DFVector pixel_size = pimage->get_pixel_size();
 
 	BOOST_CHECK_EQUAL(pixel_size, C2DFVector(1.484375,1.484375));
@@ -135,7 +135,7 @@ protected:
 template  <typename T> 
 void DicomSaveLoadFixture<T>::fill_attributes()
 {
-	org_image->set_attribute(IDMediaStorageSOPClassUID,  "somevalue");
+	org_image->set_attribute(IDMediaStorageSOPClassUID,  "othervalue");
 	org_image->set_attribute(IDSOPClassUID,  "othervalue");
 	org_image->set_pixel_size(C2DFVector(1.45, 2.34));
 
@@ -151,6 +151,9 @@ void DicomSaveLoadFixture<T>::fill_attributes()
 	org_image->set_attribute("StudyID", "786755");
 	org_image->set_attribute("SliceLocation", "12.6755");
 	org_image->set_attribute("ImageType", "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
+	org_image->set_attribute(IDRescaleIntercept, -1.0f);
+	org_image->set_attribute(IDRescaleSlope, 2.0f);
+
 
 	org_image->set_attribute(IDSmallestImagePixelValue,"0");
 	org_image->set_attribute(IDLargestImagePixelValue,"119");
