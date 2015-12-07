@@ -31,6 +31,8 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <type_traits>
+#include <iomanip>
 #include <boost/any.hpp>
 #include <boost/ref.hpp>
 #include <boost/lexical_cast.hpp>
@@ -561,13 +563,28 @@ int TAttribute<T>::type_id() const
    \remark this should replace the parameter translation methods 
 */
 
+template <typename T, bool is_floating>
+struct __convert_to_string
+{
+	static std::string apply(const typename ::boost::reference_wrapper<T>::type value) {
+		return boost::lexical_cast<std::string>(value);
+	}
+}; 
+
+template <typename T>
+struct __convert_to_string<T, true> {
+	static std::string apply(const typename ::boost::reference_wrapper<T>::type value) {
+		std::stringstream sval;
+		sval << std::setprecision(10) << value; 
+		return sval.str();
+	}
+}; 
+
 
 template <typename T>
 struct dispatch_attr_string {
 	static std::string val2string(const typename ::boost::reference_wrapper<T>::type value) {
-		std::stringstream sval;
-		sval << boost::lexical_cast<std::string>(value);
-		return sval.str();
+		return __convert_to_string<T, std::is_floating_point<T>::value>::apply(value);
 	}
 	static T string2val(const std::string& str) {
 		T v;
@@ -584,8 +601,9 @@ struct dispatch_attr_string<std::vector<T> > {
 		std::stringstream sval;
 		sval << value.size();
 		for (size_t i = 0; i < value.size(); ++i)
-			sval << " " << boost::lexical_cast<std::string>(value[i]);
-		return sval.str();
+			sval << " "
+			     <<  __convert_to_string<T, std::is_floating_point<T>::value>::apply(value[i]); 
+	        return sval.str();
 	}
 	static std::vector<T> string2val(const std::string& str) {
 		size_t s;
