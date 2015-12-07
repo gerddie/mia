@@ -21,6 +21,7 @@
 #include <addons/nifti/niftiimage.hh>
 #include <nifti1_io.h>
 
+#include <mia/core/attribute_names.hh>
 
 using namespace mia; 
 using namespace std; 
@@ -35,8 +36,7 @@ static const char *AttrID_nifti_intent_name = "nifti-intent-name";
 static const char *AttrID_nifti_intent_p1 = "nifti-intent_p1"; 
 static const char *AttrID_nifti_intent_p2 = "nifti-intent_p2"; 
 static const char *AttrID_nifti_intent_p3 = "nifti-intent_p3"; 
-static const char *AttrID_nifti_scl_slope = "nifti-scl_slope"; 
-static const char *AttrID_nifti_scl_inter = "nifti-scl_inter"; 
+
 
 
 static const char *AttrID_nifti_toffset = "nifti-toffset";       // float 
@@ -74,8 +74,8 @@ C3DImageIOPlugin("nifti")
 	CFloatTranslator::register_for("nifti-intent_p2"); 
 	CFloatTranslator::register_for("nifti-intent_p3"); 
 
-	CFloatTranslator::register_for("nifti-scl_slope");
-	CFloatTranslator::register_for("nifti-scl_inter"); 
+	CFloatTranslator::register_for(IDRescaleSlope);
+	CFloatTranslator::register_for(IDRescaleIntercept); 
 	
         CFloatTranslator::register_for(AttrID_nifti_toffset); 
 	CSITranslator::register_for(AttrID_nifti_xyz_units);
@@ -126,8 +126,8 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
 	image.set_attribute(AttrID_nifti_intent_p2, ni.intent_p2);
 	image.set_attribute(AttrID_nifti_intent_p3, ni.intent_p3);
 	image.set_attribute(AttrID_nifti_intent_name, string(ni.intent_name));
-	image.set_attribute(AttrID_nifti_scl_slope, ni.scl_slope);
-	image.set_attribute(AttrID_nifti_scl_inter, ni.scl_inter); 
+	image.set_attribute(IDRescaleSlope, ni.scl_slope);
+	image.set_attribute(IDRescaleIntercept, ni.scl_inter); 
 }
 
 
@@ -322,8 +322,8 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 	output->dv = output->pixdim[6] = 1;
 	output->dw = output->pixdim[7] = 1;
 	
-	output->scl_slope = image.get_attribute_as<float>(AttrID_nifti_scl_slope, 0.0f);
-	output->scl_inter = image.get_attribute_as<float>(AttrID_nifti_scl_inter, 0.0f);
+	output->scl_slope = image.get_attribute_as<float>(IDRescaleSlope, 0.0f);
+	output->scl_inter = image.get_attribute_as<float>(IDRescaleIntercept, 0.0f);
 
 	// need to see whether to support this 
 	output->cal_min = 0.0f;

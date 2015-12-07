@@ -63,5 +63,7 @@ EXPORT_CORE const char * IDSpacingBetweenSlices = "SpacingBetweenSlices";
 EXPORT_CORE const char * IDPhotometricInterpretation = "PhotometricInterpretation";
 
 EXPORT_CORE const char * IDAttrPixelSizeIsImager = "PixelSizeIsImagerSize"; 
+EXPORT_CORE const char * IDRescaleIntercept = "RescaleIntercept"; 
+EXPORT_CORE const char * IDRescaleSlope = "RescaleSlope"; 
 
 NS_MIA_END

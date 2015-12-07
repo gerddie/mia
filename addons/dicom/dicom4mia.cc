@@ -101,6 +101,9 @@ const SLookupInit lookup_init[] = {
 	{IDPositionerPrimaryAngleIncrement, DCM_PositionerPrimaryAngleIncrement, false, tr_no, NULL},
 	{IDPositionerSecondaryAngleIncrement, DCM_PositionerSecondaryAngleIncrement, false, tr_no, NULL},
 	{IDPhotometricInterpretation, DCM_PhotometricInterpretation, false, tr_yes_defaulted, "MONOCHROME2"},
+
+	{IDRescaleIntercept, DCM_RescaleIntercept, false, tr_yes_defaulted, "0.0"},
+	{IDRescaleSlope, DCM_RescaleSlope, false, tr_yes_defaulted, "0.0"},
 	
 	{NULL, DcmTagKey(), false, tr_no, NULL}
 };

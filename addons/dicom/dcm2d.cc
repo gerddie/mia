@@ -47,6 +47,11 @@ CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
 	CSITranslator::register_for("AcquisitionNumber");
 	CSITranslator::register_for("InstanceNumber");
 	CPatientPositionTranslator::register_for(IDPatientPosition);
+
+	CFloatTranslator::register_for(IDRescaleSlope);
+	CFloatTranslator::register_for(IDRescaleIntercept); 
+
+	
 	add_suffix(".dcm");
 	add_suffix(".DCM");
 }

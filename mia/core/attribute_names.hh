@@ -64,8 +64,12 @@ extern EXPORT_CORE const char * IDSliceThickness;
 extern EXPORT_CORE const char * IDSpacingBetweenSlices; 
 extern EXPORT_CORE const char * IDPhotometricInterpretation; 
 
+
+
+
 extern EXPORT_CORE const char * IDAttrPixelSizeIsImager; 
-/// @endcond 
+extern EXPORT_CORE const char * IDRescaleIntercept; 
+extern EXPORT_CORE const char * IDRescaleSlope; 
 
 NS_MIA_END
 
