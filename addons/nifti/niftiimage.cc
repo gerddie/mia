@@ -337,12 +337,12 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 		output->qform_code = 1; // default to method 2 
 	}
 
+	auto org = image.get_origin(); 
 	// Analyze 7.5 like data 
 	if (output->qform_code == 0) {
 		// here starts the orientation insanity 
 		// todo: re-check how this qfac is actually used
 
-		auto org = image.get_origin(); 
 		output->qoffset_x = org.x; 
 		output->qoffset_y = org.y; 
 		output->qoffset_z = org.z; 
@@ -357,26 +357,31 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 			cvwarn() << __FUNCTION__ << "FIXME:manual set orientation detected, but ignored\n"; 
 		}
 	} else {
-		// This has been taken from xmedcon m-nifti.c 
 		output->qform_code = NIFTI_XFORM_SCANNER_ANAT;
+
+		auto rot = image.get_rotation().as_matrix_3x3();
+
+		cvdebug() << "rot-quat= "<< image.get_rotation().as_quaternion() << "\n";
+		cvdebug() << "org= " << org << "\n";
+		cvdebug() << "rot= " << rot << "\n"; 		
+
+		float scaley = (size.y - 1) * scale.y; 
+		output->qoffset_x = org.x; 
+		output->qoffset_y = -org.y; 
+		output->qoffset_z = -org.z; 
 		
-		auto org = image.get_origin();
-		output->qoffset_x = -org.x; 
-		output->qoffset_y = -scale.y * (size.y-1) - org.y ; 
-		output->qoffset_z = org.z; 
-		
-		auto rot = image.get_rotation().as_matrix_3x3();; 
-		output->qto_xyz = nifti_make_orthog_mat44(- rot.x.x, 
-							  - rot.x.y,
-							  + rot.x.z,
-							  - rot.y.x,
-							  - rot.y.y,
-							  + rot.y.z,
-							  0,0,0);
-		
+
+
+		output->qto_xyz = nifti_make_orthog_mat44( 
+			-rot.x.x, -rot.x.y, rot.x.z,
+			-rot.y.x, -rot.y.y, rot.y.z,
+			-rot.z.x, -rot.z.y, rot.z.z); 
+	
 		nifti_mat44_to_quatern(output->qto_xyz,
-				       &output->quatern_b, &output->quatern_c, &output->quatern_c,
+				       &output->quatern_b, &output->quatern_c, &output->quatern_d,
 				       NULL,NULL,NULL,NULL,NULL,NULL,&output->qfac);
+
+		output->pixdim[0] = output->qfac; 
 		
 	}
 	
@@ -404,7 +409,7 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 		output->sto_xyz.m[1][2] = am[14]; 
 		output->sto_xyz.m[1][3] = am[15]; 
 		
-	}else{ // without a sform code leave it empty (for now) 
+	}else{ // without a sform code leave it empty (for now)
 		output->sform_code = 0; 
 	}
 	
