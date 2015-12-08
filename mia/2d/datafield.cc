@@ -46,9 +46,9 @@ INSTANCIATE(unsigned int);
 INSTANCIATE(signed int);
 INSTANCIATE(unsigned short);
 INSTANCIATE(signed short);
-INSTANCIATE(bool);
 INSTANCIATE(unsigned char);
 INSTANCIATE(signed char);
+template class  EXPORT_2D T2DDatafield<bool>;
 
 DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds"); 
 DEFINE_TYPE_DESCR2(C2DFVector, "2dfvector"); 

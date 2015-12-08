@@ -50,7 +50,7 @@ private:
 	void do_shift();
 	void shift_buffer();
 	mia::C2DBounds m_slice_size;
-	std::auto_ptr<mia::C3DImage> m_buffer;
+	std::unique_ptr<mia::C3DImage> m_buffer;
 	size_t m_hw;
 
 	C2DImageFifoFilter::CShiftSlices m_ss;

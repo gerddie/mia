@@ -95,7 +95,7 @@ INSTANCIATE(short);
 INSTANCIATE(unsigned short);
 INSTANCIATE(unsigned char );
 INSTANCIATE(signed char);
-INSTANCIATE(bool);
+template class  T3DDatafield<bool>;
 
 DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
 DEFINE_TYPE_DESCR2(C3DFVector, "3dfvector"); 

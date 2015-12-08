@@ -356,7 +356,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	
 	C3DFImage test_image(range);
 	
-	auto_ptr<T3DInterpolator<float> > src(ipf.create(image.data()));
+	unique_ptr<T3DInterpolator<float> > src(ipf.create(image.data()));
 
 	C3DFImage::iterator t = test_image.begin();
 

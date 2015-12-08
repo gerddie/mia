@@ -32,7 +32,7 @@ namespace distance_3d_filter {
 using namespace mia; 
 
 using std::vector; 
-using std::string; 
+using std::string;
 
 template <typename T> 
 P3DImage C3DDistanceFilter::operator () ( const T3DImage<T>& image) const
@@ -45,7 +45,8 @@ P3DImage C3DDistanceFilter::operator () ( const T3DImage<T>& image) const
 		for (size_t z = range.begin(); z != range.end(); ++z) {
 			for (size_t y = 0; y < image.get_size().y; ++y) {
 				image.get_data_line_x(y, z, in_buffer);
-				distance_transform_prepare(in_buffer.begin(), in_buffer.end(), buffer.begin()); 
+				distance_transform_prepare(in_buffer.begin(), in_buffer.end(), buffer.begin(),
+							   __is_mask_pixel<T>::value); 
 				distance_transform_inplace(buffer); 
 				result->put_data_line_x(y, z, buffer);
 			}

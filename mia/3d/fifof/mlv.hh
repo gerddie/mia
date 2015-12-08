@@ -60,7 +60,7 @@ private:
 
 	std::vector<float> m_buf1;
 	std::vector<float> m_buf2;
-	std::auto_ptr<mia::C3DImage> m_prototype;
+	std::unique_ptr<mia::C3DImage> m_prototype;
 
 	mia::C2DFImage m_n_template;
 

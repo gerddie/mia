@@ -119,11 +119,11 @@ struct vista_repnkind<std::string> {
 template <typename I, typename O>
 struct dispatch_creat_vimage {
 	static VistaIOImage apply(I begin, I end, size_t x, size_t y, size_t z) {
-		typedef typename std::iterator_traits<I>::value_type pixel_type; 
-		VistaIOImage result = VistaIOCreateImage(z, y, x, vista_repnkind<pixel_type>::value);
+		VistaIOImage result = VistaIOCreateImage(z, y, x, vista_repnkind<O>::value);
+		assert(result); 
 		
 		VistaIOSetAttr(VistaIOImageAttrList(result), "repn-unsigned", NULL, VistaIOBitRepn, 
-			       vista_repnkind<pixel_type>::is_unsigned);
+			       vista_repnkind<O>::is_unsigned);
 
 		std::copy(begin, end, (O *)VistaIOPixelPtr(result,0,0,0));
 		return result;

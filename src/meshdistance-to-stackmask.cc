@@ -66,7 +66,7 @@ struct FDistAcummulator : public TFilter<void> {
 	template <typename T> 
 	void operator ()(const T2DImage<T>& image) {
 		C2DFImage buf(image.get_size()); 
-		distance_transform_prepare(image.begin(), image.end(), buf.begin()); 
+		distance_transform_prepare(image.begin(), image.end(), buf.begin(), __is_mask_pixel<T>::value); 
 		m_distance.push_slice(m_z, buf); 
 		++m_z; 
 	}

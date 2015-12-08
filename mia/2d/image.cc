@@ -117,7 +117,7 @@ T2DImage<T>::T2DImage(const C2DBounds& size, const T* init_data):
 }
 
 template <typename T>
-T2DImage<T>::T2DImage(const C2DBounds& size, const typename T2DDatafield<T>::data_array& init_data):
+T2DImage<T>::T2DImage(const C2DBounds& size, const vector<T>& init_data):
 	C2DImage(size, (EPixelType)pixel_type<T>::value),
 	m_image(size, init_data)
 {

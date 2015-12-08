@@ -28,15 +28,17 @@ NS_MIA_BEGIN
 
 template <class T>
 struct min_max_3d {
-	static void get( const T3DDatafield<T>& data, T* min, T*max)
+	static void get( const T3DDatafield<T>& data,
+			 typename T3DDatafield<T>::value_type& min,
+			 typename T3DDatafield<T>::value_type& max)
 	{
-		typename T3DDatafield<T>::const_iterator i = data.begin(); 
-		typename T3DDatafield<T>::const_iterator e = data.end(); 
-		*min = *max = *i++; 
+		auto i = data.begin(); 
+		auto e = data.end(); 
+		min = max = *i++; 
 		
 		while (i != e) {
-			if (*i > *max) *max = *i; 
-			if (*i < *min) *min = *i; 
+			if (*i > max) max = *i; 
+			if (*i < min) min = *i; 
 			++i; 
 		}
 	}
@@ -44,19 +46,19 @@ struct min_max_3d {
 
 template <class  T>
 struct min_max_3d<T3DVector<T> > {
-	static void get( const T3DDatafield<T3DVector<T> >& data, T3DVector<T>* min, T3DVector<T>*max)
+	static void get( const T3DDatafield<T3DVector<T> >& data, T3DVector<T>& min, T3DVector<T>& max)
 	{
-		typename T3DDatafield<T3DVector<T> >::const_iterator i = data.begin(); 
-		typename T3DDatafield<T3DVector<T> >::const_iterator e = data.end(); 
-		*min = *max = *i++; 
+		auto i = data.begin(); 
+		auto e = data.end(); 
+		min = max = *i++; 
 		
 		while (i != e) {
-			if (i->x > max->x) max->x = i->x; 
-			if (i->y > max->y) max->y = i->y; 
-			if (i->z > max->z) max->z = i->z; 
-			if (i->x < min->x) min->x = i->x; 
-			if (i->y < min->y) min->y = i->y; 
-			if (i->z < min->z) min->z = i->z; 
+			if (i->x > max.x) max.x = i->x; 
+			if (i->y > max.y) max.y = i->y; 
+			if (i->z > max.z) max.z = i->z; 
+			if (i->x < min.x) min.x = i->x; 
+			if (i->y < min.y) min.y = i->y; 
+			if (i->z < min.z) min.z = i->z; 
 			++i; 
 		}
 	}
@@ -109,7 +111,7 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 	m_zbc->set_width(image.get_size().z);
 	m_z_cache.reset(); 
 
-	min_max_3d<T>::get(image, &m_min, &m_max);
+	min_max_3d<T>::get(image, m_min, m_max);
 	// we always allow that a pixel is set to zero
 	if (T() < m_min) 
 		m_min = T(); 

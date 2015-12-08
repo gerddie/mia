@@ -183,15 +183,15 @@ C3DDoGrowmask::result_type C3DDoGrowmask::operator () (const T3DImage<T>& data) 
 	P3DImage result(r);
 
 	// first initialize the seed queue
-	C3DBitImage::iterator ir = r->begin();
-	typename T3DImage<T>::const_iterator d = data.begin();
+	auto ir = r->begin();
+	auto d = data.begin();
 
 	C3DBounds pos;
 	for (pos.z = 0; pos.z < data.get_size().z; ++pos.z)
 		for (pos.y = 0; pos.y < data.get_size().y; ++pos.y)
 			for (pos.x = 0; pos.x < data.get_size().x; ++pos.x, ++ir, ++d) {
 				if (*ir)
-					add_neigborhood(pos, data, *r, *d, pool);
+					add_neigborhood(pos, data, *r, static_cast<T>(*d), pool);
 			}
 
 	// then grow

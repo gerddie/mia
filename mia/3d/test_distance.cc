@@ -43,7 +43,7 @@ BOOST_FIXTURE_TEST_CASE( test_distance_full3d_inf, Distance3DInfFixture )
 {
 	C3DFImage src_img(C3DBounds(4,4,4)); 
 	
-	distance_transform_prepare(&src_init[0], &src_init[64], src_img.begin()); 
+	distance_transform_prepare(&src_init[0], &src_init[64], src_img.begin(), true); 
 	
 	C3DFImage result =  distance_transform(src_img); 
 
@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_inf, Distance3DInfFixture )
 	C2DFImage slice(C2DBounds(4,4)); 
 	
 	for (int i = 0; i < 4; ++i) {
-		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin());
+		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin(), true);
 		slice_based_distance.push_slice(i, slice); 
 	}
 
@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_direct, Distance3DInfFixture 
 	C2DFImage slice(C2DBounds(4,4)); 
 	
 	for (int i = 0; i < 4; ++i) {
-		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin());
+		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin(), true);
 		slice_based_distance.push_slice(i, slice); 
 	}
 
@@ -110,7 +110,7 @@ BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_direct_3_3_3, Distance3DInfFi
 	C2DFImage slice(C2DBounds(4,4)); 
 	
 	for (int i = 0; i < 4; ++i) {
-		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin());
+		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin(), true);
 		slice_based_distance.push_slice(i, slice); 
 	}
 
@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE( test_distance_full3d_func,  Distance3DFuncFixture )
 {
 	C3DFImage src_img(C3DBounds(4,4,4)); 
 	
-	distance_transform_prepare(&src_init[0], &src_init[64], src_img.begin()); 
+	distance_transform_prepare(&src_init[0], &src_init[64], src_img.begin(), false); 
 	
 	C3DFImage result =  distance_transform(src_img); 
 
@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_func, Distance3DFuncFixture )
 	C2DFImage slice(C2DBounds(4,4)); 
 	
 	for (int i = 0; i < 4; ++i) {
-		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin());
+		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin(), false);
 		slice_based_distance.push_slice(i, slice); 
 	}
 

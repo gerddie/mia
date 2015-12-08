@@ -54,8 +54,7 @@ void CSeparableConvolute::fold(vector<T>& data, const C1DFilterKernel& kernel) c
 template <class T>
 CSeparableConvolute::result_type CSeparableConvolute::operator () (const T2DImage<T>& image) const
 {
-	typedef typename T2DImage<T>::value_type value_type;
-	typedef std::vector<value_type> invec_t;
+	typedef std::vector<T> invec_t;
 
 	T2DImage<T> *data = new T2DImage<T>(image);
 	CSeparableConvolute::result_type result(data);

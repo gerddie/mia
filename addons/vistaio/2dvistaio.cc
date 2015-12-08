@@ -160,7 +160,7 @@ struct CVImageCreator: public TFilter <VistaIOImage> {
 template <typename T>
 VistaIOImage CVImageCreator::operator ()( const T2DImage<T>& image) const
 {
-	typedef dispatch_creat_vimage<typename T2DImage<T>::const_iterator, typename vista_repnkind<T>::type> dispatcher;
+	typedef dispatch_creat_vimage<typename T2DImage<T>::const_iterator, T> dispatcher;
 	VistaIOImage result = dispatcher::apply(image.begin(), image.end(), image.get_size().x, image.get_size().y, 1);
 	copy_attr_list(VistaIOImageAttrList(result), image);
 	return result;

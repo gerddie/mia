@@ -291,7 +291,7 @@ bool COffMeshIO::read_polygon(istream& inp, vector<CTriangleMesh::triangle_type>
 	}else {
 		vector<unsigned int> poly(nvert);
 		
-		for (int k = 0; k < poly.size(); ++k) {
+		for (unsigned  k = 0; k < poly.size(); ++k) {
 			inp >> ws >> poly[k];
 			if (poly[k] >= nvertices) {
 				cverr() << "COffMeshIO::load_triangles: index out of range\n";

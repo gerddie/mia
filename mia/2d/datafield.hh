@@ -55,7 +55,7 @@ class EXPORT_2DDATAFIELD T2DDatafield  {
 public:
 
 	/// type for the flat reprentation of the 2D data field 
-	typedef  ::std::vector<T> data_array;
+	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
 	/// pointer type 
 	typedef  std::shared_ptr<data_array > data_pointer;
@@ -101,7 +101,7 @@ public:
 	   \param size 
 	   \param data must at least be of size (size.x*size.y)
 	*/
-	T2DDatafield(const C2DBounds& size, const data_array& data);
+	T2DDatafield(const C2DBounds& size, const std::vector<T>& data);
 
 	/** copy constructor, it does a shallow copy of the original, i.e. 
 	    the data is not copied, only the shared pointer increases its reference count.
@@ -292,7 +292,7 @@ public:
 private:
 	C2DBounds  m_size;
 	data_pointer m_data;
-	const static T Zero;
+	const static value_type Zero;
 };
 
 /// 2D scalar field that holds double values 

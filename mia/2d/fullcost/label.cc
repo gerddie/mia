@@ -186,7 +186,7 @@ void C2DLabelFullCost::prepare_distance_fields( const C2DUBImage &image )
                 if (exist) {
 			C2DFImage prep(bool_bin.get_size()); 
 			distance_transform_prepare(bool_bin.begin(), bool_bin.end(), 
-						   prep.begin());
+						   prep.begin(), true);
 			
                         m_ref_distances[i] = distance_transform(prep); 
 			transform(m_ref_distances[i].begin(), m_ref_distances[i].end(), 

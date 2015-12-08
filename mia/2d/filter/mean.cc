@@ -85,7 +85,6 @@ struct __dispatch_filter<T, true> {
 template <> 
 struct __dispatch_filter<bool, false> {
 	static bool apply(const T2DImage<bool>& data, int cx, int cy, int hw) {
-#warn Race condition possible if vector<bool> is specialized with bit fields 
 		int balance = 0; 
 		for (int y = cy - hw; y <= cy + hw; ++y) {
 			if ( y >= 0 && y < (int)data.get_size().y) 

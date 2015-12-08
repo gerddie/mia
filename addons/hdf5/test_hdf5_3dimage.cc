@@ -116,3 +116,4 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes )
 }
 
 
+

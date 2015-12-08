@@ -73,23 +73,9 @@ DECLARE_EXTERN_ITERATORS(C3DDVector)
 template <class T>
 class  EXPORT_3D T3DDatafield {
 
-	typedef  ::std::vector<T> data_array;
+	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
         typedef std::shared_ptr<data_array>  ref_data_type;
-
-        /** Size of the field */
-        C3DBounds  m_size;
-
-        /** helper: product of Size.x * Size.y */
-        size_t  m_xy;
-
-        /** Pointer to the Field of Data hold by this class */
-        ref_data_type m_data;
-
-        /** helper: represents the zero-value */
-        static const T Zero;
-	
-	static const size_t m_elements; 
 
 public:
 	
@@ -110,16 +96,16 @@ public:
 	/// a shortcut data type
 
 	/// \cond SELFEXPLAINING 
-        typedef typename std::vector<T>::iterator iterator;
-        typedef typename std::vector<T>::const_iterator const_iterator;
-        typedef typename std::vector<T>::const_reference const_reference;
-        typedef typename std::vector<T>::reference reference;
-        typedef typename std::vector<T>::const_pointer const_pointer;
-        typedef typename std::vector<T>::pointer pointer;
-        typedef typename std::vector<T>::value_type value_type;
-        typedef typename std::vector<T>::size_type size_type;
-        typedef typename std::vector<T>::difference_type difference_type;
-	typedef typename atomic_data<T>::type atomic_type; 
+        typedef typename data_array::iterator iterator;
+        typedef typename data_array::const_iterator const_iterator;
+        typedef typename data_array::const_reference const_reference;
+        typedef typename data_array::reference reference;
+        typedef typename data_array::const_pointer const_pointer;
+        typedef typename data_array::pointer pointer;
+        typedef typename data_array::value_type value_type;
+        typedef typename data_array::size_type size_type;
+        typedef typename data_array::difference_type difference_type;
+	typedef typename atomic_data<value_type>::type atomic_type; 
 	typedef range3d_iterator<iterator> range_iterator; 
 	typedef range3d_iterator<const_iterator> const_range_iterator; 
 
@@ -272,7 +258,7 @@ public:
 	{
         	// Look if we are inside, and give reference, else give the zero
 	        if (x < m_size.x && y < m_size.y && z < m_size.z) {
-	                const std::vector<T>& data = *m_data;
+	                const data_array& data = *m_data;
 	                return data[x+ m_size.x * (y  + m_size.y * z)];
 	        }
 		return Zero;
@@ -540,6 +526,20 @@ public:
         };
 
 private:
+	/** Size of the field */
+        C3DBounds  m_size;
+
+        /** helper: product of Size.x * Size.y */
+        size_t  m_xy;
+
+        /** Pointer to the Field of Data hold by this class */
+        ref_data_type m_data;
+
+        /** helper: represents the zero-value */
+        static const value_type Zero;
+	
+	static const size_t m_elements; 
+
 };
 
 /// a data field of float values

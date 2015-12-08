@@ -102,7 +102,7 @@ class PRIVATE C2DMorphFifoFilter : public mia::C2DImageFifoFilter {
 	void shift_buffer();
 
 	mia::P3DShape m_shape;
-	std::auto_ptr<mia::C3DImage> m_buffer;
+	std::unique_ptr<mia::C3DImage> m_buffer;
 
 	mia::C2DBounds m_slice_size;
 	CShiftSlices m_shifter;

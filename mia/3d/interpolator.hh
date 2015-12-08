@@ -152,8 +152,8 @@ private:
 	PSplineBoundaryCondition m_ybc; 
 	PSplineBoundaryCondition m_zbc; 
 
-	T m_min;
-	T m_max;
+	typename T3DDatafield<T>::value_type m_min;
+	typename T3DDatafield<T>::value_type m_max;
 	
 	mutable tbb::mutex m_cache_lock; 
  	mutable CSplineKernel::SCache m_x_cache; 

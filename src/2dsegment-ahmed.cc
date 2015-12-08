@@ -161,8 +161,8 @@ template <class T>
 CSegment2d::result_type CSegment2d::operator()(const T2DImage<T>& image)
 {
 	// first evaluate the histogram borders and get the initial class centers
-	T minh=0; 
-	T maxh=numeric_limits<T>::max(); 
+	typename T2DImage<T>::value_type minh=0; 
+	typename T2DImage<T>::value_type maxh=numeric_limits<T>::max(); 
 	
 
 	get_min_max(image.begin(), image.end(), minh, maxh);  

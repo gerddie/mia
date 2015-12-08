@@ -175,8 +175,8 @@ private:
 	PSplineKernel m_kernel;
 	PSplineBoundaryCondition m_x_boundary; 
 	PSplineBoundaryCondition m_y_boundary; 
-	T m_min;
-	T m_max;
+	typename T2DDatafield<T>::value_type m_min;
+	typename T2DDatafield<T>::value_type m_max;
 
 	/// This part makes the class to be not thread save 
 	mutable CSplineKernel::VIndex m_x_index; 

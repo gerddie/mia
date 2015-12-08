@@ -161,8 +161,8 @@ template <class T>
 CSegment3d::result_type CSegment3d::operator()(const T3DImage<T>& image)
 {
 	// first evaluate the histogram borders and get the initial class centers
-	T minh=0; 
-	T maxh=numeric_limits<T>::max(); 
+	typename T3DImage<T>::value_type minh=0; 
+	typename T3DImage<T>::value_type maxh=numeric_limits<T>::max(); 
 	
 
 	get_min_max(image.begin(), image.end(), minh, maxh);  

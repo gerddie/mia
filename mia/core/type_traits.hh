@@ -27,6 +27,28 @@ NS_MIA_BEGIN
 
 /// @cond INTERNAL 
 
+template <typename T> 
+struct __holder_type_dispatch  {
+	typedef T type; 
+}; 
+
+
+template <> 
+struct __holder_type_dispatch<bool>  {
+	typedef unsigned char type; 
+}; 
+
+
+template <typename T>
+struct __is_mask_pixel {
+	static const bool value = false;
+}; 
+
+template <>
+struct __is_mask_pixel<bool> {
+	static const bool value = true;
+}; 
+
 /**
    @ingroup traits 
    @brief A trait to derive the actual type handled by a plug-in based on some 

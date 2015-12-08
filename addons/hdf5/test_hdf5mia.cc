@@ -104,7 +104,7 @@ BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 		auto space = H5Space::create(2, dims); 
 		auto dataset = H5Dataset::create(get_file(), "/testset", file_type, space);
 		
-		dataset.write(data.begin(), data.end());
+		dataset.write_data(data, int());
 	}
 	// close data set automatically, and now reopen it 
 	{
@@ -121,7 +121,7 @@ BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 
 		vector<int> read_data(6);
 		
-		dataset.read(read_data.begin(), read_data.end()); 
+		dataset.read_data(read_data, int()); 
 
 		for (int i = 0; i < 6; ++i)
 			BOOST_CHECK_EQUAL(read_data[i], data[i]); 
@@ -145,7 +145,7 @@ BOOST_FIXTURE_TEST_CASE(test_bool_dataset,  HDF5CoreFileFixture)
 		auto space = H5Space::create(2, dims); 
 		auto dataset = H5Dataset::create(get_file(), "/testset", file_type, space);
 		
-		dataset.write(data.begin(), data.end());
+		dataset.write_data(data, true);
 	}
 	// close data set automatically, and now reopen it 
 	{
@@ -162,7 +162,7 @@ BOOST_FIXTURE_TEST_CASE(test_bool_dataset,  HDF5CoreFileFixture)
 
 		vector<bool> read_data(6); 
 		
-		dataset.read(read_data.begin(), read_data.end()); 
+		dataset.read_data(read_data, false); 
 
 		for (int i = 0; i < 6; ++i)
 			BOOST_CHECK_EQUAL(read_data[i], data[i]); 
@@ -197,7 +197,7 @@ void TestDatasetFixture<T>::save(const string& path, const std::vector<hsize_t>&
 	
 	auto space = H5Space::create(size); 
 	auto dataset = H5Dataset::create(get_file(), path.c_str(), file_type, space);
-	dataset.write(data.begin(), data.end());
+	dataset.write_data(data, T());
 }
 
 template <typename T> 
@@ -222,7 +222,7 @@ void TestDatasetFixture<T>::read_and_test(const string& path, const std::vector<
 	
 	std::vector<T> read_data(length); 
 	
-	dataset.read(read_data.begin(), read_data.end()); 
+	dataset.read_data(read_data, T()); 
 		
 	for (size_t i = 0; i < length; ++i)
 		BOOST_CHECK_EQUAL(read_data[i], test_data[i]); 

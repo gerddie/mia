@@ -109,7 +109,7 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *MIA_PARAM_UN
 		P3DImage new_image; 
 		switch (type_id) {
 		case EAttributeType::attr_bool: 
-			new_image = read_image<C3DBitImage>(bsize, dataset); 
+			new_image = read_image<C3DBitImage, bool>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_uchar: 
 			new_image = read_image<C3DUBImage>(bsize, dataset); 
@@ -213,7 +213,7 @@ void FHDF5Saver::operator ()( const T3DImage<T>& image)
         }
 	cvdebug() << "Add image to '" << path << "'\n"; 
         auto dataset = H5Dataset::create(m_file, path.c_str(), file_type, space);
-        dataset.write(image.begin(), image.end()); 
+        dataset.write_data(image, T()); 
         translate_to_hdf5_attributes(dataset, image); 
 }
 
