@@ -371,11 +371,11 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 		output->qoffset_z = -org.z; 
 		
 
-
+		// do the same like in amide 
 		output->qto_xyz = nifti_make_orthog_mat44( 
 			-rot.x.x, -rot.x.y, rot.x.z,
-			-rot.y.x, -rot.y.y, rot.y.z,
-			-rot.z.x, -rot.z.y, rot.z.z); 
+			rot.y.x, rot.y.y, rot.y.z,
+			rot.z.x, rot.z.y, rot.z.z); 
 	
 		nifti_mat44_to_quatern(output->qto_xyz,
 				       &output->quatern_b, &output->quatern_c, &output->quatern_d,
