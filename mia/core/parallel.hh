@@ -18,7 +18,6 @@
  *
  */
 
-
 #ifndef mia_core_parallel_hh
 #define mia_core_parallel_hh
 
@@ -26,6 +25,7 @@
 #include <mia/core/defines.hh>
 
 #ifdef HAVE_TBB
+
 #include <tbb/task_scheduler_init.h>
 #include <tbb/recursive_mutex.h>
 #include <tbb/mutex.h>
@@ -33,81 +33,26 @@
 #include <tbb/parallel_reduce.h>
 #include <tbb/blocked_range.h>
 
-#else  // use C++ 11 thread 
-#include <thread>
-#include <atomic>
-NS_MIA_BEGIN
+typedef tbb::blocked_range<int> C1DParallelRange;
+typedef tbb::mutex CMutex; 
+typedef tbb::mutex::scoped_lock CScopedLock;
 
-template <typename C> 
-class C1DParallelRange {
-public: 
-	C1DParallelRange(C begin, C end, C stride):
-		m_begin(begin),
-		m_end(end),
-		m_stride(stride), 
-		m_current_wp(0)
-		{
-		}
-
-	
-	C1DParallelRange get_next_workpackage()	{
-		int wp = m_current_wp++;
-		C begin = m_begin + wp * m_stride;
-		C end = begin + m_stride;
-		if (begin > m_end) {
-			return C1DParallelRange(m_end,m_end,0);
-		}
-		if (end > m_end) {
-			return C1DParallelRange(begin, m_end, 1);
-		}
-		return C1DParallelRange(begin, end, 1);
-	}
-
-	bool empty() const {
-		return m_begin >= m_end; 
-	}
-	
-private:
-	C m_begin;
-	C m_end;
-	C m_stride;
-	std::atomic<int> m_current_wp;
-}; 
-
-
-
-template <typename Range, typename func>
-void pfor_callback(const Range& range, func f)
-{
-	Range wp = range.get_next_workpackage();
-	if (!wp.empty()) 
-		f(wp);
+template <typename Range, typename Func>
+void pfor(const Range& range, Func f) {
+	tbb::parallel_for(range, body); 
 }
 
-template <typename Range, typename func>
-void pfor(const Range& range, func f) {
-	
-	int max_treads = CMaxThreads::get();
-
-	std::vector<std::thread> threads;
-	for (int i = 0; i < max_treads; ++i) {
-		threads.push_back(std::thread(pfor_callback, range, f)); 
-	}
-	
-	for (int i = 0; i < max_treads; ++i) {
-		threads[i].join(); 
-	}
+template<typename Range, typename Value, 
+         typename Func, typename Reduction>
+Value preduce( const Range& range, const Value& identity,
+	       const Func& func, const Reduction& reduction) {
+	return tbb::parallel_reduce(range, identity, func, reduction); 
 }; 
 
+#else  // no TBB: use C++ 11 thread
+
+#include <mia/core/parallelcxx11.hh>
+
 #endif
-
-
-
-
-
-
-
-
-NS_MIA_END
 
 #endif 
