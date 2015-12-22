@@ -46,3 +46,26 @@ BOOST_AUTO_TEST_CASE (test_preduce)
 	BOOST_CHECK_EQUAL(result, 100*199 + 1); 
 	
 }
+
+
+BOOST_AUTO_TEST_CASE (test_pfor)
+{
+	C1DParallelRange range(0, 200, 10);
+
+	vector<int> input(200);
+	for (int i = 0; i < 200; ++i)
+		input[i] = i;
+
+	auto p_func = [&input](const C1DParallelRange& range) {
+		for (auto i= range.begin(); i != range.end(); ++i) {
+			input[i] *= 2; 
+		}
+	};
+
+
+	pfor(range, p_func); 
+	
+	for (int i = 0; i < 200; ++i) {
+		BOOST_CHECK_EQUAL(input[i], 2*i); 
+	}
+}

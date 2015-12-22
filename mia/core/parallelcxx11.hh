@@ -97,7 +97,7 @@ private:
 }; 
 
 template <typename Range, typename Func>
-void pfor_callback(const Range& range, Func f)
+void pfor_callback(Range& range, Func f)
 {
 	while (true)  {
 		Range wp = range.get_next_workpackage();
@@ -109,13 +109,13 @@ void pfor_callback(const Range& range, Func f)
 }
 
 template <typename Range, typename Func>
-void pfor(const Range& range, Func f) {
+void pfor(Range range, Func f) {
 	
 	int max_treads = std::thread::hardware_concurrency();
 
 	std::vector<std::thread> threads;
 	for (int i = 0; i < max_treads; ++i) {
-		threads.push_back(std::thread(pfor_callback, range, f)); 
+		threads.push_back(std::thread(pfor_callback<Range, Func>, std::ref(range), f)); 
 	}
 	
 	for (int i = 0; i < max_treads; ++i) {
