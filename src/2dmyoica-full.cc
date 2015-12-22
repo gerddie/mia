@@ -38,10 +38,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include <libxml++/libxml++.h> 
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
+#include <mia/core/parallel.hh>
 
 using namespace std;
 using namespace mia;
@@ -153,7 +150,7 @@ struct SeriesRegistration {
                 global_reference(_global_reference)
 		{
 		}
-	P2DTransformation operator()( const blocked_range<int>& range, P2DTransformation init) const {
+	P2DTransformation operator()( const C1DParallelRange& range, P2DTransformation init) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
                 P2DTransformation result = init; 
@@ -191,27 +188,27 @@ void run_registration_pass(CSegSetWithImages& input_set,
 				imagecost, skip_images, global_reference); 
         
         P2DTransformation init; 
-	P2DTransformation inv_transf = parallel_reduce(blocked_range<int>( 0, references.size()), init, sreg, 
-                                                       [](P2DTransformation a, P2DTransformation b) {
-                                                               if (a) 
-                                                                       return a; 
-                                                               return b; 
-                                                       });
-
+	P2DTransformation inv_transf = preduce(C1DParallelRange( 0, references.size()), init, sreg, 
+					       [](P2DTransformation a, P2DTransformation b) {
+						       if (a) 
+							       return a; 
+						       return b; 
+					       });
+	
         // apply inverse to all images 
         if (inv_transf) {
 		cvmsg() << "Apply inverse for reference correction\n"; 
                 const C2DTransformation& inv_transf_ref = * inv_transf; 
-                parallel_for(blocked_range<int>( 0, references.size()), 
-                             [&inv_transf_ref, &frames, skip_images, global_reference, &input_images](const blocked_range<int>& range){
-				     CThreadMsgStream thread_stream;
-                                     for( int i=range.begin(); i!=range.end(); ++i ) {
-                                             if (i != global_reference - skip_images) {
-                                                     input_images[i + skip_images] = inv_transf_ref(*input_images[i + skip_images]);
-                                                     frames[i + skip_images].inv_transform(inv_transf_ref);
-                                             }
-                                     }
-                             });
+                pfor(C1DParallelRange( 0, references.size()), 
+		     [&inv_transf_ref, &frames, skip_images, global_reference, &input_images](const C1DParallelRange& range){
+			     CThreadMsgStream thread_stream;
+			     for( int i=range.begin(); i!=range.end(); ++i ) {
+				     if (i != global_reference - skip_images) {
+					     input_images[i + skip_images] = inv_transf_ref(*input_images[i + skip_images]);
+					     frames[i + skip_images].inv_transform(inv_transf_ref);
+				     }
+			     }
+		     });
         }
         input_set.set_images(input_images);
 }

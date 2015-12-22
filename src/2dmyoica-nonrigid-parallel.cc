@@ -39,9 +39,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
+#include <mia/core/parallel.hh>
 
 using namespace std;
 using namespace mia;
@@ -149,7 +147,7 @@ struct SeriesRegistration {
 		skip_images(_skip_images)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 
@@ -176,7 +174,7 @@ void run_registration_pass(CSegSetWithImages& input_set,
 	SeriesRegistration sreg(input_images, frames, references, minimizer, 
 				mg_levels, create_transform_creator(c_rate, divcurlweight), 
 				imagecost, skip_images); 
-	parallel_for(blocked_range<int>( 0, references.size()), sreg);
+	pfor(C1DParallelRange( 0, references.size()), sreg);
 	input_set.set_images(input_images);
 }
 

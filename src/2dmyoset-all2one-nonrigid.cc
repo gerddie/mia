@@ -34,10 +34,8 @@
 #include <mia/2d/segsetwithimages.hh>
 
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
-using namespace tbb;
 using namespace std;
 using namespace mia;
 
@@ -99,7 +97,7 @@ struct SeriesRegistration {
 		reference(_reference)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
@@ -183,7 +181,7 @@ int do_main( int argc, char *argv[] )
 	SeriesRegistration sreg(input_set, input_images, minimizer, cost_functions, 
 				mg_levels, transform_creator, reference); 
 	
-	parallel_for(blocked_range<int>( skip, input_images.size()), sreg);
+	pfor(C1DParallelRange( skip, input_images.size()), sreg);
 	
 	
 	input_set.set_images(input_images); 									  

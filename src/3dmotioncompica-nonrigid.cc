@@ -36,10 +36,7 @@
 #include <mia/3d/filter.hh>
 #include <mia/3d/ica.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
-
+#include <mia/core/parallel.hh>
 
 using namespace std;
 using namespace mia;
@@ -122,7 +119,7 @@ struct SeriesRegistration {
 		skip_images(_skip_images)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
@@ -144,7 +141,7 @@ void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& r
 	SeriesRegistration sreg(input_images,references, minimizer, 
 				mg_levels, create_transform_creator(c_rate, divcurlweight), 
 				imagecost, skip_images); 
-	parallel_for(blocked_range<int>( 0, references.size()), sreg);
+	pfor(C1DParallelRange( 0, references.size()), sreg);
 }
 
 void save_references(const string& save_ref, int current_pass, int skip_images, const C3DImageSeries& references)

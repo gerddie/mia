@@ -34,10 +34,7 @@
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/imageio.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
-using namespace tbb;
+#include <mia/core/parallel.hh>
 using namespace std;
 using namespace mia;
 
@@ -104,7 +101,7 @@ struct SeriesRegistration {
 		reference(_reference)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
@@ -188,7 +185,7 @@ int do_main( int argc, char *argv[] )
 	SeriesRegistration sreg(*input_images, minimizer, cost_functions, 
 				mg_levels, transform_creator, reference); 
 
-	parallel_for(blocked_range<int>( 0, input_images->size()), sreg);
+	pfor(C1DParallelRange( 0, input_images->size()), sreg);
 
 	bool success = true; 
 	auto ii = input_images->begin(); 

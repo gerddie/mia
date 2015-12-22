@@ -21,11 +21,9 @@
 #include <errno.h>
 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #include "sor_solver.hh"
-
 
 
 #include <iostream>
@@ -255,7 +253,7 @@ int TSORSolver::solve(const C3DFVectorfield& b, C3DFVectorfield *xvf)
 	  are not syncronized. This is not a big deal, because the solver is stable, in the worst case convergence 
 	  is a bit slower. 
 	 */
-	auto solve_slice = [this, &b, &xvf](const tbb::blocked_range<size_t>& range, float res) -> float{
+	auto solve_slice = [this, &b, &xvf](const C1DParallelRange& range, float res) -> float{
 		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end();++z) {
 			int hardcode = z * d_xy + size.x + 1;
@@ -275,8 +273,8 @@ int TSORSolver::solve(const C3DFVectorfield& b, C3DFVectorfield *xvf)
 
 	float residuum = 0.0; 
 	do {
-		residuum = tbb::parallel_reduce( tbb::blocked_range<size_t>(1, size.z-1, 4), 0.0f, solve_slice, 
-						 [](float x, float y){return x+y;}); 
+		residuum = preduce( C1DParallelRange(1, size.z-1, 4), 0.0f, solve_slice, 
+				    [](float x, float y){return x+y;}); 
 		
 		if (firsttime) {
 			firstres = residuum;
@@ -333,7 +331,7 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 	  up memory access.
 	*/
 	auto first_run =[this, &b, &xvf, &residua, &update_needed]
-		(const tbb::blocked_range<size_t>& range, float firstres) -> float {
+		(const C1DParallelRange& range, float firstres) -> float {
 		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end();++z) {
 			int hardcode = z * d_xy + size.x + 1;
@@ -356,14 +354,15 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 		return firstres; 
 	};
 	
-	firstres = tbb::parallel_reduce( tbb::blocked_range<size_t>(1, size.z-1, 4), 0.0f, first_run, 
-				    [](float x, float y){return x+y;}); 
-
+	firstres = preduce( C1DParallelRange(1, size.z-1, 4), 0.0f, first_run, 
+			    [](float x, float y){return x+y;}); 
+	
 	doorstep = firstres / gSize;
 	lastres = firstres;
 	int nIter = 1;
 
-	auto iterate_run =[this, &b, &xvf, &doorstep, &residua, &update_needed, &need_update](const tbb::blocked_range<size_t>& range, float res) -> float {
+	auto iterate_run =[this, &b, &xvf, &doorstep, &residua, &update_needed, &need_update]
+		(const C1DParallelRange& range, float res) -> float {
 		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end();++z) {
 			int hardcode = z * d_xy + size.x + 1;
@@ -391,19 +390,19 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 	};
 
 	do {
-		res = tbb::parallel_reduce( tbb::blocked_range<size_t>(1, size.z-1, 4), 0.0f, iterate_run, 
-					    [](float x, float y){return x+y;}); 
+		res = preduce( C1DParallelRange(1, size.z-1, 4), 0.0f, iterate_run, 
+			       [](float x, float y){return x+y;}); 
 		
 		doorstep = res * res / (gSize * lastres * nIter * nIter);
 		lastres = res;
 		
 		// FIXME replace this by STL confom fill
 		update_needed->clear();
-
+		
 		std::swap(update_needed, need_update); 
 		cvinfo() << "SORA: [" << ++nIter << "]" << res << "\n";
 	}while (res > firstres * rel_res && nIter < max_steps && res > abs_res );
-
+	
 	// return why we have finished
 	if (nIter >= max_steps) return 1;
 	if (res < firstres * rel_res) return 2;
