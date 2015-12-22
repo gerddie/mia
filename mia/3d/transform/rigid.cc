@@ -20,8 +20,7 @@
 
 #include <fstream>
 
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/utils.hh>
@@ -303,10 +302,10 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	assert(params.size() == degrees_of_freedom());
 
 	auto sumslice = [&gradient, this] 
-		(const tbb::blocked_range<unsigned int>& range, dvect ls)->dvect{
+		(const C1DParallelRange& range, dvect ls)->dvect{
 		
 		double fz = range.begin() - m_rot_center.z; 
-		for (unsigned int z = range.begin(); z != range.end();++z, fz += 1.0) {
+		for (auto z = range.begin(); z != range.end();++z, fz += 1.0) {
 			auto g = gradient.begin_at(0,0,z);
 			double fy =  - m_rot_center.y; 
 			for (size_t y = 0; y < m_size.y; ++y, fy += 1.0) {
@@ -332,7 +331,7 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	}; 
 	
 	dvect init(params.size(), 0.0); 
-	auto sparams = tbb::parallel_reduce( tbb::blocked_range<unsigned int>(0, m_size.z, 1), init, sumslice, sum_parts); 
+	auto sparams = preduce( C1DParallelRange(0, m_size.z, 1), init, sumslice, sum_parts); 
 	std::copy(sparams.begin(), sparams.end(), params.begin()); 
 }
 

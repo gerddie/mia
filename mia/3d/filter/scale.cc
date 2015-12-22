@@ -26,10 +26,7 @@
 #include <mia/3d/filter/scale.hh>
 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
-
+#include <mia/core/parallel.hh>
 
 NS_BEGIN(scale_3dimage_filter)
 
@@ -52,7 +49,7 @@ C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_s
 // run x-scaling 
 	T3DImage<double> tmp(C3DBounds(target_size.x, src.get_size().y, src.get_size().z)); 
 
-	auto filter_x = [&src, &tmp, &scaler_x](const tbb::blocked_range<size_t>& range) {
+	auto filter_x = [&src, &tmp, &scaler_x](const C1DParallelRange& range) {
 		vector<double> in_buffer(src.get_size().x); 
 		vector<double> out_buffer(tmp.get_size().x);
 		for (auto z = range.begin(); z != range.end(); ++z)
@@ -64,12 +61,12 @@ C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_s
 		
 	};
 	
-	parallel_for(tbb::blocked_range<size_t>(0, src.get_size().z, 1), filter_x); 
+	pfor(C1DParallelRange(0, src.get_size().z, 1), filter_x); 
 
 	// run y-scaling 
 	T3DImage<double> tmp2(C3DBounds(target_size.x, target_size.y, src.get_size().z)); 
 
-	auto filter_y = [&tmp, &tmp2, &scaler_y](const tbb::blocked_range<size_t>& range) {
+	auto filter_y = [&tmp, &tmp2, &scaler_y](const C1DParallelRange& range) {
 		vector<double> in_buffer(tmp.get_size().y); 
 		vector<double> out_buffer(tmp2.get_size().y);
 		for (auto z = range.begin(); z != range.end(); ++z)
@@ -80,9 +77,9 @@ C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_s
 			}
 		
 	};
-	parallel_for(tbb::blocked_range<size_t>(0, tmp.get_size().z, 1), filter_y); 
+	pfor(C1DParallelRange(0, tmp.get_size().z, 1), filter_y); 
 
-	auto filter_z = [&tmp2, result, &scaler_z](const tbb::blocked_range<size_t>& range) {
+	auto filter_z = [&tmp2, result, &scaler_z](const C1DParallelRange& range) {
 		vector<double> in_buffer(tmp2.get_size().z); 
 		vector<double> out_buffer(result->get_size().z);
 		vector<T> out_buffer_T(result->get_size().z);
@@ -97,7 +94,7 @@ C3DScale::result_type do_scale(const T3DImage<T>& src, const C3DBounds& target_s
 		
 	};
 
-	parallel_for(tbb::blocked_range<size_t>(0, tmp2.get_size().y, 1), filter_z); 
+	pfor(C1DParallelRange(0, tmp2.get_size().y, 1), filter_z); 
 
 	return C3DScale::result_type(result);	
 }

@@ -25,16 +25,12 @@
 #include <set>
 #include <mia/mesh/triangularMesh.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 #include <mia/core/threadedmsg.hh>
 
 
 NS_MIA_BEGIN
 
-using namespace tbb;
 using namespace std;
 using namespace boost;
 
@@ -154,7 +150,7 @@ void CTriangleMeshData::evaluate_normals()
 	typedef CTriangleMesh::normal_type normal_type; 
 	typedef CTriangleMesh::triangle_type triangle_type; 
 
-	auto run_triangles = [this, &ctriangles, &normalize](const blocked_range<unsigned>& range, 
+	auto run_triangles = [this, &ctriangles, &normalize](const C1DParallelRange& range, 
 						 const vector<normal_type>& cnormals) {
 		vector<normal_type> normals(cnormals); 
 		CThreadMsgStream thread_stream;
@@ -188,30 +184,28 @@ void CTriangleMeshData::evaluate_normals()
 	
 	auto reduce_normals = [](const vector<normal_type>& lhs, const vector<normal_type>& rhs) -> vector<normal_type> {
 		vector<normal_type> result(lhs); 
-		parallel_for(blocked_range<unsigned>(0,result.size()), 
-			     [&result, &rhs](const blocked_range<unsigned>& range) {
-				     for (auto i= range.begin(); i != range.end(); ++i) 
-					     result[i] += rhs[i]; 
-			     }); 
+		pfor(C1DParallelRange(0,result.size()), 
+		     [&result, &rhs](const C1DParallelRange& range) {
+			     for (auto i= range.begin(); i != range.end(); ++i) 
+				     result[i] += rhs[i]; 
+		     }); 
 		return result; 
 	}; 
-
+	
 	vector<normal_type> normals_accumulator(m_normals->size());
 	
-	normals_accumulator = parallel_reduce(blocked_range<unsigned>(0, ctriangles.size(), 100), normals_accumulator, 
-					      run_triangles, reduce_normals);
-
-	parallel_for(blocked_range<unsigned>(0, normals_accumulator.size()),
-		     [this, &normals_accumulator](const blocked_range<unsigned>& range){
-			     for (auto i= range.begin(); i != range.end(); ++i) {
-				     C3DFVector n = normals_accumulator[i];
-				     auto nn = n.norm2();
-				     (*m_normals)[i] = (nn > 0) ? n / sqrt(nn) : C3DFVector::_0; 
-			     }
-		     });
+	normals_accumulator = preduce(C1DParallelRange(0, ctriangles.size(), 100), normals_accumulator, 
+				      run_triangles, reduce_normals);
 	
+	pfor(C1DParallelRange(0, normals_accumulator.size()),
+	     [this, &normals_accumulator](const C1DParallelRange& range){
+		     for (auto i= range.begin(); i != range.end(); ++i) {
+			     C3DFVector n = normals_accumulator[i];
+			     auto nn = n.norm2();
+			     (*m_normals)[i] = (nn > 0) ? n / sqrt(nn) : C3DFVector::_0; 
+		     }
+	     });
 }
-
 
 CTriangleMesh::CTriangleMesh(const CTriangleMesh& orig):
 	data(new CTriangleMeshData(*orig.data))

@@ -22,8 +22,7 @@
 #define reg3d_deformer_hh
 
 #include <memory>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 
 #include <mia/3d/image.hh>
@@ -60,7 +59,7 @@ struct FDeformer3D: public TFilter<P3DImage> {
 		std::unique_ptr<T3DConvoluteInterpolator<T> > interp(m_ipfac.create(image.data())); 
 		const auto& rinterp = *interp; 
 
-		auto callback = [this, &rinterp, &result](const tbb::blocked_range<size_t>& range){
+		auto callback = [this, &rinterp, &result](const C1DParallelRange& range){
 			CThreadMsgStream thread_stream;
 			CWeightCache cache = rinterp.create_cache(); 
 			for (auto z = range.begin(); z != range.end();++z) {
@@ -71,7 +70,7 @@ struct FDeformer3D: public TFilter<P3DImage> {
 						*r = rinterp(C3DFVector(x - v->x, y - v->y, z - v->z), cache);
 			}
 		}; 
-		tbb::parallel_for(tbb::blocked_range<size_t>(0, result.get_size().z, 1), callback); 
+		pfor(C1DParallelRange(0, result.get_size().z, 1), callback); 
 		return P3DImage(); 
 	}
 	

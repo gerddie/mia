@@ -21,8 +21,7 @@
 #include <mia/mesh/filter/deltrianglesbynormal.hh>
 #include <mia/mesh/triangle_neighbourhood.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 #include <mia/core/threadedmsg.hh>
 
 
@@ -33,9 +32,6 @@
 NS_BEGIN(mia_meshfilter_deltribynormal) 
 using namespace mia; 
 using namespace std; 
-using tbb::blocked_range; 
-using tbb::parallel_for; 
-
 
 CDeleteTriangleByNormalMeshFilter::CDeleteTriangleByNormalMeshFilter(const C3DFVector& point_direction, float angle):
 	m_point_direction(point_direction), 
@@ -56,7 +52,7 @@ PTriangleMesh CDeleteTriangleByNormalMeshFilter::do_filter(const CTriangleMesh& 
 	// evaluate the triangle normals, 
 	vector<bool>  keep(mesh.triangle_size(), false); 
 
-	auto run_triangles = [this, &mesh, &keep](const blocked_range<unsigned>& range) {
+	auto run_triangles = [this, &mesh, &keep](const C1DParallelRange& range) {
 		CThreadMsgStream thread_stream;		
 		for (auto i = range.begin(); i != range.end(); ++i) {
 			auto& t = mesh.triangle_at(i); 
@@ -83,7 +79,7 @@ PTriangleMesh CDeleteTriangleByNormalMeshFilter::do_filter(const CTriangleMesh& 
 	}; 
 	
 	// estimate which triangles to keep 
-	parallel_for(blocked_range<unsigned>(0, mesh.triangle_size()), run_triangles); 
+	pfor(C1DParallelRange(0, mesh.triangle_size()), run_triangles); 
 
 	// iteratively re-add all triangles that have at least two neighbours within the keep 
 	CTrianglesWithAdjacentList trineigh(mesh); 

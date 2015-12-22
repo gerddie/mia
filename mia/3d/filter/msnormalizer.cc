@@ -18,9 +18,7 @@
  *
  */
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 #include <mia/3d/filter/msnormalizer.hh>
 #include <mia/core/threadedmsg.hh>
 
@@ -64,7 +62,7 @@ void  C3DMSNormalizerFilter::add(C3DFImage& mean, C3DFImage& variance, const mia
 
         int x_length = ei.x - bi.x; 
 	
-	auto sum_slice = [&data, &mean, &variance, bi, bo, ei, x_length](const tbb::blocked_range<int>& range) {
+	auto sum_slice = [&data, &mean, &variance, bi, bo, ei, x_length](const C1DParallelRange& range) {
 		vector <float> in_buffer(x_length);
 		for(auto z = range.begin(); z != range.end(); ++z) {
 			for(unsigned y = bi.y, oy = 0; y != ei.y; ++y, ++oy) {
@@ -80,8 +78,8 @@ void  C3DMSNormalizerFilter::add(C3DFImage& mean, C3DFImage& variance, const mia
 			}
 		}
 	}; 
-
-	parallel_for(tbb::blocked_range<int>(0, ei.z - bi.z, 1), sum_slice);
+	
+	pfor(C1DParallelRange(0, ei.z - bi.z, 1), sum_slice);
 
 
 }
@@ -115,7 +113,7 @@ mia::P3DImage C3DMSNormalizerFilter::operator () (const mia::T3DImage<T>& data) 
         }
 
 	
-	auto evaluate_result = [data, this, &mean, &variance](const tbb::blocked_range<unsigned>& range) {
+	auto evaluate_result = [data, this, &mean, &variance](const C1DParallelRange& range) {
 		CThreadMsgStream thread_stream;
 		for (auto z = range.begin(); z != range.end(); ++z) {
 			cvmsg() << "Evaluate slice " << z << "\n"; 
@@ -137,7 +135,7 @@ mia::P3DImage C3DMSNormalizerFilter::operator () (const mia::T3DImage<T>& data) 
 		}
 	}; 
 	
-	parallel_for(tbb::blocked_range<unsigned>(0, data.get_size().z, 1), evaluate_result);
+	pfor(C1DParallelRange(0, data.get_size().z, 1), evaluate_result);
 	
         return P3DImage(mean); 
 }

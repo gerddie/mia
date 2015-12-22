@@ -19,8 +19,7 @@
  */
 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
@@ -77,7 +76,7 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 	int cachYSize = data->get_size().y;
 	int cachZSize = data->get_size().z;
 
-	auto filter_x = [cachXSize, cachYSize, data, this](const tbb::blocked_range<size_t>& range) {
+	auto filter_x = [cachXSize, cachYSize, data, this](const C1DParallelRange& range) {
 		invec_t buffer(cachXSize);
 		for (auto z = range.begin(); z != range.end();++z) {
 			for (int y = 0; y < cachYSize; y++) {
@@ -88,7 +87,7 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 		}
 	}; 
 
-	auto filter_y = [cachXSize, cachYSize, data, this](const tbb::blocked_range<size_t>& range) {
+	auto filter_y = [cachXSize, cachYSize, data, this](const C1DParallelRange& range) {
 		invec_t buffer(cachYSize);
 		for (auto z = range.begin(); z != range.end();++z) {
 			for (int x = 0; x < cachXSize; x++) {
@@ -99,7 +98,7 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 		}
 	}; 
 
-	auto filter_z = [cachXSize, cachZSize, data, this](const tbb::blocked_range<size_t>& range) {
+	auto filter_z = [cachXSize, cachZSize, data, this](const C1DParallelRange& range) {
 		invec_t buffer(cachZSize);
 		for (auto y = range.begin(); y != range.end();++y) {
 			for (int x = 0; x < cachXSize; x++) {
@@ -111,16 +110,16 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 	}; 
 
 	if (m_kx.get()) {
-		tbb::parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_x); 
+		pfor(C1DParallelRange(0, cachZSize, 1), filter_x); 
 	}
 
 
 	if (m_ky.get()) {
-		tbb::parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_y); 
+		pfor(C1DParallelRange(0, cachZSize, 1), filter_y); 
 	}
 
 	if (m_kz.get()) {
-		tbb::parallel_for(tbb::blocked_range<size_t>(0, cachYSize, 1), filter_z); 	
+		pfor(C1DParallelRange(0, cachYSize, 1), filter_z); 	
 	}
 	return result;
 }

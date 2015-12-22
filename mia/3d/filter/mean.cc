@@ -24,8 +24,7 @@
 #include <mia/core/threadedmsg.hh>
 
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 
 NS_BEGIN(mean_3dimage_filter)
@@ -135,7 +134,7 @@ mia::T3DImage<T> *C3DMeanFilter::apply(const mia::T3DImage<T>& data) const
         T3DImage<T> * result = new T3DImage<T>(data.get_size(), data);
         const int hw = m_hwidth; 
 
-        auto run_slice  = [hw, data, result](const tbb::blocked_range<size_t>& range) {
+        auto run_slice  = [hw, data, result](const C1DParallelRange& range) {
                 for (auto z = range.begin(); z != range.end(); ++z) {
                         auto ir = result->begin_at(0,0,z);  
                         for (size_t y = 0; y < data.get_size().y; ++y)
@@ -144,7 +143,7 @@ mia::T3DImage<T> *C3DMeanFilter::apply(const mia::T3DImage<T>& data) const
                                 }
                 }
         }; 
-        parallel_for(tbb::blocked_range<size_t>(0, data.get_size().z, 1), run_slice);
+        pfor(C1DParallelRange(0, data.get_size().z, 1), run_slice);
         return result;
 }
 
@@ -200,7 +199,7 @@ P3DImage C3DVarianceFilter::operator () (const mia::T3DImage<T>& data) const
         T3DImage<T> * result = new T3DImage<T>(data.get_size(), data);
         const int hw = m_hwidth; 
 
-        auto run_slice  = [hw, &mean, result](const tbb::blocked_range<size_t>& range) {
+        auto run_slice  = [hw, &mean, result](const C1DParallelRange& range) {
                 for (auto z = range.begin(); z != range.end(); ++z) {
                         auto ir = result->begin_at(0,0,z);  
                         for (size_t y = 0; y < mean->get_size().y; ++y)
@@ -210,7 +209,7 @@ P3DImage C3DVarianceFilter::operator () (const mia::T3DImage<T>& data) const
                                 }
                 }
         }; 
-        parallel_for(tbb::blocked_range<size_t>(0, data.get_size().z, 1), run_slice);
+        pfor(C1DParallelRange(0, data.get_size().z, 1), run_slice);
         return P3DImage(result);
  }
 

@@ -22,8 +22,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
 #include <mia/core/property_flags.hh>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #include <numeric>
 #include <limits>

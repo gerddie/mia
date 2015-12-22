@@ -21,8 +21,7 @@
 #include <cmath>
 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 NS_MIA_BEGIN
 
@@ -128,7 +127,7 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 	int cachZSize = image.get_size().z;
 	
 
-	auto filter_x = [this, cachXSize, cachYSize, poles](const tbb::blocked_range<size_t>& range_z) {
+	auto filter_x = [this, cachXSize, cachYSize, poles](const C1DParallelRange& range_z) {
 		coeff_vector buffer(cachXSize);
 		for (auto z = range_z.begin(); z != range_z.end() ; ++z){
 			for (int y = 0; y < cachYSize; y++) {
@@ -138,10 +137,10 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 			}
 		}
 	};
-	parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_x); 
+	pfor(C1DParallelRange(0, cachZSize, 1), filter_x); 
 	
 	
-	auto filter_y = [this, cachXSize, cachYSize, poles](const tbb::blocked_range<size_t>& range_z) {
+	auto filter_y = [this, cachXSize, cachYSize, poles](const C1DParallelRange& range_z) {
 		coeff_vector buffer(cachYSize);
 		for (auto z = range_z.begin(); z  != range_z.end() ; ++z){
 			for (int x = 0; x < cachXSize; x++) {
@@ -151,10 +150,10 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 			}
 		}
 	};
-	parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_y); 
+	pfor(C1DParallelRange(0, cachZSize, 1), filter_y); 
 	
 
-	auto filter_z = [this, cachXSize, cachZSize, poles](const tbb::blocked_range<size_t>& range_y) {
+	auto filter_z = [this, cachXSize, cachZSize, poles](const C1DParallelRange& range_y) {
 		coeff_vector buffer(cachZSize);
 		for (auto y = range_y.begin(); y  != range_y.end() ; ++y){
 			for (int x = 0; x < cachXSize; x++) {
@@ -164,7 +163,7 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 			}
 		}
 	};
-	parallel_for(tbb::blocked_range<size_t>(0, cachYSize, 1), filter_z); 
+	pfor(C1DParallelRange(0, cachYSize, 1), filter_z); 
 
 }
 

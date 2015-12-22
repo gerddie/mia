@@ -18,9 +18,7 @@
  *
  */
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 
 #include <mia/3d/vectorfield.hh>
 
@@ -39,7 +37,7 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 	C3DFVectorfield help(a.get_size());
 	std::copy(a.begin(), a.end(), help.begin());
 
-	auto callback = [&a, &b, &help](const tbb::blocked_range<size_t>& range) {
+	auto callback = [&a, &b, &help](const C1DParallelRange& range) {
 		
 		for (auto z = range.begin(); z != range.end();  ++z)  {
 			C3DFVectorfield::iterator i = a.begin_at(0,0,z);
@@ -52,7 +50,7 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 			}
 		}
 	}; 
-	tbb::parallel_for( tbb::blocked_range<size_t>(0, a.get_size().z, 1), callback); 
+	pfor( C1DParallelRange(0, a.get_size().z, 1), callback); 
 	return a;
 }
 
