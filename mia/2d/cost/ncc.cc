@@ -22,10 +22,7 @@
 
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/nccsum.hh> 
-#include <tbb/parallel_reduce.h>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 
 NS_BEGIN(NS)
 
@@ -39,7 +36,7 @@ CNCC2DImageCost::CNCC2DImageCost()
 template <typename T, typename S> 
 struct FEvaluateNCCSum {
 	FEvaluateNCCSum(const T& mov, const S& ref); 
-	NCCSums operator ()(const tbb::blocked_range<size_t>& range, const NCCSums& sumacc) const; 
+	NCCSums operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const; 
 private: 
 	T m_mov; 
 	S m_ref; 
@@ -54,7 +51,7 @@ FEvaluateNCCSum<T,S>::FEvaluateNCCSum(const T& mov, const S& ref):
 }
 
 template <typename T, typename S> 
-NCCSums FEvaluateNCCSum<T,S>::operator ()(const tbb::blocked_range<size_t>& range, const NCCSums& sumacc) const
+NCCSums FEvaluateNCCSum<T,S>::operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const
 {
 	CThreadMsgStream msks; 
 	
@@ -80,7 +77,7 @@ public:
 
 		FEvaluateNCCSum<T,R> ev(mov, ref); 
 		NCCSums sum; 
-		sum = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), sum, ev, 
+		sum = preduce(C1DParallelRange(0, mov.get_size().y, 1), sum, ev, 
 				      [](const NCCSums& x, const NCCSums& y){
 					      return x + y;
 				      });
@@ -109,7 +106,7 @@ public:
 		
 		NCCSums sum; 
 		FEvaluateNCCSum<T,R> ev(mov, ref); 
-		sum = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), sum, ev, 
+		sum = parallel_reduce(C1DParallelRange(0, mov.get_size().y, 1), sum, ev, 
 					 [](const NCCSums& x, const NCCSums& y){
 					      return x + y;
 				      });
@@ -117,7 +114,7 @@ public:
 		auto geval = sum.get_grad_helper(); 
 
 		auto grad = get_gradient(mov); 
-		auto grad_eval = [this, &mov, &ref, &grad, &geval](const tbb::blocked_range<size_t>& range) {
+		auto grad_eval = [this, &mov, &ref, &grad, &geval](const C1DParallelRange& range) {
 			for (auto y = range.begin(); y != range.end(); ++y) {
 				auto ig = grad.begin_at(0,y); 
 				auto iforce = m_force.begin_at(0,y); 
@@ -134,7 +131,7 @@ public:
 			}; 
 		}; 
 		
-		parallel_for(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), grad_eval); 
+		pfor(C1DParallelRange(0, mov.get_size().y, 1), grad_eval); 
 
 		return geval.first; 
 	}
