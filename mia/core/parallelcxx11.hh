@@ -34,6 +34,14 @@ NS_MIA_BEGIN
 typedef std::mutex CMutex;
 typedef std::recursive_mutex CRecursiveMutex; 
 
+
+class CMaxTasks {
+	static int get_max_tasks(); 
+	static void set_max_tasks(int mt); 
+private:
+	static int max_tasks; 
+}; 
+
 #define ATOMIC std::atomic
 
 template <typename Mutex>
@@ -118,7 +126,9 @@ void pfor_callback(Range& range, Func f)
 template <typename Range, typename Func>
 void pfor(Range range, Func f) {
 	
-	int max_treads = std::thread::hardware_concurrency();
+	int max_treads = CMaxTasks::get_max_tasks(); 
+	
+	std::thread::hardware_concurrency();
 
 	std::vector<std::thread> threads;
 	for (int i = 0; i < max_treads; ++i) {
@@ -165,7 +175,7 @@ void preduce_callback(Range& range, ReduceValue<Value>& v, Func f, Reduce r)
 template <typename Range, typename Value, typename Func, typename Reduce>
 Value preduce(Range range, Value init, Func f, Reduce r)
 {
-	int max_treads = std::thread::hardware_concurrency();
+	int max_treads = CMaxTasks::get_max_tasks();
 
 	ReduceValue<Value> value(init); 
 		

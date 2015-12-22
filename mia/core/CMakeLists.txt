@@ -57,7 +57,7 @@ SET(MIACORE_SRC_BASE
   nccsum.cc 
   noisegen.cc 
   optionparser.cc 
-  optparam.cc 
+  optparam.cc
   paramoption.cc  
   parameter.cc  
   paramtranslator.cc  
@@ -219,6 +219,13 @@ IF(ITPP_FOUND)
     )
 ENDIF(ITPP_FOUND)
 
+IF(NOT TBB_FOUND)
+  SET(MIACORE_SRC_PARALLELCXX11 
+    parallelcxx11.cc
+    )
+  NEW_TEST(parallelcxx11 miacore)
+ENDIF(NOT TBB_FOUND)
+  
 IF(PWPDF_FOUND) 
   SET(PWPDF_SRC 
     pwh.cc
@@ -246,7 +253,7 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/revision.hh.cmake ${CMAKE_CURRENT_BIN
 #
 # the library target 
 #
-SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC})
+SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC} ${MIACORE_SRC_PARALLELCXX11})
 SET(MIACORE_HEADER ${MIACORE_HEADER_BASE} ${ITPP_HEADER} ${FFTWF_HEADER} ${PWPDF_HEADER})
 
 SET(miacore_deps miagsl ${BASELIBS} ${TBB_LIBRARIES} ${FFTWF_LIBRARIES} ${XMLPP_LIBRARIES})
@@ -319,7 +326,6 @@ NEW_TEST(kmeans miacore)
 NEW_TEST(labelmap miacore)
 NEW_TEST(meanvar  miacore)
 NEW_TEST(nccsum  miacore)
-NEW_TEST(parallelcxx11 miacore)
 NEW_TEST(productcache  miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(scaler1d miacore)

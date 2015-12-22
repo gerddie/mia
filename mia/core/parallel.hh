@@ -26,6 +26,13 @@
 
 #include <mia/core/defines.hh>
 
+class CMaxTasks {
+	static int get_max_tasks(); 
+	static void set_max_tasks(int mt); 
+private:
+	static int max_tasks; 
+}; 
+
 #ifdef HAVE_TBB
 
 #include <tbb/task_scheduler_init.h>
@@ -64,5 +71,6 @@ Value preduce( const Range& range, const Value& identity,
 #include <mia/core/parallelcxx11.hh>
 
 #endif
+
 
 #endif 

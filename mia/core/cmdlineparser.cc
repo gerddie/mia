@@ -19,7 +19,7 @@
  */
 
 #include <config.h>
-//#include <miaconfig.h>
+#include <miaconfig.h>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -32,7 +32,12 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
+
+#ifdef HAVE_TBB 
 #include <tbb/task_scheduler_init.h>
+#else
+#include <mia/core/parallelcxx11.hh>
+#endif
 
 #include <mia/core/xmlinterface.hh>
 #include <mia/core/tools.hh>
@@ -682,6 +687,8 @@ void CCmdOptionList::set_stdout_is_result()
 	m_impl->m_stdout_is_result = true; 
 }
 
+#ifdef HAVE_TBB 
+
 struct TBBTaskScheduler {
 	static const tbb::task_scheduler_init& initialize(int max_threads);
 }; 
@@ -699,6 +706,7 @@ const tbb::task_scheduler_init& TBBTaskScheduler::initialize(int max_threads)
 	return init; 
 }
 
+#endif 
 
 CCmdOptionList::EHelpRequested
 CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional, 
@@ -808,10 +816,14 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 		throw invalid_argument(msg.str());
 	}
 	
+#ifdef HAVE_TBB 
 	// the return value and info output is mostly used to make sure the compiler 
 	// doesn't optimize anything away. 
 	const auto& ts  = TBBTaskScheduler::initialize(m_impl->max_threads); 
-	cvinfo() << "Task scheduler set to " << (ts.is_active() ? "active":"inactive") << "\n"; 
+	cvinfo() << "Task scheduler set to " << (ts.is_active() ? "active":"inactive") << "\n";
+#else
+	CMaxTasks::set_max_tasks(m_impl->max_threads); 
+#endif 	
 	return hr_no; 
 }
 
