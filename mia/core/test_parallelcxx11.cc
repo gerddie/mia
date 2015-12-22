@@ -18,6 +18,31 @@
  *
  */
 
-#include <mia/core/parallalcxx11.hh>
+#include <mia/core/parallelcxx11.hh>
 #include <mia/internal/autotest.hh>
+using namespace mia;
+using namespace std; 
 
+BOOST_AUTO_TEST_CASE (test_preduce)
+{
+	int init_value = 1;
+	C1DParallelRange range(0, 200, 10);
+
+	vector<int> input(200);
+	for (int i = 0; i < 200; ++i)
+		input[i] = i;
+
+	auto p_func = [&input](const C1DParallelRange& range, int in_value) {
+		for (auto i= range.begin(); i != range.end(); ++i) {
+			in_value += input[i]; 
+		}
+		return in_value; 
+	};
+
+	auto r_func = [](int a, int b){return a+b;}; 
+	
+	int result = preduce(range, init_value, p_func, r_func); 
+	
+	BOOST_CHECK_EQUAL(result, 100*199 + 1); 
+	
+}

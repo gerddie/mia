@@ -148,6 +148,8 @@ SET(MIACORE_HEADER_BASE
   nccsum.hh
   optionparser.hh
   optparam.hh
+  parallel.hh
+  parallelcxx11.hh
   parameter.cxx parameter.hh
   paramoption.hh
   paramtranslator.hh
@@ -317,6 +319,7 @@ NEW_TEST(kmeans miacore)
 NEW_TEST(labelmap miacore)
 NEW_TEST(meanvar  miacore)
 NEW_TEST(nccsum  miacore)
+NEW_TEST(parallelcxx11 miacore)
 NEW_TEST(productcache  miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(scaler1d miacore)
@@ -337,6 +340,7 @@ NEW_TEST(utils miacore)
 #NEW_TEST(watch miacore)
 NEW_TEST(waveletslopeclassifier miacore)
 NEW_TEST(xmlinterface miacore)
+
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

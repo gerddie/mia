@@ -26,6 +26,8 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <cassert>
+#include <vector>
 
 NS_MIA_BEGIN
 
@@ -34,30 +36,38 @@ typedef std::mutex CMutex;
 class CScopedLock {
 public:
 	CScopedLock(CMutex& m): m_mutex(m){
-		m.lock();
+		m_mutex.lock();
 	};
 	~CScopedLock(){
-		m.unlock();
+		m_mutex.unlock();
 	};
 private:
 	CMutex& m_mutex;
-}
+}; 
 	
 class C1DParallelRange {
 public: 
-	C1DParallelRange(int begin, int end, int stride):
+	C1DParallelRange(int begin, int end, int block):
 		m_begin(begin),
 		m_end(end),
-		m_stride(stride), 
+		m_block(block), 
 		m_current_wp(0)
 		{
+			assert(begin <= end); 
 		}
 
+	C1DParallelRange(const C1DParallelRange& orig):
+		m_begin(orig.m_begin),
+		m_end(orig.m_end),
+		m_block(orig.m_block)
+		{
+			m_current_wp = orig.m_current_wp.load();
+		}
 	
 	C1DParallelRange get_next_workpackage()	{
 		int wp = m_current_wp++;
-		int begin = m_begin + wp * m_stride;
-		int end = begin + m_stride;
+		int begin = m_begin + wp * m_block;
+		int end = begin + m_block;
 		if (begin > m_end) {
 			return C1DParallelRange(m_end,m_end,0);
 		}
@@ -70,11 +80,19 @@ public:
 	bool empty() const {
 		return m_begin >= m_end; 
 	}
-	
+
+	int begin() const {
+		return m_begin; 
+	}
+
+	int end() const {
+		return m_end; 
+	}
+
 private:
 	int m_begin;
 	int m_end;
-	int m_stride;
+	int m_block;
 	std::atomic<int> m_current_wp;
 }; 
 
@@ -93,7 +111,7 @@ void pfor_callback(const Range& range, Func f)
 template <typename Range, typename Func>
 void pfor(const Range& range, Func f) {
 	
-	int max_treads = CMaxThreads::get();
+	int max_treads = std::thread::hardware_concurrency();
 
 	std::vector<std::thread> threads;
 	for (int i = 0; i < max_treads; ++i) {
@@ -105,31 +123,28 @@ void pfor(const Range& range, Func f) {
 	}
 }; 
 
-template <typename Value>
+template <typename V>
 class ReduceValue {
-public: 
+public:
+	typedef V Value; 
 	ReduceValue(Value& v):value(v) {
 	}
 
-	Value get() const
+	template <typename Reduce> 
+	void reduce(const Value& v, Reduce r)
 	{
-		CScopedLock (mutex);
-		return value; 
-	}
-	void set(const Value& v) const
-	{
-		CScopedLock (mutex);
-		value = v; 
+		CScopedLock sl(mutex);
+		value = r(v, value); 
 	}
 private: 
-	CMutex mutex;
+	mutable CMutex mutex;
 	Value& value; 
-}
+}; 
 
 template <typename Range, typename Value, typename Func, typename Reduce>
-void pfor_reduce_callback(const Range& range, ReduceValue& v, Func f, Reduce r)
+void preduce_callback(Range& range, ReduceValue<Value>& v, Func f, Reduce r)
 {
-	ReduceValue::Value value; 
+	Value value = Value(); 
 	while (true)  {
 		Range wp = range.get_next_workpackage();
 		if (!wp.empty()) 
@@ -137,19 +152,20 @@ void pfor_reduce_callback(const Range& range, ReduceValue& v, Func f, Reduce r)
 		else
 			break;
 	}
-	v.set(r(value, v.get())); 
+	v.reduce(value, r); 
 }
 
-template <typename Range, typename RValue, typename Func, typename Reduce>
-Value preduce(const Range& range, Value init, Func f, Reduce r)
+template <typename Range, typename Value, typename Func, typename Reduce>
+Value preduce(Range range, Value init, Func f, Reduce r)
 {
-	int max_treads = CMaxThreads::get();
+	int max_treads = std::thread::hardware_concurrency();
 
-	ReduceValue value(init); 
+	ReduceValue<Value> value(init); 
 		
 	std::vector<std::thread> threads;
 	for (int i = 0; i < max_treads; ++i) {
-		threads.push_back(std::thread(pfor_callback, range, init, f, r)); 
+		threads.push_back(std::thread(preduce_callback<Range, Value, Func, Reduce>,
+					      std::ref(range), std::ref(value), f, r)); 
 	}
 	
 	for (int i = 0; i < max_treads; ++i) {
