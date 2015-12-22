@@ -50,6 +50,7 @@ BOOST_AUTO_TEST_CASE (test_preduce)
 
 BOOST_AUTO_TEST_CASE (test_pfor)
 {
+
 	C1DParallelRange range(0, 200, 10);
 
 	vector<int> input(200);

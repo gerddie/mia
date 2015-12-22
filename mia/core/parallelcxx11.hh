@@ -32,19 +32,26 @@
 NS_MIA_BEGIN
 
 typedef std::mutex CMutex;
+typedef std::recursive_mutex CRecursiveMutex; 
 
-class CScopedLock {
+#define ATOMIC std::atomic
+
+template <typename Mutex>
+class TScopedLock {
 public:
-	CScopedLock(CMutex& m): m_mutex(m){
+	TScopedLock(Mutex& m): m_mutex(m){
 		m_mutex.lock();
 	};
-	~CScopedLock(){
+	~TScopedLock(){
 		m_mutex.unlock();
 	};
 private:
-	CMutex& m_mutex;
-}; 
-	
+	Mutex& m_mutex;
+};
+
+typedef TScopedLock<CMutex> CScopedLock;
+typedef TScopedLock<CRecursiveMutex> CRecursiveScopedLock;
+
 class C1DParallelRange {
 public: 
 	C1DParallelRange(int begin, int end, int block):

@@ -22,6 +22,8 @@
 #define mia_core_parallel_hh
 
 
+#include <miaconfig.h>
+
 #include <mia/core/defines.hh>
 
 #ifdef HAVE_TBB
@@ -32,13 +34,21 @@
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_reduce.h>
 #include <tbb/blocked_range.h>
+#include <tbb/recursive_mutex.h>
+#include <tbb/spin_mutex.h>
+
 
 typedef tbb::blocked_range<int> C1DParallelRange;
 typedef tbb::mutex CMutex; 
 typedef tbb::mutex::scoped_lock CScopedLock;
 
+typedef tbb::recursive_mutex CRecursiveMutex; 
+typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock; 
+
+#define ATOMIC tbb::atomic
+
 template <typename Range, typename Func>
-void pfor(const Range& range, Func f) {
+void pfor(const Range& range, Func body) {
 	tbb::parallel_for(range, body); 
 }
 

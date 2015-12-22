@@ -23,13 +23,9 @@
 
 #include <map>
 #include <string>
-#include <mia/core/defines.hh>
-#include <tbb/recursive_mutex.h>
-#include <tbb/spin_mutex.h>
+#include <mia/core/parallel.hh>
 
 NS_MIA_BEGIN
-typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock; 
-
 /** 
     \ingroup plugin
 
@@ -68,7 +64,7 @@ protected:
 private: 
 	virtual void do_clear() = 0; 
 	bool m_enabled; 
-	mutable tbb::spin_mutex m_enable_mutex; 
+	mutable CMutex m_enable_mutex; 
 }; 
 
 
@@ -109,7 +105,7 @@ private:
 
 	typedef std::map<std::string, ProductPtr> CMap; 
 	CMap m_cache; 
-	mutable tbb::recursive_mutex m_cache_mutex; 
+	mutable CRecursiveMutex m_cache_mutex; 
 }; 
 
 

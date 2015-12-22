@@ -23,10 +23,10 @@
 #include <mia/core/datapool.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/core/parallel.hh>
 
 NS_MIA_BEGIN
 
-typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock; 
 using namespace std;
 CDatapool::CDatapool()
 {
@@ -58,7 +58,7 @@ void CDatapool::add(const std::string& key, boost::any value)
 	m_map[key] = value;
 }
 
-tbb::recursive_mutex CDatapool::m_mutex; 
+CRecursiveMutex CDatapool::m_mutex; 
 
 CDatapool& CDatapool::instance()
 {

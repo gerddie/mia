@@ -31,13 +31,13 @@ CProductCache::CProductCache(const std::string& name):m_enabled(false)
 
 void CProductCache::enable_write(bool enable)
 {
-	tbb::spin_mutex::scoped_lock lock(m_enable_mutex);
+	CScopedLock lock(m_enable_mutex);
 	m_enabled = enable; 
 }
 
 bool CProductCache::is_enabled() const
 {
-	tbb::spin_mutex::scoped_lock lock(m_enable_mutex);
+	CScopedLock lock(m_enable_mutex);
 	return m_enabled; 
 }
 

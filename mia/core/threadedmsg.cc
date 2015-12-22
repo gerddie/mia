@@ -22,8 +22,9 @@
 #include <iomanip>
 #include <mia/core/threadedmsg.hh>
 #include <sstream> 
-#include <tbb/mutex.h>
+
 #include <stdexcept>
+#include <mia/core/parallel.hh>
 #include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
@@ -47,7 +48,7 @@ private:
 	std::ostringstream m_buffer; 
 	int m_id; 
 	static std::ostream *m_master;
-	static tbb::mutex m_master_lock; 
+	static CMutex m_master_lock; 
 	static int m_next_id; 
 }; 
 
@@ -112,7 +113,7 @@ void thread_streamredir::send_to_master()
 }
 
 std::ostream *thread_streamredir::m_master = &std::cerr;
-tbb::mutex thread_streamredir::m_master_lock; 
+CMutex thread_streamredir::m_master_lock; 
 int thread_streamredir::m_next_id = 0; 
 
 

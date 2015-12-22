@@ -32,6 +32,7 @@
 #include <mia/core/filetools.hh>
 
 #include <mia/core/defines.hh>
+#include <mia/core/parallel.hh>
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
 #include <mia/core/handlerbase.hh>
