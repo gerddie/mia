@@ -37,6 +37,7 @@
 #include <tbb/recursive_mutex.h>
 #include <tbb/spin_mutex.h>
 
+NS_MIA_BEGIN
 
 typedef tbb::blocked_range<int> C1DParallelRange;
 typedef tbb::mutex CMutex; 
@@ -58,6 +59,8 @@ Value preduce( const Range& range, const Value& identity,
 	       const Func& func, const Reduction& reduction) {
 	return tbb::parallel_reduce(range, identity, func, reduction); 
 }; 
+
+NS_MIA_END
 
 #else  // no TBB: use C++ 11 thread
 
