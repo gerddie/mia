@@ -71,6 +71,8 @@ extern EXPORT_CORE const char * IDAttrPixelSizeIsImager;
 extern EXPORT_CORE const char * IDRescaleIntercept; 
 extern EXPORT_CORE const char * IDRescaleSlope; 
 
+// \endcond DICOM_TAGS
+
 NS_MIA_END
 
 #endif 

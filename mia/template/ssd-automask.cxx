@@ -29,7 +29,6 @@
 
 NS_BEGIN(NS)
 
-
 struct SRA {
 	size_t n; 
 	double sum;
@@ -46,8 +45,8 @@ struct FEvalSSDAuto : public mia::TFilter<double> {
 		SRA result_accumulator = {0, 0.0}; 
 		
 		SRA  result = 
-			preduce(C1DParallelRange(0, a.size()), result_accumulator, 
-				[this, &a, &b](const C1DParallelRange& range, SRA acc)->SRA {
+			mia::preduce(mia::C1DParallelRange(0, a.size()), result_accumulator, 
+				[this, &a, &b](const mia::C1DParallelRange& range, SRA acc)->SRA {
 					for (auto ir = range.begin(); ir !=range.end(); ++ir){
 						double va = a[ir]; 
 						if (va >= m_src_mask_thresh) { 

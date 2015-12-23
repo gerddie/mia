@@ -208,12 +208,16 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	usage(false),
 	version(false), 
 	copyright(false),
-	verbose(vstream::ml_warning), 
+	verbose(vstream::ml_warning),
+#if HAVE_TBB 
 #if TBB_PREFERE_ONE_THREAD
 	max_threads(1), 
-#else 
+#else
 	max_threads(tbb::task_scheduler_init::automatic), 
-#endif 
+#endif
+#else
+	max_threads(-1),
+#endif 	
 	m_selftest_run(false), 
 	m_stdout_is_result(false), 
 	m_log(&std::cout)

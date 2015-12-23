@@ -300,10 +300,10 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	typedef vector<double> dvect; 
 	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
-
+	assert(params.size() == 6);  
 	auto sumslice = [&gradient, this] 
 		(const C1DParallelRange& range, dvect ls)->dvect{
-		
+		assert(ls.size() == 6);  
 		double fz = range.begin() - m_rot_center.z; 
 		for (auto z = range.begin(); z != range.end();++z, fz += 1.0) {
 			auto g = gradient.begin_at(0,0,z);

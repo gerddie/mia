@@ -35,7 +35,8 @@ typedef std::mutex CMutex;
 typedef std::recursive_mutex CRecursiveMutex; 
 
 
-class CMaxTasks {
+class EXPORT_CORE CMaxTasks {
+public:
 	static int get_max_tasks(); 
 	static void set_max_tasks(int mt); 
 private:
@@ -49,20 +50,30 @@ class TScopedLock {
 public:
 	TScopedLock(Mutex& m): m_mutex(m){
 		m_mutex.lock();
+		own_lock = true; 
 	};
 	~TScopedLock(){
-		m_mutex.unlock();
+		if (own_lock) 
+			m_mutex.unlock();
 	};
+
+	void release() {
+		if (own_lock) {
+			own_lock = false; 
+			m_mutex.unlock();
+		}
+	}
 private:
 	Mutex& m_mutex;
+	bool own_lock;
 };
 
 typedef TScopedLock<CMutex> CScopedLock;
 typedef TScopedLock<CRecursiveMutex> CRecursiveScopedLock;
 
-class C1DParallelRange {
+class EXPORT_CORE C1DParallelRange {
 public: 
-	C1DParallelRange(int begin, int end, int block):
+	C1DParallelRange(int begin, int end, int block = 1):
 		m_begin(begin),
 		m_end(end),
 		m_block(block), 
@@ -144,24 +155,31 @@ template <typename V>
 class ReduceValue {
 public:
 	typedef V Value; 
-	ReduceValue(Value& v):value(v) {
+	ReduceValue(const Value& i):identity(i), value(i) {
 	}
-
+	
 	template <typename Reduce> 
 	void reduce(const Value& v, Reduce r)
 	{
 		CScopedLock sl(mutex);
 		value = r(v, value); 
 	}
+	const Value& get_identity() const {
+		return identity;
+	}
+	const Value& get_reduced() const {
+		return value; 
+	}
 private: 
 	mutable CMutex mutex;
-	Value& value; 
+	Value identity; 
+	Value value; 
 }; 
 
 template <typename Range, typename Value, typename Func, typename Reduce>
 void preduce_callback(Range& range, ReduceValue<Value>& v, Func f, Reduce r)
 {
-	Value value = Value(); 
+	Value value = v.get_identity(); 
 	while (true)  {
 		Range wp = range.get_next_workpackage();
 		if (!wp.empty()) 
@@ -169,15 +187,15 @@ void preduce_callback(Range& range, ReduceValue<Value>& v, Func f, Reduce r)
 		else
 			break;
 	}
-	v.reduce(value, r); 
+	v.reduce(value, r);
 }
 
 template <typename Range, typename Value, typename Func, typename Reduce>
-Value preduce(Range range, Value init, Func f, Reduce r)
+Value preduce(Range range, Value identity, Func f, Reduce r)
 {
 	int max_treads = CMaxTasks::get_max_tasks();
 
-	ReduceValue<Value> value(init); 
+	ReduceValue<Value> value(identity); 
 		
 	std::vector<std::thread> threads;
 	for (int i = 0; i < max_treads; ++i) {
@@ -188,7 +206,7 @@ Value preduce(Range range, Value init, Func f, Reduce r)
 	for (int i = 0; i < max_treads; ++i) {
 		threads[i].join(); 
 	}
-	return init; 
+	return value.get_reduced(); 
 }; 
 
 NS_MIA_END 

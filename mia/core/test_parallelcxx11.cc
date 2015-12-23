@@ -25,7 +25,7 @@ using namespace std;
 
 BOOST_AUTO_TEST_CASE (test_preduce)
 {
-	int init_value = 1;
+	int identity_value = 0;
 	C1DParallelRange range(0, 200, 10);
 
 	vector<int> input(200);
@@ -41,9 +41,9 @@ BOOST_AUTO_TEST_CASE (test_preduce)
 
 	auto r_func = [](int a, int b){return a+b;}; 
 	
-	int result = preduce(range, init_value, p_func, r_func); 
+	int result = preduce(range, identity_value, p_func, r_func); 
 	
-	BOOST_CHECK_EQUAL(result, 100*199 + 1); 
+	BOOST_CHECK_EQUAL(result, 100*199); 
 	
 }
 

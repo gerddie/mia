@@ -106,7 +106,7 @@ public:
 		
 		NCCSums sum; 
 		FEvaluateNCCSum<T,R> ev(mov, ref); 
-		sum = parallel_reduce(C1DParallelRange(0, mov.get_size().y, 1), sum, ev, 
+		sum = preduce(C1DParallelRange(0, mov.get_size().y, 1), sum, ev, 
 					 [](const NCCSums& x, const NCCSums& y){
 					      return x + y;
 				      });

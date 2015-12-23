@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE( test_pool_parallel_access )
 	PoolAccessTest ptest(&n_errors); 
 	
 	C1DParallelRange range( 0, 1000, 1 ); 
-	parallel_for(range, ptest); 
+	pfor(range, ptest); 
 	BOOST_CHECK_EQUAL(n_errors, 0); 
 }
 
@@ -173,6 +173,6 @@ BOOST_AUTO_TEST_CASE( test_pool_parallel_access_2 )
 	PoolWriteLaterReadTest ptest(&n_errors); 
 	
 	C1DParallelRange range( 0, 1000, 5 ); 
-	parallel_for(range, ptest); 
+	pfor(range, ptest); 
 	BOOST_CHECK_EQUAL(n_errors, 0); 
 }

@@ -251,15 +251,19 @@ ENDIF (MSYS OR MINGW)
 ################################################################################
 #
 # Intel Threading Building Blocks 
-# 
-FIND_PACKAGE(TBB REQUIRED)
-IF(TBB_FOUND) 
-  include_directories(${TBB_INCLUDE_DIRS})
-  link_directories(${TBB_LIBRARY_DIRS})
-  SET(HAVE_TBB 1)
-ELSE(TBB_FOUND) 
-  MESSAGE(FATAL " TBB not found")
-ENDIF(TBB_FOUND)
+#
+OPTION(WITH_TBB "Use intel threading building blocks for threading, otherwise use c++11 threads" ON)
+
+IF(WITH_TBB) 
+  FIND_PACKAGE(TBB REQUIRED)
+  IF(TBB_FOUND) 
+    include_directories(${TBB_INCLUDE_DIRS})
+    link_directories(${TBB_LIBRARY_DIRS})
+    SET(HAVE_TBB 1)
+  ELSE(TBB_FOUND) 
+    MESSAGE(FATAL " TBB not found")
+  ENDIF(TBB_FOUND)
+ENDIF()
 #
 # End Intel Threading Building Blocks 
 #
@@ -268,7 +272,7 @@ ENDIF(TBB_FOUND)
 ################################################################################
 #
 # Intel Threading Building Blocks 
-# 
+# why is this here? 
 
 SET(CMAKE_THREAD_PREFER_PTHREAD ON) 
 FIND_PACKAGE(Threads)
@@ -288,8 +292,8 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 
 
 PKG_CHECK_MODULES(EIGEN3 REQUIRED eigen3)
-INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIR})
-MESSAGE("Eigen3 include: ${EIGEN3_INCLUDE_DIR}")
+INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIRS})
+MESSAGE("Eigen3 include: ${EIGEN3_INCLUDE_DIRS}")
 LINK_DIRECTORIES(${EIGEN3_LIBRARY_DIRS})
 
 

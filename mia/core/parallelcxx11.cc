@@ -24,7 +24,7 @@ NS_MIA_BEGIN
 
 int CMaxTasks::get_max_tasks()
 {
-        if (get_max_tasks() < 0) {
+        if (max_tasks < 0) {
                 max_tasks = std::thread::hardware_concurrency(); 
         }
         return max_tasks; 
