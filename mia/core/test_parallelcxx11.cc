@@ -47,6 +47,37 @@ BOOST_AUTO_TEST_CASE (test_preduce)
 	
 }
 
+BOOST_AUTO_TEST_CASE (test_preduce_vector_result)
+{
+	vector<int> identity_value(2, 0);
+	C1DParallelRange range(0, 200, 10);
+
+	vector<int> input(200);
+	for (int i = 0; i < 200; ++i)
+		input[i] = i;
+
+	auto p_func = [&input](const C1DParallelRange& range, vector<int> in_value) -> vector<int>{
+		for (auto i= range.begin(); i != range.end(); ++i) {
+			in_value[0] += input[i];
+			in_value[1] += 2 * input[i]; 
+		}
+		return in_value; 
+	};
+
+	auto r_func = [](const vector<int>& a, const vector<int>& b) -> vector<int>{
+		vector<int> out(a);
+		transform(out.begin(), out.end(), b.begin(), out.begin(), [](int ia, int ib){return ia + ib;}); 
+		return out;
+	}; 
+	
+	auto  result = preduce(range, identity_value, p_func, r_func);
+	
+	BOOST_CHECK_EQUAL(result.size(), 2u); 
+	BOOST_CHECK_EQUAL(result[0], 100*199);
+	BOOST_CHECK_EQUAL(result[1], 2 * 100*199); 
+	
+}
+
 
 BOOST_AUTO_TEST_CASE (test_pfor)
 {
