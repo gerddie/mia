@@ -105,8 +105,11 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
                 image.set_origin(C3DFVector(ni.qoffset_x, ni.qoffset_y, ni.qoffset_z)); 
                 double qa = sqrt(1.0 - (ni.quatern_b * ni.quatern_b + 
                                         ni.quatern_c * ni.quatern_c + 
-                                        ni.quatern_d * ni.quatern_d)); 
-                image.set_rotation(Quaternion(qa, ni.quatern_b, ni.quatern_c, ni.quatern_d));
+                                        ni.quatern_d * ni.quatern_d));
+		Quaternion q(qa, ni.quatern_b, ni.quatern_c, ni.quatern_d);
+		auto rot_m = q.get_rotation_matrix();
+		rot_m.z *= ni.qfac;
+		image.set_rotation(rot_m);
         }
         
         if (ni.sform_code > 0) { // method 3
