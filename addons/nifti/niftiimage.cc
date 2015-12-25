@@ -108,7 +108,9 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
                                         ni.quatern_d * ni.quatern_d));
 		Quaternion q(qa, ni.quatern_b, ni.quatern_c, ni.quatern_d);
 		auto rot_m = q.get_rotation_matrix();
-		rot_m.z *= ni.qfac;
+		rot_m.x.z *= ni.qfac;
+		rot_m.y.z *= ni.qfac;
+		rot_m.z.z *= ni.qfac;
 		image.set_rotation(rot_m);
         }
         
