@@ -43,6 +43,32 @@ static const char *AttrID_nifti_toffset = "nifti-toffset";       // float
 static const char *AttrID_nifti_xyz_units = "nifti-xyz_units";   // int 
 static const char *AttrID_nifti_time_units = "nifti-time_units"; // int 
 
+/*
+  Within MIA the orientation of the images is stored like given in DICOM. 
+  To convert to a nifti-like orientation the following formula is used: 
+  
+  input: 
+     SIZE image seize in pixels 
+     SCALE pixeldim in mm 
+     ORIG_IN location of first pixel in pyhsical space 
+     R_IN    rotation orientation matrix 
+  outut: 
+     ORIG_OUT location of first pixel in pyhsical space (nifti) 
+     R_OUT    rotation orientation matrix (nifti) 
+
+                 / -1, -1,  1 \
+  R_OUT = R_IN * | -1, -1,  1 |
+                 \  1,  1, -1 /
+     dz = (SIZE.z - 1) * scale.z; 
+
+  ORIG_OUT.x = - R_IN.z.x * dz - ORIG_IN.x; 
+  ORIG_OUT.y = - R_IN.z.y * dz - ORIG_IN.y; 
+  ORIG_OUT.z =   R_IN.z.z * dz + ORIG_IN.z; 
+
+  When reading a nifti image the inverse operation is applied. 
+
+*/
+
 
 CNifti3DImageIOPlugin::CNifti3DImageIOPlugin():
 C3DImageIOPlugin("nifti")
@@ -162,8 +188,11 @@ template <typename Image>
 CNifti3DImageIOPlugin::PData read_images(const C3DBounds& size, const nifti_image& ni)
 {
         int timesteps = 1; 
-	if (ni.ndim == 4) 
-		timesteps = ni.nt; 
+	for (int extra_dims = 4; extra_dims <= ni.ndim; ++extra_dims)
+		timesteps *= ni.dim[extra_dims]; 
+
+	cvdebug() << "Loading " << timesteps << " images\n";
+
 
 	CNifti3DImageIOPlugin::PData result(new C3DImageVector); 
 	result->reserve(timesteps); 
@@ -182,33 +211,6 @@ CNifti3DImageIOPlugin::PData read_images(const C3DBounds& size, const nifti_imag
         
 }
 
-template <typename OutImage, typename InPixel> 
-CNifti3DImageIOPlugin::PData read_images(const C3DBounds& size, const nifti_image& ni)
-{
-        int timesteps = 1; 
-	if (ni.ndim == 4) 
-		timesteps = ni.nt; 
-
-	CNifti3DImageIOPlugin::PData result(new C3DImageVector); 
-	result->reserve(timesteps); 
-	
-	const InPixel *in_data = reinterpret_cast<const InPixel *>(ni.data);
-	
-	size_t stride = size.product(); 
-        
-        const double scale = ni.scl_slope; 
-        const double shift = ni.scl_inter; 
-        
-	for (int i = 0; i < timesteps; ++i, in_data += stride) {
-		auto *img = new OutImage(size); 
-                copy_attributes(*img, ni); 
-		transform(in_data, in_data + img->size(), img->begin(), 
-                          [scale, shift](InPixel x){return scale * x + shift;}); 
-		result->push_back(P3DImage(img)); 
-	}
-	return result; 
-        
-}
 
 CNifti3DImageIOPlugin::PData CNifti3DImageIOPlugin::do_load(const std::string&  filename) const
 {
@@ -231,7 +233,7 @@ CNifti3DImageIOPlugin::PData CNifti3DImageIOPlugin::do_load(const std::string&  
                                                          image->intent_code, " that is not supported by MIA."); 
         }
 
-        if (image->ndim < 3 || image->ndim > 4)
+        if (image->ndim < 3 || image->ndim > 5)
 		throw create_exception<invalid_argument>("Nifti: 3D(+t) image expected but ", 
 							 image->ndim, " dimensions available in '", filename); 
         
@@ -296,6 +298,12 @@ public:
                         throw create_exception<invalid_argument>("NIFTI-IO: image series containing images of varying pixel types is not supported");
                 }
 
+		if (static_cast<unsigned>(m_ni.nx) != image.get_size().x ||
+		    static_cast<unsigned>(m_ni.ny) != image.get_size().y ||
+		    static_cast<unsigned>(m_ni.nz) != image.get_size().z) {
+			throw create_exception<invalid_argument>("NIFTI-IO: image series containing images of varying sizes is not supported");	
+		}
+		
                 T *out_data = reinterpret_cast<T *>(m_ni.data);
                 copy(image.begin(), image.end(), out_data + m_npixels_written);
                 m_npixels_written += image.size();
@@ -323,8 +331,9 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
         int datatype = datatype_to_nifti(pixel_type);
         
         if (data.size() > 1) {
-                dims[0] = 4; 
-                dims[4] = data.size(); 
+		cvdebug() << "Saving " << data.size() << " images\n"; 
+                dims[0] = 5; 
+                dims[5] = data.size(); 
         }
 	
         // create the output image
@@ -345,7 +354,7 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 	output->dt = output->pixdim[4] = 1;
 
 	// not supported 
-	output->du = output->pixdim[5] = data.size();
+	output->du = output->pixdim[5] = 1;
 	output->dv = output->pixdim[6] = 1;
 	output->dw = output->pixdim[7] = 1;
 	
@@ -492,7 +501,7 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 
 const std::string CNifti3DImageIOPlugin::do_get_descr() const
 {
-        return "NIFTI-1 3D image IO"; 
+        return "NIFTI-1 3D image IO. The orientation is written "; 
 }
 
 const std::string CNifti3DImageIOPlugin::do_get_preferred_suffix() const
