@@ -99,19 +99,26 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
                 image.set_voxel_size(C3DFVector(ni.dx,  ni.dy, ni.dz)); 
         } else { // Method 2
 
-		cvwarn() << "NIFTI reading orientation is not correct"; 
-                image.set_orientation(ni.qfac == 1 ? ior_xyz : ior_xyz_flipped);
-                image.set_voxel_size(C3DFVector(ni.dx,  ni.dy, ni.dz)); 
-                image.set_origin(C3DFVector(ni.qoffset_x, ni.qoffset_y, ni.qoffset_z)); 
-                double qa = sqrt(1.0 - (ni.quatern_b * ni.quatern_b + 
-                                        ni.quatern_c * ni.quatern_c + 
-                                        ni.quatern_d * ni.quatern_d));
-		Quaternion q(qa, ni.quatern_b, ni.quatern_c, ni.quatern_d);
-		auto rot_m = q.get_rotation_matrix();
-		rot_m.x.z *= ni.qfac;
-		rot_m.y.z *= ni.qfac;
-		rot_m.z.z *= ni.qfac;
-		image.set_rotation(rot_m);
+                image.set_orientation(ior_xyz);
+                image.set_voxel_size(C3DFVector(ni.dx,  ni.dy, ni.dz));
+
+		mat44 mat = nifti_quatern_to_mat44( ni.quatern_b, ni.quatern_c, ni.quatern_d,
+						    0.0f, 0.0f, 0.0f,
+						    1.0f, 1.0f, 1.0f, ni.qfac);
+
+		C3DDMatrix rot(C3DDVector(-mat.m[0][0],-mat.m[1][0], mat.m[2][0]),
+			       C3DDVector(-mat.m[0][1],-mat.m[1][1], mat.m[2][1]),
+			       C3DDVector( mat.m[0][2], mat.m[1][2],-mat.m[2][2]));
+
+		image.set_rotation(rot);
+		const float dz = (ni.nz - 1) * ni.dz; 
+
+		C3DFVector org(- rot.z.x * dz - ni.qoffset_x, 
+			       - rot.z.y * dz - ni.qoffset_y, 
+			       - rot.z.z * dz + ni.qoffset_z); 
+		
+                image.set_origin(org); 
+		
         }
         
         if (ni.sform_code > 0) { // method 3
@@ -121,10 +128,23 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
 				    ni.sto_xyz.m[3][0], ni.sto_xyz.m[3][1], ni.sto_xyz.m[3][2], ni.sto_xyz.m[3][3]}; 
                 
                 image.set_attribute(AttrID_nifti_sform, am);
-                image.set_attribute(AttrID_nifti_sform_code, ni.sform_code); 
+                image.set_attribute(AttrID_nifti_sform_code, ni.sform_code);
+
+		// in this case use s-from for orientation 
+		if (ni.qform_code == 0) {
+			C3DDMatrix rot(C3DDVector(-ni.sto_xyz.m[0][0]/ni.dx,-ni.sto_xyz.m[1][0]/ni.dy, ni.sto_xyz.m[2][0]/ni.dz),
+				       C3DDVector(-ni.sto_xyz.m[0][1]/ni.dx,-ni.sto_xyz.m[1][1]/ni.dy, ni.sto_xyz.m[2][1]/ni.dz),
+				       C3DDVector( ni.sto_xyz.m[0][2]/ni.dx, ni.sto_xyz.m[1][2]/ni.dy,-ni.sto_xyz.m[2][2]/ni.dz));
+			
+			image.set_rotation(rot);
+			const float dz = (ni.nz - 1) * ni.dz; 
+			C3DFVector org(- rot.z.x * dz - ni.qoffset_x, 
+				       - rot.z.y * dz - ni.qoffset_y, 
+				       - rot.z.z * dz + ni.qoffset_z); 
+			image.set_origin(org); 
+		}
         }
         
-
 	image.set_attribute(AttrID_nifti_toffset, ni.toffset);
 	image.set_attribute(AttrID_nifti_xyz_units, ni.xyz_units);
 	image.set_attribute(AttrID_nifti_time_units, ni.time_units);
@@ -325,7 +345,7 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 	output->dt = output->pixdim[4] = 1;
 
 	// not supported 
-	output->du = output->pixdim[5] = 1;
+	output->du = output->pixdim[5] = data.size();
 	output->dv = output->pixdim[6] = 1;
 	output->dw = output->pixdim[7] = 1;
 	
@@ -370,17 +390,16 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 		cvdebug() << "org= " << org << "\n";
 		cvdebug() << "rot= " << rot << "\n"; 		
 
-		float scaley = (size.y - 1) * scale.y; 
-		output->qoffset_x = org.x; 
-		output->qoffset_y = -org.y; 
-		output->qoffset_z = -org.z; 
-		
+		const float dz = (size.z - 1) * scale.z; 
+		output->qoffset_x = - rot.z.x * dz - org.x; 
+		output->qoffset_y = - rot.z.y * dz - org.y; 
+		output->qoffset_z = rot.z.z * dz + org.z;
 
-		// do the same like in amide 
+		// this seems to be the proper transaltion 
 		output->qto_xyz = nifti_make_orthog_mat44( 
-			-rot.x.x, -rot.x.y, rot.x.z,
-			rot.y.x, rot.y.y, rot.y.z,
-			rot.z.x, rot.z.y, rot.z.z); 
+			-rot.x.x, -rot.y.x, rot.z.x,
+			-rot.x.y, -rot.y.y, rot.z.y,
+			 rot.x.z, rot.y.z, -rot.z.z); 
 	
 		nifti_mat44_to_quatern(output->qto_xyz,
 				       &output->quatern_b, &output->quatern_c, &output->quatern_d,
@@ -404,18 +423,39 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 		output->sto_xyz.m[1][2] = am[6]; 
 		output->sto_xyz.m[1][3] = am[7]; 
 
-		output->sto_xyz.m[1][0] = am[8]; 
-		output->sto_xyz.m[1][1] = am[9]; 
-		output->sto_xyz.m[1][2] = am[10]; 
-		output->sto_xyz.m[1][3] = am[11]; 
+		output->sto_xyz.m[2][0] = am[8]; 
+		output->sto_xyz.m[2][1] = am[9]; 
+		output->sto_xyz.m[2][2] = am[10]; 
+		output->sto_xyz.m[2][3] = am[11]; 
 
-		output->sto_xyz.m[1][0] = am[12]; 
-		output->sto_xyz.m[1][1] = am[13]; 
-		output->sto_xyz.m[1][2] = am[14]; 
-		output->sto_xyz.m[1][3] = am[15]; 
+		output->sto_xyz.m[3][0] = am[12]; 
+		output->sto_xyz.m[3][1] = am[13]; 
+		output->sto_xyz.m[3][2] = am[14]; 
+		output->sto_xyz.m[3][3] = am[15]; 
 		
 	}else{ // without a sform code leave it empty (for now)
-		output->sform_code = 0; 
+		output->sform_code = NIFTI_XFORM_SCANNER_ANAT;
+
+		auto rot = image.get_rotation().as_matrix_3x3();
+		output->sto_xyz.m[0][0] = -rot.x.x * scale.x;
+		output->sto_xyz.m[0][1] = -rot.y.x * scale.y; 
+		output->sto_xyz.m[0][2] =  rot.z.x * scale.z; 
+		output->sto_xyz.m[0][3] = output->qoffset_x; 
+
+		output->sto_xyz.m[1][0] = -rot.x.y * scale.x; 
+		output->sto_xyz.m[1][1] = -rot.y.y * scale.y; 
+		output->sto_xyz.m[1][2] =  rot.z.y * scale.z; 
+		output->sto_xyz.m[1][3] = output->qoffset_y; 
+
+		output->sto_xyz.m[2][0] = rot.x.z * scale.y; 
+		output->sto_xyz.m[2][1] = rot.y.z * scale.y; 
+		output->sto_xyz.m[2][2] = -rot.z.z * scale.z; 
+		output->sto_xyz.m[2][3] = output->qoffset_z; 
+
+		output->sto_xyz.m[3][0] = 0; 
+		output->sto_xyz.m[3][1] = 0; 
+		output->sto_xyz.m[3][2] = 0; 
+		output->sto_xyz.m[3][3] = 1;  
 	}
 	
 	output->toffset = image.get_attribute_as<float>(AttrID_nifti_toffset, 0.0f);
