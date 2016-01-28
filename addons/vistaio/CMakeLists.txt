@@ -16,10 +16,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-OPTION(USE_VISTAIO "use libvistaio" TRUE)
+OPTION(WITH_VISTAIO "use libvistaio" TRUE)
 
 
-IF (USE_VISTAIO)
+IF (WITH_VISTAIO)
   if (STRICT_DEPENDECIES)
     pkg_check_modules(VISTAIO REQUIRED libvistaio>=1.2.14)
   else (STRICT_DEPENDECIES)
@@ -66,4 +66,4 @@ IF (USE_VISTAIO)
     ENDIF(WIN32)
   
   ENDIF( VISTAIO_FOUND )
-ENDIF(USE_VISTAIO)
+ENDIF(WITH_VISTAIO)
