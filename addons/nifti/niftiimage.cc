@@ -59,8 +59,8 @@ static const char *AttrID_nifti_time_units = "nifti-time_units"; // int
                  / -1, -1,  1 \
   R_OUT = R_IN * | -1, -1,  1 |
                  \  1,  1, -1 /
-     dz = (SIZE.z - 1) * scale.z; 
 
+    dz = (SIZE.z - 1) * scale.z; 
   ORIG_OUT.x = - R_IN.z.x * dz - ORIG_IN.x; 
   ORIG_OUT.y = - R_IN.z.y * dz - ORIG_IN.y; 
   ORIG_OUT.z =   R_IN.z.z * dz + ORIG_IN.z; 
@@ -158,9 +158,15 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
 
 		// in this case use s-from for orientation 
 		if (ni.qform_code == 0) {
-			C3DDMatrix rot(C3DDVector(-ni.sto_xyz.m[0][0]/ni.dx,-ni.sto_xyz.m[1][0]/ni.dy, ni.sto_xyz.m[2][0]/ni.dz),
-				       C3DDVector(-ni.sto_xyz.m[0][1]/ni.dx,-ni.sto_xyz.m[1][1]/ni.dy, ni.sto_xyz.m[2][1]/ni.dz),
-				       C3DDVector( ni.sto_xyz.m[0][2]/ni.dx, ni.sto_xyz.m[1][2]/ni.dy,-ni.sto_xyz.m[2][2]/ni.dz));
+			C3DDMatrix rot(C3DDVector(-ni.sto_xyz.m[0][0]/ni.dx,
+						  -ni.sto_xyz.m[1][0]/ni.dy,
+						   ni.sto_xyz.m[2][0]/ni.dz),
+				       C3DDVector(-ni.sto_xyz.m[0][1]/ni.dx,
+						  -ni.sto_xyz.m[1][1]/ni.dy,
+						   ni.sto_xyz.m[2][1]/ni.dz),
+				       C3DDVector( ni.sto_xyz.m[0][2]/ni.dx,
+						   ni.sto_xyz.m[1][2]/ni.dy,
+						  -ni.sto_xyz.m[2][2]/ni.dz));
 			
 			image.set_rotation(rot);
 			const float dz = (ni.nz - 1) * ni.dz; 
@@ -501,7 +507,8 @@ bool CNifti3DImageIOPlugin::do_save(const std::string& fname, const Data& data) 
 
 const std::string CNifti3DImageIOPlugin::do_get_descr() const
 {
-        return "NIFTI-1 3D image IO. The orientation is written "; 
+        return "NIFTI-1 3D image IO. The orientation is transformed in the same way like "
+		"it is done with 'dicomtonifti --no-reorder' from the vtk-dicom package."; 
 }
 
 const std::string CNifti3DImageIOPlugin::do_get_preferred_suffix() const
