@@ -26,6 +26,7 @@
 #include <set>
 #include <vector>
 #include <ostream>
+#include <atomic>
 #include <boost/any.hpp>
 
 #include <mia/core/utils.hh>
@@ -200,7 +201,7 @@ private:
 	static CPluginSearchpath m_searchpath; 
 	static bool m_is_created; 
 	static CMutex m_initialization_mutex;
-	static bool m_is_initialized; 
+	static std::atomic<bool> m_is_initialized; 
 	
 }; 
 
