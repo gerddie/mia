@@ -252,7 +252,7 @@ ENDIF (MSYS OR MINGW)
 #
 # Intel Threading Building Blocks 
 #
-OPTION(WITH_TBB "Use intel threading building blocks for threading, otherwise use c++11 threads" ON)
+OPTION(WITH_TBB "Use intel threading building blocks for threading, otherwise use c++11 threads" OFF)
 
 IF(WITH_TBB) 
   FIND_PACKAGE(TBB REQUIRED)
