@@ -347,10 +347,6 @@ void THandlerSingleton<T>::set_search_path(const CPluginSearchpath& searchpath)
 			 << ">::set_search_path: handler was already created\n"; 
 		
 	}
-#if 0 // work around the appearent icc bug, where the static member 
-      //variable is not initialised
-	::new (&m_searchpath) CPathNameArray; 
-#endif
 //	cvdebug() << "searchpath=" << searchpath << "\n"; 
 	m_searchpath = searchpath; 
 
