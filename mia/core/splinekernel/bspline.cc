@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ using std::runtime_error;
 
 template <int sd, int degree>
 struct bspline {
-	static double apply(double x) {
+	static double apply(double MIA_PARAM_UNUSED(x)) {
 		throw create_exception<invalid_argument>( "Spline ", sd , ":derivative degree "
 		      ,  degree , " not supported for spline of degree 2");
 	}
@@ -71,7 +71,7 @@ double CBSplineKernel0::get_weight_at(double x, int degree) const
 		throw create_exception<invalid_argument>( "CBSplineKernel0::get_weight_at: degree " ,  degree , 
 		      "not supported for Haar spline"); 
 	}
-	return abs(x) < 0.5 ? 1.0 : 0.0; 
+	return std::abs(x) < 0.5 ? 1.0 : 0.0; 
 }
 void CBSplineKernel0::get_derivative_weights(double /*x*/, VWeight& weight, int degree) const
 {
@@ -247,6 +247,10 @@ void CBSplineKernel3::get_weights(double x, VWeight&  weight)const
 	v2df W30 = W03; 
 	W30 = _mm_shuffle_pd(W30, W30, 0x1); 
 
+	// coverity is complaining about variables of type __m128d
+	// being pointers where they are indeed to interpreted as
+	// arrays of two elements 
+	// coverity[array_vs_singleton]
 	const v2df W12 = X - W03 - W03 + W30; 
 	
 	_mm_storel_pd(&weight[0], W03); 
@@ -865,7 +869,7 @@ CBSplineKernelPlugin::CBSplineKernelPlugin():
 	CSplineKernelPlugin("bspline"), 
 	m_degree(3)
 {
-	add_parameter("d", new CIntParameter(m_degree, 0, 5, false, "Spline degree"));
+	add_parameter("d", make_ci_param(m_degree, 0, 5, false, "Spline degree"));
 }
 	
 CSplineKernel *CBSplineKernelPlugin::do_create() const
@@ -893,7 +897,7 @@ COMomsSplineKernelPlugin::COMomsSplineKernelPlugin():
 	CSplineKernelPlugin("omoms"), 
 	m_degree(3)
 {
-	add_parameter("d", new CIntParameter(m_degree, 3, 3, false, "Spline degree"));
+	add_parameter("d", make_ci_param(m_degree, 3, 3, false, "Spline degree"));
 }
 
 CSplineKernel *COMomsSplineKernelPlugin::do_create() const

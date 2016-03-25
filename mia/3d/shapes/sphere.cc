@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ CSphere3DShapeFactory::CSphere3DShapeFactory():
 	C3DShapePlugin("sphere"),
 	m_r(2)
 {
-	add_parameter("r", new CFloatParameter(m_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
+	add_parameter("r", make_positive_param(m_r, false, "sphere radius"));
 }
 
 C3DShape *CSphere3DShapeFactory::do_create()const

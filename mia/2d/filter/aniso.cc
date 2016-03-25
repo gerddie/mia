@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -287,13 +287,11 @@ CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory():
 	TRACE("CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory()");
 	cvdebug() << "CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory()\n";
 
-	add_parameter("iter", new CIntParameter(m_maxiter, 1, 10000, false,  "number of iterations"));
+	add_parameter("iter", make_ci_param(m_maxiter, 1, 10000, false,  "number of iterations"));
 
-	add_parameter("epsilon", new CFloatParameter(m_epsilon,
-						     0.001, 100, false,  "iteration change threshold"));
-	add_parameter("k", new CFloatParameter(m_k, 0, 100, false,
-					       "k the noise threshold (<=0 -> adaptive)"));
-
+	add_parameter("epsilon", make_positive_param(m_epsilon, false,  "iteration change threshold"));
+	add_parameter("k", make_ci_param(m_k, 0.0f, 100.0f, false, "k the noise threshold (<=0 -> adaptive)"));
+	
 	add_parameter("psi", new CDictParameter<C2DAnisoDiff::FEdgeStopping>(m_edge_stop, edge_stop_table,
 							       "edge stopping function"));
 

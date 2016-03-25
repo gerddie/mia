@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,26 +20,14 @@
 #ifndef __mia_3d_matrix_hh
 #define __mia_3d_matrix_hh
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#ifndef __clang__ 
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
-#endif 
-#endif 
-
-#include <Eigen/Core>
-#include <Eigen/Eigenvalues> 
-
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif 
-
+#include <vector>
 #include <memory>
 
 #include <mia/3d/vector.hh>
 #include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
+
 
 /**
    @ingroup basic 
@@ -57,11 +45,8 @@ class T3DMatrix: public T3DVector< T3DVector<T> > {
 
 public:  
 	
-	T3DMatrix() = default; 
-	T3DMatrix(const T3DMatrix<T>& o); 
-
-	T3DMatrix<T>& operator = (const T3DMatrix<T>& o); 
-
+	T3DMatrix(); 
+	
 
 	/**
 	   Create a diagonal matrix 
@@ -163,11 +148,11 @@ public:
 private:
 	void evaluate_ev() const; 
 
-	typedef Eigen::Matrix<T, 3, 3> EMatrix3; 
-	typedef Eigen::EigenSolver<EMatrix3>  ESolver3; 
 		
-	mutable std::unique_ptr<ESolver3> m_esolver; 
-	mutable int m_ev_order[3]; 
+	mutable int m_ev_type; // 0 = not valid 
+	mutable C3DFVector m_evalues;
+	mutable std::vector<C3DFVector> m_evectors; 
+	mutable std::vector<int> m_ev_order; 
 }; 
 
 template <typename T> 
@@ -175,7 +160,8 @@ template <typename I>
 T3DMatrix<T>::T3DMatrix(const T3DMatrix<I>& o):
 	T3DVector<T3DVector<T> >(T3DVector<T>(o.x), 
 				 T3DVector<T>(o.y), 
-				 T3DVector<T>(o.z))
+				 T3DVector<T>(o.z)),
+	m_ev_type(0)
 {
 }
 
@@ -204,6 +190,7 @@ std::ostream& operator << (std::ostream& os, const T3DMatrix<T>& m)
 template <typename T> 
 T3DMatrix<T>& T3DMatrix<T>::operator -= (const T3DMatrix<T>& o)
 {
+	m_ev_type = 0; 
 	this->x -= o.x; 
 	this->y -= o.y; 
 	this->z -= o.z; 

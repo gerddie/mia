@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 
 NS_MIA_USE
 using namespace std;
-using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace crop_3d_filter;
 
@@ -65,6 +64,8 @@ void CropFixture::check_result(C3DCrop& f, const C3DBounds& start, C3DBounds rsi
 						  (x+1+start.x ) * (y +1+start.y) * (z+1+start.z));
 			}
 	BOOST_CHECK_EQUAL(result->get_voxel_size(), src.get_voxel_size()); 
+
+	BOOST_CHECK_EQUAL(result->get_origin(), C3DFVector(start) * src.get_voxel_size()); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_crop_inside, CropFixture )

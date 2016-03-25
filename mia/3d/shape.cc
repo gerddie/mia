@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,6 @@ template class TPlugin<C3DImage, shape_type>;
 template class TFactory<C3DShape>;
 template class THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> >;
 template class TFactoryPluginHandler<C3DShapePlugin>;
-template class EXPORT_3D TPluginHandler<C3DShapePlugin>;
+template class TPluginHandler<C3DShapePlugin>;
 
 NS_MIA_END

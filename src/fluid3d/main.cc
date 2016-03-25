@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,12 +122,11 @@ int do_main(int argc, char *argv[])
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOptionFlags::required_input, &imageio ));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOptionFlags::required_input, &imageio ));
-	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", 
+	options.add(make_opt( out_filename, "out-transformation", 'o', "output transformation comprising the registering transformation field",
 			      CCmdOptionFlags::required_output, &C3DTransformationIOPluginHandler::instance()));
 
-	options.add(make_opt(deformed_filename, "deformed-image", 'd', "save deformed image", 
-			     CCmdOptionFlags::output, &imageio)); 
-
+	options.add(make_opt( deformed_filename, "out-image", 'd', "save deformed image", 
+			      CCmdOptionFlags::output, &imageio)); 
 
 	options.set_group("Registration parameters"); 
 	options.add(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing"));
@@ -165,7 +164,6 @@ int do_main(int argc, char *argv[])
 
 	P3DFVectorfield result = fluid_transform(params,solver,!disable_multigrid,
 						 !disable_fullres,&g_MeasureList, ipf);
-
 
 	auto vftranscreator  = produce_3dtransform_factory("vf:imgkernel=[bspline:d=1],imgboundary=zero");
 	

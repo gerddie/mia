@@ -24,7 +24,7 @@
 #include <mia/core/fastica.hh>
 #include <mia/core/cmdlineparser.hh>
 
-#include <gsl++/matrix_vector_ops.hh>
+#include <mia/core/gsl_matrix_vector_ops.hh>
 
 #include <gsl/gsl_blas.h>
 

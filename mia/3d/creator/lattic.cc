@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,9 +98,9 @@ C3DLatticCreatorPlugin::C3DLatticCreatorPlugin():
 	C3DImageCreatorPlugin("lattic"),
 	m_freq(16.0, 16.0, 16.0)
 {
-	add_parameter("fx", new CFloatParameter(m_freq.x, 1, 64, false, "frequency in x-dir"));
-	add_parameter("fy", new CFloatParameter(m_freq.y, 1, 64, false, "frequency in y-dir"));
-	add_parameter("fz", new CFloatParameter(m_freq.z, 1, 64, false, "frequency in z-dir"));
+	add_parameter("fx", make_ci_param(m_freq.x, 1, 64, false, "frequency in x-dir"));
+	add_parameter("fy", make_ci_param(m_freq.y, 1, 64, false, "frequency in y-dir"));
+	add_parameter("fz", make_ci_param(m_freq.z, 1, 64, false, "frequency in z-dir"));
 }
 
 C3DImageCreator *C3DLatticCreatorPlugin::do_create()const

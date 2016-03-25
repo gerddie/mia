@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,8 +92,7 @@ CAdmean2DImageFilterFactory::CAdmean2DImageFilterFactory() :
 		C2DFilterPlugin ( plugin_name ),
 		m_hwidth ( 1 )
 {
-	add_parameter("w", new CIntParameter(m_hwidth, 0, numeric_limits<int>::max(),
-					     false, "half filter width"));
+	add_parameter("w", make_lc_param(m_hwidth, 1, false, "half filter width"));
 }
 
 C2DFilter *CAdmean2DImageFilterFactory::do_create()const

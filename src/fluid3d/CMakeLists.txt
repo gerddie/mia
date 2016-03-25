@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ ADD_DEFINITIONS(-DVSTREAM_DOMAIN=\"fluid3d\")
 ADD_EXECUTABLE(mia-3dfluid ${fluid3d_SOURCES})
 TARGET_LINK_LIBRARIES(mia-3dfluid mia3d)
 INSTALL(TARGETS mia-3dfluid RUNTIME DESTINATION "bin")
-
-MIA_EXE_CREATE_DOCU_AND_INTERFACE(3dfluid)
+ADD_DEPENDENCIES(mia-3dfluid plugin_test_links)
+MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia 3dfluid)
 
 
 

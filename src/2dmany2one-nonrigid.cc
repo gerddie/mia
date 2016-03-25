@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,10 +35,7 @@
 #include <mia/2d/imageio.hh>
 #include <mia/internal/main.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
-using namespace tbb;
+#include <mia/core/parallel.hh>
 using namespace std;
 using namespace mia;
 
@@ -66,13 +63,11 @@ C2DFullCostList create_costs(const std::vector<string>& costs, int idx)
 	for (auto c = costs.begin(); c != costs.end(); ++c) {
 		string cc(*c); 
 
-		if (cc.find("image") == 0) {
-			if (cc.find("src") != string::npos  || cc.find("ref") != string::npos) {
-				throw create_exception<invalid_argument>( "image cost functions '", cc, 
-								"' must not set the 'src' or 'ref' parameter explicitly");
-			}
-			cc.append(cost_descr.str()); 
+		if (cc.find("src") != string::npos  || cc.find("ref") != string::npos) {
+			throw create_exception<invalid_argument>( "image cost functions '", cc, 
+								  "' must not set the 'src' or 'ref' parameter explicitly");
 		}
+		cc.append(cost_descr.str()); 
 		cvdebug() << "create cost:"  << *c << " as " << cc << "\n"; 
 		auto imagecost = C2DFullCostPluginHandler::instance().produce(cc);
 		result.push(imagecost); 
@@ -103,7 +98,7 @@ struct SeriesRegistration {
 		reference(_reference)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
@@ -142,7 +137,7 @@ int do_main( int argc, char *argv[] )
 			      "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
 			      "file name for registered images, numbering and pattern are deducted from the input data", 
-			      CCmdOptionFlags::required)); 
+			      CCmdOptionFlags::required_output)); 
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
@@ -191,7 +186,7 @@ int do_main( int argc, char *argv[] )
 	SeriesRegistration sreg(*input_images, minimizer, cost_functions, 
 				mg_levels, transform_creator, reference); 
 
-	parallel_for(blocked_range<int>( 0, input_images->size()), sreg);
+	pfor(C1DParallelRange( 0, input_images->size()), sreg);
 
 	bool success = true; 
 	auto ii = input_images->begin(); 

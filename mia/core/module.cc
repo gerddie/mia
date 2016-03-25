@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,16 @@ CPluginModule::~CPluginModule()
 const std::string& CPluginModule::get_name() const
 {
 	return m_name; 
+}
+
+void CPluginModule::set_unload_library()
+{
+	m_loader.set_unload_library(); 
+}
+
+void CPluginModule::set_keep_library()
+{
+	m_loader.set_keep_library(); 
 }
 
 CPluginBase *CPluginModule::get_interface() const

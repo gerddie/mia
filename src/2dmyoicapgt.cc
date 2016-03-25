@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
@@ -36,11 +35,10 @@
 #include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
+#include <libxml++/libxml++.h> 
+#include <boost/filesystem/path.hpp>
 
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
+#include <mia/core/parallel.hh>
 
 using namespace std;
 using namespace mia;
@@ -157,7 +155,7 @@ struct SeriesRegistration {
                 global_reference(_global_reference)
 		{
 		}
-	P2DTransformation operator()( const blocked_range<int>& range, P2DTransformation init) const {
+	P2DTransformation operator()( const C1DParallelRange& range, P2DTransformation init) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
                 P2DTransformation result = init; 
@@ -194,26 +192,26 @@ void run_registration_pass(CSegSetWithImages& input_set,
 				imagecost, skip_images, global_reference); 
         
         P2DTransformation init; 
-	P2DTransformation inv_transf = parallel_reduce(blocked_range<int>( 0, references.size()), init, sreg, 
-                                                       [](P2DTransformation a, P2DTransformation b) {
-                                                               if (a) 
-                                                                       return a; 
-                                                               return b; 
-                                                       });
-
+	P2DTransformation inv_transf = preduce(C1DParallelRange( 0, references.size()), init, sreg, 
+					       [](P2DTransformation a, P2DTransformation b) {
+						       if (a) 
+							       return a; 
+						       return b; 
+					       });
+	
         // apply inverse to all images 
         if (inv_transf) {
 		cvmsg() << "Apply inverse for reference correction\n"; 
                 const C2DTransformation& inv_transf_ref = * inv_transf; 
-                parallel_for(blocked_range<int>( 0, references.size()), 
-                             [&inv_transf_ref, &frames, skip_images, global_reference, &input_images](const blocked_range<int>& range){
-                                     for( int i=range.begin(); i!=range.end(); ++i ) {
-                                             if (i != global_reference - skip_images) {
-                                                     input_images[i + skip_images] = inv_transf_ref(*input_images[i + skip_images]);
-                                                     frames[i + skip_images].inv_transform(inv_transf_ref);
-                                             }
-                                     }
-                             });
+                pfor(C1DParallelRange( 0, references.size()), 
+		     [&inv_transf_ref, &frames, skip_images, global_reference, &input_images](const C1DParallelRange& range){
+			     for( int i=range.begin(); i!=range.end(); ++i ) {
+				     if (i != global_reference - skip_images) {
+					     input_images[i + skip_images] = inv_transf_ref(*input_images[i + skip_images]);
+					     frames[i + skip_images].inv_transform(inv_transf_ref);
+				     }
+			     }
+		     });
         }
         input_set.set_images(input_images);
 }
@@ -479,7 +477,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( pgt_alpha, "alpha", 'A', "spacial neighborhood penalty weight"));
 	options.add(make_opt( pgt_beta, "beta", 'B', "temporal second derivative penalty weight"));
 	options.add(make_opt( pgt_rho_thresh, "rho-thresh", 'T', 
-				    "crorrelation threshhold for neighborhood analysis"));
+				    "correlation threshold for neighborhood analysis"));
 
 	
 		
@@ -560,7 +558,7 @@ int do_main( int argc, char *argv[] )
 	if (!cropped_filename.empty()) {
 		bfs::path cf(cropped_filename);
 		cf.replace_extension(); 
-		input_set.rename_base(__bfs_get_filename(cf)); 
+		input_set.rename_base(cf.filename().string()); 
 		input_set.save_images(cropped_filename);
 
 		unique_ptr<xmlpp::Document> test_cropset(input_set.write());

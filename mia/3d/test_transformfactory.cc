@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@ NS_MIA_USE
 
 
 using namespace std;
-using namespace ::boost;
-using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
 struct HandlerTestFixture {
@@ -38,10 +36,6 @@ struct HandlerTestFixture {
 
 HandlerTestFixture::HandlerTestFixture()
 {
-
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("transform"));
-	C3DTransformCreatorHandler::set_search_path(kernelsearchpath);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)

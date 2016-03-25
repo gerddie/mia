@@ -19,7 +19,7 @@
  */
 
 #include <mia/core/fastica_nonlinearity.hh>
-#include <gsl++/matrix_vector_ops.hh>
+#include <mia/core/gsl_matrix_vector_ops.hh>
 #include <mia/core/export_handler.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ private:
 	gsl_multimin_fminimizer *m_s; 
 	double m_stop_eps; 
 	gsl_multimin_function m_func; 
-	int m_maxiter;  
+	unsigned m_maxiter;  
 	double m_start_step;
 	gsl_vector *m_step_init; 	
 }; 
@@ -105,7 +105,7 @@ private:
 	EGSLOptimizer m_ot;
 	double m_gorth_tolerance; 
 	double m_stop_eps; 
-	int m_maxiter;  
+	unsigned m_maxiter;  
 	double m_start_step;
 
 

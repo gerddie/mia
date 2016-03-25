@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ std::string get_values_as_string(I begin, I end, T translate)
 }
 
 template <typename D> 
-void TIOPlugin<D>::do_get_help_xml(xmlpp::Element& root) const
+void TIOPlugin<D>::do_get_help_xml(CXMLElement& root) const
 {
 	//flag that docu should not print help about non-existent parameters 
 	root.add_child("noparam"); 

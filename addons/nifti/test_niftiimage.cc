@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ typedef bmpl::vector<
 		     > type;
 
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type ) 
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read_with_qform, T, type ) 
 {
         C3DBounds size(2,3,4);
 	T3DImage<T> *image = new T3DImage<T>(size); 
@@ -67,6 +67,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
 	pimage->set_voxel_size(voxel); 
 	pimage->set_origin(origin); 
         pimage->set_rotation(rot); 
+	pimage->set_attribute("nifti-qform-code", 1);
 
 	CNifti3DImageIOPlugin io; 
         CNifti3DImageIOPlugin::Data images;
@@ -95,8 +96,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, type )
 		++il; 
 	}
 
-	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel); 
-	BOOST_CHECK_EQUAL(ploaded.get_origin(), origin); 
+	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel);
+	
+	BOOST_CHECK_CLOSE(ploaded.get_origin().x, origin.x, 0.001);
+	BOOST_CHECK_CLOSE(ploaded.get_origin().y, origin.y, 0.001);
+	BOOST_CHECK_CLOSE(ploaded.get_origin().z, origin.z, 0.001); 
         auto qloaded = ploaded.get_rotation().as_quaternion();
 
         BOOST_CHECK_CLOSE(qloaded.x(), rot.x(), 0.001);

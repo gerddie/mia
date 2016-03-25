@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp> // includes boost/filesystem/path.hpp
 #include <boost/filesystem/fstream.hpp>    // ditto
-#include <mia/core/bfsv23dispatch.hh>
 #include <boost/regex.hpp>
 
 #include <mia/core/msgstream.hh>
@@ -280,9 +279,9 @@ EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filen
 EXPORT_CORE size_t get_filename_number_pattern(std::string const& in_filename, string& base, string& suffix)
 {
 	bfs::path p(in_filename);
-	suffix = __bfs_get_extension(p);
+	suffix = p.extension().string();
 
-	string rest = __bfs_get_stem(p);
+	string rest = p.stem().string();
 
 	size_t nwidth = 0;
 	string::const_reverse_iterator r = rest.rbegin();
@@ -299,7 +298,7 @@ EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, s
 {
 	bfs::path p(in_filename);
 	size_t nwidth = get_filename_number_pattern(in_filename, base, suffix);
-	string stem = __bfs_get_stem(p); 
+	string stem = p.stem().string();  
 	number = stem.substr(stem.size() - nwidth);
 }
 

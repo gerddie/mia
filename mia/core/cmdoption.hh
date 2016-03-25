@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <iostream>
 #include <mia/core/cmdoptionflags.hh>
 #include <mia/core/handlerbase.hh>
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
 
@@ -124,7 +124,7 @@ public:
 	   \returns the text relate to the help 
 	   \remark the text should probably be added to the parent node instead. 
 	 */
-	std::string get_long_help_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
+	std::string get_long_help_xml(CXMLElement& parent, HandlerHelpMap& handler_map) const; 
 
 	/** This function must be called after the parameter was set through a string in order to handle 
 	    complex initialization like done for factory based command line parameters 
@@ -137,7 +137,7 @@ public:
 	   \param[in,out] parent the parent xml node to which to add documentation 
 	   \param[in,out] handler_map the map of possibely recoursively called plug-in handlers 
 	*/
-	void add_option_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const;
+	void add_option_xml(CXMLElement& parent, HandlerHelpMap& handler_map) const;
 protected:
 
 	/// clear the "required" flag 
@@ -165,7 +165,7 @@ private:
 	virtual const std::string do_get_value_as_string() const;
 	virtual	void do_post_set(); 
 
-	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
+	virtual void do_get_long_help_xml(std::ostream& os, CXMLElement& parent, HandlerHelpMap& handler_map) const; 
 
 	char m_short_opt; 
 	const char *m_long_opt;

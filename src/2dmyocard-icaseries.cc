@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 
 
 #include <mia/core.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
@@ -89,12 +88,12 @@ int do_main( int argc, char *argv[] )
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOptionFlags::required_input));
 	options.add(make_opt( reference_filename, "references", 'r', "File name base for the reference images. "
-			      "Image type and numbering scheme are taken from the input images.")); 
+			      "Image type and numbering scheme are taken from the input images.", CCmdOptionFlags::output)); 
 	options.add(make_opt( cropped_filename, "save-cropped", 'c', "save cropped set of the original set to this file, "
-			      "the image files will use the stem of the name as file name base")); 
+			      "the image files will use the stem of the name as file name base", CCmdOptionFlags::output)); 
 	options.add(make_opt( save_crop_feature, "save-feature", 0, "save the features images resulting from the ICA and "
 			      "some intermediate images used for the RV-LV segmentation with the given file name base to PNG files. "
-			      "Also save the coefficients of the initial best and the final IC mixing matrix.")); 
+			      "Also save the coefficients of the initial best and the final IC mixing matrix.", CCmdOptionFlags::output)); 
 	
 	options.set_group("ICA");
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
@@ -190,7 +189,7 @@ int do_main( int argc, char *argv[] )
 		bfs::path reff(reference_filename);
 		reff.replace_extension(); 
 		input_set.set_images(references);  
-		input_set.rename_base(__bfs_get_filename(reff)); 
+		input_set.rename_base(reff.filename().string()); 
 		input_set.save_images(reference_filename);
 		
 		

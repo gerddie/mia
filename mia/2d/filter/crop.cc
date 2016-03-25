@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ typename C2DCrop::result_type C2DCrop::operator () (const Data2D& data) const
 	TRACE("C2DCrop::operator ()");
 
 
-	C2DSize end = m_size;
+	C2DSize end = m_end;
 	if (end.x == -1)
 		end.x = data.get_size().x;
 	if (end.y == -1)
@@ -58,6 +58,7 @@ typename C2DCrop::result_type C2DCrop::operator () (const Data2D& data) const
 	if (!result) {
 		throw runtime_error("crop2d: unable to allocate image");
 	}
+	result->set_origin(C2DFVector(m_start) * data.get_pixel_size());
 
 	size_t read_start_x = m_start.x < 0 ? 0 : m_start.x;
 	size_t write_start_x = m_start.x < 0 ? - m_start.x : 0;

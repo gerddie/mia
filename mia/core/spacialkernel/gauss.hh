@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ class C1DGaussFilterKernel: public mia::C1DFoldingKernel {
 public:
 	/** contructor creates a kernel with the width = 2 * fsize +1
 	    \param fsize is the filter with parameter */
-	C1DGaussFilterKernel(int fsize);
+	C1DGaussFilterKernel(unsigned fsize);
 private:
 	virtual std::vector<double> do_apply(const std::vector<double>& data) const;
 };
@@ -41,7 +41,7 @@ public:
 	virtual mia::C1DFoldingKernel *do_create() const;
 	virtual const std::string do_get_descr()const;
 private:
-	int m_w;
+	unsigned  m_w;
 };
 
 struct equal_double {

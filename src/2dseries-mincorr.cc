@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,8 +89,8 @@ int do_main( int argc, char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_name, "in", 'i', "input segmentation set", CCmdOptionFlags::required_input));
-	options.add(make_opt( out_name, "out", 'o', "output image of minimal correlation", 
+	options.add(make_opt( src_name, "in-set", 'i', "input segmentation set", CCmdOptionFlags::required_input));
+	options.add(make_opt( out_name, "out-set", 'o', "output image of minimal correlation", 
 			      CCmdOptionFlags::required_output,  &C2DImageIOPluginHandler::instance()));
 	options.add(make_opt( skip, "skip", 'k', "skip images at beginning of series"));
 

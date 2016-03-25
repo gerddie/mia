@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ SET(MIA3D_SRC
   fuzzyseg.cc
   fuzzyclustersolver_cg.cc
   image.cc
+  imagedraw.cc
   imageio.cc
   imagecollect.cc
   interpolator.cc
@@ -79,6 +80,7 @@ SET(MIA3D_HEADERS
   datafield.hh datafield.cxx
   image.hh
   filter.hh
+  imagedraw.cc
   imageio.hh
   imagetest.hh
   imageiotest.hh
@@ -219,6 +221,7 @@ TEST_3D(similarity_profile similarity_profile)
 TEST_3D(trackpoint similarity_profile)
 TEST_3D(distance distance)
 TEST_3D(imagecollect imagecollect)
+TEST_3D(imagedraw imagedraw)
 TEST_3D(rot rot)
 TEST_3D(splinetransformpenalty splinetransformpenalty)
 #

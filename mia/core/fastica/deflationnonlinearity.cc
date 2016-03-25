@@ -21,7 +21,7 @@
 
 #include <mia/core/fastica/deflationnonlinearity.hh>
 #include <gsl/gsl_blas.h>
-#include <gsl++/matrix_vector_ops.hh>
+#include <mia/core/gsl_matrix_vector_ops.hh>
 #include <algorithm> 
 
 NS_BEGIN(fastica_deflnonlin)
@@ -154,7 +154,7 @@ CFastICADeflTanhPlugin::CFastICADeflTanhPlugin():
 	m_a(1.0)
 {
 	this->add_parameter("a", 
-			    new CDoubleParameter(m_a, 1, 2, 
+                new CDBoundedParameter(m_a, EParameterBounds::bf_closed_interval, { 1, 2},
 						 false, "Tuning parameter")); 
 	
 }
@@ -178,7 +178,7 @@ CFastICADeflGaussPlugin::CFastICADeflGaussPlugin():
 	m_a(1.0)
 {
 	this->add_parameter("a", 
-			    new CDoubleParameter(m_a, 0, std::numeric_limits<float>::max(), 
+                new CDBoundedParameter(m_a, EParameterBounds::bf_min_open, {0},
 						 false, 
 						 "Tuning parameter: a in (0,2) for super-Gaussian"
 						 "density, a > 2 for sub-Gaussian density. "

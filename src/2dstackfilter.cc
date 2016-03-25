@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name base, the actual names is created "
 			      "by adding the file number based on output order and the extension bysed on the 'type' parameter"
-			      , CCmdOptionFlags::required, &imageio));
+			      , CCmdOptionFlags::required_output, &imageio));
 	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',
 			      "output file type", CCmdOptionFlags::required));
 

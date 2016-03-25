@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -210,9 +210,9 @@ TSSDCostPlugin<CP,C>::TSSDCostPlugin():
 	this->add_parameter("norm", new mia::CBoolParameter(m_normalize, false, 
 			    "Set whether the metric should be normalized by the number of image pixels")
 		); 
-	this->add_parameter("autothresh", new mia::CFloatParameter(m_automask_thresh, 0, 1000, false, 
-			"Use automatic masking of the moving image by only takeing intensity values "
-								   "into accound that are larger than the given threshold"));  
+	this->add_parameter("autothresh", mia::make_ci_param(m_automask_thresh, 0.0f, 1000.0f, false, 
+							     "Use automatic masking of the moving image by only takeing "
+							     "intensity values into accound that are larger than the given threshold"));  
 
 }
 

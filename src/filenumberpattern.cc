@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,12 +49,16 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image example name", 
 			      CCmdOptionFlags::required_input));
+	options.set_stdout_is_result(); 
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	size_t format_width = get_filename_number_pattern_width(in_filename);
 	cout << setw(format_width) << setfill('0') << 0;
+
+	// end of program, so it's not important to restore the stream state
+	// coverity[stream_format_state] 
 	return 0;
 }
 

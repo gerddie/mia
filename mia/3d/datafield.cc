@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include <mia/3d/iterator.cxx>
 #include <mia/2d/iterator.cxx>
 #include <mia/core/parameter.cxx>
+#include <mia/core/attributes.cxx>
 
 NS_MIA_BEGIN
 
@@ -57,27 +58,27 @@ T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
         float  dy = 1-fy;
         float  dz = 1-fz;
 
-        register float a1,a3,a5,a7;
+        float a1,a3,a5,a7;
 
 	a1 = (dx * (*this)(x  , y  , z  ) + fx * (*this)(x+1, y  , z  ));
 	a3 = (dx * (*this)(x  , y+1, z  ) + fx * (*this)(x+1, y+1, z  ));
 	a5 = (dx * (*this)(x  , y  , z+1) + fx * (*this)(x+1, y  , z+1));
 	a7 = (dx * (*this)(x  , y+1, z+1) + fx * (*this)(x+1, y+1, z+1));
 
-        register float b1 = dy * a1 + fy * a3;
-        register float b2 = dy * a5 + fy * a7;
+        float b1 = dy * a1 + fy * a3;
+	float b2 = dy * a5 + fy * a7;
 
 	return  (dz * b1 + fz * b2) > 0.5;
 }
 
-#define INSTANCIATE(TYPE) \
-	template class  T3DDatafield<TYPE>;			\
-	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::const_iterator>; \
-	template class  EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::const_iterator>; \
-	template class  EXPORT_3D range2d_iterator<T3DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range2d_iterator<T3DDatafield<TYPE>::const_iterator>;
+#define INSTANCIATE(TYPE)						\
+	template class  T3DDatafield<TYPE>;				\
+	template class  range3d_iterator<T3DDatafield<TYPE>::iterator>; \
+	template class  range3d_iterator<T3DDatafield<TYPE>::const_iterator>; \
+	template class  range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::iterator>; \
+	template class  range3d_iterator_with_boundary_flag<T3DDatafield<TYPE>::const_iterator>; \
+	template class  range2d_iterator<T3DDatafield<TYPE>::iterator>; \
+	template class  range2d_iterator<T3DDatafield<TYPE>::const_iterator>;
 
 
 
@@ -94,12 +95,14 @@ INSTANCIATE(short);
 INSTANCIATE(unsigned short);
 INSTANCIATE(unsigned char );
 INSTANCIATE(signed char);
-INSTANCIATE(bool);
+template class  T3DDatafield<bool>;
 
 DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
 DEFINE_TYPE_DESCR2(C3DFVector, "3dfvector"); 
+
 template class EXPORT_3D  CTParameter<C3DBounds>;
-template class EXPORT_2D  CTParameter<C3DFVector>;
+template class EXPORT_3D  CTParameter<C3DFVector>;
+template class EXPORT_3D  TTranslator<C3DFVector>; 
 
 NS_MIA_END
 

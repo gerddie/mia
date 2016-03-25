@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@ NS_BEGIN(crop_2dimage_filter)
 class C2DCrop: public mia::C2DFilter {
 public:
 	typedef mia::T2DVector<int> C2DSize;
-	C2DCrop(const C2DSize & start, const C2DSize& size):
+	C2DCrop(const C2DSize & start, const C2DSize& end):
 		m_start(start),
-		m_size(size)
+		m_end(end)
 	{
 	}
 
@@ -41,7 +41,7 @@ public:
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 	C2DSize m_start;
-	C2DSize m_size;
+	C2DSize m_end;
 
 };
 

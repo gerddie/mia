@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,8 @@
 #include <mia/2d/segsetwithimages.hh>
 
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
-using namespace tbb;
 using namespace std;
 using namespace mia;
 
@@ -64,9 +62,7 @@ C2DFullCostList create_costs(const vector<string>& costs, int idx)
 
 	for (auto c = costs.begin(); c != costs.end(); ++c) {
 		string cc(*c); 
-
-		if (cc.find("image") == 0) 
-			cc.append(cost_descr.str()); 
+		cc.append(cost_descr.str()); 
 		cvdebug() << "create cost:"  << *c << " as " << cc << "\n"; 
 		auto imagecost = C2DFullCostPluginHandler::instance().produce(cc);
 		result.push(imagecost); 
@@ -101,7 +97,7 @@ struct SeriesRegistration {
 		reference(_reference)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
@@ -185,7 +181,7 @@ int do_main( int argc, char *argv[] )
 	SeriesRegistration sreg(input_set, input_images, minimizer, cost_functions, 
 				mg_levels, transform_creator, reference); 
 	
-	parallel_for(blocked_range<int>( skip, input_images.size()), sreg);
+	pfor(C1DParallelRange( skip, input_images.size()), sreg);
 	
 	
 	input_set.set_images(input_images); 									  

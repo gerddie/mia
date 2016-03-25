@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,13 +48,18 @@ const std::string TPlugin<D, T>::get_long_name() const
 	return msg.str();
 }
 
+
 template <typename D, typename T>
-::boost::filesystem::path TPlugin<D, T>::search_path()
+const char * TPlugin<D, T>::get_data_path_part()
 {
-	return ::boost::filesystem::path(D::data_descr)/ 
-		::boost::filesystem::path(T::type_descr);
+	return D::data_descr; 
 }
 
+template <typename D, typename T>
+const char * TPlugin<D, T>::get_type_path_part()
+{
+	return T::type_descr; 
+}
 
 NS_MIA_END
 

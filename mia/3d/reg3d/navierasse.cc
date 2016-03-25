@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -313,10 +313,10 @@ inline static float  solve_at(const xchg& b, xchg *v, const xchg& param, const i
 	const  xchg *vdp = v + dx;
 	sse_prefetch(vdp, 0, SSE_HINT_T1);
 
-	register v4sf a, m;
-	register v4sf r   = sse_addps (v[-1].xmm, v[ 1].xmm);
-	register v4sf vs2 = sse_addps (vdm[ 0 ].xmm, vdp[ 0 ].xmm);
-	register v4sf vs3 = sse_addps (vm[ 0 ].xmm, vp[ 0 ].xmm);
+	v4sf a, m;
+	v4sf r   = sse_addps (v[-1].xmm, v[ 1].xmm);
+	v4sf vs2 = sse_addps (vdm[ 0 ].xmm, vdp[ 0 ].xmm);
+	v4sf vs3 = sse_addps (vm[ 0 ].xmm, vp[ 0 ].xmm);
 
 	const  xchg *vdmm = vdm - 1;
 	sse_prefetch(vdmm, 0, SSE_HINT_T1);
@@ -325,7 +325,7 @@ inline static float  solve_at(const xchg& b, xchg *v, const xchg& param, const i
 	sse_prefetch(vdpm, 0, SSE_HINT_T1);
 
 
-	register v4sf help = sse_shufps( p, p, S_AB);
+	v4sf help = sse_shufps( p, p, S_AB);
 	r = sse_mulps(r, help);
 	vs2 = sse_addps (vs2, vs3);
 
@@ -342,11 +342,11 @@ inline static float  solve_at(const xchg& b, xchg *v, const xchg& param, const i
 	vs2 = sse_addps(vm[-1].xmm, vp[ 1 ].xmm);
 	a = sse_shufps( a, a, S_XY);
 
-	register v4sf vs4 = sse_addps(vm[1].xmm, vp[ -1 ].xmm);
+	v4sf vs4 = sse_addps(vm[1].xmm, vp[ -1 ].xmm);
 	vs3 = sse_addps(vm[-dx].xmm, vp[dx].xmm);
 	vs2 = sse_shufps( vs2, vs2, S_XZ);
 
-	register v4sf vs5 = sse_addps(vm[dx].xmm, vp[-dx].xmm);
+	v4sf vs5 = sse_addps(vm[dx].xmm, vp[-dx].xmm);
 
 	vs3 = sse_shufps( vs3, vs3, S_YZ);
 	m = sse_shufps( m, m, S_XY);
@@ -513,15 +513,11 @@ C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 	m_epsilon(0.0001),
 	m_maxiter(40)
 {
-	add_parameter("mu", new CFloatParameter(m_mu, 0.0, numeric_limits<float>::max(),
-							   false, "isotropic compliance"));
-	add_parameter("lambda", new CFloatParameter(m_lambda, 0.0, numeric_limits<float>::max(),
-							       false, "isotropic compression"));
+	add_parameter("mu", make_nonnegative_param(m_mu,  false, "isotropic compliance"));
+	add_parameter("lambda", make_nonnegative_param(m_lambda,  false, "isotropic compression"));
 
-	add_parameter("epsilon", new CFloatParameter(m_epsilon, 0.000001, 0.1,
-								false, "stopping parameter"));
-	add_parameter("iter", new CIntParameter(m_maxiter, 10, 10000,
-							   false, "maximum number of iterations"));
+	add_parameter("epsilon", make_oci_param(m_epsilon, 0.0, 0.1, false, "stopping parameter"));
+	add_parameter("iter", make_lc_param(m_maxiter, 1, false, "maximum number of iterations"));
 }
 
 C3DRegModel *C3DNavierRegModelPlugin::do_create()const

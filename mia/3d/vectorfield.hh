@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@
 
 NS_MIA_BEGIN
 
-extern template class EXPORT_3D T3DDatafield<C3DFVector>;
-extern template class EXPORT_3D T3DDatafield<C3DDVector>;
 
 /**
    @ingroup basic 
@@ -37,9 +35,9 @@ extern template class EXPORT_3D T3DDatafield<C3DDVector>;
 */
 
 template <typename T>
-class T3DVectorfield: public T3DDatafield<T>, public CAttributedData {
+class EXPORT_3D  T3DVectorfield: public T3DDatafield<T>, public CAttributedData {
 public:
-	T3DVectorfield()  = default;
+	T3DVectorfield() {};
 	T3DVectorfield(const T3DVectorfield<T>& org):
 		T3DDatafield<T>(org),
 		CAttributedData(org)
@@ -82,22 +80,28 @@ public:
 	void set_voxel_size(const C3DFVector& voxel){
 		set_attribute("voxel", PAttribute(new CVoxelAttribute(voxel)));
 	}
-
+	
 };
 
 extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
-extern template class EXPORT_3D T3DVectorfield<C3DDVector>;
-extern template class EXPORT_3D range3d_iterator<T3DDatafield<C3DFVector>::iterator>;
-extern template class EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<C3DFVector>::iterator>;
-extern template class EXPORT_3D range3d_iterator<T3DDatafield<C3DFVector>::const_iterator>;
-extern template class EXPORT_3D range3d_iterator_with_boundary_flag<T3DDatafield<C3DFVector>::const_iterator>;
-
-
 /**
    @ingroup basic 
    @brief a 3D field of floating point single accuracy 3D vectors 
 */
-typedef T3DVectorfield<C3DFVector>  C3DFVectorfield;
+class EXPORT_3D C3DFVectorfield : public T3DVectorfield<C3DFVector> {
+public: 
+	static const char *data_descr;
+
+	using T3DVectorfield<C3DFVector>::T3DVectorfield; 
+	
+	void update_as_inverse_of(const C3DFVectorfield& other, float tol, int maxiter);
+
+};
+
+
+extern template class EXPORT_3D T3DVectorfield<C3DDVector>;
+
+
 
 /**
    @ingroup basic 

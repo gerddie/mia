@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,15 +19,29 @@
 
 INCLUDE (${CMAKE_ROOT}/Modules/FindDoxygen.cmake)
 
+
 ADD_CUSTOM_TARGET(docs echo "creating documentation")
 add_dependencies(doc docs)  
 
-IF(CREATE_USERDOC) 
+SET(MIADOCTOOLS_FILES 
+  miareadxml.py  
+  miawritprogram.py  
+  MiaDoctools.cmake
+  __init__.py
+  )
 
-  add_dependencies(docs manpages)
-  IF(ALWAYS_CREATE_DOC) 
-    INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/ DESTINATION share/man/man1/)
-  ENDIF(ALWAYS_CREATE_DOC) 
+SET(MIADOCTOOLS_PYTHON_EXE
+  miaxml2man.py  
+  miaxml2nipype.py  
+  miaxml2sgml.py
+  )
+
+INSTALL(FILES ${MIADOCTOOLS_FILES} DESTINATION ${MIA_DOCTOOLS_INSTALL_ROOT})
+
+INSTALL(PROGRAMS ${MIADOCTOOLS_PYTHON_EXE} DESTINATION ${MIA_DOCTOOLS_INSTALL_ROOT})
+
+
+IF(CREATE_USERDOC) 
 
   ##################################################################
   #  for html userref xsltproc and the style sheet is needed
@@ -62,7 +76,7 @@ IF(CREATE_USERDOC)
 
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/program.xml 
       COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
-      DEPENDS XMLDOC
+      DEPENDS xmldoc
       )
     
     ADD_CUSTOM_TARGET(process_xml DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/program.xml)

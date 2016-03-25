@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,10 +26,8 @@ SET (NOTHING
   harmmean
   ianiso
   kuwahara
-  labelmap
   lnfft
   midpoint
-  regiongrow
   rgg
   variation
   wmean
@@ -52,6 +50,7 @@ SET(filters2dNew_base
   kmeans
   label 
   labelmap
+  labelscale
   load
   mask
   mean 
@@ -70,6 +69,7 @@ SET(filters2dNew_base
   tee
   thinning 
   thresh
+  tmean
   transform
   watershed
 )

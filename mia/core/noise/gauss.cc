@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@
 NS_BEGIN(gauss_noise_generator)
 using namespace std;
 using namespace mia;
-
-static const size_t center = 1024;
 
 double CGaussNoiseGenerator::box_muller()const	/* normal random variate generator */
 {
@@ -86,17 +84,12 @@ CGaussNoiseGeneratorFactory::CGaussNoiseGeneratorFactory():
 	m_param_mu(0.0f),
 	m_param_sigma(1.0f)
 {
-	add_parameter("mu", new CFloatParameter(m_param_mu, -numeric_limits<float>::max(),
-								       numeric_limits<float>::max(),
-								       false, "mean of distribution"));
+	add_parameter("mu", new CTParameter<float>(m_param_mu, false, "mean of distribution"));
+	add_parameter("sigma", new CFBoundedParameter(m_param_sigma, EParameterBounds::bf_min_open, {0.0}, 
+						      false, "standard derivation of distribution"));
 
-	add_parameter("sigma", new CFloatParameter(m_param_sigma, 0.0f,
-								       numeric_limits<float>::max(),
-								       false, "standard derivation of distribution"));
-
-	add_parameter("seed", new CUIntParameter(m_param_seed, 0,   numeric_limits<unsigned int>::max(),
-						  false, "set random seed (0=init based on system time)"));
-
+	add_parameter("seed", new CUIBoundedParameter(m_param_seed, EParameterBounds::bf_min_closed, {0},
+						      false, "set random seed (0=init based on system time)"));
 }
 
 CNoiseGenerator *

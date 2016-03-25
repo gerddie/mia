@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,23 +41,6 @@ NS_MIA_BEGIN
 
 void EXPORT_CORE distance_transform_inplace(std::vector<float>& r); 
 
-
-template <typename InputIterator, typename OutputIterator, typename T> 
-struct __distance_transform_prepare {
-	static void apply(InputIterator in_begin, InputIterator in_end, OutputIterator out_begin){
-		std::transform(in_begin, in_end, out_begin, [](float x){ return x*x;});
-	}
-}; 
-
-template <typename InputIterator, typename OutputIterator> 
-struct __distance_transform_prepare<InputIterator, OutputIterator, bool> {
-	static void apply(InputIterator in_begin, InputIterator in_end, OutputIterator out_begin){
-		std::transform(in_begin, in_end, out_begin, 
-			       [](bool x){ return x ? 0.0f : std::numeric_limits<float>::max();});
-	}
-}; 
-
-
 /**
    This function evaluates prepares data for the use in a distance transform. 
    The input values are interpreted differently depending on the input data type: 
@@ -72,14 +55,21 @@ struct __distance_transform_prepare<InputIterator, OutputIterator, bool> {
    \param in_end end of the input data range 
    \param out_begin begin of the output data container, note that the output container must at least hold as 
    many values as the input data range provides. This is not tested. 
+   \param to_mask set to true if the input data is a mask, to false if the input data is a height field
 */
 
 template <typename InputIterator, typename OutputIterator>
 void  distance_transform_prepare(InputIterator in_begin, InputIterator in_end, 
-					    OutputIterator out_begin) 
+				 OutputIterator out_begin, bool to_mask) 
 {
-	typedef typename std::iterator_traits<InputIterator>::value_type in_value_type; 
-	__distance_transform_prepare<InputIterator, OutputIterator, in_value_type>::apply( in_begin, in_end, out_begin); 
+	if (to_mask) {
+		std::transform(in_begin, in_end, out_begin, 
+			       [](bool x){ return x ? 0.0f : std::numeric_limits<float>::max();});
+	}else{
+		std::transform(in_begin, in_end, out_begin, [](float x){ return x*x;});
+	}
+		
+	
 }
 
 NS_MIA_END

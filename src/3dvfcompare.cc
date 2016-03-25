@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/vfio.hh>
 #include <mia/internal/main.hh>
-
+#include <iostream>
 
 NS_MIA_USE
 using namespace std;
@@ -48,7 +48,8 @@ int do_main(int argc, char **argv)
 	options.add(make_opt( vf1_filename, "in-file-1", '1', "input vector field 1", CCmdOptionFlags::required_input, &vfio));
 	options.add(make_opt( vf2_filename, "in-file-2", '2', "input vector field 2", CCmdOptionFlags::required_input, &vfio));
 	options.add(make_opt( delta, "delta", 'd', "Maximum difference between vector to be ignored"));
-
+	options.set_stdout_is_result();
+	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
@@ -79,6 +80,7 @@ int do_main(int argc, char **argv)
 		++ivf1; 
 		++ivf2; 
 	}
+	std::cout  << (diff ? "0" : "1") << "\n"; 
 	return diff ? EXIT_FAILURE : EXIT_SUCCESS;	
 }
 

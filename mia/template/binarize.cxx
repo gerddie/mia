@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,11 +91,8 @@ TBinarizeImageFilterFactory<Image>::TBinarizeImageFilterFactory():
 	m_min(0), 
 	m_max(std::numeric_limits<float>::max())
 {
-	this->add_parameter("min", new CFloatParameter(m_min, 0, std::numeric_limits<float>::max(), 
-						 false, "minimum of accepted range")); 
-	this->add_parameter("max", new CFloatParameter(m_max, 0, std::numeric_limits<float>::max(), 
-						 false, "maximum of accepted range")); 
-
+	this->add_parameter("min", make_param(m_min, false, "minimum of accepted range")); 
+	this->add_parameter("max", make_param(m_max, false, "maximum of accepted range")); 
 }
 
 template <class Image> 

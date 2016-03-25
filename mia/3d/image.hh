@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -289,6 +289,27 @@ public:
 	}
 
 
+        /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries.  */
+        range_iterator_with_boundary_flag begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end){
+		return m_image.begin_range_with_boundary_flags(begin, end); 
+	}
+
+        /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
+        range_iterator_with_boundary_flag end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end){
+		return m_image.end_range_with_boundary_flags(begin, end); 
+	}
+
+
+        /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries. 
+            The functions ensures, that the field uses a single referenced datafield */
+        const_range_iterator_with_boundary_flag begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const{
+		return m_image.begin_range_with_boundary_flags(begin, end); 
+	}
+
+        /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
+        const_range_iterator_with_boundary_flag end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const{
+		return m_image.end_range_with_boundary_flags(begin, end); 
+	}
 
 	/// \returns the all over number of pixels/voxels
 	size_t size() const;

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( test_distance_from_inifinity )
 			     4, 9, 16, 25 };
 	
 	vector<float> src(16); 
-	distance_transform_prepare(in_1d.begin(), in_1d.end(),src.begin()); 	
+	distance_transform_prepare(in_1d.begin(), in_1d.end(),src.begin(), true); 	
 	distance_transform_inplace(src);
 	
 	for (size_t i = 0; i < 16; ++i) {
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( test_distance_from_function )
 	float out_1d[16] = {  5, 4,  1, 0, 1, 4,  9,  9,  4,   1, 0,  1,   4,  8,  13,  20};
 	
 	vector<float> src(16); 
-	distance_transform_prepare(&in_1d[0], &in_1d[16],src.begin()); 
+	distance_transform_prepare(&in_1d[0], &in_1d[16],src.begin(), false); 
 	distance_transform_inplace(src);
 	
 	for (size_t i = 0; i < 16; ++i) {

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,8 +72,8 @@ int do_main (int argc, char * argv[])
 
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
-	options.add(make_opt(  in_filename, "in-image", 'i', "input image", CCmdOptionFlags::required_input, &imageio )); 
-	options.add(make_opt(  out_filename, "out-image", 'o', "output mesh", CCmdOptionFlags::required_output, &meshio )); 
+	options.add(make_opt(  in_filename, "in-file", 'i', "input image", CCmdOptionFlags::required_input, &imageio )); 
+	options.add(make_opt(  out_filename, "out-file", 'o', "output mesh", CCmdOptionFlags::required_output, &meshio )); 
 
 	options.set_group("Image options"); 
 	options.add(make_opt(  iso_value, "iso-value", 's', "iso-value of iso surface to be extracted")); 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -185,10 +185,11 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_input, &imageio));
 
         options.add(make_opt( label_translate_filename, "label-map", 'l', "optional mapping of label numbers", 
-			    CCmdOptionFlags::input));
+			      CCmdOptionFlags::input));
 
         options.add(make_opt( out_filename, "out-file", 'o', "output file name to write the distances to. "
-                              "The output file is a csv file, containing distances listed for each label."));
+                              "The output file is a csv file, containing distances listed for each label.",
+			      CCmdOptionFlags::required_output));
         
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

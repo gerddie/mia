@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/segset.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
@@ -68,7 +67,7 @@ CSegSet load_segmentation(const string& s)
 static string get_number(const string& fname)
 {
 	bfs::path f(fname);
-	string the_stem = __bfs_get_stem(f);
+	string the_stem = f.stem().string();
 	auto rs = the_stem.rbegin();
 	string result;
 	while (rs != the_stem.rend() && isdigit(*rs))
@@ -111,7 +110,7 @@ int do_main(int argc, char *argv[])
 	}
 
 
-	auto_ptr<xmlpp::Document> outset(src_segset.write());
+	unique_ptr<xmlpp::Document> outset(src_segset.write());
 
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())

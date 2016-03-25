@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ const SProgramDescription g_general_help = {
 
 enum EOps {dist_avg, 
 	   dist_max, 
+	   dist_raw, 
 	   dist_unknown
 }; 
 
@@ -59,6 +60,7 @@ enum EOps {dist_avg,
 const TDictMap<EOps>::Table combine_option_table[] = {
 	{"avg", dist_avg, "use average"},
 	{"max", dist_max, "use maximum" },
+	{"raw", dist_raw, "collect raw values as vector" },
 	{NULL, dist_unknown, ""},
 };
 
@@ -71,14 +73,14 @@ class Convert2DoubleAndScale: public TFilter<C2DDImage>{
 	C2DDImage operator ()(const T2DImage<T>& image) const {
 		C2DDImage result(image.get_size()); 
 		transform(image.begin(), image.end(),  result.begin(), 
-			  [this](T x){return x/_M_scale;}); 
+			  [this](T x){return x * _M_scale;}); 
 		return result; 
 	}
 private:
 	double _M_scale; 
 };
 
-class CGetDistance: public TFilter<double> {
+class CGetDistance: public TFilter<vector<double>> {
 public: 
 	CGetDistance(const C2DDImage& dist_field, EOps method): 
 		_M_distance(dist_field),
@@ -93,6 +95,7 @@ public:
 		auto d = _M_distance.begin(); 
 		auto i = image.begin(); 
 		auto e = image.end(); 
+		vector<double> vresult; 
 
 		switch (_M_method) {
 		case dist_avg: {
@@ -106,7 +109,8 @@ public:
 				++d; 
 				++i; 
 			}
-			return n == 0 ? 0 : result / n; 
+			vresult.push_back(n == 0 ? 0 : result / n); 
+			return vresult; 
 		}
 		case dist_max: {
 			double result = 0.0; 
@@ -117,7 +121,17 @@ public:
 				++d; 
 				++i; 
 			}
-			return result; 
+			vresult.push_back(result); 
+			return vresult; 
+		}
+		case dist_raw: {
+			while (i != e) {
+				if (*i) 
+					vresult.push_back(*d); 
+				++d; 
+				++i; 
+			}
+			return vresult; 
 		}
 		default: 
 			throw runtime_error("unknown distance measure requested\n"); 
@@ -133,6 +147,7 @@ int do_main( int argc, char *argv[] )
 
 	string in_filename;
 	string dist_filename;
+	string out_filename("-");
 	float scale = 1.0; 
 	EOps method = dist_avg; 
 	
@@ -144,7 +159,9 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', "input image", 
 			      CCmdOptionFlags::required_input, &imageio)); 
 	options.add(make_opt( dist_filename, "distance-file", 'd', "distance field image (floating point)", 
-			      CCmdOptionFlags::required_output, &imageio)); 
+			      CCmdOptionFlags::required_input, &imageio)); 
+	options.add(make_opt(out_filename, "out-file", 'o', "output file, '-': write to stdout", CCmdOptionFlags::required_output)); 
+
 	options.add(make_opt( scale, "scale", 's', "distance scaling factor")); 
 	options.add(make_opt( method, combine_option, "method", 'm', "distance measuring method")); 
 	
@@ -160,7 +177,15 @@ int do_main( int argc, char *argv[] )
 	C2DDImage dist = mia::filter(create_dist, *dist_image); 
 	
 	CGetDistance get_distance(dist, method); 
-	cout << filter(get_distance, *in_image) <<"\n";
+	auto result = filter(get_distance, *in_image); 
+	if (out_filename == "-") 
+		cout << result <<"\n";
+	else {
+		ofstream out(out_filename.c_str()); 
+		out << result; 
+		if (!out.good())
+			create_exception<runtime_error>("Error writing result to '", out_filename, "'"); 
+	}
 	return EXIT_SUCCESS; 
 }
 

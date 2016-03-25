@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,9 +113,7 @@ C3DGrowmaskImageFilterFactory::C3DGrowmaskImageFilterFactory():
 						  "reference image for mask region growing", 
 			      &C3DImageIOPluginHandler::instance()));
 	add_parameter("shape", make_param(m_shape, "6n", false, "neighborhood mask"));
-	add_parameter("min", new CFloatParameter(m_min, -numeric_limits<float>::max(),
-						 numeric_limits<float>::max(), false,
-						 "lower threshold for mask growing"));
+	add_parameter("min", make_param(m_min, false, "lower threshold for mask growing"));
 }
 
 /* The factory create function creates and returns the filter with the given options*/
@@ -185,15 +183,15 @@ C3DDoGrowmask::result_type C3DDoGrowmask::operator () (const T3DImage<T>& data) 
 	P3DImage result(r);
 
 	// first initialize the seed queue
-	C3DBitImage::iterator ir = r->begin();
-	typename T3DImage<T>::const_iterator d = data.begin();
+	auto ir = r->begin();
+	auto d = data.begin();
 
 	C3DBounds pos;
 	for (pos.z = 0; pos.z < data.get_size().z; ++pos.z)
 		for (pos.y = 0; pos.y < data.get_size().y; ++pos.y)
 			for (pos.x = 0; pos.x < data.get_size().x; ++pos.x, ++ir, ++d) {
 				if (*ir)
-					add_neigborhood(pos, data, *r, *d, pool);
+					add_neigborhood(pos, data, *r, static_cast<T>(*d), pool);
 			}
 
 	// then grow

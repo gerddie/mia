@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +17,12 @@
 #
 #
 
-ADD_CUSTOM_TARGET(manpages)
+ADD_CUSTOM_TARGET(xmldoc)
 
-ADD_CUSTOM_TARGET(XMLDOC)
+INCLUDE (${CMAKE_SOURCE_DIR}/doc/MiaDoctools.cmake)
+
+SET(NIPYPE_INTERFACE_INIT_FILE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+MIA_PREPARE_AUTODOC(mia)
 
 ADD_CUSTOM_TARGET(mandir COMMAND mkdir -p ${CMAKE_BINARY_DIR}/doc/man)
 
@@ -55,7 +58,8 @@ DEFEXE(2dfuzzysegment     mia2d )
 DEFEXE(2dsegment-ahmed    mia2d )
 DEFEXE(2dsegment-fuzzyw   mia2d )
 DEFEXE(2dmultiimagevar    mia2d )
-#DEFEXE(2dmulti-force      mia2d )
+DEFEXE(2dmultiimageregistration    mia2d )
+DEFEXE(2dmulti-force      mia2d )
 DEFEXE(2dimagefullstats   mia2d )
 DEFEXE(2dbinarycombine    mia2d )
 DEFEXE(2dtransformation-to-strain mia2d)
@@ -92,6 +96,7 @@ DEFEXE(2dmyocard-segment      mia2dmyocardperf )
 DEFEXE(2dmyopgt-nonrigid      mia2dmyocardperf )
 DEFEXE(2dmany2one-nonrigid    mia2dmyocardperf )
 DEFEXE(2dmyoset-all2one-nonrigid    mia2dmyocardperf )
+
 IF(ITPP_FOUND) 
   DEFEXE(2dmyoica-full      mia2dmyocardperf )
   DEFEXE(2dmyoicapgt        mia2dmyocardperf )
@@ -111,6 +116,8 @@ DEFEXE(2dtrackpixelmovement mia2d )
 
 DEFCHKEXE(3dlerp mia3d )
 
+DEFEXE(2dstack-cmeans-presegment  mia3d )
+
 DEFEXE(2dmultiimageto3d   mia3d )
 DEFEXE(3dimagestats       mia3d )
 DEFEXE(3dcost             mia3d )
@@ -119,6 +126,7 @@ DEFEXE(3dimagefilter      mia3d )
 DEFEXE(3dimagecombine     mia3d )
 DEFEXE(3dimagecreator     mia3d )
 DEFEXE(3dimagefilterstack mia3d )
+DEFEXE(2dimagestack-cmeans mia3d )
 DEFEXE(raw2volume         mia3d )
 DEFEXE(3dcrispsegment     mia3d )
 DEFEXE(3ddeform           mia3d )
@@ -153,6 +161,9 @@ DEFEXE(3deval-transformquantity mia3d)
 DEFEXE(3dcost-translatedgrad mia3d)
 DEFEXE(3dsegment-ahmed    mia3d)
 DEFEXE(3dcombine-mr-segmentations mia3d)
+DEFEXE(3dcombine-imageseries mia3d)
+DEFEXE(3dpropose-boundingbox mia3d)
+DEFEXE(3dimagestatistics-in-mask mia3d)
 
 DEFEXE(3dlandmarks-transform mia3d)
 DEFEXE(3dlandmarks-distances mia3d)
@@ -160,6 +171,8 @@ DEFEXE(3dlandmarks-distances mia3d)
 DEFEXE(plugin-help miamesh )
 DEFEXE(meshdistance-to-stackmask miamesh )
 DEFEXE(meshfilter miamesh )
+DEFEXE(mesh-deformable-model miamesh )
+DEFEXE(mesh-to-maskimage  miamesh)
 
 ADD_EXECUTABLE(mia-test-plugins-as-installed test_plugins_as_installed.cc)  
 TARGET_LINK_LIBRARIES(mia-test-plugins-as-installed miamesh)

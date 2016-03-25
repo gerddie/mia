@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +82,7 @@ BOOST_FIXTURE_TEST_CASE(test_crop_reduce,  STestFicture)
 			BOOST_CHECK_EQUAL((*crop_image)(x,y), (*src_image)(x+b.x, y+b.y));
 	
 	BOOST_CHECK_EQUAL( crop_image->get_pixel_size(), test_pixelsize); 
+	BOOST_CHECK_EQUAL( crop_image->get_origin(), C2DFVector(b) * test_pixelsize); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_crop_enlarge,  STestFicture)

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/segsetwithimages.hh>
@@ -145,7 +144,7 @@ bool save_series(int index, const C2DImageVectorWithName& series, const string& 
 			frame.set_imagename(i->second);
 		else {
 			bfs::path infile(i->second); 
-			string filename = __bfs_get_filename(infile);
+			string filename = infile.filename().string();
 			frame.set_imagename(filename);
 			mia_copy_file(infile, outpath / bfs::path(filename)); 
 		}
@@ -171,7 +170,7 @@ int do_main( int argc, char *argv[] )
 	bool no_copy_images = false; 
 	
 	CCmdOptionList options(g_description);
-	options.add(make_opt( out_directory, "out", 'o', "output directory (needs to exist and be writable)", 
+	options.add(make_opt( out_directory, "out-directory", 'o', "output directory (needs to exist and be writable)", 
 			      CCmdOptionFlags::required_output));
 	options.add(make_opt( no_copy_images, "no-copy", 0, "don't copy image files to output directory"));
 

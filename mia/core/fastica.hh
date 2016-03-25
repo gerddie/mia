@@ -22,7 +22,7 @@
 #define mia_core_fastica_hh
 
 #include <memory>
-#include <gsl++/matrix.hh>
+#include <mia/core/gsl_matrix.hh>
 #include <mia/core/fastica_nonlinearity.hh>
 
 namespace mia {

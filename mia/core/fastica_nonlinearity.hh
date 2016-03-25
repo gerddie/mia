@@ -21,8 +21,8 @@
 #ifndef mia_core_fastica_nonlinearity_hh
 #define mia_core_fastica_nonlinearity_hh
 
-#include <gsl++/vector.hh>
-#include <gsl++/matrix.hh>
+#include <mia/core/gsl_vector.hh>
+#include <mia/core/gsl_matrix.hh>
 
 #include <mia/core/factory.hh>
 namespace mia {

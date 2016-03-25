@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +23,7 @@
 #include <mia/internal/autotest.hh>
 #include <iomanip>
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
-
+#include <mia/core/parallel.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -35,14 +32,14 @@ using namespace std;
 struct ThreadFixture {
 	ThreadFixture(); 
 
-	void operator () ( const blocked_range<int>& range ) const; 
+	void operator () ( const C1DParallelRange& range ) const; 
 
 }; 
 
 struct ThreadFixture2 {
 	ThreadFixture2(); 
 
-	void operator () ( const blocked_range<int>& range ) const; 
+	void operator () ( const C1DParallelRange& range ) const; 
 }; 
 
 
@@ -53,7 +50,7 @@ ThreadFixture::ThreadFixture()
 	CThreadMsgStream::set_master_stream(master_stream); 
 }
 
-void ThreadFixture::operator () ( const blocked_range<int>& range ) const
+void ThreadFixture::operator () ( const C1DParallelRange& range ) const
 {
 	CThreadMsgStream thread_stream;
 
@@ -68,7 +65,7 @@ ThreadFixture2::ThreadFixture2()
 	CThreadMsgStream::set_master_stream(master_stream); 
 }
 
-void ThreadFixture2::operator () ( const blocked_range<int>& range ) const
+void ThreadFixture2::operator () ( const C1DParallelRange& range ) const
 {
 	CThreadMsgStream thread_stream;
 
@@ -85,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_threaded_msg )
 	auto old_level =  cverb.get_level();
 	cverb.set_verbosity(vstream::ml_message); 
 	ThreadFixture fix; 
-	parallel_for(blocked_range<int>( 0, 100), fix);
+	pfor(C1DParallelRange( 0, 100), fix);
 	
 	cverb.set_verbosity(old_level); 
 	
@@ -118,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_threaded_msg_sync )
 	auto old_level =  cverb.get_level();
 	cverb.set_verbosity(vstream::ml_message); 
 	ThreadFixture2 fix; 
-	parallel_for(blocked_range<int>( 0, 100), fix);
+	pfor(C1DParallelRange( 0, 100), fix);
 	
 	cverb.set_verbosity(old_level); 
 	

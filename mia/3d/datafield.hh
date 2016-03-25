@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,35 @@
 
 NS_MIA_BEGIN
 
+
+#define DECLARE_EXTERN_ITERATORS(TYPE)						\
+	extern template class  EXPORT_3D range3d_iterator<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_3D range3d_iterator<std::vector<TYPE>::const_iterator>; \
+	extern template class  EXPORT_3D range3d_iterator_with_boundary_flag<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_3D range3d_iterator_with_boundary_flag<std::vector<TYPE>::const_iterator>; \
+	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::const_iterator>;
+
+
+DECLARE_EXTERN_ITERATORS(double);
+DECLARE_EXTERN_ITERATORS(float);
+DECLARE_EXTERN_ITERATORS(unsigned int);
+DECLARE_EXTERN_ITERATORS(int);
+DECLARE_EXTERN_ITERATORS(short);
+DECLARE_EXTERN_ITERATORS(unsigned short);
+DECLARE_EXTERN_ITERATORS(unsigned char );
+DECLARE_EXTERN_ITERATORS(signed char);
+DECLARE_EXTERN_ITERATORS(bool);
+
+#ifdef LONG_64BIT
+DECLARE_EXTERN_ITERATORS(signed long);
+DECLARE_EXTERN_ITERATORS(unsigned long);
+#endif
+
+DECLARE_EXTERN_ITERATORS(C3DFVector)
+DECLARE_EXTERN_ITERATORS(C3DDVector)
+
+
 /**
    @ingroup basic 
    \brief A templated class of a 3D data field.
@@ -44,25 +73,12 @@ NS_MIA_BEGIN
 template <class T>
 class  EXPORT_3D T3DDatafield {
 
-	typedef  ::std::vector<T> data_array;
+	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
         typedef std::shared_ptr<data_array>  ref_data_type;
 
-        /** Size of the field */
-        C3DBounds  m_size;
-
-        /** helper: product of Size.x * Size.y */
-        size_t  m_xy;
-
-        /** Pointer to the Field of Data hold by this class */
-        ref_data_type m_data;
-
-        /** helper: represents the zero-value */
-        static const T Zero;
-	
-	static const unsigned int m_elements; 
-
 public:
+	
 
         /** makes a single reference of the data, after calling this, it is save to write to the data field
          */
@@ -80,16 +96,16 @@ public:
 	/// a shortcut data type
 
 	/// \cond SELFEXPLAINING 
-        typedef typename std::vector<T>::iterator iterator;
-        typedef typename std::vector<T>::const_iterator const_iterator;
-        typedef typename std::vector<T>::const_reference const_reference;
-        typedef typename std::vector<T>::reference reference;
-        typedef typename std::vector<T>::const_pointer const_pointer;
-        typedef typename std::vector<T>::pointer pointer;
-        typedef typename std::vector<T>::value_type value_type;
-        typedef typename std::vector<T>::size_type size_type;
-        typedef typename std::vector<T>::difference_type difference_type;
-	typedef typename atomic_data<T>::type atomic_type; 
+        typedef typename data_array::iterator iterator;
+        typedef typename data_array::const_iterator const_iterator;
+        typedef typename data_array::const_reference const_reference;
+        typedef typename data_array::reference reference;
+        typedef typename data_array::const_pointer const_pointer;
+        typedef typename data_array::pointer pointer;
+        typedef typename data_array::value_type value_type;
+        typedef typename data_array::size_type size_type;
+        typedef typename data_array::difference_type difference_type;
+	typedef typename atomic_data<value_type>::type atomic_type; 
 	typedef range3d_iterator<iterator> range_iterator; 
 	typedef range3d_iterator<const_iterator> const_range_iterator; 
 
@@ -99,6 +115,53 @@ public:
 	typedef C3DBounds dimsize_type;
 	/// \endcond 
 
+	/**
+	   \brief This class provides access to a sub-range of the input data field
+
+	   This class provides iterator access to a axis-aligned 3D sub-range of the 
+	   corresponding data field. 
+	*/
+
+	
+	
+	class EXPORT_3D Range {
+		friend class T3DDatafield<T>;
+		friend class ConstRange;
+	public:
+		
+		typedef T3DDatafield<T>::range_iterator iterator;
+		
+		iterator begin();
+		
+		iterator end();
+		
+	private:
+		Range(const C3DBounds& start, const C3DBounds& end, T3DDatafield<T>& field);
+
+		iterator m_begin;
+		iterator m_end;
+	}; 
+	
+	class EXPORT_3D ConstRange {
+	public:
+		friend class T3DDatafield<T>;
+
+		typedef T3DDatafield<T>::const_range_iterator iterator;
+		
+		iterator begin() const;
+		
+		iterator end() const;
+
+	private:
+		ConstRange(const C3DBounds& start, const C3DBounds& end, const T3DDatafield<T>& field);
+
+		ConstRange(const Range& range); 
+		
+		iterator m_begin;
+		iterator m_end;
+	}; 
+
+	
 	T3DDatafield();
 
         /** Constructor to create empty Datafield if given size */
@@ -195,7 +258,7 @@ public:
 	{
         	// Look if we are inside, and give reference, else give the zero
 	        if (x < m_size.x && y < m_size.y && z < m_size.z) {
-	                const std::vector<T>& data = *m_data;
+	                const data_array& data = *m_data;
 	                return data[x+ m_size.x * (y  + m_size.y * z)];
 	        }
 		return Zero;
@@ -382,8 +445,12 @@ public:
                 make_single_ref();
                 return m_data->begin();
         }
+	
+	Range get_range(const C3DBounds& start, const C3DBounds& end);
 
-        /** \returns an read/write forward iterator over a subset of the data. 
+	ConstRange get_range(const C3DBounds& start, const C3DBounds& end) const; 
+	
+/** \returns an read/write forward iterator over a subset of the data. 
             The functions ensures, that the field uses a single referenced datafield */
         range_iterator begin_range(const C3DBounds& begin, const C3DBounds& end); 
 
@@ -397,6 +464,20 @@ public:
 
         /** \returns the end of a read/write forward iterator over a subset of the data. */
         const_range_iterator end_range(const C3DBounds& begin, const C3DBounds& end)const; 
+
+
+        /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries. */
+	range_iterator_with_boundary_flag begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end); 
+
+        /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
+	range_iterator_with_boundary_flag end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end); 
+
+
+        /** \returns an read/write forward iterator over a subset of the data with indicator for the boundaries.  */
+	const_range_iterator_with_boundary_flag begin_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const; 
+
+        /** \returns the end of a read/write forward iterator over a subset of the data with indicator for the boundaries. */
+	const_range_iterator_with_boundary_flag end_range_with_boundary_flags(const C3DBounds& begin, const C3DBounds& end)const; 
 
 
 	/**
@@ -445,8 +526,21 @@ public:
         };
 
 private:
-};
+	/** Size of the field */
+        C3DBounds  m_size;
 
+        /** helper: product of Size.x * Size.y */
+        size_t  m_xy;
+
+        /** Pointer to the Field of Data hold by this class */
+        ref_data_type m_data;
+
+        /** helper: represents the zero-value */
+        static const value_type Zero;
+	
+	static const size_t m_elements; 
+
+};
 
 /// a data field of float values
 typedef T3DDatafield<float>  C3DFDatafield;
@@ -475,6 +569,8 @@ typedef  CTParameter<C3DBounds> C3DBoundsParameter;
 
 /// 3D vector parameter type 
 typedef  CTParameter<C3DFVector> C3DFVectorParameter;
+
+typedef  TTranslator<C3DFVector> C3DFVectorTranslator; 
 
 /// @cond NEVER 
 DECLARE_TYPE_DESCR(C3DBounds); 
@@ -618,6 +714,40 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
         return T3DVector<Out>();
 
 }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
+#define DECLARE_EXTERN(TYPE)						\
+	extern template class  EXPORT_3D T3DDatafield<TYPE>; 
+
+
+DECLARE_EXTERN(double);
+DECLARE_EXTERN(float);
+DECLARE_EXTERN(unsigned int);
+DECLARE_EXTERN(int);
+DECLARE_EXTERN(short);
+DECLARE_EXTERN(unsigned short);
+DECLARE_EXTERN(unsigned char );
+DECLARE_EXTERN(signed char);
+
+#ifdef LONG_64BIT
+DECLARE_EXTERN(signed long);
+DECLARE_EXTERN(unsigned long);
+#endif
+
+DECLARE_EXTERN(C3DFVector);
+DECLARE_EXTERN(C3DDVector);
+
+#undef DECLARE_EXTERN
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 
 NS_MIA_END
 

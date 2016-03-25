@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ const SProgramDescription g_description = {
 
 class CSegment3d  {
 public: 
-	typedef C3DImageVector result_type; 
+	typedef pair<P3DImage, C3DImageVector> result_type; 
 
 	CSegment3d(bool bg_correct, int ncc,
 		   const vector<float>& icc, float k); 
@@ -72,9 +72,9 @@ public:
 	CSegment3d::result_type operator()(const T3DImage<T>& image); 
 
 private: 
-	void process(const C3DFImage& image, 
-		     vector<float>& class_centers, 
-		     C3DFImageVec& prob)const; 
+	C3DFImage process(const C3DFImage& image, 
+			 vector<float>& class_centers, 
+			 C3DFImageVec& prob)const; 
 
 	float update_class_centers(C3DFImage& image, C3DFImageVec& prob, vector<float>& class_centers)const; 
 	
@@ -161,8 +161,8 @@ template <class T>
 CSegment3d::result_type CSegment3d::operator()(const T3DImage<T>& image)
 {
 	// first evaluate the histogram borders and get the initial class centers
-	T minh=0; 
-	T maxh=numeric_limits<T>::max(); 
+	typename T3DImage<T>::value_type minh=0; 
+	typename T3DImage<T>::value_type maxh=numeric_limits<T>::max(); 
 	
 
 	get_min_max(image.begin(), image.end(), minh, maxh);  
@@ -203,10 +203,7 @@ CSegment3d::result_type CSegment3d::operator()(const T3DImage<T>& image)
 		
 		// print out the new class centers
 	}
-	cvmsg() << " initial classes ["; 
-	for (size_t j = 0; j < _M_nClasses; ++j)
-		cvmsg() << _M_class_centers[j] << " "; 
-	cvmsg() << "]" << endl;
+	cvmsg() << " initial classes [" << _M_class_centers << "\n"; 
 	
 	C3DFImage log_image(image.get_size()); 	                                 // 4 Bpp
 	vector<float> log_class_centers(_M_nClasses); 
@@ -225,22 +222,35 @@ CSegment3d::result_type CSegment3d::operator()(const T3DImage<T>& image)
 	}
 
 	
-	process(log_image, log_class_centers, prob); 
+	auto b0_image = process(log_image, log_class_centers, prob); 
 	
 	
 	CExpTransform exptrans(minh, maxh); 
 	transform(log_class_centers.begin(), log_class_centers.end(), 
 		       _M_class_centers.begin(), exptrans); 
 
-	C3DImageVector result;  
+	P3DImage pb0_corrected; 
+	if ( _M_bg_correct ) {
+		T3DImage<T> *b0_corrected = new T3DImage<T>(image);
+		transform(b0_image.begin(), b0_image.end(), b0_corrected->begin(), 
+			  [&exptrans](float x){
+				  return mia_round_clamped<T>(exptrans(x)); 
+			  }); 
+		pb0_corrected.reset(b0_corrected); 
+	}
+		
+	transform(log_class_centers.begin(), log_class_centers.end(), 
+		       _M_class_centers.begin(), exptrans); 
+
+	C3DImageVector class_images;  
 
 	for (size_t j = 0; j < _M_nClasses; ++j) {
 		C3DFImage *r = new C3DFImage(image.get_size(), image); 
 		transform(prob[j].begin(), prob[j].end(), r->begin(), 
 			  [](float x){return sqrt(x);}); 
-		result.push_back(P3DImage(r)); 
+		class_images.push_back(P3DImage(r)); 
 	}
-	return result; 
+	return make_pair(pb0_corrected, class_images); 
 }
 		
 
@@ -267,7 +277,7 @@ void CSegment3d::evaluate_probabilities(C3DFImageVec& prob)const
 		else {// must be a bright value, otherwise, class[0] would catch it
 			for (size_t i = 0; i < _M_nClasses - 1; ++i)
 				*pi[i]++ = 0.0;
-			*pi[_M_nClasses - 1] = 1.0; 
+			*pi[_M_nClasses - 1]++ = 1.0; 
 		}
 	}
 }
@@ -327,8 +337,7 @@ float CSegment3d::update_class_centers(C3DFImage& image, C3DFImageVec& prob, vec
 
 
 
-void
-CSegment3d::process(const C3DFImage& image, 
+C3DFImage CSegment3d::process(const C3DFImage& image, 
 			 vector<float>& class_centers, 
 			 C3DFImageVec& prob)const
 {
@@ -340,13 +349,11 @@ CSegment3d::process(const C3DFImage& image,
 	C3DFImage tmp(image.get_size());                                        // 4Bpp
 
 	unique_ptr<C3DFImage> bg_image;
-
 	
 	if (_M_bg_correct) {
 		bg_image.reset(new C3DFImage(image.get_size())); 
 		fill(bg_image->begin(), bg_image->end(), 1.0); 
 	}
-
 	
 	float residuum = 100; 
 	// these conditions have to be exported 
@@ -381,7 +388,8 @@ CSegment3d::process(const C3DFImage& image,
 		evaluate_probabilities(prob);
 
 		if (_M_bg_correct)
-			transform(image.begin(), image.end(), bg_image->begin(), tmp.begin(), minus<float>()); 
+			transform(image.begin(), image.end(), bg_image->begin(), tmp.begin(), 
+				  [](float x, float y){return x * y;}); 
 		else
 			copy(image.begin(), image.end(), tmp.begin()); 
 		
@@ -390,8 +398,8 @@ CSegment3d::process(const C3DFImage& image,
 		// print out the new class centers
 		cvmsg() << n_iterations << ": classes ["; 
 		for (size_t j = 0; j < _M_nClasses; ++j)
-			cvmsg() << exptrans(class_centers[j]) << " "; 
-		cvmsg() << "]" << endl; 
+			cverb << exptrans(class_centers[j]) << " "; 
+		cverb << "]" << endl; 
 		
 		// update field correction 
 		// this certainly needs a methodological review
@@ -426,6 +434,7 @@ CSegment3d::process(const C3DFImage& image,
 		}// end update bg field
 
 	} // end main while loop
+	return tmp; 
 }
 
 int do_main(int argc, char *argv[])
@@ -433,7 +442,7 @@ int do_main(int argc, char *argv[])
 
 	string in_filename; 
 	string cls_filename; 
-	string out_filename; 
+	string bias_filename; 
 	int n_classes = 3; 
 	bool bg_correct = false; 
 	string neighborhood_filter; 
@@ -443,12 +452,20 @@ int do_main(int argc, char *argv[])
 	const auto& image3dio = C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList opts(g_description);
+
+	opts.set_group("File-IO"); 
 	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOptionFlags::required_input, &image3dio )); 
-	opts.add(make_opt( cls_filename, "out-file", 'o', "class probability images, the image type "
-			   "must support multiple images and floating point values", CCmdOptionFlags::required_output, &image3dio )); 
-	opts.add(make_opt( n_classes, "no-of-classes", 'a', "number of classes"));
-	opts.add(make_opt( bg_correct, "bias-correct", 'b', "apply bias field correction"));
-	opts.add(make_opt( initial_class_centres, "class-centres", 'c', "initial class centers"));
+	opts.add(make_opt( cls_filename, "class-file", 'c', "class probability images, the image type "
+			   "must support multiple images and floating point values", 
+			   CCmdOptionFlags::required_output, &image3dio )); 
+	opts.add(make_opt( bias_filename, "out-file", 'b', "Bias corrected image will be of the same type like "
+			   "the input image. If this parameter is not given, then the bias correction will not be applied.", 
+			   CCmdOptionFlags::output, &image3dio )); 
+		 
+	opts.set_group("Parameters"); 
+	opts.add(make_opt( n_classes, "no-of-classes", 'n', "number of classes"));
+	opts.add(make_opt( initial_class_centres, "class-centres", 'C', "initial class centers, this parameter overrides "
+			   "'no-of-clases'."));
 	opts.add(make_opt( spread, "spread", 's', "spread parameter describing the strength of mattar distinction")); 
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -461,8 +478,11 @@ int do_main(int argc, char *argv[])
 			throw invalid_argument("at least two classes need to be requested"); 
 	}else {
 		cvdebug() << "Initially classes: " << initial_class_centres.size() << "\n"; 
+		n_classes = initial_class_centres.size(); 
 	}
 	
+	bg_correct = !bias_filename.empty(); 
+
 	// initialize the functor
 	CSegment3d Segment(bg_correct, n_classes, 
 			   initial_class_centres, spread);
@@ -470,15 +490,19 @@ int do_main(int argc, char *argv[])
 	
 	auto in_image = load_image3d(in_filename); 
 	
-	auto seg_list = mia::accumulate (Segment, *in_image);
-	C3DImageIOPluginHandler::Instance::Data out_image_list(seg_list);
+	auto result = mia::accumulate (Segment, *in_image);
+//	C3DImageIOPluginHandler::Instance::Data out_image_list(result.second);
 	
 	
-		//CHistory::instance().append(argv[0], revision, opts);
+	//CHistory::instance().append(argv[0], revision, opts);
 	
-	if ( !C3DImageIOPluginHandler::instance().save(cls_filename, seg_list) ){
-		string not_save = ("unable to save result to ") + cls_filename;
-		throw runtime_error(not_save);
+	if ( !image3dio.save(cls_filename, result.second) ) {
+		throw create_exception<runtime_error>("unable to save class images to '", cls_filename, "'");
+	}
+
+	if (!bias_filename.empty()) {
+		if (!save_image(bias_filename, result.first)) 
+			throw create_exception<runtime_error>("unable to save bias-corrected image '", bias_filename, "'");
 	}
 	
 	return EXIT_SUCCESS; 

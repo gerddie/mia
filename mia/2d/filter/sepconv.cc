@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +54,7 @@ void CSeparableConvolute::fold(vector<T>& data, const C1DFilterKernel& kernel) c
 template <class T>
 CSeparableConvolute::result_type CSeparableConvolute::operator () (const T2DImage<T>& image) const
 {
-	typedef typename T2DImage<T>::value_type value_type;
-	typedef std::vector<value_type> invec_t;
+	typedef std::vector<T> invec_t;
 
 	T2DImage<T> *data = new T2DImage<T>(image);
 	CSeparableConvolute::result_type result(data);
@@ -112,8 +111,7 @@ C2DGaussFilterPlugin::C2DGaussFilterPlugin():
 	C2DFilterPlugin("gauss"),
 	m_w(1)
 {
-	add_parameter("w", new CIntParameter(m_w, 0, numeric_limits<int>::max(),
-					     false, "filter width parameter"));
+	add_parameter("w", make_lc_param(m_w, 0, false, "filter width parameter"));
 }
 
 C2DFilter *C2DGaussFilterPlugin::do_create()const
@@ -132,10 +130,49 @@ const string C2DGaussFilterPlugin::do_get_descr()const
 	return "isotropic 2D gauss filter";
 }
 
+const TDictMap<C2DSobelFilterPlugin::EGradientDirection>::Table C2DSobelFilterPlugin::dir_dict[] = {
+	{"x", C2DSobelFilterPlugin::gd_x, "gradient in x-direction "},
+	{"y", C2DSobelFilterPlugin::gd_y, "gradient in y-direction "},
+	{NULL, C2DSobelFilterPlugin::gd_undefined, ""}
+};
+
+const TDictMap<C2DSobelFilterPlugin::EGradientDirection>
+C2DSobelFilterPlugin::Ddirection(C2DSobelFilterPlugin::dir_dict);
+
+C2DSobelFilterPlugin::C2DSobelFilterPlugin():
+	C2DFilterPlugin("sobel"),
+	m_direction(gd_x)
+{
+	add_parameter("dir", new CDictParameter<EGradientDirection>(m_direction, Ddirection, "Gradient direction"));
+}
+
+mia::C2DFilter *C2DSobelFilterPlugin::do_create()const
+{
+	const auto&  skp = C1DSpacialKernelPluginHandler::instance();
+	auto gauss = skp.produce("gauss:w=1");
+	auto cdiff = skp.produce("cdiff");
+	
+	switch (m_direction) {
+	case gd_x: return new CSeparableConvolute(cdiff, gauss);
+	case gd_y: return new CSeparableConvolute(gauss, cdiff);
+	default:
+		throw invalid_argument("C2DSobelFilterPlugin: unknown gradient direction specified");
+	}
+}
+
+const std::string C2DSobelFilterPlugin::do_get_descr()const
+{
+	return "The 2D Sobel filter for gradient evaluation. Note that the output pixel type "
+		"of the filtered image is the same as the input pixel type, so converting the input "
+		"beforehand to a floating point valued image is recommendable."; 
+}
+
+
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	CPluginBase *gauss = new C2DGaussFilterPlugin();
 	gauss->append_interface(new C2DSeparableConvoluteFilterPlugin());
+	gauss->append_interface(new C2DSobelFilterPlugin());
 	return gauss;
 }
 

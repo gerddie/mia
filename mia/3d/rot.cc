@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <boost/algorithm/string/classification.hpp>
 
 #include <mia/3d/rot.hh>
+#include <mia/core/attributes.cxx>
 
 NS_MIA_BEGIN
 
@@ -301,5 +302,6 @@ EXPORT_3D bool operator < (const C3DRotation& lhs, const C3DRotation& rhs)
 }
 
 template class EXPORT_3D TAttribute<C3DRotation>; 
+template class EXPORT_3D TTranslator<C3DRotation>;
 
 NS_MIA_END

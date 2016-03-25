@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,22 +21,23 @@
 #include <cmath>
 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 NS_MIA_BEGIN
 
 template <class T>
 struct min_max_3d {
-	static void get( const T3DDatafield<T>& data, T* min, T*max)
+	static void get( const T3DDatafield<T>& data,
+			 typename T3DDatafield<T>::value_type& min,
+			 typename T3DDatafield<T>::value_type& max)
 	{
-		typename T3DDatafield<T>::const_iterator i = data.begin(); 
-		typename T3DDatafield<T>::const_iterator e = data.end(); 
-		*min = *max = *i++; 
+		auto i = data.begin(); 
+		auto e = data.end(); 
+		min = max = *i++; 
 		
 		while (i != e) {
-			if (*i > *max) *max = *i; 
-			if (*i < *min) *min = *i; 
+			if (*i > max) max = *i; 
+			if (*i < min) min = *i; 
 			++i; 
 		}
 	}
@@ -44,19 +45,19 @@ struct min_max_3d {
 
 template <class  T>
 struct min_max_3d<T3DVector<T> > {
-	static void get( const T3DDatafield<T3DVector<T> >& data, T3DVector<T>* min, T3DVector<T>*max)
+	static void get( const T3DDatafield<T3DVector<T> >& data, T3DVector<T>& min, T3DVector<T>& max)
 	{
-		typename T3DDatafield<T3DVector<T> >::const_iterator i = data.begin(); 
-		typename T3DDatafield<T3DVector<T> >::const_iterator e = data.end(); 
-		*min = *max = *i++; 
+		auto i = data.begin(); 
+		auto e = data.end(); 
+		min = max = *i++; 
 		
 		while (i != e) {
-			if (i->x > max->x) max->x = i->x; 
-			if (i->y > max->y) max->y = i->y; 
-			if (i->z > max->z) max->z = i->z; 
-			if (i->x < min->x) min->x = i->x; 
-			if (i->y < min->y) min->y = i->y; 
-			if (i->z < min->z) min->z = i->z; 
+			if (i->x > max.x) max.x = i->x; 
+			if (i->y > max.y) max.y = i->y; 
+			if (i->z > max.z) max.z = i->z; 
+			if (i->x < min.x) min.x = i->x; 
+			if (i->y < min.y) min.y = i->y; 
+			if (i->z < min.z) min.z = i->z; 
 			++i; 
 		}
 	}
@@ -109,7 +110,7 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 	m_zbc->set_width(image.get_size().z);
 	m_z_cache.reset(); 
 
-	min_max_3d<T>::get(image, &m_min, &m_max);
+	min_max_3d<T>::get(image, m_min, m_max);
 	// we always allow that a pixel is set to zero
 	if (T() < m_min) 
 		m_min = T(); 
@@ -126,7 +127,7 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 	int cachZSize = image.get_size().z;
 	
 
-	auto filter_x = [this, cachXSize, cachYSize, poles](const tbb::blocked_range<size_t>& range_z) {
+	auto filter_x = [this, cachXSize, cachYSize, poles](const C1DParallelRange& range_z) {
 		coeff_vector buffer(cachXSize);
 		for (auto z = range_z.begin(); z != range_z.end() ; ++z){
 			for (int y = 0; y < cachYSize; y++) {
@@ -136,10 +137,10 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 			}
 		}
 	};
-	parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_x); 
+	pfor(C1DParallelRange(0, cachZSize, 1), filter_x); 
 	
 	
-	auto filter_y = [this, cachXSize, cachYSize, poles](const tbb::blocked_range<size_t>& range_z) {
+	auto filter_y = [this, cachXSize, cachYSize, poles](const C1DParallelRange& range_z) {
 		coeff_vector buffer(cachYSize);
 		for (auto z = range_z.begin(); z  != range_z.end() ; ++z){
 			for (int x = 0; x < cachXSize; x++) {
@@ -149,10 +150,10 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 			}
 		}
 	};
-	parallel_for(tbb::blocked_range<size_t>(0, cachZSize, 1), filter_y); 
+	pfor(C1DParallelRange(0, cachZSize, 1), filter_y); 
 	
 
-	auto filter_z = [this, cachXSize, cachZSize, poles](const tbb::blocked_range<size_t>& range_y) {
+	auto filter_z = [this, cachXSize, cachZSize, poles](const C1DParallelRange& range_y) {
 		coeff_vector buffer(cachZSize);
 		for (auto y = range_y.begin(); y  != range_y.end() ; ++y){
 			for (int x = 0; x < cachXSize; x++) {
@@ -162,7 +163,7 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 			}
 		}
 	};
-	parallel_for(tbb::blocked_range<size_t>(0, cachYSize, 1), filter_z); 
+	pfor(C1DParallelRange(0, cachYSize, 1), filter_z); 
 
 }
 

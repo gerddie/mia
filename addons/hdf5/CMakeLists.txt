@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-OPTION(USE_HDF5 "use hdf5 for data UI" TRUE)
+OPTION(WITH_HDF5 "use hdf5 for data UI" TRUE)
 
 
-IF (USE_HDF5)
+IF (WITH_HDF5)
   if (STRICT_DEPENDECIES)
     find_package(HDF5 REQUIRED)
   else (STRICT_DEPENDECIES)
@@ -44,4 +44,4 @@ IF (USE_HDF5)
 
   ENDIF(HDF5_FOUND)
   
-ENDIF(USE_HDF5)
+ENDIF(WITH_HDF5)

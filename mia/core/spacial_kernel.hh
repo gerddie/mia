@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ protected:
 	/** constructs the kernel
 	    \param fsize width parameter of the kernel
 	*/
-	C1DFilterKernel(int fsize);
+	C1DFilterKernel(unsigned fsize);
 
 	virtual ~C1DFilterKernel();
 public:
@@ -87,7 +87,7 @@ private:
 
 	virtual std::vector<double> do_apply(const std::vector<double>& data) const = 0;
 
-	int m_fsize;
+	unsigned m_fsize;
 
 };
 

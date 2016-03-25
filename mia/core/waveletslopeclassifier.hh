@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public:
 	   Initialize the classifier with the given curves and the information whether the means were stripped 
 	   @param m matrix of curves 
 	   @param mean_stripped
-	   @param min_freq minimum breatjing frequency to consider movement, set to <0 to diable this test 
+	   @param min_freq minimum breathing frequency to consider movement, set to <0 to diable this test 
 	 */
 	CWaveletSlopeClassifier(const Columns& m, bool mean_stripped, float min_freq);
 

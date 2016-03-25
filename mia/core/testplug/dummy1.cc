@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,14 @@ CDummy1::CDummy1():
 {
 }
 
+const std::string test_dummy_symbol()
+{
+	return "test_dummy_symbol from dummy1"; 
+}
+
 const string CDummy1::do_get_descr() const
 {
-	return "test module with no data";
+	return test_dummy_symbol();;
 }
 
 

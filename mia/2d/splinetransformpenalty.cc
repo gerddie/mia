@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,8 +111,8 @@ C2DSplineTransformPenaltyPlugin::C2DSplineTransformPenaltyPlugin(char const * co
 	m_weight(1.0), 
 	m_normalize(false)
 {
-	add_parameter("weight", new CFloatParameter(m_weight, 0.0f, std::numeric_limits<float>::max(), 
-						    false, "weight of penalty energy"));
+	add_parameter("weight", new CFBoundedParameter(m_weight, EParameterBounds::bf_min_open, {0.0f},
+						       false, "weight of penalty energy"));
 	add_parameter("norm", new CBoolParameter(m_normalize, false, "Set to 1 if the penalty should be normalized " 
 						 "with respect to the image size")); 
 }
@@ -135,8 +135,6 @@ EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DSplineTransformPenalty, C2DSplineTr
 
 C2DSplineTransformPenaltyPluginHandlerTest::C2DSplineTransformPenaltyPluginHandlerTest()
 {
-	CPathNameArray plugpath({bfs::path("splinepenalty")});
-	C2DSplineTransformPenaltyPluginHandler::set_search_path(plugpath);
 
 }
 

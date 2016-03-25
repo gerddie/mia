@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <mia/core/splinekernel.hh>
 #include <mia/core/boundary_conditions.hh>
 #include <mia/3d/image.hh>
-#include <tbb/mutex.h>
+#include <mia/core/parallel.hh>
 
 NS_MIA_BEGIN
 
@@ -152,10 +152,10 @@ private:
 	PSplineBoundaryCondition m_ybc; 
 	PSplineBoundaryCondition m_zbc; 
 
-	T m_min;
-	T m_max;
+	typename T3DDatafield<T>::value_type m_min;
+	typename T3DDatafield<T>::value_type m_max;
 	
-	mutable tbb::mutex m_cache_lock; 
+	mutable CMutex m_cache_lock; 
  	mutable CSplineKernel::SCache m_x_cache; 
 	mutable CSplineKernel::SCache m_y_cache; 
 	mutable CSplineKernel::SCache m_z_cache; 

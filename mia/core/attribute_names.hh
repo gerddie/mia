@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,11 +60,18 @@ extern EXPORT_CORE const char * IDDistanceSourceToPatient;
 extern EXPORT_CORE const char * IDPixelIntensityRelationship;
 extern EXPORT_CORE const char * IDPositionerPrimaryAngleIncrement; 
 extern EXPORT_CORE const char * IDPositionerSecondaryAngleIncrement; 
-extern EXPORT_CORE const char * IDSliceThickness; 
+extern EXPORT_CORE const char * IDSliceThickness;
+extern EXPORT_CORE const char * IDSpacingBetweenSlices; 
 extern EXPORT_CORE const char * IDPhotometricInterpretation; 
 
+
+
+
 extern EXPORT_CORE const char * IDAttrPixelSizeIsImager; 
-/// @endcond 
+extern EXPORT_CORE const char * IDRescaleIntercept; 
+extern EXPORT_CORE const char * IDRescaleSlope; 
+
+// \endcond DICOM_TAGS
 
 NS_MIA_END
 

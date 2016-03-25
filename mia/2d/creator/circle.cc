@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 NS_BEGIN(creator_circle_2d);
 using namespace mia;
 using namespace std;
-using namespace boost;
 
 class C2DCircleCreator	: public C2DImageCreator {
 public:
@@ -131,8 +130,8 @@ C2DCircleCreatorPlugin::C2DCircleCreatorPlugin():
 	m_f(1.0),
 	m_p(2.0)
 {
-	add_parameter("f", new CFloatParameter(m_f, 0, 10, false, "spherical change frequency"));
-	add_parameter("p", new CFloatParameter(m_p, 0.1, 100, false, "spherical shape parameter (2.0 = circle)"));
+	add_parameter("f", make_ci_param(m_f, 0.0f, 10.0f, false, "spherical change frequency"));
+	add_parameter("p", make_ci_param(m_p, 0.1f, 100.0f, false, "spherical shape parameter (2.0 = circle)"));
 }
 
 C2DImageCreator *C2DCircleCreatorPlugin::do_create()const

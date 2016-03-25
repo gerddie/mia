@@ -1,0 +1,179 @@
+#!/bin/bash 
+#
+#
+# This file is part of MIA - a toolbox for medical image analysis 
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+#
+# MIA is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+#
+
+
+out_image_type="png"
+blob_thresh=100
+class=2
+nclasses=3 
+prob_thresh=0.96 
+hist_thresh=1
+verbosity=message
+
+print_help() {
+    echo "This script runs the segmentation of one class from a series of gray "
+    echo "scale images. Parameters are"
+    echo " " 
+    echo "Usage: mia-segment-class-from-stack [options]"
+    echo " "
+    echo "File IO:"
+    echo "  --input       Input images (give like e.g. input0000.png), Input images"
+    echo "                are expected to be consecutively numbered" 
+    echo "  --output      Output image base name"  
+    echo "  --output-type Output file type, (default=$out_image_type)"
+    echo " "
+    echo "Parameters:"
+    echo "  --blop-thresh threshold for minimum size of blobs to be accepted (default=$blob_thresh)"
+    echo "  --prob-thresh class probability to accept as class member (default=$prob_thresh)"
+    echo "  --hist-thresh Percentage of pixels to merge into the extreme bins (default=$hist_thresh)"
+    echo "  --class class Id to segment"
+    echo "  --n-classes   number of classes to use in the fuzzy c-means classification (default=$nclasses)"
+    echo " "
+    echo "Info:"
+    echo "  --verbose -V  verbosity of the output (info|message|warning|error|fatal)"
+    echo " "
+    exit 0 
+}
+
+#
+# read the command line 
+#
+while [ -n "$1" ] ; do 
+
+    case "$1" in 
+	--blop-thresh) 
+	blop_thresh="$2"
+	shift
+	;;
+
+	--class)
+	class="$2"
+	shift
+	;;
+
+        --n-classes)
+	nclasses="$2"
+	shift
+	;;
+
+	--prob-thresh)
+	prob_thresh="$2"
+	shift
+	;;
+
+        --hist-thresh) 
+        hist_thresh="$2"
+        shift
+        ;;
+
+        --input) 
+        in_images="$2"
+        shift
+        ;;
+
+        --output) 
+        out_images="$2"
+        shift
+        ;;
+
+        --output-type) 
+            out_image_type="$2"
+            shift
+            ;;
+        
+        --verbose,-V)
+            verbosity="$2"
+            shift
+            ;;
+        
+	--help)
+            print_help
+	    exit 
+	    ;;
+
+	*)
+        echo "unknown option '$1' given, run with option --help to see supported options"
+	exit 
+	;;
+
+    esac
+    shift 
+done
+
+datestr=$(date +%y-%m-%d-%H-%m)
+temp_dir=$(mktemp -d stackprocess-${datestr}.XXX)
+
+echo mia-2dstack-cmeans-presegment -i $in_images -o "$temp_dir/class" \
+                              -T $hist_thresh \
+                              -S $prob_thresh \
+                              -C "kmeans:nc=$nclasses" \
+                              -L $class -V $verbosity 
+
+
+mia-2dstack-cmeans-presegment -i $in_images -o "$temp_dir/class" \
+                              -T $hist_thresh \
+                              -S $prob_thresh \
+                              -C "kmeans:nc=$nclasses" \
+                              -L $class -V $verbosity 
+
+number_pattern=$(mia-filenumberpattern -i "$in_images")
+
+# label the images 
+mia-2dstackfilter -i "$temp_dir/class${number_pattern}.png" -t v -o "$temp_dir/labeled"\
+                  "label:map=$temp_dir/labelmap.txt" -V $verbosity 
+
+#relabel joined labels 
+mia-2dimagefilterstack -i "$temp_dir/labeled${number_pattern}.v" -o $temp_dir/relabeled -t v \
+                        "labelmap:map=$temp_dir/labelmap.txt" -V $verbosity 
+
+# evaluate the histogram
+mia-multihist -i "$temp_dir/relabeled${number_pattern}.v" -o "$temp_dir/labelcount.txt" --max 1000000 --bins 1000000 -V $verbosity 
+
+
+# this can be done with awk
+echo "MiaLabelmap" > "$temp_dir/labelbinarizationmap.txt"
+awk -v thresh=$blob_thresh <"$temp_dir/labelcount.txt" \
+    '{if ($2 > thresh){ print $1 " 1"}else{ print $1 " 0"} }' \
+    >> "$temp_dir/labelbinarizationmap.txt" 
+
+mia-2dimagefilterstack -i "$temp_dir/relabeled${number_pattern}.v" -o "$temp_dir/inverse" -t v \
+                       "labelmap:map=$temp_dir/labelbinarizationmap.txt" \
+                       binarize:min=1 invert -V $verbosity 
+
+mia-2dstackfilter -i "$temp_dir/inverse${number_pattern}.v" -t v \
+                  -o "$temp_dir/ilabeled" "label:map=$temp_dir/ilabelmap.txt" -V $verbosity 
+
+mia-2dimagefilterstack -i "$temp_dir/ilabeled${number_pattern}.v" -o $temp_dir/irelabeled -t v \
+                       "labelmap:map=$temp_dir/ilabelmap.txt" -V $verbosity 
+
+mia-multihist -i "$temp_dir/irelabeled${number_pattern}.v" -o "$temp_dir/ilabelcount.txt" \
+              -V $verbosity --max 1000000 --bins 1000000
+
+echo "MiaLabelmap" > "$temp_dir/ilabelbinarizationmap.txt"
+awk -v thresh=$thresh <"$temp_dir/ilabelcount.txt" \
+    '{if ($2 > thresh){ print $1 " 1"}else{ print $1 " 0"} }'\
+    >> "$temp_dir/ilabelbinarizationmap.txt" 
+
+mia-2dimagefilterstack -i "$temp_dir/irelabeled${number_pattern}.v" -o "$out_images" -t png \
+                       "labelmap:map=$temp_dir/ilabelbinarizationmap.txt" binarize:min=1 invert -V $verbosity 
+
+#rm -rf $temp_dir
+
+

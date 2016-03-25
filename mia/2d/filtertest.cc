@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,22 +32,11 @@
 
 NS_MIA_BEGIN
 using namespace std;
-using namespace boost;
 namespace bfs=::boost::filesystem;
 using namespace boost::unit_test;
 
 EXPORT_2DTEST void imagefiltertest2d_prepare_plugin_path()
 {
-	CPathNameArray filtersearchpath;
-	filtersearchpath.push_back( bfs::path("2d") / bfs::path("filter"));
-	filtersearchpath.push_back( bfs::path("filter"));
-	C2DFilterPluginHandler::set_search_path(filtersearchpath);
-
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("core")/bfs::path("spacialkernel"));
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("core")/bfs::path("spacialkernel"));
-
-	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 }
 
 NS_MIA_END

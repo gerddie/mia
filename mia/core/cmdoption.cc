@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ void CCmdOption::do_get_long_help(std::ostream& /*os*/) const
 {
 }
 
-string CCmdOption::get_long_help_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const
+string CCmdOption::get_long_help_xml(CXMLElement& parent, HandlerHelpMap& handler_map) const
 {
 	cvdebug() << "write XML for '" << m_long_opt << "'\n"; 
 	ostringstream shelp; 
@@ -86,7 +86,7 @@ string CCmdOption::get_long_help_xml(xmlpp::Element& parent, HandlerHelpMap& han
 	return shelp.str(); 
 }
 
-void CCmdOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& /*parent*/, HandlerHelpMap& /*handler_map*/) const
+void CCmdOption::do_get_long_help_xml(std::ostream& os, CXMLElement& /*parent*/, HandlerHelpMap& /*handler_map*/) const
 {
 	do_get_long_help(os);
 }
@@ -217,7 +217,7 @@ void CCmdOption::do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)
 	}
 }
 
-void CCmdOption::add_option_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const
+void CCmdOption::add_option_xml(CXMLElement& parent, HandlerHelpMap& handler_map) const
 {
 	TRACE_FUNCTION;
 	auto option = parent.add_child("option"); 

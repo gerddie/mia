@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@
 #include <boost/algorithm/minmax_element.hpp>
 
 NS_MIA_USE
-using namespace boost; 
 using namespace std; 
 
 
@@ -349,7 +348,7 @@ struct FMinMax: public TFilter <pair<float, float> > {
 	template <typename T>
 	pair<float, float> operator ()(const T2DImage<T>& image) const {
 		pair<typename T2DImage<T>::const_iterator, typename T2DImage<T>::const_iterator> 
-			minmax = ::boost::minmax_element(image.begin(), image.end()); 
+			minmax = minmax_element(image.begin(), image.end()); 
 		return pair<float, float>(*minmax.first, *minmax.second); 
 	}
 }; 

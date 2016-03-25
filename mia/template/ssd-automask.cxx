@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,12 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
 #include <mia/core/property_flags.hh>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #include <numeric>
 #include <limits>
 
 NS_BEGIN(NS)
-
 
 struct SRA {
 	size_t n; 
@@ -47,34 +45,33 @@ struct FEvalSSDAuto : public mia::TFilter<double> {
 		SRA result_accumulator = {0, 0.0}; 
 		
 		SRA  result = 
-			tbb::parallel_reduce(tbb::blocked_range<size_t>(0, a.size()), result_accumulator, 
-				     [this, &a, &b](const tbb::blocked_range<size_t>& range, SRA acc)->SRA {
-					     for (auto ir = range.begin(); ir !=range.end(); ++ir){
-						     double va = a[ir]; 
-						     if (va >= m_src_mask_thresh) { 
-							     double vb = b[ir];
-							     if (vb >= m_ref_mask_thresh) {
-								     ++acc.n; 
-								     double d = va - vb; 
-								     acc.sum += d * d; 
-							     }
-						     }
-					     }
-					     return acc; 
-				     }, 
-				     [](const SRA& lhs, const SRA& rhs) -> SRA {
-					     SRA result;
-					     result.n = lhs.n + rhs.n; 
-					     result.sum = lhs.sum + rhs.sum; 
-					     return result; 
-				     }
-			); 
+			mia::preduce(mia::C1DParallelRange(0, a.size()), result_accumulator, 
+				[this, &a, &b](const mia::C1DParallelRange& range, SRA acc)->SRA {
+					for (auto ir = range.begin(); ir !=range.end(); ++ir){
+						double va = a[ir]; 
+						if (va >= m_src_mask_thresh) { 
+							double vb = b[ir];
+							if (vb >= m_ref_mask_thresh) {
+								++acc.n; 
+								double d = va - vb; 
+								acc.sum += d * d; 
+							}
+						}
+					}
+					return acc; 
+				}, 
+				[](const SRA& lhs, const SRA& rhs) -> SRA {
+					SRA result;
+					result.n = lhs.n + rhs.n; 
+					result.sum = lhs.sum + rhs.sum; 
+					return result; 
+				}
+				); 
 		mia::cvdebug() << "sum=" << result.sum << ", n=" <<  result.n << "\n"; 
 		return result.n > 0 ? 0.5 * result.sum / result.n : 0.0; 
 	}
 	double m_src_mask_thresh;
 	double m_ref_mask_thresh; 
-
 }; 
 
 
@@ -164,15 +161,16 @@ double TSSDAutomaskCost<TCost>::do_evaluate_force(const Data& a, const Data& b, 
 */
 template <typename CP, typename C> 
 TSSDAutomaskCostPlugin<CP,C>::TSSDAutomaskCostPlugin():
-	CP("ssd-automask")
+	CP("ssd-automask"),
+	m_src_mask_thresh(0.0), 
+	m_ref_mask_thresh(0.0)
 {
 	TRACE("TSSDAutomaskCostPlugin<CP,C>::TSSDAutomaskCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
-	const double limits = std::numeric_limits<double>::max(); 
-	this->add_parameter("rthresh", new mia::CDoubleParameter(m_ref_mask_thresh, -limits, limits, false, 
-								 "Threshold intensity value for reference image")); 
-
-	this->add_parameter("sthresh", new mia::CDoubleParameter(m_src_mask_thresh, -limits, limits, false, 
+	this->add_parameter("rthresh", new mia::CTParameter<double>(m_ref_mask_thresh, false, 
+								    "Threshold intensity value for reference image")); 
+	
+	this->add_parameter("sthresh", new mia::CTParameter<double>(m_src_mask_thresh, false, 
 								    "Threshold intensity value for source image")); 
 
 }

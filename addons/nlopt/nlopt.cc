@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -316,33 +316,32 @@ CNLOptMinimizerPlugin::CNLOptMinimizerPlugin():
 						  "local minimization algorithm that may be required for the"
 						  " main minimization algorithm."));
 	
-	add_parameter("stop", new CDoubleParameter(m_options.stopval, -HUGE_VAL, HUGE_VAL, false, 
-				  "Stopping criterion: function value falls below this value")); 
-	add_parameter("xtola", new CDoubleParameter(m_options.abs_xtol, 0.0, HUGE_VAL, false, 
+	add_parameter("stop", make_param(m_options.stopval, false,
+					 "Stopping criterion: function value falls below this value"));
+	
+	add_parameter("xtola", make_lc_param(m_options.abs_xtol, 0.0, false, 
 				  "Stopping criterion: the absolute change of all x-values is below "
 				  " this value")); 
-	add_parameter("xtolr", new CDoubleParameter(m_options.rel_xtol, 0.0, HUGE_VAL, false, 
+	add_parameter("xtolr", make_lc_param(m_options.rel_xtol, 0.0, false, 
 				  "Stopping criterion: the relative change of all x-values is below "
 				  " this value")); 
 
-	add_parameter("ftola", new CDoubleParameter(m_options.abs_ftol, 0.0, HUGE_VAL, false, 
-				  "Stopping criterion: the absolute change of the objective value is below "
-						    " this value")); 
-	add_parameter("ftolr", new CDoubleParameter(m_options.rel_ftol, 0.0, HUGE_VAL, false, 
+	add_parameter("ftola", make_lc_param(m_options.abs_ftol, 0.0, false, 
+					      "Stopping criterion: the absolute change of the objective value is below "
+					      " this value")); 
+	add_parameter("ftolr", make_lc_param(m_options.rel_ftol, 0.0, false, 
 				  "Stopping criterion: the relative change of the objective value is below "
 						    " this value")); 
 
-	add_parameter("maxiter", new CIntParameter(m_options.maxiter, 1, numeric_limits<int>::max(), false, 
-						   "Stopping criterion: the maximum number of iterations")); 
+	add_parameter("maxiter", make_lc_param(m_options.maxiter, 1, false, 
+						"Stopping criterion: the maximum number of iterations")); 
 	
-	add_parameter("step", new CDoubleParameter(m_options.step, 0.0, HUGE_VAL, false, 
-					 "Initial step size for gradient free methods")); 
-
-	add_parameter("lower", new CDoubleParameter(m_options.min_boundary, -HUGE_VAL, HUGE_VAL, false, 
-					 "Lower boundary (equal for all parameters)")); 
-
-	add_parameter("higher", new CDoubleParameter(m_options.max_boundary, -HUGE_VAL, HUGE_VAL, false, 
-					 "Higher boundary (equal for all parameters)")); 
+	add_parameter("step", make_lc_param(m_options.step, 0.0, false, 
+					     "Initial step size for gradient free methods")); 
+	
+	add_parameter("lower", make_param(m_options.min_boundary, false, "Lower boundary (equal for all parameters)")); 
+	
+	add_parameter("higher", make_param(m_options.max_boundary, false, "Higher boundary (equal for all parameters)")); 
 
 }
 	

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ struct PluginTestFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_C3DFullCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "image", "maskedimage", "taggedssd"}; 
+	set<string> test_data = { "image", "maskedimage", "taggedssd", "labelimage"}; 
 
 	test(C3DFullCostPluginHandler::instance().get_set(), test_data); 
 }
@@ -51,7 +51,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 	set<string> test_data = {
 		"binarize", "bandpass", "combiner", "convert","close", "crop", "dilate", "distance", "downscale", 
 		"erode", "gauss", "gradnorm", "growmask", "invert", "isovoxel", "kmeans",  
-		"label", "load", "lvdownscale", "mask", "mean", "median", "mlv", "msnormalizer", "open",  "resize",
+		"label", "labelmap", "labelscale", "load", "lvdownscale", "mask", "mean", "median", "mlv", "msnormalizer", "open",  "resize", "reorient", 
 		"sandp", "scale", "selectbig", "sepconv", "sws", "tee", "thinning", 
 		"transform", "variance", "ws" 
 	}; 
@@ -74,6 +74,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageIOPluginHandler,PluginTestFixture)
 		"inria", 
 		"hdf5", 
 		"mhd", 
+		"nifti", 
 		"vff", 
 		"vti", 
 		"vtk", 
@@ -103,7 +104,8 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageCreatorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DTransformCreatorHandler,PluginTestFixture) 
 {
 	set<string> test_data = { 
-		"affine", "axisrot", "raffine", "rigid", "spline", "translate", "rotation", "vf"
+		"affine", "axisrot", "raffine", "rigid", "spline", 
+		"translate", "rotation", "rotbend", "vf"
 	}; 
 	test(C3DTransformCreatorHandler::instance().get_set(), test_data); 
 }
@@ -201,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(test_CNoiseGeneratorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C1DSpacialKernelPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"gauss"
+		"gauss", "cdiff"
 	}; 
 	test(C1DSpacialKernelPluginHandler::instance().get_set(), test_data); 
 }
@@ -217,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DVFIOPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DFullCostPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"image", "maskedimage"
+		"image", "labelimage", "maskedimage"
 	}; 
 	
 	test(C2DFullCostPluginHandler::instance().get_set(), test_data); 
@@ -260,11 +262,16 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture)
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", "combiner",
 		"convert", "close", "crop", "dilate", "distance", 
 		"downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
-		"label", "labelmap", "load", "mask", "mean", "median", "mlv", 
+		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", 
 		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", 
-		"scale", "selectbig", "sepconv", "shmean", "sort-label", "sws", 
-		"tee", "thinning", "thresh", "transform", "ws"
-	}; 
+		"scale", "selectbig", "sepconv", "shmean", "sobel",
+		"sort-label", "sws", "tee", "thinning", "thresh", "tmean", 
+		"transform", "ws"
+	};
+#ifdef HAVE_MAXFLOW
+	test_data.insert("maxflow"); 
+#endif 
+
 	test(C2DFilterPluginHandler::instance().get_set(), test_data); 
 }
 

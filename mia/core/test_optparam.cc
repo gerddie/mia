@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,11 +48,11 @@ void try_parsing_and_setting(const char *options, const params& expect)
 
 	CParamList pm;
 	pm["kill"] =  CParamList::PParameter(new CBoolParameter(read.kill, false, "a bool value"));
-	pm["min"] =   CParamList::PParameter(new CFloatParameter(read.min, -100, 20, true, "a float value"));
-	pm["max"] =   CParamList::PParameter(new CFloatParameter(read.max, -10, 200, true, "a float value"));
+	pm["min"] =   CParamList::PParameter(make_ci_param(read.min, -100, 20, true, "a float value"));
+	pm["max"] =   CParamList::PParameter(make_ci_param(read.max, -10, 200, true, "a float value"));
 	pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, CCmdOptionFlags::required,
 								  "a string value"));
-	pm["n"] =     CParamList::PParameter(new CIntParameter(read.n, -200, 100, true, "an int value"));
+	pm["n"] =     CParamList::PParameter(make_ci_param(read.n, -200, 100, true, "an int value"));
 
 	CComplexOptionParser cpo(options);
 	BOOST_CHECK(cpo.size() == 1);
@@ -72,10 +72,10 @@ void try_parsing_and_setting(const char *options, const params& expect, params r
 {
 	CParamList pm;
 	pm["kill"] =  CParamList::PParameter(new CBoolParameter(read.kill, false, "a bool value"));
-	pm["min"] =   CParamList::PParameter(new CFloatParameter(read.min, -100, 20, false, "a float value"));
-	pm["max"] =   CParamList::PParameter(new CFloatParameter(read.max, -10, 200, false, "a float value"));
+	pm["min"] =   CParamList::PParameter(make_ci_param(read.min, -100, 20, false, "a float value"));
+	pm["max"] =   CParamList::PParameter(make_ci_param(read.max, -10, 200, false, "a float value"));
 	pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, CCmdOptionFlags::none, "a string value"));
-	pm["n"] =     CParamList::PParameter(new CIntParameter(read.n, -200, 100, false, "an int value"));
+	pm["n"] =     CParamList::PParameter(make_ci_param(read.n, -200, 100, false, "an int value"));
 
 	CComplexOptionParser cpo(options);
 	BOOST_CHECK(cpo.size() == 1);
@@ -154,10 +154,10 @@ BOOST_AUTO_TEST_CASE( test_reset )
 
 		CParamList pm;
 		pm["kill"] =  CParamList::PParameter(new CBoolParameter(read.kill, false, "a bool value"));
-		pm["min"] =   CParamList::PParameter(new CFloatParameter(read.min, -100, 20, false, "a float value"));
-		pm["max"] =   CParamList::PParameter(new CFloatParameter(read.max, -10, 200, false, "a float value"));
+		pm["min"] =   CParamList::PParameter(make_ci_param(read.min, -100, 20, false, "a float value"));
+		pm["max"] =   CParamList::PParameter(make_ci_param(read.max, -10, 200, false, "a float value"));
 		pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, CCmdOptionFlags::none, "a string value"));
-		pm["n"] =     CParamList::PParameter(new CIntParameter(read.n, -200, 100, false, "an int value"));
+		pm["n"] =     CParamList::PParameter(make_ci_param(read.n, -200, 100, false, "an int value"));
 		
 		CComplexOptionParser cpo("plugin:kill=0,min=1.1,nana=ping,max=3.1,n=1");
 		BOOST_CHECK(cpo.size() == 1);

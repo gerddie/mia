@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ FMedianMAD::result_type FMedianMAD::operator()( const T& data) const
 	result.first = median(buffer); 
 
 	transform(buffer.begin(), buffer.end(), buffer.begin(), 
-		  [&result](double x) {return abs(x - result.first);});
+		  [&result](double x) {return fabs(x - result.first);});
 	result.second = median(buffer); 
 	return result; 
 }

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #ifndef mia_core_cmdoption_flags_hh
 #define mia_core_cmdoption_flags_hh
 
-#include <mia/core/defines.hh>
+#include <mia/core/flags.hh>
 
 NS_MIA_BEGIN
 
@@ -36,26 +36,8 @@ enum class CCmdOptionFlags : int {
         nonipype = 16
 }; 
 
-inline CCmdOptionFlags operator | (CCmdOptionFlags lhs, CCmdOptionFlags rhs) 
-{
-        return static_cast<CCmdOptionFlags>(  static_cast<int>(lhs) | static_cast<int>(rhs)); 
-}
 
-inline CCmdOptionFlags operator  & (CCmdOptionFlags lhs, CCmdOptionFlags rhs) 
-{
-        return static_cast<CCmdOptionFlags>(  static_cast<int>(lhs) & static_cast<int>(rhs)); 
-}
-
-inline CCmdOptionFlags operator -= (CCmdOptionFlags& lhs, CCmdOptionFlags rhs) 
-{
-        lhs = static_cast<CCmdOptionFlags>(  static_cast<int>(lhs) & ~static_cast<int>(rhs)); 
-        return lhs; 
-}
-
-inline bool has_flag(CCmdOptionFlags flags, CCmdOptionFlags test) 
-{
-	return (flags & test) == test; 
-}
+IMPLEMENT_FLAG_OPERATIONS(CCmdOptionFlags); 
 
 inline std::ostream& operator << (std::ostream& os, CCmdOptionFlags flags) 
 {
@@ -72,6 +54,9 @@ inline std::ostream& operator << (std::ostream& os, CCmdOptionFlags flags)
         }; 
         return os; 
 }
+
+
+
 
 NS_MIA_END
 

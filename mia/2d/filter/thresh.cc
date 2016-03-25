@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,11 +70,7 @@ C2DThreshNImageFilterFactory::C2DThreshNImageFilterFactory():
 	m_thresh(5.0)
 {
 	add_parameter("shape", make_param(m_shape, "4n", false, "neighborhood shape to take into account")); 
-	
-	add_parameter("thresh", new CDoubleParameter(m_thresh, 
-						     -numeric_limits<double>::max(), 
-						     numeric_limits<double>::max(),
-						     false, "The threshhold value"));
+	add_parameter("thresh", make_param(m_thresh, false, "The threshold value"));
 }
 
 C2DFilter *C2DThreshNImageFilterFactory::do_create()const
@@ -84,8 +80,8 @@ C2DFilter *C2DThreshNImageFilterFactory::do_create()const
 
 const std::string C2DThreshNImageFilterFactory::do_get_descr() const
 {
-	return  "This filter sets all pixels of an image to zero that fall below a certain threshhold and "
-		"whose neighbours in a given neighborhood shape also fall below a this threshhold"; 
+	return  "This filter sets all pixels of an image to zero that fall below a certain threshold and "
+		"whose neighbours in a given neighborhood shape also fall below a this threshold"; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

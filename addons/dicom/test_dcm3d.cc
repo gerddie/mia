@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ void DicomLoaderFixture::check_attribute(const C3DImage& image, const char *name
 template <typename T> 
 void DicomSaveLoadFixture<T>::fill_attributes()
 {
-	org_image->set_attribute("MediaStorageSOPClassUID",  "somevalue");
+	org_image->set_attribute("MediaStorageSOPClassUID",  "othervalue");
 	org_image->set_attribute(IDSOPClassUID,  "othervalue");
 	org_image->set_voxel_size(C3DFVector(1.45, 2.34, 3));
 	org_image->set_origin(C3DFVector(2.45, 2.0, 3.1));
@@ -130,6 +130,8 @@ void DicomSaveLoadFixture<T>::fill_attributes()
 	org_image->set_attribute(IDSmallestImagePixelValue,"1");
 	org_image->set_attribute(IDLargestImagePixelValue,"20");
 	org_image->set_attribute(IDPhotometricInterpretation,"MONOCHROME2");
+	org_image->set_attribute(IDRescaleIntercept, -1.0f);
+	org_image->set_attribute(IDRescaleSlope, 2.0f);
 
 }
 

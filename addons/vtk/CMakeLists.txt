@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,9 +30,13 @@ IF(WITH_VTKIO)
     SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
     SET(vfio_path "${PLUGIN_INSTALL_PATH}/3dvf/io")
     SET(imageio_path "${PLUGIN_INSTALL_PATH}/3dimage/io")
-    
 
-    SET(SELECTED_VTK_LIBS ${VTK_MODULES_REQUESTED})
+    IF( ${VTK_VERSION_MAJOR} LESS 6 )
+      SET(SELECTED_VTK_LIBS ${VTK_LIBRARIES})
+    ELSE()
+      SET(SELECTED_VTK_LIBS ${VTK_MODULES_REQUESTED})
+    ENDIF()
+    
     SET(VTK_LINK_LIBS_MESH ${SELECTED_VTK_LIBS} miamesh)
     SET(VTK_LINK_LIBS_3D ${SELECTED_VTK_LIBS} mia3d)
 

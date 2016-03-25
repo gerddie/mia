@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include <mia/2d/segframe.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/angle.hh>
 
@@ -58,6 +57,23 @@ CSegFrame::CSegFrame(const string& image, const CSegStar& star, const Sections& 
 	m_version(0)
 
 {
+}
+
+
+template <typename T>
+void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required)
+{
+	auto attr = elm.get_attribute(key);
+	if (!attr) {
+		if (required) 
+			throw create_exception<std::runtime_error>( elm.get_name(), ":required attribute '", key, "' not found"); 
+		else 
+			return; 
+	}
+	
+	if (!from_string(attr->get_value(), out_value)) 
+		throw create_exception<std::runtime_error>( elm.get_name(), ":attribute '", key, "' has bogus value '", 
+						       attr->get_value(), "'");
 }
 
 
@@ -99,9 +115,9 @@ CSegFrame::CSegFrame(const Node& node, int version):
 		if (version == 2 && m_sections.size() > 2)
 			cvwarn() << "CSegFrame: gor a version 2 segmentation, but more then two sections, this may be bogus\n";
 			
-		read_attribute_from_node(elm, "quality", m_quality);  
-		read_attribute_from_node(elm, "brightness", m_brightness);  
-		read_attribute_from_node(elm, "contrast", m_contrast);  
+		read_attribute_from_node(elm, "quality", m_quality, false);  
+		read_attribute_from_node(elm, "brightness", m_brightness, false);  
+		read_attribute_from_node(elm, "contrast", m_contrast, false);  
 	}
 }
 
@@ -118,8 +134,8 @@ void CSegFrame::set_imagename(const std::string& name)
 void CSegFrame::rename_base(const std::string& new_base)
 {
 	bfs::path filename(m_filename); 
-	string suffix = __bfs_get_extension(filename); 
-	string name = __bfs_get_stem(filename);
+	string suffix = filename.extension().string(); 
+	string name = filename.stem().string();
 	auto i = name.rbegin();
 	int k = 0; 
 	while (i != name.rend() && isdigit(*i) ) {

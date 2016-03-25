@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 #include <config.h>
-//#include <miaconfig.h>
+#include <miaconfig.h>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -32,9 +32,14 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-#include <tbb/task_scheduler_init.h>
 
-#include <libxml++/libxml++.h>
+#ifdef HAVE_TBB 
+#include <tbb/task_scheduler_init.h>
+#else
+#include <mia/core/parallelcxx11.hh>
+#endif
+
+#include <mia/core/xmlinterface.hh>
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdstringoption.hh>
@@ -90,6 +95,7 @@ struct CCmdOptionListData {
 	vstream::Level verbose;
 	int max_threads;
 	bool m_selftest_run; 
+	bool m_stdout_is_result; 
 
 	CCmdOptionListData(const SProgramDescription& description); 
 
@@ -192,7 +198,7 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_default_author = "Gert Wollny"; 
 const char *g_basic_copyright1 = "This software is Copyright (c) "; 
-const char *g_basic_copyright2 = " 1999-2014 Leipzig, Germany and Madrid, Spain. "
+const char *g_basic_copyright2 = " 1999-2015 Leipzig, Germany and Madrid, Spain. "
 	      "It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
 	      "under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
 	      "For more information run the program with the option '--copyright'.\n"; 
@@ -202,13 +208,18 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	usage(false),
 	version(false), 
 	copyright(false),
-	verbose(vstream::ml_warning), 
+	verbose(vstream::ml_warning),
+#if HAVE_TBB 
 #if TBB_PREFERE_ONE_THREAD
 	max_threads(1), 
-#else 
+#else
 	max_threads(tbb::task_scheduler_init::automatic), 
-#endif 
+#endif
+#else
+	max_threads(-1),
+#endif 	
 	m_selftest_run(false), 
+	m_stdout_is_result(false), 
 	m_log(&std::cout)
 {
 
@@ -306,26 +317,25 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 }
 
 
-using xmlpp::Element; 
 void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHandlerBase *additional_help) const
 {
 	HandlerHelpMap handler_help_map; 
 	if (additional_help) 
 		additional_help->add_dependend_handlers(handler_help_map); 
 		
-	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
+	unique_ptr<CXMLDocument> doc(new CXMLDocument);
 	
-	Element* nodeRoot = doc->create_root_node("program");
-	Element* program_name = nodeRoot->add_child("name"); 
+	auto nodeRoot = doc->create_root_node("program");
+	auto program_name = nodeRoot->add_child("name"); 
 	program_name->set_child_text(name_help); 
-	Element*  version_string = nodeRoot->add_child("version"); 
+	auto  version_string = nodeRoot->add_child("version"); 
 	version_string->set_child_text(get_revision()); 
-	Element* program_group = nodeRoot->add_child("section"); 
+	auto program_group = nodeRoot->add_child("section"); 
 	program_group->set_child_text(m_program_group); 
-	Element* description = nodeRoot->add_child("description"); 
+	auto description = nodeRoot->add_child("description"); 
 	description->set_child_text(m_general_help); 
-	Element* basic_usage = nodeRoot->add_child("basic_usage"); 
-	Element*  short_descr = nodeRoot->add_child("whatis"); 
+	auto basic_usage = nodeRoot->add_child("basic_usage"); 
+	auto  short_descr = nodeRoot->add_child("whatis"); 
 	short_descr->set_child_text(m_short_descr); 
 
 
@@ -337,7 +347,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 		if (g->second.empty()) 
 			continue; 
 		
-		Element* group = nodeRoot->add_child("group"); 
+		auto group = nodeRoot->add_child("group"); 
 		group->set_attribute("name", g->first); 
 		
 		for (auto iopt= g->second.begin(); iopt != g->second.end(); ++iopt) {
@@ -349,34 +359,38 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 			
 			if (opt.is_required()) {
 				if (opt.get_short_option())
-					usage_text << "-" << opt.get_short_option() << " &lt;" 
-						   << opt.get_long_option() << "&gt; "; 
+					usage_text << "-" << opt.get_short_option() << " <" 
+						   << opt.get_long_option() << "> "; 
 				else
 					usage_text << "--" << opt.get_long_option() 
-						   << " &lt;value&gt; ";
+						   << " <value> ";
 			}
 		}
 	}
 	if (additional_help) {
-		Element* free_parameters = nodeRoot->add_child("freeparams"); 
+		auto free_parameters = nodeRoot->add_child("freeparams"); 
 		free_parameters->set_attribute("name", additional_help->get_descriptor()); 
 		free_parameters->set_attribute("type", "factory"); 
+	}
+	
+	if (m_stdout_is_result) {
+		nodeRoot->add_child("stdout-is-result");
 	}
 		
 	usage_text << "[options]"; 
 	if (additional_help) 
-		usage_text << " &lt;PLUGINS:" << additional_help->get_descriptor() <<"&gt;"; 
+		usage_text << " <PLUGINS:" << additional_help->get_descriptor() <<">"; 
 	basic_usage->set_child_text(usage_text.str()); 
 
 	for (auto h = handler_help_map.begin(); h != handler_help_map.end(); ++h)
-		h->second->get_xml_help(nodeRoot);
+		h->second->get_xml_help(*nodeRoot);
 	
-	Element* example = nodeRoot->add_child("Example");
+	auto example = nodeRoot->add_child("Example");
 	example->set_child_text(m_program_example_descr); 
-	Element* example_code = example->add_child("Code"); 
+	auto example_code = example->add_child("Code"); 
 	example_code->set_child_text(m_program_example_code); 
 	
-	Element* cr = nodeRoot->add_child("Author");
+	auto cr = nodeRoot->add_child("Author");
 	cr->set_child_text(m_author); 
 
 	ofstream xmlfile(help_xml.c_str());  
@@ -672,6 +686,13 @@ CCmdOptionList::parse(size_t argc, char *args[], const string& additional_type,
 	return do_parse(argc, (const char **)args, true, additional_help);
 }
 
+void CCmdOptionList::set_stdout_is_result()
+{
+	m_impl->m_stdout_is_result = true; 
+}
+
+#ifdef HAVE_TBB 
+
 struct TBBTaskScheduler {
 	static const tbb::task_scheduler_init& initialize(int max_threads);
 }; 
@@ -689,6 +710,7 @@ const tbb::task_scheduler_init& TBBTaskScheduler::initialize(int max_threads)
 	return init; 
 }
 
+#endif 
 
 CCmdOptionList::EHelpRequested
 CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional, 
@@ -798,10 +820,14 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 		throw invalid_argument(msg.str());
 	}
 	
+#ifdef HAVE_TBB 
 	// the return value and info output is mostly used to make sure the compiler 
 	// doesn't optimize anything away. 
 	const auto& ts  = TBBTaskScheduler::initialize(m_impl->max_threads); 
-	cvinfo() << "Task scheduler set to " << (ts.is_active() ? "active":"inactive") << "\n"; 
+	cvinfo() << "Task scheduler set to " << (ts.is_active() ? "active":"inactive") << "\n";
+#else
+	CMaxTasks::set_max_tasks(m_impl->max_threads); 
+#endif 	
 	return hr_no; 
 }
 
@@ -843,7 +869,7 @@ void CCmdFlagOption::do_write_value(std::ostream& os) const
 
 void CCmdFlagOption::do_get_long_help(std::ostream& os) const
 {
-	os << " supported flags:(" <<m_map.get_flagnames() << os << ")";
+	os << " supported flags:(" <<m_map.get_flagnames() << ")";
 }
 
 const std::string CCmdFlagOption::do_get_value_as_string() const

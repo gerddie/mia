@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,11 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <type_traits>
+#include <iomanip>
 #include <boost/any.hpp>
 #include <boost/ref.hpp>
+#include <boost/lexical_cast.hpp>
 #include <mia/core/attributetype.hh>
 
 NS_MIA_BEGIN
@@ -560,12 +563,28 @@ int TAttribute<T>::type_id() const
    \remark this should replace the parameter translation methods 
 */
 
+template <typename T, bool is_floating>
+struct __convert_to_string
+{
+	static std::string apply(const typename ::boost::reference_wrapper<T>::type value) {
+		return boost::lexical_cast<std::string>(value);
+	}
+}; 
+
+template <typename T>
+struct __convert_to_string<T, true> {
+	static std::string apply(const typename ::boost::reference_wrapper<T>::type value) {
+		std::stringstream sval;
+		sval << std::setprecision(10) << value; 
+		return sval.str();
+	}
+}; 
+
+
 template <typename T>
 struct dispatch_attr_string {
 	static std::string val2string(const typename ::boost::reference_wrapper<T>::type value) {
-		std::stringstream sval;
-		sval << value;
-		return sval.str();
+		return __convert_to_string<T, std::is_floating_point<T>::value>::apply(value);
 	}
 	static T string2val(const std::string& str) {
 		T v;
@@ -582,8 +601,9 @@ struct dispatch_attr_string<std::vector<T> > {
 		std::stringstream sval;
 		sval << value.size();
 		for (size_t i = 0; i < value.size(); ++i)
-			sval << " " << value[i];
-		return sval.str();
+			sval << " "
+			     <<  __convert_to_string<T, std::is_floating_point<T>::value>::apply(value[i]); 
+	        return sval.str();
 	}
 	static std::vector<T> string2val(const std::string& str) {
 		size_t s;
@@ -620,6 +640,15 @@ struct dispatch_attr_string<std::vector<bool> > {
 		std::istringstream svalue(str);
 		svalue >> s;
 		std::vector<bool> v(s);
+
+		// Added override for coverity
+		// 
+		// Since s is used as the size for the new vector, a large
+		// value will result in a std::bad_alloc exception. This
+		// is not worse than bailing out because s is larger than
+		// an abitrary set boundary that youle be cheked here.
+		// 
+		// coverity[tainted_scalar] 
 		for (size_t i = 0; i < s; ++i) {
 			bool value;
 			svalue >> value;
@@ -720,23 +749,6 @@ bool TAttribute<T>::do_is_less(const CAttribute& other) const
 		return m_value < o->m_value;
 
 	return strcmp(typedescr(), other.typedescr()) < 0;
-}
-
-template <typename T>
-bool TTranslator<T>::register_for(const std::string& key)
-{
-	TTranslator<T> * me = new TTranslator<T>();
-	if (!me->do_register(key)) {
-		delete me; 
-		return false; 
-	}
-	return true; 
-}
-
-template <typename T>
-PAttribute TTranslator<T>::do_from_string(const std::string& value) const
-{
-	return PAttribute(new TAttribute<T>(dispatch_attr_string<T>::string2val(value)));
 }
 
 template <typename T>

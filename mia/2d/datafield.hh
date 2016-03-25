@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include <mia/2d/vector.hh>
 #include <mia/2d/iterator.hh>
 #include <mia/core/parameter.hh>
+#include <mia/core/attributes.hh>
 #include <mia/core/typedescr.hh>
 #include <miaconfig.h>
 
@@ -54,7 +55,7 @@ class EXPORT_2DDATAFIELD T2DDatafield  {
 public:
 
 	/// type for the flat reprentation of the 2D data field 
-	typedef  ::std::vector<T> data_array;
+	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
 	/// pointer type 
 	typedef  std::shared_ptr<data_array > data_pointer;
@@ -100,7 +101,7 @@ public:
 	   \param size 
 	   \param data must at least be of size (size.x*size.y)
 	*/
-	T2DDatafield(const C2DBounds& size, const data_array& data);
+	T2DDatafield(const C2DBounds& size, const std::vector<T>& data);
 
 	/** copy constructor, it does a shallow copy of the original, i.e. 
 	    the data is not copied, only the shared pointer increases its reference count.
@@ -291,7 +292,7 @@ public:
 private:
 	C2DBounds  m_size;
 	data_pointer m_data;
-	const static T Zero;
+	const static value_type Zero;
 };
 
 /// 2D scalar field that holds double values 
@@ -334,7 +335,12 @@ typedef  CTParameter<C2DBounds> C2DBoundsParameter;
 /// Parameter type for 2D vector
 typedef CTParameter<C2DFVector> C2DFVectorParameter; 
 
+/// typedef for the C2DFVector to std::string translator 
+typedef TTranslator<C2DFVector> C2DFVectorTranslator;
+
 /// @cond NEVER 
+
+
 DECLARE_TYPE_DESCR(C2DBounds);
 DECLARE_TYPE_DESCR(C2DFVector); 
 /// @endcond

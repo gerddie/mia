@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,78 @@ BOOST_FIXTURE_TEST_CASE( test_gauss, SepconvTextFixture )
 	auto filter = BOOST_TEST_create_from_plugin<C2DGaussFilterPlugin>("gauss:w=1"); 
 	run(*filter); 
 }
+
+BOOST_AUTO_TEST_CASE( test_sobel_x )
+{
+	auto sobel_x = BOOST_TEST_create_from_plugin<C2DSobelFilterPlugin>("sobel:dir=x"); 
+
+	const float in_image[] = {
+		1, 2, 3, 4,                 
+		2, 3, 2, 5,
+		6, 7, 8, 9,
+		5, 4, 6, 3,
+		6, 7, 8, 3
+	};
+
+	
+	const float test_image[] = {
+		0, 0.75,    1, 0, 
+		0, 0.5,    1, 0, 
+		0, 2.5/4,      0.625, 0,       
+		0, 0.75, -0.5, 0,     
+		0, 3.5/4, -6.5 / 4, 0        
+	};
+
+	C2DFImage src(C2DBounds(4,5), in_image);
+
+	auto filtered = sobel_x->filter(src);
+
+	const C2DFImage& f = dynamic_cast<const C2DFImage&>(*filtered);
+
+	BOOST_CHECK_EQUAL(f.get_size(), src.get_size());
+
+	const float *t = test_image; 
+	for(auto i = f.begin(); i != f.end(); ++i, ++t) {
+		cvdebug() << *i << " " << *t << "\n"; 
+		BOOST_CHECK_CLOSE(*i, *t, 0.1);
+	}
+}
+
+BOOST_AUTO_TEST_CASE( test_sobel_y )
+{
+	auto sobel_y = BOOST_TEST_create_from_plugin<C2DSobelFilterPlugin>("sobel:dir=y"); 
+
+	const float in_image[] = {
+		1, 2, 6, 5, 6,
+		2, 3, 7, 4, 7,
+		3, 2, 8, 6, 8,
+		4, 5, 9, 3, 3
+	};
+
+	
+	const float test_image[] = {
+		0,  0,  0,  0,  0,
+		0.75, 0.5, 2.5/4, 0.75, 3.5/4,
+		1, 1, 0.625, -0.5, -6.5/4,
+		0,  0,  0,  0,  0
+	};
+
+	C2DFImage src(C2DBounds(5,4), in_image);
+
+	auto filtered = sobel_y->filter(src);
+
+	const C2DFImage& f = dynamic_cast<const C2DFImage&>(*filtered);
+
+	BOOST_CHECK_EQUAL(f.get_size(), src.get_size());
+
+	const float *t = test_image; 
+	for(auto i = f.begin(); i != f.end(); ++i, ++t) {
+		cvdebug() << *i << " " << *t << "\n"; 
+		BOOST_CHECK_CLOSE(*i, *t, 0.1);
+	}
+	
+}
+
 
 
 

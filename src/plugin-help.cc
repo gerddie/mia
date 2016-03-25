@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,8 +99,10 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 int do_main( int argc, char *argv[] )
 {
 	CCmdOptionList options(description);
+	options.set_stdout_is_result();
 	if (options.parse(argc, argv, "plugin-descriptor") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
+
 		
 	auto handlers = collect_handlers(); 
 		

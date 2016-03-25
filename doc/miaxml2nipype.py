@@ -1,6 +1,6 @@
-#!/bin/env python 
+#!/usr/bin/env python 
 #
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -124,8 +124,12 @@ class  NipypeOutput:
         
 
     def create_trait_input_param_start(self, param, trait, enums=""):
-        self.out.write ( '\tinput_{} = traits.{}({} desc="{}", '.format(dash_to_underscore(param.long), 
-                                                                                trait, enums, param.text)), 
+        dash_removed_name = dash_to_underscore(param.long)
+        # this should be implemented for all python keywords 
+        if dash_removed_name == "lambda":
+            dash_removed_name = dash_removed_name + "_"
+        self.out.write ( "\t{} = traits.{}({} desc=\"\"\"{}\"\"\", ".format(dash_removed_name, 
+                                                                  trait, enums, param.text)), 
 
     def create_param_tail(self, param):
         if param.required: 
@@ -188,17 +192,17 @@ class  NipypeOutput:
         self.create_param_tail(param)
 
     def create_output_String_param(self, param):
-        self.out.write ( '\toutput_{} = traits.String(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
+        self.out.write ( '\t{} = traits.String(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
         self.out.write('argstr="--{} %s" '.format(param.long)), 
         self.create_param_tail(param)
 
     def create_output_File_param(self, param):
-        self.out.write ( '\toutput_{} = File(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
+        self.out.write ( '\t{} = File(desc="{}", '.format(dash_to_underscore(param.long), param.text)), 
         self.out.write('argstr="--{} %s" '.format(param.long)), 
         self.create_param_tail(param)
 
     def create_output_File_param_outspec(self, param):
-        self.out.write ( '\toutput_{} = File(desc="{}"'.format(dash_to_underscore(param.long), param.text)), 
+        self.out.write ( '\t{} = File(desc="{}"'.format(dash_to_underscore(param.long), param.text)), 
         if param.required: 
                 self.out.write (', exists = True '), 
         self.out.write( ')\n')
@@ -233,7 +237,7 @@ class  NipypeOutput:
             InputTable.get(i.type, self.write_unknown_type)(i)
 
     def write_input_free_params_spec(self, freeparams):
-        self.out.write ( '\tinput_free_params = traits.ListStr(desc="Plug-in specifications of type {}", '.format(freeparams)),
+        self.out.write ( '\tfree_params = traits.ListStr(desc="Plug-in specifications of type {}", '.format(freeparams)),
         self.out.write ( 'argstr="%s")')
 
     def write_output_spec(self, name, outputs, params):
@@ -246,19 +250,42 @@ class  NipypeOutput:
 
         for i in outputs: 
             ParamTableCopy.get(i.type, self.write_unknown_type)(i)
+
+        if self.descr.stdout_is_result:
+            self.out.write ( '\tstdout = traits.Str(\'result from stdout\')\n')
+            
         self.out.write ("\n")
 
-    def write_task(self, name):
+    def write_task(self, name, outputs):
 
-        self.out.write('class {}_Task(CommandLine):\n'.format(name))
+        self.out.write('class {}(CommandLine):\n'.format(name))
         self.out.write('\tinput_spec = {}_InputSpec\n'.format(name))
         self.out.write('\toutput_spec = {}_OutputSpec\n'.format(name))
-        self.out.write('\t_cmd = "{}"\n'.format(self.descr.name))
+        self.out.write('\t_cmd = "{}"\n\n'.format(self.descr.name))
+
+        self.out.write('\tdef _list_outputs(self):\n')
+        self.out.write('\t\toutputs = self.output_spec().get()\n')
+
+        for i in outputs: 
+            # there is a problem here: for files that are given as pattern this will fail. 
+            if i.type == "io" or i.type == "string":
+                name = dash_to_underscore(i.long)
+                self.out.write('\t\toutputs[\'{}\']=os.path.abspath(self.inputs.{})\n'.format(name,name))
+            else:
+                print('Only io or string supported for output, but got {}'.format(i))
+        
+        self.out.write('\t\treturn outputs\n')
+       
+        if self.descr.stdout_is_result:
+            self.out.write('\tdef aggregate_outputs(self, runtime=None, needed_outputs=None):\n')
+            self.out.write('\t\toutputs = super({}, self).aggregate_outputs(runtime, needed_outputs)\n'.format(name))
+            self.out.write('\t\toutputs.stdout = runtime.stdout\n')
+            self.out.write('\t\treturn outputs\n')
 
     def write_main(self, name):
 
         self.out.write( 'if __name__ == "__main__":\n')
-        self.out.write( '\tmia_prog = {}_Task()\n'.format(name))
+        self.out.write( '\tmia_prog = {}()\n'.format(name))
         self.out.write( '\tprint( mia_prog.cmdline)\n')
 
     def write_nipype_file(self):
@@ -297,7 +324,7 @@ class  NipypeOutput:
         self.write_output_spec(name, outputs, params)
 
         self.out.write("\n#\n# Task class specification\n#\n"); 
-        self.write_task(name)
+        self.write_task(name, outputs)
 
         self.out.write("\n#\n# Main function used for testing\n#\n"); 
         self.write_main(name)

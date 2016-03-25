@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,9 +115,13 @@ public:
 		bool retval = true;
 		for(size_t i = m_start; i < end; ++i) {
 			P2DImage pimage(new  T2DImage<T>(__dispatch<T, s_dir>::get_slice(i, image)));
-			stringstream out_name;
-			out_name << m_fname << setw(m_digits) << setfill('0') << i << "." << m_type;
-			retval &= save_image(out_name.str(), pimage);
+			if (m_n != 1) {
+				stringstream out_name;
+				out_name << m_fname << setw(m_digits) << setfill('0') << i << "." << m_type;
+				retval &= save_image(out_name.str(), pimage);
+			}else{
+				retval &= save_image(m_fname, pimage);
+			}
 		}
 		return retval;
 	}
@@ -136,7 +140,7 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string out_type("png");
 	size_t start_slice = 0;
-	size_t slice_number = 0;
+	size_t slice_number = 1;
 	EDirection direction = dir_xy;
 	int digits = 4; 
 
@@ -146,13 +150,14 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', 
 			      "input image(s) to be filtered", 
 			      CCmdOptionFlags::required_input, &C3DImageIOPluginHandler::instance()));
-	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) base name, give without "
-			      "extension since this will be based on the '--type' option", 
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s). If number != 1 than this is used as a base name "
+			      "and should be given without extension since this will be based on the '--type' option. "
+			      "If number=1 then this exact file name will be used.", 
 			      CCmdOptionFlags::required_output, &imageio2d));
-	options.add(make_opt( out_type, imageio2d.get_set(), "type", 't', "output file type"));
+	options.add(make_opt( out_type, imageio2d.get_set(), "type", 't', "output file type for number != 1"));
 	options.add(make_opt( start_slice, "start", 's',"start slice number"));
 	options.add(make_opt( slice_number, "number", 'n', "number of slices (all=0)"));
-	options.add(make_opt( digits, "ndigits", 0, "minimum number of digits of the file name numbers"));
+	options.add(make_opt( digits, "ndigits", 0, "minimum number of digits of the file name numbers (if n != 1)"));
 
 	options.add(make_opt( direction, GDirectionmap, "dir", 'd', 
 			      "slice direction (xy=axial, xz=coronal, yz=saggital)"));

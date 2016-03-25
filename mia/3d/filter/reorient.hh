@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,22 @@ NS_BEGIN(reorient_3dimage_filter)
  */
 class C3DReorient: public mia::C3DFilter {
 public:
-	enum EOrientations {xyz, xzy, yxz, yzx, zxy, zyx, axial, coronal, saggital, ooo};
+	enum EOrientations {xyz,
+			    yzx, // permutate axes
+			    zxy, // permutate axes
+			    flip_yz, 
+			    flip_xy,
+			    flip_xz,
+			    rotate_x90,
+			    rotate_x180,
+			    rotate_x270,
+			    rotate_y90,
+			    rotate_y180,
+			    rotate_y270,
+			    rotate_z90,
+			    rotate_z180,
+			    rotate_z270,
+			    ooo};
 
 	C3DReorient(EOrientations strategy);
 
@@ -48,7 +63,6 @@ public:
 	C3DReorient::result_type operator () (const mia::T3DImage<T>& data) const;
 private:
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	EOrientations get_strategy(mia::E3DImageOrientation old_orientation) const;
 	mia::E3DImageOrientation get_new_orientation(EOrientations strategy, mia::E3DImageOrientation old_orientation)const;
 	EOrientations m_strategy;
 };

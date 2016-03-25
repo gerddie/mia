@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,23 +163,6 @@ BOOST_FIXTURE_TEST_CASE( test_float_option, CmdlineParserFixture )
 	catch (invalid_argument& x) {
 		BOOST_MESSAGE(string("Caught:") + string(x.what()));
 	}
-}
-
-BOOST_FIXTURE_TEST_CASE( test_ranged_float_option, CmdlineParserFixture )
-{
-	float value = 10;
-	PCmdOption popt(make_opt(value, -10, 12, "float", 'f', "a float option"));
-	const char *str_value = "12.2";
-	try {
-		popt->set_value(str_value);
-		BOOST_CHECK(value == 12.0f);
-		BOOST_CHECK(popt->get_value_as_string() == "12");
-	}
-	catch (invalid_argument& x) {
-		BOOST_FAIL(x.what());
-	}
-
-	BOOST_CHECK_THROW(popt->set_value("12.1s"), invalid_argument); 
 }
 
 
@@ -453,7 +436,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "Example usage:\n  Example text\n"
 			  "    \n    test-program Example command\n\n"
 			  "Copyright:\n"
-			  "  This software is Copyright (c) Gert Wollny 1999-2014 Leipzig, \n"
+			  "  This software is Copyright (c) Gert Wollny 1999-2015 Leipzig, \n"
 			  "  Germany and Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and\n"
 			  "  you may redistribute it under the terms of the GNU GENERAL PUBLIC \n"
 			  "  LICENSE Version 3 (or later). For more information run the program \n"

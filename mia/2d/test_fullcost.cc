@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,10 +90,10 @@ BOOST_AUTO_TEST_CASE( test_fullcost )
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	c.set_size(t.get_size()); 
 	
-	BOOST_CHECK_EQUAL(c.evaluate(t,gradient), 0.5 * mcost);
+	BOOST_CHECK_CLOSE(c.evaluate(t,gradient), 0.5 * mcost, 0.01);
 
-	BOOST_CHECK_EQUAL(gradient[0], 0.5 * mgx);
-	BOOST_CHECK_EQUAL(gradient[1], 0.5 * mgy);
+	BOOST_CHECK_CLOSE(gradient[0], 0.5 * mgx, 0.01);
+	BOOST_CHECK_CLOSE(gradient[1], 0.5 * mgy, 0.01);
 }
 
 BOOST_AUTO_TEST_CASE( test_multicost ) 
@@ -117,10 +117,10 @@ BOOST_AUTO_TEST_CASE( test_multicost )
 	CDoubleVector gradient(t.degrees_of_freedom(), true); 
 	costs.set_size(t.get_size()); 
 	
-	BOOST_CHECK_EQUAL(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2);
+	BOOST_CHECK_CLOSE(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2, 0.1);
 
-	BOOST_CHECK_EQUAL(gradient[0], 0.5 * mgx1 + 0.2 * mgx2);
-	BOOST_CHECK_EQUAL(gradient[1], 0.5 * mgy1 + 0.2 * mgy2);
+	BOOST_CHECK_CLOSE(gradient[0], 0.5 * mgx1 + 0.2 * mgx2, 0.1);
+	BOOST_CHECK_CLOSE(gradient[1], 0.5 * mgy1 + 0.2 * mgy2, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( test_multicost2 ) 
@@ -145,10 +145,10 @@ BOOST_AUTO_TEST_CASE( test_multicost2 )
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	costs.set_size(t.get_size()); 
 	
-	BOOST_CHECK_EQUAL(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2);
+	BOOST_CHECK_CLOSE(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2, 0.1);
 
-	BOOST_CHECK_EQUAL(gradient[0], 0.5 * mgx1 + 0.2 * mgx2);
-	BOOST_CHECK_EQUAL(gradient[1], 0.5 * mgy1 + 0.2 * mgy2);
+	BOOST_CHECK_CLOSE(gradient[0], 0.5 * mgx1 + 0.2 * mgx2, 0.1);
+	BOOST_CHECK_CLOSE(gradient[1], 0.5 * mgy1 + 0.2 * mgy2, 0.1);
 }
 
 
@@ -194,8 +194,8 @@ private:
 BOOST_AUTO_TEST_CASE( test_load_plugins ) 
 {	
 	const C2DFullCostPluginHandler::Instance& handler = PrepareFullcostTests::instance().fullcost_handler(); 
-	BOOST_CHECK_EQUAL(handler.size(), 2u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "image maskedimage ");
+	BOOST_CHECK_EQUAL(handler.size(), 3u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "image labelimage maskedimage ");
 }
 
 #if 0 
@@ -387,17 +387,5 @@ const C2DTransformCreatorHandler::Instance& PrepareFullcostTests::transform_hand
 
 PrepareFullcostTests::PrepareFullcostTests()
 {
-	CPathNameArray cost_kernel_plugpath;
-	cost_kernel_plugpath.push_back(bfs::path("cost"));
-	C2DImageCostPluginHandler::set_search_path(cost_kernel_plugpath);
-	
-	CPathNameArray cost_plugpath;
-	cost_plugpath.push_back(bfs::path("fullcost"));
-	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
-
-	CPathNameArray transform_searchpath;
-	transform_searchpath.push_back(bfs::path("transform"));
-	C2DTransformCreatorHandler::set_search_path(transform_searchpath);
-
 }
 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,16 +26,18 @@
 #include <set>
 #include <vector>
 #include <ostream>
+#include <atomic>
 #include <boost/any.hpp>
 
 #include <mia/core/utils.hh>
 #include <mia/core/filetools.hh>
 
 #include <mia/core/defines.hh>
+#include <mia/core/parallel.hh>
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
 #include <mia/core/handlerbase.hh>
-
+#include <mia/core/searchpath.hh>
 #include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
@@ -56,8 +58,10 @@ public:
 	/// typedef for the plug-in interface provided by the class 
 	typedef I Interface; 
 
+	typedef std::shared_ptr<I> PInterface; 
+
 	/// a map containing the names and theavailabe plug-ins 
-	typedef std::map<std::string, Interface*> CPluginMap; 
+	typedef std::map<std::string, PInterface> CPluginMap; 
 
 	/// the iterator to walk over the available plug-ins 
 	typedef typename CPluginMap::const_iterator const_iterator; 
@@ -86,7 +90,24 @@ public:
 	/// \returns the behind-end  iterator to the plug-ins
 	const_iterator end()const; 
 
+	/**
+	   Add a given plug-in to the handler. 
+	   @param plugin 
+	   @returns true if the plug-in was added, false if a plug-in with a higher or equal 
+	   priority and the same name already existed. 
+	*/
+	bool add_plugin(PInterface plugin); 
+
 protected: 
+
+
+	/**
+	   Add a given plug-in to the handler. The pointer must not be freed in client code. 
+	   @param plugin 
+	*/
+	void add_plugin_internal(PInterface plugin); 
+
+
 	//! \name Constructors
         //@{
 
@@ -105,17 +126,10 @@ protected:
 	typename TPluginHandler<I>::Interface *plugin(const char *plugin) const;
 
 
-	/**
-	   Add a given plug-in to the handler 
-	   @param plugin 
-	 */
-	void add_plugin(Interface *plugin); 
-
-	void initialise(CPathNameArray searchpath); 
+	void initialise(const CPluginSearchpath& searchpath); 
 
 private: 
 	virtual void do_initialise(); 
-	void global_searchpath(CPathNameArray& searchpath); 
 
 	void do_add_dependend_handlers(HandlerHelpMap& handler_map) const; 	
 	
@@ -124,7 +138,7 @@ private:
 
 	virtual void do_print_short_help(std::ostream& os) const; 
 	virtual void do_print_help(std::ostream& os) const; 
-	virtual void do_get_xml_help(xmlpp::Element *root) const; 	
+	virtual void do_get_xml_help(CXMLElement& root) const; 	
 
 	static const char * const m_help; 
 
@@ -147,7 +161,7 @@ public:
 	   Set the plugin search path for the plug-in - throws "runtime_error" if the 
 	   plugin handler is already instanciated. 
 	 */
-	static void set_search_path(const CPathNameArray& searchpath);
+	static void set_search_path(const CPluginSearchpath& searchpath);
 	
 	/// The instance of the plugin handler 
 	typedef T Instance;
@@ -162,6 +176,8 @@ public:
 	   \returns a reference to the only instance of the plugin handler 
 	*/
 	static const T& instance(); 
+
+	static bool add_plugin(typename T::PInterface p); 
 
 	/**
 	   \returns a pointer to the only instance of the plugin handler, it is possible that 
@@ -180,12 +196,12 @@ private:
 	// template the singleton with the derived handler. 
 	THandlerSingleton(); 
 
-	static const T& do_instance(bool require_initialization); 
+	static T& do_instance(bool require_initialization); 
 
-	static CPathNameArray m_searchpath; 
+	static CPluginSearchpath m_searchpath; 
 	static bool m_is_created; 
 	static CMutex m_initialization_mutex;
-	static bool m_is_initialized; 
+	static std::atomic<bool> m_is_initialized; 
 	
 }; 
 

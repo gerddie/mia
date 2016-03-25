@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,18 @@ void CTParameter<T>::do_descr(std::ostream& /*os*/) const
 template <typename T>
 struct __dispatch_parameter_do_set {
 	static bool apply (const std::string& str_value, T& value) {
+		if (std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed) {
+			std::string::size_type startpos = str_value.find_first_not_of(" \t");
+			if (startpos  == std::string::npos) {
+				throw create_exception<std::invalid_argument>("Trying to set a parameter from an string "
+									      "that is comprised of whitespaces only"); 
+			}
+			if (str_value[startpos] == '-') {
+				throw create_exception<std::invalid_argument>("Try setting an unsigned value with negative value ", str_value); 
+			}
+		}
+		
+
 		char c; 
 		std::istringstream s(str_value); 
 		s >> value; 
@@ -115,6 +127,7 @@ struct __dispatch_parameter_do_set<std::string> {
 template <typename T> 
 bool CTParameter<T>::do_set(const std::string& str_value)
 {
+	
 	bool retval = __dispatch_parameter_do_set<T>::apply(str_value, m_value); 
 	adjust(m_value); 
 	return retval; 
@@ -158,48 +171,5 @@ std::string CTParameter<T>::do_get_default_value() const
 	}
 	return str; 
 }
-
-template <typename T> 
-TRangeParameter<T>::TRangeParameter(T& value, T min, T max, bool required, const char *descr):
-	CTParameter<T>(value, required, descr),
-	m_min(min), 
-	m_max(max)
-{
-	if (m_min > m_max) 
-		throw create_exception<std::invalid_argument>("Parameter '",descr,"' TRangeParameter<T,", __type_descr<T>::value , ">: min(" 
-						    , m_min ,") > max (", m_max , ")  not allowed"); 
-}
-
-template <typename T> 
-void TRangeParameter<T>::adjust(T& value)
-{
-	if (value < m_min) {
-		cvwarn() << "TRangeParameter<T>: adjust " << value <<" to lower bound " << m_min << "\n"; 
-		value = m_min; 
-	}
-
-	
-	if (value > m_max) {
-		cvwarn() << "TRangeParameter<T>: adjust " << value <<" to upper bound " << m_max << "\n"; 
-		value = m_max; 
-	}
-}
-
-template <typename T> 
-void TRangeParameter<T>::do_descr(std::ostream& os) const
-{
-	CTParameter<T>::do_descr(os); 
-	os << " in [" << m_min << "," << m_max << "] ";
-}
-
-template <typename T> 
-void TRangeParameter<T>::do_get_help_xml(xmlpp::Element& self) const
-{
-	TRACE_FUNCTION; 
-	auto dict = self.add_child("range"); 
-	dict->set_attribute("min", to_string<T>(m_min)); 
-	dict->set_attribute("max", to_string<T>(m_max)); 
-}
-
 
 NS_MIA_END

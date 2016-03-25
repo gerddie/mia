@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,11 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <set>
 #include <mia/mesh/triangularMesh.hh>
+
+#include <mia/core/parallel.hh>
+#include <mia/core/threadedmsg.hh>
 
 
 NS_MIA_BEGIN
@@ -127,7 +131,6 @@ void CTriangleMeshData::evaluate_normals()
 		// before overwriting the normales, make sure we work on this set
 		ensure_single_refered(m_normals);
 	// zero out normals
-	fill(m_normals->begin(), m_normals->end(), C3DFVector::_0); 
 
 	// the writable iterators, index operators  do check against multiple referencing of the data.
 	// We only need read access, therefore a const reference makes sure,
@@ -136,44 +139,73 @@ void CTriangleMeshData::evaluate_normals()
 	//const CTriangleMesh::vertexfield&    cvertices = *m_vertices;
 
 	cvdebug() << "Mesh has " << ctriangles.size() << " triangles\n";
-	// run overall triangles
-	auto t = ctriangles.begin();
-	auto et = ctriangles.end();
 
-	int i = 0; 
-	while (t != et) {
-		C3DFVector e1 = (*m_vertices)[t->x] - (*m_vertices)[t->y];
-		C3DFVector e2 = (*m_vertices)[t->z] - (*m_vertices)[t->y];
-		C3DFVector e3 = (*m_vertices)[t->z] - (*m_vertices)[t->x];
-		C3DFVector help_normal = e2 ^ e1;
-		if (help_normal.norm2() > 0) {
-			float weight1 = acos((dot(e1,e2)) / (e1.norm() * e2.norm()));
-			float weight2 = acos((dot(e3,e2)) / (e3.norm() * e2.norm()));
-			(*m_normals)[t->y] += weight1 * help_normal;
-			(*m_normals)[t->z] += weight2 * help_normal;
-			
-			float weight3 = M_PI - weight1  - weight2;
-			
-			(*m_normals)[t->x] += weight3 * help_normal;
-		}else {
-			cverr() <<"CTriangleMeshData::evaluate_normals(): triangle " << i << ":" << *t << " with corners [" 
-				<< e1 << e2 << e3 << "] has zero normal\n";
+
+	auto normalize = [](C3DFVector& x) {
+		float xn = x.norm(); 
+		if (xn > 0) 
+			x /= xn; 
+	}; 
+
+	typedef CTriangleMesh::normal_type normal_type; 
+	typedef CTriangleMesh::triangle_type triangle_type; 
+
+	auto run_triangles = [this, &ctriangles, &normalize](const C1DParallelRange& range, 
+						 const vector<normal_type>& cnormals) {
+		vector<normal_type> normals(cnormals); 
+		CThreadMsgStream thread_stream;
+		for (auto i = range.begin(); i != range.end(); ++i) {
+			triangle_type t = ctriangles[i]; 
+			C3DFVector e1 = (*m_vertices)[t.x] - (*m_vertices)[t.y];
+			C3DFVector e2 = (*m_vertices)[t.z] - (*m_vertices)[t.y];
+			C3DFVector e3 = (*m_vertices)[t.z] - (*m_vertices)[t.x];
+			C3DFVector help_normal = cross(e2, e1);
+			if (help_normal.norm2() > 0) {
+				normalize(e1); 
+				normalize(e2); 
+				normalize(e3); 
+				float weight1 = acos(dot(e1,e2));
+				float weight2 = acos(dot(e3,e2));
+				
+				normals[t.y] += weight1 * help_normal;
+				normals[t.z] += weight2 * help_normal;
+				
+				float weight3 = M_PI - weight1  - weight2;
+				
+				normals[t.x] += weight3 * help_normal;
+			}else {
+				cverr() <<"CTriangleMeshData::evaluate_normals(): triangle " << i 
+					<< ":" << t << " with corners [" 
+					<< e1 << e2 << e3 << "] has zero normal\n";
+			}
 		}
-		++t;
-		++i; 
-	}
-
-	cvdebug() << "normalize " << m_normals->size() << " normals\n"; 
-	// normalize the normals
-	for_each(m_normals->begin(), m_normals->end(), 
-		 [](C3DFVector& n) -> void {
-			 float norm = n.norm();
-			 if (norm > 0) {
-				 n /= norm;
-			 }
-		 }); 
+		return normals; 
+	}; 
+	
+	auto reduce_normals = [](const vector<normal_type>& lhs, const vector<normal_type>& rhs) -> vector<normal_type> {
+		vector<normal_type> result(lhs); 
+		pfor(C1DParallelRange(0,result.size()), 
+		     [&result, &rhs](const C1DParallelRange& range) {
+			     for (auto i= range.begin(); i != range.end(); ++i) 
+				     result[i] += rhs[i]; 
+		     }); 
+		return result; 
+	}; 
+	
+	vector<normal_type> normals_accumulator(m_normals->size());
+	
+	normals_accumulator = preduce(C1DParallelRange(0, ctriangles.size(), 100), normals_accumulator, 
+				      run_triangles, reduce_normals);
+	
+	pfor(C1DParallelRange(0, normals_accumulator.size()),
+	     [this, &normals_accumulator](const C1DParallelRange& range){
+		     for (auto i= range.begin(); i != range.end(); ++i) {
+			     C3DFVector n = normals_accumulator[i];
+			     auto nn = n.norm2();
+			     (*m_normals)[i] = (nn > 0) ? n / sqrt(nn) : C3DFVector::_0; 
+		     }
+	     });
 }
-
 
 CTriangleMesh::CTriangleMesh(const CTriangleMesh& orig):
 	data(new CTriangleMeshData(*orig.data))
@@ -456,6 +488,87 @@ void CTriangleMesh::evaluate_normals()
 	data->evaluate_normals();
 }
 
+
+struct VertexWithIndex {
+	unsigned idx;
+	C3DFVector v; 
+
+	VertexWithIndex(const CTriangleMesh& mesh, unsigned i):
+		idx(i), 
+		v(mesh.vertex_at(i)){
+		
+	}
+}; 
+
+struct compare_vertex  {
+	bool operator () (const VertexWithIndex& lhs, const VertexWithIndex& rhs) {
+		return (lhs.v.z < rhs.v.z) || 
+			((lhs.v.z == rhs.v.z) && ((lhs.v.y < rhs.v.y) ||
+						  ((lhs.v.y == rhs.v.y) && (lhs.v.x < rhs.v.x)))); 
+	}
+}; 
+
+
+PTriangleMesh EXPORT_MESH get_sub_mesh(const CTriangleMesh& mesh, const vector<unsigned>& triangle_indices) 
+{
+
+	auto new_triangles = make_shared<CTriangleMesh::CTrianglefield>(triangle_indices.size()); 
+	transform(triangle_indices.begin(),  triangle_indices.end(),  
+		  new_triangles->begin(), [mesh](unsigned idx){return mesh.triangle_at(idx);}); 
+	
+	// collect the vertices 
+	set<VertexWithIndex, compare_vertex> vtxset;
+	for (auto t = new_triangles->begin(); new_triangles->end() != t; ++t) {
+		vtxset.insert(VertexWithIndex(mesh, t->x)); 
+		vtxset.insert(VertexWithIndex(mesh, t->y)); 
+		vtxset.insert(VertexWithIndex(mesh, t->z)); 
+	}
+
+	vector<unsigned> reindex(mesh.vertices_size(), mesh.vertices_size()); 
+	unsigned out_index = 0; 
+
+	auto new_vertices = make_shared<CTriangleMesh::CVertexfield>(); 
+	new_vertices->reserve(vtxset.size()); 
+	
+	for (auto iv = vtxset.begin(); iv != vtxset.end(); ++iv) {
+		new_vertices->push_back(iv->v); 
+		cvdebug() << "vertex[" << out_index << "]=" <<iv->v << "\n"; 
+		reindex[iv->idx] = out_index++; 
+	}
+	
+	// re-index the triangles 
+	for_each(new_triangles->begin(), new_triangles->end(), [&reindex](CTriangleMesh::triangle_type& t){
+			t.x = reindex[t.x]; 
+			t.y = reindex[t.y]; 
+			t.z = reindex[t.z]; 
+			cvdebug() << "triangle:" << t << "\n"; 
+		}); 
+
+	auto result = make_shared<CTriangleMesh>(new_triangles, new_vertices);
+
+	if (mesh.get_available_data() & CTriangleMesh::ed_normal) {
+		auto in = result->normals_begin(); 
+		for (auto iv = vtxset.begin(); iv != vtxset.end(); ++iv, ++in) {
+			*in = mesh.normal_at(iv->idx); 
+		}
+	}
+
+	if (mesh.get_available_data() & CTriangleMesh::ed_scale) {
+		auto is = result->scale_begin(); 
+		for (auto iv = vtxset.begin(); iv != vtxset.end(); ++iv, ++is) {
+			*is = mesh.scale_at(iv->idx); 
+		}
+	}
+
+	if (mesh.get_available_data() & CTriangleMesh::ed_color) {
+		auto ic = result->color_begin(); 
+		for (auto iv = vtxset.begin(); iv != vtxset.end(); ++iv, ++ic) {
+			*ic = mesh.color_at(iv->idx); 
+		}
+	}
+	
+	return result; 
+}
 
 
 const char *CTriangleMesh::data_descr = "mesh";

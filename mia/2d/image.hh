@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,13 @@ public:
 
         /// \param  pixel set the pixel real world size to the given value
 	void set_pixel_size(const C2DFVector& pixel);
+
+
+        /// \returns the origin in real-world units
+	C2DFVector get_origin() const;
+
+        /// \param  origin set the origin in world coordinates 
+	void set_origin(const C2DFVector& origin);
 
         /**
         returns a copy of this image
@@ -151,7 +158,7 @@ public:
 	   \param size 
 	   \param init_data must at least be of size (size.x*size.y)
 	*/
-	T2DImage(const C2DBounds& size, const data_array& init_data);
+	T2DImage(const C2DBounds& size, const std::vector<T>& init_data);
 	/**
 	   Create a 2D image with thegiven size and attach the given meta-data list. 
 	   \param size image size 
@@ -422,34 +429,7 @@ struct Binder<C2DImage> {
 	typedef __bind_all<T2DImage> Derived;
 };
 
-/**
-   Specialization of the attribute to string conversion for 2D Vectors. 
- */
-template <>
-struct dispatch_attr_string<C2DFVector> {
-	/**
-	   Convert the vector to a string 
-	   \param value 
-	   \returns the values corresponding to the vector elements as separated by spaces 
-	 */
-	static std::string val2string(const C2DFVector& value) {
-		std::stringstream sval;
-		sval << value.x << " " << value.y;
-		return sval.str();
-	}
-	/**
-	   Convert a string to 2D vector 
-	   \param str a string of two values separated by a whitespace 
-	   \returns 2D vector with the elements set accordingly 
-	 */
-	static C2DFVector string2val(const std::string& str) {
-		std::istringstream sval(str);
-		C2DFVector value;
-		sval >> value.x >> value.y;
-		return value;
-	}
-};
-/// @endcond 
+//@endcond INTERNAL 
 
 /**
    \brief functor to convert an image with an abitrary pixel type to single floating point pixels 
@@ -506,9 +486,6 @@ struct FConvert2DImageToPixeltypeO: public TFilter<T2DImage<O> > {
    we provide here a typedef for the functor.  
 */
 typedef FConvert2DImageToPixeltypeO<float> FCopy2DImageToFloatRepn; 
-
-/// typedef for the C2DFVector to std::string translator 
-typedef TTranslator<C2DFVector> C2DFVectorTranslator;
 
 
 NS_MIA_END

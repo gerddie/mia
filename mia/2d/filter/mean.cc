@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include <mia/2d/filter/mean.hh>
 #include <boost/type_traits/is_floating_point.hpp>
 
+#include <mia/core/parallel.hh>
+
 NS_BEGIN(mean_2dimage_filter)
 NS_MIA_USE;
 using namespace std;
@@ -37,12 +39,6 @@ struct __dispatch_filter {
 	static T apply(const T2DImage<T>& data, int cx, int cy, int hw) {
 		double result = 0.0; 
 		int n = 0;
-		// 
-		// Coverty complains about this: 1128688, 1128687 
-		// 
-		// hw >= 0, cy >= 0 && cy < data.get_size().y
-		// therefore n>=1 
-		// 
 		for (int y = cy - hw; y <= cy + hw; ++y) {
 			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {
@@ -52,6 +48,10 @@ struct __dispatch_filter {
 					}
 				}
 		}
+		
+		// hw >= 0, cy >= 0 && cy < data.get_size().y
+		// therefore n >=1, hence the override 
+		// coverity[divide_by_zero] 
 		return static_cast<T>(rint(result/n)); 
 	}
 }; 
@@ -61,9 +61,7 @@ struct __dispatch_filter<T, true> {
 	static T apply(const T2DImage<T>& data, int cx, int cy, int  hw) {
 		double result = 0.0; 
 		int n = 0; 
-		// 
-		// see above. Coverty  1128688, 1128687
-		// 
+		
 		for (int y = cy - hw; y <= cy + hw; ++y) {
 			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {
@@ -73,6 +71,10 @@ struct __dispatch_filter<T, true> {
 					}
 				}
 		}
+		
+		// hw >= 0, cy >= 0 && cy < data.get_size().y
+		// therefore n >=1, hence the override 
+		// coverity[divide_by_zero] 
 		return static_cast<T>(result/n); 
 	}
 }; 
@@ -87,7 +89,10 @@ struct __dispatch_filter<bool, false> {
 			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {
 					if ( x >= 0 && x < (int)data.get_size().x) {
-						balance += data(x,y) ? 1 : -1; 
+						if (data(x,y))
+							++balance;
+						else
+							--balance; 
 					}
 				}
 		}
@@ -106,12 +111,17 @@ C2DMean::result_type C2DMean::operator () (const T2DImage<T>& data) const
 	T2DImage<T> *tresult = new T2DImage<T>(data.get_size(), data);
 	P2DImage result(tresult);
 
-	typename T2DImage<T>::iterator i = tresult->begin();
 
-	for (size_t y = 0; y < data.get_size().y; ++y)
-		for (size_t x = 0; x < data.get_size().x; ++x, ++i)
-			*i = __dispatch_filter<T, is_floating_point>::apply(data, x, y, m_hw);
-
+	int hw = m_hw; 
+        auto run_line  = [hw, data, tresult](const C1DParallelRange& range) {
+		for (auto y = range.begin(); y !=  range.end(); ++y) {
+			typename T2DImage<T>::iterator i = tresult->begin_at(0, y);
+			for (size_t x = 0; x < data.get_size().x; ++x, ++i)
+				*i = __dispatch_filter<T, is_floating_point>::apply(data, x, y, hw);
+		}
+	};
+	pfor(C1DParallelRange(0, data.get_size().y, 1), run_line);
+	
 	return result;
 }
 
@@ -124,7 +134,7 @@ C2DMeanFilterPlugin::C2DMeanFilterPlugin():
 	C2DFilterPlugin("mean"), 
 	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "half filter width"));
+	add_parameter("w", make_lc_param(m_hw, 1, false, "half filter width"));
 }
 
 C2DFilter *C2DMeanFilterPlugin::do_create()const

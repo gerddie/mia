@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
@@ -38,9 +37,9 @@
 #include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/transformfactory.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
+#include <boost/filesystem.hpp>
+
+#include <mia/core/parallel.hh>
 
 using namespace std;
 using namespace mia;
@@ -148,7 +147,7 @@ struct SeriesRegistration {
 		skip_images(_skip_images)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 
@@ -175,7 +174,7 @@ void run_registration_pass(CSegSetWithImages& input_set,
 	SeriesRegistration sreg(input_images, frames, references, minimizer, 
 				mg_levels, create_transform_creator(c_rate, divcurlweight), 
 				imagecost, skip_images); 
-	parallel_for(blocked_range<int>( 0, references.size()), sreg);
+	pfor(C1DParallelRange( 0, references.size()), sreg);
 	input_set.set_images(input_images);
 }
 
@@ -389,7 +388,7 @@ int do_main( int argc, char *argv[] )
 	if (!cropped_filename.empty()) {
 		bfs::path cf(cropped_filename);
 		cf.replace_extension(); 
-		input_set.rename_base(__bfs_get_filename(cf)); 
+		input_set.rename_base(cf.filename().string()); 
 		input_set.save_images(cropped_filename);
 
 		unique_ptr<xmlpp::Document> test_cropset(input_set.write());

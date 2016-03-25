@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@ SET(filters3dNew
   invert
   kmeans 
   label
+  labelmap
+  labelscale
   load
   lvdownscale
   mask
@@ -37,7 +39,7 @@ SET(filters3dNew
   mlv 
   morphological 
   msnormalizer
-#  reorient 
+  reorient 
   resize
   scale
   seededwatershed

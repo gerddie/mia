@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,10 +154,10 @@ TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
 {
 	TRACE("TMIImageCostPlugin<CP,C>::TMIImageCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
-	this->add_parameter("rbins", new mia::CUIntParameter(m_rbins, 1, 256, false, 
-				     "Number of histogram bins used for the reference image")); 
+	this->add_parameter("rbins", mia::make_ci_param(m_rbins, 1u, 256u, false, 
+							 "Number of histogram bins used for the reference image")); 
 
-	this->add_parameter("mbins", new mia::CUIntParameter(m_mbins, 1, 256, false, 
+	this->add_parameter("mbins", mia::make_ci_param(m_mbins, 1u, 256u, false, 
 				     "Number of histogram bins used for the moving image")); 
 	
 	this->add_parameter("rkernel", mia::make_param(m_rkernel, "bspline:d=0", false, 
@@ -166,9 +166,9 @@ TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
 	this->add_parameter("mkernel", mia::make_param(m_mkernel, "bspline:d=3", false, 
 						  "Spline kernel for moving image parzen hinstogram"));  
 
-	this->add_parameter("cut", new mia::CFloatParameter(m_histogram_cut, 0.0f, 40.0f, false, 
-							    "Percentage of pixels to cut at high and low "
-							    "intensities to remove outliers")); 
+	this->add_parameter("cut", mia::make_ci_param(m_histogram_cut, 0.0f, 40.0f,
+						      false, "Percentage of pixels to cut at high and low "
+						      "intensities to remove outliers")); 
 }
 
 /**

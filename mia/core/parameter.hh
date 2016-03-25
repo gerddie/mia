@@ -1,10 +1,11 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Pub
+lic License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -26,15 +27,13 @@
 #include <ostream>
 #include <istream>
 #include <sstream>
+#include <memory>
+#include <mia/core/flags.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/handlerbase.hh>
 #include <mia/core/factory_trait.hh>
 #include <mia/core/cmdoptionflags.hh>
-
-namespace xmlpp {
-	class Element; 
-}
 
 NS_MIA_BEGIN
 
@@ -115,7 +114,7 @@ q	*/
 	   Add the help for this parameter to a given XML tree
 	   \param root the root node to add the help entry to. 
 	 */
-	void get_help_xml(xmlpp::Element& root) const;
+	void get_help_xml(CXMLElement& root) const;
 
 
 	/**
@@ -144,7 +143,7 @@ private:
 	virtual void do_reset() = 0;
 	virtual std::string do_get_default_value() const = 0;
 	virtual std::string do_get_value_as_string() const = 0;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	bool m_required;
 	bool m_is_required; 
 	const char *m_type;
@@ -194,18 +193,52 @@ private:
    to a value outside the range, the set method will throw an \a invalid_argument exception
 */
 
+
+
+/**
+   \ingroup cmdline
+   \brief Scalar parameter with a expected value boundaries 
+
+   A scalar parameter that supports specifying boundaries. These boundaries can be one-sided 
+   or on both sides, and the boundaries can be included in the range or not. 
+   If the user tries to set the parameter to a value outside the range, 
+   the set method will throw an \a invalid_argument exception
+*/
+
+enum class EParameterBounds : int {
+	bf_min = 1,  
+	bf_min_open = 3, 
+	bf_min_closed = 5, 
+	bf_min_flags = 7, 
+	bf_max = 0x10, 
+	bf_max_open = 0x30, 
+	bf_max_closed =  0x50, 
+	bf_max_flags = 0x70,
+	bf_closed_interval = 0x55, 
+	bf_open_interval = 0x33 
+	}; 
+
+IMPLEMENT_FLAG_OPERATIONS(EParameterBounds); 
+
+
+EXPORT_CORE std::ostream& operator << (std::ostream& os, EParameterBounds flags); 
+
 template <typename T>
-class EXPORT_CORE TRangeParameter : public CTParameter<T> {
+class EXPORT_CORE TBoundedParameter : public CTParameter<T> {
 
 public:
+
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
-	   \param min minimum of the parameter value range
-	   \param max maximum of the parameter value range
+	   \param flags boundary flags 
+	   \param boundaries the boundaries of the parameter. Depending on the flags 
+	   it expects one or two values. If two values are given the first value is interpreted 
+	   as the lower boundary, 
+	   \param flags boundary flags 
 	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
-	TRangeParameter(T& value, T min, T max, bool required, const char *descr);
+	TBoundedParameter(T& value, EParameterBounds flags, const std::vector<T>& boundaries, bool required, const char *descr);
 protected:
 	/**
 	   the implementation of the description-function
@@ -213,16 +246,94 @@ protected:
 	void do_descr(std::ostream& os) const;
 private:
 	virtual void adjust(T& value);
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	T m_min;
 	T m_max;
-
+	EParameterBounds m_flags; 
 };
+
+template <typename T>
+CParameter *make_param(T& value, bool required, const char *descr)
+{
+	return new CTParameter<T>(value, required, descr); 
+}
+
+
+template <typename T, typename S>
+CParameter *make_lo_param(T& value, S lower_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_open,
+		{static_cast<T>(lower_bound)}, required, descr); 
+}
+
+template <typename T>
+CParameter *make_positive_param(T& value, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_open, {T()}, required, descr); 
+}
+
+template <typename T, typename S>
+CParameter *make_lc_param(T& value, S lower_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_closed,
+		{static_cast<T>(lower_bound)}, required, descr); 
+}
+
+
+template <typename T>
+CParameter *make_nonnegative_param(T& value, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_closed, {T()}, required, descr); 
+}
+
+
+template <typename T, typename S>
+CParameter *make_uo_param(T& value, S upper_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_open,
+		{static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S>
+CParameter *make_uc_param(T& value, S upper_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_closed,
+		{static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S1, typename S2>
+CParameter *make_ci_param(T& value, S1 lower_bound, S2 upper_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_closed_interval,
+		{static_cast<T>(lower_bound), static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S1, typename S2>
+CParameter *make_oi_param(T& value, S1 lower_bound, S2 upper_bound, bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_open_interval,
+		{static_cast<T>(lower_bound), static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S1, typename S2>
+CParameter *make_coi_param(T& value, S1 lower_bound, S2 upper_bound,bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
+		{static_cast<T>(lower_bound), static_cast<T>(upper_bound)}, required, descr); 
+}
+
+template <typename T, typename S1, typename S2>
+CParameter *make_oci_param(T& value, S1 lower_bound, S2 upper_bound,bool required, const char *descr)
+{
+	return new TBoundedParameter<T>(value, EParameterBounds::bf_max_closed | EParameterBounds::bf_min_open,
+		{static_cast<T>(lower_bound), static_cast<T>(upper_bound)}, required, descr); 
+}
+
 
 
 /**
    \ingroup cmdline
-   \brief Dictionary paramater
+   \brief Dictionary parameter
 
    The (templated) parameter that takes its value froma restricted Dictionary.
    \tparam the enumerate that is used by the dictionary 
@@ -249,7 +360,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	T& m_value;
 	T m_default_value; 
 	const TDictMap<T> m_dict;
@@ -301,7 +412,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 
 	typename F::ProductPtr dummy_shared_value; 
 	typename F::UniqueProduct dummy_unique_value; 
@@ -351,7 +462,7 @@ private:
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
-	void do_get_help_xml(xmlpp::Element& self) const; 
+	void do_get_help_xml(CXMLElement& self) const; 
 	T& m_value;
 	T m_default_value; 
 	const std::set<T> m_valid_set;
@@ -406,7 +517,7 @@ private:
 	virtual std::string do_get_value_as_string() const; 
 
 	virtual void do_descr(std::ostream& os) const;
-	virtual void do_get_help_xml(xmlpp::Element& self) const;
+	virtual void do_get_help_xml(CXMLElement& self) const;
 	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map)const; 
 
 
@@ -417,16 +528,28 @@ private:
 }; 
 
 
-/// an integer parameter (with range)
-typedef TRangeParameter<int> CIntParameter;
-/// an unsigned integer parameter (with range)
-typedef TRangeParameter<unsigned int> CUIntParameter;
-/// a float parameter (with range)
-typedef TRangeParameter<float> CFloatParameter;
-/// a double parameter (with range)
-typedef TRangeParameter<double> CDoubleParameter;
 /// boolean parameter
 typedef CTParameter<bool> CBoolParameter;
+
+
+/// an unsigned short parameter (with possible boundaries)
+typedef TBoundedParameter<unsigned short> CUSBoundedParameter;
+/// an unsigned int parameter (with possible boundaries)
+typedef TBoundedParameter<unsigned int> CUIBoundedParameter;
+/// an unsigned long parameter (with possible boundaries)
+typedef TBoundedParameter<unsigned long> CULBoundedParameter;
+
+/// an signed short parameter (with possible boundaries)
+typedef TBoundedParameter<short> CSSBoundedParameter;
+/// an signed int parameter (with possible boundaries)
+typedef TBoundedParameter<int>   CSIBoundedParameter;
+/// an signed long parameter (with possible boundaries)
+typedef TBoundedParameter<long>  CSLBoundedParameter;
+
+/// an float parameter, single accuracy (with possible boundaries)
+typedef TBoundedParameter<float> CFBoundedParameter;
+/// an float parameter, double accuracy (with possible boundaries)
+typedef TBoundedParameter<double> CDBoundedParameter; 
 
 /**    
       \ingroup cmdline
@@ -473,12 +596,6 @@ CParameter *make_param(std::unique_ptr<T>& value, const std::string& init,  bool
 	
 }
 
-
-template <typename T> 
-CParameter *make_param(T& value, bool required, const char *descr) 
-{                       
-	return new TParameter<T>(value, required, descr);
-}
 
 
 
@@ -530,7 +647,7 @@ void CDictParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void CDictParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void CDictParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	TRACE_FUNCTION; 
 	auto dict = self.add_child("dict"); 
@@ -599,7 +716,7 @@ void TFactoryParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void TFactoryParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void TFactoryParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	auto dict = self.add_child("factory"); 
 	dict->set_attribute("name", T::instance().get_descriptor());
@@ -697,7 +814,7 @@ void CSetParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
-void CSetParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void CSetParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	auto set = self.add_child("set"); 
 	for (auto i = m_valid_set.begin(); i != m_valid_set.end(); ++i) {
@@ -778,6 +895,7 @@ std::string TParameter<T>::do_get_value_as_string() const
 {
 	return __dispatch_param_translate<T>::apply(m_value);	
 }
+
 
 NS_MIA_END
 

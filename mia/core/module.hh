@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,6 @@ public:
 	   an \a invalid_argument exception, if the module can not be loaded
 	*/
 	CPluginModule(const char *path);
-
 	~CPluginModule();
 
 	/**
@@ -64,6 +63,11 @@ public:
 	///\returns the file name of the module
 	const std::string& get_name() const; 
 
+	/** tell the DLL loader that it should unload this library
+	    when the modules is destroyed */ 
+	void set_unload_library(); 
+
+	void set_keep_library(); 
 private:
 	CDLLoader m_loader;
 	std::string m_name;

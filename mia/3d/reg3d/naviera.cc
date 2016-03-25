@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,8 +100,8 @@ float C3DNavierRegModel::do_force_scale() const
 
 inline PRIVATE  void C3DNavierRegModel::set_flags(C3DUBImage::iterator loc)const
 {
-	const register int dx = m_dx;
-	const register int mdx = - m_dx;
+	const int dx = m_dx;
+	const int mdx = - m_dx;
 
 	C3DUBImage::iterator lmz = loc - m_dxy;
 	C3DUBImage::iterator lpz = loc + m_dxy;
@@ -272,14 +272,14 @@ inline C3DFVector C3DNavierRegModel::get_q(const C3DFVectorfield::iterator& v)co
 
 inline float  C3DNavierRegModel::solve_at(const C3DFVector& b, C3DFVectorfield::iterator& v)const
 {
-	register C3DFVector& vv = *v;
+	C3DFVector& vv = *v;
 	const C3DFVector old_v = vv;
 
 	const  C3DFVectorfield::iterator vm = v - m_dxy;
 	const  C3DFVectorfield::iterator vp = v + m_dxy;
 
-	const register int dx = m_dx;
-	const register int mx = - m_dx;
+	const int dx = m_dx;
+	const int mx = - m_dx;
 
 	const C3DFVector& v0mm = vm[ mx];
 	const C3DFVector& vm0m = vm[ -1];
@@ -305,19 +305,19 @@ inline float  C3DNavierRegModel::solve_at(const C3DFVector& b, C3DFVectorfield::
 	const C3DFVector& v0pp = vp[  dx];
 	const C3DFVector& vp0p = vp[  1];
 
-	register float rx = (vm00.x + vp00.x) * m_a_b + b.x;
-	register const float hx = vym.x + vyp.x + vzp.x + vzm.x;
+	float rx = (vm00.x + vp00.x) * m_a_b + b.x;
+	const float hx = vym.x + vyp.x + vzp.x + vzm.x;
 
-	register float ry = (vm00.y + vp00.y) * m_a_b + b.y;
-	register const float hy = vym.y + vyp.y + vzp.y + vzm.y;
+	float ry = (vm00.y + vp00.y) * m_a_b + b.y;
+	const float hy = vym.y + vyp.y + vzp.y + vzm.y;
 
-	register float rz = (vm00.z + vp00.z) * m_a_b + b.z;
-	register const float hz = vym.z + vyp.z + vzp.z + vzm.z;
+	float rz = (vm00.z + vp00.z) * m_a_b + b.z;
+	const float hz = vym.z + vyp.z + vzp.z + vzm.z;
 
 	{
-		register float ax = vmm0.y + vpp0.y;
-		register float ay = vmm0.x + vpp0.x;
-		register float az = vm0m.x + vp0p.x;
+		float ax = vmm0.y + vpp0.y;
+		float ay = vmm0.x + vpp0.x;
+		float az = vm0m.x + vp0p.x;
 
 		ax -= vmp0.y;
 		ay -= vmp0.x;
@@ -402,15 +402,11 @@ C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 	m_epsilon(0.0001),
 	m_maxiter(40)
 {
-	add_parameter("mu", new CFloatParameter(m_mu, 0.0, numeric_limits<float>::max(),
-							   false, "isotropic compliance"));
-	add_parameter("lambda", new CFloatParameter(m_lambda, 0.0, numeric_limits<float>::max(),
-							       false, "isotropic compression"));
+	add_parameter("mu", make_nonnegative_param(m_mu, false, "isotropic compliance"));
+	add_parameter("lambda", make_nonnegative_param(m_lambda, false, "isotropic compression"));
 
-	add_parameter("epsilon", new CFloatParameter(m_epsilon, 0.000001, 0.1,
-								false, "stopping parameter"));
-	add_parameter("iter", new CIntParameter(m_maxiter, 10, 10000,
-							   false, "maximum number of iterations"));
+	add_parameter("epsilon", make_oci_param(m_epsilon, 0.0, 0.1, false, "stopping parameter"));
+	add_parameter("iter", make_lc_param(m_maxiter, 1, false, "maximum number of iterations"));
 }
 
 C3DRegModel *C3DNavierRegModelPlugin::do_create()const

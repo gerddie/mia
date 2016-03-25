@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,10 +33,7 @@
 #include <mia/3d/deformer.hh>
 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_reduce.h>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 
 //#include "3Dinterpolator.hh"
 #include "vfluid.hh"
@@ -168,7 +165,7 @@ inline C3DFVector TFluidReg::forceAt(int hardcode,float *misma)const
 
 float  TFluidReg::calculatePerturbation()
 {
-	auto callback = [this](const tbb::blocked_range<size_t>& range, float gamma) -> float{
+	auto callback = [this](const C1DParallelRange& range, float gamma) -> float{
 		C3DBounds max_p; 
 		for (auto z = range.begin(); z != range.end();++z)
 			for (size_t y = Start.y; y < End.y; y++)  {
@@ -185,17 +182,17 @@ float  TFluidReg::calculatePerturbation()
 		return gamma; 
 	}; 
 
-	float gamma = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z, End.z, 1), 
-					   0.0f, callback, 
-					   [](float x, float y){return max(x,y);}); 
-
+	float gamma = preduce( C1DParallelRange(Start.z, End.z, 1), 
+			       0.0f, callback, 
+			       [](float x, float y){return max(x,y);}); 
+	
 	cvinfo() << "pert = " << gamma << "\n";
 	return gamma;
 }
 
 float  TFluidReg::calculateJacobian()const
 {
-	auto callback = [this](const tbb::blocked_range<size_t>& range, float jmin) -> float{
+	auto callback = [this](const C1DParallelRange& range, float jmin) -> float{
 		for (auto z = range.begin(); z != range.end();++z)
 			for (size_t y = Start.y+1; y < End.y-1; y++)
 				for (size_t x = Start.x+1; x < End.x-1; x++) {
@@ -206,9 +203,9 @@ float  TFluidReg::calculateJacobian()const
 	}; 
 	
 	
-	float jmin = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z + 1, End.z-1, 1), 
-					   numeric_limits<float>::max(), callback, 
-					   [](float x, float y){return min(x,y);}); 
+	float jmin = preduce( C1DParallelRange(Start.z + 1, End.z-1, 1), 
+			      numeric_limits<float>::max(), callback, 
+			      [](float x, float y){return min(x,y);}); 
 	cvinfo() << "jacobian = " << jmin << endl;
         return jmin;
 }
@@ -324,7 +321,7 @@ void TFluidReg::DeleteTemps()
 
 float	TFluidReg::calculateForces()
 {
-	auto callback = [this](const tbb::blocked_range<size_t>& range, float mismatch) -> float{
+	auto callback = [this](const C1DParallelRange& range, float mismatch) -> float{
 		CThreadMsgStream thread_stream;
 		C3DBounds max_p; 
 		for (auto z = range.begin(); z != range.end();++z) {
@@ -342,11 +339,11 @@ float	TFluidReg::calculateForces()
 		return mismatch; 
         }; 
 	
-	float mismatch = tbb::parallel_reduce( tbb::blocked_range<size_t>(Start.z, End.z, 1), 
-					       0.0f, callback, 
-					       [](float x, float y){return x + y;}); 
+	float mismatch = preduce( C1DParallelRange(Start.z, End.z, 1), 
+				  0.0f, callback, 
+				  [](float x, float y){return x + y;}); 
 	
-
+	
 	return mismatch/ref.size();
 }
 
@@ -398,9 +395,9 @@ float  TFluidReg::perturbationAt(int x, int y, int z)
 
 void  TFluidReg::ApplyShift()
 {
-	auto callback = [this](const tbb::blocked_range<size_t>& range){
+	auto callback = [this](const C1DParallelRange& range){
 		CThreadMsgStream thread_stream;
-
+		
 		for (auto z = range.begin(); z != range.end();++z) {
 			int iz = z - Start.z; 
 			int iy = 0;
@@ -411,10 +408,10 @@ void  TFluidReg::ApplyShift()
 			}
 		}
 	}; 
-	tbb::parallel_for(tbb::blocked_range<size_t>(Start.z, End.z, 1), callback); 
-
+	pfor(C1DParallelRange(Start.z, End.z, 1), callback); 
+	
 	tmp = C3DFImage(src.get_size());
-
+	
 
 
 	FDeformer3D deformer(*u, ipf);
@@ -503,7 +500,7 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 	float iy_mult = 1.0f / y_mult;
 	float iz_mult = 1.0f / z_mult;
 
-	auto callback = [&](const tbb::blocked_range<size_t>& range){
+	auto callback = [&](const C1DParallelRange& range){
 		CThreadMsgStream thread_stream;
 		
 		for (auto z = range.begin(); z != range.end();++z) { 
@@ -516,8 +513,8 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 				}
 		}
 	}; 
-	tbb::parallel_for(tbb::blocked_range<size_t>(0, size.z, 1), callback);
-
+	pfor(C1DParallelRange(0, size.z, 1), callback);
+	
 	return Result;
 }
 

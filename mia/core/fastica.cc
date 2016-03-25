@@ -18,8 +18,8 @@
  *
  */
 
-#include <gsl++/matrix_vector_ops.hh>
-#include <gsl++/pca.hh>
+#include <mia/core/gsl_matrix_vector_ops.hh>
+#include <mia/core/gsl_pca.hh>
 #include <mia/core/fastica.hh>
 #include <algorithm>
 #include <random>

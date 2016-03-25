@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,16 +31,12 @@
 #include <mia/core/filetools.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
-#include <mia/core/bfsv23dispatch.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/filter.hh>
 #include <mia/3d/ica.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
-
+#include <mia/core/parallel.hh>
 
 using namespace std;
 using namespace mia;
@@ -123,7 +119,7 @@ struct SeriesRegistration {
 		skip_images(_skip_images)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
@@ -145,7 +141,7 @@ void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& r
 	SeriesRegistration sreg(input_images,references, minimizer, 
 				mg_levels, create_transform_creator(c_rate, divcurlweight), 
 				imagecost, skip_images); 
-	parallel_for(blocked_range<int>( 0, references.size()), sreg);
+	pfor(C1DParallelRange( 0, references.size()), sreg);
 }
 
 void save_references(const string& save_ref, int current_pass, int skip_images, const C3DImageSeries& references)

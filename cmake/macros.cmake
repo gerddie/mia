@@ -1,5 +1,5 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ ENDMACRO(ASSERT_SIZE)
 
 
 #
-# This macro runs the program to create the XML program descrition 
+# This macro runs the program to create the XMLprogram descrition 
 # that is used to create documentation and interfaced 
 #
 MACRO(CREATE_EXE_XML_HELP name)
@@ -131,13 +131,31 @@ MACRO(CREATE_EXE_XML_HELP name)
     COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH} 
     ./mia-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     COMMAND rm -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
-    DEPENDS mia-${name} plugin_test_links )
+    DEPENDS mia-${name} )
     
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
   ADD_DEPENDENCIES(XMLDOC mia-${name}-xml)
 ENDMACRO(CREATE_EXE_XML_HELP)
 
 
+MACRO(CREATE_NIPYPE_FROM_XML name)
+  IF(CREATE_NIPYPE_INTERFACES)
+    STRING(REPLACE "-" "_" PythonName ${name})
+
+    SET(${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/mia_${PythonName}.py)
+    
+    ADD_CUSTOM_COMMAND(OUTPUT ${${name}-nipype-interface} 
+      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2nipype.py 
+      -i ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml -o ${${name}-nipype-interface}
+      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
+    
+    ADD_CUSTOM_TARGET(mia-${name}-nipype DEPENDS ${${name}-nipype-interface})
+    ADD_DEPENDENCIES(nipypeinterfaces mia-${name}-nipype)
+    
+    INSTALL(FILES ${${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR}/mia)
+
+  ENDIF(CREATE_NIPYPE_INTERFACES)
+ENDMACRO(CREATE_NIPYPE_FROM_XML)
 #
 #
 # man pages can only be created if the python + lxml packages are available 
@@ -160,10 +178,11 @@ MACRO(CREATE_MANPAGE_FROM_XML name)
 ENDMACRO(CREATE_MANPAGE_FROM_XML)
 
 
-MACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE name)
-  CREATE_EXE_XML_HELP(${name})
-  CREATE_MANPAGE_FROM_XML(${name})
-ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
+#MACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE name)
+#  CREATE_EXE_XML_HELP(${name})
+#  CREATE_MANPAGE_FROM_XML(${name})
+#  CREATE_NIPYPE_FROM_XML(${name})
+# ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
 
 MACRO(DEFEXE name libraries) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
@@ -173,11 +192,9 @@ MACRO(DEFEXE name libraries)
   
   TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
-  
-  MIA_EXE_CREATE_DOCU_AND_INTERFACE(${name})
+  ADD_DEPENDENCIES(mia-${name} plugin_test_links)
+  MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia ${name})
 ENDMACRO(DEFEXE)
-
-
 
 
 MACRO(DEFCHKEXE name deps) 
@@ -191,12 +208,14 @@ MACRO(DEFCHKEXE name deps)
   TARGET_LINK_LIBRARIES(mia-${name} ${BOOST_UNITTEST})
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
 
-  CREATE_EXE_XML_HELP(${name})
-  CREATE_MANPAGE_FROM_XML(${name})
+  MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia ${name})
+  ADD_DEPENDENCIES(mia-${name} plugin_test_links)
   ADD_TEST(${name} mia-${name} --selftest)
+
+  SET_TESTS_PROPERTIES(${name}
+    PROPERTIES ENVIRONMENT "MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}")
+
 ENDMACRO(DEFCHKEXE)
-
-
 
 
 MACRO(NEW_TEST name libs)
@@ -207,5 +226,6 @@ MACRO(NEW_TEST name libs)
   IF (NOT WIN32) 
     TARGET_LINK_LIBRARIES(${EXENAME} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
   ENDIF (NOT WIN32)
+  ADD_DEPENDENCIES(${EXENAME} plugin_test_links)
   ADD_TEST(${name} ${EXENAME})
 ENDMACRO(NEW_TEST)

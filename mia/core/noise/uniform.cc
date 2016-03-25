@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,6 @@ NS_BEGIN(uniform_noise_generator)
 using namespace std;
 using namespace mia;
 
-static const size_t center = 1024;
-
 CUniformNoiseGenerator::CUniformNoiseGenerator(unsigned int seed, double a, double b):
 	CNoiseGenerator(seed),
 	m_a(a),
@@ -50,15 +48,11 @@ CUniformNoiseGeneratorFactory::CUniformNoiseGeneratorFactory():
 	m_param_a(0),
 	m_param_b(1)
 {
-	add_parameter("a", new CFloatParameter(m_param_a, -numeric_limits<float>::max(),
-								       numeric_limits<float>::max(),
-								       false, "lower bound if noise range"));
+	add_parameter("a", new CTParameter<float>(m_param_a, false, "lower bound if noise range"));
 
-	add_parameter("b", new CFloatParameter(m_param_b, -numeric_limits<float>::max(),
-								       numeric_limits<float>::max(),
-								       false, "higher bound if noise range"));
-	add_parameter("seed", new CUIntParameter(m_param_seed, 0,   numeric_limits<unsigned int>::max(),
-						  false, "set random seed (0=init based on system time)"));
+	add_parameter("b", new CTParameter<float>(m_param_b, false, "higher bound if noise range"));
+	add_parameter("seed", new CUIBoundedParameter(m_param_seed, EParameterBounds::bf_min_closed, {0}, 
+						     false, "set random seed (0=init based on system time)"));
 
 }
 

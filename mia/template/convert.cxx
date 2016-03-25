@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,12 +207,8 @@ TConvertFilterPlugin<Image>::TConvertFilterPlugin():
 	m_a(1.0), 
 	m_b(0.0)
 {
-	this->add_parameter("a", new CFloatParameter(m_a, -std::numeric_limits<float>::max(), 
-					       std::numeric_limits<float>::max(), false, 
-					       "linear conversion parameter a")); 
-	this->add_parameter("b", new CFloatParameter(m_b, -std::numeric_limits<float>::max(), 
-					       std::numeric_limits<float>::max(), false, 
-					       "linear conversion parameter b")); 
+	this->add_parameter("a", make_param(m_a, false, "linear conversion parameter a")); 
+	this->add_parameter("b", make_param(m_b, false, "linear conversion parameter b")); 
 	this->add_parameter("repn",new CDictParameter<EPixelType>(m_pixeltype, CPixelTypeDict, "output pixel type")); 
 	this->add_parameter("map", new CDictParameter<EPixelConversion>(m_convert, CPixelConversionDict, "conversion mapping"));
 

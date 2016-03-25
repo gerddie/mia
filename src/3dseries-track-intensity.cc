@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', 
 			      "input perfusion data set", CCmdOptionFlags::required_input, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-			      "file name for output intensity slopes")); 
+			      "file name for output intensity slopes", CCmdOptionFlags::required_output)); 
 	
 	
 	if (options.parse(argc, argv, "points") != CCmdOptionList::hr_no)

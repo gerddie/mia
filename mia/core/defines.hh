@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,23 +21,13 @@
 /**
    @file core/defines.hh 
    This file provides some defines to make life easier 
- */
+*/
 
 
 #ifndef mia_core_defines_hh
 #define mia_core_defines_hh
 
-#include <gsl++/gsldefines.hh>
-#include <tbb/mutex.h>
-
-
-/// The mutex renamed to MIA style
-typedef tbb::mutex CMutex; 
-
-
-/// The scoped lock renamed to MIA style
-typedef tbb::mutex::scoped_lock CScopedLock; 
-
+#include <mia/core/gsl_defines.hh>
 
 /// conveniance define to start the mia namespace 
 #define NS_MIA_BEGIN namespace mia {

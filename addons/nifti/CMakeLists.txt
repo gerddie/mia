@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-OPTION(USE_NIFTI "Use nifti-1 3D image file format" TRUE)
+OPTION(WITH_NIFTI "Use nifti-1 3D image file format" TRUE)
 
-IF (USE_NIFTI)
+IF (WITH_NIFTI)
   SET(NIFTI_FOUND FALSE)
   
   # zlib is required for nifti to function 
@@ -51,8 +51,6 @@ IF (USE_NIFTI)
     ENDIF()
     
   ENDIF(ZLIB_FOUND) 
-      
-
 
   if (NOT NIFTI_FOUND AND STRICT_DEPENDECIES)
     MESSAGE(FATAL_ERROR "NIFTI includes and or libraries not found and strict dependencies enabled")
@@ -65,4 +63,4 @@ IF (USE_NIFTI)
   SET(NIFTI_LINK_LIBS_3D ${NIFTIIO_LIBRARIES} mia3d)
   PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" niftiimage "${NIFTI_LINK_LIBS_3D}")
   
-ENDIF (USE_NIFTI)
+ENDIF (WITH_NIFTI)

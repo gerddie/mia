@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,12 +40,12 @@ class CLabelRemapper {
 public: 
 	void clear(); 
 	
-	void add_pair(unsigned short a, unsigned short b); 
+	void add_pair(unsigned int  a, unsigned int  b); 
 	
 	mia::CLabelMap get_map() const; 
 private: 
-	std::set<mia::T2DVector<unsigned short>, 
-		 mia::less_then<mia::T2DVector<unsigned short>>> m_raw_map;
+	std::set<mia::T2DVector<unsigned int >, 
+		 mia::less_then<mia::T2DVector<unsigned int >>> m_raw_map;
 }; 
 
 class C2DLabelStackFilter: public mia::C2DImageFifoFilter {
@@ -56,6 +56,9 @@ public:
 	C2DLabelStackFilter(const std::string& mapfile, mia::P2DShape n); 
 	~C2DLabelStackFilter(); 
 
+	// only for testing 
+	void set_start_label(unsigned int); 
+	
 	// this is public for testing 
 	const mia::CLabelMap& get_joints() const; 
 private: 
@@ -69,16 +72,17 @@ private:
 	void new_label(mia::C2DBitImage& input); 
 	void re_label(mia::C2DBitImage& input);
 	void label_new_regions(mia::C2DBitImage& input); 
-	void grow( int x, int y, mia::C2DBitImage& input, unsigned short l); 
+	void grow( int x, int y, mia::C2DBitImage& input, unsigned int l); 
 
-	mia::P2DShape m_neigbourhood; 
-	mutable int   m_last_label;
+	mia::P2DShape m_neigbourhood;
+	unsigned int   m_start_label;
+	mutable unsigned int   m_last_label;
 	CLabelRemapper m_joints; 
 	std::string   m_map_file;
 	bool m_first_pass; 
 
 	mia::C2DBounds m_slice_size; 
-	mia::C2DUSImage m_out_buffer;
+	mia::C2DUIImage m_out_buffer;
 	
 	mia::CLabelMap m_target; 
 	
