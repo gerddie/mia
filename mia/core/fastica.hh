@@ -28,18 +28,15 @@
 namespace mia {
 
 /**
-   This class implements the FastICA blind source separation with some 
-   additions. 
+   This class implements the FastICA blind source separation
 
+   As additional feature the saddle-check [1] can be run to
+   improve the obtained results.
    
-   
-   Addition one: Saddle-check
-   
-   Petr Tichavský, Zbynek Koldovský, and Erkki Oja
+   [1] Petr Tichavský, Zbynek Koldovský, and Erkki Oja
    "Performance Analysis of the FastICA Algorithm and Cramér–Rao "
    "Bounds for Linear Independent Component Analysis"
    IEEE Tran Signal Processing, 54(4), 2006, 1189-1203  
-
 
  */
 
