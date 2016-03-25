@@ -148,10 +148,10 @@ public:
 	gsl_vector * operator  ->(); 
 	
         /// vector const pointer type operator  to enable transparent calls to the GSL APL
-	operator vector_const_pointer_type () const; 
+	operator Vector::vector_const_pointer_type () const; 
 
 	/// vector pointer type operator  to enable transparent calls to the GSL APL
-	operator vector_pointer_type (); 
+	operator Vector::vector_pointer_type (); 
 	
 	/**
 	   Write the vector to a stream 
@@ -252,7 +252,7 @@ public:
 	}
 	
 	operator Vector::vector_const_pointer_type () const {
-		return m_holder.operator vector_const_pointer_type(); 
+		return m_holder.operator Vector::vector_const_pointer_type(); 
 	}
 
 private: 
