@@ -24,8 +24,10 @@
 #pragma GCC diagnostic push
 #ifndef __clang__ 
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #else
 #pragma clang diagnostic ignored "-Wdeprecated-register"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif 
 #endif 
 
