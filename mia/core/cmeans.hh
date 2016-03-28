@@ -114,10 +114,12 @@ private:
        
 }; 
 
+/// @cond NEVER
 extern template class EXPORT_CORE TPlugin<CMeans::Initializer, CMeans::Initializer>; 
 extern template class EXPORT_CORE TFactory<CMeans::Initializer>;
 extern template class EXPORT_CORE TFactoryPluginHandler<TFactory<CMeans::Initializer>>;
 extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<TFactory<CMeans::Initializer>> >;
+/// @endcond
 
 template <>  const char * const TPluginHandler<TFactory<CMeans::Initializer>>::m_help;
 

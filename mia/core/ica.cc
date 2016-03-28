@@ -116,7 +116,7 @@ bool CICAAnalysis::run(unsigned int nica, vector<vector<float> > guess)
 		fastICA.set_max_num_iterations(impl->m_max_iterations);
 
 	if (!guess.empty()) {
-		itpp::mat mguess(impl->m_Signal.rows(), guess.size()); 
+        itpp::mat mguess(impl->m_Signal.rows(), static_cast<int>(guess.size()));
         for (unsigned int c = 0; c < guess.size(); ++c)
             for (unsigned int r = 0; r < guess.size(); ++r)
 				mguess(r,c) = guess[c][r]; 
@@ -217,7 +217,7 @@ vector<float> CICAAnalysis::get_feature_row(unsigned int row) const
 	if (row < impl->m_ncomponents) {
 		vector<float> result(impl->m_nlength);
         for (unsigned int i = 0; i < impl->m_nlength; ++i)
-			result[i] = impl->m_ICs(row, i);
+            result[i] = static_cast<float>(impl->m_ICs(row, i));
 		return result;
 	}
 
@@ -263,10 +263,10 @@ float correlation(const CICAAnalysis::itppvector& a, const CICAAnalysis::itppvec
 	const float ssxy = sxy - sx * sy / a.size();
 	const float ssxx = sxx - sx * sx / a.size();
 	const float ssyy = syy - sy * sy / a.size();
-	if (sxx == 0 && syy == 0)
+    if (sxx < 1e-10 && syy < 1e-10 )
 		return 1.0;
 
-	if (sxx == 0 || syy == 0)
+    if (sxx < 1e-10 || syy < 1e-10 )
 		return 0.0;
 
 	return (ssxy * ssxy) /  (ssxx * ssyy);
@@ -314,14 +314,14 @@ void CICAAnalysisImpl::get_mixing_curve(unsigned int c, vector<float>& curve) co
 	TRACE_FUNCTION;
 	curve.resize(m_rows);
     for (unsigned int i = 0; i < m_rows; ++i)
-		curve[i] = m_Mix(i, c);
+        curve[i] = static_cast<float>(m_Mix(i, c));
 }
 
 std::vector<float> CICAAnalysis::get_mix(unsigned int idx)const
 {
 	TRACE_FUNCTION;
 	if (idx < impl->m_rows) {
-		vector<float> result(impl->m_nlength, impl->m_mean[idx]);
+        vector<float> result(impl->m_nlength, static_cast<float>(impl->m_mean[idx]));
         for (unsigned int i = 0; i < impl->m_nlength; ++i) {
             for (unsigned int c = 0; c < impl->m_ncomponents; ++c)
 				result[i] += impl->m_ICs(c, i) *  impl->m_Mix(idx, c);
@@ -360,7 +360,7 @@ std::vector<float> CICAAnalysis::get_partial_mix(unsigned int idx, const IndexSe
 
 	} else {
 		impl->check_set(cps);
-		vector<float> result(impl->m_nlength, impl->m_mean[idx]);
+        vector<float> result(impl->m_nlength, static_cast<float>(impl->m_mean[idx]));
         for (unsigned int i = 0; i < impl->m_nlength; ++i) {
 			for (IndexSet::const_iterator c = cps.begin(); c != cps.end(); ++c)
 				result[i] += impl->m_ICs(*c, i) *  impl->m_Mix(idx, *c);
@@ -373,7 +373,7 @@ std::vector<float> CICAAnalysis::get_incomplete_mix(unsigned int idx, const std:
 {
 	TRACE_FUNCTION;
 	if (idx < impl->m_rows) {
-		vector<float> result(impl->m_nlength, impl->m_mean[idx]);
+        vector<float> result(impl->m_nlength, static_cast<float>(impl->m_mean[idx]));
         for (unsigned int i = 0; i < impl->m_nlength; ++i) {
             for (unsigned int c = 0; c < impl->m_ncomponents; ++c)
 				if (skip.find(c) == skip.end())
