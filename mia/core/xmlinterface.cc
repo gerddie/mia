@@ -37,7 +37,7 @@ struct CXMLElementImpl {
         ~CXMLElementImpl();
         
         xmlNodePtr element;
-	vector<CXMLElement::Pointer> children; 
+        vector<CXMLElement::Pointer> children;
 }; 
 
 CXMLElementImpl::CXMLElementImpl(const char *name)
@@ -67,7 +67,7 @@ CXMLElement::~CXMLElement()
 CXMLElement::Pointer CXMLElement::add_child(const char *name)
 {
         Pointer result = make_shared<CXMLElement>(name);
-	impl->children.push_back(result); 
+        impl->children.push_back(result);
         xmlAddChild(impl->element, result->impl->element); 
         return result; 
 }
@@ -85,7 +85,7 @@ void CXMLElement::set_attribute(const char *name, const std::string& value)
 	}else{
 		xmlChar *path = xmlGetNodePath(impl->element); 
 		cvdebug() << "CXMLElement: trying to add attribute " << name << " a second time to '"
-			  << path << "'\n";
+                  << path << "'\n";
 		xmlFree(path);
 		xmlFree(attr);
 	}
@@ -142,7 +142,7 @@ string CXMLDocument::write_to_string_formatted() const
                                1);
 
         stringstream out_string;
-	out_string << doc_txt_ptr; 
+        out_string << doc_txt_ptr;
         free(doc_txt_ptr);
         return out_string.str(); 
 }

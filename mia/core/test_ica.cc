@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( test_mixing_ica_without_mean )
 
 	itpp::mat mix(init_mix, rows, nica, false);
 	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<float> mean(rows, 0.0);
+    vector<double> mean(rows, 0.0);
 
 	CICAAnalysis ica(ic, mix, mean);
 
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE( test_mixing_ica_with_skip )
 
 	itpp::mat mix(init_mix, rows, nica, false);
 	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<float> mean(rows, 0.0);
+    vector<double> mean(rows, 0.0);
 
 	CICAAnalysis ica(ic, mix, mean);
 	CICAAnalysis::IndexSet skip;
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE( test_partial_ica_mix )
 
 	itpp::mat mix(init_mix, rows, nica, false);
 	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<float> mean(rows, 0.0);
+    vector<double> mean(rows, 0.0);
 
 	CICAAnalysis ica(ic, mix, mean);
 	CICAAnalysis::IndexSet components;
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE( test_delta_ica_mix )
 
 	itpp::mat mix(init_mix, rows, nica, false);
 	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<float> mean(rows, 0.0);
+    vector<double> mean(rows, 0.0);
 
 	CICAAnalysis ica(ic, mix, mean);
 	CICAAnalysis::IndexSet plus_components;
