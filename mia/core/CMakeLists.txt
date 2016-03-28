@@ -65,6 +65,7 @@ SET(MIACORE_SRC_BASE
   fullstats.cc
   handlerbase.cc
   history.cc
+  icaanalysisbase.cc
   index.cc
   info.cc
   splinekernel.cc
@@ -157,6 +158,7 @@ SET(MIACORE_HEADER_BASE
   handler.cxx handler.hh
   history.hh
   histogram.hh
+  icaanalysisbase.hh
   index.hh
   import_handler.hh
   iodata.hh

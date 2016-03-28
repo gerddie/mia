@@ -168,7 +168,7 @@ public:
 private:
 	// evaluate the whitening and de-whitening matrices 
 	void evaluate_whiten_matrix(const gsl::Matrix& evec, const gsl::Vector& eval); 
-        bool fpica_defl_round(int component, gsl::Vector& w, gsl::Matrix& B); 
+    bool fpica_defl_round(int component, gsl::Vector& w, gsl::Matrix& B);
 	bool fpica_defl(const gsl::Matrix& X, gsl::Matrix& B); 
 	double fpica_symm_step(gsl::Matrix& B, gsl::Matrix& B_old, double mu, gsl::Matrix& Workspace); 
 	bool fpica_symm(const gsl::Matrix& X, gsl::Matrix& B); 
@@ -220,10 +220,9 @@ private:
 	
 	gsl::Matrix	m_dewhitening_matrix;
 
-        gsl::Matrix	m_principal_eigenvectors; 
+    gsl::Matrix	m_principal_eigenvectors;
 
-        gsl::Matrix	m_white_sig; 
-
+    gsl::Matrix	m_white_sig;
 	
 };
 

@@ -83,7 +83,7 @@ public:
 	 */
     bool run(unsigned int nica, std::vector<std::vector<float> > guess);
 
-        /**
+    /**
 	   Run the independed component analysis with an estimation of the optimal number
 	   of components. (experimental) 
 	   \param max_ica maximum number of independend components
