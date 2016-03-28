@@ -73,7 +73,7 @@ CICAAnalysis::~CICAAnalysis()
 	delete impl;
 }
 
-void CICAAnalysis::set_row(unsigned row, const std::vector<double>&  buffer, double mean)
+void CICAAnalysis::set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean)
 {
 	TRACE_FUNCTION;
 	assert(impl);

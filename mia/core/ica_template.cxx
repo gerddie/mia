@@ -51,7 +51,7 @@ TDataSeriesICA<Data>::TDataSeriesICA(const std::vector<Data>& initializer, bool 
 		std::transform(m_mean.begin(), m_mean.end(), m_mean.begin(),
 			       [&scale](float x){return x * scale;});
 
-		std::vector<float> help(initializer[0].size());
+                std::vector<double> help(initializer[0].size());
 		for(size_t i = 0; i < initializer.size(); ++i) {
 			std::transform(initializer[i].begin(), initializer[i].end(),
 				       m_mean.begin(), help.begin(), 

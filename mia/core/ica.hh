@@ -25,6 +25,7 @@
 #include <vector>
 #include <mia/core/defines.hh>
 #include <mia/core/slopevector.hh>
+#include <mia/core/icaanalysisbase.hh>
 #include <itpp/signal/fastica.h>
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
@@ -38,7 +39,7 @@ NS_MIA_BEGIN
    This class implements basic operations for of ICA. It makes use of the ITPP implementation of FastICA.
 */
 
-class  EXPORT_CORE CICAAnalysis {
+class  EXPORT_CORE CICAAnalysis : public CICAAnalysisBase {
 public:
 
 	/// The type of a vector as used by IT++
@@ -61,18 +62,6 @@ public:
 
 	/// defines a set of indices used for mixing
     typedef std::set<unsigned int> IndexSet;
-
-	/**
-	   Set on row of input data
-	   \tparam Iterator input data iterator, must follow the model of a forward iterator
-	   \param row index of the input slice
-	   \param begin start iterator of input data
-	   \param end end iterator of input data
-	 */
-	template <class Iterator>
-	BOOST_CONCEPT_REQUIRES(((::boost::ForwardIterator<Iterator>)),
-			       (void))
-        set_row(unsigned row, Iterator begin, Iterator end);
 
 
 	/**
@@ -166,31 +155,12 @@ public:
 	 */
 	void set_approach(int approach); 
 private:
-    void set_row(unsigned row, const std::vector<double>&  buffer, double mean);
+    void set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean);
 
 	struct CICAAnalysisImpl *impl;
 
 };
 
-/// \cond DOXYGEN_DOESNT_UNDERSTAND_BOOST_CONCEPT_REQUIRES
-template <class Iterator>
-BOOST_CONCEPT_REQUIRES(((::boost::ForwardIterator<Iterator>)),
-		       (void))
-CICAAnalysis::set_row(unsigned row, Iterator begin, Iterator end)
-{
-    const unsigned int length = std::distance(begin, end);
-    std::vector<double> buffer(length);
-    unsigned int idx = 0;
-	double mean = 0.0;
-
-	while (begin != end)
-		mean += (buffer[idx++] = *begin++);
-	mean /= length;
-    for(unsigned int i = 0; i < length; ++i)
-		buffer[i] -= mean;
-	set_row(row, buffer, mean);
-}
-/// \endcond 
 
 NS_MIA_END
 

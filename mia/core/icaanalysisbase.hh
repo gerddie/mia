@@ -145,7 +145,7 @@ public:
      */
     virtual void set_approach(int approach) = 0;
 private:
-    virtual void set_row(unsigned row, const std::vector<double>&  buffer, double mean) = 0;
+    virtual void set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean) = 0;
 
 };
 
@@ -165,7 +165,7 @@ CICAAnalysisBase::set_row(unsigned row, Iterator begin, Iterator end)
         mean /= length;
     for(unsigned int i = 0; i < length; ++i)
                 buffer[i] -= mean;
-        set_row(row, buffer, mean);
+        set_row_internal(row, buffer, mean);
 }
 /// \endcond
 
