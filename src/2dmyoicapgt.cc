@@ -28,6 +28,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
@@ -252,10 +253,10 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
                                      int components, bool normalize, bool no_meanstrip, int max_ica_iterations, 
                                      int skip_images,  const string& minimizer, const string& linear_transform, 
                                      size_t mg_levels, int max_pass, const string& imagecost, int global_reference, 
-				     float min_rel_frequency)
+                                     float min_rel_frequency, const CICAAnalysisITPPFactory& icatool)
 {
-        int current_pass = 0; 
-	bool do_continue=true; 
+    int current_pass = 0;
+    bool do_continue=true;
 	bool lastpass = false; 
 	vector<C2DFImage> references_float; 
 	do {
@@ -279,9 +280,9 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
 		transform(input_set.get_images().begin() + skip_images, 
 			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
-		if (!ica2.run(series)) {
-			ica2.set_approach(FICA_APPROACH_SYMM); 
-			ica2.run(series); 
+        if (!ica2.run(series, icatool)) {
+            ica2.set_approach(CICAAnalysis::appr_symm);
+            ica2.run(series, icatool);
 		}
 		if (lastpass) 
 			break; 
@@ -381,7 +382,8 @@ int do_main( int argc, char *argv[] )
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
-		segmethod=C2DPerfusionAnalysis::bs_features; 
+            segmethod=C2DPerfusionAnalysis::bs_features;
+    CICAAnalysisITPPFactory icatool;
 
 	float min_breathing_frequency = -1.0f; 
 
@@ -428,10 +430,10 @@ int do_main( int argc, char *argv[] )
                              "linear transform to be used", 
                              CCmdOptionFlags::none, &C2DTransformCreatorHandler::instance()));
         
-        options.add(make_opt(nonlinear_minimizer, "non-linear-optimizer", 'O', 
-                             "Optimizer used for minimization in the non-linear registration.", 
-                             CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
-	options.add(make_opt( c_rate, "start-c-rate", 'a', 
+    options.add(make_opt(nonlinear_minimizer, "non-linear-optimizer", 'O',
+                         "Optimizer used for minimization in the non-linear registration.",
+                         CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
+    options.add(make_opt( c_rate, "start-c-rate", 'a',
                               "start coefficinet rate in spines,"
                               " gets divided by --c-rate-divider with every pass."));
 	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 
@@ -515,11 +517,11 @@ int do_main( int argc, char *argv[] )
 		ica->set_min_movement_frequency(rel_min_bf); 
 
 
-	ica->set_approach(FICA_APPROACH_DEFL); 
-	if (!ica->run(series)) {
+    ica->set_approach(CICAAnalysis::appr_defl);
+    if (!ica->run(series, icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-		ica->set_approach(FICA_APPROACH_SYMM); 
-		if (!ica->run(series)) 
+        ica->set_approach(CICAAnalysis::appr_symm);
+        if (!ica->run(series, icatool))
 			box_scale = false; 
 	}		
 
@@ -575,7 +577,7 @@ int do_main( int argc, char *argv[] )
                 run_linear_registration_passes (input_set, references,  
                                                 components, normalize, no_meanstrip,  max_ica_iterations, 
                                                 skip_images,  linear_minimizer, linear_transform, 
-                                                mg_levels, max_linear_passes, imagecost, global_reference, rel_min_bf); 
+                                                mg_levels, max_linear_passes, imagecost, global_reference, rel_min_bf, icatool);
 
         if (max_nonlinear_passes > 0) 
                 run_nonlinear_registration_passes (input_set,  pgt_alpha, pgt_beta, pgt_rho_thresh,

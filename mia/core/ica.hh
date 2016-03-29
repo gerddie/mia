@@ -23,10 +23,12 @@
 
 #include <set>
 #include <vector>
+#include <itpp/signal/fastica.h>
+
 #include <mia/core/defines.hh>
 #include <mia/core/slopevector.hh>
 #include <mia/core/icaanalysisbase.hh>
-#include <itpp/signal/fastica.h>
+
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
 
@@ -39,7 +41,7 @@ NS_MIA_BEGIN
    This class implements basic operations for of ICA. It makes use of the ITPP implementation of FastICA.
 */
 
-class  EXPORT_CORE CICAAnalysis : public CICAAnalysisBase {
+class  EXPORT_CORE CICAAnalysisITPP : public CICAAnalysis {
 public:
 
 	/// The type of a vector as used by IT++
@@ -47,17 +49,22 @@ public:
 	/**
        Initialize an ICA based of predefined data - this is only used for test cases.
 	 */
-    CICAAnalysis(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean );
+    CICAAnalysisITPP(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean );
 
 	/**
 	   Main constructor of the ICA, i.e. you want to use this.
 	   \param series_length number of data sets that will be provided
 	   \param slice_size number of elements each set containes
 	 */
-    CICAAnalysis(unsigned int series_length, unsigned int slice_size);
+    CICAAnalysisITPP(unsigned int series_length, unsigned int slice_size) __attribute__((deprecated));
+
+    CICAAnalysisITPP();
 
 
-	~CICAAnalysis();
+    ~CICAAnalysisITPP();
+
+
+    void initialize(unsigned int series_length, unsigned int slice_size);
 
 
 	/// defines a set of indices used for mixing
@@ -153,14 +160,21 @@ public:
 	   Set the ICA approach to either FICA_APPROACH_DEFL(default) or FICA_APPROACH_SYMM. 
 	   \param approach
 	 */
-	void set_approach(int approach); 
+    void set_approach(EApproach approach);
 private:
     void set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean);
 
-	struct CICAAnalysisImpl *impl;
+    struct CICAAnalysisITPPImpl *impl;
 
 };
 
+
+class EXPORT_CORE CICAAnalysisITPPFactory: public CICAAnalysisFactory {
+public:
+    PICAAnalysis create() const;
+};
+
+typedef std::shared_ptr<CICAAnalysisITPPFactory> PICAAnalysisITPPFactory;
 
 NS_MIA_END
 

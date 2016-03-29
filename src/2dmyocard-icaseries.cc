@@ -33,6 +33,7 @@
 
 
 #include <mia/core.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
@@ -126,7 +127,10 @@ int do_main( int argc, char *argv[] )
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	
 
-	if (!ica.run(series)) {
+    // this needs to be replaced by a parameter
+    CICAAnalysisITPPFactory icatool;
+
+    if (!ica.run(series, icatool)) {
 		// ICA + classifictaion failed, 
 		// save the mixing matrix if requested 
 		if (!save_crop_feature.empty()) 

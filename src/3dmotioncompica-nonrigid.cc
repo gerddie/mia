@@ -31,6 +31,7 @@
 #include <mia/core/filetools.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/filter.hh>
@@ -255,11 +256,12 @@ int do_main( int argc, char *argv[] )
 	
 
 	// run ICA
-	C3DImageSeriesICA ica(series, false); 
+    CICAAnalysisITPPFactory icatool;
+    C3DImageSeriesICA ica(icatool, series, false);
 	if (max_ica_iterations) 
 		ica.set_max_iterations(max_ica_iterations); 
 	if (!ica.run(components, !no_meanstrip, !no_normalize)) {
-		ica.set_approach(FICA_APPROACH_SYMM); 
+        ica.set_approach(CICAAnalysis::appr_symm);
 		if (!ica.run(components, !no_meanstrip, !no_normalize))
 			cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...\n";
 	}
@@ -317,11 +319,11 @@ int do_main( int argc, char *argv[] )
 
 		
 		
-		C3DImageSeriesICA ica2(series, false); 
+        C3DImageSeriesICA ica2(icatool, series, false);
 		if (max_ica_iterations) 
 			ica2.set_max_iterations(max_ica_iterations); 
 		if (!ica2.run(components, !no_meanstrip, !no_normalize)) {
-			ica2.set_approach(FICA_APPROACH_SYMM); 
+            ica2.set_approach(CICAAnalysis::appr_symm);
 			ica2.run(components, !no_meanstrip, !no_normalize); 
 		}
 		

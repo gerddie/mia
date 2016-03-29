@@ -32,14 +32,14 @@ NS_MIA_BEGIN
 
 using namespace std;
 
-struct CICAAnalysisImpl {
+struct CICAAnalysisITPPImpl {
 
-    CICAAnalysisImpl(unsigned int rows, unsigned int length);
-    CICAAnalysisImpl(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean);
+    CICAAnalysisITPPImpl(unsigned int rows, unsigned int length);
+    CICAAnalysisITPPImpl(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean);
 	void normalize_ICs();
     void get_mixing_curve(unsigned int c, vector<float>& curve) const;
     void set_mixing_series(unsigned int index, const std::vector<float>& series);
-	void check_set(const CICAAnalysis::IndexSet& s) const;
+    void check_set(const CICAAnalysisITPP::IndexSet& s) const;
 	std::vector<float> normalize_Mix();
 	float max_selfcorrelation(int& row1, int &row2) const;
 
@@ -57,23 +57,38 @@ struct CICAAnalysisImpl {
 };
 
 
-CICAAnalysis::CICAAnalysis(unsigned int rows, unsigned int length):
-	impl(new CICAAnalysisImpl(rows, length))
+CICAAnalysisITPP::CICAAnalysisITPP(unsigned int rows, unsigned int length):
+    impl(new CICAAnalysisITPPImpl(rows, length))
 {
 }
 
-CICAAnalysis::CICAAnalysis(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean):
-	impl(new CICAAnalysisImpl(ic, mix, mean))
+CICAAnalysisITPP::CICAAnalysisITPP(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean):
+    impl(new CICAAnalysisITPPImpl(ic, mix, mean))
 {
 
 }
 
-CICAAnalysis::~CICAAnalysis()
+CICAAnalysisITPP::CICAAnalysisITPP():impl(nullptr)
+{
+
+}
+
+
+void CICAAnalysisITPP::initialize(unsigned int series_length, unsigned int slice_size)
+{
+    auto new_impl = new CICAAnalysisITPPImpl(series_length, slice_size);
+    swap(new_impl, impl);
+
+    if (new_impl)
+        delete new_impl;
+}
+
+CICAAnalysisITPP::~CICAAnalysisITPP()
 {
 	delete impl;
 }
 
-void CICAAnalysis::set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean)
+void CICAAnalysisITPP::set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean)
 {
 	TRACE_FUNCTION;
 	assert(impl);
@@ -89,12 +104,20 @@ void CICAAnalysis::set_row_internal(unsigned row, const std::vector<double>&  bu
 	cvdebug() << "add row " << row << ", mean=" << mean << "\n";
 }
 
-void CICAAnalysis::set_approach(int approach)
+void CICAAnalysisITPP::set_approach(EApproach approach)
 {
-	impl->m_approach = approach;
+    switch (approach) {
+    case appr_defl: impl->m_approach = FICA_APPROACH_DEFL;
+        break;
+    case appr_symm: impl->m_approach = FICA_APPROACH_SYMM;
+        break;
+    default:
+        throw invalid_argument("CICAAnalysisITPP:set_approach: Unknown approach given");
+    }
+
 }
 
-bool CICAAnalysis::run(unsigned int nica, vector<vector<float> > guess)
+bool CICAAnalysisITPP::run(unsigned int nica, vector<vector<float> > guess)
 {
 	TRACE_FUNCTION;
 	assert(impl);
@@ -140,7 +163,7 @@ bool CICAAnalysis::run(unsigned int nica, vector<vector<float> > guess)
 	return result; 
 }
 
-void CICAAnalysis::run_auto(int nica, int min_ica, float corr_thresh)
+void CICAAnalysisITPP::run_auto(int nica, int min_ica, float corr_thresh)
 {
 	TRACE_FUNCTION;
 	assert(impl);
@@ -206,12 +229,12 @@ void CICAAnalysis::run_auto(int nica, int min_ica, float corr_thresh)
 
 }
 
-unsigned int CICAAnalysis::get_ncomponents() const
+unsigned int CICAAnalysisITPP::get_ncomponents() const
 {
 	return impl->m_ncomponents;
 }
 
-vector<float> CICAAnalysis::get_feature_row(unsigned int row) const
+vector<float> CICAAnalysisITPP::get_feature_row(unsigned int row) const
 {
 	TRACE_FUNCTION;
 	if (row < impl->m_ncomponents) {
@@ -221,11 +244,11 @@ vector<float> CICAAnalysis::get_feature_row(unsigned int row) const
 		return result;
 	}
 
-	throw create_exception<invalid_argument>("CICAAnalysis::get_feature_row: requested row ", row, " out of range");
+    throw create_exception<invalid_argument>("CICAAnalysisITPP::get_feature_row: requested row ", row, " out of range");
 
 }
 
-std::vector<float> CICAAnalysis::get_mix_series(unsigned int colm)const
+std::vector<float> CICAAnalysisITPP::get_mix_series(unsigned int colm)const
 {
 	TRACE_FUNCTION;
 	if (colm < impl->m_ncomponents) {
@@ -233,16 +256,16 @@ std::vector<float> CICAAnalysis::get_mix_series(unsigned int colm)const
 		impl->get_mixing_curve(colm, result);
 		return result;
 	}
-	throw create_exception<invalid_argument>("CICAAnalysis::get_mix_series: requested series ", colm, " out of range");
+    throw create_exception<invalid_argument>("CICAAnalysisITPP::get_mix_series: requested series ", colm, " out of range");
 }
 
-void CICAAnalysis::set_mixing_series(unsigned int index, const std::vector<float>& filtered_series)
+void CICAAnalysisITPP::set_mixing_series(unsigned int index, const std::vector<float>& filtered_series)
 {
 	impl->set_mixing_series(index, filtered_series);
 }
 
 
-float correlation(const CICAAnalysis::itppvector& a, const CICAAnalysis::itppvector& b)
+float correlation(const CICAAnalysisITPP::itppvector& a, const CICAAnalysisITPP::itppvector& b)
 {
 	assert(a.size() > 0);
 	assert(a.size() == b.size());
@@ -272,7 +295,7 @@ float correlation(const CICAAnalysis::itppvector& a, const CICAAnalysis::itppvec
 	return (ssxy * ssxy) /  (ssxx * ssyy);
 }
 
-float CICAAnalysisImpl::max_selfcorrelation(int& row1, int &row2) const
+float CICAAnalysisITPPImpl::max_selfcorrelation(int& row1, int &row2) const
 {
 	float max_corr = 0.0;
 	for (int i = 0; i < m_Mix.cols(); ++i)
@@ -289,7 +312,7 @@ float CICAAnalysisImpl::max_selfcorrelation(int& row1, int &row2) const
 
 }
 
-void CICAAnalysisImpl::set_mixing_series(unsigned int index, const std::vector<float>& series)
+void CICAAnalysisITPPImpl::set_mixing_series(unsigned int index, const std::vector<float>& series)
 {
 	TRACE_FUNCTION;
 	assert(m_rows == series.size());
@@ -300,7 +323,7 @@ void CICAAnalysisImpl::set_mixing_series(unsigned int index, const std::vector<f
 }
 
 
-CSlopeColumns CICAAnalysis::get_mixing_curves() const
+CSlopeColumns CICAAnalysisITPP::get_mixing_curves() const
 {
 	TRACE_FUNCTION;
 	CSlopeColumns result(impl->m_ncomponents);
@@ -309,7 +332,7 @@ CSlopeColumns CICAAnalysis::get_mixing_curves() const
 	return result;
 }
 
-void CICAAnalysisImpl::get_mixing_curve(unsigned int c, vector<float>& curve) const
+void CICAAnalysisITPPImpl::get_mixing_curve(unsigned int c, vector<float>& curve) const
 {
 	TRACE_FUNCTION;
 	curve.resize(m_rows);
@@ -317,7 +340,7 @@ void CICAAnalysisImpl::get_mixing_curve(unsigned int c, vector<float>& curve) co
         curve[i] = static_cast<float>(m_Mix(i, c));
 }
 
-std::vector<float> CICAAnalysis::get_mix(unsigned int idx)const
+std::vector<float> CICAAnalysisITPP::get_mix(unsigned int idx)const
 {
 	TRACE_FUNCTION;
 	if (idx < impl->m_rows) {
@@ -329,10 +352,10 @@ std::vector<float> CICAAnalysis::get_mix(unsigned int idx)const
 		return result;
 	}
 
-	throw create_exception<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, " out of range: ", impl->m_rows);
+    throw create_exception<invalid_argument>("CICAAnalysisITPP::get_mix: requested idx ", idx, " out of range: ", impl->m_rows);
 }
 
-std::vector<float> CICAAnalysis::get_delta_feature(const IndexSet& plus, const IndexSet& minus)const
+std::vector<float> CICAAnalysisITPP::get_delta_feature(const IndexSet& plus, const IndexSet& minus)const
 {
 	TRACE_FUNCTION;
 
@@ -351,11 +374,11 @@ std::vector<float> CICAAnalysis::get_delta_feature(const IndexSet& plus, const I
 	return result;
 }
 
-std::vector<float> CICAAnalysis::get_partial_mix(unsigned int idx, const IndexSet& cps)const
+std::vector<float> CICAAnalysisITPP::get_partial_mix(unsigned int idx, const IndexSet& cps)const
 {
 	TRACE_FUNCTION;
 	if (idx >=  impl->m_rows) {
-		throw create_exception<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, 
+        throw create_exception<invalid_argument>("CICAAnalysisITPP::get_mix: requested idx ", idx,
 					       " out of range: ", impl->m_rows);
 
 	} else {
@@ -369,7 +392,7 @@ std::vector<float> CICAAnalysis::get_partial_mix(unsigned int idx, const IndexSe
 	}
 }
 
-std::vector<float> CICAAnalysis::get_incomplete_mix(unsigned int idx, const std::set<unsigned int>& skip)const
+std::vector<float> CICAAnalysisITPP::get_incomplete_mix(unsigned int idx, const std::set<unsigned int>& skip)const
 {
 	TRACE_FUNCTION;
 	if (idx < impl->m_rows) {
@@ -382,16 +405,16 @@ std::vector<float> CICAAnalysis::get_incomplete_mix(unsigned int idx, const std:
 		return result;
 	}
 
-	throw create_exception<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, 
+    throw create_exception<invalid_argument>("CICAAnalysisITPP::get_mix: requested idx ", idx,
 				       " out of range: ", impl->m_rows);
 }
 
-std::vector<float> CICAAnalysis::normalize_Mix()
+std::vector<float> CICAAnalysisITPP::normalize_Mix()
 {
 	return impl->normalize_Mix();
 }
 
-CICAAnalysisImpl::CICAAnalysisImpl(unsigned int rows, unsigned int length):
+CICAAnalysisITPPImpl::CICAAnalysisITPPImpl(unsigned int rows, unsigned int length):
 	m_Signal(rows, length),
 	m_mean(rows),
 	m_ncomponents(0),
@@ -403,7 +426,7 @@ CICAAnalysisImpl::CICAAnalysisImpl(unsigned int rows, unsigned int length):
 	cvdebug() << "Analyis of signal with " << rows << " data rows of " << length << " entries\n";
 }
 
-CICAAnalysisImpl::CICAAnalysisImpl(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean):
+CICAAnalysisITPPImpl::CICAAnalysisITPPImpl(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean):
 	// Coverty may complain here, but the order is correct
 	// the signal is a matrix of the number of columns of the mixing matrix = time points 
 	// by rows of the independent components - each row constitutes th epixel ogf a feature image
@@ -421,25 +444,25 @@ CICAAnalysisImpl::CICAAnalysisImpl(const itpp::mat& ic, const itpp::mat& mix, co
 	TRACE_FUNCTION;
 }
 
-void CICAAnalysis::normalize_ICs()
+void CICAAnalysisITPP::normalize_ICs()
 {
 	TRACE_FUNCTION;
 	impl->normalize_ICs();
 }
 
-void CICAAnalysisImpl::check_set(const CICAAnalysis::IndexSet& s) const
+void CICAAnalysisITPPImpl::check_set(const CICAAnalysisITPP::IndexSet& s) const
 {
-	for (CICAAnalysis::IndexSet::const_iterator is = s.begin();
+    for (CICAAnalysisITPP::IndexSet::const_iterator is = s.begin();
 	     is != s.end(); ++is) {
 		if (*is >= m_ncomponents) {
-			throw create_exception<invalid_argument>("CICAAnalysis: request component index ",  *is , 
+            throw create_exception<invalid_argument>("CICAAnalysisITPP: request component index ",  *is ,
 						       " but only up to index ", m_ncomponents - 1, 
 						       " available\n");
 		}
 	}
 }
 
-void CICAAnalysisImpl::normalize_ICs()
+void CICAAnalysisITPPImpl::normalize_ICs()
 {
 #if 1
 	if (m_nlength < 2) 
@@ -526,7 +549,7 @@ void CICAAnalysisImpl::normalize_ICs()
 #endif 
 }
 
-std::vector<float> CICAAnalysisImpl::normalize_Mix()
+std::vector<float> CICAAnalysisITPPImpl::normalize_Mix()
 {
 	std::vector<float> result(m_nlength,0.0f);
 
@@ -555,9 +578,14 @@ std::vector<float> CICAAnalysisImpl::normalize_Mix()
 }
 
 
-void CICAAnalysis::set_max_iterations(int n)
+void CICAAnalysisITPP::set_max_iterations(int n)
 {
 	impl->m_max_iterations = n;
+}
+
+PICAAnalysis CICAAnalysisITPPFactory::create() const
+{
+    return PICAAnalysis(new CICAAnalysisITPP);
 }
 
 NS_MIA_END

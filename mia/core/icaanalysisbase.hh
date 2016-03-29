@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis
- * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #ifndef mia_core_ICAANALYSISBASE_HH
 #define mia_core_ICAANALYSISBASE_HH
 
+#include <memory>
 #include <set>
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
@@ -32,11 +33,22 @@
 
 namespace mia {
 
-class EXPORT_CORE CICAAnalysisBase
+class EXPORT_CORE CICAAnalysis
 {
 public:
 
-    virtual ~CICAAnalysisBase();
+    /**
+       Separation approach to be used.
+     */
+    enum EApproach {
+        appr_defl, /**< Deflation approach - each component is extimated separately */
+        appr_symm,  /**< Symmetric approach thet estimates all components at the same time */
+        appr_unknown
+    };
+
+    typedef std::unique_ptr<CICAAnalysis> Pointer;
+
+    virtual ~CICAAnalysis();
 
     /// defines a set of indices used for mixing
     typedef std::set<unsigned int> IndexSet;
@@ -54,6 +66,7 @@ public:
     set_row(unsigned row, Iterator begin, Iterator end);
 
 
+    virtual void initialize(unsigned int series_length, unsigned int slice_size) = 0;
     /**
        Run the independed component analysis using the given numbers of components
        \param nica number of indentepended components
@@ -143,17 +156,29 @@ public:
        Set the ICA approach to either FICA_APPROACH_DEFL(default) or FICA_APPROACH_SYMM.
        \param approach
      */
-    virtual void set_approach(int approach) = 0;
+    virtual void set_approach(EApproach approach) = 0;
 private:
     virtual void set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean) = 0;
 
 };
 
+typedef CICAAnalysis::Pointer PICAAnalysis;
+
+
+class EXPORT_CORE CICAAnalysisFactory {
+public:
+    virtual ~CICAAnalysisFactory();
+    virtual PICAAnalysis create() const = 0;
+};
+
+
+typedef std::shared_ptr<CICAAnalysisFactory> PICAAnalysisFactory;
+
 /// \cond DOXYGEN_DOESNT_UNDERSTAND_BOOST_CONCEPT_REQUIRES
 template <class Iterator>
 BOOST_CONCEPT_REQUIRES(((::boost::ForwardIterator<Iterator>)),
                        (void))
-CICAAnalysisBase::set_row(unsigned row, Iterator begin, Iterator end)
+CICAAnalysis::set_row(unsigned row, Iterator begin, Iterator end)
 {
     const unsigned int length = std::distance(begin, end);
     std::vector<double> buffer(length);

@@ -29,6 +29,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/segsetwithimages.hh>
@@ -241,11 +242,12 @@ int do_main( int argc, char *argv[] )
 	if (max_ica_iterations) 
 		ica->set_max_ica_iterations(max_ica_iterations); 
 
-	ica->set_approach(FICA_APPROACH_DEFL); 
-	if (!ica->run(series)) {
+    CICAAnalysisITPPFactory icatool;
+    ica->set_approach(CICAAnalysis::appr_defl);
+    if (!ica->run(series, icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-		ica->set_approach(FICA_APPROACH_SYMM); 
-		if (!ica->run(series)) 
+        ica->set_approach(CICAAnalysis::appr_symm);
+        if (!ica->run(series, icatool))
 			box_scale = false; 
 	}
 
@@ -299,10 +301,10 @@ int do_main( int argc, char *argv[] )
 		transform(registered.begin() + skip_images, 
 			  registered.end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
-		if (!ica2.run(series))
-			ica2.set_approach(FICA_APPROACH_SYMM); 
+        if (!ica2.run(series, icatool))
+            ica2.set_approach(CICAAnalysis::appr_symm);
 
-		ica2.run(series); 
+        ica2.run(series, icatool);
 		divcurlweight /= divcurlweight_divider; 
 		if (c_rate > 1) 
 			c_rate /= c_rate_divider; 

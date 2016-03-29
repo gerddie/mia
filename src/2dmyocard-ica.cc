@@ -31,6 +31,7 @@
 
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/ica.hh>
 #include <mia/core/slopeclassifier.hh>
 
@@ -57,11 +58,16 @@ const SProgramDescription g_description = {
 	{pdi_example_code, "-i imageXXXX.exr -o ref -k 2 -C 5 -m -n"}
 }; 
 
+
+// this needs to be replaced by a parameter
+CICAAnalysisITPPFactory icatool;
+
 unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean,
 				      size_t& components, bool ica_normalize, int max_iterations)
 {
 	srand(time(NULL));
-	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
+
+        unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(icatool, series, false));
 	if (components > 0) {
 		ica->set_max_iterations(max_iterations);
 		ica->run(components, strip_mean, ica_normalize);
@@ -70,7 +76,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 		// highly correlated curves.
 		float min_cor = 0.0;
 		for (int i = 7; i > 3; --i) {
-			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
+            unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(icatool, series, false));
 			l_ica->set_max_iterations(max_iterations);
 			l_ica->run(i, strip_mean, ica_normalize);
 
@@ -91,7 +97,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 
 unique_ptr<C2DImageSeriesICA> get_ica_auto(vector<C2DFImage>& series, size_t& max_components )
 {
-	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
+    unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(icatool, series, false));
 	max_components = ica->run_auto(max_components, 3, 0.7);
 	return ica;
 }

@@ -36,6 +36,7 @@
 #include <mia/2d/imageio.hh>
 #include <mia/2d/segsetwithimages.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/core/ica.hh>
 
 #include <boost/filesystem.hpp>
 
@@ -344,12 +345,12 @@ int do_main( int argc, char *argv[] )
 	if (rel_min_bf > 0) 
 		ica->set_min_movement_frequency(rel_min_bf); 
 
-
-	ica->set_approach(FICA_APPROACH_DEFL); 
-	if (!ica->run(series)) {
+    CICAAnalysisITPPFactory icatool;
+    ica->set_approach(CICAAnalysis::appr_defl);
+    if (!ica->run(series, icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-		ica->set_approach(FICA_APPROACH_SYMM); 
-		if (!ica->run(series)) 
+        ica->set_approach(CICAAnalysis::appr_symm);
+        if (!ica->run(series, icatool))
 			box_scale = false; 
 
 	}		
@@ -423,9 +424,9 @@ int do_main( int argc, char *argv[] )
 		transform(input_set.get_images().begin() + skip_images, 
 			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
-		if (!ica2.run(series)) {
-			ica2.set_approach(FICA_APPROACH_SYMM); 
-			ica2.run(series); 
+        if (!ica2.run(series, icatool)) {
+            ica2.set_approach(CICAAnalysis::appr_symm);
+            ica2.run(series, icatool);
 		}
 		if (lastpass) 
 			break; 
@@ -451,9 +452,9 @@ int do_main( int argc, char *argv[] )
 	transform(input_set.get_images().begin() + skip_images, 
 		  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 	
-	if (!ica_final.run(series)) {
-			ica_final.set_approach(FICA_APPROACH_SYMM); 
-			ica_final.run(series); 
+    if (!ica_final.run(series, icatool)) {
+            ica_final.set_approach(CICAAnalysis::appr_symm);
+            ica_final.run(series, icatool);
 	}
 
 	if (!save_crop_feature.empty()) {

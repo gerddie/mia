@@ -21,6 +21,7 @@
 #include <mia/2d/transform.hh>
 #include <mia/internal/autotest.hh>
 
+#include <mia/core/ica.hh>
 #include <mia/2d/ica.hh>
 
 using namespace mia;
@@ -43,13 +44,13 @@ protected:
 BOOST_AUTO_TEST_CASE ( test_empty_initialization )
 {
 	vector<C2DFImage> series;
-	BOOST_CHECK_THROW( C2DImageSeriesICA s(series, false), invalid_argument);
+    BOOST_CHECK_THROW( C2DImageSeriesICA s(CICAAnalysisITPPFactory(), series, false), invalid_argument);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, false);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, false);
 
 	ica.run(3, false, false);
 
@@ -66,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICASeriesFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, false);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),image_set, false);
 	C2DImageSeriesICA::IndexSet skip;
 	skip.insert(0);
 	skip.insert(1);
@@ -88,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICASeriesFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, true);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),image_set, true);
 
 	ica.run(3, false, false);
 
@@ -105,7 +106,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICASeriesFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, true);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),image_set, true);
 
 	ica.run(4, false, false);
 
@@ -122,7 +123,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICASeriesFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, true);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),image_set, true);
 
 	ica.run(4, true, true);
 
@@ -139,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, 
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, false);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),image_set, false);
 
 	ica.run(4, true, true);
 
@@ -156,7 +157,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICASeriesFixt
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, false);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),image_set, false);
 
 	ica.run(4, true, true);
 
@@ -173,7 +174,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICASeriesFix
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, false);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),image_set, false);
 
 	ica.run(4,  true, false);
 
@@ -190,7 +191,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICASeries
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICASeriesFixture )
 {
-	C2DImageSeriesICA ica(image_set, false);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),image_set, false);
 
 	ica.run(4, false, false);
 	for (size_t i = 0; i < slices; ++i) {
@@ -217,7 +218,7 @@ BOOST_AUTO_TEST_CASE( test_ica_mean_substract )
 	images.push_back(C2DFImage(size, init_image1));
 	images.push_back(C2DFImage(size, init_image2));
 
-	C2DImageSeriesICA ica(images, true);
+    C2DImageSeriesICA ica(CICAAnalysisITPPFactory(),images, true);
 
 	const C2DFImage& mean = ica.get_mean_image();
 

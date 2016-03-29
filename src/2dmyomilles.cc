@@ -30,6 +30,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/imageio.hh>
@@ -214,9 +215,11 @@ int do_main( int argc, char *argv[] )
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	if (use_guess_model) 
 		ica.set_use_guess_model(); 
-	if (!ica.run(series)) {
-		ica.set_approach(FICA_APPROACH_SYMM); 
-		if (!ica.run(series) )
+
+    CICAAnalysisITPPFactory icatool;
+    if (!ica.run(series, icatool)) {
+        ica.set_approach(CICAAnalysis::appr_symm);
+        if (!ica.run(series, icatool) )
 			cvwarn() << "ICA analysis didn't converge, results might by bougus\n";
 	}
 
@@ -300,9 +303,9 @@ int do_main( int argc, char *argv[] )
 	
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), FCopy2DImageToFloatRepn()); 
-		if (!ica2.run(series))
-			ica2.set_approach(FICA_APPROACH_SYMM); 
-		if (ica2.run(series) ) {
+        if (!ica2.run(series, icatool))
+            ica2.set_approach(CICAAnalysis::appr_symm);
+        if (ica2.run(series, icatool) ) {
 			references_float = ica2.get_references(); 
 
 			transform(references_float.begin(), references_float.end(), 

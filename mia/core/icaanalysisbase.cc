@@ -23,7 +23,12 @@
 
 namespace  mia {
 
-CICAAnalysisBase::~CICAAnalysisBase()
+CICAAnalysis::~CICAAnalysis()
+{
+
+}
+
+CICAAnalysisFactory::~CICAAnalysisFactory()
 {
 
 }

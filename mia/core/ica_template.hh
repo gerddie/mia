@@ -21,8 +21,9 @@
 #ifndef mia_core_ica_template_hh
 #define mia_core_ica_template_hh
 
-#include <mia/core/ica.hh>
+#include <mia/core/icaanalysisbase.hh>
 #include <vector>
+
 
 #ifndef EXPORT_TDataSeriesICA
 #ifdef WIN32
@@ -61,7 +62,7 @@ class  EXPORT_TDataSeriesICA TDataSeriesICA {
 public:
 	/** a set of indices used for addressing a subset of the independend componsts 
 	 */
-	typedef CICAAnalysis::IndexSet IndexSet;
+        typedef CICAAnalysis::IndexSet IndexSet;
 
 	/** a (shared) pointer to itself */
 	typedef typename Data::Pointer PData; 
@@ -70,10 +71,13 @@ public:
 	   \brief ICA initialization 
 	   
 	   The contructor for an ICA
+           \param icatool tool used for the ICA analysis
 	   \param initializer data set containing all the time steps of input data 
 	   \param strip_mean strip the mean from the series before processing 
 	 */
-	TDataSeriesICA(const std::vector<Data>& initializer, bool strip_mean);
+
+
+        TDataSeriesICA(const CICAAnalysisFactory&  icatool, const std::vector<Data>& initializer, bool strip_mean);
 	
 	/**  Runs the ICA 
 	     \param ncomponents retained components 
@@ -160,12 +164,12 @@ public:
 	   Set the ICA approach to either FICA_APPROACH_DEFL(default) or FICA_APPROACH_SYMM. 
 	   \param approach
 	 */
-	void set_approach(int approach); 
+        void set_approach(CICAAnalysis::EApproach approach);
 	
 
 	~TDataSeriesICA();
 private:
-	CICAAnalysis m_analysis;
+        PICAAnalysis m_analysis;
 	typedef typename Data::dimsize_type dimsize_type; 
 	dimsize_type m_size;
 	Data m_mean;
