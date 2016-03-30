@@ -371,6 +371,7 @@ IF (NOT LIBXMLPP_VERSION)
   pkg_check_modules(XMLPP libxml++-3.0)
 
   IF (XMLPP_FOUND)
+    MESSAGE(STATUS "Set LIBXMLPP_VERSION to 3")
     SET(LIBXMLPP_VERSION 3)
   ELSE()
     pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)

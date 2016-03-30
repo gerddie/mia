@@ -32,7 +32,7 @@
 #endif
 
 #cmakedefine HAVE_SYS_IOCTL_H 1
-#cmakedefine LIBXMLPP_VERSION 0
+#cmakedefine LIBXMLPP_VERSION @LIBXMLPP_VERSION@
 
 #cmakedefine HAVE_MAXFLOW 1
 
