@@ -45,19 +45,19 @@ C2DMeanVar::C2DMeanVar(unsigned hw, double thresh, const std::string& varfilenam
 template <typename T>
 std::pair<double, double> evaluate_pixel(const T2DImage<T>& data, unsigned x, unsigned y, unsigned hw, double thresh)
 {
-	unsigned startx = data.get_size().x - hw;
+	unsigned startx = x - hw;
 	if (startx > data.get_size().x)
 		startx = 0;
 
-	unsigned endx = data.get_size().x + hw;
+	unsigned endx = x + hw + 1;
 	if (endx > data.get_size().x)
 		endx = data.get_size().x;
 
-	unsigned starty = data.get_size().y - hw;
+	unsigned starty = y - hw;
 	if (starty > data.get_size().y)
 		starty = 0;
 
-	unsigned endy = data.get_size().y + hw;
+	unsigned endy = y + hw + 1;
 	if (endy > data.get_size().y)
 		endy = data.get_size().y;
 
@@ -71,8 +71,8 @@ std::pair<double, double> evaluate_pixel(const T2DImage<T>& data, unsigned x, un
 		double sum2 = 0.0f;
 		unsigned n = 0; 
 		
-		for (unsigned ix = startx; ix < endx; ++ix) {
-			for (unsigned iy = startx; iy < endy; ++iy) {
+		for (unsigned iy = starty; iy < endy; ++iy) {
+			for (unsigned ix = startx; ix < endx; ++ix) {
 				double v = data(ix, iy);
 				if (v >= thresh) {
 					sum += v;
@@ -94,7 +94,12 @@ std::pair<double, double> evaluate_pixel(const T2DImage<T>& data, unsigned x, un
 template <typename T>
 C2DMeanVar::result_type C2DMeanVar::operator () (const T2DImage<T>& data) const
 {
-	cvdebug() << "C2DMeanVar::operator () begin\n";
+	TRACE_FUNCTION;
+
+	cvdebug() << "Running 2D meanvar with hw=" << m_hw
+		  << ", thresh=" << m_thresh
+		  << ", and varfile=" << m_varfilename
+		  << "\n";
 
 	C2DFImage *result_mu = new C2DFImage(data.get_size(), data);
 	C2DFImage *result_sigma = new C2DFImage(data.get_size(), data);

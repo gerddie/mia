@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( test_meanvar_without_thresh )
 	srand48(0);
 #endif
 
-	for (int width = 2; width < 12; ++width) {
+	for (int width = 4; width < 5; ++width) {
 		int w = width / 2;
 		cvdebug() << "test filter of width " << w << "\n";
 		ostringstream filter_descr; 
@@ -44,7 +44,6 @@ BOOST_AUTO_TEST_CASE( test_meanvar_without_thresh )
 		auto filter = BOOST_TEST_create_from_plugin<C2DMeanVarImageFilterFactory>(filter_descr.str().c_str()); 
 
 		int isize = 4 * w + 1;
-		int fwidth = 2 * w;
 		C2DBounds size(isize, isize);
 
 		C2DFImage *src = new C2DFImage(size);
@@ -68,15 +67,26 @@ BOOST_AUTO_TEST_CASE( test_meanvar_without_thresh )
 				float sum2 = 0.0f;
 				int n = 0;
 
-				for (int iy = max(0, y - fwidth); iy < min(isize, y + 1); ++iy)
-					for (int ix = max(0, x - fwidth); ix < min(isize, x + 1); ++ix) {
+				int starty = max(0, y - w);
+				int startx = max(0, x - w);
+				
+				int endy = min(isize, y + w + 1);
+				int endx = min(isize, x + w + 1);
+
+				
+				for (int iy = starty; iy < endy; ++iy) 
+					for (int ix = startx; ix < endx; ++ix) {
 						float const& val = (*src)(ix,iy);
 						sum += val;
 						sum2 += val * val;
 						++n;
 					}
+				cvdebug() << "("<< x << ", " << y << ")n=" << n
+					  << " ["<< startx << "," << endx 
+					  << "]x[" << starty << "," << endy 
+					  << "]\n"; 
 				float m = n>0 ? mu(x,y) = sum / n : 0;
-				sigma(x,y) = (n > 1) ? (sum2 - n * m * m) / (n - 1) : 0.0f;
+				sigma(x,y) = (n > 1) ? sqrt((sum2 - sum * m) / (n - 1)) : 0.0f;
 			}
 
 		}
@@ -89,6 +99,20 @@ BOOST_AUTO_TEST_CASE( test_meanvar_without_thresh )
 		BOOST_CHECK_EQUAL(res_mu->get_size(), src_wrap->get_size());
 		BOOST_REQUIRE(res_mu->get_size() == src_wrap->get_size());
 
+		
+		auto ires = res_mu->begin();
+		auto iref = mu.begin();
+
+		for (unsigned y = 0; y < isize; ++y) {
+			for (unsigned x = 0; x < isize; ++x, ++ires, ++iref) {
+				if (fabs(*ires - *iref) > 1e-5
+					) {
+					cvfail() << "Error at (" << x << ", " << y << ") got " << *ires
+						 << " expect "<< *iref << "\n"; 
+				}
+			}
+		}
+		
 		for (auto ires = res_mu->begin(), iref = mu.begin();
 		     ires != res_mu->end(); ++ires, ++iref) {
 			BOOST_CHECK_CLOSE(*ires, *iref, 0.1);
