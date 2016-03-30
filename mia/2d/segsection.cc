@@ -40,19 +40,19 @@ CSegSection::CSegSection(const string& id, const Points& points, bool is_open):
 {
 }
 
-CSegSection::CSegSection(xmlpp::Node& node, int version):
+CSegSection::CSegSection(const xmlpp::Node& node, int version):
 	m_is_open(false)
 {
 	TRACE("CSegSection::CSegSection");
 
-	xmlpp::Element& elm = dynamic_cast<xmlpp::Element&>(node);
-	xmlpp::Attribute *id = elm.get_attribute ("color");
+	const xmlpp::Element& elm = dynamic_cast<const xmlpp::Element&>(node);
+	auto *id = elm.get_attribute ("color");
 
 	if (!id)
 		throw invalid_argument("CSegSection::CSegSection: node without id");
 	m_id = id->get_value();
 
-	xmlpp::Node::NodeList points = node.get_children("point");
+	auto points = node.get_children("point");
 
 	for (auto i = points.begin(); i != points.end(); ++i)
 		m_points.push_back(CSegPoint2D(**i));
@@ -97,9 +97,9 @@ void CSegSection::inv_transform(const C2DTransformation& t)
 }
 
 
-void CSegSection::write(xmlpp::Node& node, int version) const
+void CSegSection::write(xmlpp::Element& node, int version) const
 {
-	xmlpp::Element* nodeChild = node.add_child("section");
+	xmlpp::Element* nodeChild = node.add_child_element("section");
 	nodeChild->set_attribute("color", m_id);
 
 	if (version > 1) {

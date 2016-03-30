@@ -96,7 +96,7 @@ CSegFrame::CSegFrame(const Node& node, int version):
 	}
 	m_filename = attr->get_value(); 
 	
-	Node::NodeList nodes = elm.get_children(); 
+	auto nodes = elm.get_children(); 
 	
 	for (auto i = nodes.begin(); i != nodes.end(); ++i) {
 
@@ -160,9 +160,9 @@ const CSegStar& CSegFrame::get_star() const
 }
 
 
-void CSegFrame::write(Node& node, int version) const
+void CSegFrame::write(xmlpp::Element& node, int version) const
 {
-	Element* self = node.add_child("frame"); 
+	Element* self = node.add_child_element("frame"); 
 	self->set_attribute("image", m_filename); 	
 
 	if (version > 1) {

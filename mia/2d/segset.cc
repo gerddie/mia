@@ -114,12 +114,12 @@ xmlpp::Document *CSegSet::write() const
 		nodeRoot->set_attribute("version", to_string<int>(m_version));
 	}
 
-	Element* description = nodeRoot->add_child("description"); 
-	Element* RVPeak = description->add_child("RVpeak"); 
+	Element* description = nodeRoot->add_child_element("description"); 
+	Element* RVPeak = description->add_child_element("RVpeak"); 
 	RVPeak->set_attribute("value", to_string<int>(m_RV_peak));
-	Element* LVPeak = description->add_child("LVpeak"); 
+	Element* LVPeak = description->add_child_element("LVpeak"); 
 	LVPeak->set_attribute("value", to_string<int>(m_LV_peak));
-	Element* PreferedRef = description->add_child("PreferedRef"); 
+	Element* PreferedRef = description->add_child_element("PreferedRef"); 
 	PreferedRef->set_attribute("value", to_string<int>(m_preferred_reference));
 
 

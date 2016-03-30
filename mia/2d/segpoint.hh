@@ -66,7 +66,7 @@ public:
 	/** Write the point as child-node to a given XML tree
 	    \param node 
 	*/
-	void write(xmlpp::Node& node) const;
+	void write(xmlpp::Element& node) const;
 
 	/**
 	   Tranform the point according to the given tranformation 

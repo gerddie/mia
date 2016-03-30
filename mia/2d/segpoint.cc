@@ -73,8 +73,8 @@ CSegPoint2D::CSegPoint2D(float x, float y):
 CSegPoint2D::CSegPoint2D(const Node& node)
 {
 	const Element& elm = dynamic_cast<const Element&>(node);
-	Attribute *ax = elm.get_attribute ("x");
-	Attribute *ay = elm.get_attribute ("y");
+	auto *ax = elm.get_attribute ("x");
+	auto *ay = elm.get_attribute ("y");
 	if (!ax || !ay)
 		throw runtime_error("SegSection:Point attribute x or y not found");
 	
@@ -87,9 +87,9 @@ CSegPoint2D::CSegPoint2D(const Node& node)
 					     ay->get_value(), "' is not a floating point value");
 }
 
-void CSegPoint2D::write(Node& node) const
+void CSegPoint2D::write(Element& node) const
 {
-	Element* point = node.add_child("point");
+	Element* point = node.add_child_element("point");
 	point->set_attribute("y", to_string<float>(y));
 	point->set_attribute("x", to_string<float>(x));
 }
