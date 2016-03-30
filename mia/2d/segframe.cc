@@ -29,7 +29,13 @@
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp> 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
+#if LIBXMLPP_VERSION < 3
+#define add_child_element add_child
+#endif
 
 NS_MIA_BEGIN
 using namespace std; 

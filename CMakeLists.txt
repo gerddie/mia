@@ -365,11 +365,19 @@ ENDIF(WITH_FFTWD)
 ####################################################################################
 #
 # add xml library for loading/storing segmentations and document creation  
+# search it olny once
 #
-pkg_check_modules(XMLPP libxml++-3.0)
+IF (NOT LIBXMLPP_VERSION)
+  pkg_check_modules(XMLPP alibxml++-3.0)
 
-IF (NOT XMLPP_FOUND)
-  pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
+  IF (XMLPP_FOUND)
+    SET(LIBXMLPP_VERSION 3)
+  ELSE()
+    pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
+    IF (XMLPP_FOUND)
+      SET(LIBXMLPP_VERSION 2)
+    ENDIF()
+  ENDIF()
 ENDIF()
 
 IF (XMLPP_FOUND)

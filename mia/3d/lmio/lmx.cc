@@ -25,8 +25,17 @@
 #include <boost/filesystem.hpp>
 
 
-namespace
- bfs=boost::filesystem; 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#if LIBXMLPP_VERSION < 3
+#define get_first_child_text get_child_text
+#define set_first_child_text set_child_text
+#define add_child_element add_child
+#endif
+
+namespace  bfs=boost::filesystem;
 using namespace xmlpp;
 
 NS_MIA_USE

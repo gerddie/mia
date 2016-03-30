@@ -24,6 +24,13 @@
 #include <mia/core/filetools.hh>
 #include <mia/core/tools.hh>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#if LIBXMLPP_VERSION < 3
+#define add_child_element add_child
+#endif
 
 
 NS_MIA_BEGIN
