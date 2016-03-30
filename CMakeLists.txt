@@ -367,21 +367,15 @@ ENDIF(WITH_FFTWD)
 # add xml library for loading/storing segmentations and document creation  
 # search it olny once
 #
-IF (NOT LIBXMLPP_VERSION)
-  pkg_check_modules(XMLPP libxml++-3.0)
+pkg_check_modules(XMLPP libxml++-3.0)
 
-  IF (XMLPP_FOUND)
-    MESSAGE(STATUS "Set LIBXMLPP_VERSION to 3")
-    SET(LIBXMLPP_VERSION 3)
-  ELSE()
-    pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
-    IF (XMLPP_FOUND)
-      SET(LIBXMLPP_VERSION 2)
-    ENDIF()
-  ENDIF()
+IF (NOT XMLPP_FOUND)
+  pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
 ENDIF()
 
 IF (XMLPP_FOUND)
+STRING(REGEX MATCH "[0-9]*" XMLPP_MAJOR_VERSION "${XMLPP_VERSION}")
+  SET(LIBXMLPP_VERSION ${XMLPP_MAJOR_VERSION})
   INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
   LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
 ENDIF (XMLPP_FOUND)
