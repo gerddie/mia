@@ -368,7 +368,7 @@ ENDIF(WITH_FFTWD)
 # search it olny once
 #
 IF (NOT LIBXMLPP_VERSION)
-  pkg_check_modules(XMLPP alibxml++-3.0)
+  pkg_check_modules(XMLPP libxml++-3.0)
 
   IF (XMLPP_FOUND)
     SET(LIBXMLPP_VERSION 3)
