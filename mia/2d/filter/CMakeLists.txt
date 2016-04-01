@@ -56,6 +56,7 @@ SET(filters2dNew_base
   mean
   meanvar 
   median
+  medianmad
   mlv
   morphological
   ngfnorm
