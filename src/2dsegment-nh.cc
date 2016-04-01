@@ -76,10 +76,11 @@ C2DUBImage FInitialLabelImage::operator() (const T2DImage<T>& median, const T2DI
 
         while (iout != eout) {
                 if (*imedian != 0) {
+                        cvdebug() << "*imad = " << *imad << "\n"; 
                         if (*imad < m_thresh)
                                 *iout = 3;
                         else {
-                                *iout = *iorig < *imedian ? 1 : 2; 
+                                *iout = (*iorig < *imedian) ? 1 : 2; 
                         }
                 } else
                         *iout = 0; 
@@ -121,13 +122,21 @@ int do_main(int argc, char *argv[])
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
-	auto in_image = load_image2d(in_filename); 
+	auto in_image = load_image2d(in_filename);
+
+        if (bg_thresh < 0.0f) {
+                cvwarn() << "threshhold auto-estimation not yet implemented\n";
+                return EXIT_FAILURE; 
+        }else if (bg_thresh < 1.0){
+                cvwarn() << "% threshhold not yet implemented\n";
+                return EXIT_FAILURE; 
+        }
 	
         stringstream filter;
-        filter << "medianmad:w=" << median_filterwidth << ",thresh=" << bg_thresh << ",madfile=mad.@";
+        filter << "medianmad:w=" << median_filterwidth << ",thresh=" << bg_thresh << ",madfile=mad.png";
 
         auto median = run_filter(in_image, filter.str().c_str());
-        auto mad = load_image2d("mad.@");
+        auto mad = load_image2d("mad.png");
 
         FInitialLabelImage ilm(mad_thresh, in_image);
         auto out_image = mia::filter(ilm, *median, *mad);
