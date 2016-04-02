@@ -128,9 +128,10 @@ int do_main(int argc, char *argv[])
                 cvwarn() << "threshhold auto-estimation not yet implemented\n";
                 return EXIT_FAILURE; 
         }else if (bg_thresh < 1.0){
-                cvwarn() << "% threshhold not yet implemented\n";
-                return EXIT_FAILURE; 
+                auto range = in_image->get_minmax_intensity();
+		bg_thresh = (range.second  - range.first)  * bg_thresh + range.first;
         }
+	cvinfo() << "Using intensity threshhold: " << bg_thresh << "\n";
 	
         stringstream filter;
         filter << "medianmad:w=" << median_filterwidth << ",thresh=" << bg_thresh << ",madfile=mad.png";

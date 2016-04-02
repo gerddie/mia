@@ -103,8 +103,8 @@ BOOST_AUTO_TEST_CASE( test_meanvar_without_thresh )
 		auto ires = res_mu->begin();
 		auto iref = mu.begin();
 
-		for (unsigned y = 0; y < isize; ++y) {
-			for (unsigned x = 0; x < isize; ++x, ++ires, ++iref) {
+		for (int  y = 0; y < isize; ++y) {
+			for (int  x = 0; x < isize; ++x, ++ires, ++iref) {
 				if (fabs(*ires - *iref) > 1e-5
 					) {
 					cvfail() << "Error at (" << x << ", " << y << ") got " << *ires

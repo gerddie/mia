@@ -291,6 +291,13 @@ C2DFVector T2DImage<bool>::get_gradient(const C2DFVector& p) const
 }
 
 
+template <class T>
+std::pair<double, double> T2DImage<T>::get_minmax_intensity() const
+{
+	auto mm = std::minmax_element( m_image.begin(), m_image.end());
+	return std::pair<double, double>(*mm.first, *mm.second);
+}
+
 struct FGradientEvaluator: public TFilter<C2DFVectorfield> {
 	template <typename T>
 	C2DFVectorfield operator ()( const T2DImage<T>& image) const {

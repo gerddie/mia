@@ -286,6 +286,13 @@ const C3DBounds& T3DImage<T>::get_size() const
 	return m_image.get_size();
 }
 
+template <class T>
+std::pair<double, double> T3DImage<T>::get_minmax_intensity() const
+{
+	auto mm = std::minmax_element( m_image.begin(), m_image.end());
+	return std::pair<double, double>(*mm.first, *mm.second);
+}
+
 
 struct FGetGradient3D: public TFilter< C3DFVectorfield> {
 	template <typename T>

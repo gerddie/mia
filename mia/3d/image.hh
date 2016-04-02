@@ -121,6 +121,9 @@ public:
 	    @remark orientation is currently not really used
 	*/
 	void set_orientation(E3DImageOrientation orient);
+
+	/// \returns a pair (minimum, maximum) pixel intensity 
+	virtual std::pair<double, double> get_minmax_intensity() const = 0; 
 private:
 	EPixelType m_pixel_type;
 };
@@ -366,6 +369,8 @@ public:
 	/// \returns the 3D size of the image
 	virtual const C3DBounds& get_size() const;
 
+	/// \returns minimum and mximum pixel intensity of the image
+	std::pair<double, double> get_minmax_intensity() const; 
 private:
 	T3DDatafield<T> m_image;
 };

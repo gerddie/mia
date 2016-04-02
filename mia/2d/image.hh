@@ -83,6 +83,8 @@ public:
         */
 	virtual C2DImage* clone() const __attribute__((warn_unused_result))  = 0;
 
+	virtual std::pair<double, double> get_minmax_intensity() const = 0; 
+
  protected:
          /** Constructor initializes the size and the pixel type
          */
@@ -308,6 +310,9 @@ public:
 	   \returns gradient at position p 
 	 */
 	C2DFVector get_gradient(const C2DFVector& p) const;
+
+	/// \returns a pair (minimum, maximum) pixel intensity 
+	std::pair<double, double> get_minmax_intensity() const; 
 private:
 	T2DDatafield<T> m_image;
 };
