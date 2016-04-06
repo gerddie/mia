@@ -47,64 +47,63 @@ public:
 	/// The type of a vector as used by IT++
 	typedef itpp::Vec<itpp::mat::value_type> itppvector;
 	/**
-       Initialize an ICA based of predefined data - this is only used for test cases.
-	 */
-    CICAAnalysisITPP(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean );
+	   Initialize an ICA based of predefined data - this is only used for test cases.
+	*/
+	CICAAnalysisITPP(const itpp::mat& ic, const itpp::mat& mix, const std::vector<double>& mean );
+	
 
+	CICAAnalysisITPP();
+	
+	
+	~CICAAnalysisITPP();
+	
 	/**
-	   Main constructor of the ICA, i.e. you want to use this.
+	   Initialize the ICA
 	   \param series_length number of data sets that will be provided
 	   \param slice_size number of elements each set containes
-	 */
-    CICAAnalysisITPP(unsigned int series_length, unsigned int slice_size) __attribute__((deprecated));
-
-    CICAAnalysisITPP();
-
-
-    ~CICAAnalysisITPP();
-
-
-    void initialize(unsigned int series_length, unsigned int slice_size);
-
-
+	*/
+	
+	void initialize(unsigned int series_length, unsigned int slice_size);
+	
+	
 	/// defines a set of indices used for mixing
-    typedef std::set<unsigned int> IndexSet;
-
-
+	typedef std::set<unsigned int> IndexSet;
+	
+	
 	/**
 	   Run the independed component analysis using the given numbers of components
 	   \param nica number of indentepended components
 	   \param guess initial guess for the ICA, pass an empty vector of you 
 	   don't want to use this feature  
-	 */
-    bool run(unsigned int nica, std::vector<std::vector<float> > guess);
-
-    /**
+	*/
+	bool run(unsigned int nica, std::vector<std::vector<float> > guess);
+	
+	/**
 	   Run the independed component analysis with an estimation of the optimal number
 	   of components. (experimental) 
 	   \param max_ica maximum number of independend components
 	   \param min_ica minimum number of independend components
 	   \param corr_thresh minimum absolute correation of the mixing signals to joins two components
 	*/
-    void run_auto(int max_ica, int min_ica, float corr_thresh=0.9f);
-
+	void run_auto(int max_ica, int min_ica, float corr_thresh=0.9f);
+	
 
 	/// \returns the feature vector of \a row
-    std::vector<float> get_feature_row(unsigned int row)const;
-
+	std::vector<float> get_feature_row(unsigned int row)const;
+	
 	/// \returns the mixing signal curve of the feature \a row
-    std::vector<float> get_mix_series(unsigned int row)const;
-
+	std::vector<float> get_mix_series(unsigned int row)const;
+	
 	/// \returns the complete mixed signal at series index \a idx
-    std::vector<float> get_mix(unsigned int idx)const;
-
+	std::vector<float> get_mix(unsigned int idx)const;
+	
 	/** Evaluate an incomplete mixed signal. Here the features are given that are \a not to be used.
 	    \sa get_partial_mix
 	    \param idx series index
 	    \param skip a set of feature indices that will be skipped when evaluating the mix
 	    \returns the mixed signal
 	*/
-    std::vector<float> get_incomplete_mix(unsigned int idx, const IndexSet& skip)const;
+	std::vector<float> get_incomplete_mix(unsigned int idx, const IndexSet& skip)const;
 
 	/** Evaluate an incomplete mixed signal. Here the features are given that are \a used to create the mix.
 	    \sa get_incomplete_mix
@@ -112,25 +111,25 @@ public:
 	    \param use the set of feature indices that will be used to evaluate the mix
 	    \returns an incolmplete mixed signal.
 	*/
-    std::vector<float> get_partial_mix(unsigned int idx, const IndexSet& use)const;
-
+	std::vector<float> get_partial_mix(unsigned int idx, const IndexSet& use)const;
+	
 	/** Evaluate a mix of the feature signals by adding and subtractig individual features.
 	    \param plus features o be added
 	    \param minus features to be subtracted
 	    \returns the feature mix
-	 */
+	*/
 	std::vector<float> get_delta_feature(const IndexSet& plus, const IndexSet& minus)const;
-
+	
 	/**
 	   Replace a mixing signal curve
 	   \param index of the curve to be replaced
 	   \param series new data for mixing curve
 	 */
-    void set_mixing_series(unsigned int index, const std::vector<float>& series);
-
+	void set_mixing_series(unsigned int index, const std::vector<float>& series);
+	
 	/// \returns a vector containing all mixing curves
 	CSlopeColumns   get_mixing_curves() const;
-
+	
 	/**
 	   Normalize the ICs in the following manner:
 	   * Scale and shift the range of the ICs to  [-1, 1]
@@ -148,30 +147,30 @@ public:
 
 
 	/// \returns the number of actual ICs
-    unsigned int get_ncomponents() const;
-
+	unsigned int get_ncomponents() const;
+	
 	/**
 	   sets the number of iterations in the ICA
 	   \param n
 	 */
 	void set_max_iterations(int n);
-
+	
 	/**
 	   Set the ICA approach to either FICA_APPROACH_DEFL(default) or FICA_APPROACH_SYMM. 
 	   \param approach
-	 */
-    void set_approach(EApproach approach);
+	*/
+	void set_approach(EApproach approach);
 private:
-    void set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean);
-
-    struct CICAAnalysisITPPImpl *impl;
-
+	void set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean);
+	
+	struct CICAAnalysisITPPImpl *impl;
+	
 };
 
 
 class EXPORT_CORE CICAAnalysisITPPFactory: public CICAAnalysisFactory {
 public:
-    PICAAnalysis create() const;
+	PICAAnalysis create() const;
 };
 
 typedef std::shared_ptr<CICAAnalysisITPPFactory> PICAAnalysisITPPFactory;
