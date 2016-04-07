@@ -51,7 +51,7 @@ CTestFixedInitializer::CTestFixedInitializer(const CMeans::DVector& init):
 {
 }
 
-CMeans::DVector CTestFixedInitializer::run(const CMeans::NormalizedHistogram& nh) const
+CMeans::DVector CTestFixedInitializer::run(const CMeans::NormalizedHistogram& MIA_PARAM_UNUSED(nh)) const
 {
 	return m_init; 
 }

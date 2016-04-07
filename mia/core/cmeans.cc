@@ -188,9 +188,9 @@ double CMeansImpl::update_class_centers(CMeans::DVector& class_center,
 	return sqrt(residuum); 
 }
 
-double CMeansImpl::adjust_k(const CMeans::DVector& class_center,
-			     const CMeans::NormalizedHistogram& nh, 
-			     const CMeans::SparseProbmap& pv)const
+double CMeansImpl::adjust_k(const CMeans::DVector& MIA_PARAM_UNUSED(class_center),
+                             const CMeans::NormalizedHistogram& MIA_PARAM_UNUSED(nh),
+                             const CMeans::SparseProbmap& MIA_PARAM_UNUSED(pv))const
 {
 	cvwarn() << "CMeans: auto 'k' not implemented\n"; 
 	return m_k; 
