@@ -12,9 +12,9 @@ before_script:
 - cd build
 - cmake .. -DALWAYS_CREATE_DOC=ON -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=ON -DMIA_CREATE_NIPYPE_INTERFACES=ON -DENABLE_COVERAGE=ON
 script:
-- make -j3
+- make -j4 
 after_success:
-- make test
+- CTEST_PARALLEL_LEVEL=3 make test
 - cd .. 
 - coveralls --exclude CMakeFiles  --gcov-options '\-lp' -b $(pwd)/build
 env:
