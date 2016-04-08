@@ -109,7 +109,7 @@ IF(CREATE_USERDOC)
   
 ENDIF(CREATE_USERDOC)
 
-OPTION(DOXYGEN_USE_MATHJAX "Use mathjax for formulas in html documentation" OFF)
+OPTION(DOXYGEN_USE_MATHJAX "Use mathjax for formulas in html documentation" ON)
 
 IF (DOXYGEN_FOUND)
   ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
@@ -126,6 +126,9 @@ IF (DOXYGEN_FOUND)
       /usr/share/mathjax
       /usr/share/javascript/
       )
+    IF(NOT MATHJAX_CODEFILE)
+      MESSAGE(STATUS "No mathjax installation found, will create the documentation linking to the on-line version") 
+    ENDIF()
   ENDIF()
   
   CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/reference.dox.cmake 
