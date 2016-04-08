@@ -78,6 +78,7 @@ OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are a
 OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" TRUE)
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
+OPTION(ENABLE_COVERAGE "Enable code coverage tests" FALSE)
 
 INCLUDE(GNUInstallDirs)
 
@@ -104,6 +105,13 @@ IF(UNIX)
   
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${CXX_11_FLAG} -fvisibility=hidden")
 ENDIF(UNIX)
+
+IF (ENABLE_COVERAGE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
+ENDIF()
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
