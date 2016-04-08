@@ -109,6 +109,8 @@ IF(CREATE_USERDOC)
   
 ENDIF(CREATE_USERDOC)
 
+OPTION(DOXYGEN_USE_MATHJAX "Use mathjax for formulas in html documentation" OFF)
+
 IF (DOXYGEN_FOUND)
   ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
   ADD_DEPENDENCIES(docs LibraryDoc)
@@ -116,6 +118,11 @@ IF (DOXYGEN_FOUND)
   IF(DOXYGEN_DOT_FOUND)
     SET(HAVE_DOT YES)
   ENDIF(DOXYGEN_DOT_FOUND)
+
+  IF(DOXYGEN_USE_MATHJAX)
+    SET(USE_MATHJAX YES)
+  ENDIF()
+  
   CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/reference.dox.cmake 
     ${CMAKE_CURRENT_BINARY_DIR}/reference.dox)
   
