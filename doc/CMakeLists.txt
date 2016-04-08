@@ -121,6 +121,11 @@ IF (DOXYGEN_FOUND)
 
   IF(DOXYGEN_USE_MATHJAX)
     SET(USE_MATHJAX YES)
+    FIND_PATH(MATHJAX_CODEFILE MathJax.js
+      PATHS
+      /usr/share/mathjax
+      /usr/share/javascript/
+      )
   ENDIF()
   
   CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/reference.dox.cmake 
