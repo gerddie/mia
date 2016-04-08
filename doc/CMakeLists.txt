@@ -127,7 +127,7 @@ IF (DOXYGEN_FOUND)
       /usr/share/javascript/
       )
     IF(NOT MATHJAX_CODEFILE)
-      MESSAGE(STATUS "No mathjax installation found, will create the documentation linking to the on-line version") 
+      MESSAGE(STATUS "No mathjax installation found, Doxygen will create the documentation linking to the on-line version") 
     ENDIF()
   ENDIF()
   
