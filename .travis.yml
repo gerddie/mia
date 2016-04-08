@@ -2,9 +2,6 @@ sudo: required
 dist: trusty
 language: generic
 
-env:
-  - CTEST_PARALLEL_LEVEL=2 
-
 install:
 - sudo add-apt-repository ppa:gert-die/trusty-mia -y 
 - sudo apt-get update -qq
@@ -23,6 +20,7 @@ after_success:
 
 env: 
   global:
+  - CTEST_PARALLEL_LEVEL=2 
   - secure: GJh7knKOeyjofQFswCHI4H1VeRBYDmGrZjBiW/yNoGqLvvAZi32HF2d5gHj2vrsGBqto/5mQrydo1rH6Q85VuZ7ZNZmcmiMVA5htv61WKfxzc50mSrkSfvDTb0MOmR8QcpWpK4YAfCYd4r8drPfpbRdHUvTfEk9tS8I/1LGLuos3cLRU+OojEuvndUC8rGHtCRtDswFmngbc96gkAuHfAd7LiaJ5EY+pqOmHY4xMgi5Ev4FnGdkUczUcpisxee/48QIite9lw5E0pemPepKuhrwUJRvnzb9Tgsp94R42mzymvnKyLsttdUQtUItTQshTqEtWSFf/6GO9GPyUXAgR+BDsQ9ODlxOC6+Cip0HqxCvgDfIZarVaj5/2/ZwiyjocEinhSzFiIJF9SShpqSpP9MUgS/ZL/9y6GMiDXx19zkxBJ9kXP+7vH/G/7qFZ6f1aVuDemgKit5styDQDnLyd/FlBrz3oWftj4WDpF3LQIwAAstq1nBKsccYT5cfcbrvMY+lNTAL0HrjAt06C1b9DoG0ftEy5YWYrJlgdfmkXhK9O6Dz73Pj8FMDjJyKlFIpssLWEmQUE3LytnDY3tw7uE+JIXIb8Ii3Q8CLX/IMWjEkHAaXd4+jXJOAoFWelZtCqbHXRH367Rel7ETBmI/PELm3WaGKxcTACC8zpLk9IDJQ=
 addons:
   coverity_scan:
