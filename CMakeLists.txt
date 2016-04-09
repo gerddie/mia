@@ -79,6 +79,7 @@ OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build proce
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
 OPTION(ENABLE_COVERAGE "Enable code coverage tests" FALSE)
+OPTION(DISABLE_PROGRAMS "Don't build the programs in src/ (only for testing purposes)" FALSE)
 
 INCLUDE(GNUInstallDirs)
 
@@ -107,7 +108,7 @@ IF(UNIX)
 ENDIF(UNIX)
 
 IF (ENABLE_COVERAGE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O1 -g")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
@@ -538,6 +539,12 @@ INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COP
  
 ADD_CUSTOM_TARGET(dist bash ${CMAKE_SOURCE_DIR}/create_package "${PACKAGE_NAME}" "${PACKAGE_VERSION}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 
-ADD_SUBDIRECTORY(src)
+
+
+IF (NOT DISABLE_PROGRAMS) 
+  ADD_SUBDIRECTORY(src)
+ENDIF()
+
 ADD_SUBDIRECTORY(test)
 ADD_SUBDIRECTORY(doc)
+

@@ -2,6 +2,14 @@ sudo: required
 dist: trusty
 language: generic
 
+env:
+  matrix: 
+  - COVERAGE=ON EXTRA=OFF 
+  - COVERAGE=OFF EXTRA=ON
+  global:
+  - CTEST_PARALLEL_LEVEL=2 
+  - secure: GJh7knKOeyjofQFswCHI4H1VeRBYDmGrZjBiW/yNoGqLvvAZi32HF2d5gHj2vrsGBqto/5mQrydo1rH6Q85VuZ7ZNZmcmiMVA5htv61WKfxzc50mSrkSfvDTb0MOmR8QcpWpK4YAfCYd4r8drPfpbRdHUvTfEk9tS8I/1LGLuos3cLRU+OojEuvndUC8rGHtCRtDswFmngbc96gkAuHfAd7LiaJ5EY+pqOmHY4xMgi5Ev4FnGdkUczUcpisxee/48QIite9lw5E0pemPepKuhrwUJRvnzb9Tgsp94R42mzymvnKyLsttdUQtUItTQshTqEtWSFf/6GO9GPyUXAgR+BDsQ9ODlxOC6+Cip0HqxCvgDfIZarVaj5/2/ZwiyjocEinhSzFiIJF9SShpqSpP9MUgS/ZL/9y6GMiDXx19zkxBJ9kXP+7vH/G/7qFZ6f1aVuDemgKit5styDQDnLyd/FlBrz3oWftj4WDpF3LQIwAAstq1nBKsccYT5cfcbrvMY+lNTAL0HrjAt06C1b9DoG0ftEy5YWYrJlgdfmkXhK9O6Dz73Pj8FMDjJyKlFIpssLWEmQUE3LytnDY3tw7uE+JIXIb8Ii3Q8CLX/IMWjEkHAaXd4+jXJOAoFWelZtCqbHXRH367Rel7ETBmI/PELm3WaGKxcTACC8zpLk9IDJQ=
+
 install:
 - sudo add-apt-repository ppa:gert-die/trusty-mia -y 
 - sudo apt-get update -qq
@@ -10,18 +18,14 @@ install:
 before_script:
 - mkdir build
 - cd build
-- cmake .. -DALWAYS_CREATE_DOC=ON -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=ON -DMIA_CREATE_NIPYPE_INTERFACES=ON -DENABLE_COVERAGE=ON -DUSE_MATHJAX=YES
+- cmake .. -DALWAYS_CREATE_DOC=$EXTRA -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=$EXTRA -DMIA_CREATE_NIPYPE_INTERFACES=$EXTRA -DENABLE_COVERAGE=$COVERAGE -DDISABLE_PROGRAMS=$EXTRA -DUSE_MATHJAX=YES
 script:
-- make -j3
+- make -j2
 after_success:
 - make test
 - cd .. 
-- coveralls --exclude CMakeFiles --exclude src --gcov-options '\-lp' -b $(pwd)/build 2>&1 >/dev/null 
+- if test "x$COVERAGE" = "xON; then coveralls --exclude CMakeFiles --exclude src --gcov-options '\-lp' -b $(pwd)/build 2>&1 >/dev/null ; fi 
 
-env: 
-  global:
-  - CTEST_PARALLEL_LEVEL=2 
-  - secure: GJh7knKOeyjofQFswCHI4H1VeRBYDmGrZjBiW/yNoGqLvvAZi32HF2d5gHj2vrsGBqto/5mQrydo1rH6Q85VuZ7ZNZmcmiMVA5htv61WKfxzc50mSrkSfvDTb0MOmR8QcpWpK4YAfCYd4r8drPfpbRdHUvTfEk9tS8I/1LGLuos3cLRU+OojEuvndUC8rGHtCRtDswFmngbc96gkAuHfAd7LiaJ5EY+pqOmHY4xMgi5Ev4FnGdkUczUcpisxee/48QIite9lw5E0pemPepKuhrwUJRvnzb9Tgsp94R42mzymvnKyLsttdUQtUItTQshTqEtWSFf/6GO9GPyUXAgR+BDsQ9ODlxOC6+Cip0HqxCvgDfIZarVaj5/2/ZwiyjocEinhSzFiIJF9SShpqSpP9MUgS/ZL/9y6GMiDXx19zkxBJ9kXP+7vH/G/7qFZ6f1aVuDemgKit5styDQDnLyd/FlBrz3oWftj4WDpF3LQIwAAstq1nBKsccYT5cfcbrvMY+lNTAL0HrjAt06C1b9DoG0ftEy5YWYrJlgdfmkXhK9O6Dz73Pj8FMDjJyKlFIpssLWEmQUE3LytnDY3tw7uE+JIXIb8Ii3Q8CLX/IMWjEkHAaXd4+jXJOAoFWelZtCqbHXRH367Rel7ETBmI/PELm3WaGKxcTACC8zpLk9IDJQ=
 addons:
   coverity_scan:
     project:
