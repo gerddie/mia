@@ -458,16 +458,18 @@ ENDIF(ALWAYS_CREATE_DOC)
 #
 SET(CREATE_USERDOC FALSE)
 
-FIND_PACKAGE(PythonInterp)
-IF(PYTHONINTERP_FOUND) 
-  EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
-  IF(LXML_ERR) 
-    MESSAGE(python found, but no lxml, no user documantation will be created) 
-  ELSE(LXML_ERR)
-    SET(CREATE_USERDOC TRUE)
-  ENDIF(LXML_ERR) 
-ENDIF(PYTHONINTERP_FOUND)
-
+#if no programs are build, no userdoc can be created 
+IF (NOT DISABLE_PROGRAMS) 
+  FIND_PACKAGE(PythonInterp)
+  IF(PYTHONINTERP_FOUND) 
+    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
+    IF(LXML_ERR) 
+      MESSAGE(python found, but no lxml, no user documantation will be created) 
+    ELSE(LXML_ERR)
+      SET(CREATE_USERDOC TRUE)
+    ENDIF(LXML_ERR) 
+  ENDIF(PYTHONINTERP_FOUND)
+ENDIF()
 
 #############################################
 #
