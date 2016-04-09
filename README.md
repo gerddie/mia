@@ -1,3 +1,7 @@
+
+[![Coverage Status](https://coveralls.io/repos/github/gerddie/mia/badge.svg?branch=master)](https://coveralls.io/github/gerddie/mia?branch=master)
+
+
 This repository is a mirror of the master branch of
 
     git://git.code.sf.net/p/mia/mia2
