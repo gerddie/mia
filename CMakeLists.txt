@@ -79,7 +79,7 @@ OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build proce
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
 OPTION(ENABLE_COVERAGE "Enable code coverage tests" FALSE)
-OPTION(DISABLE_PROGRAMS "Don't build the programs in src/ (only for testing purposes)" FALSE)
+OPTION(DISABLE_PROGRAMS "Don't build the programs nor documentation (only for testing purposes)" FALSE)
 
 INCLUDE(GNUInstallDirs)
 
