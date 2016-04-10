@@ -19,13 +19,13 @@ before_script:
 - mkdir build
 - cd build
 - echo COVERAGE=$COVERAGE EXTRA=$EXTRA
-- cmake .. -DALWAYS_CREATE_DOC=$EXTRA -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=$EXTRA -DMIA_CREATE_NIPYPE_INTERFACES=$EXTRA -DENABLE_COVERAGE=$COVERAGE -DDISABLE_PROGRAMS=$EXTRA -DUSE_MATHJAX=YES
+- cmake .. -DALWAYS_CREATE_DOC=$EXTRA -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=$EXTRA -DMIA_CREATE_NIPYPE_INTERFACES=$EXTRA -DENABLE_COVERAGE=$COVERAGE -DDISABLE_PROGRAMS=$COVERAGE -DUSE_MATHJAX=YES
 script:
 - make -j2
 after_success:
 - make test
 - cd .. 
-- if test "x$COVERAGE" = "xON; then coveralls --exclude CMakeFiles --exclude src --gcov-options '\-lp' -b $(pwd)/build 2>&1 >/dev/null ; fi 
+- if test "x$COVERAGE" = "xON"; then coveralls --exclude CMakeFiles --exclude src --gcov-options '\-lp' -b $(pwd)/build 2>&1 >/dev/null ; fi 
 
 addons:
   coverity_scan:
