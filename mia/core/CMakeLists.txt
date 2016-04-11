@@ -68,10 +68,10 @@ SET(MIACORE_SRC_BASE
   icaanalysisbase.cc
   index.cc
   info.cc
-  splinekernel.cc
   interpolator1d.cc
   iodata.cc
   ioplugin.cc
+  kmeans.cc
   labelmap.cc
   mitestimages.cc
   module.cc
@@ -99,7 +99,8 @@ SET(MIACORE_SRC_BASE
   shape.cc 
   slopestatistics.cc
   slopeclassifier.cc
-  spacial_kernel.cc 
+  spacial_kernel.cc
+  splinekernel.cc
   splineparzenmi.cc
   sqmin.cc
   streamredir.cc

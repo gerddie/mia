@@ -28,11 +28,15 @@
 #include <limits>
 #include <mia/core/defines.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/core/msgstream.hh>
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
 
 NS_MIA_BEGIN
-/// helper function called by kmeans - don't call it directly 
+
+int EXPORT_CORE kmeans_get_closest_clustercenter(const std::vector<double>& classes, size_t l, double value); 
+
+
 template <typename InputIterator, typename OutputIterator> 
 bool kmeans_step(InputIterator ibegin, InputIterator iend, OutputIterator obegin, 
 		 std::vector<double>& classes, size_t l, int& biggest_class ) 
@@ -57,20 +61,9 @@ bool kmeans_step(InputIterator ibegin, InputIterator iend, OutputIterator obegin
 		// assign closest cluster center
 		OutputIterator ob = obegin; 
 		for (InputIterator b = ibegin; b != iend; ++b, ++ob) {
-			const double val = *b;
-			double dmin = std::numeric_limits<double>::max();
-			int c = 0;
-			for (size_t i = 0; i <= l; i++) {
-				double d = fabs (val - classes[i]);
-				if (d < dmin) {
-					dmin = d;
-					c = i;
-				};
-			};
-			*ob = c; 
-			
-			++count[c];
-			sums[c] += val;
+			*ob = kmeans_get_closest_clustercenter(classes,l, *b); 
+			++count[*ob];
+			sums[*ob] += *b;
 		};
 		
 		// recompute cluster centers
