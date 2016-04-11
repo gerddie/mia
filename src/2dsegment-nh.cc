@@ -74,7 +74,7 @@ int do_main(int argc, char *argv[])
 	string out_filename;
 
        
-        int blocksize = 40;
+        int blocksize = 20;
 	unsigned n_classes = 3;
 		
 	const auto& image2dio = C2DImageIOPluginHandler::instance();
@@ -109,8 +109,8 @@ int do_main(int argc, char *argv[])
 	
 	FKmeans local_kmeans(full_classes, class_output);
 
-	unsigned nx = in_image->get_size().x / blocksize + 1;
-	unsigned ny = in_image->get_size().y / blocksize + 1;
+	unsigned nx = (in_image->get_size().x + blocksize - 1) / blocksize;
+	unsigned ny = (in_image->get_size().y  + blocksize - 1)/ blocksize;
 
 	int xtarget = 0;
 	int ytarget = 0; 
@@ -119,13 +119,20 @@ int do_main(int argc, char *argv[])
 			C2DBounds start(ix * blocksize, iy * blocksize);
 			C2DBounds end((2+ix) * blocksize, (2+iy) * blocksize);
 
+			if (end.x > in_image->get_size().x)
+				end.x = in_image->get_size().x;
+			
+			if (end.y > in_image->get_size().y)
+				end.y = in_image->get_size().y; 
+
 			local_kmeans.set_range(start, end, xtarget, ytarget);
 
 			auto local_class_centers = mia::accumulate(local_kmeans, *in_image); 
 		}
 	}
 
-	// merge the class labels; 
+	// merge the class labels;
+	cvmsg() << "Create result image of size" << in_image->get_size() << "\n"; 
 	C2DUBImage result_labels(in_image->get_size(), *in_image);
 
 	auto iout = result_labels.begin();
@@ -156,10 +163,13 @@ int do_main(int argc, char *argv[])
 				max_count = counts[k];
 				max_class = k; 
 			}
+			++k; 
 		}
 		*iout = max_class; 
 		++iout; 
 	}
+	cvmsg() << "Save result to " << out_filename << "\n"; 
+	save_image(out_filename, result_labels); 
 	
 	return EXIT_SUCCESS; 
 	
@@ -169,7 +179,7 @@ int do_main(int argc, char *argv[])
 FKmeans::FKmeans(const vector<double>& in_classes, vector<C2DSBImage>& class_output):
 	m_in_classes(in_classes),
 	m_class_output(class_output),
-	m_rel_cluster_threshold(0.05)
+	m_rel_cluster_threshold(0.0001)
 {
 }
 
@@ -187,26 +197,29 @@ vector<double> FKmeans::operator () (const T2DImage<T>& image)
 {
 	auto ibegin = image.begin_range(m_start, m_end);
 	auto iend = image.end_range(m_start, m_end);
-
+	
 	auto i = ibegin;
-
+	
 	size_t n = 0; 
 	vector<size_t> cluster_sizes(m_in_classes.size());
 	size_t l = m_in_classes.size() - 1; 
 	
 	while ( i != iend ) {
+		auto p = i.pos();
+		if (p.x > 430 && p.y > 1390)
+			cvdebug() << "pos= " << i.pos() << "\n"; 
 		const unsigned c = kmeans_get_closest_clustercenter(m_in_classes, l, *i); 
 		++cluster_sizes[c]; 
 		++i;
 		++n; 
 	}
-
+	
 	vector<double> rel_cluster_sizes(m_in_classes.size());
 	transform(cluster_sizes.begin(), cluster_sizes.end(), rel_cluster_sizes.begin(),
 		  [n](double x){return x / n;});
-
-	cvmsg() << "Relative cluster sizes: [" << m_start << "],[" <<  m_end <<"]= "<< rel_cluster_sizes << "\n"; 
-
+	
+	cvmsg() << "Block [" << m_start << "],[" <<  m_end <<"] Relative cluster sizes: " << rel_cluster_sizes << "\n"; 
+	
 	vector<short> map_idx; 
 	vector<double> result; 
 	for (unsigned i = 0; i < m_in_classes.size(); ++i) {
@@ -215,9 +228,9 @@ vector<double> FKmeans::operator () (const T2DImage<T>& image)
 			map_idx.push_back(i); 
 		}
 	}
-
+	
 	vector<int> class_relation(n);
-
+	
 	int biggest_class = -1; 
 	// iterate to update the class centers  
 	for (size_t  l = 1; l < 4; l++) {
@@ -225,12 +238,12 @@ vector<double> FKmeans::operator () (const T2DImage<T>& image)
 				result.size() - 1, biggest_class)) 
 			break; 
 	}
-
+	
 	transform(class_relation.begin(), class_relation.end(),
 		  m_class_output[m_ytarget * 2 + m_xtarget].begin_range(m_start, m_end), 
 		  [map_idx](int idx) {return map_idx[idx];});
-		  
-	return result; 
+	
+	return result;
 }
 
 #include <mia/internal/main.hh>
