@@ -49,7 +49,7 @@ const SProgramDescription g_description = {
 
 class FKmeans: public TFilter<vector<double>> {
 public: 
-	FKmeans(const vector<double>& in_classes, vector<C2DSBImage>& class_output);
+	FKmeans(const vector<double>& in_classes, vector<C2DSBImage>& class_output, double rel_cluster_threshold);
 	void set_range(const C2DBounds& start, const C2DBounds& end, int xtarget, int ytarget);
 
 	template <typename T>
@@ -76,6 +76,7 @@ int do_main(int argc, char *argv[])
        
         int blocksize = 20;
 	unsigned n_classes = 3;
+	double rel_cluster_threshold = 0.0001;
 		
 	const auto& image2dio = C2DImageIOPluginHandler::instance();
 
@@ -89,6 +90,9 @@ int do_main(int argc, char *argv[])
 			   "grid-spacing", 'g', "Spacing of the grid used to modulate the intensity inhomogeneities"));
 	opts.add(make_opt( n_classes, EParameterBounds::bf_closed_interval, {2u,127u},
 			   "nclasses", 'n', "Number of intensity classes to segment")); 
+	opts.add(make_opt( rel_cluster_threshold, EParameterBounds::bf_open_interval, {0.0,1.0},
+			   "relative-cluster-threshhold", 't', "Number of intensity classes to segment")); 
+	
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -107,7 +111,7 @@ int do_main(int argc, char *argv[])
 	auto full_classes_ptr = full_kmeans->get_attribute(ATTR_IMAGE_KMEANS_CLASSES);
 	const CVDoubleAttribute& full_classes = dynamic_cast<const CVDoubleAttribute&>(*full_classes_ptr); 
 	
-	FKmeans local_kmeans(full_classes, class_output);
+	FKmeans local_kmeans(full_classes, class_output, rel_cluster_threshold);
 
 	unsigned nx = (in_image->get_size().x + blocksize - 1) / blocksize;
 	unsigned ny = (in_image->get_size().y  + blocksize - 1)/ blocksize;
@@ -176,10 +180,11 @@ int do_main(int argc, char *argv[])
 }
 
 
-FKmeans::FKmeans(const vector<double>& in_classes, vector<C2DSBImage>& class_output):
+FKmeans::FKmeans(const vector<double>& in_classes, vector<C2DSBImage>& class_output,
+		 double rel_cluster_threshold):
 	m_in_classes(in_classes),
 	m_class_output(class_output),
-	m_rel_cluster_threshold(0.0001)
+	m_rel_cluster_threshold(rel_cluster_threshold)
 {
 }
 
