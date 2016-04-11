@@ -26,6 +26,7 @@
 
 #include <mia/core/histogram.hh>
 #include <mia/core/cmdlineparser.hh>
+#include <mia/core/kmeans.hh>
 #include <mia/2d.hh>
 
 
@@ -46,51 +47,25 @@ const SProgramDescription g_description = {
 }; 
 
 
-class  FInitialLabelImage: public TFilter<C2DUBImage> {
+class FKmeans: public TFilter<vector<double>> {
 public: 
-        FInitialLabelImage(float thresh, P2DImage orig):
-                m_thresh(thresh),
-                m_orig(orig)
-        {
-        }
-        template< typename T, typename S>
-        C2DUBImage operator() (const T2DImage<T>& median, const T2DImage<S>& mad) const; 
+	FKmeans(const vector<double>& in_classes, vector<C2DSBImage>& class_output);
+	void set_range(const C2DBounds& start, const C2DBounds& end, int xtarget, int ytarget);
+
+	template <typename T>
+	vector<double> operator () (const T2DImage<T>& image);
+
 private:
-        float m_thresh;
-        P2DImage m_orig; 
+	vector<double> m_in_classes;
+	vector<C2DSBImage>& m_class_output;
+	double m_rel_cluster_threshold; 
+	C2DBounds m_start; 
+	C2DBounds m_end;
+	int m_xtarget;
+	int m_ytarget; 
 }; 
 
-template< typename T, typename S>
-C2DUBImage FInitialLabelImage::operator() (const T2DImage<T>& median, const T2DImage<S>& mad) const
-{
-        // median filteredd image is of same pixel type like original
-        const T2DImage<T>& porig = dynamic_cast<const T2DImage<T>&>(*m_orig); 
-        
-        C2DUBImage out_image(median.get_size(), median);
-        
-        auto imedian = median.begin();
-        auto imad = mad.begin();
-        auto iorig = porig.begin(); 
-        auto iout = out_image.begin();
-        auto eout = out_image.end(); 
-
-        while (iout != eout) {
-                if (*imedian != 0) {
-                        cvdebug() << "*imad = " << *imad << "\n"; 
-                        if (*imad < m_thresh)
-                                *iout = 3;
-                        else {
-                                *iout = (*iorig < *imedian) ? 1 : 2; 
-                        }
-                } else
-                        *iout = 0; 
-                
-                ++iout; ++imad; ++imedian; ++iorig; 
-        }
-        return out_image; 
-}
-
-        
+       
 
 int do_main(int argc, char *argv[])
 {
@@ -98,12 +73,10 @@ int do_main(int argc, char *argv[])
 	string in_filename; 
 	string out_filename;
 
-        float bg_thresh = 0.1f;
-        unsigned median_filterwidth = 8;
-        float mad_thresh = 22.0f;
-        
-        
-	
+       
+        int blocksize = 40;
+	unsigned n_classes = 3;
+		
 	const auto& image2dio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList opts(g_description);
@@ -112,40 +85,152 @@ int do_main(int argc, char *argv[])
 	opts.add(make_opt( out_filename, "out-file", 'o', "class label image", CCmdOptionFlags::required_output, &image2dio ));
 
         opts.set_group("Parameters"); 
-	opts.add(make_opt( bg_thresh, "bg-thresh", 't', "background intensity threshhold. if this value is in (0,1), "
-                           "then it is assumed to be a fraction of the intensity range, if it is set to a value <0 then "
-                           "an automatic estimation based on the histogram will be tried."));
-	opts.add(make_opt( median_filterwidth, "median-filterwidth", 'w', "width of the median-MAD filter to be applied"));
-	opts.add(make_opt( mad_thresh, "mad-thresh", 'm', "Threshold value for the median absolute distance (MAD) value. "
-                           "pixels with MAD values below this threshhold are considered to belong to a homogenous image area."));
+	opts.add(make_opt( blocksize, EParameterBounds::bf_min_closed, {3},
+			   "grid-spacing", 'g', "Spacing of the grid used to modulate the intensity inhomogeneities"));
+	opts.add(make_opt( n_classes, EParameterBounds::bf_closed_interval, {2u,127u},
+			   "nclasses", 'n', "Number of intensity classes to segment")); 
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
 	auto in_image = load_image2d(in_filename);
+	stringstream kfilter_ss;
+	kfilter_ss << "kmeans:c=" << n_classes; 
 
-        if (bg_thresh < 0.0f) {
-                cvwarn() << "threshhold auto-estimation not yet implemented\n";
-                return EXIT_FAILURE; 
-        }else if (bg_thresh < 1.0){
-                auto range = in_image->get_minmax_intensity();
-		bg_thresh = (range.second  - range.first)  * bg_thresh + range.first;
-        }
-	cvinfo() << "Using intensity threshhold: " << bg_thresh << "\n";
+	auto full_kmeans = run_filter(in_image, kfilter_ss.str().c_str());
+
+	vector <C2DSBImage> class_output(4, C2DSBImage(in_image->get_size()));
+	for (auto image : class_output) {
+		fill(image.begin(), image.end(), -1); 
+	}
 	
-        stringstream filter;
-        filter << "medianmad:w=" << median_filterwidth << ",thresh=" << bg_thresh << ",madfile=mad.png";
+	auto full_classes_ptr = full_kmeans->get_attribute(ATTR_IMAGE_KMEANS_CLASSES);
+	const CVDoubleAttribute& full_classes = dynamic_cast<const CVDoubleAttribute&>(*full_classes_ptr); 
+	
+	FKmeans local_kmeans(full_classes, class_output);
 
-        auto median = run_filter(in_image, filter.str().c_str());
-        auto mad = load_image2d("mad.png");
+	unsigned nx = in_image->get_size().x / blocksize + 1;
+	unsigned ny = in_image->get_size().y / blocksize + 1;
 
-        FInitialLabelImage ilm(mad_thresh, in_image);
-        auto out_image = mia::filter(ilm, *median, *mad);
+	int xtarget = 0;
+	int ytarget = 0; 
+	for (unsigned iy = 0; iy < ny; ++iy, ytarget = (ytarget + 1)%2) {
+		for (unsigned ix = 0; ix < nx; ++ix, xtarget = (xtarget + 1)%2) {
+			C2DBounds start(ix * blocksize, iy * blocksize);
+			C2DBounds end((2+ix) * blocksize, (2+iy) * blocksize);
 
-        save_image(out_filename, out_image); 
-        
+			local_kmeans.set_range(start, end, xtarget, ytarget);
+
+			auto local_class_centers = mia::accumulate(local_kmeans, *in_image); 
+		}
+	}
+
+	// merge the class labels; 
+	C2DUBImage result_labels(in_image->get_size(), *in_image);
+
+	auto iout = result_labels.begin();
+	auto eout = result_labels.end();
+	
+	vector<C2DSBImage::const_iterator> ii; 
+	
+	for (int i = 0; i < 4; ++i) {
+		ii.push_back(class_output[i].begin());
+	}
+
+	vector<unsigned> counts(n_classes); 
+	while (iout != eout)  {
+		fill(counts.begin(), counts.end(), 0);
+		for (int i = 0; i < 4; ++i) {
+			if (*ii[i] >= 0) {
+				++counts[*ii[i]];
+			}
+			++ii[i]; 
+		}
+		unsigned max_count = 0;
+		int max_class = -1;
+		
+		unsigned k = 0; 
+		
+		while ( (max_count << 1) < n_classes && k < n_classes ) {
+			if (max_count < counts[k]) {
+				max_count = counts[k];
+				max_class = k; 
+			}
+		}
+		*iout = max_class; 
+		++iout; 
+	}
+	
 	return EXIT_SUCCESS; 
 	
+}
+
+
+FKmeans::FKmeans(const vector<double>& in_classes, vector<C2DSBImage>& class_output):
+	m_in_classes(in_classes),
+	m_class_output(class_output),
+	m_rel_cluster_threshold(0.05)
+{
+}
+
+void FKmeans::set_range(const C2DBounds& start, const C2DBounds& end, int xtarget, int ytarget)
+{
+	m_start = start; 
+	m_end = end;
+	m_xtarget = xtarget;
+	m_ytarget = ytarget; 
+}
+	
+
+template <typename T>
+vector<double> FKmeans::operator () (const T2DImage<T>& image)
+{
+	auto ibegin = image.begin_range(m_start, m_end);
+	auto iend = image.end_range(m_start, m_end);
+
+	auto i = ibegin;
+
+	size_t n = 0; 
+	vector<size_t> cluster_sizes(m_in_classes.size());
+	size_t l = m_in_classes.size() - 1; 
+	
+	while ( i != iend ) {
+		const unsigned c = kmeans_get_closest_clustercenter(m_in_classes, l, *i); 
+		++cluster_sizes[c]; 
+		++i;
+		++n; 
+	}
+
+	vector<double> rel_cluster_sizes(m_in_classes.size());
+	transform(cluster_sizes.begin(), cluster_sizes.end(), rel_cluster_sizes.begin(),
+		  [n](double x){return x / n;});
+
+	cvmsg() << "Relative cluster sizes: [" << m_start << "],[" <<  m_end <<"]= "<< rel_cluster_sizes << "\n"; 
+
+	vector<short> map_idx; 
+	vector<double> result; 
+	for (unsigned i = 0; i < m_in_classes.size(); ++i) {
+		if (rel_cluster_sizes[i] > m_rel_cluster_threshold) {
+			result.push_back(m_in_classes[i]);
+			map_idx.push_back(i); 
+		}
+	}
+
+	vector<int> class_relation(n);
+
+	int biggest_class = -1; 
+	// iterate to update the class centers  
+	for (size_t  l = 1; l < 4; l++) {
+		if (kmeans_step(ibegin, iend, class_relation.begin(), result,
+				result.size() - 1, biggest_class)) 
+			break; 
+	}
+
+	transform(class_relation.begin(), class_relation.end(),
+		  m_class_output[m_ytarget * 2 + m_xtarget].begin_range(m_start, m_end), 
+		  [map_idx](int idx) {return map_idx[idx];});
+		  
+	return result; 
 }
 
 #include <mia/internal/main.hh>
