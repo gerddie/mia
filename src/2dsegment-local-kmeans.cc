@@ -48,7 +48,7 @@ const SProgramDescription g_description = {
 	 "are run only including the locally present classes, i.e. the classes that "
 	 "relatively contain more pixels than a given threshhold."}, 
 	{pdi_example_descr, "Run the segmentation on image test.png using three classes, "
-	 "local regions of 40 pixles (grid width 20 pixels), and a class ignore threshhold of 0.01." }, 
+	 "local regions of 40 pixels (grid width 20 pixels), and a class ignore threshhold of 0.01." }, 
 	{pdi_example_code, "-i test.png -o label.png -n 3 -g 20 -t 0.01"}
 }; 
 
