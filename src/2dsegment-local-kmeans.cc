@@ -353,7 +353,6 @@ P2DImage FKMeansLocal::operator () (const T2DImage<T>& image) const
 			centers[i] = *ii[i];
 			++ii[i]; 
 		}
-		cvdebug() << "v=" << *i << ", classes=" << centers << "\n"; 
 		*iout = kmeans_get_closest_clustercenter(centers, n_classes-1, *i); 
 
 		++iout; ++i; 
