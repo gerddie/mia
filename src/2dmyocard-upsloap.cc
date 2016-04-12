@@ -19,7 +19,6 @@
  */
 
 
-#define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
 #include <ostream>
 #include <fstream>

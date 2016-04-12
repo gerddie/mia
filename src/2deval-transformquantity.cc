@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "3deval-transformquantity"
-
 #include <fstream>
 #include <ostream>
 #include <cstring>

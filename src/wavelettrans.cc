@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "wavelet"
-
 #include <fstream>
 #include <sstream>
 #include <iostream>

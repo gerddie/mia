@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyocard-segment"
 #include <iomanip>
 #include <ostream>
 #include <fstream>
