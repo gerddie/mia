@@ -40,10 +40,16 @@ typedef vector<C2DFImage> C2DFImageVec;
 
 const SProgramDescription g_description = {
         {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
-	{pdi_short, "Run a segmentation of a noisy  2D image."}, 
-	{pdi_description, "This program is experimental"}, 
-	{pdi_example_descr, "No example yet" }, 
-	{pdi_example_code, "-i input.png -o label.png"}
+	{pdi_short, "Run a k-means segmentation of a 2D image."}, 
+	{pdi_description, "This program runs the segmentation of a 2D image by applying "
+	 "a localized k-means approach that helps to overcome intensity inhomogeneities "
+	 "in the image. The approach evaluates a global k-means clustering, and then "
+	 "separates the image into overlapping regions where more k-means iterations "
+	 "are run only including the locally present classes, i.e. the classes that "
+	 "relatively contain more pixels than a given threshhold."}, 
+	{pdi_example_descr, "Run the segmentation on image test.png using three classes, "
+	 "local regions of 40 pixles (grid width 20 pixels), and a class ignore threshhold of 0.01." }, 
+	{pdi_example_code, "-i test.png -o label.png -n 3 -g 20 -t 0.01"}
 }; 
 
 
