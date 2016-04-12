@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "3dmotioncompica"
-
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <itpp/signal/fastica.h>

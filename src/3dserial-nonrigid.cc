@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "3dmyoserial"
-
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <itpp/signal/fastica.h>

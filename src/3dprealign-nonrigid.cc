@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "3dprealign"
-
 #include <fstream>
 #include <sstream>
 #include <iomanip>

@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "3dmany3one"
-
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <itpp/signal/fastica.h>

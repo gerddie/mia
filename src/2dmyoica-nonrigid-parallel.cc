@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyoica"
-
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <itpp/signal/fastica.h>

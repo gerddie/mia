@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "3dseries-track-intensity"
-
 #include <fstream>
 #include <ostream>
 

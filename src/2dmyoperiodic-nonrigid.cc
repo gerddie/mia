@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyoperiodic"
-
 #include <fstream>
 #include <sstream>
 #include <iomanip>

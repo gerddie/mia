@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmilles"
-
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>

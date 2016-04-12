@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyoica-pgt"
-
 #include <fstream>
 #include <itpp/signal/fastica.h>
 

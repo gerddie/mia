@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "mia-3dlandmark-transform"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/landmarklistio.hh>
 #include <mia/3d/transformio.hh>
