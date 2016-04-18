@@ -25,6 +25,11 @@
 #include <mia/core/msgstream.hh>
 #include <mia/internal/autotest.hh>
 
+
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#endif
+
 NS_MIA_USE
 using namespace std;
 using namespace boost::unit_test;
@@ -462,4 +467,45 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 		}
 	}
 }
+
+#ifdef HAVE_SYS_IOCTL_H
+BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_small, CmdlineParserFixture )
+{
+	int test; 
+	struct winsize ws;
+	ws.ws_col = 50;
+	ws.ws_row = 50;
+	
+	if (ioctl(0,TIOCSWINSZ,&ws)==0) {
+		CCmdOptionList olist(general_help_test);
+
+		vector<const char *> options;
+		options.push_back("self");
+		options.push_back("-h");
+
+		olist.add(make_opt(test, "lala", 'i', "a int option"));
+		olist.parse(options.size(), &options[0]); 
+	}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_wide, CmdlineParserFixture )
+{
+	int test; 
+	struct winsize ws;
+	ws.ws_col = 150;
+	ws.ws_row = 50;
+	
+	if (ioctl(0,TIOCSWINSZ,&ws)==0) {
+		CCmdOptionList olist(general_help_test);
+
+		vector<const char *> options;
+		options.push_back("self");
+		options.push_back("-h");
+
+		olist.add(make_opt(test, "lala", 'i', "a string option"));
+		olist.parse(options.size(), &options[0]); 
+	}
+}
+
+#endif 
 
