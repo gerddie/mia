@@ -336,7 +336,7 @@ NEW_TEST(boundary_conditions  miacore)
 NEW_TEST(callback miacore)
 NEW_TEST(cmdoptionflags miacore)
 NEW_TEST(cmdlineparser miacore)
-
+NEW_TEST(cmdoptionhelp miacore)
 NEW_TEST(cmdlineparseroutput miacore)
 NEW_TEST(cmeans miacore)
 NEW_TEST(datapool miacore)
