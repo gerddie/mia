@@ -199,6 +199,7 @@ MACRO(DEFEXE name libraries)
 ENDMACRO(DEFEXE)
 
 
+
 MACRO(DEFCHKEXE name deps) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
   
@@ -220,8 +221,7 @@ MACRO(DEFCHKEXE name deps)
 
 ENDMACRO(DEFCHKEXE)
 
-
-MACRO(NEW_TEST name libs)
+MACRO(NEW_TEST_BASE name libs)
   SET(EXENAME test-${name})
   
   ADD_EXECUTABLE(${EXENAME} test_${name}.cc)
@@ -230,5 +230,15 @@ MACRO(NEW_TEST name libs)
     TARGET_LINK_LIBRARIES(${EXENAME} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
   ENDIF (NOT WIN32)
   ADD_DEPENDENCIES(${EXENAME} plugin_test_links)
+
+ENDMACRO(NEW_TEST_BASE)
+
+MACRO(NEW_TEST name libs)
+  NEW_TEST_BASE(${name} ${libs})
   ADD_TEST(${name} ${EXENAME})
 ENDMACRO(NEW_TEST)
+
+MACRO(NEW_TEST_WITH_PARAM name libs param)
+  NEW_TEST_BASE(${name} ${libs})
+  ADD_TEST(${name} ${EXENAME} ${param})
+ENDMACRO(NEW_TEST_WITH_PARAM)

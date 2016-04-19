@@ -80,6 +80,14 @@ bool fork_and_run_check(const char *me, vector<const char*  >& options, const st
 			cvfail() << "Option '"<< options[2] << "' failed:\n";
 			cvfail() << "got "<< child_output.size() << " '"<< child_output << "'\n";
 			cvfail() << "expected "<< expect.size() << " '" << expect << "'\n\n";
+
+			for (unsigned i = 0; i < min(  expect.size(), child_output.size()); ++i){
+				if (child_output[i] != expect[i]) {
+					cvfail() << "First character error: " << i << " "
+						 << "got '" << child_output[i]  << "', expect '" <<expect[i] << "'\n";
+					break; 
+				}
+			}
 		}
 		return test_result;
 	}
@@ -99,21 +107,18 @@ extern string expect_xml_help_end;
 
 int main(int argc, const char **args)
 {
-	int required_option;  
-	
+	string required_option;
+	string other_required_option;  
         CCmdOptionList options(general_help);
         options.add(make_opt(required_option, "required", 'r',
 			     "some required option",
 			     CCmdOptionFlags::required_input));
+        options.add(make_opt(required_option, "other", 0,
+			     "other required option",
+			     CCmdOptionFlags::required_output));
 
-	vector <const char *> args_help(argc + 2);
-	for (int i = 0; i< argc; ++i) {
-		args_help[i] = args[i]; 
-	}
-	args_help[argc] = "-r";
-	args_help[argc+1] = "1"; 
 	
-        if (options.parse(args_help.size(), &args_help[0], "spline",
+        if (options.parse(argc, args, "spline",
 			  &CSplineKernelPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return 0;
 
@@ -146,10 +151,11 @@ string expect_xml_help_start = "<?xml version=\"1.0\"?>\n"
 string expect_xml_help_end="</version>\n"
 	"  <section>Test</section>\n"
 "  <description>This program tests the command line parser output.</description>\n"
-"  <basic_usage> test-cmdoptionhelp [options] &lt;PLUGINS:1d/splinekernel&gt;</basic_usage>\n"
+"  <basic_usage> test-cmdoptionhelp -r &lt;required&gt; --other &lt;value&gt; [options] &lt;PLUGINS:1d/splinekernel&gt;</basic_usage>\n"
 "  <whatis>program tests</whatis>\n"
 "  <group name=\"\">\n"
-"    <option short=\"r\" long=\"required\" default=\"1\" type=\"int\">some required option<flags>required</flags>some required option</option>\n"
+"    <option short=\"r\" long=\"required\" default=\"\" type=\"string\"><flags>input required </flags>some required option</option>\n"
+"    <option short=\"\" long=\"other\" default=\"\" type=\"string\"><flags>output required </flags>other required option</option>\n"
 "  </group>\n"
 "  <group name=\"Help &amp; Info\">\n"
 "    <option short=\"V\" long=\"verbose\" default=\"warning\" type=\"dict\">verbosity of output, print messages of given level and higher priorities. Supported priorities starting at lowest level are:<dict><value name=\"trace\">Function call trace</value><value name=\"debug\">Debug output</value><value name=\"info\">Low level messages</value><value name=\"message\">Normal messages</value><value name=\"warning\">Warnings</value><value name=\"fail\">Report test failures</value><value name=\"error\">Report errors</value><value name=\"fatal\">Report only fatal errors</value></dict>verbosity of output, print messages of given level and higher priorities. Supported priorities starting at lowest level are:</option>\n"
