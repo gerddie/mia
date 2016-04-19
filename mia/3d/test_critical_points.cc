@@ -55,5 +55,13 @@ BOOST_AUTO_TEST_CASE( test_critical_point_simple )
         BOOST_CHECK_CLOSE(val_2_1_1.x, 0.05f, 0.1);
         BOOST_CHECK_CLOSE(val_2_1_1.y, -0.1f/3.0f, 0.1);
         BOOST_CHECK_CLOSE(val_2_1_1.z, -0.1f/6.0f, 0.1);
+
+	C3DFVector val_2_1_1_alt = cp_1.at_alt(C3DFVector(2,0,1)); //delta = 1, -2, -2
+        // 3.9 
+        // C3DFVector test_2_1_1(3 / 3.9    -4/ 3.9  -1/ 3.9  ); 
+
+        BOOST_CHECK_CLOSE(val_2_1_1_alt.x,  3.0f / 3.9f, 0.1);
+        BOOST_CHECK_CLOSE(val_2_1_1_alt.y, -4.0f / 3.9f, 0.1);
+        BOOST_CHECK_CLOSE(val_2_1_1_alt.z, -1.0f / 3.9f, 0.1);
         
 }
