@@ -92,11 +92,12 @@ public:
 	/** \retval the magnitude of the critical point */
 	float get_gamma()const;
 
-	/** \retval the location of the critical point \a writable */
-	C3DFVector& get_point();
+	/** \retval the location of the critical point */
+	void set_point(const C3DFVector&);
 	
-	/** \retval the phase portrait of the critical point \a writable */
-	C3DFMatrix& get_a();
+	/** \retval the phase portrait of the critical point */
+	void  set_a(const C3DFMatrix&);
+
 	
 	/** set the magnitude if the critical point 
 	    \param gamma_ the new magnitude of the critical point
@@ -377,15 +378,17 @@ inline const C3DFMatrix  C3DCriticalPoint::get_a()const
 	return A;
 }
 
-inline C3DFVector& C3DCriticalPoint::get_point()
+
+inline void C3DCriticalPoint::set_point(const C3DFVector& x) 
 {
-	return x0;
+	x0 = x;
 }
 
-inline C3DFMatrix& C3DCriticalPoint::get_a()
+inline void C3DCriticalPoint::set_a(const C3DFMatrix& a) 
 {
-	return A;
+	A = a;
 }
+
 
 inline  float C3DCriticalPoint::get_gamma()const
 {

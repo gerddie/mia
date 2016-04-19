@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( test_critical_point_simple )
         C3DCriticalPoint cp_1(x);
         BOOST_CHECK_EQUAL(cp_1.get_point(), x);
 
-        cp_1.get_a() = C3DFMatrix::diagonal(C3DFVector(3.0f,2.0f,0.5f));
+        cp_1.set_a(C3DFMatrix::diagonal(C3DFVector(3.0f,2.0f,0.5f)));
         cp_1.set_gamma(0.1f);
         
         BOOST_CHECK_EQUAL(cp_1.get_gamma(), 0.1f);
@@ -49,11 +49,11 @@ BOOST_AUTO_TEST_CASE( test_critical_point_simple )
         // check center 
         BOOST_CHECK_EQUAL(cp_1.at(x), C3DFVector::_0); 
 
-        C3DFVector val_2_1_1 = cp_1.at(C3DFVector(2,1,1)); // delta = 1, 1, 2
-        // C3DFVector test_2_1_1(0.1f, 0.1f/3.0f, 0.05f/6.0f); 
+        C3DFVector val_2_1_1 = cp_1.at(C3DFVector(2,1,1)); // delta = 1, -1, -2
+        // C3DFVector test_2_1_1(0.1 * 3 / 6, 0.1f/3.0f,  -2 * 0.5 / 6 ); 
 
-        BOOST_CHECK_CLOSE(val_2_1_1.x, 0.1f, 0.1);
-        BOOST_CHECK_CLOSE(val_2_1_1.y, 0.1f/3.0f, 0.1);
-        BOOST_CHECK_CLOSE(val_2_1_1.z, 0.05f/6.0f, 0.1);
+        BOOST_CHECK_CLOSE(val_2_1_1.x, 0.05f, 0.1);
+        BOOST_CHECK_CLOSE(val_2_1_1.y, -0.1f/3.0f, 0.1);
+        BOOST_CHECK_CLOSE(val_2_1_1.z, -0.1f/6.0f, 0.1);
         
 }

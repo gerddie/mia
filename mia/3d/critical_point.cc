@@ -59,7 +59,7 @@ C3DCriticalPoint&  C3DCriticalPoint::operator = (const C3DCriticalPoint& org)
 
 C3DFVector C3DCriticalPoint::at(const C3DFVector& x)const
 {
-	C3DFVector delta = x-x0;
+	C3DFVector delta = x - x0;
 	float tmp = delta.norm2(); 
 	if (tmp > .0001) {
 		return (gamma / tmp) * (A * delta);
