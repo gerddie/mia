@@ -139,9 +139,6 @@ private:
 typedef C3DCriticalPoint::List C3DCriticalPointList;
 
 
-typedef std::complex<float> fcomplex; 
-typedef T3DVector<fcomplex> C3DCVector; 
-
 /** 
     \ingroup basic 
     \brief A class to hold a criticalpoint with eigenvalues and eigenvectors.
@@ -150,7 +147,9 @@ typedef T3DVector<fcomplex> C3DCVector;
 */
 
 class EXPORT_3D C3DCriticalPointEigen {
-	/// where is the critical point 
+	
+	
+        /// where is the critical point 
 	C3DFVector location; 
 
 
@@ -165,13 +164,13 @@ class EXPORT_3D C3DCriticalPointEigen {
 	float eval3;
 	
 	/// first eigenvector (always real)
-	C3DFVector evec1;
+	T3DCVector<float> evec1;
 	
 	/// second real eigenvector, or real part of a the conjugated complex eigenvectors
-	C3DFVector evec2; 
+	T3DCVector<float> evec2; 
 	
 	/// third real eigenvector, or imaginary part of a the conjugated complex eigenvectors
-	C3DFVector evec3;
+	T3DCVector<float> evec3;
 	
 public:	
 	/// types of critical points
@@ -236,12 +235,12 @@ public:
 	/** \retval get second eigenvalue as complex
 	    \remark asserts whether eigenvalue is really complex
 	*/	
-	fcomplex get_complex_eval2()const; 
+	std::complex<float> get_complex_eval2()const; 
 	
 	/** \retval get third eigenvalue as complex
 	    \remark asserts whether eigenvalue is really complex
 	*/	
-	fcomplex get_complex_eval3()const;
+	std::complex<float> get_complex_eval3()const;
 	
 	/** \retval a copy of the phase portrait
 	 */
@@ -258,17 +257,11 @@ public:
 	/** \retval a copy of the second eigenvector as real
 	    \remark use only for loading and storing
 	 */
-	const C3DFVector get_evect2()const; 
-	/** \retval a copy of the third eigenvector as real
-	    \remark use only for loading and storing
-	 */
-	const C3DFVector get_evect3()const; 
 
-	
 	const C3DFVector get_real_evect2()const; 
 	const C3DFVector get_real_evect3()const; 
-	const C3DCVector get_complex_evect2()const; 
-	const C3DCVector get_complex_evect3()const; 
+	const T3DCVector<float> get_complex_evect2()const; 
+	const T3DCVector<float> get_complex_evect3()const; 
 	
 
 private:
@@ -305,52 +298,40 @@ inline float C3DCriticalPointEigen::get_real_eval3()const
 	assert(type != ev_complex);
 	return eval3; 
 }     
-inline fcomplex C3DCriticalPointEigen::get_complex_eval2()const
+inline std::complex<float> C3DCriticalPointEigen::get_complex_eval2()const
 {
 	assert(type == ev_complex);
-	return fcomplex(eval2,eval3); 
+	return std::complex<float>(eval2,eval3); 
 }
-inline fcomplex C3DCriticalPointEigen::get_complex_eval3()const
+inline std::complex<float> C3DCriticalPointEigen::get_complex_eval3()const
 {
 	assert(type == ev_complex);
-	return fcomplex(eval2,-eval3); 
+	return std::complex<float>(eval2,eval3); 
 }
 
 inline const C3DFVector C3DCriticalPointEigen::get_evect1()const
 {
-	return evec1; 
-}
-inline const C3DFVector C3DCriticalPointEigen::get_evect2()const
-{
-	return evec2; 
-}
-inline const C3DFVector C3DCriticalPointEigen::get_evect3()const
-{
-	return evec3; 
+	return C3DFVector(evec1.x.real(), evec1.y.real(), evec1.z.real()); 
 }
 inline const C3DFVector C3DCriticalPointEigen::get_real_evect2()const
 {
 	assert(type != ev_complex);	
-	return evec2; 
+	return C3DFVector(evec2.x.real(), evec2.y.real(), evec2.z.real()); 
 }
 inline const C3DFVector C3DCriticalPointEigen::get_real_evect3()const
 {
 	assert(type != ev_complex);
-	return evec3; 
+	return C3DFVector(evec3.x.real(), evec3.y.real(), evec3.z.real()); ; 
 }
-inline const C3DCVector C3DCriticalPointEigen::get_complex_evect2()const
+inline const T3DCVector<float> C3DCriticalPointEigen::get_complex_evect2()const
 {
 	assert(type == ev_complex);
-	return C3DCVector(fcomplex(evec2.x,evec3.x),
-			  fcomplex(evec2.y,evec3.y),
-			  fcomplex(evec2.z,evec3.z));
+	return evec2;
 }
-inline const C3DCVector C3DCriticalPointEigen::get_complex_evect3()const
+inline const T3DCVector<float> C3DCriticalPointEigen::get_complex_evect3()const
 {
 	assert(type == ev_complex);
-	return C3DCVector(fcomplex(evec2.x,-evec3.x),
-			  fcomplex(evec2.y,-evec3.y),
-			  fcomplex(evec2.z,-evec3.z));
+	return evec3;
 }
 
 inline const C3DFVector C3DCriticalPointEigen::get_location()const

@@ -28,6 +28,8 @@
 
 NS_MIA_BEGIN
 
+template <typename T>
+using T3DCVector=T3DVector<std::complex<T>>; 
 
 /**
    @ingroup basic 
@@ -43,7 +45,8 @@ template <typename T>
 class T3DMatrix: public T3DVector< T3DVector<T> > {
 
 
-public:  
+public:
+
 	
 	T3DMatrix(); 
 	
@@ -130,14 +133,20 @@ public:
 		     4 three real eigenvalues, all equal 
 	*/	     
 
-	int get_eigenvalues(C3DFVector& v)const; 
+	int get_eigenvalues(T3DVector<T>& v)const; 
 
-	/** Calculate the eigenvector to a given eigenvalues. If the eigenvalue is complex, the 
-	    matrix has to be propagated to a complex one using the type converting copy constructor
+	/** Calculate the eigenvector to a given eigenvalues. 
+	    This function doesn't work for complex valued eigenvectors 
 	    \param i number of eigenvector 
 	    \returns the requested eigenvector
 	 */
-	C3DFVector get_eigenvector(int i)const; 
+	T3DVector<T> get_real_eigenvector(int i)const;
+
+	/** Calculate the complex eigenvector to a given eigenvalues. 
+	    \param i number of eigenvector 
+	    \returns the requested eigenvector
+	 */
+	T3DCVector<T> get_complex_eigenvector(int i)const; 
 
 
 	/// The unity matrix 
@@ -151,8 +160,8 @@ private:
 
 		
 	mutable int m_ev_type; // 0 = not valid 
-	mutable C3DFVector m_evalues;
-	mutable std::vector<C3DFVector> m_evectors; 
+	mutable T3DVector<T> m_evalues;
+	mutable std::vector<T3DCVector<T>> m_complex_evectors; 
 	mutable std::vector<int> m_ev_order; 
 }; 
 

@@ -89,8 +89,6 @@ BOOST_AUTO_TEST_CASE( test_critical_point_eigen_real )
         BOOST_CHECK_EQUAL(cp.get_location(), C3DFVector::_1); 
 
         BOOST_CHECK_EQUAL(cp.get_evect1(), C3DFVector(0,0,1));
-        BOOST_CHECK_EQUAL(cp.get_evect2(), C3DFVector(0,1,0));
-        BOOST_CHECK_EQUAL(cp.get_evect3(), C3DFVector(1,0,0)); 
         BOOST_CHECK_EQUAL(cp.get_real_evect2(), C3DFVector(0,1,0));
         BOOST_CHECK_EQUAL(cp.get_real_evect3(), C3DFVector(1,0,0)); 
 
@@ -110,8 +108,6 @@ BOOST_AUTO_TEST_CASE( test_critical_point_eigen_real_two )
         BOOST_CHECK_EQUAL(cp.get_eval3(), 2.0f);
         
         BOOST_CHECK_EQUAL(cp.get_evect1(), C3DFVector(0,0,1));
-        BOOST_CHECK_EQUAL(cp.get_evect2(), C3DFVector(1,0,0));
-        BOOST_CHECK_EQUAL(cp.get_evect3(), C3DFVector(0,1,0)); 
         BOOST_CHECK_EQUAL(cp.get_real_evect2(), C3DFVector(1,0,0));
         BOOST_CHECK_EQUAL(cp.get_real_evect3(), C3DFVector(0,1,0)); 
         
@@ -131,9 +127,51 @@ BOOST_AUTO_TEST_CASE( test_critical_point_eigen_real_three )
         BOOST_CHECK_EQUAL(cp.get_eval3(), 2.0f);
         
         BOOST_CHECK_EQUAL(cp.get_evect1(), C3DFVector(0,0,1));
-        BOOST_CHECK_EQUAL(cp.get_evect2(), C3DFVector(1,0,0));
-        BOOST_CHECK_EQUAL(cp.get_evect3(), C3DFVector(0,1,0)); 
         BOOST_CHECK_EQUAL(cp.get_real_evect2(), C3DFVector(1,0,0));
         BOOST_CHECK_EQUAL(cp.get_real_evect3(), C3DFVector(0,1,0)); 
         
 }
+
+BOOST_AUTO_TEST_CASE( test_critical_point_eigen_two_complex )
+{
+        C3DCriticalPointEigen cp(C3DFVector::_1,
+                                 C3DFMatrix(C3DFVector(1,0,0),
+                                            C3DFVector(0,cos(M_PI/3),sin(M_PI/3)),
+                                            C3DFVector(0,-sin(M_PI/3),cos(M_PI/3))));
+
+        BOOST_CHECK_EQUAL(cp.get_type(), C3DCriticalPointEigen::ev_complex);
+
+        BOOST_CHECK_EQUAL(cp.get_eval1(), 1.0f);
+        auto cev2 = cp.get_complex_eval2(); 
+        BOOST_CHECK_CLOSE(cev2.real(), 0.5f, 0.1);
+        BOOST_CHECK_CLOSE(cev2.imag(), sqrt(3.0f)/2.0f, 0.1);
+
+        auto cev3 = cp.get_complex_eval3(); 
+        BOOST_CHECK_CLOSE(cev3.real(), 0.5f, 0.1);
+        BOOST_CHECK_CLOSE(cev3.imag(), sqrt(3.0f)/2.0f, 0.1);
+
+        // use directly what comes from the library eigen3
+        
+        BOOST_CHECK_EQUAL(cp.get_evect1(), C3DFVector(1,0,0));
+
+        auto evect2 = cp.get_complex_evect2();
+        BOOST_CHECK_SMALL(evect2.x.real(), 1e-5f);
+        BOOST_CHECK_SMALL(evect2.x.imag(), 1e-5f);
+        BOOST_CHECK_CLOSE(evect2.y.real(), 1.0f/sqrt(2.0f), 0.1);
+        BOOST_CHECK_SMALL(evect2.y.imag(), 1e-5f);
+        BOOST_CHECK_SMALL(evect2.z.real(), 1e-5f);
+        BOOST_CHECK_CLOSE(evect2.z.imag(), 1.0f/sqrt(2.0f), 0.1);
+
+
+        auto evect3 = cp.get_complex_evect3();
+        BOOST_CHECK_SMALL(evect3.x.real(), 1e-5f);
+        BOOST_CHECK_SMALL(evect3.x.imag(), 1e-5f);
+        BOOST_CHECK_CLOSE(evect3.y.real(), 1.0f/sqrt(2.0f), 1e-5f);
+        BOOST_CHECK_SMALL(evect3.y.imag(), 1e-5f);
+        BOOST_CHECK_SMALL(evect3.z.real(), 1e-5f);
+        BOOST_CHECK_CLOSE(evect3.z.imag(), 1.0f/sqrt(2.0f), 1e-5f);
+
+        
+        
+}
+                

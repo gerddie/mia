@@ -138,9 +138,9 @@ bool C3DCriticalPointEigen::estimate()
 			cerr << "ERROR: 3 distinct eigenvalues but rank not 3!" << endl; 
 			return false; 
 		}
-		evec1 = portrait.get_eigenvector(0); 
-		evec2 = portrait.get_eigenvector(1); 
-		evec3 = portrait.get_eigenvector(2); 
+		evec1 = portrait.get_complex_eigenvector(0); 
+		evec2 = portrait.get_complex_eigenvector(1); 
+		evec3 = portrait.get_complex_eigenvector(2); 
 		type = ev_real; 
 		return true; 
 		
@@ -150,29 +150,29 @@ bool C3DCriticalPointEigen::estimate()
 				cerr << "ERROR: 3 distinct eigenvalues but rank not 3!" << endl; 
 				return false; 
 			}
-			evec1 = portrait.get_eigenvector(0); 
-			evec2 = portrait.get_eigenvector(1); 
-			evec2 = portrait.get_eigenvector(2); 
+			evec1 = portrait.get_complex_eigenvector(0); 
+			evec2 = portrait.get_complex_eigenvector(1); 
+			evec3 = portrait.get_complex_eigenvector(2); 
 			
 			type = ev_complex; 
 			return true; 
 		}
 	case 2:// three ev's but at least two are equal
-		evec1 = portrait.get_eigenvector(0); 
-		evec2 = portrait.get_eigenvector(1); 
-		evec3 = portrait.get_eigenvector(2); 
+		evec1 = portrait.get_complex_eigenvector(0); 
+		evec2 = portrait.get_complex_eigenvector(1); 
+		evec3 = portrait.get_complex_eigenvector(2); 
 		type = ev_real_two_equal;
 		return true;
 	case 4:// three real ev's all are equal
-		evec1 = portrait.get_eigenvector(0); 
-		evec2 = portrait.get_eigenvector(1); 
-		evec3 = portrait.get_eigenvector(2); 
+		evec1 = portrait.get_complex_eigenvector(0); 
+		evec2 = portrait.get_complex_eigenvector(1); 
+		evec3 = portrait.get_complex_eigenvector(2); 
 		type = ev_real_three_equal;
 		return true;
 
 		
 	default: 
-		evec1 = portrait.get_eigenvector(0); 
+		evec1 = portrait.get_complex_eigenvector(0); 
 		return false;
 		
 	}

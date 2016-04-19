@@ -45,7 +45,7 @@ NS_MIA_BEGIN
 template <typename T> 
 T3DMatrix<T>::T3DMatrix():
         m_ev_type(0),
-	m_evectors(3),
+	m_complex_evectors(3),
 	m_ev_order(3)
 {
 }
@@ -71,7 +71,7 @@ template <typename T>
 T3DMatrix<T>::T3DMatrix(const T3DVector< T3DVector<T> >& other):
 	T3DVector<T3DVector<T> >(other.x, other.y, other.z),
 	m_ev_type(0),
-	m_evectors(3),
+	m_complex_evectors(3),
 	m_ev_order(3)
 {
 }
@@ -80,7 +80,7 @@ template <typename T>
 T3DMatrix<T>::T3DMatrix(const T3DVector< T >& x, const T3DVector< T >& y, const T3DVector< T >& z ):
 	T3DVector<T3DVector<T> >(x, y, z),
 	m_ev_type(0),
-	m_evectors(3),
+	m_complex_evectors(3),
 	m_ev_order(3)
 {
 }
@@ -139,7 +139,6 @@ void T3DMatrix<T>::evaluate_ev() const
 		double evnorms[3]; 
 		for (int i = 0; i < 3; ++i)
 			evnorms[i] = std::norm(eval(i)); 
-		
 		
 		
 		if (evnorms[0] < evnorms[1]) {
@@ -205,7 +204,9 @@ void T3DMatrix<T>::evaluate_ev() const
 	assert(m_ev_type);
 	for (int i = 0; i < 3; ++i) {
 		const auto evec = esolver.eigenvectors().col(m_ev_order[i]);
-		m_evectors[i] = C3DFVector(evec(0).real(), evec(1).real(), evec(2).real());
+		cvdebug() << "i: eval= " << eval[m_ev_order[i]]
+			  << "evec= " << evec(0) << ", " << evec(1) << "," << evec(2) << "\n"; 
+		m_complex_evectors[i] = T3DCVector<T>(evec(0), evec(1), evec(2));
 	}
 }
 
@@ -243,7 +244,7 @@ T T3DMatrix<T>::get_det()  const
 
 
 template <typename T> 
-int T3DMatrix<T>::get_eigenvalues(C3DFVector& result)const
+int T3DMatrix<T>::get_eigenvalues(T3DVector<T>& result)const
 {
 	if (m_ev_type == 0) 
 		evaluate_ev(); 
@@ -253,13 +254,24 @@ int T3DMatrix<T>::get_eigenvalues(C3DFVector& result)const
 }
 
 template <typename T> 
-C3DFVector T3DMatrix<T>::get_eigenvector(int i)const
+T3DCVector<T> T3DMatrix<T>::get_complex_eigenvector(int i)const
 {
 	if (m_ev_type == 0) 
 		evaluate_ev(); 
 	
-	return m_evectors[i];
+	return m_complex_evectors[i];
 }
+
+template <typename T> 
+T3DVector<T> T3DMatrix<T>::get_real_eigenvector(int i)const
+{
+	if (m_ev_type == 0) 
+		evaluate_ev(); 
+
+	auto evec = m_complex_evectors[i]; 
+	return T3DVector<T>(evec.x.real(), evec.y.real(), evec.z.real()); 
+}
+
 
 template class T3DMatrix<float>; 
 template class T3DMatrix<double>; 
