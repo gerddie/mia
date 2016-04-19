@@ -65,3 +65,75 @@ BOOST_AUTO_TEST_CASE( test_critical_point_simple )
         BOOST_CHECK_CLOSE(val_2_1_1_alt.z, -1.0f / 3.9f, 0.1);
         
 }
+
+BOOST_AUTO_TEST_CASE( test_critical_point_eigen_zero )
+{
+        C3DCriticalPointEigen cp(C3DFVector::_1, C3DFMatrix::_0);
+
+        BOOST_CHECK_EQUAL(cp.get_type(), C3DCriticalPointEigen::ev_zero); 
+}
+
+BOOST_AUTO_TEST_CASE( test_critical_point_eigen_real )
+{
+        C3DCriticalPointEigen cp(C3DFVector::_1,
+                                 C3DFMatrix::diagonal(C3DFVector(1,2,3)));
+
+        BOOST_CHECK_EQUAL(cp.get_type(), C3DCriticalPointEigen::ev_real);
+
+        BOOST_CHECK_EQUAL(cp.get_eval1(), 3.0f);
+        BOOST_CHECK_EQUAL(cp.get_real_eval2(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_real_eval3(), 1.0f);
+        BOOST_CHECK_EQUAL(cp.get_eval2(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_eval3(), 1.0f); 
+
+        BOOST_CHECK_EQUAL(cp.get_location(), C3DFVector::_1); 
+
+        BOOST_CHECK_EQUAL(cp.get_evect1(), C3DFVector(0,0,1));
+        BOOST_CHECK_EQUAL(cp.get_evect2(), C3DFVector(0,1,0));
+        BOOST_CHECK_EQUAL(cp.get_evect3(), C3DFVector(1,0,0)); 
+        BOOST_CHECK_EQUAL(cp.get_real_evect2(), C3DFVector(0,1,0));
+        BOOST_CHECK_EQUAL(cp.get_real_evect3(), C3DFVector(1,0,0)); 
+
+}
+
+BOOST_AUTO_TEST_CASE( test_critical_point_eigen_real_two )
+{
+        C3DCriticalPointEigen cp(C3DFVector::_1,
+                                 C3DFMatrix::diagonal(C3DFVector(2,2,3)));
+
+        BOOST_CHECK_EQUAL(cp.get_type(), C3DCriticalPointEigen::ev_real_two_equal);
+
+        BOOST_CHECK_EQUAL(cp.get_eval1(), 3.0f);
+        BOOST_CHECK_EQUAL(cp.get_real_eval2(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_real_eval3(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_eval2(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_eval3(), 2.0f);
+        
+        BOOST_CHECK_EQUAL(cp.get_evect1(), C3DFVector(0,0,1));
+        BOOST_CHECK_EQUAL(cp.get_evect2(), C3DFVector(1,0,0));
+        BOOST_CHECK_EQUAL(cp.get_evect3(), C3DFVector(0,1,0)); 
+        BOOST_CHECK_EQUAL(cp.get_real_evect2(), C3DFVector(1,0,0));
+        BOOST_CHECK_EQUAL(cp.get_real_evect3(), C3DFVector(0,1,0)); 
+        
+}
+
+BOOST_AUTO_TEST_CASE( test_critical_point_eigen_real_three )
+{
+        C3DCriticalPointEigen cp(C3DFVector::_1,
+                                 C3DFMatrix::diagonal(C3DFVector(2,2,2)));
+
+        BOOST_CHECK_EQUAL(cp.get_type(), C3DCriticalPointEigen::ev_real_three_equal);
+
+        BOOST_CHECK_EQUAL(cp.get_eval1(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_real_eval2(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_real_eval3(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_eval2(), 2.0f);
+        BOOST_CHECK_EQUAL(cp.get_eval3(), 2.0f);
+        
+        BOOST_CHECK_EQUAL(cp.get_evect1(), C3DFVector(0,0,1));
+        BOOST_CHECK_EQUAL(cp.get_evect2(), C3DFVector(1,0,0));
+        BOOST_CHECK_EQUAL(cp.get_evect3(), C3DFVector(0,1,0)); 
+        BOOST_CHECK_EQUAL(cp.get_real_evect2(), C3DFVector(1,0,0));
+        BOOST_CHECK_EQUAL(cp.get_real_evect3(), C3DFVector(0,1,0)); 
+        
+}

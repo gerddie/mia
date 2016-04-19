@@ -193,10 +193,14 @@ void T3DMatrix<T>::evaluate_ev() const
 		m_evalues.y = eval[m_ev_order[1]].real(); 
 		m_evalues.z = eval[m_ev_order[2]].real();
 		
-		if (m_evalues.x == m_evalues.y || m_evalues.y == m_evalues.z) 
-			m_ev_type = 2;
-		else 
-			m_ev_type = 3; 
+		if (m_evalues.x == m_evalues.y || m_evalues.y == m_evalues.z) {
+			if (m_evalues.x == m_evalues.y && m_evalues.y == m_evalues.z)
+				m_ev_type = 4;
+			else
+				m_ev_type = 2;
+		}else {
+			m_ev_type = 3;
+		}
 	}
 	assert(m_ev_type);
 	for (int i = 0; i < 3; ++i) {

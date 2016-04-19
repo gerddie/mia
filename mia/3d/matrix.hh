@@ -127,6 +127,7 @@ public:
 	    \returns 1 one real, two complex eigenvalues, real part = result->y, imaginary part = result->z
 	             2 three real eigenvalues, at least two are equal
 		     3 three distinct real eigenvalues
+		     4 three real eigenvalues, all equal 
 	*/	     
 
 	int get_eigenvalues(C3DFVector& v)const; 
