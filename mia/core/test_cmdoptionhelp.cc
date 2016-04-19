@@ -117,6 +117,7 @@ int main(int argc, const char **args)
 			     "other required option",
 			     CCmdOptionFlags::required_output));
 
+	options.set_stdout_is_result(); 
 	options.set_group("empty"); 
 	
 	
@@ -170,6 +171,7 @@ string expect_xml_help_end="</version>\n"
 "    <option short=\"\" long=\"threads\" default=\"-1\" type=\"int\">Maxiumum number of threads to use for processing,This number should be lower or equal to the number of logical processor cores in the machine. (-1: automatic estimation).Maxiumum number of threads to use for processing,This number should be lower or equal to the number of logical processor cores in the machine. (-1: automatic estimation).</option>\n"
 "  </group>\n"
 "  <freeparams name=\"1d/splinekernel\" type=\"factory\"/>\n"
+"  <stdout-is-result/>\n"
 "  <handler name=\"1d/splinekernel\">These plug-ins provide various kernels that evaluate the wights in spline-based interpolation.<plugin name=\"bspline\">B-spline kernel creation <param name=\"d\" type=\"int\" default=\"3\">Spline degree<bounded min=\"[0\" max=\"5]\"/></param></plugin><plugin name=\"omoms\">OMoms-spline kernel creation<param name=\"d\" type=\"int\" default=\"3\">Spline degree<bounded min=\"[3\" max=\"3]\"/></param></plugin></handler>\n"
 "  <Example>Example text<Code>Example command</Code></Example>\n"
 "  <Author>Gert Wollny</Author>\n"
