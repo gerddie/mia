@@ -101,7 +101,7 @@ const SProgramDescription general_help {
 	{pdi_example_code, "Example command"}
 };
 
-string expect_usage("Usage:\n  test-cmdoptionhelp -r required -V verbose -h help -? usage \n");
+string expect_usage("Usage:\n  test-cmdoptionhelp -r required --other <value> -V verbose -h help -? usage \n");
 extern string expect_xml_help_start; 
 extern string expect_xml_help_end;
 
