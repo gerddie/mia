@@ -41,7 +41,7 @@ NS_MIA_BEGIN
 */
 
 
-class C3DCriticalPoint {
+class EXPORT_3D C3DCriticalPoint {
 public:
 
 	/// A list of critical points 
@@ -56,7 +56,7 @@ public:
 
 	/** 
 	    Construct a critical point at a certain location. 
-	    Magnitude and pahse portrait are set to zero. 
+	    Magnitude and phase portrait are set to zero. 
 	    \param x0_ location of the new critical point
 	*/
 
@@ -110,7 +110,13 @@ public:
 	    \retval value of vector field created by this crtitical point at \a x
 	*/
 	C3DFVector at(const C3DFVector& x) const;
-	
+
+	/** return the magniture of the critical point at location \a x according to 
+	    \f[ \frac {A \dot (x - x0)}{ | \| \mathbf{x} - \mathbf{x_0} \|_2 - gamma |}  \f]
+	    \param x location weher to evaluate the vector field 
+	    \retval value of vector field created by this crtitical point at \a x
+	*/
+
 	C3DFVector at_alt(const C3DFVector& x) const;
 
 	/** compare two critical points 
@@ -142,7 +148,7 @@ typedef T3DVector<fcomplex> C3DCVector;
     @remark untested 
 */
 
-class C3DCriticalPointEigen {
+class EXPORT_3D C3DCriticalPointEigen {
 	/// where is the critical point 
 	C3DFVector location; 
 

@@ -196,6 +196,7 @@ ELSE (WIN32)
 ENDIF(WIN32)
 
 TEST_3D(affine_matrix affine_matrix)
+TEST_3D(critical_points)
 TEST_3D(2dimagefifofilter imagefifofilter)
 TEST_3D(nfg nfg)
 TEST_3D(vectorfield vectorfield)
