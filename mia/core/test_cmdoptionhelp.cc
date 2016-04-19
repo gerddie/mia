@@ -77,7 +77,7 @@ bool fork_and_run_check(const char *me, vector<const char*  >& options, const st
                 }
 		bool test_result = child_output == expect;
 		if (!test_result) {
-			cvfail() << "Option '"<< options[2] << "' failed:\n";
+			cvfail() << "Option '"<< options[1] << "' failed:\n";
 			cvfail() << "got "<< child_output.size() << " '"<< child_output << "'\n";
 			cvfail() << "expected "<< expect.size() << " '" << expect << "'\n\n";
 
@@ -101,7 +101,7 @@ const SProgramDescription general_help {
 	{pdi_example_code, "Example command"}
 };
 
-string expect_usage("Usage:\n  test-cmdoptionhelp -r required --other <value> -V verbose -h help -? usage \n");
+string expect_usage("Usage:\n  test-cmdoptionhelp -r required -V verbose -h help -? usage \n");
 extern string expect_xml_help_start; 
 extern string expect_xml_help_end;
 

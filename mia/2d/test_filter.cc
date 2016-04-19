@@ -108,3 +108,100 @@ BOOST_AUTO_TEST_CASE(test_chain_filters)
 	}
 }
 
+
+BOOST_AUTO_TEST_CASE(test_filters_chain_push_font_and_back)
+{
+	C2DBounds size(2,2); 
+	const unsigned int   init_data[] = {1, 10, 100, 200}; 
+	const unsigned short test_data[] = {2, 2, 5, 2}; 
+
+	C2DUIImage *int_image = new C2DUIImage(size, init_data); 
+	P2DImage image(int_image); 
+
+	C2DImageFilterChain chain(NULL, 0);
+
+	BOOST_CHECK(chain.empty()); 
+
+	chain.push_back("binarize:min=100,max=200");
+	chain.push_front("bandpass:min=1,max=150");
+	chain.push_back("convert:repn=ushort,map=linear,b=2,a=3");
+	
+	auto testimg = chain.run(image); 
+
+	BOOST_CHECK_EQUAL(testimg->get_pixel_type(), it_ushort); 
+	auto test_image = dynamic_cast<const C2DUSImage&>(*testimg); 
+	
+	BOOST_CHECK_EQUAL(test_image.get_size(), size); 
+	
+	auto it = test_image.begin(); 
+	auto et = test_image.end(); 
+	auto id = test_data; 
+	while (it != et) {
+		BOOST_CHECK_EQUAL(*it, *id); 
+		++it; ++id; 
+	}
+}
+
+BOOST_AUTO_TEST_CASE(test_filters_chain_init_from_vector)
+{
+	C2DBounds size(2,2); 
+	const unsigned int   init_data[] = {1, 10, 100, 200}; 
+	const unsigned short test_data[] = {2, 2, 5, 2}; 
+
+	C2DUIImage *int_image = new C2DUIImage(size, init_data); 
+	P2DImage image(int_image); 
+
+	vector<string> filter_descr({"bandpass:min=1,max=150",
+				"binarize:min=100,max=200",
+				"convert:repn=ushort,map=linear,b=2,a=3"}); 
+
+	C2DImageFilterChain chain(filter_descr);
+	
+	auto testimg = chain.run(image); 
+	
+	BOOST_CHECK_EQUAL(testimg->get_pixel_type(), it_ushort); 
+	auto test_image = dynamic_cast<const C2DUSImage&>(*testimg); 
+	
+	BOOST_CHECK_EQUAL(test_image.get_size(), size); 
+	
+	auto it = test_image.begin(); 
+	auto et = test_image.end(); 
+	auto id = test_data; 
+	while (it != et) {
+		BOOST_CHECK_EQUAL(*it, *id); 
+		++it; ++id; 
+	}
+}
+
+BOOST_AUTO_TEST_CASE(test_filters_chain_init_from_cstring_array)
+{
+	C2DBounds size(2,2); 
+	const unsigned int   init_data[] = {1, 10, 100, 200}; 
+	const unsigned short test_data[] = {2, 2, 5, 2}; 
+	
+	C2DUIImage *int_image = new C2DUIImage(size, init_data); 
+	P2DImage image(int_image); 
+	
+	const char *filter_descr[] = {"bandpass:min=1,max=150",
+				      "binarize:min=100,max=200",
+				      "convert:repn=ushort,map=linear,b=2,a=3"};
+	
+	C2DImageFilterChain chain(filter_descr, 3);
+	
+	auto testimg = chain.run(image); 
+
+	BOOST_CHECK_EQUAL(testimg->get_pixel_type(), it_ushort); 
+	auto test_image = dynamic_cast<const C2DUSImage&>(*testimg); 
+	
+	BOOST_CHECK_EQUAL(test_image.get_size(), size); 
+	
+	auto it = test_image.begin(); 
+	auto et = test_image.end(); 
+	auto id = test_data; 
+	while (it != et) {
+		BOOST_CHECK_EQUAL(*it, *id); 
+		++it; ++id; 
+	}
+}
+
+
