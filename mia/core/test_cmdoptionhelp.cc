@@ -110,13 +110,15 @@ int main(int argc, const char **args)
 	string required_option;
 	string other_required_option;  
         CCmdOptionList options(general_help);
-        options.add(make_opt(required_option, "required", 'r',
-			     "some required option",
-			     CCmdOptionFlags::required_input));
-        options.add(make_opt(required_option, "other", 0,
+        options.add("A", make_opt(required_option, "required", 'r',
+				   "some required option",
+				   CCmdOptionFlags::required_input));
+        options.add("A", make_opt(required_option, "other", 0,
 			     "other required option",
 			     CCmdOptionFlags::required_output));
 
+	options.set_group("empty"); 
+	
 	
         if (options.parse(argc, args, "spline",
 			  &CSplineKernelPluginHandler::instance()) != CCmdOptionList::hr_no)
@@ -153,7 +155,7 @@ string expect_xml_help_end="</version>\n"
 "  <description>This program tests the command line parser output.</description>\n"
 "  <basic_usage> test-cmdoptionhelp -r &lt;required&gt; --other &lt;value&gt; [options] &lt;PLUGINS:1d/splinekernel&gt;</basic_usage>\n"
 "  <whatis>program tests</whatis>\n"
-"  <group name=\"\">\n"
+"  <group name=\"A\">\n"
 "    <option short=\"r\" long=\"required\" default=\"\" type=\"string\"><flags>input required </flags>some required option</option>\n"
 "    <option short=\"\" long=\"other\" default=\"\" type=\"string\"><flags>output required </flags>other required option</option>\n"
 "  </group>\n"
