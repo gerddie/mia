@@ -55,7 +55,6 @@ extern void print_full_copyright(const char *name, const char *author);
 
 
 NS_MIA_BEGIN
-extern char const *get_revision(); 
 
 using std::ostream;
 using std::ofstream;
@@ -393,10 +392,13 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	auto cr = nodeRoot->add_child("Author");
 	cr->set_child_text(m_author); 
 
-	ofstream xmlfile(help_xml.c_str());  
-	
-	xmlfile << doc->write_to_string_formatted();
-	xmlfile << "\n"; 
+	if (help_xml != "-") {
+		ofstream xmlfile(help_xml.c_str());  
+		xmlfile << doc->write_to_string_formatted();
+		xmlfile << "\n";
+	}else{
+		std::cout << doc->write_to_string_formatted();
+	}
 }
 
 /**
@@ -779,6 +781,7 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 		m_impl->print_help(name_help, has_additional);
 		return hr_help;
 	}else if (!m_impl->help_xml.empty()) {
+		cvdebug() << "Write XML help\n";
 		m_impl->print_help_xml(name_help, additional_help);
 		return hr_help_xml;
 	} else if (m_impl->usage) {

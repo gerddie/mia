@@ -25,6 +25,7 @@
 
 NS_MIA_BEGIN 
 
+
 /**
    This macro implements operations on a strongly typed enum 
    that is used as a flag. We use a macro since we don't want to 

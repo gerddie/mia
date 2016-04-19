@@ -22,7 +22,7 @@
 #include <mia/core/revision.hh>
 
 NS_MIA_BEGIN
-char const *get_revision()
+char const * EXPORT_CORE get_revision()
 {
 
 	return LIBMIA_REVISION;

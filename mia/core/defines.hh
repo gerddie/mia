@@ -57,6 +57,7 @@
 */
 NS_MIA_BEGIN
 
+
 /// some constants for interpoation types
 enum EInterpolation {
 	ip_nn,       /**< nearest neighbor interpolation */
@@ -126,6 +127,12 @@ NS_MIA_END
 #  endif
 #  define VSTREAM "MIA-CORE"
 #endif
+
+NS_MIA_BEGIN
+
+EXPORT_CORE extern char const *get_revision(); 
+
+NS_MIA_END
 
 #endif
 
