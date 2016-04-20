@@ -72,8 +72,6 @@ bool fork_and_run_check(const char *me, vector<const char*  >& options, const st
 	sig.sa_handler = sig_usr;
 	wait_for_child = true;
 #endif 	
-
-	
         if (pipe2(aStdoutPipe, O_NONBLOCK) < 0) {
                 perror ("Allocatin stdout pipe");
                 return false; 

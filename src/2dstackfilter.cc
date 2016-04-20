@@ -17,8 +17,6 @@
  * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-#define VSTREAM_DOMAIN "2dstackfilter" 
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

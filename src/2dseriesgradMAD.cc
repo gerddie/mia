@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "SERGRADVAR"
-
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -28,7 +26,7 @@
 #include <stdexcept>
 
 #include <mia/internal/main.hh>
-#include <mia/2d/filterchain.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/segsetwithimages.hh>
 #include <mia/core.hh>

@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "SER2DGRADMedian"
-
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -30,7 +28,7 @@
 #include <boost/algorithm/minmax_element.hpp>
 
 #include <mia/internal/main.hh>
-#include <mia/2d/filterchain.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/segsetwithimages.hh>
 #include <mia/core.hh>

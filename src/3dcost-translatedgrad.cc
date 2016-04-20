@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "mia-3dcost-translatedgrad"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/transformio.hh>
 #include <mia/3d/transformfactory.hh>

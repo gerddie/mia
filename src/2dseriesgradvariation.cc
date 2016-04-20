@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "SERGRADVAR"
-
 #include <iostream>
 #include <iomanip>
 #include <string>

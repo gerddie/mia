@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dall2one"
-
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>

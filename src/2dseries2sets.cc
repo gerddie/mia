@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "series2set" 
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <mia/core/cmdlineparser.hh>

@@ -19,8 +19,6 @@
  */
 
 
-#define VSTREAM_DOMAIN "2dmyoseries-dice"
-
 #include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
 #include <mia/internal/main.hh>

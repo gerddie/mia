@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dtrack-pixelmovement"
-
 #include <fstream>
 #include <ostream>
 

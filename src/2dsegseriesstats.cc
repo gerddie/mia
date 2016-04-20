@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyosegstats"
-
 #include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>

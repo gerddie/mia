@@ -36,6 +36,8 @@ NS_MIA_BEGIN
    
 */
 
+typedef TFilterChain<
+
 class EXPORT_2D C2DFilterChain {
 public:
 	C2DFilterChain();

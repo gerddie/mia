@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "mia-2dtransformation-to-tensor"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/file.hh>

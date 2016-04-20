@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "SEGBORDERDIST" 
-
 #include <iterator>
 #include <algorithm>
 #include <iostream>
