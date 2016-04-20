@@ -98,3 +98,23 @@ BOOST_AUTO_TEST_CASE( test_load_series )
 	
 }
 
+
+BOOST_AUTO_TEST_CASE( test_load_store_bmp )
+{
+	string filename(MIA_SOURCE_ROOT"/testdata/gray2x3.bmp");
+
+	auto test_image = load_image2d(filename);
+
+	const C2DUBImage& img = dynamic_cast<const C2DUBImage&>(*test_image); 
+	BOOST_CHECK_EQUAL(img.get_size().x, 2u);
+	BOOST_CHECK_EQUAL(img.get_size().y, 3u);
+
+	BOOST_CHECK_EQUAL(img(0,0),   0u);
+	BOOST_CHECK_EQUAL(img(1,0),  63u);
+	BOOST_CHECK_EQUAL(img(0,1), 128u);
+	BOOST_CHECK_EQUAL(img(1,1), 190u);
+	BOOST_CHECK_EQUAL(img(0,2), 229u);
+	BOOST_CHECK_EQUAL(img(1,2), 255u);
+
+	
+}

@@ -357,12 +357,17 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 #ifdef WORDS_BIGENDIAN
 	endian_adapt_info_header(info_header);
 #endif
+	switch (info_header.size) {
+	case 40:cvdebug() << "BMP: Windows NT, 3.1x style bitmap\n"; 
+		break;
+	case 108: cvdebug() << "BMP: Windows NT 4.0, 95 style bitmap\n"; 
+		break;
+	case 124: cvdebug() << "BMP: Windows NT 5.0, 98 style bitmap\n";
+	default: 
+		throw create_exception<runtime_error>("CBMP2DImageIO::load: incompatible header size=", info_header.size);
+	}
 
-
-	if (info_header.size != 40)
-		throw runtime_error("CBMP2DImageIO::load: incompatible header size");
-
-	cvdebug() << "validated infor header size\n";
+	cvdebug() << "validated info header size\n";
 
 	if (info_header.bits <= 8) {
 		// eat the palette
@@ -388,6 +393,8 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 		throw create_exception<runtime_error>("CBMP2DImageIO::load: Image has too big", 
 						      " width=", info_header.width, ", height=", 
 						      info_header.height);
+	fseek(f, header.offset, SEEK_SET); 
+	
 	
 	PData result = PData(new C2DImageVector());
 
