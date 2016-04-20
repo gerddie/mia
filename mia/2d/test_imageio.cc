@@ -116,6 +116,20 @@ BOOST_AUTO_TEST_CASE( test_load_bmp_8_uncompressed )
 	BOOST_CHECK_EQUAL(img(0,2), 229u);
 	BOOST_CHECK_EQUAL(img(1,2), 255u);
 
+	save_image("test_image.bmp", test_image);
+
+	auto test2_image = load_image2d("test_image.bmp");
+	
+	const C2DUBImage& img2 = dynamic_cast<const C2DUBImage&>(*test2_image); 
+	BOOST_CHECK_EQUAL(img2.get_size().x, 2u);
+	BOOST_CHECK_EQUAL(img2.get_size().y, 3u);
+
+	BOOST_CHECK_EQUAL(img2(0,0),   0u);
+	BOOST_CHECK_EQUAL(img2(1,0),  63u);
+	BOOST_CHECK_EQUAL(img2(0,1), 128u);
+	BOOST_CHECK_EQUAL(img2(1,1), 190u);
+	BOOST_CHECK_EQUAL(img2(0,2), 229u);
+	BOOST_CHECK_EQUAL(img2(1,2), 255u);
 	
 }
 
