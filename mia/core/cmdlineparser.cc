@@ -395,7 +395,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	if (help_xml != "-") {
 		ofstream xmlfile(help_xml.c_str());  
 		xmlfile << doc->write_to_string_formatted();
-		xmlfile << "\n";
+		xmlfile << std::endl;
 	}else{
 		std::cout << doc->write_to_string_formatted();
 	}

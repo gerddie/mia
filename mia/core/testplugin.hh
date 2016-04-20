@@ -52,7 +52,7 @@ public:
 
 template <> const char * const TPluginHandler<CTestPlugin>::m_help; 
 
-extern template class EXPORT_CORE TPluginHandler<CTestPlugin>;
+extern template class TPluginHandler<CTestPlugin>;
 
 /**
    \ingroup test 

@@ -31,6 +31,8 @@
 #include <fcntl.h> 
 #endif
 
+#include<signal.h>
+
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
@@ -55,12 +57,27 @@ private:
 };
 
 
+bool wait_for_child = true;
+
+void sig_usr(int signo)
+{
+	if (signo == SIGINT)
+		wait_for_child = false; 
+}
+
 
 bool fork_and_run_check(const char *me, const char *console_width, string& child_output)
 {
         int aStdoutPipe[2];
         
-        if (pipe2(aStdoutPipe, O_NONBLOCK) < 0) {
+	struct sigaction sig;
+	sigemptyset(&sig.sa_mask);          
+	sig.sa_flags = 0;
+	sig.sa_handler = sig_usr;
+	
+	wait_for_child = true;
+	
+	if (pipe2(aStdoutPipe, O_NONBLOCK) < 0) {
                 perror ("Allocatin stdout pipe");
                 return false; 
         }
@@ -81,12 +98,12 @@ bool fork_and_run_check(const char *me, const char *console_width, string& child
 		cvfail() << "unable to start myself" << endl;
 		return false;
 	}else {
+		sigaction(SIGINT,&sig,NULL); 
                 cvdebug() << "Parent: Start reading" << endl; 
-		int result = -1;
                 child_output.clear(); 
                 char c;
 
-                while (!waitpid(pid, &result, WNOHANG)) {
+                while (wait_for_child) {
                         while(read(aStdoutPipe[0], &c, 1) == 1) {
                                 child_output.push_back(c);
                         }
@@ -103,6 +120,9 @@ const SProgramDescription general_help {
 	{pdi_example_code, "Example command"}
 };
 
+#ifdef MIA_COVERAGE
+extern "C" void __gcov_dump(void );
+#endif 
 
 int main(int argc, const char **args)
 {
@@ -117,35 +137,46 @@ int main(int argc, const char **args)
                 return -1;
         
         if (internal) {
+
+		int retvalue = 0; 
                 struct winsize ws;
                 int old_width = 100; 
                 if (ioctl(0,TIOCGWINSZ,&ws)==0) {
                         old_width = ws.ws_col;
-                }else{
-                        return -1; 
-                }
-                ws.ws_col = console_width;
+			ws.ws_col = console_width;
                 
-                if (ioctl(0,TIOCSWINSZ,&ws)==0) {
-                        CCmdOptionList olist(general_help);
-                        int test = 0; 
-                        vector<const char *> options;
-                        options.push_back("self");
-                        options.push_back("-h");
-                        
-                        olist.add(make_opt(test, "lala", 'i', "a string option"));
-                        if (olist.parse(options.size(), &options[0]) != CCmdOptionList::hr_no)
-                                return -1; 
-                }
-                ws.ws_col = old_width;
-                if (ioctl(0,TIOCSWINSZ,&ws)!=0) {
-                        cverr() << "Resetting console width failed\n"; 
-                        return -1; 
-                }
-                return 0; 
+			if (ioctl(0,TIOCSWINSZ,&ws)==0) {
+				CCmdOptionList olist(general_help);
+				int test = 0; 
+				vector<const char *> options;
+				options.push_back("self");
+				options.push_back("-h");
+				
+				olist.add(make_opt(test, "lala", 'i', "a string option"));
+				if (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no) {
+					ws.ws_col = old_width;
+					if (ioctl(0,TIOCSWINSZ,&ws) !=0) {
+						cverr() << "Resetting console width failed\n"; 
+						retvalue = -1;
+					}
+				}else
+					retvalue = -1;
+			}else
+				retvalue = -1;
+                }else
+			retvalue = -1;
+		cverr() << "Send signal\n";
+		sleep(1); 
+		kill(getppid(), SIGINT);
+		sleep(1);
+
+		ws.ws_col = old_width;
+		ioctl(0,TIOCSWINSZ,&ws);
+		
+		return retvalue;
+		
         } else {
-                struct winsize old_ws;
-                (ioctl(0,TIOCGWINSZ,&old_ws)==0); 
+		
                 int retval = 0; 
                 // fork the tests
                 string child_output_100; 
@@ -157,7 +188,8 @@ int main(int argc, const char **args)
                         }
                 }else 
                         retval = -2;
-
+		
+		
                 string child_output_50; 
                 if (fork_and_run_check(args[0], "50", child_output_50)) {
                         if (child_output_50.size() != 2241) {
@@ -168,7 +200,7 @@ int main(int argc, const char **args)
                 }else 
                         retval = -2;
 
-                ioctl(0,TIOCSWINSZ,&old_ws); 
+
                 return retval; 
         }
 }; 

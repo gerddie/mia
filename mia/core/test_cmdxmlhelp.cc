@@ -23,7 +23,7 @@
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/core/splinekernel.hh>
+#include <mia/core/testplugin.hh>
 
 #include <config.h>
 
@@ -37,16 +37,43 @@
 #endif
 
 
+/*
+  Wenn we ron coverage, then the child process sends a signal to the parent 
+  process to let the parent program terminate before the child that actually 
+  runs the interesting code is terminated. 
+*/
+#ifdef MIA_COVERAGE	
+#include<signal.h>
+#endif 
+
 #include <sys/types.h>
 #include <sys/wait.h>
 
 NS_MIA_USE
 using namespace std;
 
+#ifdef MIA_COVERAGE	
+bool wait_for_child = true;
+void sig_usr(int signo)
+{
+	if (signo == SIGINT)
+		wait_for_child = false; 
+}
+#endif 	
+
 bool fork_and_run_check(const char *me, vector<const char*  >& options, const string& expect)
 {
         int aStdoutPipe[2];
-        
+
+#ifdef MIA_COVERAGE	
+	struct sigaction sig;
+	sigemptyset(&sig.sa_mask);          
+	sig.sa_flags = 0;
+	sig.sa_handler = sig_usr;
+	wait_for_child = true;
+#endif 	
+
+	
         if (pipe2(aStdoutPipe, O_NONBLOCK) < 0) {
                 perror ("Allocatin stdout pipe");
                 return false; 
@@ -66,11 +93,17 @@ bool fork_and_run_check(const char *me, vector<const char*  >& options, const st
 		return false;
 	}else {
                 cvdebug() << "Parent: Start reading" << endl; 
-		int result = -1;
+
                 string child_output; 
                 char c;
-
-                while (!waitpid(pid, &result, WNOHANG)) {
+#ifdef MIA_COVERAGE
+		sigaction(SIGINT,&sig,NULL); 
+		while (wait_for_child) 
+#else 		
+		int result = -1;
+		while (!waitpid(pid, &result, WNOHANG)) 
+#endif
+		{
                         while(read(aStdoutPipe[0], &c, 1) == 1) {
                                 child_output.push_back(c);
                         }
@@ -84,7 +117,7 @@ bool fork_and_run_check(const char *me, vector<const char*  >& options, const st
 			for (unsigned i = 0; i < min(  expect.size(), child_output.size()); ++i){
 				if (child_output[i] != expect[i]) {
 					cvfail() << "First character error: " << i << " "
-						 << "got '" << child_output[i]  << "', expect '" <<expect[i] << "'\n";
+						 << "got '" << child_output.substr(i)  << "', expect '" << expect.substr(i) << "'\n";
 					break; 
 				}
 			}
@@ -101,11 +134,10 @@ const SProgramDescription general_help {
 	{pdi_example_code, "Example command"}
 };
 
-string expect_usage("Usage:\n  test-cmdoptionhelp -r required -V verbose -h help -? usage \n");
 extern string expect_xml_help_start; 
 extern string expect_xml_help_end;
 
-int main(int argc, const char **args)
+int do_main(int argc, char **args)
 {
 	string required_option;
 	string other_required_option;  
@@ -119,42 +151,46 @@ int main(int argc, const char **args)
 
 	options.set_stdout_is_result(); 
 	options.set_group("empty"); 
+
+	CPluginSearchpath sp(true);
+	sp.add("testplug"); 
+	CTestPluginHandler::set_search_path(sp);
 	
-	
-        if (options.parse(argc, args, "spline",
-			  &CSplineKernelPluginHandler::instance()) != CCmdOptionList::hr_no)
+        if (options.parse(argc, args, "plugin",
+			  &CTestPluginHandler::instance()) != CCmdOptionList::hr_no) {
+#ifdef MIA_COVERAGE
+		// strange, the output to std::cerr makes sure that the signal is received, 
+		// sleep(n) doesn't.  
+		std::cerr << "\n"; 
+		kill(getppid(), SIGINT);
+#endif 
 		return 0;
-
-	
-	
-	map<string, vector<const char*>> option_results;
-
-	option_results[expect_usage] = vector<const char*>{args[0], "--usage", NULL};
+	}
 
 	string expect_xml_help = expect_xml_help_start + string(get_revision()) + expect_xml_help_end;
-	option_results[expect_xml_help] = vector<const char*>{args[0],
-							      "--help-xml", "-",
-							      NULL};
+	vector<const char*> arg{args[0],"--help-xml", "-", NULL};
 	
 
 	bool failed = false; 
-	for (auto pairs: option_results) {
-		if (!fork_and_run_check(args[0], pairs.second, pairs.first)) {
-			failed = true; 
-		}
+	if (!fork_and_run_check(args[0], arg, expect_xml_help)) {
+		failed = true; 
 	}
+
 	return failed ? EXIT_FAILURE : EXIT_SUCCESS; 
 }; 
 
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 
+
 string expect_xml_help_start = "<?xml version=\"1.0\"?>\n"
 	"<program>\n"
-	"  <name>test-cmdoptionhelp</name>\n"
+	"  <name>test-cmdxmlhelp</name>\n"
 	"  <version>"; 
 
 string expect_xml_help_end="</version>\n"
 	"  <section>Test</section>\n"
 "  <description>This program tests the command line parser output.</description>\n"
-"  <basic_usage> test-cmdoptionhelp -r &lt;required&gt; --other &lt;value&gt; [options] &lt;PLUGINS:1d/splinekernel&gt;</basic_usage>\n"
+"  <basic_usage> test-cmdxmlhelp -r &lt;required&gt; --other &lt;value&gt; [options] &lt;PLUGINS:none/test&gt;</basic_usage>\n"
 "  <whatis>program tests</whatis>\n"
 "  <group name=\"A\">\n"
 "    <option short=\"r\" long=\"required\" default=\"\" type=\"string\"><flags>input required </flags>some required option</option>\n"
@@ -170,9 +206,9 @@ string expect_xml_help_end="</version>\n"
 "  <group name=\"Processing\">\n"
 "    <option short=\"\" long=\"threads\" default=\"-1\" type=\"int\">Maxiumum number of threads to use for processing,This number should be lower or equal to the number of logical processor cores in the machine. (-1: automatic estimation).Maxiumum number of threads to use for processing,This number should be lower or equal to the number of logical processor cores in the machine. (-1: automatic estimation).</option>\n"
 "  </group>\n"
-"  <freeparams name=\"1d/splinekernel\" type=\"factory\"/>\n"
+"  <freeparams name=\"none/test\" type=\"factory\"/>\n"
 "  <stdout-is-result/>\n"
-"  <handler name=\"1d/splinekernel\">These plug-ins provide various kernels that evaluate the wights in spline-based interpolation.<plugin name=\"bspline\">B-spline kernel creation <param name=\"d\" type=\"int\" default=\"3\">Spline degree<bounded min=\"[0\" max=\"5]\"/></param></plugin><plugin name=\"omoms\">OMoms-spline kernel creation<param name=\"d\" type=\"int\" default=\"3\">Spline degree<bounded min=\"[3\" max=\"3]\"/></param></plugin></handler>\n"
+"  <handler name=\"none/test\">This is a handler for the test plug-ins<plugin name=\"dummy1\">test_dummy_symbol from dummy1</plugin><plugin name=\"dummy2\">test module with no data (2)</plugin><plugin name=\"dummy3\">test_dummy_symbol from dummy3</plugin></handler>\n"
 "  <Example>Example text<Code>Example command</Code></Example>\n"
 "  <Author>Gert Wollny</Author>\n"
 "</program>\n"; 
