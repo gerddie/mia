@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( test_load_series )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_load_store_bmp )
+BOOST_AUTO_TEST_CASE( test_load_bmp_8_uncompressed )
 {
 	string filename(MIA_SOURCE_ROOT"/testdata/gray2x3.bmp");
 
@@ -116,5 +116,28 @@ BOOST_AUTO_TEST_CASE( test_load_store_bmp )
 	BOOST_CHECK_EQUAL(img(0,2), 229u);
 	BOOST_CHECK_EQUAL(img(1,2), 255u);
 
+	
+}
+
+BOOST_AUTO_TEST_CASE( test_load_bmp_8_compressed )
+{
+	auto test_image = load_image2d(MIA_SOURCE_ROOT"/testdata/gray100x2c.bmp");
+
+	const C2DUBImage& img = dynamic_cast<const C2DUBImage&>(*test_image); 
+	BOOST_CHECK_EQUAL(img.get_size().x, 100u);
+	BOOST_CHECK_EQUAL(img.get_size().y, 2u);
+
+	auto p = img.begin(); 
+	
+	for (unsigned x = 0; x < 52; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 163u);
+	
+	for (unsigned x = 52; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 139u); 
+
+	for (unsigned x = 0; x < 47; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 100u); 
+	for (unsigned x = 47; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 211u); 
 	
 }
