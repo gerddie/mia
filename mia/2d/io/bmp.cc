@@ -143,9 +143,76 @@ static P2DImage  read_bit_pixels(CFile& image, unsigned int width, unsigned int 
         return presult;
 }
 
+static P2DImage  read_4bit_pixels_c(CFile& image, unsigned int width, unsigned int height)
+{
+	C2DUBImage *result = new C2DUBImage(C2DBounds(width, height));
+	P2DImage presult(result); 
+	cvdebug() << "read_4bit_pixels compressed\n";
+
+	
+	int y = height-1;
+	int x = 0; 
+	while (y >= 0) {
+		int inbyte_1 = fgetc(image);
+		
+		//rle encoded pixels
+		if (inbyte_1 > 0) {
+			int inbyte_2 = fgetc(image);
+			if (inbyte_2 == EOF) 
+				throw runtime_error("BPM::Load: incomplete image");
+			char hi = (inbyte_2 >> 4) & 0xF;
+			char lo = inbyte_2 & 0xF;
+			
+			while (inbyte_1--) {
+				(*result)(x,y) = hi;
+				swap(hi, lo);
+				++x; 
+			}
+		}else{
+			int inbyte_2 = fgetc(image);
+
+			// literal pixels 
+			if ( inbyte_2 > 2){
+				vector<char> buffer( (inbyte_2 + 3) / 4);
+				if (fread(&buffer[0], 1, buffer.size(), image) != buffer.size())
+					throw runtime_error("BPM::Load: incomplete image");
+				for (auto c: buffer) {
+					++x; 
+					(*result)(x,y) = (c >> 4) & 0xF;
+					inbyte_2--;
+					if (inbyte_2--) {
+						++x; 
+						(*result)(x,y) = c & 0xF;
+					}
+				}
+			}else if (inbyte_2 == 0){
+				cvdebug() << "End of row\n"; 
+				--y;
+				x = 0;
+			}else if (inbyte_2 == 1){
+				cvdebug() << "End of image\n"; 
+				// end of image 
+				break;
+			}else { // if inbyte_2 == 2
+				// offset
+				int dx = fgetc(image);
+				int dy = fgetc(image);
+
+				if (dx == EOF || dy == EOF) {
+					throw runtime_error("BPM::Load: incomplete image");
+				}
+				y -= dy;
+				x += dx;
+			}
+		}
+	}
+	
+	return presult;
+}
+
 static P2DImage  read_4bit_pixels(CFile& image, unsigned int width, unsigned int height)
 {
-	C2DBitImage *result = new C2DBitImage(C2DBounds(width, height));
+	C2DUBImage *result = new C2DUBImage(C2DBounds(width, height));
 	P2DImage presult(result); 
 	cvdebug() << "read_4bit_pixels\n";
 
@@ -369,16 +436,6 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 
 	cvdebug() << "validated info header size\n";
 
-	if (info_header.bits <= 8) {
-		// eat the palette
-		size_t palette_size = (1 << info_header.bits);
-		cvdebug() << "Read palette of size " << palette_size << "\n";
-		vector<char> buffer(palette_size * 4);
-		if (fread(&buffer[0], palette_size, 4, f) != 4) {
-			throw runtime_error("bmp: error reading palette");
-		}
-	}
-
 	if ((info_header.width < 1) || (info_header.height < 1))
 		throw create_exception<runtime_error>("CBMP2DImageIO::load: Image has unsupported dimensions", 
 						      " width=", info_header.width, ", height=", 
@@ -420,6 +477,8 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 		} // end switch
 	}else{
 		switch (info_header.bits) {
+		case 4: result->push_back(read_4bit_pixels_c(f, info_header.width, info_header.height));
+			break;
 		case 8: result->push_back(read_8bit_pixels_c(f, info_header.width, info_header.height));
 			break;
 		default:

@@ -155,3 +155,26 @@ BOOST_AUTO_TEST_CASE( test_load_bmp_8_compressed )
 		BOOST_CHECK_EQUAL(*p, 211u); 
 	
 }
+
+BOOST_AUTO_TEST_CASE( test_load_bmp_4bit_compressed )
+{
+	auto test_image = load_image2d(MIA_SOURCE_ROOT"/testdata/gray100x2c-4bit.bmp");
+
+	const C2DUBImage& img = dynamic_cast<const C2DUBImage&>(*test_image); 
+	BOOST_CHECK_EQUAL(img.get_size().x, 100u);
+	BOOST_CHECK_EQUAL(img.get_size().y, 2u);
+
+	auto p = img.begin(); 
+	
+	for (unsigned x = 0; x < 52; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 2u);
+	
+	for (unsigned x = 52; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 1u); 
+
+	for (unsigned x = 0; x < 47; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u); 
+	for (unsigned x = 47; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 3u); 
+	
+}
