@@ -40,7 +40,6 @@ using namespace std;
 using namespace boost;
 
 
-enum EDataType {dt_8bit, dt_16bit, dt_32bit};
 enum ECompression {c_none = 0,
 		   c_8bit_rle,
 		   c_4bit_rle,
@@ -96,7 +95,6 @@ private:
 CBMP2DImageIO::CBMP2DImageIO():
 	C2DImageIOPlugin("bmp")
 {
-	add_supported_type(it_ushort);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_bit);
 	add_suffix(".bmp");
@@ -319,54 +317,6 @@ static P2DImage  read_8bit_pixels_c(CFile& image, unsigned int width, unsigned i
 	return presult;
 }
 
-
-static P2DImage  read_16bit_pixels(CFile& image, unsigned int width, unsigned int height)
-{
-	C2DUSImage *result = new C2DUSImage(C2DBounds(width, height));
-	P2DImage presult(result); 
-	int row_count = width % 2;
-	cvdebug() << "read_16bit_pixels\n";
-
-	for (int y = height-1; y >= 0; --y) {
-		unsigned short *p = &(*result)(0,y);
-		if (fread( p, width, 2, image) != 2)
-			throw runtime_error("BMP::Load: incomplete image");
-#ifdef WORDS_BIGENDIAN
-		for (size_t x = 0; x < width; ++x, ++p)
-			ENDIANADAPT(*p);
-#endif
-		int remain = row_count;
-		while (remain--) {
-			if (fgetc(image) == EOF) 
-				throw runtime_error("BPM::Load: incomplete image");
-			if (fgetc(image) == EOF) 
-				throw runtime_error("BPM::Load: incomplete image");
-		}
-	}
-	return presult;
-}
-
-
-
-static P2DImage  read_24bit_pixels(CFile& image, unsigned int width, unsigned int height)
-{
-	cvdebug() << "read_24bit_pixels\n";
-
-	C2DUIImage *result = new C2DUIImage(C2DBounds(width, height));
-	P2DImage presult(result); 
-
-	for (int y = height-1; y >= 0; --y) {
-		unsigned int *p = &(*result)(0,y);
-		if (fread( p, width, 4, image) != 4)
-			throw runtime_error("BMP::Load: incomplete image");
-#ifdef WORDS_BIGENDIAN
-		for (size_t x = 0; x < width; ++x, ++p)
-			ENDIANADAPT(*p);
-#endif
-	}
-	return presult;
-}
-
 #ifdef WORDS_BIGENDIAN
 void endian_adapt_header(CBMP2DImageIO::BMPHeader& header)
 {
@@ -466,10 +416,6 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 			break;
 		case 8: result->push_back(read_8bit_pixels_uc(f, info_header.width, info_header.height));
 			break;
-		case 16:result->push_back(read_16bit_pixels(f, info_header.width, info_header.height));
-			break;
-		case 24:result->push_back(read_24bit_pixels(f, info_header.width, info_header.height));
-			break;
 		default: {
 			stringstream errmsg;
 			errmsg << "CBMP2DImageIO::load: unsupported pixel size: " << info_header.bits;
@@ -521,20 +467,8 @@ struct TBMPIOPixelTrait<C2DBitImage> {
 };
 
 template <>
-struct TBMPIOPixelTrait<C2DUIImage> {
-	enum { pixel_size = 24 };
-	enum { supported = 1 };
-};
-
-template <>
 struct TBMPIOPixelTrait<C2DUBImage> {
 	enum { pixel_size = 8 };
-	enum { supported = 1 };
-};
-
-template <>
-struct TBMPIOPixelTrait<C2DUSImage> {
-	enum { pixel_size = 16 };
 	enum { supported = 1 };
 };
 
