@@ -37,5 +37,7 @@ IF(PNG_FOUND)
   PLUGIN_WITH_PREFIX2("2dimage" "io" png-gray "${PNG_LINK_LIBS}")
   PLUGIN_WITH_PREFIX2("rgbimage" "io" png-rgb "${PNG_LINK_LIBS}" )
 
+  NEW_TEST(png mia2d)
+ 
 
 ENDIF(PNG_FOUND)
