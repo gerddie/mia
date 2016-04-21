@@ -67,6 +67,41 @@ BOOST_AUTO_TEST_CASE( test_load_save_8bit )
 	
 }
 
+BOOST_AUTO_TEST_CASE( test_load_save_1bit )
+{
+	string filename(MIA_SOURCE_ROOT"/testdata/gray2x3-1.png");
+
+
+        auto test_image = load_image2d(filename);
+
+	const C2DBitImage& img = dynamic_cast<const C2DBitImage&>(*test_image); 
+	BOOST_CHECK_EQUAL(img.get_size().x, 2u);
+	BOOST_CHECK_EQUAL(img.get_size().y, 3u);
+
+	BOOST_CHECK_EQUAL(img(0,0), 0u);
+	BOOST_CHECK_EQUAL(img(1,0), 0u);
+	BOOST_CHECK_EQUAL(img(0,1), 0u);
+	BOOST_CHECK_EQUAL(img(1,1), 1u);
+	BOOST_CHECK_EQUAL(img(0,2), 1u);
+	BOOST_CHECK_EQUAL(img(1,2), 1u);
+
+	save_image("test_image.png", test_image);
+
+	auto test2_image = load_image2d("test_image.png");
+	
+	const C2DBitImage& img2 = dynamic_cast<const C2DBitImage&>(*test2_image); 
+	BOOST_CHECK_EQUAL(img2.get_size().x, 2u);
+	BOOST_CHECK_EQUAL(img2.get_size().y, 3u);
+
+	BOOST_CHECK_EQUAL(img(0,0), 0u);
+	BOOST_CHECK_EQUAL(img(1,0), 0u);
+	BOOST_CHECK_EQUAL(img(0,1), 0u);
+	BOOST_CHECK_EQUAL(img(1,1), 1u);
+	BOOST_CHECK_EQUAL(img(0,2), 1u);
+	BOOST_CHECK_EQUAL(img(1,2), 1u);
+	
+}
+
 BOOST_AUTO_TEST_CASE( test_load_save_16bit )
 {
 	string filename(MIA_SOURCE_ROOT"/testdata/gray2x3-16.png");
