@@ -483,8 +483,8 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 		case 8: result->push_back(read_8bit_pixels_c(f, info_header.width, info_header.height));
 			break;
 		default:
-			throw create<runtime_error>("CBMP2DImageIO::load: compressed images with ",
-						    info_header.bits, " bits per pixel not supported");
+			throw create_exception<runtime_error>("CBMP2DImageIO::load: compressed images with ",
+							      info_header.bits, " bits per pixel not supported");
 		}
 	}
 	cvdebug() << "CBMP2DImageIO::load done\n";
