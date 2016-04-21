@@ -165,24 +165,25 @@ static P2DImage  read_4bit_pixels_c(CFile& image, unsigned int width, unsigned i
 			
 			while (inbyte_1--) {
 				(*result)(x,y) = hi;
+				cvdebug() << inbyte_1 << " x=" << x << ", y=" << y << " -> " << (int)hi << "\n"; 
 				swap(hi, lo);
-				++x; 
+				++x;
 			}
 		}else{
 			int inbyte_2 = fgetc(image);
 
 			// literal pixels 
 			if ( inbyte_2 > 2){
-				vector<char> buffer( (inbyte_2 + 3) / 4);
+				vector<char> buffer( (inbyte_2 + 3) / 2);
 				if (fread(&buffer[0], 1, buffer.size(), image) != buffer.size())
 					throw runtime_error("BPM::Load: incomplete image");
-				for (auto c: buffer) {
+				for (auto c = buffer.begin(); c != buffer.end() && inbyte_2 > 0; ++c) {
+					(*result)(x,y) = (*c >> 4) & 0xF;
 					++x; 
-					(*result)(x,y) = (c >> 4) & 0xF;
 					inbyte_2--;
 					if (inbyte_2--) {
+						(*result)(x,y) = *c & 0xF;
 						++x; 
-						(*result)(x,y) = c & 0xF;
 					}
 				}
 			}else if (inbyte_2 == 0){
@@ -482,7 +483,8 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 		case 8: result->push_back(read_8bit_pixels_c(f, info_header.width, info_header.height));
 			break;
 		default:
-			throw runtime_error("CBMP2DImageIO::load: compressed images not (yet) supported");
+			throw create<runtime_error>("CBMP2DImageIO::load: compressed images with ",
+						    info_header.bits, " bits per pixel not supported");
 		}
 	}
 	cvdebug() << "CBMP2DImageIO::load done\n";
@@ -711,7 +713,9 @@ bool CBMP2DImageIO::do_save(string const& filename, const C2DImageVector& data) 
 
 const string  CBMP2DImageIO::do_get_descr()const
 {
-	return string("BMP 2D-image input/output support");
+	return string("BMP 2D-image input/output support. The plug-in supports reading and writing of binary images and "
+		      "8-bit gray scale images. read-only support is provided for 4-bit gray scale images. "
+		      "The color table is ignored and the pixel values are taken as literal gray scale values.");
 }
 
 

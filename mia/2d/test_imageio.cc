@@ -168,6 +168,39 @@ BOOST_AUTO_TEST_CASE( test_load_bmp_4bit_compressed )
 	
 	for (unsigned x = 0; x < 52; ++x, ++p)
 		BOOST_CHECK_EQUAL(*p, 2u);
+
+	BOOST_CHECK_EQUAL(*p++, 1u);
+	BOOST_CHECK_EQUAL(*p++, 3u);
+	BOOST_CHECK_EQUAL(*p++, 1u);
+	BOOST_CHECK_EQUAL(*p++, 0u);
+	BOOST_CHECK_EQUAL(*p++, 1u);
+	BOOST_CHECK_EQUAL(*p++, 0u);
+
+	
+	for (unsigned x = 58; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 1u); 
+
+	for (unsigned x = 0; x < 47; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u);
+
+	
+	for (unsigned x = 47; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 3u); 
+	
+}
+
+BOOST_AUTO_TEST_CASE( test_load_bmp_4bit_uncompressed )
+{
+	auto test_image = load_image2d(MIA_SOURCE_ROOT"/testdata/gray100x2uc-4bit.bmp");
+
+	const C2DUBImage& img = dynamic_cast<const C2DUBImage&>(*test_image); 
+	BOOST_CHECK_EQUAL(img.get_size().x, 100u);
+	BOOST_CHECK_EQUAL(img.get_size().y, 2u);
+
+	auto p = img.begin(); 
+	
+	for (unsigned x = 0; x < 52; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 2u);
 	
 	for (unsigned x = 52; x < 100; ++x, ++p)
 		BOOST_CHECK_EQUAL(*p, 1u); 
