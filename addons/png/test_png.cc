@@ -25,6 +25,7 @@
 #include <mia/core/attribute_names.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/imageio.hh>
+#include <mia/2d/rgbimageio.hh>
 
 NS_MIA_USE
 using namespace std; 
@@ -32,7 +33,7 @@ using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem; 
 
 
-BOOST_AUTO_TEST_CASE( test_load_save_8bit )
+BOOST_AUTO_TEST_CASE( test_load_save_8bit_gray )
 {
 	string filename(MIA_SOURCE_ROOT"/testdata/gray2x3.png");
 
@@ -64,10 +65,10 @@ BOOST_AUTO_TEST_CASE( test_load_save_8bit )
 	BOOST_CHECK_EQUAL(img2(1,1), 190u);
 	BOOST_CHECK_EQUAL(img2(0,2), 229u);
 	BOOST_CHECK_EQUAL(img2(1,2), 255u);
-	
+        unlink("test_image.png"); 	
 }
 
-BOOST_AUTO_TEST_CASE( test_load_save_1bit )
+BOOST_AUTO_TEST_CASE( test_load_save_1bit_gray )
 {
 	string filename(MIA_SOURCE_ROOT"/testdata/gray2x3-1.png");
 
@@ -99,10 +100,12 @@ BOOST_AUTO_TEST_CASE( test_load_save_1bit )
 	BOOST_CHECK_EQUAL(img(1,1), 1u);
 	BOOST_CHECK_EQUAL(img(0,2), 1u);
 	BOOST_CHECK_EQUAL(img(1,2), 1u);
+
+        unlink("test_image.png"); 
 	
 }
 
-BOOST_AUTO_TEST_CASE( test_load_save_16bit )
+BOOST_AUTO_TEST_CASE( test_load_save_16bit_gray )
 {
 	string filename(MIA_SOURCE_ROOT"/testdata/gray2x3-16.png");
 
@@ -134,7 +137,44 @@ BOOST_AUTO_TEST_CASE( test_load_save_16bit )
 	BOOST_CHECK_EQUAL(img2(1,1), 190u * 256);
 	BOOST_CHECK_EQUAL(img2(0,2), 229u * 256);
 	BOOST_CHECK_EQUAL(img2(1,2), 255u * 256);
-	
+
+        unlink("test_image.png"); 
 }
 
+BOOST_AUTO_TEST_CASE( test_load_save_8bit_rgb )
+{
+        vector<unsigned char> test_data{206, 89, 97, 71, 99, 67, 192, 205, 52,
+                        28, 31, 98, 94, 27, 204, 232, 18, 214};
+        
+        const auto& io = C2DRGBImageIOPluginPluginHandler::instance(); 
+
+        auto test_image = io.load(MIA_SOURCE_ROOT"/testdata/rgb3x2-24bit.png");
+
+        const CRGB2DImage& img = *test_image;
+
+        BOOST_CHECK_EQUAL(img.get_size().x, 3);
+        BOOST_CHECK_EQUAL(img.get_size().y, 2);
+        
+        auto pixels = img.pixel();
+        for (int i = 0; i < 18; ++i) {
+                BOOST_CHECK_EQUAL(pixels[i], test_data[i]); 
+        }
+
+        BOOST_REQUIRE(save_image("test_image_rgb.png", *test_image));
+        
+        auto test_image2 = io.load("test_image_rgb.png");
+
+        const CRGB2DImage& img2 = *test_image2;
+
+        BOOST_CHECK_EQUAL(img2.get_size().x, 3);
+        BOOST_CHECK_EQUAL(img2.get_size().y, 2);
+        
+        pixels = img2.pixel();
+        for (int i = 0; i < 18; ++i) {
+                BOOST_CHECK_EQUAL(pixels[i], test_data[i]); 
+        }
+
+        unlink("test_image_rgb.png"); 
+        
+}
 
