@@ -278,7 +278,9 @@ bool CBMPRGB2DImageIO::do_save(string const& filename, const CRGB2DImage& data) 
 	struct BGR {
 		unsigned char b,g,r; 
 	}; 
-	vector<BGR> buffer(data.get_size().x); 	
+	vector<BGR> buffer(data.get_size().x);
+	const unsigned  fill = (data.get_size().x * 3 + 3)/4 * 4 - 3 * data.get_size().x; 
+	
 	for (int i = data.get_size().y - 1; i >= 0 && good; --i) {
 		auto p = data.pixel() +  i * dx; 
 		for (auto b = buffer.begin(); b != buffer.end(); ++b) {
@@ -287,7 +289,10 @@ bool CBMPRGB2DImageIO::do_save(string const& filename, const CRGB2DImage& data) 
 			b->b = *p++; 
 		}
 
-		good = (dx == fwrite(&buffer[0], 1, dx, f));
+		good &= (dx == fwrite(&buffer[0], 1, dx, f));
+		for (unsigned i = 0; i < fill; ++i)
+			good &= (fputc(0, f) != EOF);
+		
 	}
 	
 	cvdebug() << "CBMPRGB2DImageIO::save end\n";
