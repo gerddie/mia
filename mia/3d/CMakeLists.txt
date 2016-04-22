@@ -225,6 +225,8 @@ TEST_3D(imagecollect imagecollect)
 TEST_3D(imagedraw imagedraw)
 TEST_3D(rot rot)
 TEST_3D(splinetransformpenalty splinetransformpenalty)
+
+TEST_3D(imageio imageio)
 #
 # installation 
 #
