@@ -121,11 +121,108 @@ void endian_adapt_info_header(CBMPRGB2DImageIO::BMPInfoHeader& header)
 
 #endif
 
+static PRGB2DImage read_8bit_pixels_uc(CFile& image, unsigned int width, unsigned int height)
+{
+	PRGB2DImage result(new CRGB2DImage(C2DBounds(width, height))); 
+
+	unsigned load_width = ((3 * width + 3) /4) * 4; 
+	vector< unsigned char> buffer(load_width); 
+	unsigned char *pixel =  result->pixel();
+
+	cvdebug() << "Loading " << load_width << "\n"; 
+	
+	for (int y = height-1; y >= 0; --y) {
+		if (fread( &buffer[0], 1, load_width, image) != load_width){
+			throw runtime_error("BPM::Load: incomplete image");
+		}
+
+		for (unsigned x = 0; x < width; ++x) {
+
+			unsigned char *p = &pixel[3*(x + y * width)];
+			p[0] = buffer[3*x+2];
+			p[1] = buffer[3*x+1];
+			p[2] = buffer[3*x+0]; 
+		}
+	}
+	
+	return result;
+}
+
 
 CBMPRGB2DImageIO::PData CBMPRGB2DImageIO::do_load(string const& MIA_PARAM_UNUSED(filename))const
 {
-	assert(0 && "loading of RGB image not yet supported");
-	return PData();
+	int read = 0;
+	CInputFile f(filename);
+	if (!f)
+		return PData();
+
+	BMPHeader header;
+	BMPInfoHeader info_header;
+
+	cvdebug() << "CBMPRGB2DImageIO::load\n";
+
+	read = fread(&header, sizeof(BMPHeader), 1, f);
+	if (header.magic[0] != 'B' || header.magic[1] != 'M' || read != 1)
+		return PData();
+
+#ifdef WORDS_BIGENDIAN
+	endian_adapt_header(header);
+#endif
+
+	cvdebug() << "read header\n";
+
+	read = fread(&info_header, sizeof(BMPInfoHeader), 1, f);
+	if (read != 1) {
+                throw create_exception<runtime_error>("CBMPRGB2DImageIO::load: unable to read info header from '", filename, "'");
+        }
+
+	cvdebug() << "read info header";
+
+#ifdef WORDS_BIGENDIAN
+	endian_adapt_info_header(info_header);
+#endif
+	switch (info_header.size) {
+	case 40:cvdebug() << "BMP: Windows NT, 3.1x style bitmap\n"; 
+		break;
+	case 108: cvdebug() << "BMP: Windows NT 4.0, 95 style bitmap\n"; 
+		break;
+	case 124: cvdebug() << "BMP: Windows NT 5.0, 98 style bitmap\n";
+	default: 
+		throw create_exception<runtime_error>("CBMP2DImageIO::load: incompatible header size=", info_header.size);
+	}
+
+	cvdebug() << "validated info header size\n";
+
+	if ((info_header.width < 1) || (info_header.height < 1))
+		throw create_exception<runtime_error>("CBMPRGB2DImageIO::load: Image has unsupported dimensions", 
+						      " width=", info_header.width, ", height=", 
+						      info_header.height);
+	
+  
+	// this is actually a non-sense test but it should silence the Coverty warning about 
+	// the tainted variables. 
+	size_t h = info_header.height; 
+	size_t w = info_header.width; 
+	if (h > numeric_limits<unsigned>::max() || w > numeric_limits<unsigned>::max()) 
+		throw create_exception<runtime_error>("CBMPRGB2DImageIO::load: Image has too big", 
+						      " width=", info_header.width, ", height=", 
+						      info_header.height);
+	fseek(f, header.offset, SEEK_SET); 
+
+	if (!info_header.compression) {
+
+		switch (info_header.bits) {
+		case 24: return read_8bit_pixels_uc(f, info_header.width, info_header.height);
+		default: {
+			stringstream errmsg;
+			errmsg << "CBMP2DImageIO::load: unsupported pixel size: " << info_header.bits;
+			throw runtime_error(errmsg.str());
+		}
+		} // end switch
+	}else{
+		throw create_exception<runtime_error>("CBMPRGB2DImageIO::load: compressed RGB images with ",
+						      info_header.bits, " bits per pixel not supported");
+	}
 }
 
 bool CBMPRGB2DImageIO::write_header(COutputFile& f, const C2DBounds& size) const

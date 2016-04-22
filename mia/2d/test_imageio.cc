@@ -24,6 +24,7 @@
 #include <mia/core/attribute_names.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/imageio.hh>
+#include <mia/2d/rgbimageio.hh>
 
 NS_MIA_USE
 using namespace std; 
@@ -277,6 +278,9 @@ BOOST_AUTO_TEST_CASE( test_load_save_bmp_1bit_uc )
 
 BOOST_AUTO_TEST_CASE( test_load_bmp_8_compressed_with_jumps )
 {
+	// this test should check whether the jump inside a bitmap file is propperly
+	// executed, but currently the image is not encoded with such a jump. 
+	
 	auto test_image = load_image2d(MIA_SOURCE_ROOT"/testdata/gray20x20c.bmp");
 
 	const C2DUBImage& img = dynamic_cast<const C2DUBImage&>(*test_image); 
@@ -288,10 +292,10 @@ BOOST_AUTO_TEST_CASE( test_load_bmp_8_compressed_with_jumps )
 	for (x = 0; x < 9; ++x, ++p)
 		BOOST_CHECK_EQUAL(*p, 99u);
 
-	for (; x < 7*20+5; ++x, ++p)
+	for (; x < 8*20+6; ++x, ++p)
 		BOOST_CHECK_EQUAL(*p, 0u);
 
-	for (; x < 8*20; ++x, ++p)
+	for (; x < 9*20; ++x, ++p)
 		BOOST_CHECK_EQUAL(*p, 121u);
 	
 	for (; x < 14*20; ++x, ++p)
@@ -303,4 +307,42 @@ BOOST_AUTO_TEST_CASE( test_load_bmp_8_compressed_with_jumps )
 	for (; x < 20*20; ++x, ++p)
 		BOOST_CHECK_EQUAL(*p, 0u); 
 
+}
+
+BOOST_AUTO_TEST_CASE( test_load_save_rgb8_bmp )
+{
+	
+        vector<unsigned char> test_data{206, 89, 97, 71, 99, 67, 192, 205, 52,
+                        28, 31, 98, 94, 27, 204, 232, 18, 214};
+        
+        const auto& io = C2DRGBImageIOPluginPluginHandler::instance(); 
+
+        auto test_image = io.load(MIA_SOURCE_ROOT"/testdata/rgb3x2-24bit.bmp");
+
+        const CRGB2DImage& img = *test_image;
+
+        BOOST_CHECK_EQUAL(img.get_size().x, 3);
+        BOOST_CHECK_EQUAL(img.get_size().y, 2);
+        
+        auto pixels = img.pixel();
+        for (int i = 0; i < 18; ++i) {
+		cvdebug() << i << ":" <<  (int)pixels[i] << " exp " << (int)test_data[i] << "\n"; 
+                BOOST_CHECK_EQUAL(pixels[i], test_data[i]); 
+        }
+
+        BOOST_REQUIRE(save_image("test_image_rgb.bmp", *test_image));
+        
+        auto test_image2 = io.load("test_image_rgb.bmp");
+
+        const CRGB2DImage& img2 = *test_image2;
+
+        BOOST_CHECK_EQUAL(img2.get_size().x, 3);
+        BOOST_CHECK_EQUAL(img2.get_size().y, 2);
+        
+        pixels = img2.pixel();
+        for (int i = 0; i < 18; ++i) {
+                BOOST_CHECK_EQUAL(pixels[i], test_data[i]); 
+        }
+
+        unlink("test_image_rgb.bmp"); 
 }
