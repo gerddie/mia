@@ -274,3 +274,33 @@ BOOST_AUTO_TEST_CASE( test_load_save_bmp_1bit_uc )
 
 	unlink("test_image-bit.bmp"); 
 }
+
+BOOST_AUTO_TEST_CASE( test_load_bmp_8_compressed_with_jumps )
+{
+	auto test_image = load_image2d(MIA_SOURCE_ROOT"/testdata/gray20x20c.bmp");
+
+	const C2DUBImage& img = dynamic_cast<const C2DUBImage&>(*test_image); 
+	BOOST_CHECK_EQUAL(img.get_size().x, 20u);
+	BOOST_CHECK_EQUAL(img.get_size().y, 20u);
+
+	auto p = img.begin(); 
+	unsigned x; 
+	for (x = 0; x < 9; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 99u);
+
+	for (; x < 7*20+5; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u);
+
+	for (; x < 8*20; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 121u);
+	
+	for (; x < 14*20; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u);
+
+	for (; x < 14*20 + 10; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 138u);
+	
+	for (; x < 20*20; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u); 
+
+}
