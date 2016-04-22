@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( test_load_save_16bit_gray )
         unlink("test_image.tif"); 
 }
 
-#ifdef HAS_TIFF_RGB
+#ifdef USE_TIFF_RGB_IO
 BOOST_AUTO_TEST_CASE( test_load_save_8bit_rgb )
 {
         vector<unsigned char> test_data{206, 89, 97, 71, 99, 67, 192, 205, 52,
