@@ -187,3 +187,53 @@ BOOST_AUTO_TEST_CASE( test_rejects )
 			  runtime_error); 
 
 }
+
+
+BOOST_AUTO_TEST_CASE( test_load_save_8bit_gray_multiframe )
+{
+	string filename(MIA_SOURCE_ROOT"/testdata/gray2x3-multiframe.tif");
+
+	const auto& io = C2DImageIOPluginHandler::instance(); 
+	
+        auto test_images = io.load(filename);
+
+	BOOST_CHECK_EQUAL(test_images->size(), 2u);
+
+	vector<vector<unsigned char>> expect{
+		{ 0, 63,128,190,229,255},
+		{68,212,135,190,194,184}};   
+			
+
+	for (unsigned i = 0; i < test_images->size(); ++i) {
+		const C2DUBImage& img = dynamic_cast<const C2DUBImage&>(*(*test_images)[i]); 
+		BOOST_CHECK_EQUAL(img.get_size().x, 2u);
+		BOOST_CHECK_EQUAL(img.get_size().y, 3u);
+		
+		BOOST_CHECK_EQUAL(img(0,0), expect[i][0]);
+		BOOST_CHECK_EQUAL(img(1,0), expect[i][1]);
+		BOOST_CHECK_EQUAL(img(0,1), expect[i][2]);
+		BOOST_CHECK_EQUAL(img(1,1), expect[i][3]);
+		BOOST_CHECK_EQUAL(img(0,2), expect[i][4]);
+		BOOST_CHECK_EQUAL(img(1,2), expect[i][5]);
+	}
+
+	BOOST_REQUIRE(io.save("test_image_multi.tif", *test_images));
+
+	auto test2_images = io.load("test_image_multi.tif");
+	BOOST_CHECK_EQUAL(test2_images->size(), 2u);
+
+	for (unsigned i = 0; i < test_images->size(); ++i) {
+		const C2DUBImage& img2 = dynamic_cast<const C2DUBImage&>(*(*test2_images)[i]);
+		BOOST_CHECK_EQUAL(img2.get_size().x, 2u);
+		BOOST_CHECK_EQUAL(img2.get_size().y, 3u);
+		
+		BOOST_CHECK_EQUAL(img2(0,0), expect[i][0]);
+		BOOST_CHECK_EQUAL(img2(1,0), expect[i][1]);
+		BOOST_CHECK_EQUAL(img2(0,1), expect[i][2]);
+		BOOST_CHECK_EQUAL(img2(1,1), expect[i][3]);
+		BOOST_CHECK_EQUAL(img2(0,2), expect[i][4]);
+		BOOST_CHECK_EQUAL(img2(1,2), expect[i][5]);
+	}
+
+	unlink("test_image_multi.tif"); 	
+}
