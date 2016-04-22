@@ -116,9 +116,9 @@ BOOST_AUTO_TEST_CASE( test_load_bmp_8_uncompressed )
 	BOOST_CHECK_EQUAL(img(0,2), 229u);
 	BOOST_CHECK_EQUAL(img(1,2), 255u);
 
-	save_image("test_image.bmp", test_image);
+	save_image("test_image-8u.bmp", test_image);
 
-	auto test2_image = load_image2d("test_image.bmp");
+	auto test2_image = load_image2d("test_image-8u.bmp");
 	
 	const C2DUBImage& img2 = dynamic_cast<const C2DUBImage&>(*test2_image); 
 	BOOST_CHECK_EQUAL(img2.get_size().x, 2u);
@@ -130,6 +130,8 @@ BOOST_AUTO_TEST_CASE( test_load_bmp_8_uncompressed )
 	BOOST_CHECK_EQUAL(img2(1,1), 190u);
 	BOOST_CHECK_EQUAL(img2(0,2), 229u);
 	BOOST_CHECK_EQUAL(img2(1,2), 255u);
+
+	unlink("test_image-8u.bmp"); 
 	
 }
 
@@ -210,4 +212,65 @@ BOOST_AUTO_TEST_CASE( test_load_bmp_4bit_uncompressed )
 	for (unsigned x = 47; x < 100; ++x, ++p)
 		BOOST_CHECK_EQUAL(*p, 3u); 
 	
+}
+
+BOOST_AUTO_TEST_CASE( test_load_save_bmp_1bit_uc )
+{
+	auto test_image = load_image2d(MIA_SOURCE_ROOT"/testdata/binary100x2uc.bmp");
+
+	const C2DBitImage& img = dynamic_cast<const C2DBitImage&>(*test_image); 
+	BOOST_CHECK_EQUAL(img.get_size().x, 100u);
+	BOOST_CHECK_EQUAL(img.get_size().y, 2u);
+
+	auto p = img.begin(); 
+	
+	for (unsigned x = 0; x < 55; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u);
+
+	BOOST_CHECK_EQUAL(*p++, 1u);
+	BOOST_CHECK_EQUAL(*p++, 0u);
+	BOOST_CHECK_EQUAL(*p++, 1u);
+
+	
+	for (unsigned x = 58; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u); 
+
+	for (unsigned x = 0; x < 47; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 1u);
+
+	
+	for (unsigned x = 47; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u); 
+
+
+	save_image("test_image-bit.bmp", test_image);
+
+	auto test2_image = load_image2d("test_image-bit.bmp");
+
+
+	const C2DBitImage& img2 = dynamic_cast<const C2DBitImage&>(*test2_image); 
+	BOOST_CHECK_EQUAL(img2.get_size().x, 100u);
+	BOOST_CHECK_EQUAL(img2.get_size().y, 2u);
+
+	p = img2.begin(); 
+	
+	for (unsigned x = 0; x < 55; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u);
+
+	BOOST_CHECK_EQUAL(*p++, 1u);
+	BOOST_CHECK_EQUAL(*p++, 0u);
+	BOOST_CHECK_EQUAL(*p++, 1u);
+
+	
+	for (unsigned x = 58; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u); 
+
+	for (unsigned x = 0; x < 47; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 1u);
+
+	
+	for (unsigned x = 47; x < 100; ++x, ++p)
+		BOOST_CHECK_EQUAL(*p, 0u); 
+
+	unlink("test_image-bit.bmp"); 
 }
