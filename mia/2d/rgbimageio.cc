@@ -24,6 +24,8 @@
 #include <mia/core/ioplugin.cxx>
 #include <mia/core/iohandler.cxx>
 
+#include <mia/core/msgstream.hh>
+
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -35,6 +37,7 @@ CRGB2DImage::CRGB2DImage(const C2DBounds& size):
         m_size(size), 
 	m_pixels(size.x * size.y * 3)
 {
+	cvdebug() << "Allocated buffer of " << size.x * size.y * 3 << " bytes\n"; 
 }
 
 const C2DBounds& CRGB2DImage::get_size() const

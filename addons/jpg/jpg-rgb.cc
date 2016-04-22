@@ -91,19 +91,34 @@ C2DRGBImageIOPlugin::PData CJpegRGB2DImageIOPlugin::do_load(const string& fname)
 	}
 
 
-	int row_stride = decompress.info.output_width * decompress.info.output_components * 3;
-	vector<JSAMPLE> buf(row_stride); 
+	int row_stride = decompress.info.output_width * decompress.info.output_components;
+	vector<JSAMPLE> buf(row_stride);
+
+	
+	
+	cvdebug() << "owidth=" << decompress.info.output_width
+		  << ", row_stride="  << row_stride << "\n"; 
 	
 	JSAMPROW buffer[1]; 
-	buffer[0] = &buf[0]; 
-
+	buffer[0] = &buf[0];
+	
+	cvdebug() << "Create image of size "
+		  << decompress.info.output_width <<"x"<< decompress.info.output_height << "\n"; 
+	
 	CRGB2DImage *result = new CRGB2DImage(C2DBounds(decompress.info.output_width, decompress.info.output_height)); 
 	PRGB2DImage presult(result); 
+
+	unsigned char *p = presult->pixel(); 
+	cvdebug() << "output pointer base = " << (long)p << "\n"; 
 	
 	while (decompress.info.output_scanline < decompress.info.output_height) {
-		(void) jpeg_read_scanlines(&decompress.info, buffer, 1);
-		copy(buf.begin(), buf.end(), 
-		     result->pixel() + ((decompress.info.output_scanline - 1) * row_stride));  
+		cvdebug() << "scanline=" << decompress.info.output_scanline
+			  << " - " << decompress.info.output_height
+			  << " outpos = " << decompress.info.output_scanline * row_stride <<"\n"; 
+		jpeg_read_scanlines(&decompress.info, buffer, 1);
+		cvdebug() << "output pointer = " << (long)&p[decompress.info.output_scanline * row_stride] << "\n"; 
+		
+		copy(buf.begin(), buf.end(), &p[(decompress.info.output_scanline-1) * row_stride]);
 	}
 	
 	return presult; 

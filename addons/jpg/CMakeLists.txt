@@ -33,4 +33,6 @@ IF(JPEG_FOUND)
 
   PLUGIN_WITH_PREFIX2("2dimage" "io" jpg-gray "${JPEG_LINK_LIBS}")
   PLUGIN_WITH_PREFIX2("rgbimage" "io" jpg-rgb "${JPEG_LINK_LIBS}" "${rgbimage2dio_path}")
+
+  NEW_TEST(jpg mia2d)
 ENDIF(JPEG_FOUND)
