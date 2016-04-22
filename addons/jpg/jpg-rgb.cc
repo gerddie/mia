@@ -86,7 +86,7 @@ C2DRGBImageIOPlugin::PData CJpegRGB2DImageIOPlugin::do_load(const string& fname)
 	jpeg_start_decompress(&decompress.info);
 	// only one component? 
 	if (decompress.info.output_components != 3) {
-		throw create_exception<runtime_error>(":MIA this plugin only supports RGB images, but got an image with ", 
+		throw create_exception<invalid_argument>(":MIA this plugin only supports RGB images, but got an image with ", 
 					    decompress.info.output_components, " color components.");
 	}
 

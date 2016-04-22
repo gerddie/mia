@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE( test_load_save_8bit_rgb )
         
 }
 
-BOOST_AUTO_TEST_CASE( test_reject_gray_with_rgb_reader )
+BOOST_AUTO_TEST_CASE( test_rejects )
 {
         const auto& io = C2DRGBImageIOPluginPluginHandler::instance(); 
 
@@ -188,5 +188,7 @@ BOOST_AUTO_TEST_CASE( test_reject_gray_with_rgb_reader )
 	BOOST_CHECK_THROW(io.load(MIA_SOURCE_ROOT"/testdata/nonexistent"),
 			  runtime_error); 
 
-
+	
+	BOOST_CHECK_THROW(load_image2d(MIA_SOURCE_ROOT"/testdata/rgb3x2-24bit.png"),
+			  invalid_argument);
 }

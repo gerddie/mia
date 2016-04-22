@@ -138,3 +138,22 @@ BOOST_AUTO_TEST_CASE( test_save_load_8bit_rgb )
 
 	
 }
+
+BOOST_AUTO_TEST_CASE( test_rejects )
+{
+        const auto& io = C2DRGBImageIOPluginPluginHandler::instance(); 
+
+	BOOST_CHECK_THROW(io.load(MIA_SOURCE_ROOT"/testdata/gray2x3.jpg"),
+			  invalid_argument);
+	
+	BOOST_CHECK_THROW(io.load(MIA_SOURCE_ROOT"/testdata/nonexistent.jpg"),
+			  runtime_error); 
+
+	
+	BOOST_CHECK_THROW(load_image2d(MIA_SOURCE_ROOT"/testdata/rgb3x2-24bit.jpg"),
+			  invalid_argument);
+	
+	BOOST_CHECK_THROW(load_image2d(MIA_SOURCE_ROOT"/testdata/nonexistent.jpg"),
+			  runtime_error);
+
+}
