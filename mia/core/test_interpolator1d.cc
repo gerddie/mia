@@ -120,3 +120,46 @@ void InterpolatorIDFixture::test_case(EInterpolation type, double tolerance)
 	}
 }
 
+
+
+BOOST_AUTO_TEST_CASE( test_bspline0_zero )
+{
+	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_bspline0,bc_zero));
+
+	vector<double> data(10);
+	for(size_t x = 0; x < 10; ++x)
+		data[x] = x - 1 ;
+
+	unique_ptr< T1DInterpolator<double> > interp(ipf->create(data));
+
+	BOOST_CHECK_EQUAL( (*interp)(-1), 0.0);
+	BOOST_CHECK_EQUAL( (*interp)(11), 0.0);
+
+	for(size_t x = 0; x < 10; ++x) {
+		
+		BOOST_CHECK_EQUAL( (*interp)(x - 0.2), x - 1);
+		BOOST_CHECK_EQUAL( (*interp)(x + 0.2), x - 1);
+	
+	}
+}
+
+BOOST_AUTO_TEST_CASE( test_bspline0_repeat )
+{
+	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_bspline0,bc_repeat));
+
+	vector<double> data(10);
+	for(size_t x = 0; x < 10; ++x)
+		data[x] = x +1 ;
+
+	unique_ptr< T1DInterpolator<double> > interp(ipf->create(data));
+
+	BOOST_CHECK_EQUAL( (*interp)(-1), 1.0);
+	BOOST_CHECK_EQUAL( (*interp)(11), 10.0);
+
+	for(size_t x = 0; x < 10; ++x) {
+		
+		BOOST_CHECK_EQUAL( (*interp)(x - 0.2), x + 1);
+		BOOST_CHECK_EQUAL( (*interp)(x + 0.2), x + 1);
+	
+	}
+}

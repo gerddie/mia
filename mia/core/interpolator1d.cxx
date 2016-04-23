@@ -61,6 +61,7 @@ T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data
 	m_boundary_conditions->set_width(data.size()); 
 
 	min_max<typename std::vector<T>::const_iterator>::get(data.begin(), data.end(), m_min, m_max);
+
 	
 	// copy the data
 	__dispatch_copy<std::vector<T>, TCoeff1D >::apply(data, m_coeff); 
@@ -133,10 +134,7 @@ T  T1DConvoluteInterpolator<T>::operator () (const double& x) const
 {
 	typedef typename TCoeff1D::value_type U; 
 	
-	// cut at boundary
-	if (x < 0.0 || x >= m_coeff.size())
-		return T();
-	
+
 	(*m_kernel)(x, m_x_weight, m_x_index);
 	m_boundary_conditions->apply(m_x_index, m_x_weight); 
 

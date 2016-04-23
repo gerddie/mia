@@ -72,9 +72,11 @@ public:
 
 
 	/**
-	   Default copy constructor 
+	   Delete copy operations 
 	 */
-	CSplineBoundaryCondition(const CSplineBoundaryCondition& /*other*/) = default; 
+	CSplineBoundaryCondition(const CSplineBoundaryCondition& /*other*/) = delete;
+
+	CSplineBoundaryCondition& operator = (const CSplineBoundaryCondition& /*other*/) = delete; 
 
 	/**
 	   Constructor for the boundary conditions. 
