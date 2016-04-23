@@ -163,3 +163,56 @@ BOOST_AUTO_TEST_CASE( test_bspline0_repeat )
 	
 	}
 }
+
+
+BOOST_AUTO_TEST_CASE( test_bspline0_repeat_copy )
+{
+	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_bspline0,bc_repeat));
+
+	vector<double> data(10);
+	for(size_t x = 0; x < 10; ++x)
+		data[x] = x +1 ;
+
+	unique_ptr< T1DInterpolator<double> > interp(ipf->create(data));
+
+	BOOST_CHECK_EQUAL( (*interp)(-1), 1.0);
+	BOOST_CHECK_EQUAL( (*interp)(11), 10.0);
+
+	for(size_t x = 0; x < 10; ++x) {
+		
+		BOOST_CHECK_EQUAL( (*interp)(x - 0.2), x + 1);
+		BOOST_CHECK_EQUAL( (*interp)(x + 0.2), x + 1);
+	
+	}
+
+	C1DInterpolatorFactory other(*ipf); 
+
+	unique_ptr< T1DInterpolator<double> > interp2(other.create(data));
+
+	BOOST_CHECK_EQUAL( (*interp2)(-1), 1.0);
+	BOOST_CHECK_EQUAL( (*interp2)(11), 10.0);
+
+	for(size_t x = 0; x < 10; ++x) {
+		
+		BOOST_CHECK_EQUAL( (*interp2)(x - 0.2), x + 1);
+		BOOST_CHECK_EQUAL( (*interp2)(x + 0.2), x + 1);
+	
+	}
+
+
+	*ipf = other;
+	
+	unique_ptr< T1DInterpolator<double> > interp3(other.create(data));
+
+	BOOST_CHECK_EQUAL( (*interp3)(-1), 1.0);
+	BOOST_CHECK_EQUAL( (*interp3)(11), 10.0);
+
+	for(size_t x = 0; x < 10; ++x) {
+		
+		BOOST_CHECK_EQUAL( (*interp3)(x - 0.2), x + 1);
+		BOOST_CHECK_EQUAL( (*interp3)(x + 0.2), x + 1);
+	
+	}
+
+	
+}
