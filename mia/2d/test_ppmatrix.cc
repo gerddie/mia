@@ -25,16 +25,18 @@
 
 NS_MIA_USE;
 
+using std::string;
+
 struct TransformSplineFixtureFieldBase {
 	TransformSplineFixtureFieldBase()
 	{
 
 	}
-	void init(int dsize, float range, EInterpolation type) {
-		init2d(T2DVector<int>(dsize,dsize), range, type); 
+	void init(int dsize, float range, const string& kernel) {
+		init2d(T2DVector<int>(dsize,dsize), range, kernel); 
 	}
-	void init2d(const T2DVector<int>& dsize, float range, EInterpolation type) {
-		ipf.reset(create_2dinterpolation_factory(type, bc_mirror_on_bounds));
+	void init2d(const T2DVector<int>& dsize, float range, const std::string& kernel) {
+		ipf.reset(new C2DInterpolatorFactory(kernel, "mirror"));
 		size = C2DBounds(2 * dsize.x + 1,2 * dsize.y + 1);
 		field = C2DFVectorfield(size);
 		scale.x = range / dsize.x;
@@ -73,19 +75,19 @@ private:
 
 
 struct TransformSplineFixtureConst: public TransformSplineFixtureFieldBase {
-	void prepare(int dsize, float range, EInterpolation type, float fx, float fy); 
+	void prepare(int dsize, float range, const std::string& kernel, float fx, float fy); 
 	virtual float fx(float x, float y);
 	virtual float fy(float x, float y);
 private: 
 	C2DFVector m_f; 
 };
 
-void TransformSplineFixtureConst::prepare(int dsize, float range, EInterpolation type, float fx, float fy)
+void TransformSplineFixtureConst::prepare(int dsize, float range, const std::string& kernel, float fx, float fy)
 {
 	m_f.x = fx; 
 	m_f.y = fy; 
 
-	init(dsize, range, type); 
+	init(dsize, range, kernel); 
 }
 
 float TransformSplineFixtureConst::fx(float , float )
@@ -139,17 +141,17 @@ struct TransformSplineFixtureCurlOnly: public TransformSplineFixtureFieldBase {
 
 
 struct TransformSplineFixtureexpm2Field_44: public TransformSplineFixtureexpm2Field {
-	void run(int dsize, float range, EInterpolation type, double corr=1.0); 
+	void run(int dsize, float range, const string& type, double corr=1.0); 
 }; 
 
 struct TransformSplineFixtureexpm2testInterp : public TransformSplineFixtureexpm2Field {
-	void run(int dsize, float range, EInterpolation type); 
+	void run(int dsize, float range, const string& type); 
 }; 
 
 
 BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 {
-	init(16, 4, ip_bspline4);
+	init(16, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -169,7 +171,7 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 
 BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_noniso, TransformSplineFixtureDivOnly )
 {
-	init2d(T2DVector<int>(32, 14), 4, ip_bspline4);
+	init2d(T2DVector<int>(32, 14), 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -190,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_noniso, TransformSplineFixtureDivO
 
 BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_8_4, TransformSplineFixtureDivOnly )
 {
-	init(8, 4, ip_bspline4);
+	init(8, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -210,7 +212,7 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_8_4, TransformSplineFixtureDivOnly
 
 BOOST_FIXTURE_TEST_CASE( test_nodiv_bspline3, TransformSplineFixtureCurlOnly )
 {
-	init(16, 4, ip_bspline4);
+	init(16, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -232,24 +234,24 @@ BOOST_FIXTURE_TEST_CASE( test_nodiv_bspline3, TransformSplineFixtureCurlOnly )
 // test whether the interpolation is "good enough" 
 BOOST_FIXTURE_TEST_CASE( test_interpolation_16_2_bspline3, TransformSplineFixtureexpm2testInterp ) 
 {
-	run( 8, 2.0, ip_bspline3);
+	run( 8, 2.0, "bspline:d=3");
 }
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_16_8, TransformSplineFixtureexpm2Field_44 )
 {
-	run(16, 4, ip_bspline3, 1.0);
+	run(16, 4, "bspline:d=3", 1.0);
 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_8_8, TransformSplineFixtureexpm2Field_44 )
 {
-	run(8, 4, ip_bspline3, 1.0);
+	run(8, 4, "bspline:d=3", 1.0);
 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFixtureexpm2Field_44 )
 {
-	init(8, 4, ip_bspline4);
+	init(8, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -291,7 +293,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFix
 
 BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad, TransformSplineFixtureexpm2Field_44 )
 {
-	init(8, 4, ip_bspline4);
+	init(8, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -333,7 +335,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad, TransformSplineFixtu
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad_noiso, TransformSplineFixtureexpm2Field_44 )
 {
-	init2d(T2DVector<int>(12, 9), 4, ip_bspline4);
+	init2d(T2DVector<int>(12, 9), 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -375,7 +377,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad_noiso, TransformSpl
 
 BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad_noiso, TransformSplineFixtureexpm2Field_44 )
 {
-	init2d(T2DVector<int>(12, 9), 4, ip_bspline4);
+	init2d(T2DVector<int>(12, 9), 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -418,19 +420,19 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad_noiso, TransformSplin
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline4, TransformSplineFixtureexpm2Field_44 )
 {
-	run(16, 4, ip_bspline4, 1.0);
+	run(16, 4, "bspline:d=4", 1.0);
 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline4_8_4, TransformSplineFixtureexpm2Field_44 )
 {
-	run(8, 4, ip_bspline4, 1.0);
+	run(8, 4, "bspline:d=4", 1.0);
 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_zero_x, TransformSplineFixtureConst )
 {
-	prepare(16, 16, ip_bspline4, 0, .01);
+	prepare(16, 16, "bspline:d=4", 0, .01);
 
 	const double testvalue = 0.0;
 
@@ -604,9 +606,9 @@ float TransformSplineFixtureexpm2Field::integrate_div(float x1, float x2,
 
 
 
-void TransformSplineFixtureexpm2testInterp::run(int size, float range, EInterpolation type)
+void TransformSplineFixtureexpm2testInterp::run(int size, float range, const string& kernel)
 {
-	init( size, range, type);
+	init( size, range, kernel);
 	
 	for (float y = -range; y < range; y += range/5.0)
 		for (float x = -range; x < range; x += range/5.0) {
@@ -618,7 +620,7 @@ void TransformSplineFixtureexpm2testInterp::run(int size, float range, EInterpol
 	
 }
 
-void TransformSplineFixtureexpm2Field_44::run(int dsize, float range, EInterpolation type, double corr)
+void TransformSplineFixtureexpm2Field_44::run(int dsize, float range, const string& type, double corr)
 {
 	init(dsize, range, type);
 

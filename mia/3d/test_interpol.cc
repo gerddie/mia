@@ -142,6 +142,8 @@ extern const char bspline5[] = "bspline:d=5";
 extern const char omomsspl3[] = "omoms:d=3"; 
 
 
+
+
 BOOST_AUTO_TEST_CASE(test_external_cache_interpolator) 
 {
 	T3DDatafield<float> data(C3DBounds(10, 12, 11));
@@ -344,4 +346,3 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_types, T , types )
 	test_type<T, bspline0>();
 	test_type<T, omomsspl3>();
 }
-

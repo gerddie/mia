@@ -236,10 +236,6 @@ private:
 	PSplineBoundaryCondition m_zbc; 
 };
 
-
-EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
-	__attribute__ ((warn_unused_result));
-
 // implementation
 
 template <class T>

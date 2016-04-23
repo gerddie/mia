@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
+
  */
 
 #include <mia/internal/autotest.hh>
@@ -35,14 +36,14 @@ struct InterpolatorIDFixture  {
 
 	double df(double x) const;
 
-	void test_case(EInterpolation type, double tolerance = 0.1);
+	void test_case(const string& interpolator_kernel, double tolerance = 0.1);
 
 };
 
 BOOST_FIXTURE_TEST_CASE( test_linear, InterpolatorIDFixture)
 {
 
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_linear, bc_mirror_on_bounds));
+	unique_ptr<C1DInterpolatorFactory>  ipf(new C1DInterpolatorFactory("bspline:d=1", "mirror"));
 	vector<double> data(512);
 
 
@@ -61,28 +62,28 @@ BOOST_FIXTURE_TEST_CASE( test_linear, InterpolatorIDFixture)
 
 BOOST_FIXTURE_TEST_CASE( test_bspline2, InterpolatorIDFixture)
 {
-	test_case(ip_bspline2);
+	test_case("bspline:d=2");
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3, InterpolatorIDFixture)
 {
-	test_case(ip_bspline3);
+	test_case("bspline:d=3");
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline4, InterpolatorIDFixture)
 {
-	test_case(ip_bspline4);
+	test_case("bspline:d=4");
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline5, InterpolatorIDFixture)
 {
-	test_case(ip_bspline5);
+	test_case("bspline:d=5");
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_omoms3, InterpolatorIDFixture)
 {
-	test_case(ip_omoms3);
+	test_case("omoms:d=3");
 }
 
 double InterpolatorIDFixture::f(double x) const
@@ -96,9 +97,9 @@ double InterpolatorIDFixture::df(double x) const
 }
 
 
-void InterpolatorIDFixture::test_case(EInterpolation type, double tolerance)
+void InterpolatorIDFixture::test_case(const string& interpolator_kernel, double tolerance)
 {
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type,bc_mirror_on_bounds));
+	unique_ptr<C1DInterpolatorFactory>  ipf(new C1DInterpolatorFactory(interpolator_kernel,"mirror"));
 	vector<double> data(512); 
 	for(size_t x = 0; x < 512; ++x)
 		data[x] = f(x) ;
@@ -124,7 +125,7 @@ void InterpolatorIDFixture::test_case(EInterpolation type, double tolerance)
 
 BOOST_AUTO_TEST_CASE( test_bspline0_zero )
 {
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_bspline0,bc_zero));
+	unique_ptr<C1DInterpolatorFactory>  ipf(new C1DInterpolatorFactory("bspline:d=0","zero"));
 
 	vector<double> data(10);
 	for(size_t x = 0; x < 10; ++x)
@@ -145,7 +146,7 @@ BOOST_AUTO_TEST_CASE( test_bspline0_zero )
 
 BOOST_AUTO_TEST_CASE( test_bspline0_repeat )
 {
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_bspline0,bc_repeat));
+	unique_ptr<C1DInterpolatorFactory>  ipf(new C1DInterpolatorFactory("bspline:d=0","repeat"));
 
 	vector<double> data(10);
 	for(size_t x = 0; x < 10; ++x)
@@ -167,7 +168,7 @@ BOOST_AUTO_TEST_CASE( test_bspline0_repeat )
 
 BOOST_AUTO_TEST_CASE( test_bspline0_repeat_copy )
 {
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_bspline0,bc_repeat));
+	unique_ptr<C1DInterpolatorFactory>  ipf(new C1DInterpolatorFactory("bspline:d=0","repeat"));
 
 	vector<double> data(10);
 	for(size_t x = 0; x < 10; ++x)
