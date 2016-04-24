@@ -60,15 +60,15 @@ struct coeff_map<T3DVector<U> > {
 	typedef C3DDVector   coeff_type;
 };
 
-struct CWeightCache {
+struct C3DWeightCache {
 	CSplineKernel::SCache x; 
 	CSplineKernel::SCache y; 
 	CSplineKernel::SCache z; 
 	
-	CWeightCache(int kernel_size, 
-		    const CSplineBoundaryCondition& xbc, 
-		    const CSplineBoundaryCondition& ybc, 
-		    const CSplineBoundaryCondition& zbc); 
+	C3DWeightCache(int kernel_size, 
+		       const CSplineBoundaryCondition& xbc, 
+		       const CSplineBoundaryCondition& ybc, 
+		       const CSplineBoundaryCondition& zbc); 
 }; 
 /// @endcond 
 
@@ -113,7 +113,7 @@ public:
 	   environment. This function must be called in each thread once. 
 	   \returns the cache structure 
 	*/
-	CWeightCache create_cache() const; 
+	C3DWeightCache create_cache() const; 
 
 	/**
 	   get the interpolated value at a given location \a x
@@ -122,7 +122,7 @@ public:
 	   \returns the interpolated value
 	   \remark This method is thread save if the cache structure is thread local 
 	*/
-	T  operator () (const C3DFVector& x, CWeightCache& cache) const;
+	T  operator () (const C3DFVector& x, C3DWeightCache& cache) const;
 
 	/**
 	   get the interpolated value at a given location \a x

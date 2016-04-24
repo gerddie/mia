@@ -40,10 +40,10 @@ NS_MIA_BEGIN
 
 using namespace std;
 
-CWeightCache::CWeightCache(int kernel_size, 
-			   const CSplineBoundaryCondition& xbc, 
-			   const CSplineBoundaryCondition& ybc, 
-			   const CSplineBoundaryCondition& zbc):
+C3DWeightCache::C3DWeightCache(int kernel_size, 
+			       const CSplineBoundaryCondition& xbc, 
+			       const CSplineBoundaryCondition& ybc, 
+			       const CSplineBoundaryCondition& zbc):
 	x(kernel_size, xbc, kernel_size < 3), 
 	y(kernel_size, ybc, true), 
 	z(kernel_size, zbc, true)

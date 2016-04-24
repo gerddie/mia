@@ -61,7 +61,7 @@ struct FDeformer3D: public TFilter<P3DImage> {
 
 		auto callback = [this, &rinterp, &result](const C1DParallelRange& range){
 			CThreadMsgStream thread_stream;
-			CWeightCache cache = rinterp.create_cache(); 
+			auto cache = rinterp.create_cache(); 
 			for (auto z = range.begin(); z != range.end();++z) {
 				auto r = result.begin_at(0,0,z); 
 				auto v = m_vf.begin_at(0,0,z); 

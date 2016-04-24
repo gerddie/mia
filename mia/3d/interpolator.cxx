@@ -168,9 +168,9 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 }
 
 template <typename T>
-CWeightCache T3DConvoluteInterpolator<T>::create_cache() const
+C3DWeightCache T3DConvoluteInterpolator<T>::create_cache() const
 {
-	return CWeightCache(m_kernel->size(), *m_xbc, *m_ybc, *m_zbc); 
+	return C3DWeightCache(m_kernel->size(), *m_xbc, *m_ybc, *m_zbc); 
 }
 
 template <typename T>
@@ -269,7 +269,7 @@ struct add_3d<T3DDatafield< float >, 2> {
 #endif
 
 template <typename T>
-T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x, CWeightCache& cache) const
+T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x, C3DWeightCache& cache) const
 {
 	typedef typename TCoeff3D::value_type U; 
 	
