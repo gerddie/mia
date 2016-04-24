@@ -156,9 +156,7 @@ private:
 	typename T3DDatafield<T>::value_type m_max;
 	
 	mutable CMutex m_cache_lock; 
- 	mutable CSplineKernel::SCache m_x_cache; 
-	mutable CSplineKernel::SCache m_y_cache; 
-	mutable CSplineKernel::SCache m_z_cache; 
+ 	mutable C3DWeightCache m_cache; 
 };
 
 

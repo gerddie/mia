@@ -72,9 +72,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_xbc(produce_spline_boundary_condition("mirror")), 
 	m_ybc(produce_spline_boundary_condition("mirror")),
 	m_zbc(produce_spline_boundary_condition("mirror")),
-	m_x_cache(kernel->size(), *m_xbc, m_kernel->size() < 3), 
-	m_y_cache(kernel->size(), *m_ybc, true), 
-	m_z_cache(kernel->size(), *m_zbc, true)
+	m_cache(kernel->size(), *m_xbc, *m_ybc, *m_zbc)
 {
 
 	prefilter(image); 
@@ -91,9 +89,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_xbc(xbc.clone()), 
 	m_ybc(ybc.clone()),
 	m_zbc(zbc.clone()),
-	m_x_cache(kernel->size(), *m_xbc, m_kernel->size() < 3), 
-	m_y_cache(kernel->size(), *m_ybc, true), 
-	m_z_cache(kernel->size(), *m_zbc, true)
+	m_cache(kernel->size(), *m_xbc, *m_ybc, *m_zbc)
 {
 	prefilter(image); 
 }
@@ -104,11 +100,11 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 {
 
 	m_xbc->set_width(image.get_size().x); 
-	m_x_cache.reset(); 
+	m_cache.x.reset(); 
 	m_ybc->set_width(image.get_size().y); 
-	m_y_cache.reset(); 
+	m_cache.y.reset(); 
 	m_zbc->set_width(image.get_size().z);
-	m_z_cache.reset(); 
+	m_cache.z.reset(); 
 
 	min_max_3d<T>::get(image, m_min, m_max);
 	// we always allow that a pixel is set to zero
@@ -192,9 +188,7 @@ template <class C, int size>
 struct add_3d {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type value(const C&  coeff, const CSplineKernel::SCache& xc, 
-					    const CSplineKernel::SCache& yc,
-					    const CSplineKernel::SCache& zc) 
+	static typename C::value_type value(const C&  coeff, const C3DWeightCache& cache) 
 	{
 		U result = U();
 		
@@ -202,14 +196,14 @@ struct add_3d {
 			U ry = U();
 			for (size_t y = 0; y < size; ++y) {
 				U rx = U();
-				const U *p = &coeff(0, yc.index[y], zc.index[z]);
+				const U *p = &coeff(0, cache.y.index[y], cache.z.index[z]);
 				for (size_t x = 0; x < size; ++x) {
-					int xinx = xc.is_flat ? xc.start_idx +x : xc.index[x]; 
-					rx += xc.weights[x] * p[xinx];
+					int xinx = cache.x.is_flat ? cache.x.start_idx + x : cache.x.index[x]; 
+					rx += cache.x.weights[x] * p[xinx];
 				}
-				ry += yc.weights[y] * rx; 
+				ry += cache.y.weights[y] * rx; 
 			}
-			result += zc.weights[z] * ry; 
+			result += cache.z.weights[z] * ry; 
 		}
 		return result; 
 	}
@@ -217,13 +211,10 @@ struct add_3d {
 
 template <typename T>
 struct add_3d<T3DDatafield< T >, 1> {
-	static T value(const T3DDatafield< T >&  coeff, 
-		       const CSplineKernel::SCache& xc, 
-		       const CSplineKernel::SCache& yc,
-		       const CSplineKernel::SCache& zc) 
+	static T value(const T3DDatafield< T >&  coeff, const C3DWeightCache& cache) 
 		{
-			return xc.weights[0] *  yc.weights[0] * zc.weights[0] * 
-				coeff(xc.index[0], yc.index[0], zc.index[0] ) ; 
+			return cache.x.weights[0] *  cache.y.weights[0] * cache.z.weights[0] * 
+				coeff(cache.x.index[0], cache.y.index[0], cache.z.index[0] ) ; 
 		}
 };
 
@@ -231,19 +222,13 @@ struct add_3d<T3DDatafield< T >, 1> {
 #ifdef __SSE2__
 template <>
 struct add_3d<T3DDatafield< double >, 2> {
-	static double value(const T3DDatafield< double >&  coeff, 
-			    const CSplineKernel::SCache& xc, 
-			    const CSplineKernel::SCache& yc,
-			    const CSplineKernel::SCache& zc); 
+	static double value(const T3DDatafield< double >&  coeff, const C3DWeightCache& cache); 
 	
 };
 
 template <>
 struct add_3d<T3DDatafield< double >, 4> {
-	static double value(const T3DDatafield< double >&  coeff, 
-			    const CSplineKernel::SCache& xc, 
-			    const CSplineKernel::SCache& yc,
-			    const CSplineKernel::SCache& zc); 
+	static double value(const T3DDatafield< double >&  coeff, const C3DWeightCache& cache); 
 	
 };
 #endif
@@ -251,18 +236,12 @@ struct add_3d<T3DDatafield< double >, 4> {
 #ifdef __SSE__
 template <>
 struct add_3d<T3DDatafield< float >, 4> {
-	static float value(const T3DDatafield< float >&  coeff, 
-			    const CSplineKernel::SCache& xc, 
-			    const CSplineKernel::SCache& yc,
-			    const CSplineKernel::SCache& zc); 
+	static float value(const T3DDatafield< float >&  coeff, const C3DWeightCache& cache); 
 	
 };
 template <>
 struct add_3d<T3DDatafield< float >, 2> {
-	static float value(const T3DDatafield< float >&  coeff, 
-			    const CSplineKernel::SCache& xc, 
-			    const CSplineKernel::SCache& yc,
-			    const CSplineKernel::SCache& zc); 
+	static float value(const T3DDatafield< float >&  coeff, const C3DWeightCache& cache); 
 	
 };
 
@@ -291,12 +270,12 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x, C3DWeightCache
 	// With SSE and SSE2 available kernel sizes 2 and 4 and the use of float and double 
 	// scalar fields are optimized.
 	switch (m_kernel->size()) {
-	case 1: result = add_3d<TCoeff3D,1>::value(m_coeff, cache.x, cache.y, cache.z); break; 
-	case 2: result = add_3d<TCoeff3D,2>::value(m_coeff, cache.x, cache.y, cache.z); break; 
-	case 3: result = add_3d<TCoeff3D,3>::value(m_coeff, cache.x, cache.y, cache.z); break; 
-	case 4: result = add_3d<TCoeff3D,4>::value(m_coeff, cache.x, cache.y, cache.z); break; 
-	case 5: result = add_3d<TCoeff3D,5>::value(m_coeff, cache.x, cache.y, cache.z); break; 
-	case 6: result = add_3d<TCoeff3D,6>::value(m_coeff, cache.x, cache.y, cache.z); break; 
+	case 1: result = add_3d<TCoeff3D,1>::value(m_coeff, cache); break; 
+	case 2: result = add_3d<TCoeff3D,2>::value(m_coeff, cache); break; 
+	case 3: result = add_3d<TCoeff3D,3>::value(m_coeff, cache); break; 
+	case 4: result = add_3d<TCoeff3D,4>::value(m_coeff, cache); break; 
+	case 5: result = add_3d<TCoeff3D,5>::value(m_coeff, cache); break; 
+	case 6: result = add_3d<TCoeff3D,6>::value(m_coeff, cache); break; 
 	default: {
 		assert(0 && "kernel sizes above 5 are not implemented"); 
 	}
@@ -315,15 +294,15 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 	
 	// x will usually be the fastest changing index, therefore, it is of no use to use the cache 
 	// at the same time it's access may be handled "flat" 
-	m_kernel->get_uncached(x.x, m_x_cache);
+	m_kernel->get_uncached(x.x, m_cache.x);
 
 	// the other two coordinates are changing slowly and caching makes sense 
 	// however, the index set will always be fully evaluated 
-	if (x.y != m_y_cache.x) 
-		m_kernel->get_cached(x.y, m_y_cache);
+	if (x.y != m_cache.y.x) 
+		m_kernel->get_cached(x.y, m_cache.y);
 	
-	if (x.z != m_z_cache.x) 
-		m_kernel->get_cached(x.z, m_z_cache);	
+	if (x.z != m_cache.z.x) 
+		m_kernel->get_cached(x.z, m_cache.z);	
 	
 	U result = U();
 	// now we give the compiler a chance to optimize based on kernel size and data type.  
@@ -331,12 +310,12 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 	// With SSE and SSE2 available kernel sizes 2 and 4 and the use of float and double 
 	// scalar fields are optimized.
 	switch (m_kernel->size()) {
-	case 1: result = add_3d<TCoeff3D,1>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
-	case 2: result = add_3d<TCoeff3D,2>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
-	case 3: result = add_3d<TCoeff3D,3>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
-	case 4: result = add_3d<TCoeff3D,4>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
-	case 5: result = add_3d<TCoeff3D,5>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
-	case 6: result = add_3d<TCoeff3D,6>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
+	case 1: result = add_3d<TCoeff3D,1>::value(m_coeff, m_cache); break; 
+	case 2: result = add_3d<TCoeff3D,2>::value(m_coeff, m_cache); break; 
+	case 3: result = add_3d<TCoeff3D,3>::value(m_coeff, m_cache); break; 
+	case 4: result = add_3d<TCoeff3D,4>::value(m_coeff, m_cache); break; 
+	case 5: result = add_3d<TCoeff3D,5>::value(m_coeff, m_cache); break; 
+	case 6: result = add_3d<TCoeff3D,6>::value(m_coeff, m_cache); break; 
 	default: {
 		assert(0 && "kernel sizes above 5 are not implemented"); 
 	}
