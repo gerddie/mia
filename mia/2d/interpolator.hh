@@ -264,12 +264,6 @@ private:
 typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 
 
-/**
-   create a 2D interpolation factory of a certain interpolation type 
-*/
-C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
-	__attribute__ ((deprecated));
-
 // implementation
 
 template <class T>

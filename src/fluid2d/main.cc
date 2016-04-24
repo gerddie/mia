@@ -147,7 +147,7 @@ int do_main(int argc, char *argv[])
 	unsigned int y_shift = 0;
 
 
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
+	C2DInterpolatorFactory   ipfactory("bspline:d=3", "mirror");
 
 
 	while (GlobalSize.x >> x_shift > grid_start){
@@ -176,7 +176,7 @@ int do_main(int argc, char *argv[])
 			result = upscale(result, ModelScale->get_size());
 
 		register_level(*ModelScale,*RefScale,result,regrid_thresh,epsilon,
-			       (x_shift >y_shift ? x_shift : y_shift)+1,elastic,mu, lambda, *ipfactory);
+			       (x_shift >y_shift ? x_shift : y_shift)+1,elastic,mu, lambda, ipfactory);
 
 		if (alter)
 			alter = !alter;
@@ -195,7 +195,7 @@ int do_main(int argc, char *argv[])
 	cvmsg() << "Finales Level" << result.get_size() << "\n";
 
 	result = upscale(result, Model->get_size());
-	register_level(*Model,*Reference,result,regrid_thresh,epsilon,1,elastic,mu, lambda, *ipfactory);
+	register_level(*Model,*Reference,result,regrid_thresh,epsilon,1,elastic,mu, lambda, ipfactory);
 
 	cvmsg() << "Gesamtzeit: " << time(NULL)-start_time << "\n";
 

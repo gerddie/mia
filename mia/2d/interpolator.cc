@@ -91,43 +91,6 @@ const CSplineKernel* C2DInterpolatorFactory::get_kernel() const
 	return m_kernel.get();
 }
 
-C2DInterpolatorFactory *create_2dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
-{
-	string boundary; 
-	switch (bc) {
-	case bc_mirror_on_bounds: 
-		boundary = "mirror"; 
-		break; 
-		
-	case bc_repeat: 
-		boundary = "repeat"; 
-		break; 
-	case bc_zero: 
-		boundary = "zero"; 
-		break; 
-	default: 
-		throw invalid_argument("Unknown boundary consitions requested"); 
-	}
-	
-	string kernel; 
-	switch (type) {
-	case ip_nn: 
-	case ip_bspline0: kernel = "bspline:d=0"; break; 
-	case ip_linear:
-	case ip_bspline1: kernel = "bspline:d=1"; break; 
-	case ip_bspline2: kernel = "bspline:d=2"; break; 
-	case ip_bspline3: kernel = "bspline:d=3"; break; 
-	case ip_bspline4: kernel = "bspline:d=4"; break; 
-	case ip_bspline5: kernel = "bspline:d=5"; break; 
-	case ip_omoms3:   kernel = "omoms:d=3"; break;
-	default: 
-		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
-	}; 
-
-	return new C2DInterpolatorFactory(kernel, boundary); 
-}
-
-
 #ifdef __SSE__
 float add_2d_new<T2DDatafield< float >, 4>::value(const T2DDatafield< float >&  coeff, 
 							   const CSplineKernel::SCache& xc, 
