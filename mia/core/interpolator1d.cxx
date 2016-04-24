@@ -108,7 +108,13 @@ template <class T, class U>
 struct bounded {
 	static void apply(T& r, const U& min, const U& max)
 	{
-		r = (r >= min) ? ( (r <= max) ? r : max) : min;
+		if (r > min) {
+			if (r < max)
+				return;
+			else
+				r = max;
+		}else
+			r = min; 
 	}
 };
 
@@ -136,7 +142,7 @@ T  T1DConvoluteInterpolator<T>::operator () (const double& x) const
 	
 
 	(*m_kernel)(x, m_x_weight, m_x_index);
-	m_boundary_conditions->apply(m_x_index, m_x_weight); 
+	m_boundary_conditions->apply(m_x_index, m_x_weight);
 
 	U result = U();
 	
@@ -149,11 +155,8 @@ T  T1DConvoluteInterpolator<T>::operator () (const double& x) const
 	case 6: result = add_1d<TCoeff1D,6>::value(m_coeff, m_x_weight, m_x_index); break; 
 	default: {
 		/* perform interpolation */
-		
-		U result = U();
-		
-		for (size_t x = 0; x < m_kernel->size(); ++x) {
-			result += m_x_weight[x] * m_coeff[m_x_index[x]];
+		for (size_t i = 0; i < m_kernel->size(); ++i) {
+			result += m_x_weight[i] * m_coeff[m_x_index[i]];
 		}
 		
 	}
@@ -187,8 +190,6 @@ T1DConvoluteInterpolator<T>::derivative_at (const double& x) const
 	case 6: result = add_1d<TCoeff1D,6>::value(m_coeff, m_x_weight, m_x_index); break; 
 	default: {
 		/* perform interpolation */
-		
-		U result = U();
 		
 		for (size_t x = 0; x < m_kernel->size(); ++x) {
 			result += m_x_weight[x] * m_coeff[m_x_index[x]];

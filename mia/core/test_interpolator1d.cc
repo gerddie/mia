@@ -217,3 +217,66 @@ BOOST_AUTO_TEST_CASE( test_bspline0_repeat_copy )
 
 	
 }
+
+class CDummyLargeKernel: public CSplineKernel {
+public:
+	CDummyLargeKernel();
+	void get_weights(double x, VWeight& weight) const;
+	void get_derivative_weights(double x, VWeight& weight) const;
+	void get_derivative_weights(double x, VWeight& weight, int order) const;
+
+	
+}; 
+
+CDummyLargeKernel::CDummyLargeKernel():
+	CSplineKernel(6, -1, ip_unknown)
+{
+}
+
+void CDummyLargeKernel::get_weights(double MIA_PARAM_UNUSED(x), VWeight& weight) const
+{
+	fill(weight.begin(), weight.end(), 1.0/weight.size());
+	cvdebug() << "Dummy weights f=" << weight << "\n"; 
+}
+
+void CDummyLargeKernel::get_derivative_weights(double MIA_PARAM_UNUSED(x), VWeight& weight) const
+{
+	fill(weight.begin(), weight.end(), 0.5/weight.size());
+	cvdebug() << "Dummy weights df=" << weight << "\n"; 
+}
+
+void CDummyLargeKernel::get_derivative_weights(double MIA_PARAM_UNUSED(x), VWeight& weight, int order) const
+{
+	fill(weight.begin(), weight.end(), 1.0/(weight.size() * (order + 1)));
+}
+
+BOOST_AUTO_TEST_CASE( test_big_kernel )
+{
+	vector<double> data(30);
+	for(size_t x = 0; x < 30; ++x)
+		data[x] = x + 1;
+
+	cvdebug() << "Data = " << data << "\n"; 
+
+	PSplineKernel kernel(new CDummyLargeKernel); 
+	C1DInterpolatorFactory factory(kernel, *produce_spline_boundary_condition("repeat"));
+
+	unique_ptr< T1DInterpolator<double> > interp(factory.create(data));
+
+	
+	BOOST_CHECK_CLOSE( (*interp)(10), 10.0, 1e-5);
+
+	BOOST_CHECK_CLOSE(interp->derivative_at(10), 5, 1e-5);
+
+	// derivatives are cut off at the boundaries 
+	BOOST_CHECK_EQUAL(interp->derivative_at(-1), 0.0);
+	BOOST_CHECK_EQUAL(interp->derivative_at(31), 0.0);
+
+	CSplineKernel::VWeight weights(kernel->size()); 
+
+	kernel->get_derivative_weights(0, weights, 2);
+
+	for (auto w: weights) {
+		BOOST_CHECK_CLOSE(w, 1.0 / 21.0, 1e-5); 
+	}
+}
