@@ -19,12 +19,11 @@
  */
 
 #include <mia/internal/autotest.hh>
+#include <mia/core/slopestatistics.hh>
 
 #include <stdexcept>
 #include <cmath>
-
-#include <mia/core/slopestatistics.hh>
-
+#include <numeric> 
 
 using namespace std;
 NS_MIA_USE

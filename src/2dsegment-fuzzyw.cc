@@ -29,6 +29,7 @@
 
 #include <memory>
 #include <vector>
+#include <numeric>
 
 using namespace mia;
 using namespace std; 

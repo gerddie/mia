@@ -27,7 +27,7 @@
 #include <mia/core/minimizer.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
-
+#include <numeric>
 
 
 using namespace std; 

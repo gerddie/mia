@@ -35,6 +35,8 @@
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 
+#include <numeric> 
+
 using namespace std;
 using namespace mia;
 using xmlpp::DomParser;

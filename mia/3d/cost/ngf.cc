@@ -21,6 +21,7 @@
 #include <mia/3d/cost/ngf.hh>
 #include <mia/3d/nfg.hh>
 
+#include <numeric> 
 
 NS_BEGIN(ngf_3dimage_cost)
 

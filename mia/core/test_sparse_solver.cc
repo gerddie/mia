@@ -22,6 +22,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/core/sparse_solver.hh>
+#include <numeric> 
 
 /**
    This test only tests the general idea of the unified solver class, and 

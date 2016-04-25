@@ -20,6 +20,7 @@
 
 #include <map>
 #include <algorithm>
+#include <numeric>
 #include <stdexcept>
 #include <cmath>
 

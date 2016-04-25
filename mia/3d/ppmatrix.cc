@@ -26,6 +26,8 @@
 #include <mia/core/threadedmsg.hh>
 
 #include <mia/core/parallel.hh>
+#include <numeric> 
+
 
 #ifdef __SSE2__
 #include <emmintrin.h>

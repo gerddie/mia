@@ -43,6 +43,8 @@
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/datafield.cxx>
 
+#include <numeric> 
+
 NS_MIA_USE;
 using namespace std; 
 
