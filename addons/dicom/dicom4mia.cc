@@ -902,7 +902,7 @@ void CDicomWriterData::setSize(const C2DBounds& size)
 void CDicomWriterData::setPixelSpacing(const DcmTagKey& key, const C2DFVector& value)
 {
 	stringstream pixelspacing;
-	pixelspacing << value.x << "\\" << value.y;
+	pixelspacing << value.y << "\\" << value.x;
 	setValueString(key, pixelspacing.str(), false);
 }
 
