@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( test_file)
 		BOOST_FAIL("'this-file-should-not-exist.11111' was opened for reading");
 	}
 	catch (runtime_error& x) {
-		BOOST_MESSAGE(string("caught an expected exception:") + x.what());
+		cvdebug() << "test_file: caught an expected exception:" <<  x.what() <<"\n";
 	}
 
 	try {
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_file)
 	}
 
 	catch (runtime_error& x) {
-		BOOST_MESSAGE(string("caught an expected exception:") + x.what());
+		cvdebug() << "test_file: caught an expected exception:" << x.what() << "\n";
 	}
 }
 

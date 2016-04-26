@@ -82,7 +82,7 @@ BOOST_FIXTURE_TEST_CASE( test_set_option, CmdlineParserFixture )
 		BOOST_FAIL("error value not detected");
 	}
 	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
+		BOOST_TEST_MESSAGE(string("Caught:") + string(x.what()));
 	}
 }
 
@@ -166,7 +166,7 @@ BOOST_FIXTURE_TEST_CASE( test_float_option, CmdlineParserFixture )
 		BOOST_FAIL("error value not detected");
 	}
 	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
+		BOOST_TEST_MESSAGE(string("Caught:") + string(x.what()));
 	}
 }
 
@@ -192,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE( test_int_option, CmdlineParserFixture )
 		BOOST_FAIL("error value not detected");
 	}
 	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
+		BOOST_TEST_MESSAGE(string("Caught:") + string(x.what()));
 	}
 }
 
@@ -300,7 +300,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 	BOOST_CHECK_EQUAL(olist.parse(options.size(), (const char**)&options[0], "remaining"),  CCmdOptionList::hr_no);
 
 	for(auto i = olist.get_remaining().begin(); i != olist.get_remaining().end(); ++i)
-		BOOST_MESSAGE(*i);
+		BOOST_TEST_MESSAGE(*i);
 
 	BOOST_CHECK_EQUAL(int_value1,12);
 	BOOST_CHECK_EQUAL(int_value2,13);

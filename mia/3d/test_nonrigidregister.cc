@@ -36,7 +36,7 @@ namespace bfs=boost::filesystem;
 
 BOOST_AUTO_TEST_CASE ( test_nothing ) 
 {
-	BOOST_MESSAGE("This is a placeholder"); 
+	BOOST_TEST_MESSAGE("This is a placeholder"); 
 }
 
 #if 0

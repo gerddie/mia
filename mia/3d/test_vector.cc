@@ -105,22 +105,12 @@ BOOST_AUTO_TEST_CASE( test_float_vector_option)
 
 	PCmdOption popt(make_opt(v,  "3dvector", 'f', "a float 3d vector option"));
 	const char *str_value = "1.2,3.4,8.2";
-	try {
-		popt->set_value(str_value);
-		BOOST_CHECK(v.x == 1.2f && v.y == 3.4f && v.z == 8.2f);
-	}
-	catch (invalid_argument& x) {
-		BOOST_FAIL(x.what());
-	}
+	popt->set_value(str_value);
+	BOOST_CHECK(v.x == 1.2f && v.y == 3.4f && v.z == 8.2f);
 
+	// don't accept extra characters 
 	const char *str_value_err = "1.2,3.4,8.2x";
-	try {
-		popt->set_value(str_value_err);
-		BOOST_FAIL("error value not detected");
-	}
-	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
-	}
+	BOOST_CHECK_THROW(popt->set_value(str_value_err), invalid_argument); 
 }
 
 BOOST_AUTO_TEST_CASE( test_size_vector_option)
@@ -129,23 +119,15 @@ BOOST_AUTO_TEST_CASE( test_size_vector_option)
 
 	PCmdOption popt(make_opt(v,  "3dbounds", 'f', "a 3d size option"));
 	const char *str_value = "12,34,256";
-	try {
-		cvdebug() << "initialising from '" << str_value<< "'\n";
-		popt->set_value(str_value);
-		BOOST_CHECK(v.x == 12 && v.y == 34 && v.z == 256);
-	}
-	catch (invalid_argument& x) {
-		BOOST_FAIL(x.what());
-	}
+	cvdebug() << "initialising from '" << str_value<< "'\n";
+	popt->set_value(str_value); 
+	
+	BOOST_CHECK(v.x == 12 && v.y == 34 && v.z == 256);
 
+	// don't accept floating point values 
 	const char *str_value_err = "1.2,3.4,8.2";
-	try {
-		popt->set_value(str_value_err);
-		BOOST_FAIL("error value not detected");
-	}
-	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
-	}
+	BOOST_CHECK_THROW(popt->set_value(str_value_err), invalid_argument);
+	
 }
 
 BOOST_AUTO_TEST_CASE( test_swizzle )
