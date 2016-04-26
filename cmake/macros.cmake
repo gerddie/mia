@@ -214,7 +214,7 @@ MACRO(DEFCHKEXE name deps)
 
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia ${name})
   ADD_DEPENDENCIES(mia-${name} plugin_test_links)
-  ADD_TEST(${name} mia-${name} --selftest)
+  ADD_TEST(${name} mia-${name} -- --selftest)
 
   SET_TESTS_PROPERTIES(${name}
     PROPERTIES ENVIRONMENT "MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}")
