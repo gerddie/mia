@@ -18,7 +18,7 @@
 
 PROJECT("mia")
 
-// now need OBJECT libraries 
+# now need OBJECT libraries 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.8 FATAL_ERROR)
 
 if(COMMAND cmake_policy)
