@@ -31,16 +31,15 @@ IF (WITH_HDF5)
     INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIRS})
     LINK_DIRECTORIES(${HDF5_LIBRARY_DIRS})
     SET(HDF5IO_SRC hdf5mia.cc hdf5a_mia.cc)
-    SET(HDF5MIALIBS miacore ${HDF5_LIBRARIES})
+    SET(HDF5MIALIBS mia3d ${HDF5_LIBRARIES})
     MIA_ADD_LIBRARY(miahdf5 "${HDF5IO_SRC}" "${HDF5MIALIBS}")
     SET(INSTALL_TARGETS miahdf5)	
     INSTALL_BASE("${INSTALL_TARGETS}")
 
 
     NEW_TEST(hdf5mia miahdf5)
-    SET(DEPS3D miahdf5 mia3d)
 
-    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" hdf5_3dimage  "${DEPS3D}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" hdf5_3dimage  miahdf5)
 
   ENDIF(HDF5_FOUND)
   
