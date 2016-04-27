@@ -64,6 +64,35 @@ const float scale[5] = {
 }; 
 
 
+/**
+   This checks the scalar prduct to see whether the stwo series are 
+   (mostly) parallel. 
+*/
+static void check_scalar_product(const vector<float>& prototype,
+				 const vector<float>& value, float tol)
+{
+	float sump2 = 0.0f;
+	float sumv2 = 0.0f;
+	float sumpv = 0.0f;
+
+	BOOST_CHECK_EQUAL(prototype.size(), value.size());
+
+	for (unsigned i = 0; i < prototype.size(); ++i) {
+		const float p =  prototype[i];
+		const float v =  value[i];
+
+		sump2 = p*p;
+		sumv2 = v*v;
+		sumpv = p * v; 
+	}
+
+	BOOST_REQUIRE(sump2 > 0.1);
+	BOOST_REQUIRE(sumv2 > 0.1);
+
+	BOOST_CHECK_SMALL(fabsf(sumpv) / (sump2 * sumv2), tol);   
+	
+}
+
 BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets )
 {
 	C2DBounds size(16,16);
@@ -95,9 +124,13 @@ BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets )
 	BOOST_CHECK(pa.get_perfusion_idx() >= 0); 
 	BOOST_CHECK(pa.get_movement_idx() >= 0);
 
+	check_scalar_product(LV_mix, pa.get_mixing_curve(pa.get_LV_idx()), 0.1);
+	check_scalar_product(RV_mix, pa.get_mixing_curve(pa.get_RV_idx()), 0.1);
+	check_scalar_product(PERF_mix, pa.get_mixing_curve(pa.get_perfusion_idx()), 0.1);
+	check_scalar_product(MOV_mix, pa.get_mixing_curve(pa.get_movement_idx()), 0.1); 
 
 
-	C2DPerfusionAnalysis pa0(0, true, false);
+	C2DPerfusionAnalysis pa0(0, true, true);
 
 	BOOST_CHECK(pa0.run(series, ica_factory));
 	BOOST_CHECK(pa0.has_movement()); 
@@ -110,6 +143,10 @@ BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets )
 	BOOST_CHECK(pa0.get_perfusion_idx() >= 0); 
 	BOOST_CHECK(pa0.get_movement_idx() >= 0);
 	
+	check_scalar_product(LV_mix, pa.get_mixing_curve(pa.get_LV_idx()), 0.1);
+	check_scalar_product(RV_mix, pa.get_mixing_curve(pa.get_RV_idx()), 0.1);
+	check_scalar_product(PERF_mix, pa.get_mixing_curve(pa.get_perfusion_idx()), 0.1);
+	check_scalar_product(MOV_mix, pa.get_mixing_curve(pa.get_movement_idx()), 0.1); 
 	
 	
 }
