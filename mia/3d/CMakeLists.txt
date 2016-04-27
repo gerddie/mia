@@ -57,7 +57,7 @@ SET(MIA3D_SRC
   orientation.cc
   ppmatrix.cc 
   quaternion.cc
-  register.cc
+#  register.cc
   rigidregister.cc
   rot.cc
   shape.cc
@@ -115,7 +115,7 @@ SET(MIA3D_HEADERS
   orientation.hh
   ppmatrix.hh
   quaternion.hh
-  register.hh
+#  register.hh
   rigidregister.hh
   rot.hh
   shape.hh 
