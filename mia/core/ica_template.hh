@@ -135,6 +135,14 @@ public:
 	/// \returns the mixing curves as vector of vectors
 	CSlopeColumns get_mixing_curves() const;
 
+	/**
+	   Obtain a specific mixing curve
+	   \param idx: index of requested curve, throws invalid_argument if index is out of bounds 
+	   \returns a mixing curve
+	   
+	*/
+	std::vector<float> get_mixing_curve(unsigned idx) const;
+
 	/// \returns the feature data relating to component \a idx
 	PData get_feature_image(size_t idx) const; 
 

@@ -34,7 +34,7 @@ struct C2DPerfusionAnalysisImpl {
 				 bool meanstrip); 
 	
 	vector<C2DFImage> get_references() const; 
-    bool run_ica(const vector<C2DFImage>& series, const CICAAnalysisFactory& icatool);
+	bool run_ica(const vector<C2DFImage>& series, const CICAAnalysisFactory& icatool);
 	P2DFilter get_crop_filter(float scale, C2DBounds& crop_start,
 				  C2DPerfusionAnalysis::EBoxSegmentation approach, 
 				  const std::string& save_features) const; 
@@ -65,7 +65,7 @@ struct C2DPerfusionAnalysisImpl {
 	C2DBounds m_image_size; 
 	CWaveletSlopeClassifier m_cls; 
 	size_t m_length; 
-    CICAAnalysis::EApproach m_ica_approach;
+	CICAAnalysis::EApproach m_ica_approach;
 	bool m_use_guess_model; 
 	C2DFImage m_image_attributes; 
 	float m_min_movement_frequency;  
@@ -667,6 +667,15 @@ int C2DPerfusionAnalysis::get_perfusion_idx() const
 	return impl->m_cls.get_perfusion_idx();
 }
 
+int C2DPerfusionAnalysis::get_movement_idx() const
+{
+	return impl->m_cls.get_movement_idx();
+}
+
+vector<float> C2DPerfusionAnalysis::get_mixing_curve(unsigned idx) const
+{
+	return impl->m_ica->get_mixing_curve(idx); 
+}
 
 template <typename T>
 int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const

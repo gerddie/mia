@@ -146,6 +146,12 @@ public:
 	*/
 	int get_perfusion_idx() const; 
 
+        /**
+	   \returns the perfusion enhancement IC index of -1 if it could not be identified
+	*/
+	int get_movement_idx() const; 
+
+	
 	/**
 	   Dictionary for segmentation method flags 
 	 */
@@ -185,6 +191,13 @@ public:
 	 */
 	int get_RV_peak_time() const; 
 
+	/**
+	   Obtain the mixing curve of a vertain component
+	   @param idx index of the requested mixing series; 
+	   @returns the mixing curve
+	 */
+	std::vector<float> get_mixing_curve(unsigned  idx) const;
+	
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 
 

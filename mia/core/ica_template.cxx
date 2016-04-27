@@ -140,6 +140,14 @@ CSlopeColumns TDataSeriesICA<Data>::get_mixing_curves() const
         return m_analysis->get_mixing_curves();
 }
 
+template <class Data>
+std::vector<float> TDataSeriesICA<Data>::get_mixing_curve(unsigned idx) const
+{
+	TRACE_FUNCTION; 
+        return m_analysis->get_mix_series(idx);
+}
+	
+
 template <class Data> 
 typename TDataSeriesICA<Data>::PData TDataSeriesICA<Data>::get_feature_image(size_t idx) const 
 {
