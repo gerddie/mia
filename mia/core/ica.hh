@@ -43,8 +43,10 @@ NS_MIA_BEGIN
 
 class  EXPORT_CORE CICAAnalysisITPP : public CICAAnalysis {
 public:
+	typedef CICAAnalysis::IndexSet IndexSet; 
+	
 
-	/// The type of a vector as used by IT++
+        /// The type of a vector as used by IT++
 	typedef itpp::Vec<itpp::mat::value_type> itppvector;
 	/**
 	   Initialize an ICA based of predefined data - this is only used for test cases.
@@ -64,10 +66,6 @@ public:
 	*/
 	
 	void initialize(unsigned int series_length, unsigned int slice_size);
-	
-	
-	/// defines a set of indices used for mixing
-	typedef std::set<unsigned int> IndexSet;
 	
 	
 	/**

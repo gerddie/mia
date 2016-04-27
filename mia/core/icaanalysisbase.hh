@@ -48,10 +48,10 @@ public:
 
     typedef std::unique_ptr<CICAAnalysis> Pointer;
 
-    virtual ~CICAAnalysis();
-
     /// defines a set of indices used for mixing
     typedef std::set<unsigned int> IndexSet;
+
+    virtual ~CICAAnalysis();
 
     /**
        Set on row of input data
