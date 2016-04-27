@@ -72,7 +72,7 @@ public:
        \param icatool Generator for the used ICA analyis method
 	 */
 
-    bool run(const std::vector<C2DFImage>& series, const CICAAnalysisFactory& icatool);
+	bool run(const std::vector<C2DFImage>& series, const CICAAnalysisFactory& icatool);
 
 
 	/**
@@ -109,7 +109,7 @@ public:
 	   \param approach FICA_APPROACH_SYMM or FICA_APPROACH_DEFL
 	   \todo the parameter should be an enum
 	 */
-    void set_approach(CICAAnalysis::EApproach approach);
+	void set_approach(CICAAnalysis::EApproach approach);
 
 	/**
 	   \returns the RV peak enhancement IC index of -1 if it could not be identified
