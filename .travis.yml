@@ -1,7 +1,9 @@
 sudo: required
 dist: trusty
 language: c++
-cache: ccache
+cache: 
+  ccache: true 
+  pip: true 
 
 env:
   matrix: 
