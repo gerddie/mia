@@ -132,7 +132,9 @@ void check_pa(const C2DPerfusionAnalysis& pa)
 BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets )
 {
 	C2DBounds size(16,16);
-	std::vector<C2DFImage> series(nframes, C2DFImage(size));
+	C2DFImage prototype(size);
+	prototype.set_pixel_size(C2DFVector(4, 4)); 
+	std::vector<C2DFImage> series(nframes, prototype);
 
 	
 	for (unsigned i = 0; i < nframes; ++i) {
@@ -151,7 +153,14 @@ BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets )
 	C2DPerfusionAnalysis pa(5, true, true);
 
 	BOOST_CHECK(pa.run(series, ica_factory));
-	check_pa(pa); 
+	check_pa(pa);
+
+	C2DBounds crop_start;
+	P2DFilter crop_filter = pa.get_crop_filter(1.0, crop_start, C2DPerfusionAnalysis::bs_delta_feature); 
+	BOOST_REQUIRE(crop_filter);
+
+	BOOST_CHECK_EQUAL(crop_start.x, 2);
+	BOOST_CHECK_EQUAL(crop_start.y, 0); 
 	
 	C2DPerfusionAnalysis pa0(0, true, true);
 	BOOST_CHECK(pa0.run(series, ica_factory));

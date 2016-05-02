@@ -457,7 +457,6 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_f
 retry:
 	do {
 		do {
-			++nc;
 			stringstream kfd;
 			kfd << "kmeans:c=" << 2*nc + 1;
 			kmeans = run_filter(*pre_kmeans, kfd.str().c_str());
@@ -467,9 +466,16 @@ retry:
 			
 			RV = RV_filter_chain.run(kmeans_binarized);
 			
-			npixels = ::mia::filter(GetRegionSize(1), *RV);
+			npixels = 10 * ::mia::filter(GetRegionSize(1), *RV);
+			cvinfo() << "nc= "<< nc << ", got " << npixels << " RV pixels from size "
+				 << rvlv_feature->get_size().x * rvlv_feature->get_size().y << "\n";
+
+			if (npixels < rvlv_feature->get_size().x * rvlv_feature->get_size().y)
+				break; 
 			
-		} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 7);
+			++nc;
+			
+		} while (nc < 7);
 		
 		if (!save_features.empty()) {
 			save_feature(save_features, "kmeans", *kmeans); 
@@ -487,8 +493,18 @@ retry:
 		
 		label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 		lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
+
+		cvinfo() << "nc= "<< nc << ", got " << lv_pixels << " LV pixels from size "
+				 << rvlv_feature->get_size().x * rvlv_feature->get_size().y << "\n";
 		
-	} while (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 7);
+		if (10 * lv_pixels < rvlv_feature->get_size().x * rvlv_feature->get_size().y) {
+			cvinfo() << "Found LV\n"; 
+			break;
+		}else
+			++nc; 
+		
+		
+	} while (nc < 7);
 	
 	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y) {
 		cvmsg() << "LV classification failed\n"; 
@@ -521,8 +537,11 @@ retry:
 	float r = LV_mask_amplify * delta_center.norm();
 	cvinfo() << "r = " << r << "\n";
 	stringstream mask_lv;
-	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r));
+	int csy = int(LV_center.y - r);
+	
+	crop_start = C2DBounds(int(LV_center.x - r), csy < 0 ? 0 : csy);
 
+	cvinfo() << "crop_start= "<< crop_start << "\n"; 
 	// this is ugly and should be replaced
 	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y) {
 		if (nc < 7) 
