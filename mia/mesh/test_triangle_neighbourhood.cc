@@ -168,10 +168,22 @@ BOOST_AUTO_TEST_CASE(test_normals_implicite_evaluate)
 		++ni; ++ntest; 
 	}
 	
+	// test scales is empty and not allocated 
+	auto sb = mesh.scale_begin();
+	auto se = mesh.scale_end();
+
+	BOOST_CHECK(sb == se); 
+
+	// test color is empty and not allocated 
+	auto cb = mesh.color_begin();
+	auto ce = mesh.color_end();
+
+	BOOST_CHECK(cb == ce); 
+
 	
 }
 
-BOOST_AUTO_TEST_CASE(test_normals_allocate_only_begin_first)
+BOOST_AUTO_TEST_CASE(test_allocate_only_begin_first)
 {
         auto vertices = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({C3DFVector(2,0,0), C3DFVector(-2,0,0), 
                                         C3DFVector(0,2,0), C3DFVector(0,-2,0), 
@@ -204,9 +216,17 @@ BOOST_AUTO_TEST_CASE(test_normals_allocate_only_begin_first)
 		BOOST_CHECK_EQUAL(ni->z, 0.0f); 
 		++ni; 
 	}
+
+	auto sb = mesh.scale_begin();
+	BOOST_CHECK_EQUAL(std::distance(sb, mesh.scale_end()), 6);
+
+	auto cb = mesh.color_begin();
+	BOOST_CHECK( mesh.get_color_pointer() );
+	BOOST_CHECK_EQUAL(std::distance(cb, mesh.color_end()), 6); 
+
 }
 
-BOOST_AUTO_TEST_CASE(test_normals_allocate_only_end_first)
+BOOST_AUTO_TEST_CASE(test_allocate_only_end_first)
 {
         auto vertices = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({C3DFVector(2,0,0), C3DFVector(-2,0,0), 
                                         C3DFVector(0,2,0), C3DFVector(0,-2,0), 
@@ -240,4 +260,12 @@ BOOST_AUTO_TEST_CASE(test_normals_allocate_only_end_first)
 		BOOST_CHECK_EQUAL(ni->z, 0.0f); 
 		++ni; 
 	}
+
+	auto se = mesh.scale_end();
+	BOOST_CHECK_EQUAL(std::distance(mesh.scale_begin(), se), 6);
+
+	auto ce = mesh.color_end();
+	BOOST_CHECK( mesh.get_color_pointer() );
+	BOOST_CHECK_EQUAL(std::distance(mesh.color_begin(), ce), 6); 
+	
 }
