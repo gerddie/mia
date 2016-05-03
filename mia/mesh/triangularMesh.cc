@@ -233,9 +233,8 @@ CTriangleMesh::CTriangleMesh(PTrianglefield triangles, PVertexfield vertices):
 
 CTriangleMesh CTriangleMesh::clone_connectivity()const
 {
-	PVertexfield vertices(new CVertexfield(vertices_size()));
-	CTriangleMesh result(data->m_triangles, vertices);
-	return result;
+	PVertexfield  vf(new CVertexfield(vertices_size())); 
+	return CTriangleMesh(data->m_triangles, vf);
 }
 
 CTriangleMesh *CTriangleMesh::clone() const

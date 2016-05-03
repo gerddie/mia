@@ -150,6 +150,9 @@ BOOST_AUTO_TEST_CASE(test_normals_implicite_evaluate)
 	
 	const CTriangleMesh mesh(triangles, vertices);
 
+	BOOST_CHECK( mesh.get_vertex_pointer() );
+	BOOST_CHECK( mesh.get_triangle_pointer() );
+	
 	BOOST_CHECK( !mesh.get_normal_pointer() );
 	BOOST_CHECK( !mesh.get_color_pointer() );
 
@@ -267,5 +270,76 @@ BOOST_AUTO_TEST_CASE(test_allocate_only_end_first)
 	auto ce = mesh.color_end();
 	BOOST_CHECK( mesh.get_color_pointer() );
 	BOOST_CHECK_EQUAL(std::distance(mesh.color_begin(), ce), 6); 
+	
+}
+
+BOOST_AUTO_TEST_CASE( test_clone_connectivity )
+{
+        auto vertices = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({C3DFVector(2,0,0), C3DFVector(-2,0,0), 
+                                        C3DFVector(0,2,0), C3DFVector(0,-2,0), 
+                                        C3DFVector(0,0,2), C3DFVector(0,0,-2)})); 
+	
+	typedef CTriangleMesh::triangle_type Triangle; 
+	
+	auto triangles = CTriangleMesh::PTrianglefield(
+		new CTriangleMesh::CTrianglefield(
+			{Triangle(4, 0, 2), Triangle(4, 2, 1), 
+			 Triangle(4, 1, 3), Triangle(4, 3, 0), 
+			 Triangle(5, 2, 0), Triangle(5, 1, 2), 
+			 Triangle(5, 3, 1), Triangle(5, 0, 3)}));
+
+
+	CTriangleMesh mesh(triangles, vertices);
+
+	CTriangleMesh clone_c = mesh.clone_connectivity();
+
+	BOOST_CHECK_EQUAL(mesh.triangle_size(), clone_c.triangle_size());
+	BOOST_CHECK_EQUAL(mesh.vertices_size(), clone_c.vertices_size());
+
+	for (unsigned  i = 0; i < mesh.triangle_size(); ++i)
+		BOOST_CHECK_EQUAL(mesh.triangle_at(i), clone_c.triangle_at(i)); 
+
+	for (unsigned  i = 0; i < mesh.vertices_size(); ++i)
+		BOOST_CHECK_EQUAL(clone_c.vertex_at(i), C3DFVector::_0);
+	
+	
+}
+
+class CMockDeform {
+public:
+	C3DFVector apply(const C3DFVector& MIA_PARAM_UNUSED(x)) const {
+		return C3DFVector(2,3,4); 
+	}
+};
+
+
+BOOST_AUTO_TEST_CASE( test_scale_evaluation )
+{
+        auto vertices = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({C3DFVector(2,0,0), C3DFVector(-2,0,0), 
+                                        C3DFVector(0,2,0), C3DFVector(0,-2,0), 
+                                        C3DFVector(0,0,2), C3DFVector(0,0,-2)})); 
+	
+	typedef CTriangleMesh::triangle_type Triangle; 
+	
+	auto triangles = CTriangleMesh::PTrianglefield(
+		new CTriangleMesh::CTrianglefield(
+			{Triangle(4, 0, 2), Triangle(4, 2, 1), 
+			 Triangle(4, 1, 3), Triangle(4, 3, 0), 
+			 Triangle(5, 2, 0), Triangle(5, 1, 2), 
+			 Triangle(5, 3, 1), Triangle(5, 0, 3)}));
+
+
+	CTriangleMesh mesh(triangles, vertices);
+
+	CMockDeform deform;
+	CTriangleMesh colored = colorize_mesh(mesh, deform);
+
+	BOOST_CHECK_EQUAL(std::distance(colored.scale_begin(), colored.scale_end()), 6);
+
+	vector<double> test_scale = {2, -2, 3, -3, 4, -4};
+	auto ts = test_scale.begin(); 
+	for (auto ci = colored.scale_begin(); ci != colored.scale_end(); ++ci, ++ts) {
+		BOOST_CHECK_CLOSE(*ci, *ts, 0.0001); 
+	}
 	
 }
