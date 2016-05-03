@@ -72,3 +72,172 @@ BOOST_AUTO_TEST_CASE(test_neighborhood)
         
 
 }
+
+BOOST_AUTO_TEST_CASE(test_normals_explicite_evaluate)
+{
+        auto vertices = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({C3DFVector(2,0,0), C3DFVector(-2,0,0), 
+                                        C3DFVector(0,2,0), C3DFVector(0,-2,0), 
+                                        C3DFVector(0,0,2), C3DFVector(0,0,-2)})); 
+	
+	typedef CTriangleMesh::triangle_type Triangle; 
+	
+	auto triangles = CTriangleMesh::PTrianglefield(
+		new CTriangleMesh::CTrianglefield(
+			{Triangle(4, 0, 2), Triangle(4, 2, 1), 
+			 Triangle(4, 1, 3), Triangle(4, 3, 0), 
+			 Triangle(5, 2, 0), Triangle(5, 1, 2), 
+			 Triangle(5, 3, 1), Triangle(5, 0, 3)}));
+
+	vector<C3DFVector> test_normals = {
+		C3DFVector( 1,  0,  0),
+		C3DFVector(-1,  0,  0),
+		C3DFVector( 0,  1,  0),
+		C3DFVector( 0, -1,  0),
+		C3DFVector( 0,  0,  1),
+		C3DFVector( 0,  0, -1)
+	};
+	
+	
+	
+	CTriangleMesh mesh(triangles, vertices);
+
+	BOOST_CHECK( !mesh.get_normal_pointer() );
+	BOOST_CHECK( !mesh.get_color_pointer() );
+
+	mesh.evaluate_normals(); 
+	BOOST_CHECK( mesh.get_normal_pointer() );
+		
+	auto ni = mesh.normals_begin();
+	auto ne = mesh.normals_end();
+
+	auto ntest = test_normals.begin();
+
+	BOOST_CHECK_EQUAL(std::distance(ni, ne), 6); 
+
+	while (ni != ne) {
+		BOOST_CHECK_CLOSE(ni->x, ntest->x, 0.1);
+		BOOST_CHECK_CLOSE(ni->y, ntest->y, 0.1);
+		BOOST_CHECK_CLOSE(ni->z, ntest->z, 0.1); 
+		++ni; ++ntest; 
+	}
+	
+	
+}
+
+BOOST_AUTO_TEST_CASE(test_normals_implicite_evaluate)
+{
+        auto vertices = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({C3DFVector(2,0,0), C3DFVector(-2,0,0), 
+                                        C3DFVector(0,2,0), C3DFVector(0,-2,0), 
+                                        C3DFVector(0,0,2), C3DFVector(0,0,-2)})); 
+	
+	typedef CTriangleMesh::triangle_type Triangle; 
+	
+	auto triangles = CTriangleMesh::PTrianglefield(
+		new CTriangleMesh::CTrianglefield(
+			{Triangle(4, 0, 2), Triangle(4, 2, 1), 
+			 Triangle(4, 1, 3), Triangle(4, 3, 0), 
+			 Triangle(5, 2, 0), Triangle(5, 1, 2), 
+			 Triangle(5, 3, 1), Triangle(5, 0, 3)}));
+
+	vector<C3DFVector> test_normals = {
+		C3DFVector( 1,  0,  0),
+		C3DFVector(-1,  0,  0),
+		C3DFVector( 0,  1,  0),
+		C3DFVector( 0, -1,  0),
+		C3DFVector( 0,  0,  1),
+		C3DFVector( 0,  0, -1)
+	};
+	
+	const CTriangleMesh mesh(triangles, vertices);
+
+	BOOST_CHECK( !mesh.get_normal_pointer() );
+	BOOST_CHECK( !mesh.get_color_pointer() );
+
+	auto ni = mesh.normals_begin();
+	auto ne = mesh.normals_end();
+
+	BOOST_CHECK( mesh.get_normal_pointer() );
+	auto ntest = test_normals.begin();
+
+	BOOST_CHECK_EQUAL(std::distance(ni, ne), 6); 
+
+	while (ni != ne) {
+		BOOST_CHECK_CLOSE(ni->x, ntest->x, 0.1);
+		BOOST_CHECK_CLOSE(ni->y, ntest->y, 0.1);
+		BOOST_CHECK_CLOSE(ni->z, ntest->z, 0.1); 
+		++ni; ++ntest; 
+	}
+	
+	
+}
+
+BOOST_AUTO_TEST_CASE(test_normals_allocate_only_begin_first)
+{
+        auto vertices = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({C3DFVector(2,0,0), C3DFVector(-2,0,0), 
+                                        C3DFVector(0,2,0), C3DFVector(0,-2,0), 
+                                        C3DFVector(0,0,2), C3DFVector(0,0,-2)})); 
+	
+	typedef CTriangleMesh::triangle_type Triangle; 
+	
+	auto triangles = CTriangleMesh::PTrianglefield(
+		new CTriangleMesh::CTrianglefield(
+			{Triangle(4, 0, 2), Triangle(4, 2, 1), 
+			 Triangle(4, 1, 3), Triangle(4, 3, 0), 
+			 Triangle(5, 2, 0), Triangle(5, 1, 2), 
+			 Triangle(5, 3, 1), Triangle(5, 0, 3)}));
+
+
+	CTriangleMesh mesh(triangles, vertices);
+	
+	BOOST_CHECK( !mesh.get_normal_pointer() );
+	BOOST_CHECK( !mesh.get_color_pointer() );
+
+	auto ni = mesh.normals_begin();
+	BOOST_CHECK( mesh.get_normal_pointer() );
+	
+	auto ne = mesh.normals_end();
+	BOOST_CHECK_EQUAL(std::distance(ni, ne), 6); 
+
+	while (ni != ne) {
+		BOOST_CHECK_EQUAL(ni->x, 0.0f);
+		BOOST_CHECK_EQUAL(ni->y, 0.0f);
+		BOOST_CHECK_EQUAL(ni->z, 0.0f); 
+		++ni; 
+	}
+}
+
+BOOST_AUTO_TEST_CASE(test_normals_allocate_only_end_first)
+{
+        auto vertices = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({C3DFVector(2,0,0), C3DFVector(-2,0,0), 
+                                        C3DFVector(0,2,0), C3DFVector(0,-2,0), 
+                                        C3DFVector(0,0,2), C3DFVector(0,0,-2)})); 
+	
+	typedef CTriangleMesh::triangle_type Triangle; 
+	
+	auto triangles = CTriangleMesh::PTrianglefield(
+		new CTriangleMesh::CTrianglefield(
+			{Triangle(4, 0, 2), Triangle(4, 2, 1), 
+			 Triangle(4, 1, 3), Triangle(4, 3, 0), 
+			 Triangle(5, 2, 0), Triangle(5, 1, 2), 
+			 Triangle(5, 3, 1), Triangle(5, 0, 3)}));
+
+
+	CTriangleMesh mesh(triangles, vertices);
+	
+	BOOST_CHECK( !mesh.get_normal_pointer() );
+	BOOST_CHECK( !mesh.get_color_pointer() );
+
+	auto ne = mesh.normals_end();
+	BOOST_CHECK( mesh.get_normal_pointer() );
+	
+	auto ni = mesh.normals_begin();
+	
+	BOOST_CHECK_EQUAL(std::distance(ni, ne), 6); 
+
+	while (ni != ne) {
+		BOOST_CHECK_EQUAL(ni->x, 0.0f);
+		BOOST_CHECK_EQUAL(ni->y, 0.0f);
+		BOOST_CHECK_EQUAL(ni->z, 0.0f); 
+		++ni; 
+	}
+}

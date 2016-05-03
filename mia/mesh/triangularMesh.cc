@@ -396,7 +396,7 @@ CTriangleMesh::normal_iterator CTriangleMesh::normals_end()
 	else
 		ensure_single_refered(data->m_normals);
 
-	return data->m_normals->begin();
+	return data->m_normals->end();
 }
 
 CTriangleMesh::const_scale_iterator CTriangleMesh::scale_begin()const
