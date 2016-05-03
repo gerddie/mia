@@ -75,16 +75,6 @@ public:
      */
     virtual bool run(unsigned int nica, std::vector<std::vector<float> > guess) = 0;
 
-    /**
-       Run the independed component analysis with an estimation of the optimal number
-       of components. (experimental)
-       \param max_ica maximum number of independend components
-       \param min_ica minimum number of independend components
-       \param corr_thresh minimum absolute correation of the mixing signals to joins two components
-    */
-    virtual void run_auto(int max_ica, int min_ica, float corr_thresh=0.9f) = 0;
-
-
     /// \returns the feature vector of \a row
     virtual std::vector<float> get_feature_row(unsigned int row)const = 0;
 

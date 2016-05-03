@@ -93,14 +93,6 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 	return ica;
 }
 
-
-unique_ptr<C2DImageSeriesICA> get_ica_auto(vector<C2DFImage>& series, size_t& max_components )
-{
-    unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(icatool, series, false));
-	max_components = ica->run_auto(max_components, 3, 0.7);
-	return ica;
-}
-
 void save_feature_image_unnamed(const string& base, int id, size_t max_comp,
 			const C2DImageSeriesICA& ica)
 {
@@ -362,7 +354,6 @@ int do_main( int argc, char *argv[] )
 	string feature_image_base;
 	string numbered_feature_image;
 	float LV_mask = 0.0; // no mask
-	bool auto_comp = false;
 	int max_iterations = 0;
 
 	const auto& imageio = C2DImageIOPluginHandler::instance();
@@ -392,10 +383,6 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop"));
 
-
-	options.add(make_opt( auto_comp, "auto-components", 'a',
-				    "automatic esitmation of number of components based on correlation."
-				    " Implies -m and -n (Experimental)"));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
@@ -432,13 +419,12 @@ int do_main( int argc, char *argv[] )
 
 	cvmsg()<< "Got series of " << series.size() << " images\n";
 	// always strip mean
-	unique_ptr<C2DImageSeriesICA> ica = auto_comp ?
-		get_ica_auto(series, components ):
+	unique_ptr<C2DImageSeriesICA> ica = 
 		get_ica(series, strip_mean, components, ica_normalize, max_iterations);
 	CSlopeClassifier::Columns curves = ica->get_mixing_curves();
 
 	CICAAnalysis::IndexSet component_set = skip_only_periodic ?
-		get_all_without_periodic(curves, strip_mean || auto_comp):
+		get_all_without_periodic(curves, strip_mean):
 		get_LV_RV_Perfusion(curves);
 
 
@@ -552,7 +538,7 @@ int do_main( int argc, char *argv[] )
 		if ( cls.get_baseline_idx() >= 0) {
 			save_feature_image(feature_image_base, "baseline", cls.get_baseline_idx(), components, *ica);
 		}
-		if (strip_mean||auto_comp)
+		if (strip_mean)
 			save_feature_image(feature_image_base, "mean", -1, components, *ica);
 	}
 	if (!coefs_name.empty())

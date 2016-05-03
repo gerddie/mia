@@ -189,14 +189,6 @@ void  TDataSeriesICA<Data>::normalize_Mix()
 }
 
 template <class Data> 
-size_t TDataSeriesICA<Data>::run_auto(int nica, int min_ica, float corr_thresh)
-{
-        m_analysis->run_auto(nica, min_ica, corr_thresh);
-        return m_analysis->get_ncomponents();
-}
-
-
-template <class Data> 
 void TDataSeriesICA<Data>::set_max_iterations(int n)
 {
         m_analysis->set_max_iterations(n);

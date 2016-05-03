@@ -41,7 +41,6 @@ struct CICAAnalysisITPPImpl {
 	void set_mixing_series(unsigned int index, const std::vector<float>& series);
 	void check_set(const CICAAnalysisITPP::IndexSet& s) const;
 	std::vector<float> normalize_Mix();
-	float max_selfcorrelation(int& row1, int &row2) const;
 
 	itpp::mat  m_Signal;
 	itpp::mat  m_ICs;
@@ -158,72 +157,6 @@ bool CICAAnalysisITPP::run(unsigned int nica, vector<vector<float> > guess)
 	return result; 
 }
 
-void CICAAnalysisITPP::run_auto(int nica, int min_ica, float corr_thresh)
-{
-	TRACE_FUNCTION;
-	assert(impl);
-
-	std::unique_ptr<itpp::Fast_ICA > fastICA( new itpp::Fast_ICA(impl->m_Signal));
-
-	float corr = 1.0;
-	do {
-
-		cvinfo() << __func__ << ": run with " << nica << "\n";
-		fastICA->set_nrof_independent_components(nica);
-		fastICA->set_non_linearity(  FICA_NONLIN_TANH  );
-		fastICA->set_approach( FICA_APPROACH_DEFL );
-		fastICA->separate();
-
-		impl->m_ICs = fastICA->get_independent_components();
-		impl->m_Mix = fastICA->get_mixing_matrix();
-
-		impl->m_ncomponents = impl->m_Mix.cols();
-		impl->m_nlength     = impl->m_ICs.cols();
-		impl->m_rows        = impl->m_Mix.rows();
-
-		normalize_Mix();
-		normalize_ICs();
-
-		int row1 = -1;
-		int row2 = -1;
-
-		corr = 	impl->max_selfcorrelation(row1, row2);
-		cvinfo() << __func__ << ": R² = " << corr << ", n=" << nica << " @ " << impl->m_Mix.cols() << "\n";
-
-		if (fabs(corr) < corr_thresh)
-			break;
-
-		// copy old ICs to new guess if they don'z correspond to the most correlated mixes
-		itpp::mat guess;
-		unsigned int guess_rows = 0;
-		for (int i = 0; i < nica; ++i)
-			if (i != row1 && i != row2)
-				guess.ins_row(guess_rows++, impl->m_ICs.get_row(i));
-			else
-				cvinfo() << __func__ << ": skip row " << i << "\n";
-
-
-		// now combine the most correlated mixes
-		itppvector buffer(impl->m_ICs.cols());
-
-		if (corr < 0)
-			for (int i = 0; i < impl->m_ICs.cols(); ++i)
-				buffer[i] = (impl->m_ICs(row1, i) - impl->m_ICs(row2, i)) / 2.0;
-		else
-			for (int i = 0; i < impl->m_ICs.cols(); ++i)
-				buffer[i] = (impl->m_ICs(row1, i) + impl->m_ICs(row2, i)) / 2.0;
-		--nica;
-		guess.ins_row(guess_rows, buffer);
-		cvinfo() << "guess.rows()=" << guess.rows() << "\n";
-		assert(guess.rows() == nica);
-
-		fastICA.reset( new itpp::Fast_ICA(impl->m_Signal));
-		fastICA->set_init_guess(guess);
-
-	} while (nica > min_ica);
-
-}
-
 unsigned int CICAAnalysisITPP::get_ncomponents() const
 {
 	return impl->m_ncomponents;
@@ -288,23 +221,6 @@ float correlation(const CICAAnalysisITPP::itppvector& a, const CICAAnalysisITPP:
 		return 0.0;
 
 	return (ssxy * ssxy) /  (ssxx * ssyy);
-}
-
-float CICAAnalysisITPPImpl::max_selfcorrelation(int& row1, int &row2) const
-{
-	float max_corr = 0.0;
-	for (int i = 0; i < m_Mix.cols(); ++i)
-		for (int j = i+1; j < m_Mix.cols(); ++j) {
-			const float corr = correlation(m_Mix.get_col(i), m_Mix.get_col(j));
-			if (fabs(max_corr) < fabs(corr)) {
-				row1 = i;
-				row2 = j;
-				max_corr = corr;
-				cvdebug() << "Corr=" << max_corr << " @ " << i << "," << j << "\n";
-			}
-		}
-	return max_corr;
-
 }
 
 void CICAAnalysisITPPImpl::set_mixing_series(unsigned int index, const std::vector<float>& series)
