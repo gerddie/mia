@@ -226,6 +226,10 @@ public:
 	 */
 	const color_type&       color_at(unsigned int i)const;
 
+
+	const CVertexfield& get_vertices() const;
+	const CTrianglefield& get_triangles() const; 
+
 	/// \cond SELFEXPLAINING 
 	const_triangle_iterator triangles_begin() const;
 	triangle_iterator       triangles_begin();

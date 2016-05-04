@@ -253,6 +253,23 @@ const void *CTriangleMesh::get_vertex_pointer()const
 	return data->m_vertices ? &(*data->m_vertices)[0].x : NULL;
 }
 
+const CTriangleMesh::CVertexfield& CTriangleMesh::get_vertices() const
+{
+	if (data->m_vertices)
+		return *data->m_vertices;
+	else
+		throw logic_error("CTriangleMesh::get_vertices(): no vertices available"); 
+}
+
+const CTriangleMesh::CTrianglefield& CTriangleMesh::get_triangles() const
+{
+	if (data->m_triangles)
+		return *data->m_triangles;
+	else
+		throw logic_error("CTriangleMesh::get_triangles(): no triangles available"); 
+}
+
+
 const void *CTriangleMesh::get_normal_pointer()const
 {
 	return data->m_normals ? &(*data->m_normals)[0].x : NULL;

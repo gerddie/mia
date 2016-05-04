@@ -28,3 +28,5 @@ PLUGINGROUP_WITH_PREFIX2(
   "${iomesh}" 
   "${MIAMESHLIBS}" 
 )
+
+NEW_TEST(meshio miamesh)

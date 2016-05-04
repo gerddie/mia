@@ -521,7 +521,11 @@ PTriangleMesh COffMeshIO::do_load_it(CInputFile& inp)const
 	int n_faces = 0;
 	int n_edges = 0;
 
-	if (fscanf(inp, "%d %d %d", &n_vertices, &n_faces, &n_edges)!= 3) {
+	char buffer[2049];
+	read_line(buffer, 2048, inp); 
+	
+	
+	if (sscanf(buffer, "%d %d %d", &n_vertices, &n_faces, &n_edges)!= 3) {
 		cverr() << "OFF: parse error\n";
 		return PTriangleMesh();
 	}
