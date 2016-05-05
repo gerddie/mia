@@ -165,4 +165,11 @@ BOOST_AUTO_TEST_CASE( test_load_save_octaedron_with_vertex_normals_off )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_load_off_errors )
+{
+        BOOST_CHECK_THROW(CMeshIOPluginHandler::instance().load(MIA_SOURCE_ROOT"/testdata/4D.off"), invalid_argument);
+        BOOST_CHECK_THROW(CMeshIOPluginHandler::instance().load(MIA_SOURCE_ROOT"/testdata/ND.off"), invalid_argument);
+}
+
+
 	
