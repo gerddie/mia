@@ -252,10 +252,14 @@ bool COffMeshIO::load_vertices(CInputFile& inf,
 	}else if (normals) {
 		CTriangleMesh::normal_iterator n = normals->begin();
 		do  {
-			sscanf(buf, "%f %f %f %f %f %f",
-			       &v->x, &v->y, &v->z,
-			       &n->x, &n->y, &n->z);
-			++v; ++n; ++i;
+			int read = sscanf(buf, "%f %f %f %f %f %f",
+					   &v->x, &v->y, &v->z,
+					   &n->x, &n->y, &n->z);
+			if (read != 6)
+				throw create_exception<runtime_error>("Bogus OFF file: Expect 6 values (vertices and normals) but got only ",
+								      read, " numbers"); 
+			
+			    ++v; ++n; ++i;
 		}while (i < nvertices && read_line(buf, 2048, inf));
 	}else
 		do  {
