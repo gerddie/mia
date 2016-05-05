@@ -35,6 +35,8 @@
 #include <mia/mesh/triangularMesh.hh>
 #include <mia/mesh/triangulate.hh>
 
+// documentation of the format:
+// http://www.geomview.org/docs/html/OFF.html
 
 NS_BEGIN(off_mesh_io)
 
@@ -90,7 +92,11 @@ COffMeshIO::COffMeshIO():CMeshIOPlugin(format)
 
 const string  COffMeshIO::do_get_descr()const
 {
-	return string("plugin to load/store some Geomview OFF Files");
+	return string("plugin to load/store some Geomview OFF files. "
+		      "Supported is only the ASCII format 3D meshes with normales and per-vertex RGB colors. "
+		      "Alpha values and texture coordinates, as well as per face properties are ignored. "
+		      "Polygons are read and triangulated. "
+		);
 }
 
 PTriangleMesh COffMeshIO::do_load(string const &  filename)const

@@ -258,7 +258,24 @@ BOOST_AUTO_TEST_CASE( test_load_off_errors )
 {
         BOOST_CHECK_THROW(CMeshIOPluginHandler::instance().load(MIA_SOURCE_ROOT"/testdata/4D.off"), invalid_argument);
         BOOST_CHECK_THROW(CMeshIOPluginHandler::instance().load(MIA_SOURCE_ROOT"/testdata/ND.off"), invalid_argument);
+	BOOST_CHECK_THROW(CMeshIOPluginHandler::instance().load(MIA_SOURCE_ROOT"/testdata/vertex_error.off"), runtime_error);
 }
 
+set<C3DFVector, vector3d_less<C3DFVector> > test_poly_vertices = {
+        C3DFVector(1,0,0), C3DFVector(1,1,0), 
+        C3DFVector(2,1,0), C3DFVector(2,3,0)
+};
+
+
+BOOST_AUTO_TEST_CASE( test_load_off_poly )
+{
+	auto mesh = CMeshIOPluginHandler::instance().load(MIA_SOURCE_ROOT"/testdata/poly.off");
+	test_set_equal(mesh->vertices_begin(), mesh->vertices_end(), test_poly_vertices);
+	BOOST_CHECK_EQUAL(mesh->triangle_size(), 2u);
+
+	BOOST_CHECK_EQUAL(mesh->triangle_at(0), Triangle(2,3,0)); 
+	BOOST_CHECK_EQUAL(mesh->triangle_at(1), Triangle(1,2,0));
+	
+}
 
 	
