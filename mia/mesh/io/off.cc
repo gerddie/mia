@@ -62,8 +62,7 @@ private:
 			   CTriangleMesh::PVertexfield vertices,
 			   CTriangleMesh::PNormalfield normals,
 			   CTriangleMesh::PColorfield colors,
-			   CTriangleMesh::PScalefield scale,
-			   bool has_texturcoord,
+			   bool has_texture_coordinates, 
 			   unsigned int nvertices)const;
 
 	bool load_triangles(CInputFile& inp, vector<CTriangleMesh::triangle_type>& tri,
@@ -121,16 +120,31 @@ static bool read_line(char *buf, size_t size, FILE *f)
 }
 
 bool COffMeshIO::load_vertices(CInputFile& inf,
-				  CTriangleMesh::PVertexfield vertices,
-				  CTriangleMesh::PNormalfield normals,
-				  CTriangleMesh::PColorfield colors,
-				  CTriangleMesh::PScalefield scale,
-				  bool has_texturcoord,
-				  unsigned int nvertices)const
+			       CTriangleMesh::PVertexfield vertices,
+			       CTriangleMesh::PNormalfield normals,
+			       CTriangleMesh::PColorfield colors,
+			       bool has_texture_coordinates, 
+			       unsigned int nvertices)const
 {
 	unsigned int i = 0;
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
+
+	CTriangleMesh::normal_iterator n;
+	CTriangleMesh::color_iterator  c; 
+
+	int expect_count = has_texture_coordinates ? 5 : 2; 
+	int c_offest = 0;
+	if (normals) {
+		n = normals->begin();
+		c_offest += 3;
+		expect_count += 3; 
+	}
+	
+	if (colors) {
+		c = colors->begin();
+		expect_count += 3; 
+	}
 
 	char buf[2048];
 
@@ -138,53 +152,52 @@ bool COffMeshIO::load_vertices(CInputFile& inf,
 	if (!success)
 		return false;
 
+	int first_count = 0; 
 
-	if (normals && colors &&  scale) {
-		CTriangleMesh::normal_iterator n = normals->begin();
-		CTriangleMesh::color_iterator  c = colors->begin();
-		CTriangleMesh::scale_iterator  s = scale->begin();
+	do {
+		float x[9];
+		float *xc = &x[c_offest];
+		
+		int count = sscanf(buf, "%f %f %f %f %f %f %f %f %f %f %f %f",
+				   &v->x, &v->y, &v->z,
+				   &x[0], &x[1], &x[2],
+				   &x[3], &x[4], &x[5], &x[6],
+				   &x[7], &x[8]);
 
-		if (has_texturcoord) {
-			do {
-				float sink; // texture coordinates are currently rejected
-				sscanf(buf, "%f %f %f %f %f %f %f %f %f %f %f %f",
-				       &v->x, &v->y, &v->z,
-				       &n->x, &n->y, &n->z,
-				       &c->x, &c->y, &c->z,
-				       &*s,
-				       &sink,
-				       &sink);
-				++v; ++n; ++s; ++c; ++i;
-			}while (i < nvertices && read_line(buf, 2048, inf));
+		if (count < expect_count) {
+			throw create_exception<runtime_error>("OFF: unsupported file type. "
+							      "Most likely the file type uses color map indices."); 
+		}
 
-		}else
-			do  {
-				sscanf(buf, "%f %f %f %f %f %f %f %f %f %f",
-				       &v->x, &v->y, &v->z,
-				       &n->x, &n->y, &n->z,
-				       &c->x, &c->y, &c->z,
-				       &*s);
-				++v; ++n; ++s; ++c; ++i;
-			}  while (i < nvertices && read_line(buf, 2048, inf));
-	}else if (normals) {
-		CTriangleMesh::normal_iterator n = normals->begin();
-		do  {
-			int read = sscanf(buf, "%f %f %f %f %f %f",
-					   &v->x, &v->y, &v->z,
-					   &n->x, &n->y, &n->z);
-			if (read != 6)
-				throw create_exception<runtime_error>("Bogus OFF file: Expect 6 values (vertices and normals) but got only ",
-								      read, " numbers"); 
-			
-			    ++v; ++n; ++i;
-		}while (i < nvertices && read_line(buf, 2048, inf));
-	}else
-		do  {
-			istringstream line(buf); line >> v->x >> v->y >>v->z;
+		if (first_count > 0) {
+			if (first_count != count) {
+				throw create_exception<runtime_error>("OFF: inconsistent vertex definitions"); 
+			}
+		}else{
+			first_count = count; 
+		}
+		
+		if (normals) {
+			n->x = x[0];
+			n->y = x[1];
+			n->z = x[2];
+			++n;
+			count -= 6; 
+		}
+		
+		if (colors) {
+			if (count < 3)
+				throw create_exception<invalid_argument>("OFF: color indices not supported"); 
+			c->x = xc[0] < 1.0 ? xc[0] : xc[0]/ 255.0f;
+			c->y = xc[1] < 1.0 ? xc[1] : xc[1]/ 255.0f;
+			c->z = xc[2] < 1.0 ? xc[2] : xc[2]/ 255.0f;
+			++c; 
+		}
+		
+		++v;
+		++i; 
+	} while (i < nvertices && read_line(buf, 2048, inf));
 
-			++v; ++i;
-
-		}while (i < nvertices && read_line(buf, 2048, inf));
 	return i == nvertices;
 }
 
@@ -414,20 +427,16 @@ PTriangleMesh COffMeshIO::do_load_it(CInputFile& inp)const
 	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(n_vertices));
 	CTriangleMesh::PNormalfield normals;
 	CTriangleMesh::PColorfield  colors;
-	CTriangleMesh::PScalefield  scale;
-
-
 
 	if (flags & vt_color) {
 		colors.reset(new CTriangleMesh::CColorfield(n_vertices));
-		scale.reset(new CTriangleMesh::CScalefield(n_vertices));
 	}
 
 	if (flags & vt_normal) {
 		normals.reset(new CTriangleMesh::CNormalfield(n_vertices));
 	}
 
-	if ( !load_vertices(inp, vertices, normals, colors, scale, flags & vt_texture, n_vertices)) {
+	if ( !load_vertices(inp, vertices, normals, colors, flags & vt_texture, n_vertices)) {
 		throw create_exception<runtime_error>("OFF: Error reading vertices");
 	}
 
@@ -450,7 +459,7 @@ PTriangleMesh COffMeshIO::do_load_it(CInputFile& inp)const
 
 	CTriangleMesh::PTrianglefield triangles(new CTriangleMesh::CTrianglefield(tri.size()));
 	copy(tri.begin(), tri.end(), triangles->begin());
-	return PTriangleMesh(new CTriangleMesh(triangles, vertices, normals, colors, scale));
+	return PTriangleMesh(new CTriangleMesh(triangles, vertices, normals, colors, nullptr));
 
 }
 
@@ -476,6 +485,11 @@ bool COffMeshIO::do_save(string const &  filename, const CTriangleMesh& data)con
 
 	int written = 1;
 
+	if (flags & CTriangleMesh::ed_scale) {
+		cvwarn() << "OFF-save: Mesh has scale values, but they are "
+			 << "not supported by the OFF file format and will be lost\n"; 
+	}
+
 	for (size_t i = 0; i < data.vertices_size() && written > 0; ++i) {
 		const CTriangleMesh::vertex_type& v = data.vertex_at(i);
 		fprintf(f, "%f %f %f",v.x,v.y, v.z);
@@ -484,14 +498,9 @@ bool COffMeshIO::do_save(string const &  filename, const CTriangleMesh& data)con
 			const CTriangleMesh::normal_type& n = data.normal_at(i);
 			written += fprintf(f, " %f %f %f",n.x,n.y, n.z);
 		}
-		if (flags & CTriangleMesh::ed_color && flags & CTriangleMesh::ed_scale) {
+		if (flags & CTriangleMesh::ed_color) {
 			const CTriangleMesh::color_type& c = data.color_at(i);
-			written += fprintf(f, " %f %f %f %f",c.x,c.y, c.z, data.scale_at(i));
-		}else if (flags & CTriangleMesh::ed_color && !(flags & CTriangleMesh::ed_scale)) {
-			const CTriangleMesh::color_type& c = data.color_at(i);
-			written += fprintf(f, " %f %f %f 1.0",c.x,c.y, c.z);
-		}else if ( !(flags & CTriangleMesh::ed_color) && flags & CTriangleMesh::ed_scale) {
-			written += fprintf(f, "1.0 1.0 1.0");
+			written += fprintf(f, " %f %f %f",c.x,c.y, c.z);
 		}
 		written += fprintf(f,"\n");
 	}
