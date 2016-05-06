@@ -131,7 +131,7 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 
 	f >> tag;
 	if (tag != start_face) {
-		cvdebug() << "Loading solid " <<solid_name << "\n";
+		cvdebug() << "Loading solid " <<tag  << "\n";
 		f >> tag;
 	}
 
@@ -195,7 +195,7 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 		     i != vmap.end(); ++i)
 			(*vertices)[i->second] = i->first;
 
-		cvwarn() << "For nor we throw away the normals of the file\n";
+		cvinfo() << "STL: For now the face normals given in the file are thrown away\n";
 
 		CTriangleMesh::PTrianglefield tri(new CTriangleMesh::CTrianglefield(faces.size()));
 		copy(faces.begin(), faces.end(), tri->begin());
@@ -204,8 +204,8 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 	}
 
 fail:
-	cverr() << "not a valid ascii STL mesh file\n";
-	return PTriangleMesh();
+	throw create_exception<runtime_error>("STL: not a valid ascii STL mesh file\n");
+
 }
 
 PTriangleMesh CSTLMeshIO::do_load(string const &  filename)const
@@ -221,14 +221,7 @@ PTriangleMesh CSTLMeshIO::do_load(string const &  filename)const
 		result = load_ascii(cin);
 
 	if (!result) { // probably a binary file
-
-		cvdebug() << "Try STL binary file\n";
-		CInputFile f(filename);
-
-		if (!f)
-			return PTriangleMesh();
-
-		cvdebug() << "If this is a binary STL mesh then it can not yet be loaded\n";
+		cvinfo() << "If this is a binary STL mesh then it is not (yet) supported\n";
 		return PTriangleMesh();
 	}
 	return PTriangleMesh(result);

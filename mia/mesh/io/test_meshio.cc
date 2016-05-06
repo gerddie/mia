@@ -279,6 +279,7 @@ const char test_mesh_normals_colors_off[] =
 			       "3 5 0 3\n"; 
 
 
+extern const char test_mesh_stl[]; 
 
 static void run_simple_octaedron_test(const char *in_file, const char *test_file, const string& test_string); 
 static void run_octaedron_vertex_normal_test(const char *in_file, const char *test_file, const string& test_string); 
@@ -295,6 +296,7 @@ BOOST_AUTO_TEST_CASE( test_load_save_octaedron_ply )
 {
 	run_simple_octaedron_test(MIA_SOURCE_ROOT"/testdata/octahedron.ply", "testmesh.ply", test_mesh_ply); 
 }
+
 
 
 BOOST_AUTO_TEST_CASE( test_load_save_octaedron_with_vertex_normals_off )
@@ -491,3 +493,101 @@ void run_octaedron_vertex_normal_scale_test(const char *in_file, const char *tes
 	
 	unlink(test_file); 
 }
+
+BOOST_AUTO_TEST_CASE( test_load_save_octaedron_stl )
+{
+	const char *test_file = "testmesh.stl";
+	string test_string(test_mesh_stl); 
+        auto mesh = CMeshIOPluginHandler::instance().load(MIA_SOURCE_ROOT"/testdata/octahedron.stl");
+
+	BOOST_CHECK_EQUAL(mesh->get_available_data(), CTriangleMesh::ed_vertex); 
+	
+        test_set_equal(mesh->vertices_begin(), mesh->vertices_end(), test_vertices);
+	// missing triangles test, can't be done like above, because the triangles are build
+	// from the vertex list. 
+	
+
+	BOOST_REQUIRE(CMeshIOPluginHandler::instance().save(test_file, *mesh));
+
+	auto mesh2 = CMeshIOPluginHandler::instance().load(test_file);
+
+        test_set_equal(mesh2->vertices_begin(), mesh2->vertices_end(), test_vertices);
+        //test_set_equal(mesh2->triangles_begin(), mesh2->triangles_end(), test_triangles); 
+
+	// check file output 
+	FILE *testfile = fopen(test_file, "r");
+	BOOST_REQUIRE(testfile); 
+	char buffer[2000];
+	memset(buffer, 0, 2000); 
+	size_t flen = test_string.length(); //don't count terminating 0 
+	size_t read_bytes = fread(buffer, 1, 2000, testfile);
+	fclose(testfile);
+
+	BOOST_CHECK_EQUAL(read_bytes, flen);
+	BOOST_CHECK(!strcmp(buffer, test_string.c_str()));
+
+	cvdebug() << "Read: '" << buffer << "'\n"; 
+	
+	unlink(test_file); 
+}
+
+
+extern const char test_mesh_stl[] =
+"solid\n"
+"  facet normal 0.408248 0.408248 0.816497\n"
+"    outer loop\n"
+"      vertex 0 0 1\n"
+"      vertex 2 0 0\n"
+"      vertex 0 2 0\n"
+"    endloop\n"
+"  endfacet\n"
+"  facet normal -0.408248 0.408248 0.816497\n"
+"    outer loop\n"
+"      vertex 0 0 1\n"
+"      vertex 0 2 0\n"
+"      vertex -2 0 0\n"
+"    endloop\n"
+"  endfacet\n"
+"  facet normal -0.408248 -0.408248 0.816497\n"
+"    outer loop\n"
+"      vertex 0 0 1\n"
+"      vertex -2 0 0\n"
+"      vertex 0 -2 0\n"
+"    endloop\n"
+"  endfacet\n"
+"  facet normal 0.408248 -0.408248 0.816497\n"
+"    outer loop\n"
+"      vertex 0 0 1\n"
+"      vertex 0 -2 0\n"
+"      vertex 2 0 0\n"
+"    endloop\n"
+"  endfacet\n"
+"  facet normal 0.408248 0.408248 -0.816497\n"
+"    outer loop\n"
+"      vertex 0 0 -1\n"
+"      vertex 0 2 0\n"
+"      vertex 2 0 0\n"
+"    endloop\n"
+"  endfacet\n"
+"  facet normal -0.408248 0.408248 -0.816497\n"
+"    outer loop\n"
+"      vertex 0 0 -1\n"
+"      vertex -2 0 0\n"
+"      vertex 0 2 0\n"
+"    endloop\n"
+"  endfacet\n"
+"  facet normal -0.408248 -0.408248 -0.816497\n"
+"    outer loop\n"
+"      vertex 0 0 -1\n"
+"      vertex 0 -2 0\n"
+"      vertex -2 0 0\n"
+"    endloop\n"
+"  endfacet\n"
+"  facet normal 0.408248 -0.408248 -0.816497\n"
+"    outer loop\n"
+"      vertex 0 0 -1\n"
+"      vertex 2 0 0\n"
+"      vertex 0 -2 0\n"
+"    endloop\n"
+"  endfacet\n"
+"endsolid\n"; 
