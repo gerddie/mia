@@ -56,6 +56,9 @@ set<C3DFVector, vector3d_less<C3DFVector> > test_colors = {
         C3DFVector(0.5, 0.6, 0.7), C3DFVector(0.6, 0.6, 0.7)
 };
 
+set<float> test_scale = {
+	0.1, 2.2, 4.3, 3.4, 0.5, 0.6
+};
 
 typedef CTriangleMesh::triangle_type Triangle; 
 
@@ -89,6 +92,18 @@ void test_set_equal(const IT begin, IT end,
 	cvdebug() << expect << "\n"; 
         
 }
+
+template <typename IT, typename T> 
+void test_set_equal(const IT begin, IT end,
+		    const set<T>& expect)
+{
+        set<T> loaded(begin, end);
+        BOOST_CHECK_EQUAL(loaded.size(), expect.size());
+
+	BOOST_CHECK(loaded == expect);
+        
+}
+
 
 const char test_mesh_off[] =
 	       "OFF\n"
@@ -185,6 +200,36 @@ const char test_mesh_normals_colors_ply[] =
 			       "3 5 3 1\n"
 			       "3 5 0 3\n"; 
 
+const char test_mesh_normals_scale_ply[] =
+			       "ply\n"
+			       "format ascii 1.0\n"
+			       "element vertex 6\n"
+			       "property float32 x\n"
+			       "property float32 y\n"
+			       "property float32 z\n"
+			       "property float32 nx\n"
+			       "property float32 ny\n"
+			       "property float32 nz\n"
+			       "property float32 scale\n"
+			       "element face 8\n"
+			       "property list uint8 uint32 vertex_index\n"
+			       "end_header\n"
+			       "2 0 0 1 0 0 0.1\n"
+			       "-2 0 0 -1 0 0 2.2\n"
+			       "0 2 0 0 1 0 4.3\n"
+			       "0 -2 0 0 -1 0 3.4\n"
+			       "0 0 1 0 0 1 0.5\n"
+			       "0 0 -1 0 0 -1 0.6\n"
+			       "3 4 0 2\n"
+			       "3 4 2 1\n"
+			       "3 4 1 3\n"
+			       "3 4 3 0\n"
+			       "3 5 2 0\n"
+			       "3 5 1 2\n" 
+			       "3 5 3 1\n"
+			       "3 5 0 3\n"; 
+
+
 const char test_mesh_normals_ply[] =
 			       "ply\n"
 			       "format ascii 1.0\n"
@@ -237,7 +282,8 @@ const char test_mesh_normals_colors_off[] =
 
 static void run_simple_octaedron_test(const char *in_file, const char *test_file, const string& test_string); 
 static void run_octaedron_vertex_normal_test(const char *in_file, const char *test_file, const string& test_string); 
-static void run_octaedron_vertex_normal_color_test(const char *in_file, const char *test_file, const string& test_string); 
+static void run_octaedron_vertex_normal_color_test(const char *in_file, const char *test_file, const string& test_string);
+static void run_octaedron_vertex_normal_scale_test(const char *in_file, const char *test_file, const string& test_string); 
 
 
 BOOST_AUTO_TEST_CASE( test_load_save_octaedron_off )
@@ -264,16 +310,21 @@ BOOST_AUTO_TEST_CASE( test_load_save_octaedron_with_vertex_normals_ply )
 
 BOOST_AUTO_TEST_CASE( test_load_save_octaedron_with_vertex_normals_colors_off )
 {
-	string filename();
 	run_octaedron_vertex_normal_color_test(MIA_SOURCE_ROOT"/testdata/octahedron-with-normals-and-color.off",
 					       "octahedron-nc.OFF", test_mesh_normals_colors_off); 
 }
 
 BOOST_AUTO_TEST_CASE( test_load_save_octaedron_with_vertex_normals_colors_ply )
 {
-	string filename();
 	run_octaedron_vertex_normal_color_test(MIA_SOURCE_ROOT"/testdata/octahedron-with-normals-and-color.ply",
 					       "octahedron-nc.PLY", test_mesh_normals_colors_ply); 
+}
+
+BOOST_AUTO_TEST_CASE( test_load_save_octaedron_with_vertex_normals_scale_ply )
+{
+
+	run_octaedron_vertex_normal_scale_test(MIA_SOURCE_ROOT"/testdata/octahedron-with-normals-and-scale.ply",
+					       "octahedron-ns.PLY", test_mesh_normals_scale_ply); 
 }
 
 
@@ -388,6 +439,41 @@ void run_octaedron_vertex_normal_color_test(const char *in_file, const char *tes
         test_set_equal(mesh2->triangles_begin(), mesh2->triangles_end(), test_triangles); 
         test_set_equal(mesh2->normals_begin(), mesh2->normals_end(), test_normals);
 	test_set_equal(mesh2->color_begin(), mesh2->color_end(), test_colors);
+
+	// check file output 
+	FILE *testfile = fopen(test_file, "r");
+	BOOST_REQUIRE(testfile); 
+	char buffer[2000];
+	memset(buffer, 0, 2000); 
+	size_t flen = test_string.length(); //don't count terminating 0 
+	size_t read_bytes = fread(buffer, 1, 2000, testfile);
+	fclose(testfile);
+
+	BOOST_CHECK_EQUAL(read_bytes, flen);
+	BOOST_CHECK(!strcmp(buffer, test_string.c_str()));
+
+	cvdebug() << "Read: '" << buffer << "'\n";
+	
+	unlink(test_file); 
+}
+
+void run_octaedron_vertex_normal_scale_test(const char *in_file, const char *test_file, const string& test_string)
+{
+	auto mesh = CMeshIOPluginHandler::instance().load(in_file);
+        
+        test_set_equal(mesh->vertices_begin(), mesh->vertices_end(), test_vertices);
+        test_set_equal(mesh->triangles_begin(), mesh->triangles_end(), test_triangles); 
+        test_set_equal(mesh->normals_begin(), mesh->normals_end(), test_normals);
+	test_set_equal(mesh->scale_begin(), mesh->scale_end(), test_scale);
+
+	BOOST_REQUIRE(CMeshIOPluginHandler::instance().save(test_file, *mesh));
+
+	auto mesh2 = CMeshIOPluginHandler::instance().load(test_file);
+
+        test_set_equal(mesh2->vertices_begin(), mesh2->vertices_end(), test_vertices);
+        test_set_equal(mesh2->triangles_begin(), mesh2->triangles_end(), test_triangles); 
+        test_set_equal(mesh2->normals_begin(), mesh2->normals_end(), test_normals);
+	test_set_equal(mesh2->scale_begin(), mesh2->scale_end(), test_scale);
 
 	// check file output 
 	FILE *testfile = fopen(test_file, "r");
