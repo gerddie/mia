@@ -58,7 +58,7 @@ C1DWavelet::~C1DWavelet()
 
 std::vector<double> C1DWavelet::backward(const std::vector<double>& x) const
 {
-	return impl->forward(x); 
+	return impl->backward(x); 
 }
 
 std::vector<double> C1DWavelet::forward(const std::vector<double>& x) const
