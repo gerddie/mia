@@ -65,9 +65,6 @@ private:
 
         int m_shift; 
         EPixelType m_pixeltype; 
-
-        
-        
 }; 
 
 template <typename T> 

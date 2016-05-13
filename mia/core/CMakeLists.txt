@@ -100,6 +100,7 @@ SET(MIACORE_SRC_BASE
   slopestatistics.cc
   slopeclassifier.cc
   spacial_kernel.cc
+  sparse_histogram.cc
   splinekernel.cc
   splineparzenmi.cc
   sqmin.cc
@@ -201,6 +202,7 @@ SET(MIACORE_HEADER_BASE
   splinekernel.hh
   splineparzenmi.hh
   spacial_kernel.hh
+  sparse_histogram.hh
   sparse_solver.hh
   sqmin.hh
   statistics.hh
@@ -369,6 +371,7 @@ NEW_TEST(simpson miacore)
 NEW_TEST(slopeclassifier miacore)
 NEW_TEST(slopestatistics miacore)
 NEW_TEST(sparse_solver miacore)
+NEW_TEST(sparse_histogram miacore)
 NEW_TEST(splinekernel miacore)
 NEW_TEST(splineparzenmi miacore)
 NEW_TEST(streamvector miacore)
