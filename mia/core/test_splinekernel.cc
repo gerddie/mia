@@ -18,14 +18,15 @@
  *
  */
 
+
+#include <mia/internal/autotest.hh>
+#include <mia/core/splinekernel.hh>
+#include <mia/core/boundary_conditions.hh>
+
+#include <boost/filesystem/path.hpp>
 #include <stdexcept>
 #include <climits>
 
-#include <mia/internal/autotest.hh>
-
-#include <boost/filesystem/path.hpp>
-#include <mia/core/splinekernel.hh>
-#include <mia/core/boundary_conditions.hh>
 
 namespace bfs=::boost::filesystem; 
 
