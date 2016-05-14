@@ -290,7 +290,7 @@ BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vncs, CVistaMeshtestFixtureVNCS)
 }
 
 
-struct CVistaMeshtestFixtureVNS : public CVistaMeshtestFixtureVNC{
+struct CVistaMeshtestFixtureVNS : public CVistaMeshtestFixtureVN {
         CVistaMeshtestFixtureVNS();
         virtual void test_loaded( const CTriangleMesh& loaded);  
 };
@@ -302,7 +302,7 @@ CVistaMeshtestFixtureVNS::CVistaMeshtestFixtureVNS()
 
 void CVistaMeshtestFixtureVNS::test_loaded( const CTriangleMesh& loaded)
 {
-        CVistaMeshtestFixtureVNC::test_loaded(loaded);
+        CVistaMeshtestFixtureVN::test_loaded(loaded);
 
         test_set_equal(loaded.scale_begin(), loaded.scale_end(), test_scale);
 }
