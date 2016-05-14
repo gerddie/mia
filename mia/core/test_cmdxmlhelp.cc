@@ -158,7 +158,8 @@ int do_main(int argc, char **args)
 			  &CTestPluginHandler::instance()) != CCmdOptionList::hr_no) {
 #ifdef MIA_COVERAGE
 		// strange, the output to std::cerr makes sure that the signal is received, 
-		// sleep(n) doesn't.  
+		// sleep(n) doesn't.
+		sleep(1); 
 		std::cerr << "\n"; 
 		kill(getppid(), SIGINT);
 #endif 
