@@ -62,3 +62,92 @@ BOOST_FIXTURE_TEST_CASE(test_2dimage_plugin, PathInitFixture)
 {
 	test_2dimageio_plugins(); 
 }
+
+BOOST_AUTO_TEST_CASE ( test_2dvfio )
+{
+        C2DBounds size(2,3); 
+        C2DFVectorfield vf(size);
+
+        vector<C2DFVector> test_data = {
+                C2DFVector(2, 3), C2DFVector(3, 4), C2DFVector(4, 5),
+                C2DFVector(5, 6), C2DFVector(6, 7), C2DFVector(8, 9)
+        };
+
+        copy(test_data.begin(), test_data.end(), vf.begin()); 
+
+        C2DIOVectorfield iovf(vf); 
+        BOOST_REQUIRE(C2DVFIOPluginHandler::instance().save("2dvf.exr", iovf));
+
+        auto loaded = C2DVFIOPluginHandler::instance().load("2dvf.exr");
+        BOOST_REQUIRE(loaded);
+        
+        BOOST_CHECK_EQUAL(loaded->get_size(), size);
+        auto i = loaded->begin();
+        auto e = loaded->end();
+        auto t = vf.begin();
+
+        while (i != e) {
+                BOOST_CHECK_EQUAL(*i, *t);
+                ++i; ++t; 
+        }
+}
+
+
+BOOST_AUTO_TEST_CASE ( test_2dimageio_float )
+{
+        C2DBounds size(2,3); 
+        C2DFImage image(size);
+
+        vector<float> test_data = {2.1, 3.3, 3.5, 4.5, 4.6, 5.2};
+
+        copy(test_data.begin(), test_data.end(), image.begin()); 
+
+        
+        BOOST_REQUIRE(save_image("2dimage-f.exr", image));
+
+        auto loaded = load_image2d("2dimage-f.exr");
+        BOOST_REQUIRE(loaded);
+	
+        BOOST_CHECK_EQUAL(loaded->get_size(), size);
+
+	const C2DFImage& float_loaded = dynamic_cast<const C2DFImage&>(*loaded); 
+	
+        auto i = float_loaded.begin();
+        auto e = float_loaded.end();
+        auto t = image.begin();
+
+        while (i != e) {
+                BOOST_CHECK_EQUAL(*i, *t);
+                ++i; ++t; 
+        }
+}
+
+BOOST_AUTO_TEST_CASE ( test_2dimageio_uint )
+{
+        C2DBounds size(2,3); 
+        C2DUIImage image(size);
+
+        vector<float> test_data = {2, 3, 3, 4, 4, 5};
+
+        copy(test_data.begin(), test_data.end(), image.begin()); 
+
+        
+        BOOST_REQUIRE(save_image("2dimage-ui.exr", image));
+
+        auto loaded = load_image2d("2dimage-ui.exr");
+        BOOST_REQUIRE(loaded);
+	
+        BOOST_CHECK_EQUAL(loaded->get_size(), size);
+
+	const C2DUIImage& float_loaded = dynamic_cast<const C2DUIImage&>(*loaded); 
+	
+        auto i = float_loaded.begin();
+        auto e = float_loaded.end();
+        auto t = image.begin();
+
+        while (i != e) {
+                BOOST_CHECK_EQUAL(*i, *t);
+                ++i; ++t; 
+        }
+}
+
