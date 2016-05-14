@@ -219,9 +219,11 @@ static CTriangleMesh *read_vcgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 	CTriangleMesh::vertex_iterator e = vertices->end();
 	CTriangleMesh::color_iterator c = color->begin();
 
+	cvdebug() << "First color = " << *c << "\n"; 
 	while (node && v != e) {
 		*v++ = node->vertex;
 		*c++ = node->color;
+		cvdebug() << "load: n=" << node->vertex << " c=" << node->color << "\n"; 
 		node = (TVCNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 
@@ -416,7 +418,7 @@ static VistaIOGraph create_vngraph(const CTriangleMesh& mesh)
 	TVNNodeType<float> node;
 	node.type = 2;
 	int pos = 1;
-
+	
 	while (vi != ve) {
 		node.vertex = *vi++;
 		node.normal = *ni++;
@@ -476,12 +478,13 @@ static VistaIOGraph create_vcgraph(const CTriangleMesh& mesh)
 	CTriangleMesh::const_color_iterator  ci  = mesh.color_begin();
 
 	int pos = 1;
-	TVNCNodeType<float> node;
+	TVCNodeType<float> node;
 	node.type = 7;
-
+	
 	while (vi != ve) {
 		node.vertex = *vi++;
 		node.color  = *ci++;
+		cvdebug() << "write: n=" << node.vertex << " c=" << node.color << "\n"; 
 		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
@@ -782,13 +785,13 @@ bool CVistaMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh)c
 	while (lookup->data_avail && lookup->data_avail != type)
 		++lookup;
 
-	cvdebug() << "will save " << lookup->type_name << "\n";
-
 	if (!lookup->data_avail) {
 		cverr() << "Fatal: unknown data in mesh\n";
 		return false;
 	}
 
+	cvdebug() << "will save " << lookup->type_name << "\n";
+	
 	vertex_graph = lookup->create(mesh);
 
 	if (!vertex_graph) {

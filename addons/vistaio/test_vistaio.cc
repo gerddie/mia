@@ -58,7 +58,7 @@ set<C3DFVector, vector3d_less<C3DFVector> > test_normals = {
 set<C3DFVector, vector3d_less<C3DFVector> > test_colors = {
         C3DFVector(0.1, 0.5, 0.5), C3DFVector(0.2, 0.6, 0.7), 
         C3DFVector(0.3, 0.6, 0.7), C3DFVector(0.4, 0.6, 0.7), 
-        C3DFVector(0.5, 0.6, 0.7), C3DFVector(0.6, 0.6, 0.7)
+        C3DFVector(0.5, 0.6, 0.7), C3DFVector(0.6, 0.6, 1)
 };
 
 set<float> test_scale = {
@@ -210,7 +210,7 @@ void CVistaMeshtestFixtureVC::test_loaded( const CTriangleMesh& loaded)
         test_set_equal(loaded.color_begin(), loaded.color_end(), test_colors);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vc, CVistaMeshtestFixtureVNC)
+BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vc, CVistaMeshtestFixtureVC)
 {
         run("mesh-vc.vmesh"); 
 }
