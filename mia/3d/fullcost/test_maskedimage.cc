@@ -219,3 +219,130 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost_ref_mask)
 	BOOST_CHECK_CLOSE(gradient[113], 255 *255/128.0 , 0.1);
 	
 }
+
+
+BOOST_AUTO_TEST_CASE( test_imagefullcost_src_ref_mask)
+{
+
+	// create two images 
+	const unsigned char src_data[64] = {
+		0, 0, 0, 0,   0,  0,  0, 0,  0,  0,  0, 0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   0,  0,  0, 0,  0,  0,  0, 0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   0,255,255, 0,  0,255,255, 0,   0, 0, 0, 0,
+		0, 0, 0, 0,   0,255,  0, 0,  0,  0,  0, 0,   0, 0, 0, 0
+
+	};
+	const unsigned char ref_data[64] = {
+		0, 0, 0, 0, 
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0
+
+	};
+
+	const bool src_mask_data[64] = {
+		0, 0, 0, 0, 
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		0, 1, 1, 0,
+		0, 1, 1, 0,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		0, 1, 1, 0,
+		0, 1, 1, 0,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0
+
+	};
+
+	const bool ref_mask_data[64] = {
+		0, 0, 0, 0, 
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		1, 1, 1, 1,
+		1, 1, 1, 1,
+		0, 0, 0, 0,
+
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0
+
+	};
+
+	
+	C3DBounds size(4,4,4); 
+
+	P3DImage src(new C3DUBImage(size, src_data ));
+	P3DImage ref(new C3DUBImage(size, ref_data ));
+
+	P3DImage src_mask(new C3DBitImage(size, src_mask_data ));
+	P3DImage ref_mask(new C3DBitImage(size, ref_mask_data ));
+	
+	BOOST_REQUIRE(save_image("src.@", src)); 
+	BOOST_REQUIRE(save_image("ref.@", ref));
+	BOOST_REQUIRE(save_image("src-mask.@", ref_mask)); 
+	BOOST_REQUIRE(save_image("ref-mask.@", src_mask)); 
+
+        assert("at least one mask must be provided"); 
+	C3DMaskedImageFullCost cost("src.@", "ref.@", "src-mask.@", "ref-mask.@", nullptr, nullptr, 
+                                    C3DMaskedImageCostPluginHandler::instance().produce("ssd"), 1.0); 
+
+	cvdebug() << "prepare cost\n"; 
+	cost.reinit(); 
+	cvdebug() << "set size cost\n"; 
+	cost.set_size(size);
+	
+	C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror")); 
+	
+	CDoubleVector gradient(t.degrees_of_freedom()); 
+	double cost_value = cost.evaluate(t, gradient);
+	BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u); 
+
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0/16.0 , 0.1);
+
+	double value = cost.cost_value(t);
+	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0/16.0  , 0.1);
+
+	value = cost.cost_value();
+	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0/16.0  , 0.1);
+	
+	BOOST_CHECK_CLOSE(gradient[111], 255 *255/128.0 , 0.1);
+	BOOST_CHECK_CLOSE(gradient[112], 255 *255/128.0 , 0.1);
+	BOOST_CHECK_CLOSE(gradient[113], 255 *255/128.0 , 0.1);
+
+	BOOST_CHECK(cost.has(property_gradient));
+
+	BOOST_CHECK(!cost.has("nonexistent-property"));
+}
