@@ -189,6 +189,9 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost_src_ref_mask)
 	BOOST_CHECK(cost.get_full_size(read_size));
 	BOOST_CHECK_EQUAL(read_size, size);
 
+	C2DBounds read_wrong_size(2,3); 
+	BOOST_CHECK(!cost.get_full_size(read_wrong_size));
+		
 	cost.set_size(C2DBounds(4,4));
 	
 }

@@ -211,7 +211,7 @@ void C3DMaskedImageFullCost::do_reinit()
 			m_src_mask = m_src_mask_prefilter->filter(*m_src_mask); 
 
                 if (m_src->get_size() != m_src_mask->get_size()) {
-                        throw create_exception<runtime_error>("C3DMaskedImageFullCost: moving image has size [", 
+                        throw create_exception<invalid_argument>("C3DMaskedImageFullCost: moving image has size [", 
                                                               m_src->get_size(), "], but corresponding mask is of size [", 
                                                               m_src_mask->get_size(), "]"); 
                 }
@@ -235,9 +235,9 @@ void C3DMaskedImageFullCost::do_reinit()
 			m_ref_mask = m_src_mask_prefilter->filter(*m_ref_mask); 
 				
                 if (m_ref->get_size() != m_ref_mask->get_size()) {
-                        throw create_exception<runtime_error>("C3DMaskedImageFullCost: reference image has size [", 
-                                                              m_src->get_size(), "], but corresponding mask is of size [",
-                                                              m_src_mask->get_size(), "]"); 
+                        throw create_exception<invalid_argument>("C3DMaskedImageFullCost: reference image has size [", 
+                                                              m_ref->get_size(), "], but corresponding mask is of size [",
+                                                              m_ref_mask->get_size(), "]"); 
                 }
 
 
