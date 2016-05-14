@@ -48,6 +48,8 @@ IF (WITH_VISTAIO)
     PLUGIN_WITH_PREFIX2("mesh" "io" vistamesh "${DEPSMESH}")
     PLUGIN_WITH_TEST_AND_PREFIX2("2dtransform" "io" 2dtrans "${DEPS2D}" TESTLIBS mia2dtest)
     PLUGIN_WITH_TEST_AND_PREFIX2("3dtransform" "io" 3dtrans "${DEPS3D}" )
+
+
     
   
     ADD_EXECUTABLE(test-vista4mia  test_vista4mia.cc)
@@ -55,6 +57,9 @@ IF (WITH_VISTAIO)
     SET(VISTADEPLIBS vista4mia mia3dtest mia2dtest mia3d mia2d)
     
     TARGET_LINK_LIBRARIES(test-vista4mia ${VISTADEPLIBS} ${BOOST_UNITTEST})
+
+    SET(VISTAIO_TESTLIBS miamesh vista4mia)
+    NEW_TEST(vistaio "${VISTAIO_TESTLIBS}")
     
     SET(INSTALL_TARGETS vista4mia)	
     INSTALL_BASE("${INSTALL_TARGETS}")

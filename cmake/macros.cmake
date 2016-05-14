@@ -234,12 +234,12 @@ MACRO(NEW_TEST_BASE name libs)
 ENDMACRO(NEW_TEST_BASE)
 
 MACRO(NEW_TEST name libs)
-  NEW_TEST_BASE(${name} ${libs})
+  NEW_TEST_BASE(${name} "${libs}")
   ADD_TEST(${name} ${EXENAME})
 ENDMACRO(NEW_TEST)
 
 MACRO(NEW_TEST_WITH_PARAM name libs param)
-  NEW_TEST_BASE(${name} ${libs})
+  NEW_TEST_BASE(${name} "${libs}")
   ADD_TEST(${name} ${EXENAME} ${param})
   SET_TESTS_PROPERTIES(${name}
     PROPERTIES ENVIRONMENT "MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}")
