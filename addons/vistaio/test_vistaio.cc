@@ -25,6 +25,8 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/mesh/triangularMesh.hh>
+#include <mia/2d/vfio.hh>
+#include <mia/3d/vfio.hh>
 
 #include <set>
 #include <ostream>
@@ -138,7 +140,8 @@ void CVistaMeshtestFixtureV::test_loaded( const CTriangleMesh& loaded)
 void CVistaMeshtestFixtureV::run(const char *testfilename)
 {
         BOOST_REQUIRE(CMeshIOPluginHandler::instance().save(testfilename, *mesh));
-        auto loaded_mesh = CMeshIOPluginHandler::instance().load(testfilename); 
+        auto loaded_mesh = CMeshIOPluginHandler::instance().load(testfilename);
+        BOOST_REQUIRE(loaded_mesh);
         test_loaded(*loaded_mesh); 
 }
 
@@ -212,6 +215,64 @@ void CVistaMeshtestFixtureVNS::test_loaded( const CTriangleMesh& loaded)
 BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vns, CVistaMeshtestFixtureVNS)
 {
         run("mesh-vns.vmesh"); 
+}
+
+BOOST_AUTO_TEST_CASE ( test_3dvfio )
+{
+        C3DBounds size(1,2,3); 
+        C3DFVectorfield vf(size);
+
+        vector<C3DFVector> test_data = {
+                C3DFVector(1, 2, 3), C3DFVector(2, 3, 4), C3DFVector(3, 4, 5),
+                C3DFVector(4, 5, 6), C3DFVector(5, 6, 7), C3DFVector(7, 8, 9)
+        };
+
+        copy(test_data.begin(), test_data.end(), vf.begin()); 
+
+        C3DIOVectorfield iovf(vf); 
+        BOOST_REQUIRE(C3DVFIOPluginHandler::instance().save("3d.vf", iovf));
+
+        auto loaded = C3DVFIOPluginHandler::instance().load("3d.vf");
+        BOOST_REQUIRE(loaded);
+        
+        BOOST_CHECK_EQUAL(loaded->get_size(), size);
+        auto i = loaded->begin();
+        auto e = loaded->end();
+        auto t = vf.begin();
+
+        while (i != e) {
+                BOOST_CHECK_EQUAL(*i, *t);
+                ++i; ++t; 
+        }
+}
+
+BOOST_AUTO_TEST_CASE ( test_2dvfio )
+{
+        C2DBounds size(2,3); 
+        C2DFVectorfield vf(size);
+
+        vector<C2DFVector> test_data = {
+                C2DFVector(2, 3), C2DFVector(3, 4), C2DFVector(4, 5),
+                C2DFVector(5, 6), C2DFVector(6, 7), C2DFVector(8, 9)
+        };
+
+        copy(test_data.begin(), test_data.end(), vf.begin()); 
+
+        C2DIOVectorfield iovf(vf); 
+        BOOST_REQUIRE(C2DVFIOPluginHandler::instance().save("2d.vf", iovf));
+
+        auto loaded = C2DVFIOPluginHandler::instance().load("2d.vf");
+        BOOST_REQUIRE(loaded);
+        
+        BOOST_CHECK_EQUAL(loaded->get_size(), size);
+        auto i = loaded->begin();
+        auto e = loaded->end();
+        auto t = vf.begin();
+
+        while (i != e) {
+                BOOST_CHECK_EQUAL(*i, *t);
+                ++i; ++t; 
+        }
 }
 
 

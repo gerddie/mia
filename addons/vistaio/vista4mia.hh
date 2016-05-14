@@ -146,7 +146,7 @@ VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributedData& attributes, const Vis
 /**
    Helper class to indice atomatic destruction of vista attribute lists. 
  */
-class CVAttrList {
+class VISTA4MIA_EXPORT CVAttrList {
 public: 
 	CVAttrList(VistaIOAttrList list); 
 	~CVAttrList(); 
