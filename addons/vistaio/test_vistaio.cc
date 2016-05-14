@@ -145,11 +145,6 @@ void CVistaMeshtestFixtureV::run(const char *testfilename)
         test_loaded(*loaded_mesh); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_vista_meshio_v, CVistaMeshtestFixtureV)
-{
-        run("mesh-v.vmesh"); 
-}
-
 struct CVistaMeshtestFixtureVN : public CVistaMeshtestFixtureV{
         CVistaMeshtestFixtureVN();
         virtual void test_loaded( const CTriangleMesh& loaded);  
@@ -171,6 +166,9 @@ BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vn, CVistaMeshtestFixtureVN)
 {
         run("mesh-vn.vmesh"); 
 }
+
+
+
 
 struct CVistaMeshtestFixtureVNC : public CVistaMeshtestFixtureVN{
         CVistaMeshtestFixtureVNC();
@@ -195,27 +193,97 @@ BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vnc, CVistaMeshtestFixtureVNC)
 }
 
 
-struct CVistaMeshtestFixtureVNS : public CVistaMeshtestFixtureVN{
-        CVistaMeshtestFixtureVNS();
+struct CVistaMeshtestFixtureVC : public CVistaMeshtestFixtureV{
+        CVistaMeshtestFixtureVC();
         virtual void test_loaded( const CTriangleMesh& loaded);  
 };
 
-CVistaMeshtestFixtureVNS::CVistaMeshtestFixtureVNS()
+CVistaMeshtestFixtureVC::CVistaMeshtestFixtureVC()
+{
+        copy(test_colors.begin(), test_colors.end(), mesh->color_begin()); 
+}
+
+void CVistaMeshtestFixtureVC::test_loaded( const CTriangleMesh& loaded)
+{
+        CVistaMeshtestFixtureV::test_loaded(loaded);
+
+        test_set_equal(loaded.color_begin(), loaded.color_end(), test_colors);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vc, CVistaMeshtestFixtureVNC)
+{
+        run("mesh-vc.vmesh"); 
+}
+
+
+struct CVistaMeshtestFixtureVS : public CVistaMeshtestFixtureV{
+        CVistaMeshtestFixtureVS();
+        virtual void test_loaded( const CTriangleMesh& loaded);  
+};
+
+CVistaMeshtestFixtureVS::CVistaMeshtestFixtureVS()
 {
         copy(test_scale.begin(), test_scale.end(), mesh->scale_begin()); 
 }
 
-void CVistaMeshtestFixtureVNS::test_loaded( const CTriangleMesh& loaded)
+void CVistaMeshtestFixtureVS::test_loaded( const CTriangleMesh& loaded)
 {
-        CVistaMeshtestFixtureVN::test_loaded(loaded);
+        CVistaMeshtestFixtureV::test_loaded(loaded);
 
         test_set_equal(loaded.scale_begin(), loaded.scale_end(), test_scale);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vns, CVistaMeshtestFixtureVNS)
+BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vns, CVistaMeshtestFixtureVS)
 {
-        run("mesh-vns.vmesh"); 
+        run("mesh-vs.vmesh"); 
 }
+
+
+struct CVistaMeshtestFixtureVCS : public CVistaMeshtestFixtureVC{
+        CVistaMeshtestFixtureVCS();
+        virtual void test_loaded( const CTriangleMesh& loaded);  
+};
+
+CVistaMeshtestFixtureVCS::CVistaMeshtestFixtureVCS()
+{
+        copy(test_scale.begin(), test_scale.end(), mesh->scale_begin()); 
+}
+
+void CVistaMeshtestFixtureVCS::test_loaded( const CTriangleMesh& loaded)
+{
+        CVistaMeshtestFixtureVC::test_loaded(loaded);
+
+        test_set_equal(loaded.scale_begin(), loaded.scale_end(), test_scale);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vcs, CVistaMeshtestFixtureVCS)
+{
+        run("mesh-vcs.vmesh"); 
+}
+
+struct CVistaMeshtestFixtureVNCS : public CVistaMeshtestFixtureVNC{
+        CVistaMeshtestFixtureVNCS();
+        virtual void test_loaded( const CTriangleMesh& loaded);  
+};
+
+CVistaMeshtestFixtureVNCS::CVistaMeshtestFixtureVNCS()
+{
+        copy(test_scale.begin(), test_scale.end(), mesh->scale_begin()); 
+}
+
+void CVistaMeshtestFixtureVNCS::test_loaded( const CTriangleMesh& loaded)
+{
+        CVistaMeshtestFixtureVNC::test_loaded(loaded);
+
+        test_set_equal(loaded.scale_begin(), loaded.scale_end(), test_scale);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_vista_meshio_vncs, CVistaMeshtestFixtureVNCS)
+{
+        run("mesh-vncs.vmesh"); 
+}
+
+
 
 BOOST_AUTO_TEST_CASE ( test_3dvfio )
 {
