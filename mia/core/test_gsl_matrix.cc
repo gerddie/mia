@@ -29,12 +29,14 @@
 #include <mia/core/gsl_matrix.hh>
 
 #include <stdexcept>
+#include <sstream>
 
 using namespace gsl; 
 using namespace ::boost;
 using namespace ::boost::unit_test;
 
-
+using std::ostringstream;
+using std::string; 
 
 BOOST_AUTO_TEST_CASE( test_matrix_alloc_and_free ) 
 {
@@ -134,6 +136,47 @@ BOOST_AUTO_TEST_CASE( test_copy_ops )
 	BOOST_CHECK_EQUAL(m2(1,0), 2.0); 
 	BOOST_CHECK_EQUAL(m2(1,1), 2.0); 
 	BOOST_CHECK_EQUAL(m2(1,2), 2.0);
+
+
+	const double in_values[6] = {5, 6, 7, 8, 9, 2};
+	const double *iv = in_values;
+
+	for (auto im = m.begin(); im != m.end(); ++im, ++iv){
+		*im = *iv;
+	}
+	
+	BOOST_CHECK_EQUAL(m(0,0), 5.0); 
+	BOOST_CHECK_EQUAL(m(0,1), 6.0); 
+	BOOST_CHECK_EQUAL(m(0,2), 7.0); 
+	BOOST_CHECK_EQUAL(m(1,0), 8.0); 
+	BOOST_CHECK_EQUAL(m(1,1), 9.0); 
+	BOOST_CHECK_EQUAL(m(1,2), 2.0);
+
+	auto im = m.begin(); 
+	BOOST_CHECK(im == m.begin()); 
+}
+
+BOOST_AUTO_TEST_CASE( test_print )
+{
+	Matrix m;
+	ostringstream s_empty;
+	s_empty << m;
+
+	BOOST_CHECK_EQUAL(s_empty.str(), string("[(null)]"));
+
+	double v[] = {1, 2}; 
+	
+	Matrix m12(1, 2, v);
+	ostringstream s_simple12;
+	s_simple12 << m12;
+	BOOST_CHECK_EQUAL(s_simple12.str(), string("[\n  1, 2, \n]"));
+	
+	const gsl_matrix *gslm = m12;
+	Matrix cm12(gslm);
+	ostringstream s_csimple12;
+	s_csimple12 << cm12;
+	BOOST_CHECK_EQUAL(s_csimple12.str(), string("[(const)\n  1, 2, \n]"));
+	
 	
 	
 }

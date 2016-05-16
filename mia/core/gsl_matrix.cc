@@ -163,7 +163,7 @@ VectorView Matrix::get_row(int r)
 
 ConstVectorView Matrix::get_row(int r) const 
 {
-	return ConstVectorView(gsl_matrix_const_row(m_matrix, r)); 
+	return ConstVectorView(gsl_matrix_const_row(m_const_matrix, r)); 
 }
 
 void Matrix::set_column(int c, const Vector& col)
@@ -180,7 +180,7 @@ VectorView Matrix::get_column(int c)
 
 ConstVectorView Matrix::get_column(int c) const
 {
-	return ConstVectorView(gsl_matrix_const_column(m_matrix, c)); 
+	return ConstVectorView(gsl_matrix_const_column(m_const_matrix, c)); 
 }
 
 
@@ -202,7 +202,7 @@ void Matrix::print(std::ostream& os) const
 	os << "["; 
 	if (!m_matrix) {
 		if (!m_const_matrix) {
-			os << "(null)]\n"; 
+			os << "(null)]"; 
 			return; 
 		}
 			
@@ -216,7 +216,9 @@ void Matrix::print(std::ostream& os) const
 		copy(mrow.begin(), mrow.end(), ostream_iterator<double>(os, ", ")); 
 		os << "\n"; 
 	}
-	os << "]"; 
+	os << "]";
+
+	
 }
 
 void Matrix::set(size_t i, size_t j, double x)
