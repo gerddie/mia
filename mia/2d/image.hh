@@ -85,6 +85,8 @@ public:
 
 	virtual std::pair<double, double> get_minmax_intensity() const = 0; 
 
+	virtual void make_single_ref() = 0; 
+	
  protected:
          /** Constructor initializes the size and the pixel type
          */
@@ -312,7 +314,9 @@ public:
 	C2DFVector get_gradient(const C2DFVector& p) const;
 
 	/// \returns a pair (minimum, maximum) pixel intensity 
-	std::pair<double, double> get_minmax_intensity() const; 
+	std::pair<double, double> get_minmax_intensity() const;
+
+	void make_single_ref(); 
 private:
 	T2DDatafield<T> m_image;
 };

@@ -179,6 +179,11 @@ const T2DDatafield<T>& T2DImage<T>::data() const
 	return m_image;
 }
 
+template <typename T>
+void T2DImage<T>::make_single_ref()
+{
+	m_image.make_single_ref(); 
+}
 
 template <typename T>
 void T2DImage<T>::get_data_line_x(size_t y, std::vector<T>& buffer) const
