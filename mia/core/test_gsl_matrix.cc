@@ -28,6 +28,8 @@
 #include <boost/test/floating_point_comparison.hpp>
 #include <mia/core/gsl_matrix.hh>
 
+#include <stdexcept>
+
 using namespace gsl; 
 using namespace ::boost;
 using namespace ::boost::unit_test;
@@ -77,6 +79,131 @@ BOOST_AUTO_TEST_CASE( test_with_init )
 	BOOST_CHECK_EQUAL(m(1,2), 6); 
 	
 }
+
+BOOST_AUTO_TEST_CASE( test_copy_ops ) 
+{
+	Matrix m(2,3, 2.0); 
+
+	BOOST_CHECK_EQUAL(m(0,0), 2.0); 
+	BOOST_CHECK_EQUAL(m(0,1), 2.0); 
+	BOOST_CHECK_EQUAL(m(0,2), 2.0); 
+	BOOST_CHECK_EQUAL(m(1,0), 2.0); 
+	BOOST_CHECK_EQUAL(m(1,1), 2.0); 
+	BOOST_CHECK_EQUAL(m(1,2), 2.0);
+
+	Matrix m2(2,3, 1.0);
+
+	BOOST_CHECK_EQUAL(m2.rows(), 2u); 
+	BOOST_CHECK_EQUAL(m2.cols(), 3u); 
+			  
+	m2.reset(3, 2, 3.0);
+
+	BOOST_CHECK_EQUAL(m2.rows(), 3u); 
+	BOOST_CHECK_EQUAL(m2.cols(), 2u);
+	
+	BOOST_CHECK_EQUAL(m2(0,0), 3.0); 
+	BOOST_CHECK_EQUAL(m2(0,1), 3.0); 
+	BOOST_CHECK_EQUAL(m2(1,0), 3.0); 
+	BOOST_CHECK_EQUAL(m2(1,1), 3.0); 
+	BOOST_CHECK_EQUAL(m2(2,0), 3.0); 
+	BOOST_CHECK_EQUAL(m2(2,1), 3.0);
+
+	Matrix *m3 = &m2;
+	m3->reset(2, 3, 4.0); 
+	
+	m2 = *m3;
+
+	BOOST_CHECK_EQUAL(m2.rows(), 2u); 
+	BOOST_CHECK_EQUAL(m2.cols(), 3u);
+	
+	BOOST_CHECK_EQUAL(m2(0,0), 4.0); 
+	BOOST_CHECK_EQUAL(m2(0,1), 4.0); 
+	BOOST_CHECK_EQUAL(m2(0,2), 4.0); 
+	BOOST_CHECK_EQUAL(m2(1,0), 4.0); 
+	BOOST_CHECK_EQUAL(m2(1,1), 4.0); 
+	BOOST_CHECK_EQUAL(m2(1,2), 4.0);
+
+	m2 = m;
+
+	BOOST_CHECK_EQUAL(m2.rows(), 2u); 
+	BOOST_CHECK_EQUAL(m2.cols(), 3u); 
+	
+	BOOST_CHECK_EQUAL(m2(0,0), 2.0); 
+	BOOST_CHECK_EQUAL(m2(0,1), 2.0); 
+	BOOST_CHECK_EQUAL(m2(0,2), 2.0); 
+	BOOST_CHECK_EQUAL(m2(1,0), 2.0); 
+	BOOST_CHECK_EQUAL(m2(1,1), 2.0); 
+	BOOST_CHECK_EQUAL(m2(1,2), 2.0);
+	
+	
+}
+
+BOOST_AUTO_TEST_CASE( test_const_iterator )
+{
+	const double input[6]  = { 
+		1,2,3,4,5,6
+	}; 
+	
+	Matrix m(2,3, input);
+
+	int v = 1; 
+	for ( auto i = m.begin(); i != m.end(); ++i, ++v) {
+		BOOST_CHECK_EQUAL(*i, v); 
+	}
+
+	auto i = m.begin();
+	BOOST_CHECK(i == m.begin()); 
+}
+
+BOOST_AUTO_TEST_CASE( test_sum )
+{
+	const double input1[6]  = { 
+		1,2,3,4,5,6
+	};
+	
+	const double input2[6]  = { 
+		5,4,3,2,1,0
+	}; 
+
+	
+	Matrix m1(2, 3, input1);
+	Matrix m2(2, 3, input2);
+
+	Matrix m3 = m1 + m2;
+
+	BOOST_CHECK_EQUAL(m3.rows(), 2u); 
+	BOOST_CHECK_EQUAL(m3.cols(), 3u); 
+	
+	BOOST_CHECK_EQUAL(m3(0,0), 6.0); 
+	BOOST_CHECK_EQUAL(m3(0,1), 6.0); 
+	BOOST_CHECK_EQUAL(m3(0,2), 6.0); 
+	BOOST_CHECK_EQUAL(m3(1,0), 6.0); 
+	BOOST_CHECK_EQUAL(m3(1,1), 6.0); 
+	BOOST_CHECK_EQUAL(m3(1,2), 6.0);
+	
+}
+
+BOOST_AUTO_TEST_CASE( test_sum_fail )
+{
+	const double input1[6]  = { 
+		1,2,3,4,5,6
+	};
+	
+	const double input2[6]  = { 
+		5,4,3,2,1,0
+	}; 
+
+	
+	Matrix m1(2, 3, input1);
+	Matrix m2(3, 2, input2);
+
+	// this must fail 
+	BOOST_CHECK_THROW(m1 + m2, std::logic_error); 
+
+	
+}
+
+
 
 BOOST_AUTO_TEST_CASE( test_transpose ) 
 {
@@ -372,6 +499,11 @@ BOOST_AUTO_TEST_CASE( test_const_row_ops )
 	
 	BOOST_CHECK(b == mr.end()); 
 
+	double v_init[5] = {1, 2, 3, 4, 5}; 
+	
+	Vector v(5, v_init);
+
+	BOOST_CHECK_EQUAL(m.dot_row(9, v), 46.0); 
 }
 
 
@@ -528,3 +660,5 @@ BOOST_AUTO_TEST_CASE( test_col_ops )
 	BOOST_CHECK_EQUAL(mr3[8], 3); 
 	BOOST_CHECK_EQUAL(mr3[9], 2); 	
 }
+
+

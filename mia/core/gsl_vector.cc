@@ -19,10 +19,12 @@
  */
 
 #include <mia/core/gsl_vector.hh>
+#include <mia/core/errormacro.hh>
 
 #include <cstring>
 
 namespace gsl {
+
 
 Vector::Vector():
 	data(NULL), 
@@ -145,6 +147,41 @@ Vector::size_type Vector::size() const
 	return this->cdata->size; 
 }
 
+extern "C" void gsl_error_handler (const char * reason, 
+				   const char * file, 
+				   int line, 
+				   int gsl_errno)
+{
+	switch (gsl_errno) {
+	case GSL_EBADLEN: 
+		throw mia::create_exception<std::logic_error>("GSL Error: '", reason,
+							      "' ", file, ":", line, ", Errno:");
+	default:
+		throw mia::create_exception<std::runtime_error>("GSL Error: '", reason,
+								"' ", file, ":", line, ", (Errno:", gsl_errno, ")");
+	}
+}
+
+class CSetGSLErrorHandler {
+public: 
+	CSetGSLErrorHandler();
+
+	~CSetGSLErrorHandler();
+private: 
+	gsl_error_handler_t *m_old_hander; 
+	
+}; 
+
+CSetGSLErrorHandler::CSetGSLErrorHandler()
+{
+	m_old_hander = gsl_set_error_handler(gsl_error_handler); 
+}
+
+CSetGSLErrorHandler::~CSetGSLErrorHandler()
+{
+	gsl_set_error_handler(m_old_hander);
+}
+
 
 #ifdef NDEBUG 
 	class CTurnOffErrorHandler {
@@ -158,7 +195,9 @@ Vector::size_type Vector::size() const
 		gsl_set_error_handler_off (); 
 	}
 		
-	const CTurnOffErrorHandler gsl_turn_off_error_handler; 		
+	const CTurnOffErrorHandler gsl_turn_off_error_handler;
+#else
+CSetGSLErrorHandler replace_error_handler; 
 #endif 
 
 }
