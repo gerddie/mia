@@ -62,10 +62,10 @@ public:
 			   size_t reference, size_t max_delta); 
 	
 	/// copy constructor 
-	TSimilarityProfile(const TSimilarityProfile<dim>& org); 
+	TSimilarityProfile(const TSimilarityProfile<dim>& org) = default; 
 	
 	/// assignment operator 
-	TSimilarityProfile<dim>& operator = (const TSimilarityProfile<dim>& org); 
+	TSimilarityProfile<dim>& operator = (const TSimilarityProfile<dim>& org)  = default; 
 
 	
 	/// \returns the peak frequency coefficent and its index
