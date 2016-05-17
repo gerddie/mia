@@ -32,7 +32,7 @@ CSparseHistogram::CSparseHistogram():
 {
 }
 
-vector<pair<int, unsigned long>> CSparseHistogram::get_compressed_histogram()const
+CSparseHistogram::Compressed CSparseHistogram::get_compressed_histogram()const
 {
         int nonzero_bins = 0;
         for (auto b: m_histogram) {

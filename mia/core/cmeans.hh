@@ -34,8 +34,8 @@ public:
 
 	class EXPORT_CORE SparseProbmap { 
 	public: 
-		typedef std::pair<double, DVector> value_type;  
-		typedef std::vector<std::pair<double, DVector>> Map;
+		typedef std::pair<unsigned short, DVector> value_type;  
+		typedef std::vector<value_type> Map;
 
 		SparseProbmap() = delete; 
 		SparseProbmap (size_t size);
@@ -115,8 +115,15 @@ private:
 }; 
 
 /// @cond NEVER
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif 
 extern template class EXPORT_CORE TPlugin<CMeans::Initializer, CMeans::Initializer>; 
 extern template class EXPORT_CORE TFactory<CMeans::Initializer>;
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 extern template class EXPORT_CORE TFactoryPluginHandler<TFactory<CMeans::Initializer>>;
 extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<TFactory<CMeans::Initializer>> >;
 /// @endcond

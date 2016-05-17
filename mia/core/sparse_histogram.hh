@@ -38,7 +38,9 @@ NS_MIA_BEGIN
 class EXPORT_CORE CSparseHistogram : public TFilter<size_t> {
         
 public: 
-        CSparseHistogram();
+	typedef std::vector<std::pair<int, unsigned long>> Compressed; 
+
+	CSparseHistogram();
 
         /**
            Fees pixels to the histogram
@@ -53,7 +55,7 @@ public:
         /**
            \returns the histogram as a vector of <value, count> pairs 
          */
-        std::vector<std::pair<int, unsigned long>> get_compressed_histogram()const; 
+        Compressed get_compressed_histogram()const; 
  private: 
         std::vector<unsigned long> m_histogram; 
         int m_shift; 
