@@ -157,7 +157,12 @@ void read_faces(CTriangleMesh::CTrianglefield& triangles, unsigned n_faces,
 		get_line(buffer, filename, file);
 
 		istringstream buf(buffer);
-		buf >> count; 
+		buf >> count;
+		if (count > v.max_size()) {
+			throw create_exception<runtime_error>("PLY: ", filename, ": ", count, " vertices specified ",
+							      "but implementation only supports up to ", v.max_size()); 
+		}
+		
 		v.resize(count);
 		for (unsigned i = 0; i < count; ++i) {
 			buf >> v[i];
@@ -217,7 +222,7 @@ PTriangleMesh TPlyMeshIO::do_load(string const &  filename) const
 	cvdebug() << "Load as PLY?\n"; 
 	char buffer[2048];
 	int n_vertices = 0;
-	int n_face = 0;
+	unsigned n_face = 0;
 
 	CInputFile f(filename);
 	if (!f)
@@ -278,6 +283,12 @@ PTriangleMesh TPlyMeshIO::do_load(string const &  filename) const
 	read_vertex_data(*vertices, normals, colors, scales, buffer, filename, f);
 	
 	CTriangleMesh::PTrianglefield triangles(new  CTriangleMesh::CTrianglefield);
+
+	if (n_face > triangles->max_size()) {
+		throw create_exception<runtime_error>("PLY: ", filename, ": ", n_face, " triangles specified ",
+						      "but implementation only supports up to ", triangles->max_size()); 
+	}
+		
 	triangles->reserve(n_face); 
 
 	read_faces(*triangles, n_face, *vertices, buffer, filename, f);

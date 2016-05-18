@@ -421,8 +421,8 @@ PTriangleMesh COffMeshIO::do_load_it(CInputFile& inp)const
 	int n_edges = 0;
 
 	char buffer[2049];
-	read_line(buffer, 2048, inp); 
-	
+	if (!read_line(buffer, 2048, inp))
+		throw create_exception<runtime_error>("OFF: Unable to read from input file.");
 	
 	if (sscanf(buffer, "%d %d %d", &n_vertices, &n_faces, &n_edges)!= 3) {
 		throw create_exception<runtime_error>("OFF: parse error reading from '", buffer, "'");

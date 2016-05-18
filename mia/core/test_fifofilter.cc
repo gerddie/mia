@@ -19,8 +19,6 @@
  */
 
 #define BOOST_TEST_DYN_LINK
-
-#define EXPORT_HANDLER
 #include <cassert>
 #include <iostream>
 #include <cmath>

@@ -108,9 +108,7 @@ int do_main(int argc, char **argv)
 	C3DImageIOPluginHandler::Instance::Data vout;
 	vout.push_back(result);
 
-	imageio.save(out_filename, vout);
-
-	return EXIT_SUCCESS;
+	return imageio.save(out_filename, vout) ? EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
 

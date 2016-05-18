@@ -32,7 +32,10 @@ using std::vector;
 using namespace gsl; 
 using std::ostream_iterator; 
 
-CFastICANonlinearityBase::CFastICANonlinearityBase():m_mu(1.0)
+CFastICANonlinearityBase::CFastICANonlinearityBase():
+	m_mu(1.0),
+	m_sample_scale(1.0), 
+        m_signal(nullptr)
 {
 }
 

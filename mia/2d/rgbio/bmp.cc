@@ -204,10 +204,16 @@ CBMPRGB2DImageIO::PData CBMPRGB2DImageIO::do_load(string const& MIA_PARAM_UNUSED
 	size_t h = info_header.height; 
 	size_t w = info_header.width; 
 	if (h > numeric_limits<unsigned>::max() || w > numeric_limits<unsigned>::max()) 
-		throw create_exception<runtime_error>("CBMPRGB2DImageIO::load: Image has too big", 
-						      " width=", info_header.width, ", height=", 
+		throw create_exception<runtime_error>("CBMPRGB2DImageIO::load: '", filename,
+						      "' Image has too big - width=",
+						      info_header.width, ", height=", 
 						      info_header.height);
-	fseek(f, header.offset, SEEK_SET); 
+	
+	if (fseek(f, header.offset, SEEK_SET) != 0) {
+		throw create_exception<runtime_error>("CBMP2DImageIO::load: '", filename,
+						      "' ", strerror(errno)); 
+	}
+
 
 	if (!info_header.compression) {
 

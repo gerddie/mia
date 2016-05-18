@@ -401,7 +401,10 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 		throw create_exception<runtime_error>("CBMP2DImageIO::load: Image has too big", 
 						      " width=", info_header.width, ", height=", 
 						      info_header.height);
-	fseek(f, header.offset, SEEK_SET); 
+	if (fseek(f, header.offset, SEEK_SET) != 0) {
+		throw create_exception<runtime_error>("CBMP2DImageIO::load: '", filename,
+						      "' ", strerror(errno)); 
+	}
 	
 	
 	PData result = PData(new C2DImageVector());

@@ -35,6 +35,7 @@
 
 NS_MIA_USE
 
+
 using namespace std;
 BOOST_AUTO_TEST_CASE( test_params )
 {
@@ -59,35 +60,35 @@ BOOST_AUTO_TEST_CASE( test_params )
 
 }
 
-enum ETest {te_unknown, te_a, te_b, te_c};
+enum ETestParameter {tep_unknown, tep_a, tep_b, tep_c};
 
 BOOST_AUTO_TEST_CASE( test_dict_params)
 {
 
-	static const TDictMap<ETest>::Table table[] = {
-		{"a", te_a, "test a"},
-		{"b", te_b, "test b"},
-		{"c", te_c, "test c"},
-		{NULL, te_unknown, ""}
+	static const TDictMap<ETestParameter>::Table table[] = {
+		{"a", tep_a, "test a"},
+		{"b", tep_b, "test b"},
+		{"c", tep_c, "test c"},
+		{NULL, tep_unknown, ""}
 	};
 
-	const TDictMap<ETest> map(table, true);
-	ETest test1 = te_a;
+	const TDictMap<ETestParameter> map(table, true);
+	ETestParameter test1 = tep_a;
 
-	CDictParameter<ETest> testp1(test1, map, "some dictionary parameter");
+	CDictParameter<ETestParameter> testp1(test1, map, "some dictionary parameter");
 
-	BOOST_CHECK_EQUAL(test1, te_a);
+	BOOST_CHECK_EQUAL(test1, tep_a);
 
 	BOOST_CHECK(testp1.set("b"));
-	BOOST_CHECK_EQUAL(test1, te_b);
+	BOOST_CHECK_EQUAL(test1, tep_b);
 
 	BOOST_CHECK(testp1.set("c"));
-	BOOST_CHECK_EQUAL(test1, te_c);
+	BOOST_CHECK_EQUAL(test1, tep_c);
 	BOOST_CHECK(testp1.set("chajh"));
-	BOOST_CHECK_EQUAL(test1, te_unknown);
+	BOOST_CHECK_EQUAL(test1, tep_unknown);
 
-	const TDictMap<ETest> map2(table);
-	CDictParameter<ETest> testp2(test1, map2, "some dictionary parameter");
+	const TDictMap<ETestParameter> map2(table);
+	CDictParameter<ETestParameter> testp2(test1, map2, "some dictionary parameter");
 	BOOST_CHECK_THROW(testp2.set("chajh"), std::invalid_argument);
 
 

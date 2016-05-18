@@ -223,20 +223,7 @@ SET(MIACORE_HEADER_BASE
   )
 
 SET(MIACORETEST_SRC 
-  test_core.cc
-  test_cost.cc
-  test_filter.cc
-  test_kernels.cc
-  test_optparam.cc
-  test_optionparser.cc
-  test_parameter.cc
-  test_pixeltype.cc
-  test_register.cc
-  test_sqmin.cc
-  test_streamredir.cc
-  test_dictmap.cc
-  test_fifofilter.cc
-  test_probmap.cc
+  test_core_combined.cc
 )
 
 IF(ITPP_FOUND)
@@ -332,14 +319,17 @@ ADD_SUBDIRECTORY(splinekernel  )
 ADD_SUBDIRECTORY(splinebc  ) 
 ADD_SUBDIRECTORY(testplug      )
 
+#tests that fork themselfs 
+SET(cmdxmlhelp_params  -r 1 --other o)
+NEW_TEST_WITH_PARAM(cmdxmlhelp miacore "${cmdxmlhelp_params}")
+
+
 NEW_TEST(Vector miacore)
 NEW_TEST(attributes miacore)
 NEW_TEST(boundary_conditions  miacore)
 NEW_TEST(callback miacore)
 NEW_TEST(cmdoptionflags miacore)
 NEW_TEST(cmdlineparser miacore)
-SET(cmdxmlhelp_params  -r 1 --other o)
-NEW_TEST_WITH_PARAM(cmdxmlhelp miacore "${cmdxmlhelp_params}")
 NEW_TEST(cmdlineparseroutput miacore)
 NEW_TEST(cmeans miacore)
 NEW_TEST(datapool miacore)
