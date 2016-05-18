@@ -20,6 +20,7 @@
 
 
 #include <mia/core/probmap.hh>
+#include <mia/core/sparse_histogram.hh>
 #include <mia/core/factory.hh>
 
 NS_MIA_BEGIN
@@ -29,7 +30,7 @@ NS_MIA_BEGIN
 class EXPORT_CORE CMeans {
 public:
 	typedef std::vector<double> DVector;
-	typedef std::vector<std::pair<int, unsigned long>> SparseHistogram;
+	typedef CSparseHistogram::Compressed SparseHistogram;
 	typedef std::vector<std::pair<double, double>> NormalizedHistogram;
 
 	class EXPORT_CORE SparseProbmap { 

@@ -38,7 +38,7 @@ NS_MIA_BEGIN
 class EXPORT_CORE CSparseHistogram : public TFilter<size_t> {
         
 public: 
-	typedef std::vector<std::pair<int, unsigned long>> Compressed; 
+	typedef std::vector<std::pair<short, unsigned long>> Compressed; 
 
 	CSparseHistogram();
 
@@ -52,6 +52,11 @@ public:
         template <typename InIterator>
         size_t operator ()(InIterator begin, InIterator end); 
 
+	template <typename Image>
+	size_t operator ()(const Image& image) {
+		return (*this)(image.begin(), image.end()); 
+	}
+	
         /**
            \returns the histogram as a vector of <value, count> pairs 
          */

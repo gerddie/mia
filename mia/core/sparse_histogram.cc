@@ -40,7 +40,7 @@ CSparseHistogram::Compressed CSparseHistogram::get_compressed_histogram()const
                         ++nonzero_bins; 
         }
 
-        vector<pair<int, unsigned long>> result;
+        Compressed result;
         result.reserve(nonzero_bins);
         for (unsigned i = 0; i < m_histogram.size(); ++i) {
                 if (m_histogram[i] != 0)
