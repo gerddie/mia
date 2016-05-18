@@ -38,7 +38,7 @@ NS_MIA_BEGIN
 class EXPORT_CORE CSparseHistogram : public TFilter<size_t> {
         
 public: 
-	typedef std::vector<std::pair<short, unsigned long>> Compressed; 
+	typedef std::vector<std::pair<int, unsigned long>> Compressed; 
 
 	CSparseHistogram();
 
@@ -67,6 +67,7 @@ public:
         EPixelType m_pixeltype; 
 }; 
 
+EXPORT_CORE std::ostream& operator << (std::ostream& os, const std::pair<short, unsigned long>& pair); 
 
 //   Implementation
 

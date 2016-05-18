@@ -49,5 +49,11 @@ CSparseHistogram::Compressed CSparseHistogram::get_compressed_histogram()const
         return result; 
 }
 
+EXPORT_CORE  std::ostream& operator << (std::ostream& os, const std::pair<short, unsigned long>& pair)
+{
+	os << "[" << pair.first << ": " << pair.second << "]";
+	return os; 
+}
+
 
 NS_MIA_END

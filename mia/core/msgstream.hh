@@ -336,9 +336,15 @@ inline vstream& cvmsg()
 */
 template <typename T> 
 vstream& operator << (vstream& os, const std::vector<T>& v) {
-	os << "["; 
-	for (auto i =v.begin(); i != v.end(); ++i) 
-		os << *i << ", "; 
+	os << "[";
+	auto i = v.begin();
+	auto e = v.end(); 
+
+	if (i != e)
+		os << *i++;
+	while (i != e)
+		os << "," << *i++;
+	
 	os << "]"; 
 	return os; 
 }

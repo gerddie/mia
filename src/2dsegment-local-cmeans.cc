@@ -67,7 +67,7 @@ public:
 		     const C2DBounds& start, const C2DBounds& end,
 		     const CMeans::SparseProbmap& global_probmap,
 		     float rel_cluster_threshold, 
-		     const map<short, int>& segmap, 
+		     const map<int, unsigned>& segmap, 
 		     C2DFImageVec& prob_buffer);
 	
 	template <typename T> 
@@ -81,7 +81,7 @@ private:
 	C2DBounds m_end;
 	const CMeans::SparseProbmap& m_global_probmap;
 	float m_rel_cluster_threshold; 
-	const map<short, int>& m_segmap;
+	const map<int, unsigned>& m_segmap;
 	C2DFImageVec& m_prob_buffer;
 	size_t m_count; 
 	
@@ -100,7 +100,7 @@ int do_main(int argc, char *argv[])
         int blocksize = 20;
 	unsigned n_classes = 3;
 	double rel_cluster_threshold = 0.0001;
-	float cmeans_k = 64.0; // should be based on input noise
+	float cmeans_k = 0.05; // should be based on input noise
 
 	float cmeans_epsilon = 0.0001; 
 	
@@ -143,11 +143,20 @@ int do_main(int argc, char *argv[])
 	mia::accumulate(global_histogram, *in_image);
 	
 	CMeans globale_cmeans(cmeans_k, cmeans_epsilon, class_center_initializer); 
-	CMeans::DVector global_class_centers; 
-	auto global_sparse_probmap = globale_cmeans.run(global_histogram.get_histogram(),
-							global_class_centers);
+
+	auto gh = global_histogram.get_histogram();
+	cvdebug() << "histogram: " << gh << "\n";
+
+	CMeans::DVector global_class_centers;
+	auto global_sparse_probmap = globale_cmeans.run(gh, global_class_centers);
+
+	cvinfo() << "Histogram range: [" << gh[0].first << ", " << gh[gh.size()-1].first << "]\n"; 
+
+	cvinfo() << "Global class centers: " << global_class_centers << "\n"; 
 	
-	map<short, int> segmap;
+	
+	
+	map<int, unsigned> segmap;
 	for_each(global_sparse_probmap.begin(), global_sparse_probmap.end(),
 		 [&segmap](const CMeans::SparseProbmap::value_type& x) {
 			 int c = 0;
@@ -181,8 +190,6 @@ int do_main(int argc, char *argv[])
 			unsigned ix_end = ix_base + 2 * blocksize;
 			if (ix_end > in_image->get_size().x)
 				ix_end = in_image->get_size().x; 
-			
-
 			
 
 			FLocalCMeans lcm(cmeans_k, cmeans_epsilon, global_class_centers,
@@ -239,7 +246,7 @@ FLocalCMeans::FLocalCMeans(float k, float epsilon, const vector<double>& global_
 		     const C2DBounds& start, const C2DBounds& end,
 		     const CMeans::SparseProbmap& global_probmap,
 		     float rel_cluster_threshold, 
-		     const map<short, int>& segmap, 
+		     const map<int, unsigned>& segmap, 
 		     C2DFImageVec& prob_buffer):
 	m_k(k),
 	m_epsilon(epsilon),
@@ -273,11 +280,11 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 	}
 	auto part_thresh = accumulate(partition.begin(), partition.end(), 0.0) * m_rel_cluster_threshold; 
 	
-	cvdebug() << "Partition = " << partition << "\n";
+	cvinfo() << "Partition = " << partition << "\n";
 
 	// select the classes that should be used further on
 	vector<double> retained_class_centers;
-	vector<unsigned short> used_classed; 
+	vector<unsigned> used_classed; 
 	for (unsigned i = 0; i < partition.size(); ++i) {
 		if (partition[i] >= part_thresh) {
 			retained_class_centers.push_back(m_global_class_centers[i]);
@@ -285,8 +292,9 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 		}
 	}
 	
-	stringstream cci_descr;
-	cci_descr << "predefined:cc=" << retained_class_centers;
+	ostringstream cci_descr;
+	cci_descr << "predefined:cc=[" << retained_class_centers<<"]";
+	cvinfo() << "Initializing local cmeans with '" << cci_descr.str() << "'\n"; 
 	auto cci = CMeansInitializerPluginHandler::instance().produce(cci_descr.str()); 
 	
 	// remove data that was globally assigned to now unused class
@@ -294,7 +302,6 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 	CSparseHistogram::Compressed cleaned_histogram;
 	cleaned_histogram.reserve(ch.size());
 	vector<int> reindex(ch.size(), -1); 
-	int ireindex = 0; 
 	
 	// copy used intensities 
 	for (auto c: used_classed) {

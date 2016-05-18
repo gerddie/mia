@@ -81,6 +81,8 @@ CMeans::~CMeans()
 
 CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& class_centers) const
 {
+	FUNCTION_NOT_TESTED; 
+		
 	// prepare input data 
 	NormalizedHistogram nhist(histogram.size());
 
@@ -88,6 +90,8 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 	const double bin_scale = 1.0 / double(histogram[histogram.size() - 1].first - bin_shift);
 	const double inv_bin_scale = double(histogram[histogram.size() - 1].first - bin_shift);
 
+	cvinfo() << "Histogram conversion: shift = " <<  bin_shift << ", scale = " << bin_scale << "\n"; 
+	
 	size_t n = 0;
 	for(auto h: histogram)
 		n += h.second;
@@ -102,7 +106,9 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 		  [bin_shift, bin_scale, normalizer](const SparseHistogram::value_type& x) -> NormalizedHistogram::value_type {
 			  return make_pair((x.first - bin_shift) * bin_scale, x.second * normalizer);  
 		  });
-	
+
+	cvinfo() << "CMeans: normalized histogram range:[" <<  nhist[0].first
+		 << ", " << nhist[nhist.size()-1].first << "]\n"; 
 
 	class_centers = m_cci->run(nhist);
 	cvmsg() << "Initial class centers =" << class_centers << "\n"; 
