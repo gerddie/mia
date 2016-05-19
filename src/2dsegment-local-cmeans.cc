@@ -76,12 +76,12 @@ public:
 	void operator()(const T2DImage<T>& image);
 private:
 
-	float m_epsilon;
+	const float m_epsilon;
 	const vector<double>& m_global_class_centers;
-	C2DBounds m_start;
-	C2DBounds m_end;
+	const C2DBounds m_start;
+	const C2DBounds m_end;
 	const Probmap& m_global_probmap;
-	float m_rel_cluster_threshold; 
+	const float m_rel_cluster_threshold; 
 	const map<int, unsigned>& m_segmap;
 	C2DFImageVec& m_prob_buffer;
 	size_t m_count; 
@@ -324,7 +324,8 @@ FLocalCMeans::FLocalCMeans(float epsilon, const vector<double>& global_class_cen
 template <typename T> 
 void FLocalCMeans::operator()(const T2DImage<T>& image)
 {
-	cvmsg() << "Start subrange ["<< m_start << "]-["<< m_end<<"]\n"; 
+	cvmsg() << "Start subrange ["<< m_start << "]-["<< m_end<<"]\n";
+	
 	// obtain the histogram for the current patch 
 	CSparseHistogram histogram;
 	histogram(image.begin_range(m_start, m_end), 
@@ -354,29 +355,34 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 		}
 	}
 	
-	ostringstream cci_descr;
-	cci_descr << "predefined:cc=[" << retained_class_centers<<"]";
-	cvinfo() << "Initializing local cmeans with '" << cci_descr.str()
-		 << " for retained classes " << used_classed << "'\n"; 
-	auto cci = CMeansInitializerPluginHandler::instance().produce(cci_descr.str()); 
-	
-	// remove data that was globally assigned to now unused class
-	
-	CSparseHistogram::Compressed cleaned_histogram;
-	cleaned_histogram.reserve(ch.size());
-	
-	// copy used intensities 
-	for (auto c: used_classed) {
-		for (auto ich: ch) {
-			if ( m_segmap.at(ich.first) == c) {
-				cleaned_histogram.push_back(ich);
-			}
-		}
-	}
+
+	// prepare linear interpolation summing 
 	auto center = C2DFVector((m_end + m_start)) / 2.0f;
 	auto max_distance = C2DFVector((m_end - m_start)) / 2.0f;
-	if (retained_class_centers.size() > 1)  {
 	
+	
+	if (retained_class_centers.size() > 1)  {
+		
+		ostringstream cci_descr;
+		cci_descr << "predefined:cc=[" << retained_class_centers<<"]";
+		cvinfo() << "Initializing local cmeans with '" << cci_descr.str()
+			 << " for retained classes " << used_classed << "'\n"; 
+		auto cci = CMeansInitializerPluginHandler::instance().produce(cci_descr.str()); 
+
+
+		// remove data that was globally assigned to now unused class
+		CSparseHistogram::Compressed cleaned_histogram;
+		cleaned_histogram.reserve(ch.size());
+		
+		// copy used intensities 
+		for (auto c: used_classed) {
+			for (auto ich: ch) {
+				if ( m_segmap.at(ich.first) == c) {
+					cleaned_histogram.push_back(ich);
+				}
+			}
+		}
+		
 		// evluate the local c-means classification 
 		CMeans local_cmeans(m_epsilon, cci);
 		auto local_map = local_cmeans.run(cleaned_histogram,  retained_class_centers);
@@ -389,7 +395,6 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 
 
 		// now add the new probabilities to the global maps.
-		
 		auto ii = image.begin_range(m_start, m_end);
 		auto ie = image.end_range(m_start, m_end);
 		while (ii != ie) {
