@@ -159,7 +159,7 @@ void CMeansImpl::evaluate_probabilities(const CMeans::DVector& classes,
 			unsigned j = 1;
 			bool value_set = false; 
 			while (!value_set && (j < classes.size()) ) {
-				// between two centers 
+				// between two centers
 				if (x < classes[j]) {
 					double p0 = x - classes[j-1];
 					double p1 = x - classes[j];
@@ -167,15 +167,16 @@ void CMeansImpl::evaluate_probabilities(const CMeans::DVector& classes,
 					double p12 = p1 * p1;
 					double normalizer = 1.0/(p02 + p12); 
 					
-					p->second[j] = p02  / normalizer;
-					p->second[j - 1] = p12  / normalizer;
-					value_set = true; 
+					p->second[j] = p02  * normalizer;
+					p->second[j - 1] = p12  * normalizer;
+					value_set = true;
 				}
 				++j; 
 			}
 			if (!value_set)
 				p->second[classes.size() - 1] = 1.0; 
 		}
+
 	}
 }
 

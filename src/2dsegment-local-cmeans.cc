@@ -70,7 +70,7 @@ public:
 		     const Probmap& global_probmap,
 		     float rel_cluster_threshold, 
 		     const map<int, unsigned>& segmap, 
-		     C2DFImageVec& prob_buffer);
+		     vector<C2DFDatafield>& prob_buffer);
 	
 	template <typename T> 
 	void operator()(const T2DImage<T>& image);
@@ -83,7 +83,7 @@ private:
 	const Probmap& m_global_probmap;
 	const float m_rel_cluster_threshold; 
 	const map<int, unsigned>& m_segmap;
-	C2DFImageVec& m_prob_buffer;
+	vector<C2DFDatafield>& m_prob_buffer;
 	size_t m_count; 
 	
 }; 
@@ -117,9 +117,9 @@ int do_main(int argc, char *argv[])
 	string cls_filename;
 	string debug_filename; 
 	
-        int blocksize = 20;
+        int blocksize = 15;
 	unsigned n_classes = 3;
-	double rel_cluster_threshold = 0.0001;
+	double rel_cluster_threshold = 0.02;
 
 	float cmeans_epsilon = 0.0001; 
 	
@@ -215,9 +215,11 @@ int do_main(int argc, char *argv[])
 	int  start_x = (nx * blocksize - in_image->get_size().x) / 2; 
 	int  start_y = (ny * blocksize - in_image->get_size().y) / 2; 
 
-	vector<C2DFImage> prob_buffer(global_class_centers.size(), C2DFImage(in_image->get_size()));
-	for( auto pbuf: prob_buffer)
-		pbuf.make_single_ref(); 
+	
+	
+	vector<C2DFDatafield> prob_buffer(global_class_centers.size());
+	for (unsigned i = 0; i < global_class_centers.size(); ++i)
+		prob_buffer[i] = C2DFDatafield(in_image->get_size()); 
 	
 	for (int  iy_base = start_y; iy_base < (int)in_image->get_size().y; iy_base +=  blocksize) {
 		unsigned iy = iy_base < 0 ? 0 : iy_base;
@@ -244,7 +246,7 @@ int do_main(int argc, char *argv[])
 	}
 	// save the prob images ?
 	// normalize probability images
-#if 0 
+#if 0
 	C2DFImage sum(prob_buffer[0]);
 	for (unsigned c = 1; c < n_classes; ++c) {
 		transform(sum.begin(), sum.end(), prob_buffer[c].begin(), sum.begin(),
@@ -308,7 +310,7 @@ FLocalCMeans::FLocalCMeans(float epsilon, const vector<double>& global_class_cen
 		     const Probmap& global_probmap,
 		     float rel_cluster_threshold, 
 		     const map<int, unsigned>& segmap, 
-		     C2DFImageVec& prob_buffer):
+		     vector<C2DFDatafield>& prob_buffer):
 	m_epsilon(epsilon),
 	m_global_class_centers(global_class_centers),
 	m_start(start),
