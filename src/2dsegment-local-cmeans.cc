@@ -118,7 +118,6 @@ int do_main(int argc, char *argv[])
 	string debug_filename; 
 	
         int blocksize = 15;
-	unsigned n_classes = 3;
 	double rel_cluster_threshold = 0.02;
 
 	float cmeans_epsilon = 0.0001; 
@@ -175,7 +174,8 @@ int do_main(int argc, char *argv[])
 	cvinfo() << "Global class centers: " << global_class_centers << "\n";
 	cvinfo() << "Probmap size = " << global_sparse_probmap.size()
 		 << " weight number " << global_sparse_probmap[0].second.size() << "\n"; 
-	
+
+	auto n_classes = global_class_centers.size(); 
 	
 	// need the normalized class centers
 	
@@ -246,7 +246,6 @@ int do_main(int argc, char *argv[])
 	}
 	// save the prob images ?
 	// normalize probability images
-#if 0
 	C2DFImage sum(prob_buffer[0]);
 	for (unsigned c = 1; c < n_classes; ++c) {
 		transform(sum.begin(), sum.end(), prob_buffer[c].begin(), sum.begin(),
@@ -256,9 +255,9 @@ int do_main(int argc, char *argv[])
 		transform(sum.begin(), sum.end(), prob_buffer[c].begin(), prob_buffer[c].begin(),
 			  [](float s, float p){return p/s;});
 	}
-#endif 
 	if (!cls_filename.empty()) {
 		C2DImageIOPluginHandler::Instance::Data classes;
+
 		for (unsigned c = 0; c < n_classes; ++c)
 			classes.push_back(make_shared<C2DFImage>(prob_buffer[c]));
 
