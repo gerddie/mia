@@ -111,7 +111,7 @@ public:
 
 	/** general output routine; output is only given, if the data verbosity level is
 	    set higher or equal to the stream verbosity level.
-	    \param text the text to be written to the stream
+x1	    \param text the text to be written to the stream
 	    \returns a reference to this object
 	*/
 	template <class T>
@@ -329,25 +329,6 @@ inline vstream& cvmsg()
    \brief define a shortcut to the raw output stream 
 */
 #define cverb ::mia::vstream::instance()
-
-/**
-   \ingroup logging
-   \brief implements the direct streaming of std::vectors. 
-*/
-template <typename T> 
-vstream& operator << (vstream& os, const std::vector<T>& v) {
-	os << "[";
-	auto i = v.begin();
-	auto e = v.end(); 
-
-	if (i != e)
-		os << *i++;
-	while (i != e)
-		os << "," << *i++;
-	
-	os << "]"; 
-	return os; 
-}
 
 NS_MIA_END
 

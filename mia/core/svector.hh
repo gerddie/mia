@@ -32,11 +32,19 @@
 
 NS_MIA_BEGIN
 
+/**
+   \ingroup logging
+   \brief implements the direct streaming of std::vectors. 
+*/
 template <typename T> 
-std::ostream&  operator << (std::ostream& os, const std::vector<T>& v) 
-{
-	for(auto x: v)
-		os << x << ","; 
+std::ostream& operator << (std::ostream& os, const std::vector<T>& v) {
+	auto i = v.begin();
+	auto e = v.end(); 
+
+	if (i != e)
+		os << *i++;
+	while (i != e)
+		os << "," << *i++;
 	return os; 
 }
 

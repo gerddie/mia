@@ -98,7 +98,11 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 	vector<double> centers{30, 120, 220, 300, 390};
 	vector<double> weights{2.0, 0.9, 1.3, 1.1, 0.9};
 
-	vector<double> expect{34.34, 105.31, 214.627, 278.295, 383.15};
+	vector<double> expect{3.4110660260349697,
+			107.75244427782859,
+			220.0556776582051,
+			329.2486937120629,
+			439.79923440552466};
 
 	double k = 20;
 	for (int i = 0; i < 250; ++i) {
@@ -111,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 	}
 
 	CMeans::PInitializer cci(new CTestFixedInitializer({0, 0.25, 0.5, 0.75, 1}));
-	CMeans cm(0.01, 0.0001, cci);
+	CMeans cm(0.0001, cci);
 
 
 	CMeans::DVector result_cci(5); 

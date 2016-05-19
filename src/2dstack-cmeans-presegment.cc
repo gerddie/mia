@@ -87,7 +87,7 @@ FGetClassSeedMask::FGetClassSeedMask(const Probmap& map,
 {
 }
 
-P2DImage FGetClassSeedMask::operator() (const C2DBitImage& image) const
+P2DImage FGetClassSeedMask::operator() (const C2DBitImage& MIA_PARAM_UNUSED(image)) const
 {
 	throw invalid_argument("Unsupported input pixel type: This classification doesn't make sense for binary images"); 
 }
@@ -223,7 +223,7 @@ int do_main( int argc, char *argv[] )
 
 	CMeans::DVector class_centers; 
 	
-	CMeans cmeans(0.01, 0.00001, class_center_initializer);
+	CMeans cmeans(0.00001, class_center_initializer);
 	CMeans::SparseProbmap pv = cmeans.run(threshed_histo,  class_centers);
 
 	Probmap pmap; 

@@ -62,10 +62,12 @@ private:
 
 class FLocalCMeans: public TFilter<void> {
 public: 
+	typedef map<int, CMeans::DVector> Probmap; 
+
 	
-	FLocalCMeans(float k, float epsilon, const vector<double>& global_class_centers,
+	FLocalCMeans(float epsilon, const vector<double>& global_class_centers,
 		     const C2DBounds& start, const C2DBounds& end,
-		     const CMeans::SparseProbmap& global_probmap,
+		     const Probmap& global_probmap,
 		     float rel_cluster_threshold, 
 		     const map<int, unsigned>& segmap, 
 		     C2DFImageVec& prob_buffer);
@@ -74,12 +76,11 @@ public:
 	void operator()(const T2DImage<T>& image);
 private:
 
-	float m_k;
 	float m_epsilon;
 	const vector<double>& m_global_class_centers;
 	C2DBounds m_start;
 	C2DBounds m_end;
-	const CMeans::SparseProbmap& m_global_probmap;
+	const Probmap& m_global_probmap;
 	float m_rel_cluster_threshold; 
 	const map<int, unsigned>& m_segmap;
 	C2DFImageVec& m_prob_buffer;
@@ -87,6 +88,24 @@ private:
 	
 }; 
 
+class FCrispSeg: public TFilter<P2DImage> {
+public:
+	FCrispSeg(const map<int, unsigned>& segmap):
+		m_segmap(segmap)
+		{
+		}
+
+	template <typename T> 
+	P2DImage operator()(const T2DImage<T>& image) const {
+		P2DImage out_image = make_shared<C2DUBImage>(image.get_size());
+		C2DUBImage *help = static_cast<C2DUBImage*>(out_image.get());
+		transform(image.begin(), image.end(), help->begin(),
+			  [this](T x){return m_segmap.at(x);}); 
+		return out_image; 
+	}
+private:
+	const map<int, unsigned>& m_segmap;
+}; 
 
 
 int do_main(int argc, char *argv[])
@@ -95,12 +114,12 @@ int do_main(int argc, char *argv[])
 	string in_filename; 
 	string out_filename;
 	string out_filename2;
+	string cls_filename;
 	string debug_filename; 
 	
         int blocksize = 20;
 	unsigned n_classes = 3;
 	double rel_cluster_threshold = 0.0001;
-	float cmeans_k = 0.05; // should be based on input noise
 
 	float cmeans_epsilon = 0.0001; 
 	
@@ -114,6 +133,11 @@ int do_main(int argc, char *argv[])
 			   CCmdOptionFlags::required_input, &image2dio )); 
 	opts.add(make_opt( out_filename, "out-file", 'o', "class label image based on "
 			   "merging local labels", CCmdOptionFlags::output, &image2dio ));
+
+	opts.add(make_opt( out_filename2, "out-global-crisp", 'G', "class label image based on "
+			   "global segmentation", CCmdOptionFlags::output, &image2dio ));
+	opts.add(make_opt( cls_filename, "class-prob", 'C', "class probability image file, filetype "
+			   "must support floating point multi-frame images", CCmdOptionFlags::output, &image2dio ));
 	
         opts.set_group("Parameters"); 
 	opts.add(make_opt( blocksize, EParameterBounds::bf_min_closed, {3},
@@ -121,8 +145,6 @@ int do_main(int argc, char *argv[])
 			   "the intensity inhomogeneities"));
 	opts.add(make_opt( class_center_initializer, "kmeans:nc=3",
 			   "cmeans", 'c', "c-means initializer"));
-	opts.add(make_opt( cmeans_k, EParameterBounds::bf_min_closed,
-			   {0.0}, "c-means-k", 'k', "c-means distribution variance parameter"));
 	opts.add(make_opt( cmeans_epsilon, EParameterBounds::bf_min_open,
 			   {0.0}, "c-means-epsilon", 'e', "c-means breaking condition for update tolerance"));
 	opts.add(make_opt( rel_cluster_threshold, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
@@ -142,17 +164,20 @@ int do_main(int argc, char *argv[])
 
 	mia::accumulate(global_histogram, *in_image);
 	
-	CMeans globale_cmeans(cmeans_k, cmeans_epsilon, class_center_initializer); 
+	CMeans globale_cmeans(cmeans_epsilon, class_center_initializer); 
 
 	auto gh = global_histogram.get_histogram();
-	cvdebug() << "histogram: " << gh << "\n";
 
 	CMeans::DVector global_class_centers;
-	auto global_sparse_probmap = globale_cmeans.run(gh, global_class_centers);
+	auto global_sparse_probmap = globale_cmeans.run(gh, global_class_centers, false);
 
 	cvinfo() << "Histogram range: [" << gh[0].first << ", " << gh[gh.size()-1].first << "]\n"; 
-
-	cvinfo() << "Global class centers: " << global_class_centers << "\n"; 
+	cvinfo() << "Global class centers: " << global_class_centers << "\n";
+	cvinfo() << "Probmap size = " << global_sparse_probmap.size()
+		 << " weight number " << global_sparse_probmap[0].second.size() << "\n"; 
+	
+	
+	// need the normalized class centers
 	
 	
 	
@@ -170,31 +195,46 @@ int do_main(int argc, char *argv[])
 			 }
 			 segmap[x.first] = c; 
 		 }); 
-	
 
+
+	FLocalCMeans::Probmap global_probmap;
+	for (auto k : global_sparse_probmap) {
+		global_probmap[k.first] = k.second; 
+	}; 
+	
+	if (!out_filename2.empty()) {
+		FCrispSeg cs(segmap);
+		auto crisp_global_seg = mia::filter(cs, *in_image);
+		if (!save_image (out_filename2, crisp_global_seg)) {
+			cverr() << "Unable to save to '" << out_filename2 << "'\n"; 
+		}
+	}
+	
 	int  nx = (in_image->get_size().x + blocksize - 1) / blocksize;
 	int  ny = (in_image->get_size().y + blocksize - 1) / blocksize;
 	int  start_x = (nx * blocksize - in_image->get_size().x) / 2; 
 	int  start_y = (ny * blocksize - in_image->get_size().y) / 2; 
 
-	vector<C2DFImage> prob_buffer(global_class_centers.size(), C2DFImage(in_image->get_size())); 
+	vector<C2DFImage> prob_buffer(global_class_centers.size(), C2DFImage(in_image->get_size()));
+	for( auto pbuf: prob_buffer)
+		pbuf.make_single_ref(); 
 	
-	for (int  iy_base = start_y; iy_base < (int)in_image->get_size().y; iy_base += 2 * blocksize) {
+	for (int  iy_base = start_y; iy_base < (int)in_image->get_size().y; iy_base +=  blocksize) {
 		unsigned iy = iy_base < 0 ? 0 : iy_base;
-		unsigned iy_end = iy_base + 2 * blocksize;
+		unsigned iy_end = iy_base +  2 * blocksize;
 		if (iy_end > in_image->get_size().y)
 			iy_end = in_image->get_size().y; 
 		
-		for (int ix_base = start_x; ix_base < (int)in_image->get_size().x; ix_base += 2 * blocksize) {
+		for (int ix_base = start_x; ix_base < (int)in_image->get_size().x; ix_base +=  blocksize) {
 			unsigned ix = ix_base < 0 ? 0 : ix_base;
-			unsigned ix_end = ix_base + 2 * blocksize;
+			unsigned ix_end = ix_base +  2 * blocksize;
 			if (ix_end > in_image->get_size().x)
 				ix_end = in_image->get_size().x; 
 			
 
-			FLocalCMeans lcm(cmeans_k, cmeans_epsilon, global_class_centers,
+			FLocalCMeans lcm(cmeans_epsilon, global_class_centers,
 					 C2DBounds(ix, iy), C2DBounds(ix_end, iy_end),
-					 global_sparse_probmap,
+					 global_probmap,
 					 rel_cluster_threshold,
 					 segmap, 
 					 prob_buffer);
@@ -202,7 +242,28 @@ int do_main(int argc, char *argv[])
 			mia::accumulate(lcm, *in_image); 
 		}
 	}
-	// save the prob images ? 
+	// save the prob images ?
+	// normalize probability images
+#if 0 
+	C2DFImage sum(prob_buffer[0]);
+	for (unsigned c = 1; c < n_classes; ++c) {
+		transform(sum.begin(), sum.end(), prob_buffer[c].begin(), sum.begin(),
+			  [](float x, float y){return x+y;}); 
+	}
+	for (unsigned c = 0; c < n_classes; ++c) {
+		transform(sum.begin(), sum.end(), prob_buffer[c].begin(), prob_buffer[c].begin(),
+			  [](float s, float p){return p/s;});
+	}
+#endif 
+	if (!cls_filename.empty()) {
+		C2DImageIOPluginHandler::Instance::Data classes;
+		for (unsigned c = 0; c < n_classes; ++c)
+			classes.push_back(make_shared<C2DFImage>(prob_buffer[c]));
+
+		if (!C2DImageIOPluginHandler::instance().save(cls_filename, classes))
+			cverr() << "Error writing class images to '" << cls_filename << "'\n"; 
+	}
+	
 	
 	// now for each pixel we have a probability sume that should take inhomogeinities
 	// into account
@@ -242,13 +303,12 @@ CSparseHistogram::Compressed FRunHistogram::get_histogram() const
 }
 
 
-FLocalCMeans::FLocalCMeans(float k, float epsilon, const vector<double>& global_class_centers,
+FLocalCMeans::FLocalCMeans(float epsilon, const vector<double>& global_class_centers,
 		     const C2DBounds& start, const C2DBounds& end,
-		     const CMeans::SparseProbmap& global_probmap,
+		     const Probmap& global_probmap,
 		     float rel_cluster_threshold, 
 		     const map<int, unsigned>& segmap, 
 		     C2DFImageVec& prob_buffer):
-	m_k(k),
 	m_epsilon(epsilon),
 	m_global_class_centers(global_class_centers),
 	m_start(start),
@@ -264,6 +324,7 @@ FLocalCMeans::FLocalCMeans(float k, float epsilon, const vector<double>& global_
 template <typename T> 
 void FLocalCMeans::operator()(const T2DImage<T>& image)
 {
+	cvmsg() << "Start subrange ["<< m_start << "]-["<< m_end<<"]\n"; 
 	// obtain the histogram for the current patch 
 	CSparseHistogram histogram;
 	histogram(image.begin_range(m_start, m_end), 
@@ -272,10 +333,11 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 
 	// calculate the class avaliability in the patch
 	vector<double> partition(m_global_class_centers.size());
-	for (auto ich: ch) {
-		const double n = ich.second; 
-		auto v = m_global_probmap[ich.first];
-		transform(partition.begin(), partition.end(), v.second.begin(),
+	
+	for (auto idx: ch) {
+		const double n = idx.second; 
+		auto v = m_global_probmap.at(idx.first);
+		transform(partition.begin(), partition.end(), v.begin(),
 			  partition.begin(), [n](double p, double value){return p + n * value;}); 
 	}
 	auto part_thresh = accumulate(partition.begin(), partition.end(), 0.0) * m_rel_cluster_threshold; 
@@ -294,14 +356,14 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 	
 	ostringstream cci_descr;
 	cci_descr << "predefined:cc=[" << retained_class_centers<<"]";
-	cvinfo() << "Initializing local cmeans with '" << cci_descr.str() << "'\n"; 
+	cvinfo() << "Initializing local cmeans with '" << cci_descr.str()
+		 << " for retained classes " << used_classed << "'\n"; 
 	auto cci = CMeansInitializerPluginHandler::instance().produce(cci_descr.str()); 
 	
 	// remove data that was globally assigned to now unused class
 	
 	CSparseHistogram::Compressed cleaned_histogram;
 	cleaned_histogram.reserve(ch.size());
-	vector<int> reindex(ch.size(), -1); 
 	
 	// copy used intensities 
 	for (auto c: used_classed) {
@@ -311,28 +373,57 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 			}
 		}
 	}
+	auto center = C2DFVector((m_end + m_start)) / 2.0f;
+	auto max_distance = C2DFVector((m_end - m_start)) / 2.0f;
+	if (retained_class_centers.size() > 1)  {
+	
+		// evluate the local c-means classification 
+		CMeans local_cmeans(m_epsilon, cci);
+		auto local_map = local_cmeans.run(cleaned_histogram,  retained_class_centers);
 
-	// evluate the local c-means classification 
-	CMeans local_cmeans(m_k, m_epsilon, cci);
-	auto local_map = local_cmeans.run(ch,  retained_class_centers);
-
-	// sum the local probablities to global proability sum map
-	map<unsigned short, CMeans::DVector> mapper;
-	for (auto i: local_map) {
-		mapper[i.first] = i.second; 
-	}
-	auto ii = image.begin_range(m_start, m_end);
-	auto ie = image.end_range(m_start, m_end);
-
-	while (ii != ie) {
-		auto probs = mapper.find(*ii);
-		if (probs != mapper.end()) {
-			for (unsigned c = 0; c < used_classed.size();  ++c) {
-				m_prob_buffer[used_classed[c]](ii.pos()) += probs->second[c];  
-			}
+		// create a lookup map intensity -> probability vector 
+		map<unsigned short, CMeans::DVector> mapper;
+		for (auto i: local_map) {
+			mapper[i.first] = i.second; 
 		}
-		++ii; 
+
+
+		// now add the new probabilities to the global maps.
+		
+		auto ii = image.begin_range(m_start, m_end);
+		auto ie = image.end_range(m_start, m_end);
+		while (ii != ie) {
+			auto probs = mapper.find(*ii);
+			auto delta = (C2DFVector(ii.pos()) - center) / max_distance;
+			float lin_scale = (1.0 - std::fabs(delta.x))* (1.0 - std::fabs(delta.y));
+			
+			if (probs != mapper.end()) {
+				for (unsigned c = 0; c < used_classed.size();  ++c) {
+					m_prob_buffer[used_classed[c]](ii.pos()) += lin_scale * probs->second[c];
+				}
+			}else{ // not in local map: retain global probabilities 
+				auto v = m_global_probmap.at(*ii);
+				for (unsigned c = 0; c < v.size();  ++c) {
+					m_prob_buffer[c](ii.pos()) += lin_scale * v[c];
+				}
+			}
+			++ii;
+		}
+		
+		
+	}else{// only one class retained, add 1.0 to probabilities, linearly smoothed 
+		cvdebug() << "Only one class used:" << used_classed[0] << "\n"; 
+		auto ii = m_prob_buffer[used_classed[0]].begin_range(m_start, m_end);
+		auto ie = m_prob_buffer[used_classed[0]].end_range(m_start, m_end);
+		
+		while (ii != ie)  {
+			auto delta = (C2DFVector(ii.pos()) - center) / max_distance;
+			*ii += (1.0 - std::fabs(delta.x))* (1.0 - std::fabs(delta.y)); ;
+			++ii; 
+		}
+		
 	}
+	cvmsg() << "Done subrange ["<< m_start << "]-["<< m_end<<"]\n"; 
 }
 
 #include <mia/internal/main.hh>

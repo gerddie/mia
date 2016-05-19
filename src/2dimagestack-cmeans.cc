@@ -129,7 +129,7 @@ int do_main( int argc, char *argv[] )
 
 	CMeans::DVector class_centers; 
 	
-	CMeans cmeans(0.01, 0.00001, class_center_initializer);
+	CMeans cmeans(0.00001, class_center_initializer);
 	CMeans::SparseProbmap pv = cmeans.run(threshed_histo,  class_centers);
 
 	pv.save(out_probmap); 

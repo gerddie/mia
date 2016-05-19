@@ -88,11 +88,13 @@ public:
 	}; 
 	typedef std::shared_ptr<Initializer> PInitializer; 
 	
-	CMeans(double k, double epsilon, PInitializer class_center_initializer);
+	CMeans(double epsilon, PInitializer class_center_initializer);
 
 	~CMeans();
 	
 	SparseProbmap run(const SparseHistogram& histogram,  DVector& class_centers) const;
+
+	SparseProbmap run(const SparseHistogram& histogram,  DVector& class_centers, bool de_normalize_results) const;
 	
 private:
 	PInitializer m_cci; 
