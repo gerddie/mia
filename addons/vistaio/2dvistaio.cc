@@ -61,6 +61,7 @@ CVista2DImageIOPlugin::CVista2DImageIOPlugin():
 
 	add_standard_vistaio_properties(*this); 
 
+	add_suffix(".-");
 	add_suffix(".v");
 	add_suffix(".V");
 	add_suffix(".vista");

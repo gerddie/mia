@@ -54,6 +54,7 @@ CVistaMeshIO::CVistaMeshIO():
 	CMeshIOPlugin(format)
 {
 	//add_property(io_plugin_property_history);
+	add_suffix(".-");
 	add_suffix(".v");
 	add_suffix(".V");
 	add_suffix(".vmesh");

@@ -54,7 +54,8 @@ CVista3DImageIOPlugin::CVista3DImageIOPlugin():
 	add_supported_type(it_double);
 	
 	add_standard_vistaio_properties(*this); 
-	
+
+	add_suffix(".-");
 	add_suffix(".v");
 	add_suffix(".V");
 	add_suffix(".vista");
