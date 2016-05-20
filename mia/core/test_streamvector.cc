@@ -42,6 +42,21 @@ BOOST_AUTO_TEST_CASE( test_read_strings_to_empty_vector )
 	BOOST_CHECK_EQUAL(result[2], "test3");
 }
 
+BOOST_AUTO_TEST_CASE( test_read_int_to_empty_vector ) 
+{
+	istringstream is("1 , 2, 3"); 
+	
+	vector<int> result; 
+	is >> result; 
+
+	BOOST_REQUIRE(result.size() == 3u); 
+	
+	BOOST_CHECK_EQUAL(result[0], 1); 
+	BOOST_CHECK_EQUAL(result[1], 2); 
+	BOOST_CHECK_EQUAL(result[2], 3);
+}
+
+
 BOOST_AUTO_TEST_CASE( test_read_strings_to_presized_vector ) 
 {
 	istringstream is("test1,test2,test3"); 
@@ -72,6 +87,17 @@ BOOST_AUTO_TEST_CASE( test_read_strings_to_presized_vector_throw_not_enough )
 	vector<string> result(4); 
 	BOOST_CHECK_THROW(is >> result, invalid_argument); 
 }
+
+BOOST_AUTO_TEST_CASE( test_write_vector_to_stream ) 
+{
+	vector<int> a = {1, 2, 3};
+
+	ostringstream s;
+	s << a;
+	BOOST_CHECK_EQUAL(s.str(), "1,2,3"); 
+	
+}
+
 
 BOOST_AUTO_TEST_CASE( test_read_float ) 
 {
