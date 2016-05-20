@@ -1,9 +1,6 @@
 sudo: required
 dist: trusty
-language: c++
-cache: 
-  ccache: true 
-  pip: true 
+language: generic
 
 env:
   matrix: 
@@ -16,9 +13,8 @@ env:
 install:
 - sudo add-apt-repository ppa:gert-die/trusty-mia -y 
 - sudo apt-get update -qq
-- sudo apt-get install -o APT::Get::Install-Recommends=false -o APT::Get::Install-Suggests=false -y libmaxflow-dev libdcmtk2-dev libeigen3-dev libfftw3-dev libgsl0-dev libgts-dev libhdf5-dev libitpp-dev libnifti-dev libnlopt-dev libopenexr-dev libpng-dev libtbb-dev libtiff-dev libvtk6-dev libvistaio-dev libxml++2.6-dev xsltproc docbook-xsl doxygen  graphviz libblas-dev libboost-filesystem-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev
+- sudo apt-get install -o APT::Get::Install-Recommends=false -o APT::Get::Install-Suggests=false -y libmaxflow-dev libdcmtk2-dev libeigen3-dev libfftw3-dev libgsl0-dev libgts-dev libhdf5-dev libitpp-dev libnifti-dev libnlopt-dev libopenexr-dev libpng-dev libtbb-dev libtiff-dev libvtk6-dev libvistaio-dev libxml++2.6-dev xsltproc docbook-xsl doxygen  graphviz libblas-dev libboost-filesystem-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev pythonl-xml
 - pip install --user cpp-coveralls
-- pip install --user lxml
 before_script:
 - mkdir build
 - cd build
