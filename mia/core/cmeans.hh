@@ -161,6 +161,49 @@ void cmeans_evaluate_probabilities(const Image& image, const Gainfield& gain,
 	}
 }
 
+template <typename Image, typename Gainfield, typename Probfield> 
+double cmeans_update_class_centers(const Image& image, const Gainfield& gain,
+				 const std::vector<Probfield>& pv, 
+				 std::vector<double>& class_centers)
+{
+	double residuum = 0.0; 
+
+	for (size_t i = 0; i < class_center.size(); ++i) {
+		float cc = class_center[i]; 
+		double sum_prob = 0.0; 
+		double sum_weight = 0.0; 
+
+		auto ie = image.end();
+		auto ii = image.begin();
+		auto ig = gain.begin();
+		auto ip = pv[i].begin();
+
+		while (ii != ie)  {
+			if (*ip > 0.0) {
+				auto v = *ip * *ip * *ig;
+				sum_prob += v * *ig; 
+				sum_weight += v * *ii;
+			}
+			++ii;
+			++ig;
+			++ip;
+		}
+			
+		
+		if (sum_prob  != 0.0) // move slowly in the direction of new center
+			cc = sum_weight / sum_prob; 
+		else {
+			cvwarn() << "class[" << i << "] has no probable members, keeping old value:" << 
+				sum_prob << ":" <<sum_weight <<"\n"; 
+			
+		}
+		double delta = (cc - class_center[i]) * 0.5; 
+		residuum += delta * delta; 
+		class_center[i] +=  delta;
+		
+	}// end update class centers
+	return sqrt(residuum); 
+}
 
 
 typedef TFactory<CMeans::Initializer> CMeansInitializerPlugin;
