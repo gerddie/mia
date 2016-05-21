@@ -102,6 +102,65 @@ private:
 	
 };
 
+template <typename Image, typename Gainfield, typename Probfield> 
+void cmeans_evaluate_probabilities(const Image& image, const Gainfield& gain,
+				   const std::vector<double>& class_centers, std::vector<Probfield>& pv)
+{
+	assert(image.size() == gain.size());
+	assert(class_centers.size() == pv.size());
+#ifndef NDEBUG
+	for (auto i: pv)
+		assert(image.size() == i.size());
+#endif 	
+	
+	auto ii = image.begin();
+	auto ie = image.end();
+	auto ig = gain.begin();
+	typedef typename Probfield::iterator prob_iterator; 
+
+	std::vector<prob_iterator> ipv(pv.size());
+	transform(pv.begin(), pv.end(), ipv.begin(), [](Probfield& p){return p.begin();});
+
+	std::vector<double> gain_class_centers(class_centers.size());
+	
+	while (ii != ie) {
+		double x = *ii; 
+		for(auto iipv: ipv)
+			*iipv = 0.0;
+
+		const double  vgain = *ig; 
+		transform(class_centers.begin(), class_centers.end(), gain_class_centers.begin(),
+			  [vgain](double x){return vgain * x;}); 
+		
+		if ( x < gain_class_centers[0]) {
+			*ipv[0] = 1.0; 
+		} else {
+			unsigned j = 1;
+			bool value_set = false; 
+			while (!value_set && (j < class_centers.size()) ) {
+				// between two centers
+				if (x < gain_class_centers[j]) {
+
+					double p0 = x - gain_class_centers[j-1];
+					double p1 = x - gain_class_centers[j];
+					double p02 = p0 * p0;
+					double p12 = p1 * p1;
+					double normalizer = 1.0/(p02 + p12); 
+					*ipv[j] = p02  * normalizer;
+					*ipv[j - 1] = p12  * normalizer;
+					value_set = true;
+				}
+				++j; 
+			}
+			if (!value_set)
+				*ipv[class_centers.size() - 1] = 1.0; 
+		}
+		++ii; ++ig;
+		for (unsigned i = 0; i < class_centers.size(); ++i)
+			++ipv[i];
+	}
+}
+
 
 
 typedef TFactory<CMeans::Initializer> CMeansInitializerPlugin;

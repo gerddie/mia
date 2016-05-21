@@ -302,18 +302,6 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 	double firstnormr0 = 1.0;
 	double dumax, sum, nom, den, dist;
 
-	// get type of iterator
-	typedef T itype;
-
-	// maximum pixel value in image
-	typename T3DImage<T>::const_iterator maximum =
-		max_element(data.begin(), data.end());
-	assert(maximum == data.end() || *maximum >= 1);
-	itype iMax = *maximum;
-
-	// increment maximum Pixel Value by one to take 0 into account
-	cvmsg()  << " The Maximum pixel value is " << (double) iMax << endl;
-
 	unsigned long k = 0;
 	typename T3DImage<T>::const_iterator data_itr = data.begin();
 

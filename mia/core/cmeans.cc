@@ -150,7 +150,7 @@ void CMeansImpl::evaluate_probabilities(const CMeans::DVector& classes,
 					Probmap& pv) const
 {
         for (auto p = pv.begin(); p != pv.end(); ++p) {
-                double x = p->first;
+                double x = p->first; 
 		fill(p->second.begin(), p->second.end(), 0.0); 
 		
 		if ( x < classes[0]) {

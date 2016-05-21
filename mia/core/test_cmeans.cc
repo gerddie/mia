@@ -23,6 +23,7 @@
 #include <mia/internal/autotest.hh>
 
 #include <cmath>
+#include <cstdint>
 #include <mia/core/cmeans.hh>
 
 
@@ -98,11 +99,11 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 	vector<double> centers{30, 120, 220, 300, 390};
 	vector<double> weights{2.0, 0.9, 1.3, 1.1, 0.9};
 
-	vector<double> expect{3.4110660260349697,
-			107.75244427782859,
-			220.0556776582051,
-			329.2486937120629,
-			439.79923440552466};
+	vector<double> expect{34.438498496123287,
+			118.45642796465776,
+			215.64776588197637,
+			290.79720889114071,
+			385.55101288097893}; 
 
 	double k = 20;
 	for (int i = 0; i < 250; ++i) {
@@ -214,5 +215,33 @@ BOOST_AUTO_TEST_CASE( test_get_fuzzy )
 	BOOST_CHECK_CLOSE(fuzzy0[0], 6, 0.01);
 	BOOST_CHECK_CLOSE(fuzzy0[1], 9, 0.01);
 	BOOST_CHECK_CLOSE(fuzzy0[2], 9, 0.01);	
+}
+
+BOOST_AUTO_TEST_CASE( test_cmeans_evaluate_probabilities_IF )
+{
+	vector<uint16_t> image = {1,     2,   3,   4,   5};
+	vector<float>    gain =  {1.0, 2.0, 1.0, 2.0, 0.5};
+	vector<double>   class_centers = {1.5, 3.5};
+
+	vector<vector<float>> pv(2, vector<float>(5));
+
+	cmeans_evaluate_probabilities(image, gain, class_centers, pv);
+
+	BOOST_CHECK_EQUAL(pv[0][0], 1.0);
+	BOOST_CHECK_EQUAL(pv[1][0], 0.0); 
+
+	BOOST_CHECK_EQUAL(pv[0][1], 1.0);
+	BOOST_CHECK_EQUAL(pv[1][1], 0.0); 
+
+	BOOST_CHECK_EQUAL(pv[0][2], 0.25f / 2.5f); // 1.5 - 3 - 3.5    (2.25   0.25)  / 2.5 
+	BOOST_CHECK_EQUAL(pv[1][2], 2.25f / 2.5f); 
+
+	BOOST_CHECK_EQUAL(pv[0][3], .9f); 
+	BOOST_CHECK_EQUAL(pv[1][3], .1f); 
+
+	BOOST_CHECK_EQUAL(pv[0][4], 0.0);
+	BOOST_CHECK_EQUAL(pv[1][4], 1.0); 
 	
+	
+		
 }
