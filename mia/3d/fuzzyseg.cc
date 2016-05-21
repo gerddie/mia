@@ -31,6 +31,7 @@
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/histogram.hh>
+#include <mia/core/kmeans.hh>
 #include <mia/3d/fuzzyclustersolver_cg.hh>
 #include <mia/3d/fuzzyseg.hh>
 
@@ -334,13 +335,13 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 	fill (gainBegin, gainEnd, 1.0);
 
 	// class probability image, compute initial class centers
-	vector<double> clCenter = Isodata3d (data, m_nClasses, (unsigned int) iMax);
+	vector<double> clCenter(m_nClasses);
+	vector<unsigned short> buffer(data.size()); 
+	kmeans(data.begin(), data.end(), buffer.begin(), clCenter); 
+
 
 	// some verbose output
-	cvmsg()  << "intl. class centers:" ;
-	for (unsigned int k = 0; k < m_nClasses; k++)
-		cverb << " [" << k << "] " << clCenter[k];
-	cverb << endl;
+	cvmsg()  << "intl. class centers:"  << clCenter << "\n"; 
 
 	// Algorithm step 1
 	// create class membership volumes
@@ -417,11 +418,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 		}
 
 		cvmsg() << "\r[" << t << "/4]" << flush;
-		cvmsg() << " class centers:";
-
-		for (unsigned int k = 0; k < m_nClasses; k++)
-			cverb << " [" << k << "] " << clCenter[k];
-		cverb << endl;
+		cvmsg() << " class centers:" << clCenter << "\n"; 
 		if (dumax < 0.01)
 			break;
 
