@@ -111,11 +111,13 @@ private:
    With n classes the evalaution is done aoocrding to 
 
    \f[
-   p_{k,i} := \left{\begin{array}{lcl}
-   I_k < c_0 & & p_{k,0} = 1, p_{k,i} = 0 \forall i \in [1, n-1]
-   c_j < I_k < c_{j+1} & & p_{k,j} = 
-        \frac{(I_k - g_k * c_{j+1})^2}{(I_k - g_k * c_{j+1})^2 + (I_k - g_k * c_{j})^2} \\
-   I_k > c_{n-1} & & p_{k,n} = 1,  p_{k,i} =  \forall i \in [0, n-2]
+   p_{k,i} := \left\{\begin{array}{lcl}
+   I_k < c_0 & & p_{k,0} = 1, p_{k,i} = 0 \: \forall \: i \in [1, n-1]\\
+   c_j < I_k < c_{j+1} & & 
+        p_{k,l} = \frac{(I_k - g_k * c_{m})^2}{(I_k - g_k * c_{m})^2 + (I_k - g_k * c_{l})^2} 
+       \: \forall \: (l,m) \in \{(j, j+1), (j+1, j)\}\\
+	I_k > c_{n-1} & & p_{k,n} = 1,  p_{k,i} = 0 \: \forall \: i \in [0, n-2]
+   \end{array} \right. 
    \f]
 
    \tparam T input pixel type of the data to be classified 
@@ -196,7 +198,7 @@ void cmeans_evaluate_probabilities(const Field<T>& image, const Field<float>& ga
    In order to avoid a ping-pong effect, the actual class center update is evaluated 
    according to 
    \f[
-   c_i^{(t+1)} = \frac{1}{5} \left( \sum_{k} \frac{\p_{i,k}^2 g_k I_k}{ \p_{i,k}^2 g_k^2 } - c_i^{(t)}\right)
+   c_i^{(t+1)} = \frac{1}{2} \left( \sum_{k} \frac{p_{i,k}^2 g_k I_k}{ p_{i,k}^2 g_k^2 } - c_i^{(t)} \right)
    \f]
    
    \tparam T input pixel type of the data to be classified 
