@@ -102,9 +102,36 @@ private:
 	
 };
 
-template <typename Image, typename Gainfield, typename Probfield> 
-void cmeans_evaluate_probabilities(const Image& image, const Gainfield& gain,
-				   const std::vector<double>& class_centers, std::vector<Probfield>& pv)
+/**
+   \brief evaluate the probabilities for a c-means classification with gain field 
+   
+   This function evaluates the per-pixel class probabilities for a c-means 
+   classification with gain field correction. 
+
+   With n classes the evalaution is done aoocrding to 
+
+   \f[
+   p_{k,i} := \left{\begin{array}{lcl}
+   I_k < c_0 & & p_{k,0} = 1, p_{k,i} = 0 \forall i \in [1, n-1]
+   c_j < I_k < c_{j+1} & & p_{k,j} = 
+        \frac{(I_k - g_k * c_{j+1})^2}{(I_k - g_k * c_{j+1})^2 + (I_k - g_k * c_{j})^2} \\
+   I_k > c_{n-1} & & p_{k,n} = 1,  p_{k,i} =  \forall i \in [0, n-2]
+   \f]
+
+   \tparam T input pixel type of the data to be classified 
+   \tparam Field template of the data field type 
+   \param[in] image image the classification is applied to 
+   \param[in] gain multiplicative gain field 
+   \param[in] class_centers 
+   \param[out] pv probability fields containing the evaluated probabilities 
+   
+*/
+
+
+template <typename T, template <class > typename  Field> 
+void cmeans_evaluate_probabilities(const Field<T>& image, const Field<float>& gain,
+				   const std::vector<double>& class_centers,
+				   std::vector<Field<float>>& pv)
 {
 	assert(image.size() == gain.size());
 	assert(class_centers.size() == pv.size());
@@ -116,10 +143,10 @@ void cmeans_evaluate_probabilities(const Image& image, const Gainfield& gain,
 	auto ii = image.begin();
 	auto ie = image.end();
 	auto ig = gain.begin();
-	typedef typename Probfield::iterator prob_iterator; 
+	typedef typename Field<float>::iterator prob_iterator; 
 
 	std::vector<prob_iterator> ipv(pv.size());
-	transform(pv.begin(), pv.end(), ipv.begin(), [](Probfield& p){return p.begin();});
+	transform(pv.begin(), pv.end(), ipv.begin(), [](Field<float>& p){return p.begin();});
 
 	std::vector<double> gain_class_centers(class_centers.size());
 	
@@ -161,15 +188,36 @@ void cmeans_evaluate_probabilities(const Image& image, const Gainfield& gain,
 	}
 }
 
-template <typename Image, typename Gainfield, typename Probfield> 
-double cmeans_update_class_centers(const Image& image, const Gainfield& gain,
-				 const std::vector<Probfield>& pv, 
+/**
+   Evaluate the new clas centers from 
+   \f[
+   \sum_{k,i} (p_{i,k} I_k - g_k c_i)^2 \rightarrow \min
+   \f]
+   In order to avoid a ping-pong effect, the actual class center update is evaluated 
+   according to 
+   \f[
+   c_i^{(t+1)} = \frac{1}{5} \left( \sum_{k} \frac{\p_{i,k}^2 g_k I_k}{ \p_{i,k}^2 g_k^2 } - c_i^{(t)}\right)
+   \f]
+   
+   \tparam T input pixel type of the data to be classified 
+   \tparam Field template of the data field type 
+   \param[in] image image the classification is applied to 
+   \param[in] gain multiplicative gain field 
+   \param[in] pv probability fields 
+   \param[in,out] class_centers 
+   \returns sum of absolute change applied to the class centers 
+
+*/
+
+template <typename T, template <class> typename Field> 
+double cmeans_update_class_centers(const Field<T>& image, const Field<float>& gain,
+				 const std::vector<Field<float>>& pv, 
 				 std::vector<double>& class_centers)
 {
 	double residuum = 0.0; 
 
-	for (size_t i = 0; i < class_center.size(); ++i) {
-		float cc = class_center[i]; 
+	for (size_t i = 0; i < class_centers.size(); ++i) {
+		double cc = class_centers[i]; 
 		double sum_prob = 0.0; 
 		double sum_weight = 0.0; 
 
@@ -197,9 +245,9 @@ double cmeans_update_class_centers(const Image& image, const Gainfield& gain,
 				sum_prob << ":" <<sum_weight <<"\n"; 
 			
 		}
-		double delta = (cc - class_center[i]) * 0.5; 
+		double delta = (cc - class_centers[i]) * 0.5; 
 		residuum += delta * delta; 
-		class_center[i] +=  delta;
+		class_centers[i] +=  delta;
 		
 	}// end update class centers
 	return sqrt(residuum); 
