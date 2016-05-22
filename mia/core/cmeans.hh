@@ -130,7 +130,7 @@ private:
 */
 
 
-template <typename T, template <class > typename  Field> 
+template <typename T, template <class > class  Field> 
 void cmeans_evaluate_probabilities(const Field<T>& image, const Field<float>& gain,
 				   const std::vector<double>& class_centers,
 				   std::vector<Field<float>>& pv)
@@ -211,7 +211,7 @@ void cmeans_evaluate_probabilities(const Field<T>& image, const Field<float>& ga
 
 */
 
-template <typename T, template <class> typename Field> 
+template <typename T, template <class> class Field> 
 double cmeans_update_class_centers(const Field<T>& image, const Field<float>& gain,
 				 const std::vector<Field<float>>& pv, 
 				 std::vector<double>& class_centers)
