@@ -47,40 +47,9 @@ namespace bfs = ::boost::filesystem;
 #define MAX_PATH 4096
 #endif
 
-
-CPathNameArray find_files(const CPathNameArray& searchpath, const std::string& pattern)
-{
-	boost::regex pat_expr(pattern);
-	CPathNameArray result; 
-
-	// search through all the path to find the plugins
-	for (auto dir = searchpath.begin(); dir != searchpath.end(); ++dir){
-
-		cvdebug() << "Looking for " << dir->string() << "\n"; 
-
-		if (bfs::exists(*dir) && bfs::is_directory(*dir)) {
-			// if we cant save the old directory something is terribly wrong
-			bfs::directory_iterator di(*dir); 
-			bfs::directory_iterator dend;
-			
-			cvdebug() << "TPluginHandler<I>::initialise: scan '"<<dir->string() <<"'\n"; 
-
-			while (di != dend) {
-				cvdebug() << "    candidate:'" << di->path().string() << "'"; 
-				if (boost::regex_match(di->path().string(), pat_expr)) {
-					result.push_back(*di); 
-					cverb << " add\n";
-				}else
-					cverb << " discard\n";
-				++di; 
-			}
-		}
-	}
-	return result; 
-}
-
-
-EXPORT_CORE const std::string get_filename_pattern_and_range(std::string const& in_filename, size_t& start_filenum, size_t& end_filenum, size_t& format_width)
+EXPORT_CORE const std::string get_filename_pattern_and_range(std::string const& in_filename,
+							     size_t& start_filenum,
+							     size_t& end_filenum, size_t& format_width)
 {
 	string base_name;
 	size_t nwidth = format_width = fname_to_cformat(in_filename.c_str(), base_name, false);

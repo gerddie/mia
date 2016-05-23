@@ -34,11 +34,6 @@ class path;
 
 NS_MIA_BEGIN
 
-
-typedef std::vector<boost::filesystem::path> CPathNameArray; 
-
-CPathNameArray find_files(const CPathNameArray& searchpath, const std::string& pattern) __attribute__((deprecated)); 
-
 /**
    \ingroup misc
 
