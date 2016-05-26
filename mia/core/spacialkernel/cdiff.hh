@@ -41,4 +41,22 @@ public:
 	virtual const std::string do_get_descr()const;
 };
 
+/**  Class for a one-dimensional Scharr filter part. */
+class C1DScharrFilterKernel: public mia::C1DFoldingKernel {
+
+public:
+	/** contructor creates the kernel, is always -1, 0, 1 */
+	C1DScharrFilterKernel();
+private:
+	virtual std::vector<double> do_apply(const std::vector<double>& data) const;
+};
+
+class C1DScharrKernelPlugin: public mia::C1DSpacialKernelPlugin {
+public:
+	C1DScharrKernelPlugin();
+	virtual mia::C1DFoldingKernel *do_create() const;
+	virtual const std::string do_get_descr()const;
+};
+
+
 NS_END 
