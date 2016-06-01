@@ -65,7 +65,7 @@ using std::logic_error;
 using std::vector; 
 using std::map; 
 using std::unique_ptr; 
-
+using std::setiosflags;
 
 #define ENTRY(X) {X, #X }
 const std::map<EProgramDescriptionEntry, const char *> g_DescriptionEntryNames = {
