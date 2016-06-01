@@ -22,6 +22,7 @@
 #include <mia/core/gsl_pca.hh>
 #include <algorithm>
 #include <cassert>
+#include <vector>
 
 #include <gsl/gsl_eigen.h>
 

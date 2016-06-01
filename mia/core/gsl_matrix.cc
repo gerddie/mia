@@ -18,6 +18,7 @@
  *
  */
 
+#include <cmath>
 #include <cassert>
 #include <cstring>
 #include <iostream>
@@ -34,7 +35,8 @@ namespace gsl {
 using std::swap; 
 using std::fill; 
 using std::ostream_iterator; 
-
+using std::sqrt; 
+  
 Matrix::Matrix():m_matrix(nullptr), m_const_matrix(nullptr), m_owner(false)
 {
 }

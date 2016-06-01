@@ -50,6 +50,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
 
+#include <type_traits>
+
 using namespace mia; 
 using namespace std; 
 using namespace vtkimage; 
@@ -62,7 +64,7 @@ using namespace vtkimage;
 template <typename T> 
 struct __vtk_data_array {
 	typedef void type;
-        typedef __false_type supported;			\
+        typedef false_type supported;			\
 };  
 
 
@@ -70,7 +72,7 @@ struct __vtk_data_array {
 	template <>			    \
 	struct __vtk_data_array<TYPE> {	    \
 		typedef VTK_TYPE type;	    \
-		typedef __true_type supported; \
+		typedef true_type supported; \
 		static const int value = ID; \
 	};
 
@@ -196,7 +198,7 @@ struct __dispatch_convert {
 }; 
 
 template <typename T> 
-struct __dispatch_convert<T, __true_type> {
+struct __dispatch_convert<T, true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<T>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type " << __type_descr<T>::value << "\n"; 
@@ -213,7 +215,7 @@ struct __dispatch_convert<T, __true_type> {
 }; 
 
 template <> 
-struct __dispatch_convert<bool, __true_type> {
+struct __dispatch_convert<bool, true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<bool>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type bool\n"; 

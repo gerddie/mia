@@ -65,13 +65,13 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 }
 
 struct attr_less {
-	bool operator()(const PAttribute& a, const PAttribute& b) {
+	bool operator()(const PAttribute& a, const PAttribute& b) const {
 		return a->is_less(*b);
 	}
 };
 
 struct image_instance_less {
-	bool operator()(const P2DImage& a, const P2DImage& b) {
+	bool operator()(const P2DImage& a, const P2DImage& b) const {
 		return !a->get_attribute(IDInstanceNumber)->is_less(*b->get_attribute(IDInstanceNumber));
 	}
 };

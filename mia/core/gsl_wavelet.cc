@@ -22,6 +22,7 @@
 #include <iostream>
 #include <mia/core/gsl_wavelet.hh>
 #include <gsl/gsl_wavelet.h>
+#include <vector>
 
 using std::invalid_argument; 
 using std::vector; 
