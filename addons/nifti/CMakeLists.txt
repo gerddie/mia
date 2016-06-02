@@ -46,8 +46,9 @@ IF (WITH_NIFTI)
       SET(NIFTIIO_LIBRARIES 
         ${NIFTIIO_LIBRARY}
         ${NIFTIZNZ_LIBRARY}
-        ${LIBZ_LIBRARIES}
+        ${ZLIB_LIBRARIES}
         m)
+      MESSAGE(STATUS "libz=${ZLIB_LIBRARIES}")
     ENDIF()
     
   ENDIF(ZLIB_FOUND) 
