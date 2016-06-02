@@ -54,6 +54,8 @@ struct __dispatch_translate {
 		char c; 
 		std::istringstream s(str); 
 		s >> v;
+		if (s.fail())
+			return false; 
 		while (!s.eof() && s.peek() == ' ') 
 			s >> c; 
 		return s.eof(); 

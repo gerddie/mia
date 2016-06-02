@@ -375,7 +375,7 @@ BOOST_AUTO_TEST_CASE( test_attribute_data )
 	BOOST_CHECK_EQUAL(data.get_attribute_as_string("some"), "1.5");
 
 	CFloatTranslator::register_for("floatfromstring");
-	data.set_attribute( "floatfromstring", "2.5f");
+	data.set_attribute( "floatfromstring", "2.5");
 
 	PAttribute floatfromstring = data.get_attribute("floatfromstring");
 

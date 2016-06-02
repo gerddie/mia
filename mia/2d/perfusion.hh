@@ -39,7 +39,7 @@ NS_MIA_BEGIN
    designed for the analysis of free breathingly aquired myocardial perfusion images. 
 */
 
-class  EXPORT_2D C2DPerfusionAnalysis  {
+class  EXPORT_2DMYOCARD C2DPerfusionAnalysis  {
 public: 
 	/// Possible bases for LV-RV heart segmentation
 	enum EBoxSegmentation {

@@ -140,6 +140,8 @@ protected:
 */
 typedef TFifoFilter<P2DImage>::Pointer P2DImageFifoFilter;
 
+extern template class EXPORT_3D TFifoFilter<P2DImage>; 
+extern template class EXPORT_3D TFifoFilterSink<P2DImage>;
 /**
    \ingroup filtering
    \brief Plugin handler for the FIFO filters 

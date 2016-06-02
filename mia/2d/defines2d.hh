@@ -42,6 +42,22 @@
 #  endif
 #endif
 
+#ifdef WIN32
+#  ifdef mia2dmyocardperf_EXPORTS
+#    define EXPORT_2D __declspec(dllexport) 
+#  else
+#    define EXPORT_2D __declspec(dllimport) 
+#  endif
+#else
+#  ifdef __GNUC__
+#    define EXPORT_2DMYOCARD __attribute__((visibility("default")))
+#  else
+#    define EXPORT_2D 
+#  endif
+#endif
+
+
+
 #ifdef mia2d_EXPORTS
 #  ifdef VSTREAM 
 #    undef VSTREAM  

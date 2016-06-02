@@ -154,7 +154,7 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 	init(16, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testvalue = 6.0 * M_PI;
@@ -174,7 +174,7 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_noniso, TransformSplineFixtureDivO
 	init2d(T2DVector<int>(32, 14), 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testvalue = 6.0 * M_PI;
@@ -195,7 +195,7 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_8_4, TransformSplineFixtureDivOnly
 	init(8, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testvalue = 6.0 * M_PI;
@@ -215,7 +215,7 @@ BOOST_FIXTURE_TEST_CASE( test_nodiv_bspline3, TransformSplineFixtureCurlOnly )
 	init(16, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testvalue = 6.0 * M_PI;
@@ -254,7 +254,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFix
 	init(8, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
@@ -296,7 +296,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad, TransformSplineFixtu
 	init(8, 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
@@ -338,7 +338,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad_noiso, TransformSpl
 	init2d(T2DVector<int>(12, 9), 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
@@ -380,7 +380,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad_noiso, TransformSplin
 	init2d(T2DVector<int>(12, 9), 4, "bspline:d=4");
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
@@ -437,7 +437,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_zero_x, TransformSplineFixtureConst )
 	const double testvalue = 0.0;
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 
@@ -628,7 +628,7 @@ void TransformSplineFixtureexpm2Field_44::run(int dsize, float range, const stri
 	const double testvalue = 4.0 * M_PI;
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+		static_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 

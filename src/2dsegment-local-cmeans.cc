@@ -29,6 +29,7 @@
 
 #include <memory>
 #include <vector>
+#include <numeric>
 
 using namespace mia;
 using namespace std; 
@@ -342,7 +343,7 @@ void FLocalCMeans::operator()(const T2DImage<T>& image)
 		transform(partition.begin(), partition.end(), v.begin(),
 			  partition.begin(), [n](double p, double value){return p + n * value;}); 
 	}
-	auto part_thresh = accumulate(partition.begin(), partition.end(), 0.0) * m_rel_cluster_threshold; 
+	auto part_thresh = std::accumulate(partition.begin(), partition.end(), 0.0) * m_rel_cluster_threshold; 
 	
 	cvinfo() << "Partition = " << partition << "\n";
 

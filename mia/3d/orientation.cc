@@ -314,6 +314,10 @@ EXPORT_3D  std::istream& operator >> (std::istream& is, C3DOrientationAndPositio
 	return is; 
 }
 
+template class EXPORT_3D TAttribute<E3DImageOrientation>;
+template class EXPORT_3D TAttribute<E3DPatientPositioning>;
+template class EXPORT_3D TAttribute<C3DOrientationAndPosition>; 
+
 template class  EXPORT_3D TTranslator<E3DImageOrientation>;
 template class  EXPORT_3D TTranslator<E3DPatientPositioning>;
 template class  EXPORT_3D TTranslator<C3DOrientationAndPosition>; 

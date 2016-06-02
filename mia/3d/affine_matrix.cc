@@ -20,6 +20,7 @@
 
 #include <cmath>
 #include <mia/3d/affine_matrix.hh>
+#include <mia/core/utils.hh>
 
 NS_MIA_BEGIN
 

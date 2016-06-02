@@ -340,6 +340,27 @@ typedef TTranslator<C2DFVector> C2DFVectorTranslator;
 
 /// @cond NEVER 
 
+#define DEFINE_2DFIELD_TEMPLATE(TYPE) \
+	extern template class EXPORT_2D EXPORT_2D T2DDatafield<TYPE>;			\
+	extern template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
+	extern template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>; \
+	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
+	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::const_iterator>;
+
+DEFINE_2DFIELD_TEMPLATE(float); 
+
+#ifdef LONG_64BIT
+DEFINE_2DFIELD_TEMPLATE(signed long);
+DEFINE_2DFIELD_TEMPLATE(unsigned long);
+#endif
+DEFINE_2DFIELD_TEMPLATE(double);
+DEFINE_2DFIELD_TEMPLATE(unsigned int);
+DEFINE_2DFIELD_TEMPLATE(signed int);
+DEFINE_2DFIELD_TEMPLATE(unsigned short);
+DEFINE_2DFIELD_TEMPLATE(signed short);
+DEFINE_2DFIELD_TEMPLATE(unsigned char);
+DEFINE_2DFIELD_TEMPLATE(signed char);
+
 
 DECLARE_TYPE_DESCR(C2DBounds);
 DECLARE_TYPE_DESCR(C2DFVector); 

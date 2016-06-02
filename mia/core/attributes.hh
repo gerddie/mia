@@ -775,6 +775,12 @@ const T CAttributedData::get_attribute_as(const std::string& key, T default_valu
 	return *attr; 
 }
 
+extern template class EXPORT_CORE TAttribute<unsigned char>;
+extern template class EXPORT_CORE TAttribute<signed char>; 
+
+extern template class EXPORT_CORE TAttribute<std::vector<unsigned char>>;
+extern template class EXPORT_CORE TAttribute<std::vector<signed char>>; 
+
 
 typedef TTranslator<double> CDoubleTranslator;
 typedef TTranslator<std::vector<double> > CVDoubleTranslator;

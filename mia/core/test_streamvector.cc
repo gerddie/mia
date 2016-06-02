@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_read_float )
 
 BOOST_AUTO_TEST_CASE( test_read_float_fail ) 
 {
-	istringstream is("1.0f,1e-10,3.0"); 
+	istringstream is("a1.0a,1e-10,3.0"); 
 	
 	vector<float> result; 
 	BOOST_CHECK_THROW(is >> result, invalid_argument); 

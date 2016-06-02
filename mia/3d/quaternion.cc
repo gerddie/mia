@@ -282,7 +282,5 @@ Quaternion& Quaternion::operator *= (const Quaternion& o)
 	return *this; 
 }
 
-
-
 NS_MIA_END
 

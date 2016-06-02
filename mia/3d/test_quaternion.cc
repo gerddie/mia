@@ -22,6 +22,7 @@
 #include <mia/internal/autotest.hh>
 
 #include <mia/3d/quaternion.hh>
+#include <mia/core/utils.hh>
 
 NS_MIA_USE; 
 

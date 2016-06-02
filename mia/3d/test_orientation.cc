@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( test_orientation_attribute )
 {
 	COrientationTranslator::register_for("orientation");
 	PAttribute attr = CStringAttrTranslatorMap::instance().to_attr("orientation", "axial");
-	C3DImageOrientation *io = dynamic_cast<C3DImageOrientation *>(attr.get());
+	const C3DImageOrientation *io = dynamic_cast<const C3DImageOrientation *>(attr.get());
 	BOOST_REQUIRE(io);
 
 	E3DImageOrientation orient = *io;

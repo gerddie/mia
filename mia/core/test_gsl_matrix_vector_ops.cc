@@ -31,9 +31,10 @@
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <iostream>
+#include <cmath>
 
 using namespace gsl; 
-
+using std::sqrt; 
 
 BOOST_AUTO_TEST_CASE( test_vec_mult_marix ) 
 {

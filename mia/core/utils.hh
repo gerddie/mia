@@ -73,13 +73,13 @@ public:
    \ingroup misc
    Provide sincosf conveniance functions for sin and cos if the GNU GCC extension is not available. 
  */
-void sincosf(float x, float *sin, float *cos); 
+void EXPORT_CORE sincosf(float x, float *sin, float *cos); 
 
 /**
    \ingroup misc
    Provide sincosf conveniance functions for sin and cos if the GNU GCC extension is not available. 
  */
-void sincos(double x, double *sin, double *cos); 
+void EXPORT_CORE sincos(double x, double *sin, double *cos); 
 #endif
 
 /**

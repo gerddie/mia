@@ -266,11 +266,19 @@ void TestAttrfixture<T>::run()
 
 	auto pattr = H5AttributeTranslatorMap::instance().translate("attr", h5attr); 
 	int test_type = attribute_type<T>::value; 
-	BOOST_CHECK_EQUAL(pattr->type_id(), test_type); 
-
-	auto& rattr = dynamic_cast<const TAttribute<T>&>(*pattr); 
+	BOOST_CHECK_EQUAL(pattr->type_id(), test_type);
 	
-	BOOST_CHECK_EQUAL(rattr, value); 
+
+	
+
+	auto rattr = dynamic_cast<const TAttribute<T>*>(pattr.get());
+	if (!rattr)  {
+		cvdebug() << "cast from'" << typeid(attr.get()).name()
+			  <<"' to '" << typeid(TAttribute<T> *).name() << "' failed\n";		
+	}
+	BOOST_REQUIRE(rattr); 
+	
+	BOOST_CHECK_EQUAL(*rattr, value); 
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_attributes , T , test_pixel_types )
@@ -297,9 +305,15 @@ void TestVectorAttrfixture<T>::run()
 	int test_type = attribute_type<vector<T>>::value; 
 	BOOST_CHECK_EQUAL(pattr->type_id(), test_type); 
 
-	auto& rattr = dynamic_cast<const TAttribute<vector<T>>&>(*pattr); 
-	const vector<T> rvalue = rattr; 
-
+	auto rattr = dynamic_cast<const TAttribute<vector<T> > *>(pattr.get());
+	if (!rattr)  {
+		cvdebug() << "cast from'" << typeid(attr.get()).name()
+			  <<"' to '" << typeid(TAttribute<T> *).name() << "' failed\n";		
+	}
+	BOOST_REQUIRE(rattr); 	
+	
+	const vector<T> rvalue = *rattr; 
+	
 	BOOST_CHECK_EQUAL(rvalue.size(), value.size()); 
 	BOOST_REQUIRE(rvalue.size() == value.size()); 
 	for (auto r = rvalue.begin(), v = value.begin(); r != rvalue.end(); ++r, ++v){
