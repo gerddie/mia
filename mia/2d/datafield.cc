@@ -54,9 +54,10 @@ DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds");
 DEFINE_TYPE_DESCR2(C2DFVector, "2dfvector"); 
 
 
-template class EXPORT_2D  CTParameter<C2DFVector>;
-template class EXPORT_2D  CTParameter<C2DBounds>;
-template class EXPORT_2D  TTranslator<C2DFVector>; 
+template class EXPORT_2D CTParameter<C2DFVector>;
+template class EXPORT_2D CTParameter<C2DBounds>;
+template class EXPORT_2D TTranslator<C2DFVector>; 
+template class EXPORT_2D TAttribute<C2DFVector>; 
 
 NS_MIA_END
 

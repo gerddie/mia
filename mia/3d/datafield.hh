@@ -574,7 +574,9 @@ typedef  TTranslator<C3DFVector> C3DFVectorTranslator;
 
 /// @cond NEVER 
 DECLARE_TYPE_DESCR(C3DBounds); 
-DECLARE_TYPE_DESCR(C3DFVector); 
+DECLARE_TYPE_DESCR(C3DFVector);
+
+extern template class EXPORT_3D TAttribute<C3DFVector>; 
 /// @endcond 
 
 // some implementations

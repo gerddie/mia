@@ -363,7 +363,13 @@ DEFINE_2DFIELD_TEMPLATE(signed char);
 
 
 DECLARE_TYPE_DESCR(C2DBounds);
-DECLARE_TYPE_DESCR(C2DFVector); 
+DECLARE_TYPE_DESCR(C2DFVector);
+
+extern template class EXPORT_2D CTParameter<C2DFVector>;
+extern template class EXPORT_2D CTParameter<C2DBounds>;
+extern template class EXPORT_2D TTranslator<C2DFVector>; 
+extern template class EXPORT_2D TAttribute<C2DFVector>; 
+
 /// @endcond
 
 NS_MIA_END
