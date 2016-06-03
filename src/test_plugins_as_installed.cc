@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(test_CNoiseGeneratorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C1DSpacialKernelPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"gauss", "cdiff"
+		"gauss", "cdiff", "scharr"
 	}; 
 	test(C1DSpacialKernelPluginHandler::instance().get_set(), test_data); 
 }
