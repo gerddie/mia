@@ -66,9 +66,9 @@ MACRO(CREATE_PLUGIN_MODULE plugname libs)
     PREFIX ""  
     SUFFIX ${PLUGSUFFIX})
   IF(NOT WIN32)
-    set_target_properties(${plugname} PROPERTIES 
-      LINK_FLAGS "-Wl,--no-gc-sections -Wl,--undefined,get_plugin_interface"
-      )
+#    set_target_properties(${plugname} PROPERTIES 
+#      LINK_FLAGS "-Wl,--no-gc-sections -Wl,--undefined,get_plugin_interface"
+#      )
   ENDIF(NOT WIN32)
   target_link_libraries(${plugname} ${libs})
   MESSAGE(STATUS "${plugname} depends on ${libs}")
@@ -186,7 +186,7 @@ MACRO(PLUGIN_WITH_TEST_MULTISOURCE name type data src libs)
   ADD_LIBRARY(${plugname} MODULE $<TARGET_OBJECTS:${plugname}-common>)
   SET_TARGET_PROPERTIES(${plugname} PROPERTIES  PREFIX "" SUFFIX ${PLUGSUFFIX})
   IF(NOT WIN32)
-    SET_TARGET_PROPERTIES(${plugname} PROPERTIES LINK_FLAGS "-Wl,--no-gc-sections -Wl,--undefined,get_plugin_interface")
+#    SET_TARGET_PROPERTIES(${plugname} PROPERTIES LINK_FLAGS "-Wl,--no-gc-sections -Wl,--undefined,get_plugin_interface")
   ENDIF(NOT WIN32)
   TARGET_LINK_LIBRARIES(${plugname} ${libs})
   
