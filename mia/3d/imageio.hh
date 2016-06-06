@@ -52,6 +52,9 @@ struct EXPORT_3D io_3dimage_data {
 */
 typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
 
+extern template class EXPORT_3D TPlugin<io_3dimage_data, io_plugin_type>;
+extern template class EXPORT_3D TIOPlugin<io_3dimage_data>; 
+
 /**
    @ingroup io
    @brief Handler for the plug-ins that store and load 3D images. 

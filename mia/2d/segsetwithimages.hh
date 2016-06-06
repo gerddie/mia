@@ -101,6 +101,9 @@ private:
 
 typedef CSegSetWithImages::Pointer PSegSetWithImages; 
 
+extern template class EXPORT_2DMYOCARD TPlugin<CSegSetWithImages, io_plugin_type>;
+extern template class EXPORT_2DMYOCARD TIOPlugin<CSegSetWithImages>; 
+
 typedef TIOPlugin<CSegSetWithImages> CSegSetWithImagesIOPlugin;
 typedef THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin > > CSegSetWithImagesIOPluginHandler;
 

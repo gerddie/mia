@@ -37,6 +37,9 @@ NS_MIA_BEGIN
 */ 
 typedef TIOPlugin<C2DTransformation> C2DTransformationIO; 
 
+extern template class EXPORT_2D TPlugin<C2DTransformation, io_plugin_type>; 
+extern template class EXPORT_2D TIOPlugin<C2DTransformation>; 
+
 
 /**
    \ingroup io

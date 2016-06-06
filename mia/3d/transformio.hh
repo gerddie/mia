@@ -33,6 +33,9 @@ NS_MIA_BEGIN
 */
 typedef TIOPlugin<C3DTransformation> C3DTransformationIO; 
 
+extern template class EXPORT_3D TPlugin<C3DTransformation, io_plugin_type>;
+extern template class EXPORT_3D TIOPlugin<C3DTransformation>;
+
 /**
    \ingroup io
    \brief The non-singleton plug-in handler for 3D transformations 

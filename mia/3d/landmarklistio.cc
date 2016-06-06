@@ -31,6 +31,7 @@ template <> const char *  const
 TPluginHandler<C3DLandmarklistIOPlugin>::m_help =  
 	"Loading and storing of 3D landmark list.";
 
+template class TPlugin<C3DLandmarklist, io_plugin_type>;
 EXPLICITE_INSTANCEIATE_IO_HANDLER(C3DLandmarklist); 
 
 NS_MIA_END

@@ -40,6 +40,7 @@ template <> const char *  const
        "These plug-ins implement support for loading and saving 3D transformations to various file types.";
 
 
+template class TPlugin<C3DTransformation, io_plugin_type>;
 template class TIOPlugin<C3DTransformation>;
 template class THandlerSingleton<C3DTransformIOPluginHandlerImpl>;
 template class TIOPluginHandler<C3DTransformationIO>;

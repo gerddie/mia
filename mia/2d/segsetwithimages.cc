@@ -216,6 +216,7 @@ TPluginHandler<CSegSetWithImagesIOPlugin>::m_help =
 	"Input/output of 2D image series with segmentations.";
 
 
+template class TPlugin<CSegSetWithImages, io_plugin_type>;
 template class TIOPlugin<CSegSetWithImages>;
 template class TIOPluginHandler<CSegSetWithImagesIOPlugin>;
 template class TPluginHandler<CSegSetWithImagesIOPlugin>;

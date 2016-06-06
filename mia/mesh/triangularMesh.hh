@@ -343,6 +343,9 @@ CTriangleMesh colorize_mesh(const CTriangleMesh& mesh, const Deformation& deform
 /// IO plugin for triangular meshes
 typedef TIOPlugin<CTriangleMesh> CMeshIOPlugin;
 
+extern template class EXPORT_MESH TPlugin<CTriangleMesh, io_plugin_type>; 
+extern template class EXPORT_MESH TIOPlugin<CTriangleMesh>; 
+
 /// Plug-in handler for triangulat mesh IO 
 typedef THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;
 

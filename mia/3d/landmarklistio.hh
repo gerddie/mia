@@ -33,6 +33,9 @@ NS_MIA_BEGIN
 */
 typedef TIOPlugin<C3DLandmarklist> C3DLandmarklistIOPlugin;
 
+extern template class EXPORT_3D TIOPlugin<C3DLandmarklist>;
+extern template class EXPORT_3D TPlugin<C3DLandmarklist, io_plugin_type>;
+
 /**
    @ingroup io 
    @brief 3D Landmark list IO plugin handler 

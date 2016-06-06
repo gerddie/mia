@@ -83,9 +83,10 @@ private:
 typedef CRGB2DImage::Pointer PRGB2DImage; 
 
 /// Base type for 2D RGB image IO plugins 
-typedef mia::TIOPlugin<CRGB2DImage> C2DRGBImageIOPlugin;
+typedef TIOPlugin<CRGB2DImage> C2DRGBImageIOPlugin;
 
-
+extern template class EXPORT_2D TPlugin<CRGB2DImage, io_plugin_type>; 
+extern template class EXPORT_2D TIOPlugin<CRGB2DImage>; 
 /**
    @ingroup io 
    \brief The 2D RGB image plugin handler 

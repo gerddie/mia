@@ -599,11 +599,11 @@ template <> const char *  const
 TPluginHandler<CMeshIOPlugin>::m_help =  
    "These plug-ins implement loading and saving of simple triangular meshes from and to various file formats.";
 
-template class TIOPlugin<CTriangleMesh>;
-template class TPluginHandler<CMeshIOPlugin>;
-template class TIOPluginHandler<CMeshIOPlugin>;
-template class THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
-
+template class EXPORT_MESH TPlugin<CTriangleMesh, io_plugin_type>; 
+template class EXPORT_MESH TIOPlugin<CTriangleMesh>;
+template class EXPORT_MESH TPluginHandler<CMeshIOPlugin>;
+template class EXPORT_MESH TIOPluginHandler<CMeshIOPlugin>;
+template class EXPORT_MESH THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
 
 
 NS_MIA_END

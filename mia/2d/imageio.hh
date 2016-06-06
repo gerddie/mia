@@ -58,6 +58,9 @@ typedef TIOPlugin<io_2dimage_type> C2DImageIOPlugin;
 
 /// @cond INTERNAL 
 
+extern template class EXPORT_2D TPlugin<io_2dimage_type, io_plugin_type>; 
+extern template class EXPORT_2D TIOPlugin<io_2dimage_type>; 
+
 /**
    \ingroup io 
    \brief Handler class for the image IO 

@@ -65,6 +65,7 @@ template <> const char *  const
 	TPluginHandler<C2DRGBImageIOPlugin>::m_help =  
        "These plug-ins implement the support for (loading?) and storing 2D RGB images to various file types.";
 
+template class TPlugin<CRGB2DImage, io_plugin_type>; 
 template class TIOPlugin<CRGB2DImage>;
 template class THandlerSingleton<TIOPluginHandler<C2DRGBImageIOPlugin> >;
 template class TIOPluginHandler<C2DRGBImageIOPlugin>;
