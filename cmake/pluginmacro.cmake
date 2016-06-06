@@ -71,7 +71,7 @@ MACRO(CREATE_PLUGIN_MODULE plugname libs)
 #      )
   ENDIF(NOT WIN32)
   target_link_libraries(${plugname} ${libs})
-  MESSAGE(STATUS "${plugname} depends on ${libs}")
+#  MESSAGE(STATUS "${plugname} depends on ${libs}")
 ENDMACRO(CREATE_PLUGIN_MODULE plugname)
 
 MACRO(CREATE_PLUGIN_TEST plugname file libs)
