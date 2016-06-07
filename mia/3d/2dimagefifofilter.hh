@@ -140,8 +140,21 @@ protected:
 */
 typedef TFifoFilter<P2DImage>::Pointer P2DImageFifoFilter;
 
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
 extern template class EXPORT_3D TFifoFilter<P2DImage>; 
 extern template class EXPORT_3D TFifoFilterSink<P2DImage>;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
 /**
    \ingroup filtering
    \brief Plugin handler for the FIFO filters 

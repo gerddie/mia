@@ -21,7 +21,16 @@ SET(shape3d
 )
 
 
-ADD_LIBRARY(3d-shapes MODULE basic_shapes.cc sphere.cc)
+SET(SHAPES_SRC basic_shapes.cc sphere.cc)
+add_library(3d-shapes-common OBJECT ${SHAPES_SRC})
+IF(NOT WIN32)
+  set_source_files_properties(${SHAPES_SRC}  PROPERTIES COMPILE_FLAGS "-fPIC")
+  set_target_properties(3d-shapes-common  PROPERTIES COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"') 
+ENDIF(NOT WIN32)
+
+
+add_library(3d-shapes MODULE $<TARGET_OBJECTS:3d-shapes-common>)
+
 TARGET_LINK_LIBRARIES(3d-shapes ${MIA3DLIBS})
 SET_TARGET_PROPERTIES(3d-shapes PROPERTIES PREFIX "" SUFFIX ${PLUGSUFFIX})
 INSTALL(TARGETS 3d-shapes LIBRARY DESTINATION "${PLUGIN_INSTALL_PATH}/3dimage/shape")
@@ -31,4 +40,19 @@ ADD_CUSTOM_TARGET(3d-shapes_test_link
   DEPENDS 3dimage_shape_testdir 3d-shapes)
 
 ADD_DEPENDENCIES(plugin_test_links 3d-shapes_test_link)
+
+add_executable(test-3d-shapes test_shapes.cc $<TARGET_OBJECTS:3d-shapes-common>)
+IF(NOT WIN32)
+  set_target_properties(test-3d-shapes PROPERTIES 
+    COMPILE_FLAGS -DVSTREAM_DOMAIN='"3d-shapes"' 
+    COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+ELSE(NOT WIN32)
+  set_target_properties(test-3d-shapes PROPERTIES
+    COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+ENDIF(NOT WIN32)
+#  target_link_libraries(test-${plugname} ${plugname}-common)
+target_link_libraries(test-3d-shapes ${MIA3DLIBS} ${BOOST_UNITTEST})
+add_test(3d-shapes test-3d-shapes)
+
+
 

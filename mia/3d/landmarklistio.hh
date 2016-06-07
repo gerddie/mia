@@ -33,8 +33,19 @@ NS_MIA_BEGIN
 */
 typedef TIOPlugin<C3DLandmarklist> C3DLandmarklistIOPlugin;
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
 extern template class EXPORT_3D TIOPlugin<C3DLandmarklist>;
 extern template class EXPORT_3D TPlugin<C3DLandmarklist, io_plugin_type>;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 /**
    @ingroup io 

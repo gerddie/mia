@@ -47,6 +47,13 @@ NS_MIA_BEGIN
 	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::const_iterator>;
 
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
 DECLARE_EXTERN_ITERATORS(double);
 DECLARE_EXTERN_ITERATORS(float);
 DECLARE_EXTERN_ITERATORS(unsigned int);
@@ -65,6 +72,9 @@ DECLARE_EXTERN_ITERATORS(unsigned long);
 DECLARE_EXTERN_ITERATORS(C3DFVector)
 DECLARE_EXTERN_ITERATORS(C3DDVector)
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 
 /**
    @ingroup basic 
@@ -744,6 +754,12 @@ DECLARE_EXTERN(unsigned long);
 
 DECLARE_EXTERN(C3DFVector);
 DECLARE_EXTERN(C3DDVector);
+
+extern template class EXPORT_3D CTParameter<C3DBounds>;
+extern template class EXPORT_3D CTParameter<C3DFVector>;
+extern template class EXPORT_3D TTranslator<C3DFVector>; 
+extern template class EXPORT_3D TAttribute<C3DFVector>; 
+
 
 #undef DECLARE_EXTERN
 
