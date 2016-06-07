@@ -20,7 +20,7 @@
 
 #include <mia/internal/plugintester.hh>
 #include <mia/3d/shapes/basic_shapes.hh>
-
+#include <mia/3d/shapes/sphere.hh>
 using namespace mia; 
 using namespace basic_3dshape_creator; 
 
@@ -81,5 +81,20 @@ BOOST_FIXTURE_TEST_CASE( test_27n_shape, CShapeTestFixture )
         
 	check(*shape, C3DBounds(3,3,3), test_mask); 
 }
+
+BOOST_FIXTURE_TEST_CASE( test_sphere_2_shape, CShapeTestFixture )
+{
+        auto shape = BOOST_TEST_create_from_plugin<CSphere3DShapeFactory>("sphere:r=2");
+
+        const bool test_mask [] = {0,0,0,0,0, /**/  0,0,0,0,0, /**/ 0,0,1,0,0, /**/ 0,0,0,0,0, /**/ 0,0,0,0,0,
+				   0,0,0,0,0, /**/  0,1,1,1,0, /**/ 0,1,1,1,0, /**/ 0,1,1,1,0, /**/ 0,0,0,0,0,
+				   0,0,1,0,0, /**/  0,1,1,1,0, /**/ 1,1,1,1,1, /**/ 0,1,1,1,0, /**/ 0,0,1,0,0,
+				   0,0,0,0,0, /**/  0,1,1,1,0, /**/ 0,1,1,1,0, /**/ 0,1,1,1,0, /**/ 0,0,0,0,0,
+				   0,0,0,0,0, /**/  0,0,0,0,0, /**/ 0,0,1,0,0, /**/ 0,0,0,0,0, /**/ 0,0,0,0,0}; 
+        
+	check(*shape, C3DBounds(5,5,5), test_mask); 
+}
+
+
 
 
