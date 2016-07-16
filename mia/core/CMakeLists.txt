@@ -45,6 +45,7 @@ SET(MIACORE_SRC_BASE
   combiner.cc
   cmdlineparser.cc
   cmdoption.cc
+  cmdparamoption.cc
   cmdstringoption.cc
   cmdbooloption.cc
   cmeans.cc
