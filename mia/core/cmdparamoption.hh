@@ -24,7 +24,7 @@
 #include <mia/core/cmdoption.hh>
 #include <mia/core/typedescr.hh>
 #include <mia/core/paramoption.hh>
-
+#include <mia/core/handlerbase.hh>
 
 NS_MIA_BEGIN
 
@@ -111,7 +111,7 @@ private:
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
-	vector<T>& m_value;
+	std::vector<T>& m_value;
 };
 
 
@@ -356,45 +356,55 @@ const std::string TCmdOption<T>::do_get_value_as_string() const
 }
 
 
+template <typename T>
 TRepeatableCmdOption<T>::TRepeatableCmdOption(std::vector<T>& val, char short_opt, const char *long_opt,
                                               const char *long_help,
                                               const char *short_help,
-                                              CCmdOptionFlags flags = CCmdOptionFlags::none):
+                                              CCmdOptionFlags flags):
         CCmdOption(short_opt, long_opt, long_help, short_help, flags),
         m_value(val)
 {
-        __dispatch_opt<T>::init(m_value);
+        __dispatch_opt<std::vector<T>>::init(m_value);
 }
-        
+
+template <typename T>
 void TRepeatableCmdOption<T>::do_get_long_help_xml(std::ostream& os, CXMLElement& parent,
-                                                   HandlerHelpMap& handler_map) const
+                                                   HandlerHelpMap& MIA_PARAM_UNUSED(handler_map)) const
 {
 	do_get_long_help(os);
 	parent.set_attribute("type", __type_descr<T>::value);
-        parent.set_attribute("repeatable", true);
+        parent.set_attribute("repeatable", "1");
 }
 
+template <typename T>
 bool TRepeatableCmdOption<T>::do_set_value(const char *str_value)
 {
         T value; 
-        return __dispatch_opt<T>::apply(svalue, value);
-        m_value.push_back(value); 
+        bool good = __dispatch_opt<T>::apply(str_value, value);
+	if (good) {
+		m_value.push_back(value);
+	}
+	return good; 
+	
 
 }
-        
+
+template <typename T>
 size_t TRepeatableCmdOption<T>::do_get_needed_args() const
 {
         return 1;
 }
-        
+
+template <typename T>
 void TRepeatableCmdOption<T>::do_write_value(std::ostream& os) const
 {
-        __dispatch_opt<T>::apply( os, m_value, is_required());
+        __dispatch_opt<std::vector<T>>::apply( os, m_value, is_required());
 }
 
+template <typename T>
 const std::string TRepeatableCmdOption<T>::do_get_value_as_string() const
 {
-        return __dispatch_opt<T>::get_as_string(m_value);
+        return __dispatch_opt<std::vector<T>>::get_as_string(m_value);
 }
 
 
@@ -421,6 +431,31 @@ PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt,
 {
 	return PCmdOption(new TCmdOption<std::vector<T> >(value, short_opt, long_opt, help, 
 							  long_opt, flags ));
+}
+
+
+/**
+   \ingroup cmdline
+   \brief Create a repeatable option to set a vector of values
+   
+   The option can be given more than one time. 
+   The values are accumulated in the parameter vector. 
+   \tparam T type of the value hold by the vector
+   \param[in,out] value at input: if not empty, number of expected values and their defaults, at output: the values given on the command line
+   \param long_opt long option name (must not be NULL)
+   \param short_opt short option name (or 0)
+   \param help help string (must not be NULL)
+   \param flags option flags indicating whether the option is required 
+   \remark be aware that localization of the decimal separator of floating point values is not used, 
+   it is always the full stop ".". 
+*/
+
+template <typename T>
+PCmdOption make_repeatable_opt(std::vector<T>& value, const char *long_opt, char short_opt, 
+			       const char *help, CCmdOptionFlags flags = CCmdOptionFlags::none)
+ {
+	return PCmdOption(new TRepeatableCmdOption<T>(value, short_opt, long_opt, help, 
+								    long_opt, flags ));
 }
 
 NS_MIA_END

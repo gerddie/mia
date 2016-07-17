@@ -29,7 +29,7 @@
 #include <iostream>
 #include <string>
 #include <iterator>
-#include <mia/core/cmdparaoption.hh>
+#include <mia/core/cmdparamoption.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/flagstring.hh>
 #include <mia/core/handlerbase.hh>

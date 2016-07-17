@@ -484,7 +484,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_small, CmdlinePar
 		options.push_back("-h");
 
 		olist.add(make_opt(test, "lala", 'i', "a int option"));
-		olist.parse(options.size(), &options[0]); 
+		BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_help);
 	}
 }
 
@@ -503,9 +503,38 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_wide, CmdlinePars
 		options.push_back("-h");
 
 		olist.add(make_opt(test, "lala", 'i', "a string option"));
-		olist.parse(options.size(), &options[0]); 
+		BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_help);
 	}
 }
 
 #endif 
+
+BOOST_FIXTURE_TEST_CASE( test_repeat_option, CmdlineParserFixture )
+{
+
+	CCmdOptionList olist(general_help);
+
+	vector<int> value; 
+
+	olist.add(make_repeatable_opt(value, "int", 'i', "an intager repeatable option"));
+	vector<const char *> options;
+
+	options.push_back("self");
+	options.push_back("-i");
+	options.push_back("1");
+	options.push_back("-i");
+	options.push_back("2");
+	
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
+
+	BOOST_CHECK_EQUAL( olist.get_remaining().size(), 0);
+	
+	BOOST_CHECK_EQUAL(value.size(), 2u);
+	BOOST_REQUIRE(value.size() == 2u);
+	
+	BOOST_CHECK_EQUAL(value[0], 1);
+	BOOST_CHECK_EQUAL(value[1], 2);
+}
+
+
 

@@ -45,7 +45,6 @@ SET(MIACORE_SRC_BASE
   combiner.cc
   cmdlineparser.cc
   cmdoption.cc
-  cmdparamoption.cc
   cmdstringoption.cc
   cmdbooloption.cc
   cmeans.cc
@@ -125,6 +124,7 @@ SET(MIACORE_HEADER_BASE
   cmdbooloption.hh
   cmdlineparser.hh
   cmdoption.hh
+  cmdparamoption.hh
   cmdoptionflags.hh
   cmdstringoption.hh
   cmeans.hh
@@ -330,6 +330,7 @@ NEW_TEST(attributes miacore)
 NEW_TEST(boundary_conditions  miacore)
 NEW_TEST(callback miacore)
 NEW_TEST(cmdoptionflags miacore)
+NEW_TEST(cmdparamoption miacore)
 NEW_TEST(cmdlineparser miacore)
 NEW_TEST(cmdlineparseroutput miacore)
 NEW_TEST(cmeans miacore)
