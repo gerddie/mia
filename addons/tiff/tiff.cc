@@ -99,7 +99,7 @@ void MyErrorHandler(const char *module, const char *fmt,  va_list ap)
 	char buf[16384];
 	
 	vsnprintf(buf,16384, fmt, ap);
-	throw create_exception<runtime_error>(module, ":", buf);
+	throw create_exception<std::runtime_error>(module, ":", buf);
 }
 
 struct CErrorHandlerReplacer {
