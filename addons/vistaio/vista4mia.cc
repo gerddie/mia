@@ -92,7 +92,7 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributedData& attributes, const VistaIOA
 			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VistaIOLongRepn:{
-			long f;
+			int f;
 			VistaIOGetAttrValue(&pos,NULL,VistaIOLongRepn,&f);
 			vistaio_add_attribute(attributes, name, f);
 		}break;
