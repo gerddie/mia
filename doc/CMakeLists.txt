@@ -123,8 +123,9 @@ IF (DOXYGEN_FOUND)
     SET(USE_MATHJAX YES)
     FIND_PATH(MATHJAX_CODEFILE MathJax.js
       PATHS
-      /usr/share/mathjax
+      /usr/share/mathjax/
       /usr/share/javascript/
+      /usr/share/javascript/mathjax/
       )
     IF(NOT MATHJAX_CODEFILE)
       MESSAGE(STATUS "No mathjax installation found, Doxygen will create the documentation linking to the on-line version") 
