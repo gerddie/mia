@@ -469,7 +469,28 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 }
 
 #ifdef HAVE_SYS_IOCTL_H
-BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_small, CmdlineParserFixture )
+
+class CmdLineWidthFixture: public CmdlineParserFixture
+{
+public: 
+	CmdLineWidthFixture();
+	~CmdLineWidthFixture();
+private:
+	struct winsize m_old_ws;
+}; 
+
+CmdLineWidthFixture::CmdLineWidthFixture()
+{
+	ioctl(0,TIOCGWINSZ,&m_old_ws); 
+}
+
+CmdLineWidthFixture::~CmdLineWidthFixture()
+{
+	ioctl(0,TIOCSWINSZ,&m_old_ws); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_small, CmdLineWidthFixture )
 {
 	int test; 
 	struct winsize ws;
@@ -485,10 +506,12 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_small, CmdlinePar
 
 		olist.add(make_opt(test, "lala", 'i', "a int option"));
 		BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_help);
+
+		
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_wide, CmdlineParserFixture )
+BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_wide, CmdLineWidthFixture )
 {
 	int test; 
 	struct winsize ws;

@@ -144,7 +144,7 @@ int main(int argc, const char **args)
                 if (ioctl(0,TIOCGWINSZ,&ws)==0) {
                         old_width = ws.ws_col;
 			ws.ws_col = console_width;
-                
+			
 			if (ioctl(0,TIOCSWINSZ,&ws)==0) {
 				CCmdOptionList olist(general_help);
 				int test = 0; 
@@ -165,13 +165,15 @@ int main(int argc, const char **args)
 				retvalue = -1;
                 }else
 			retvalue = -1;
+
+		ws.ws_col = old_width;
+		ioctl(0,TIOCSWINSZ,&ws);
+
 		cverr() << "Send signal\n";
 		sleep(1); 
 		kill(getppid(), SIGINT);
 		sleep(1);
 
-		ws.ws_col = old_width;
-		ioctl(0,TIOCSWINSZ,&ws);
 		
 		return retvalue;
 		
