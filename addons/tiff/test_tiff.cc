@@ -182,10 +182,14 @@ BOOST_AUTO_TEST_CASE( test_load_save_8bit_rgb )
 
 BOOST_AUTO_TEST_CASE( test_rejects )
 {
+	try {
 
 	BOOST_CHECK_THROW(load_image2d(MIA_SOURCE_ROOT"/testdata/nonexistent.tif"),
-			  runtime_error); 
-
+			  std::runtime_error); 
+	}
+	catch (std::runtime_error& x) {
+		cvwarn() << "Expected exception thrown but BOOST_CHECK_THROW didn't catch it\n";
+	}
 }
 
 
