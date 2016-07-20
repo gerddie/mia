@@ -48,11 +48,16 @@ template<> const char * const
 TPluginHandler<CTestIOPlugin>::m_help = "These are some dummy plug-ins for IO handler testing."; 
 
 
+void CDummyIOPluginHandler::check_file_exists(const std::string& MIA_PARAM_UNUSED(fname)) const
+{
+}
+
+
 template class TPlugin<test_io_data,io_plugin_type>; 
 template class TPluginHandler<CTestIOPlugin>;
 template class TIOPlugin<test_io_data>; 
 template class TIOPluginHandler<CTestIOPlugin>;
-template class THandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
+template class THandlerSingleton<CDummyIOPluginHandler>;
 
 
 NS_MIA_END

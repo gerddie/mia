@@ -167,11 +167,33 @@ const std::string TIOPluginHandler<I>::get_supported_suffixes() const
 	return result.str(); 
 }
 
+
+template <class I> 
+void TIOPluginHandler<I>::check_file_exists(const std::string& fname) const
+{
+	if (fname != "-") { 
+		// first check whether file actually exists
+		bfs::path p(fname);
+		
+		if (p.extension() != ".@") {
+			
+			if (!bfs::exists(p)) {
+				throw create_exception<std::runtime_error>("Can't open file '", fname,
+									   "' for reading: it doesn't exist"); 
+			}
+		}
+	}
+}
+
 template <class I> 
 typename TIOPluginHandler<I>::PData
 TIOPluginHandler<I>::load(const std::string& fname) const
 {
-	TRACE_FUNCTION; 
+	TRACE_FUNCTION;
+
+	this->check_file_exists(fname); 
+	
+	
 	const Interface *pp = preferred_plugin_ptr(fname); 
 	if (pp) {
 		PData retval = pp->load(fname); 

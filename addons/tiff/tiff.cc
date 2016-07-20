@@ -97,9 +97,8 @@ private:
 void MyErrorHandler(const char *module, const char *fmt,  va_list ap)
 {
 	char buf[16384];
-	
 	vsnprintf(buf,16384, fmt, ap);
-	throw create_exception<std::runtime_error>(module, ":", buf);
+	throw create_exception<runtime_error>(module, ":", buf);
 }
 
 struct CErrorHandlerReplacer {
@@ -243,11 +242,11 @@ P2DImage read_strip_pixels(CTiffFile& tif, unsigned int width,
 
 CTiff2DImageIO::PData CTiff2DImageIO::do_load(string const& filename)const
 {
-	CErrorHandlerReplacer error_handing;
 	CTiffFile tif(filename.c_str(), "r");
 	if (!tif)
 		return PData();
 
+	CErrorHandlerReplacer error_handing;
 	// load that stuff
 	uint32 height;
 	uint32 width;

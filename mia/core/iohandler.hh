@@ -148,6 +148,8 @@ private:
 	std::string do_get_handler_type_string() const; 
         bool do_validate_parameter_string(const std::string& s) const;
 
+	virtual void check_file_exists(const std::string& fname) const; 
+	
 	/**
 	   Private plugin to handle the virtual data pool IO  
 	 */
