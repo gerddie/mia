@@ -35,6 +35,9 @@
 
 #ifdef HAVE_TBB 
 #include <tbb/task_scheduler_init.h>
+#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
+#define TBB_PREFERE_ONE_THREAD 1
+#endif 
 #else
 #include <mia/core/parallelcxx11.hh>
 #endif
@@ -47,12 +50,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/fixedwidthoutput.hh>
 
-#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
-#define TBB_PREFERE_ONE_THREAD 1
-#endif 
-
 extern void print_full_copyright(const char *name, const char *author);
-
 
 NS_MIA_BEGIN
 

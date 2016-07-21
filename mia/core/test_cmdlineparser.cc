@@ -21,6 +21,9 @@
 #include <stdexcept>
 #include <climits>
 
+#include <config.h>
+#include <miaconfig.h>
+
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/internal/autotest.hh>
@@ -427,7 +430,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "  -? --usage            print a short help\n"
 			  "     --version          print the version number and exit\n\n"
 			  "Processing               \n"
-#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
+#if defined(HAVE_TBB ) && defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
 			  "     --threads=1 (int)  Maxiumum number of threads to use for \n"
 #else
 			  "     --threads=-1 (int) \n"
