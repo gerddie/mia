@@ -1,4 +1,9 @@
-2.4.1 
+2.4.2
+
+    * correct installed headers
+
+2.4.1
+
     * Add additional search path for MathJax
     * Correct type in VistaIO 
     * Change file load handling to throw when file is not available 
