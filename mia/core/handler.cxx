@@ -28,7 +28,6 @@
 #include <iterator>
 #include <climits> 
 
-#include <boost/regex.hpp>
 #include <boost/filesystem/operations.hpp>
 
 #include <mia/core/module.hh>

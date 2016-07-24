@@ -17,15 +17,24 @@
  * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
+#include <mia/core/searchpath.hh>
+#include <mia/core/msgstream.hh>
+
 
 #include <stdexcept>
 #include <sstream>
 #include <cstdlib>
 
-#include <mia/core/searchpath.hh>
-#include <mia/core/msgstream.hh>
-
+#if __cplusplus >= 201103
+#include <regex>
+using std::regex;
+using std::regex_match; 
+#else 
 #include <boost/regex.hpp>
+using boost::regex;
+using boost::regex_match; 
+#endif
+
 #include <boost/filesystem/operations.hpp>
 
 #include <config.h>
@@ -115,7 +124,8 @@ std::vector<PPluginModule> CPluginSearchpath::find_modules(const std::string& da
 
         std::stringstream pattern; 
         pattern << ".*\\."<< MIA_MODULE_SUFFIX << "$";
-        boost::regex pat_expr(pattern.str());	
+
+        regex pat_expr(pattern.str());
 
 	std::vector<PPluginModule> result;
 	
@@ -138,7 +148,7 @@ std::vector<PPluginModule> CPluginSearchpath::find_modules(const std::string& da
                         
 			while (di != dend) {
 				cvdebug() << "    candidate:'" << di->path().string() << "'"; 
-				if (boost::regex_match(di->path().string(), pat_expr)) {
+				if (regex_match(di->path().string(), pat_expr)) {
 					candidates.push_back(*di); 
 					cverb << " add\n";
 				}else

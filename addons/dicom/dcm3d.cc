@@ -26,7 +26,17 @@
 #include <map>
 #include <queue>
 #include <boost/filesystem.hpp>
+
+#if __cplusplus >= 201103
+#include <regex>
+using std::regex;
+using std::regex_match; 
+#else 
 #include <boost/regex.hpp>
+using boost::regex;
+using boost::regex_match; 
+#endif
+
 
 #include <mia/core/errormacro.hh>
 #include <mia/core/file.hh>
@@ -231,12 +241,12 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 
 	stringstream pattern;
 	pattern << ".*\\" << ext;
-	boost::regex pat_expr(pattern.str());
+	regex pat_expr(pattern.str());
 
 	bfs::directory_iterator di(dir);
 	bfs::directory_iterator dend;
 	while (di != dend) {
-		if (boost::regex_match(di->path().filename().string(), pat_expr) &&
+		if (regex_match(di->path().filename().string(), pat_expr) &&
 		    di->path().filename().string() != fname) {
 			bfs::path f =  di->path();
 			cvdebug() << "read file '" << f << "'\n";

@@ -82,6 +82,9 @@ OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
 OPTION(ENABLE_COVERAGE "Enable code coverage tests" FALSE)
 OPTION(DISABLE_PROGRAMS "Don't build the programs nor documentation (only for testing purposes)" FALSE)
 OPTION(MIA_CREATE_USERDOC "Enable creation of html user documentation" TRUE)
+OPTION(MIA_USE_BOOST_REGEX "Use the boost::regex library (instead of c++11 build in) " FALSE)
+
+
 
 INCLUDE(GNUInstallDirs)
 
@@ -216,7 +219,12 @@ MACRO(GET_BOOST_LINKERFLAG VAR LIBNAMES)
   SET(${VAR} "${flags}")
 ENDMACRO(GET_BOOST_LINKERFLAG)
 
-SET(BOOST_COMPONENTS   filesystem  regex unit_test_framework serialization system)
+SET(BOOST_COMPONENTS filesystem  unit_test_framework serialization system)
+
+IF (MIA_USE_BOOST_REGEX)
+  SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} regex)
+ENDIF()
+
 IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
 ENDIF(WIN32)
@@ -231,7 +239,12 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
 ADD_DEFINITIONS(-DBOOST_FILESYSTEM_VERSION=3)
 
-SET(BOOST_DEPS  ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+IF (MIA_USE_BOOST_REGEX)
+  SET(BOOST_DEPS ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+ELSE()
+  SET(BOOST_DEPS ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+ENDIF()
+
 SET(BOOST_UNITTEST  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 IF (WIN32 AND NOT UNIX)

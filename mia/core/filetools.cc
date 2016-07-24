@@ -25,7 +25,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp> // includes boost/filesystem/path.hpp
 #include <boost/filesystem/fstream.hpp>    // ditto
-#include <boost/regex.hpp>
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/filetools.hh>
