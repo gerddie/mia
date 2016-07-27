@@ -215,7 +215,7 @@ CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl(const CFFTSlopeClassifier::Colu
 	
 	
 	/* mechanics for classifying the mixing curves:
-	   - sort the slopes that are below the periodic threshhold for high range and eliminate the 
+	   - sort the slopes that are below the periodic threshold for high range and eliminate the 
 	   other curves, they are perfusion or baseline 
 	   - sort these two curves by the order in which the high peaks appear to identify
              which is RV (peak comes first) and which LV

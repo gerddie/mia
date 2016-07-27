@@ -151,7 +151,7 @@ public:
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
 		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
-					   "TCArrayWrapper::operator[]: No writeable data availabe or not unique,"
+					   "TCArrayWrapper::operator[]: No writeable data available or not unique,"
 					   " call TCArrayWrapper::make_unique() first or enforce the use of  "
 					   "'TCArrayWrapper::operator[](...) const'");
 		return m_data.get()[i]; 
@@ -170,7 +170,7 @@ public:
 	 */
 	iterator begin() {
 		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
-					   "TCArrayWrapper::begin(): No writeable data availabe or not unique, "
+					   "TCArrayWrapper::begin(): No writeable data available or not unique, "
 					   "call TCArrayWrapper::make_unique() first or enforce the use of "
 					   "'TCArrayWrapper::begin() const'");
 		return m_data.get(); 
@@ -181,7 +181,7 @@ public:
 	 */
 	iterator end() {
 		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
-					   "TCArrayWrapper::begin(): No writeable data availabe or not unique, "
+					   "TCArrayWrapper::begin(): No writeable data available or not unique, "
 					   "call TCArrayWrapper::make_unique() first or enforce the use of "
 					   "'TCArrayWrapper::end() const'");
 		return m_data.get() + m_size; 

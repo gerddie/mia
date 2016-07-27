@@ -177,7 +177,7 @@ C3DDoGrowmask::result_type C3DDoGrowmask::operator () (const T3DImage<T>& data) 
 	queue <seed_t<T> > pool;
 
 	if (data.get_size() != m_start_mask.get_size())
-		throw invalid_argument("C3DGrowmask::filter: seed mask and reference must be ofthe same size");
+		throw invalid_argument("C3DGrowmask::filter: seed mask and reference must be of the same size");
 	C3DBitImage *r = new C3DBitImage(m_start_mask);
 	r->set_attributes(data.begin_attributes(), data.end_attributes()); 
 	P3DImage result(r);

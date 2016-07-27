@@ -43,9 +43,9 @@ const SProgramDescription g_description = {
 	 "in the image. The approach evaluates a global k-means clustering, and then "
 	 "separates the image into overlapping regions where more k-means iterations "
 	 "are run only including the locally present classes, i.e. the classes that "
-	 "relatively contain more pixels than a given threshhold."}, 
+	 "relatively contain more pixels than a given threshold."}, 
 	{pdi_example_descr, "Run the segmentation on image test.png using three classes, "
-	 "local regions of 40 pixels (grid width 20 pixels), and a class ignore threshhold of 0.01." }, 
+	 "local regions of 40 pixels (grid width 20 pixels), and a class ignore threshold of 0.01." }, 
 	{pdi_example_code, "-i test.png -o label.png -n 3 -g 20 -t 0.01"}
 }; 
 
@@ -110,7 +110,7 @@ int do_main(int argc, char *argv[])
 	opts.add(make_opt( n_classes, EParameterBounds::bf_closed_interval, {2u,127u},
 			   "nclasses", 'n', "Number of intensity classes to segment")); 
 	opts.add(make_opt( rel_cluster_threshold, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
-			   {0.0,1.0}, "relative-cluster-threshhold", 't', "Number of intensity classes to segment")); 
+			   {0.0,1.0}, "relative-cluster-threshold", 't', "Number of intensity classes to segment")); 
 
 
 	

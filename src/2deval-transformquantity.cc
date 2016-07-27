@@ -160,7 +160,7 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
 			      "input point set, if this parameter is given a sparse evaluation "
-			      "of the quantity will be done, otherwise the quantity is evalutated "
+			      "of the quantity will be done, otherwise the quantity is evaluated "
 			      "for each grid point of the transformation range.", CCmdOptionFlags::required_input));
 	options.add(make_opt( out_filename, "out-file", 'o', 
 			      "output strains file, for a format description see above.", CCmdOptionFlags::required_output)); 

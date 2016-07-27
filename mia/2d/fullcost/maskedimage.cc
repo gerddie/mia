@@ -242,7 +242,7 @@ void C2DMaskedImageFullCost::do_reinit()
         
 
 	if (m_src->get_pixel_size() != m_ref->get_pixel_size()) {
-		cvwarn() << "C2DMaskedImageFullCost: moving and reference image are of differnet pixel dimensions."
+		cvwarn() << "C2DMaskedImageFullCost: moving and reference image are of different pixel dimensions."
                          << "unless you optimize a transformation that supports global scaling this might "
                          << "not be what you want to do\n"; 
 	}

@@ -205,7 +205,7 @@ const string C2DRegiongrowFifoFilterPlugin::do_get_descr() const
 		"a 3D image.  The region growing is based on class probabilities obtained from "
 		"a c-means classification of the pixel intensities. One seed thresh is use to initiate "
 		"a region, and another (lower) threshold is used to stop the region growing. "
-		"By holding a number of 3D slices in the working memory to allow the region to grow \""
+		"By holding a number of 3D slices in the working memory to permit the region to grow \""
 		"backwards \" in the stack a Quasi-3D processing is achieved. However, with complex "
 		"structures the region growing may not properly be segmented.";
 }

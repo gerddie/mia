@@ -185,7 +185,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( hmin, "min", 0, "minimum of histogram range"));
 	options.add(make_opt( hmax, "max", 0, "maximum of histogram range"));
 	options.add(make_opt( bins, "bins", 0, "number of histogram bins, set to zero to create a bin for "
-			      "each intensity value availabe in the input data. In this case the histogram "
+			      "each intensity value available in the input data. In this case the histogram "
 			      "range is also evaluated automatically"));
 		
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

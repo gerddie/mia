@@ -999,7 +999,7 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 							 "will be overwritten by the 'rate' value."));
 
 	add_parameter("debug",
-		      new CBoolParameter(m_debug, false, "enable additional debuging output"));
+		      new CBoolParameter(m_debug, false, "enable additional debugging output"));
 	add_parameter("penalty", make_param(m_penalty, "", false, "transformation penalty energy term")); 
 
 }

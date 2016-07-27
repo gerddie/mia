@@ -153,8 +153,8 @@ C2DMedianMadImageFilterFactory::C2DMedianMadImageFilterFactory():
 	m_thresh(0.0)
 {
 	add_parameter("w", make_lc_param(m_hw, 1, false, "filter width parameter"));
-	add_parameter("thresh", make_lc_param(m_thresh, 0.0, false, "Intensity threshholding parameter: Pixels with intensities "
-					      "below this threshhold will be set to zero, and also not used when evaluating mean "
+	add_parameter("thresh", make_lc_param(m_thresh, 0.0, false, "Intensity thresholding parameter: Pixels with intensities "
+					      "below this threshold will be set to zero, and also not used when evaluating mean "
 					      "and variation"));
 	add_parameter("madfile", new CStringParameter(m_madfilename, CCmdOptionFlags::required_output,
 						      "name of the output file to save the median absolute deviation image too.", 

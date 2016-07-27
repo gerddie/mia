@@ -45,7 +45,7 @@ const SProgramDescription g_description = {
 	{pdi_short, "Registration of a series of 2D images"}, 
 	{pdi_description, "This program implements the non-linear registration based on Pseudo "
 	 "Ground Thruth for motion compensation of series of myocardial perfusion images as "
-	 "decribed in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
+	 "described in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
 	 "MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing and Computer-Assisted "
 	 "Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear motion correction "
 	 "a preceding linear registration step is usually required."}, 

@@ -53,7 +53,7 @@ public:
 	/// the IO interface provided by this handler 
 	typedef typename TPluginHandler<I>::Interface Interface; 
 	
-	/// an iterator over the availabe plug-ins 
+	/// an iterator over the available plug-ins 
 	typedef typename TPluginHandler<I>::const_iterator const_iterator; 
 
 	/// The map that maps file name suffixes to IO plug-ins 

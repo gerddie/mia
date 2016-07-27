@@ -91,7 +91,7 @@ public:
 	/// @return the time index of the LV peak image or  -1 if not identified 
 	int get_LV_peak() const;
 
-	/// \returns the absolute difference between the length ofthe longest and second longest curve in the list
+	/// \returns the absolute difference between the length of the longest and second longest curve in the list
 	float get_max_slope_length_diff() const;
 
 	/// \returns the maximum value of the correlation between the curves and the rows for which it occures 

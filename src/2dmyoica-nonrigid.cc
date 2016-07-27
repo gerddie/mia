@@ -163,7 +163,7 @@ float get_relative_min_breathing_frequency(const C2DImageSeries& images, int ski
 		double aq_time = image_end->get_attribute_as<double>(IDAcquisitionTime) - 
 			image_begin->get_attribute_as<double>(IDAcquisitionTime);
 		if (aq_time < 0) 
-			throw create_exception<runtime_error>("Got non-postive aquisition time range ", aq_time, 
+			throw create_exception<runtime_error>("Got non-postive acquisition time range ", aq_time, 
 							      ", can't handle this");  
 							      
 		double heart_rate = 60 * n_heartbeats / aq_time; 

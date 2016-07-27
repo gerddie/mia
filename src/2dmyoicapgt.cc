@@ -336,7 +336,7 @@ float get_relative_min_breathing_frequency(const C2DImageSeries& images, int ski
 		double aq_time = image_end->get_attribute_as<double>(IDAcquisitionTime) - 
 			image_begin->get_attribute_as<double>(IDAcquisitionTime);
 		if (aq_time < 0) 
-			throw create_exception<runtime_error>("Got non-postive aquisition time range ", aq_time, 
+			throw create_exception<runtime_error>("Got non-postive acquisition time range ", aq_time, 
 							      ", can't handle this");  
 							      
 		double heart_rate = 60 * n_heartbeats / aq_time; 
@@ -470,7 +470,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'b', 
 			     "minimal mean frequency a mixing curve can have to be considered to stem from brething. "
 			     "A healthy rest breating rate is 12 per minute. A negative value disables the test. "
-			     "A value 0.0 forces the series to be indentified as acquired with initial breath hold.")); 
+			     "A value 0.0 forces the series to be identified as acquired with initial breath hold.")); 
 	
 	
 	options.set_group("\nPseudo Ground Thruth estimation"); 

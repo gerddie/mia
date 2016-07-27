@@ -122,7 +122,7 @@ void C3DImageFullCost::do_reinit()
 		throw runtime_error("C3DImageFullCost only works with images of equal size"); 
 
 	if (m_src->get_voxel_size() != m_ref->get_voxel_size()) {
-		cverr() << "C3DImageFullCost: src and reference image are of differnet pixel dimensions."
+		cverr() << "C3DImageFullCost: src and reference image are of different pixel dimensions."
 			<< "This code doesn't honour this and a proper scaling should be applied first."; 
 	}
 	m_cost_kernel->set_reference(*m_ref_scaled); 

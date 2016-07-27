@@ -556,7 +556,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_pertuberate, TransformSplineFixture )
 
 	fill(v.begin(), v.end(), vv);
 
-	// this location is hand-picked and is not really the position ofthe maximun
+	// this location is hand-picked and is not really the position of the maximun
 	// but only an approximation
 	float gamma = stransf.pertuberate(v);
 	C3DFVector lmg(12* scalex, 27 * scaley);

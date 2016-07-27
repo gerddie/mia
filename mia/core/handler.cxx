@@ -314,10 +314,10 @@ T& THandlerSingleton<T>::do_instance(bool require_initialization)
 	
 	if (require_initialization) {
 		if (!m_is_initialized) {
-			TRACE("Unitialized state"); 
+			TRACE("Uninitialized state"); 
 			CScopedLock lock_init(m_initialization_mutex);
 			if (!m_is_initialized) {
-				TRACE("Enter locked unitialized state"); 
+				TRACE("Enter locked uninitialized state"); 
 				lock.release(); 
 				cvdebug() << "not yet initialized: second check passed\n"; 
 				me.initialise(m_searchpath);

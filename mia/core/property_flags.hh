@@ -65,7 +65,7 @@ public:
 	bool has_all_in(const CPropertyFlagHolder& testset)const;
 
 	/**
-	   Evalaute the set of properties that is availabe in the testset but not in this one
+	   Evalaute the set of properties that is available in the testset but not in this one
 	   @param testset 
 	   @return set of missing flags 
 	 */

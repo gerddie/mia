@@ -89,7 +89,7 @@ int CGDSAMinimizer::do_run(CDoubleVector& x)
                 
                 
 		if (f < f_old) {
-                        cvinfo() << "Successfull step: [" << iter << "]: f=" << f 
+                        cvinfo() << "Successful step: [" << iter << "]: f=" << f 
                                  << ", gmax = " << gmax << ", step=" << step << "\n"; 
 
                         tries = 0; 
@@ -140,7 +140,7 @@ int CGDSAMinimizer::do_run(CDoubleVector& x)
 		cvmsg() << "Stop: dx below given limit\n"; 
 		
 	if (success & SUCCESS_FTOLR) 
-		cvmsg() << "Stop: relative cost funtion value decrease below limit "<< m_ftolr << ".\n"; 
+		cvmsg() << "Stop: relative cost function value decrease below limit "<< m_ftolr << ".\n"; 
 
 	return CMinimizer::success; 
 }

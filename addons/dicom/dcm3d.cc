@@ -88,7 +88,7 @@ struct image_instance_less {
 
 typedef priority_queue<P2DImage, vector<P2DImage>, image_instance_less> CImageInstances;
 typedef map<PAttribute, CImageInstances, attr_less> CImageSeries;
-typedef map<PAttribute, CImageSeries, attr_less> CAquisitions;
+typedef map<PAttribute, CImageSeries, attr_less> CAcquisitions;
 
 struct C3DImageCreator: public TFilter<bool> {
 	C3DImageCreator(size_t nz): m_nz(nz),
@@ -194,7 +194,7 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::get_images(const vector<P2DImage>
 
 	PData result(new Data);
 
-	CAquisitions acc;
+	CAcquisitions acc;
 
 	// read all the images into a map
 	for(auto i =  candidates.begin();   i != candidates.end(); ++i) {
@@ -205,7 +205,7 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::get_images(const vector<P2DImage>
 				[(*i)->get_attribute(IDSeriesNumber)].push(*i);
 		}else{
 			cvwarn() << "Discard image because of no "
-				 << ((*i)->has_attribute(IDAcquisitionNumber) ? "" : "aquisition") 
+				 << ((*i)->has_attribute(IDAcquisitionNumber) ? "" : "acquisition") 
 				 << ((*i)->has_attribute(IDInstanceNumber) ? "" : "instance") 
 				 << ((*i)->has_attribute(IDSeriesNumber) ? "" : "series")
 				 << " number\n"; 

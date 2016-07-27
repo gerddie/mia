@@ -277,7 +277,7 @@ CGSLMinimizerPlugin::CGSLMinimizerPlugin():
 
 const std::string CGSLMinimizerPlugin::do_get_descr() const
 {
-	return "optimizer plugin based on the multimin optimizers of"
+	return "optimizer plugin based on the multimin optimizers of "
 		"the GNU Scientific Library (GSL) https://www.gnu.org/software/gsl/"; 
 }
 

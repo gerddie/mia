@@ -132,8 +132,8 @@ C2DFilter *C2DTmeanFilterPlugin::do_create()const
 const string C2DTmeanFilterPlugin::do_get_descr()const
 {
 	return "2D image thresholded tmean filter: The output pixel value is zero if the input pixel "
-                "value is below the given threshhold, otherwise the pixels in the evaluation windows "
-                "are only considered if the input pixel intensity is above the threshhold.";
+                "value is below the given threshold, otherwise the pixels in the evaluation windows "
+                "are only considered if the input pixel intensity is above the threshold.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

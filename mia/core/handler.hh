@@ -60,7 +60,7 @@ public:
 
 	typedef std::shared_ptr<I> PInterface; 
 
-	/// a map containing the names and theavailabe plug-ins 
+	/// a map containing the names and the available plug-ins 
 	typedef std::map<std::string, PInterface> CPluginMap; 
 
 	/// the iterator to walk over the available plug-ins 

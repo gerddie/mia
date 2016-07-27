@@ -150,7 +150,7 @@ static  CTriangleMesh::PTrianglefield  read_triangles(VistaIOGraph graph, size_t
 			// set triangle values
 			*t++ = node->t;
 		}else{
-			cverr() <<"adressing vertexes " << node->t << "but have only"<<v_size<< "vertices\n";
+			cverr() <<"addressing vertexes " << node->t << " but have only "<<v_size<< "vertices\n";
 			cverr() <<"Bougus mesh: Triangle vertex out of bounds - bailing out\n";
 			return CTriangleMesh::PTrianglefield();
 		}

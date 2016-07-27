@@ -37,7 +37,7 @@ TPluginHandler<C2DFullCostPlugin>::m_help =
 	"This class of cost functions evaluates the cost resulting from the "
 	"use of a certain transformation. This may include a penalty term that ensures "
 	"the smoothness of a transformation or the evaluation of a similarity measure "
-	"between a transformed study data set and a refernce data set.";
+	"between a transformed study data set and a reference data set.";
 
 
 EXPLICIT_INSTANCE_PLUGIN(C2DFullCost);

@@ -263,7 +263,7 @@ C2DImageCost *C2DNFGImageCostPlugin::do_create()const
 const string C2DNFGImageCostPlugin::do_get_descr()const
 {
 	return "This function evaluates the image similarity based on normalized gradient fields. "
-		"Various evaluation kernels are availabe.";
+		"Various evaluation kernels are available.";
 }
 
 

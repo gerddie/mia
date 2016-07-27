@@ -150,7 +150,7 @@ private:
    \ingroup basic
     
    Helper function to get the value of an attribute. Thr function throws a bad_cast exception,
-   if the attribute doesn't hold a value ofthe requested type T
+   if the attribute doesn't hold a value of the requested type T
    \tparam T target type
    \param attr attribute to be read
  */
@@ -250,7 +250,7 @@ EXPORT_CORE  std::ostream& operator << (std::ostream& os, const CAttributeMap& d
     \brief A collection of attributes 
     
     This is the base class for all data that uses attributes. It provides all the needed functions to store 
-    and retrive attributes. 
+    and retrieve attributes. 
 */
 class EXPORT_CORE CAttributedData {
 public:

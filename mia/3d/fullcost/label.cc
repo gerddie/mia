@@ -257,7 +257,7 @@ void C3DLabelFullCost::do_reinit()
 		throw runtime_error("C3DLabelFullCost only works with images of equal size"); 
 	
 	if (m_src->get_voxel_size() != m_ref->get_voxel_size()) {
-		cvwarn() << "C3DLabelFullCost: src and reference image are of differnet voxel dimensions:"
+		cvwarn() << "C3DLabelFullCost: src and reference image are of different voxel dimensions:"
 			<< m_src->get_voxel_size() << " vs " << m_ref->get_voxel_size() 
 			<< " This code doesn't honour this.\n"; 
 	}

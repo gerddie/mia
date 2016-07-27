@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_available_filters)
 #ifdef HAVE_MAXFLOW
 	test_data.insert("maxflow"); 
 #endif 
-	test_availabe_plugins(handler, test_data); 
+	test_available_plugins(handler, test_data); 
 }
 
 BOOST_AUTO_TEST_CASE(test_run_filters)

@@ -34,7 +34,7 @@ const SProgramDescription g_description = {
         
         {pdi_description,
          "Evaluate Euclidian distances between the corresponding landmarks in two landmark sets. "
-         "The programs prints out only values for landmarks that are availabe and have location "
+         "The programs prints out only values for landmarks that are available and have location "
          "values in both sets "}, 
 	
         {pdi_example_descr,

@@ -33,7 +33,7 @@ NS_MIA_USE;
 const SProgramDescription description = {
 	{pdi_group, "Help"}, 
 	{pdi_short, "Print help about plug-in groups"},
-	{pdi_description, "This program is used to print out help about the availabel plug-ins\n"}, 
+	{pdi_description, "This program is used to print out help about the available plug-ins\n"}, 
 	{pdi_example_descr, "Print out the help about the 2D filter plugins .\n"},  
 	{pdi_example_code, "filter/2d"}
 }; 

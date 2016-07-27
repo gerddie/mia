@@ -127,7 +127,7 @@ TPluginHandler<C3DSplineTransformPenaltyPlugin>::m_help =
 	"This class provides the penalty put on spline based transformations  "
 	"when considering image registration. This penalty term ensures "
 	"the smoothness of a transformation or the evaluation of a similarity measure "
-	"between a transformed study data set and a refernce data set.";
+	"between a transformed study data set and a reference data set.";
 
 
 EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C3DSplineTransformPenalty, C3DSplineTransformPenaltyPlugin); 

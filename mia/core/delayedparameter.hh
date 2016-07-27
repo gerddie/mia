@@ -91,7 +91,7 @@ const T TDelayedParameter<T>::get() const
 {
 	if (!(CDatapool::instance().has_key(m_key))) {
 		throw create_exception<std::invalid_argument>("TDelayedParameter::get(): Key '", m_key, 
-						    "' is not availabe in the data pool");  
+						    "' is not available in the data pool");  
 	}
 	return boost::any_cast<T>(CDatapool::instance().get(m_key)); 
 }

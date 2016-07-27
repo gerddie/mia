@@ -451,7 +451,7 @@ void CDicomReaderData::getAcquisitionTimeIfAvailable(CAttributedData& image)
 	OFTime of_time; 
 	success = dcm_time->getOFTime(of_time); 
 	if (!success.good()) {
-		cverr() << "CDicomReader: Could not retrive OFTime string from DcmTime Element\n";
+		cverr() << "CDicomReader: Could not retrieve OFTime string from DcmTime Element\n";
 		return; 
 	}
 	image.set_attribute(IDAcquisitionTime, of_time.getTimeInSeconds()); 

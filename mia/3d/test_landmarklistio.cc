@@ -26,10 +26,10 @@
 NS_MIA_USE
 using namespace std;
 
-BOOST_AUTO_TEST_CASE( test_available_plugins ) 
+BOOST_AUTO_TEST_CASE( test_available_plugins_landmarklistio ) 
 {
 	set<string> expected_plugins = {"lmx", "datapool"};
-	test_availabe_plugins(C3DLandmarklistIOPluginHandler::instance(), expected_plugins); 
+	test_available_plugins(C3DLandmarklistIOPluginHandler::instance(), expected_plugins); 
 }
 
 BOOST_AUTO_TEST_CASE( test_load_landmarklist_lmx ) 

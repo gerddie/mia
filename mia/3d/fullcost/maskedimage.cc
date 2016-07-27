@@ -256,7 +256,7 @@ void C3DMaskedImageFullCost::do_reinit()
         
 
 	if (m_src->get_voxel_size() != m_ref->get_voxel_size()) {
-		cvwarn() << "C3DMaskedImageFullCost: moving and reference image are of differnet pixel dimensions."
+		cvwarn() << "C3DMaskedImageFullCost: moving and reference image are of different pixel dimensions."
                          << "unless you optimize a transformation that supports global scaling this might "
                          << "not be what you want to do\n"; 
 	}

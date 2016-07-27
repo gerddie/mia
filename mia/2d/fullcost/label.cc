@@ -272,7 +272,7 @@ void C2DLabelFullCost::do_reinit()
 		throw runtime_error("C2DLabelFullCost only works with images of equal size"); 
 	
 	if (m_src->get_pixel_size() != m_ref->get_pixel_size()) {
-		cvwarn() << "C2DLabelFullCost: src and reference image are of differnet pixel dimensions:"
+		cvwarn() << "C2DLabelFullCost: src and reference image are of different pixel dimensions:"
 			<< m_src->get_pixel_size() << " vs " << m_ref->get_pixel_size() 
 			<< " This code doesn't honour this.\n"; 
 	}

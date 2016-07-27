@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 
 template <typename Hander> 
-void test_availabe_plugins(const  Hander& handler, const  std::set<std::string>& test)
+void test_available_plugins(const  Hander& handler, const  std::set<std::string>& test)
 {
 	auto data = handler.get_set(); 
 	BOOST_CHECK_EQUAL(data.size(), test.size()); 

@@ -113,7 +113,7 @@ CSegFrame::CSegFrame(const Node& node, int version):
 		else if ((*i)->get_name() == "section") {
 			m_sections.push_back(CSegSection(**i, version)); 
 		}else {
-			cvinfo() << "ignoring unsuported element '" << (*i)->get_name() << "'\n"; 
+			cvinfo() << "ignoring unsupported element '" << (*i)->get_name() << "'\n"; 
 		}
 	}
 	
@@ -161,7 +161,7 @@ const CSegFrame::Sections& CSegFrame::get_sections()const
 const CSegStar& CSegFrame::get_star() const
 {
 	if (!m_has_star) 
-		cvwarn() << "CSegFrame::get_star(): returing fake star"; 
+		cvwarn() << "CSegFrame::get_star(): returning fake star"; 
 	return m_star; 
 }
 

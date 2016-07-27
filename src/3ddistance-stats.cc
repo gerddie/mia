@@ -50,7 +50,7 @@ const SProgramDescription g_description = {
 	 "        cat(result)\n"
 	 "    }\n\n"
 	}, 
-	{pdi_example_descr, "Evaluate the distances for each label availabe in image.v to the "
+	{pdi_example_descr, "Evaluate the distances for each label available in image.v to the "
          "corresponding labels in the image reference.v ans store the result "
          "a coma separated list of values, i.e. distances.csv."}, 
 	{pdi_example_code, "-i image.v -r reference.v -o distances.csv" }

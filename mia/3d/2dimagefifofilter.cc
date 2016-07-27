@@ -121,7 +121,7 @@ TPluginHandler<C2DFifoFilterPlugin>::m_help =
    "These filters work on a stack of 2D images in a 3D manner by interpreting the images of the stack "
    "as slices of a 3D image. For spacial filters with a fixed filter width that is small compared to "
    "the number of slices the filter is applied in a true 3D manner. "
-   "For other filters, that would normaly require to work on the whole image domain at once, the "
+   "For other filters, that would normally require to work on the whole image domain at once, the "
    "image filter is only applied to a subset of the images at a time which results in a quasi-3D processing " 
   " that may require additional post-processing.";
 

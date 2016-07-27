@@ -39,7 +39,7 @@ class EXPORT_CORE CCircularIndex {
 public: 
 	/**
 	  Construct the buffer
-	  \param size size ofthe buffer 
+	  \param size size of the buffer 
 	  \param start start index
 	*/
 	CCircularIndex(unsigned int size, unsigned int start); 
