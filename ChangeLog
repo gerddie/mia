@@ -1,3 +1,10 @@
+2.4.3
+
+   * m/c/utils.cc: Always define PATH_MAX when it is not defined by 
+     system headers
+   * Correct spellings
+   * Replace use of boost::regex by std::regex
+
 2.4.2
 
     * correct installed headers
