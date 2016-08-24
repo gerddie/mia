@@ -26,7 +26,6 @@
 #include <direct.h>
 #define getcwd _getcwd
 #define chdir _chdir
-#define PATH_MAX 1024
 #endif
 
 #include <limits.h>
@@ -41,6 +40,11 @@
 // MIA specific
 #include <mia/core/utils.hh>
 #include <mia/core/msgstream.hh>
+
+// WIN32 and HURD don't define this 
+#ifndef PATH_MAX
+#define PATH_MAX 1024
+#endif 
 
 NS_MIA_BEGIN
 
