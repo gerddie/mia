@@ -32,6 +32,11 @@
 #include <mia/core/utils.hh>
 
 
+// WIN32 and HURD don't define this 
+#ifndef PATH_MAX
+#define PATH_MAX 1024
+#endif 
+
 NS_MIA_USE
 using namespace std;
 using namespace boost::unit_test;
