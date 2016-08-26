@@ -24,20 +24,23 @@
 #include <stdexcept>
 #include <sstream>
 #include <cstdlib>
-
-#if __cplusplus >= 201103
-#include <regex>
-using std::regex;
-using std::regex_match; 
-#else 
-#include <boost/regex.hpp>
-using boost::regex;
-using boost::regex_match; 
-#endif
-
 #include <boost/filesystem/operations.hpp>
 
 #include <config.h>
+
+#ifdef MIA_USE_BOOST_REGEX
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::regex_match; 
+#else 
+# if __cplusplus >= 201103
+# include <regex>
+using std::regex;
+using std::regex_match; 
+# else 
+# error must either use boost::regex or c++11 based regex
+# endif 
+#endif
 
 
 NS_MIA_BEGIN

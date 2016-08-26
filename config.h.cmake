@@ -46,6 +46,6 @@
 #cmakedefine HAVE_JPG 1
 
 #cmakedefine HAVE_NLOPT 1
-
+#cmakedefine MIA_USE_BOOST_REGEX 1
 
 #endif
