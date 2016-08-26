@@ -52,6 +52,7 @@ protected:
 	   @param type pixel type of this image  
 	 */
 	C3DImage(const CAttributedData& data, EPixelType type);
+
 	/**
 	   Constructor to create the base sceleton of the image 
 	   @param type pixel type of this image  
@@ -194,6 +195,12 @@ public:
 	   copy constructor
 	 */
 	T3DImage(const T3DImage& orig);
+
+	/**
+	   Constructor to create the image by using a 3D data field 
+	   \param orig the input data field 
+	*/
+	T3DImage(const T3DDatafield<T>& orig);
 
 	/**
 	   standart costructor creates an image of size (0,0,0)

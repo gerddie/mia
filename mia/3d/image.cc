@@ -173,6 +173,15 @@ T3DImage<T>::T3DImage(const T3DImage<T>& orig):
 }
 
 template <typename T>
+T3DImage<T>::T3DImage(const T3DDatafield<T>& orig):
+	C3DImage((EPixelType)pixel_type<T>::value),
+	m_image(orig)
+
+{
+}
+
+
+template <typename T>
 C3DImage::Pointer T3DImage<T>::clone() const
 {
 	return P3DImage(new T3DImage<T>(*this));

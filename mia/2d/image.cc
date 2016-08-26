@@ -42,6 +42,7 @@ C2DImage::C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPi
 {
 }
 
+
 C2DImage::~C2DImage()
 {
 }
