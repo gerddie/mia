@@ -148,7 +148,8 @@ int do_main(int argc, char *argv[])
 	opts.add(make_opt( cmeans_epsilon, EParameterBounds::bf_min_open,
 			   {0.0}, "c-means-epsilon", 'e', "c-means breaking condition for update tolerance"));
 	opts.add(make_opt( rel_cluster_threshold, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
-			   {0.0,1.0}, "relative-cluster-threshold", 't', "Number of intensity classes to segment")); 
+			   {0.0,1.0}, "relative-cluster-threshold", 't', "threshhold to ignore classes when initializing"
+			   " the local cmeans from the global one.")); 
 
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
