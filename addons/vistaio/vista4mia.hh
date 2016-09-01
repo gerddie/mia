@@ -23,6 +23,7 @@
 #include <mia/core.hh>
 #include <mia/3d/vector.hh>
 #include <vistaio/vistaio.h>
+#include <vistaio/vconfig.h>
 
 #ifdef WIN32
 #ifdef vista4mia_EXPORTS
@@ -86,6 +87,19 @@ struct vista_repnkind<unsigned int> {
 	static const bool is_unsigned = true; 
 	typedef VistaIOLong type;
 };
+
+#if VISTAIO_MAJOR_VERSION > 1 || \
+	VISTAIO_MAJOR_VERSION == 1 && VISTAIO_MINOR_VERSION > 2 || \
+	VISTAIO_MAJOR_VERSION == 1 && VISTAIO_MINOR_VERSION ==  2 && VISTAIO_MICRO_VERSION > 19
+
+template <>
+struct vista_repnkind<int64_t> {
+	static const VistaIORepnKind value = VistaIOLong64Repn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOLong64 type;
+};
+#endif 
+
 
 template <>
 struct vista_repnkind<float> {
