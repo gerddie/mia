@@ -79,8 +79,6 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 
 CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& class_centers, bool de_normalize_results) const
 {
-	FUNCTION_NOT_TESTED; 
-		
 	// prepare input data 
 	NormalizedHistogram nhist(histogram.size());
 
