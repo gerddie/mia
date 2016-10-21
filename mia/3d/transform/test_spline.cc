@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -356,7 +356,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	
 	C3DFImage test_image(range);
 	
-	auto_ptr<T3DInterpolator<float> > src(ipf.create(image.data()));
+	unique_ptr<T3DInterpolator<float> > src(ipf.create(image.data()));
 
 	C3DFImage::iterator t = test_image.begin();
 
@@ -556,7 +556,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_pertuberate, TransformSplineFixture )
 
 	fill(v.begin(), v.end(), vv);
 
-	// this location is hand-picked and is not really the position ofthe maximun
+	// this location is hand-picked and is not really the position of the maximun
 	// but only an approximation
 	float gamma = stransf.pertuberate(v);
 	C3DFVector lmg(12* scalex, 27 * scaley);

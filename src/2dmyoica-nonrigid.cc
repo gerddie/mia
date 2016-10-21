@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyoica"
-
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <itpp/signal/fastica.h>
@@ -30,6 +28,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
@@ -164,7 +163,7 @@ float get_relative_min_breathing_frequency(const C2DImageSeries& images, int ski
 		double aq_time = image_end->get_attribute_as<double>(IDAcquisitionTime) - 
 			image_begin->get_attribute_as<double>(IDAcquisitionTime);
 		if (aq_time < 0) 
-			throw create_exception<runtime_error>("Got non-postive aquisition time range ", aq_time, 
+			throw create_exception<runtime_error>("Got non-postive acquisition time range ", aq_time, 
 							      ", can't handle this");  
 							      
 		double heart_rate = 60 * n_heartbeats / aq_time; 
@@ -298,11 +297,12 @@ int do_main( int argc, char *argv[] )
 	if (rel_min_bf > 0) 
 		ica->set_min_movement_frequency(rel_min_bf); 
 
-	ica->set_approach(FICA_APPROACH_DEFL); 
-	if (!ica->run(series)) {
+    CICAAnalysisITPPFactory icatool;
+    ica->set_approach(CICAAnalysis::appr_defl);
+    if (!ica->run(series, icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-		ica->set_approach(FICA_APPROACH_SYMM); 
-		if (!ica->run(series)) 
+        ica->set_approach(CICAAnalysis::appr_symm);
+        if (!ica->run(series, icatool))
 			box_scale = false; 
 	}
 	
@@ -361,9 +361,9 @@ int do_main( int argc, char *argv[] )
 		transform(input_set.get_images().begin() + skip_images, 
 			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
-		if (!ica2.run(series)) {
-			ica2.set_approach(FICA_APPROACH_SYMM); 
-			ica2.run(series); 
+        if (!ica2.run(series, icatool)) {
+            ica2.set_approach(CICAAnalysis::appr_symm);
+            ica2.run(series, icatool);
 		}
 		if (lastpass) 
 			break; 
@@ -390,9 +390,9 @@ int do_main( int argc, char *argv[] )
 	transform(input_set.get_images().begin() + skip_images, 
 		  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 	
-	if (!ica_final.run(series)) {
-			ica_final.set_approach(FICA_APPROACH_SYMM); 
-			ica_final.run(series); 
+    if (!ica_final.run(series, icatool)) {
+            ica_final.set_approach(CICAAnalysis::appr_symm);
+            ica_final.run(series, icatool);
 	}
 	if( input_set.get_RV_peak() < 0) 
 		input_set.set_RV_peak(ica_final.get_RV_peak_time() + skip_images); 

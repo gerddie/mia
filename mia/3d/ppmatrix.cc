@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@
 #include <mia/3d/datafield.cxx>
 #include <mia/core/threadedmsg.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
+#include <numeric> 
+
 
 #ifdef __SSE2__
 #include <emmintrin.h>
 #endif
 
-using namespace tbb;
 using namespace std; 
 
 NS_MIA_BEGIN
@@ -405,7 +405,7 @@ struct EvaluateGradientAndValue {
 		{
 		}
 	
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		int nx = size.x; 
@@ -549,7 +549,7 @@ struct EvaluateGradientAndValue {
 		{
 		}
 	
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		int nx = size.x; 
@@ -624,7 +624,7 @@ double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DFVector>& coeffici
 	vector<double> values(m_size.z); 
 	EvaluateGradientAndValue<C3DFVector> eval(coefficients, gradient, values,m_P, m_size, m_ksize); 
 	
-	parallel_for(blocked_range<int>( 0, m_size.z), eval);
+	pfor(C1DParallelRange( 0, m_size.z), eval);
 	return accumulate(values.begin(), values.end(), 0.0); 
 
 }
@@ -639,7 +639,7 @@ double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coeffici
 	vector<double> values(m_size.z); 
 	EvaluateGradientAndValue<C3DDVector> eval(coefficients, gradient, values,m_P, m_size, m_ksize); 
 	
-	parallel_for(blocked_range<int>( 0, m_size.z), eval);
+	pfor(C1DParallelRange( 0, m_size.z), eval);
 	return accumulate(values.begin(), values.end(), 0.0); 
 }
 

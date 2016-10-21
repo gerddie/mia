@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,11 +55,11 @@ public:
            \param outer_epsilon a relative cost function value per 
                 multi-grid level to stop registration
 	*/
-	C2DMultiImageRegister(size_t start_size, size_t max_iter, 
-			      C2DRegModel& model, 
-			      C2DRegTimeStep& time_step, 
-			      C2DTransformCreator& trans_factory, 
-			      float outer_epsilon); 
+	C2DMultiImageNonrigidRegister(size_t start_size, size_t max_iter, 
+				      C2DRegModel& model, 
+				      C2DRegTimeStep& time_step, 
+				      C2DTransformCreator& trans_factory, 
+				      float outer_epsilon); 
 
 	/**
 	   The registration operator that does the registration

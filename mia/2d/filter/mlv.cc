@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,7 @@
 
 #include <limits>
 
-#ifdef HAVE_BLAS
-extern "C" {
-#include <cblas.h>
-}
-#endif
+#include <gsl/gsl_cblas.h>
 
 NS_BEGIN(mlv_2dimage_filter);
 
@@ -201,7 +197,6 @@ C2DMLV::result_type C2DMLV::operator () (const T2DImage<T>& data) const
 											 data.begin() + data.get_size().x * (y + 1) ,
 											 m_sqbuf.begin());
 
-#ifdef HAVE_BLAS
 			copy(data.begin_at(0,y), data.begin_at(0,y) + data.get_size().x, m_buf.begin());
 			for (size_t x = 0; x < m_kh; ++x) {
 				cblas_saxpy(data.get_size().x, 1.0f, &m_buf[0],  1, &m_mu_l1[x], 1);
@@ -212,27 +207,6 @@ C2DMLV::result_type C2DMLV::operator () (const T2DImage<T>& data) const
 				cblas_saxpy(m_mu_l1.size(), 1.0f, &m_mu_l1[0],  1, &m_mu(0,y + iy), 1);
 				cblas_saxpy(m_sigma_l1.size(), 1.0f, &m_sigma_l1[0],  1, &m_sigma(0,y + iy), 1);
 			}
-#else
-			for (size_t x = 0; x < m_kh; ++x) {
-				C2DFImage::iterator start = m_mu_l1.begin() + x;
-
-				__dispatch_trasform<typename T2DImage<T>::const_iterator>::apply_add(start,
-												     start + data.get_size().x,
-												     data.begin() + data.get_size().x * y);
-
-				start = m_sigma_l1.begin() + x;
-				transform(start, start + data.get_size().x, m_sqbuf.begin(), start, 
-					  [][float a, float b](return a+b;});
-			}
-
-			for (size_t iy= 0; iy < m_kh; ++iy) {
-				transform(m_mu_l1.begin(), m_mu_l1.end(), m_mu.begin_at(0,y + iy), 
-					  m_mu.begin_at(0,y + iy), [](float a, float b)(return a+b;});
-				transform(m_sigma_l1.begin(), m_sigma_l1.end(), m_sigma.begin_at(0,y + iy), 
-					  m_sigma.begin_at(0,y + iy), [](float a, float b)(return a+b;});
-			}
-#endif
-
 		}
 
 

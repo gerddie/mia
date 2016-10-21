@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 
 template <typename Hander> 
-void test_availabe_plugins(const  Hander& handler, const  std::set<std::string>& test)
+void test_available_plugins(const  Hander& handler, const  std::set<std::string>& test)
 {
 	auto data = handler.get_set(); 
 	BOOST_CHECK_EQUAL(data.size(), test.size()); 

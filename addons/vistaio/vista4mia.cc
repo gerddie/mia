@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,12 +29,21 @@ using namespace boost;
 
 NS_MIA_BEGIN
 
+template <typename T> 
+void vistaio_add_attribute(CAttributedData& attr, const string& name, T value)
+{
+	cvdebug() << "add attribute " << name << " of type 'string' and value '" << value << "'\n";
+	attr.set_attribute(name, PAttribute(new TAttribute<T>(value))); 
+}
+
+template <> 
 void vistaio_add_attribute(CAttributedData& attr, const string& name, VistaIOString value)
 {
 	cvdebug() << "add attribute " << name << " of type 'string' and value '" << value << "'\n";
 	attr.set_attribute(name, CStringAttrTranslatorMap::instance().to_attr(name, value)); 
 }
 
+template <> 
 void vistaio_add_attribute(CAttributedData& attr, const string& name, VistaIOBit value)
 {
 	cvdebug() << "add attribute " << name << " of type " << typeid(VistaIOBit).name() << " and value '" << value << "'\n";
@@ -56,6 +65,10 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributedData& attributes, const VistaIOA
 	VistaIOFirstAttr(in_list, &pos);
 	while (VistaIOAttrExists(&pos)){
 		std::string name(VistaIOGetAttrName(&pos));
+
+		// actually, vistaio internally stores all scalar values as string
+		// which means most of this switch is dead code.
+		// 
 		cvdebug() << "got " << name << " " << VistaIOGetAttrRepn(&pos) << "\n";
 		switch (VistaIOGetAttrRepn(&pos)) {
 		case VistaIOStringRepn:{
@@ -79,7 +92,7 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributedData& attributes, const VistaIOA
 			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VistaIOLongRepn:{
-			long f;
+			int f;
 			VistaIOGetAttrValue(&pos,NULL,VistaIOLongRepn,&f);
 			vistaio_add_attribute(attributes, name, f);
 		}break;

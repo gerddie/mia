@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ template <typename T>
 void check_value(const CAttributedData& attr_map, const string& key,  T value)
 {
 	const PAttribute pattr = attr_map.get_attribute(key);
-	cvdebug() << "check_value(" << key << ") = '" << value << "'\n";
+	cvdebug() << "check_value(" << key << ") = '" << value << "' of type " << typeid(T).name() << "\n";
 	const TAttribute<T> * attr = dynamic_cast<const TAttribute<T> *>(pattr.get());
 	BOOST_REQUIRE(attr);
 	T v = *attr;
@@ -117,6 +117,8 @@ BOOST_AUTO_TEST_CASE( check_translation)
         VistaIOSetAttr(vista_list1, "double", NULL, VistaIODoubleRepn, double_value);
         VistaIOSetAttr(vista_list1, "string", NULL, VistaIOStringRepn, string_value.c_str());
 
+	
+	
 	CAttributedData attr_map;
 
 	copy_attr_list(attr_map, vista_list1);

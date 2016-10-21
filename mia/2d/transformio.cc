@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@ template <> const char *  const
 	TPluginHandler<C2DTransformationIO>::m_help =  
        "These plug-ins implement the support for loading and storing 2D transformations to various file types.";
 
+
+template class TPlugin<C2DTransformation, io_plugin_type>; 
 template class TIOPlugin<C2DTransformation>;
 template class THandlerSingleton<C2DTransformIOPluginHandlerImpl>;
 template class TIOPluginHandler<C2DTransformationIO>;

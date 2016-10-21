@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,20 @@ NS_MIA_BEGIN
    @brief 3D Landmark list IO plugin base 
 */
 typedef TIOPlugin<C3DLandmarklist> C3DLandmarklistIOPlugin;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
+extern template class EXPORT_3D TIOPlugin<C3DLandmarklist>;
+extern template class EXPORT_3D TPlugin<C3DLandmarklist, io_plugin_type>;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 /**
    @ingroup io 

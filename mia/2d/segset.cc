@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,13 @@
 #include <mia/core/filetools.hh>
 #include <mia/core/tools.hh>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#if LIBXMLPP_VERSION < 3
+#define add_child_element add_child
+#endif
 
 
 NS_MIA_BEGIN
@@ -114,12 +121,12 @@ xmlpp::Document *CSegSet::write() const
 		nodeRoot->set_attribute("version", to_string<int>(m_version));
 	}
 
-	Element* description = nodeRoot->add_child("description"); 
-	Element* RVPeak = description->add_child("RVpeak"); 
+	Element* description = nodeRoot->add_child_element("description"); 
+	Element* RVPeak = description->add_child_element("RVpeak"); 
 	RVPeak->set_attribute("value", to_string<int>(m_RV_peak));
-	Element* LVPeak = description->add_child("LVpeak"); 
+	Element* LVPeak = description->add_child_element("LVpeak"); 
 	LVPeak->set_attribute("value", to_string<int>(m_LV_peak));
-	Element* PreferedRef = description->add_child("PreferedRef"); 
+	Element* PreferedRef = description->add_child_element("PreferedRef"); 
 	PreferedRef->set_attribute("value", to_string<int>(m_preferred_reference));
 
 
@@ -156,7 +163,7 @@ void CSegSet::read(const xmlpp::Document& node)
 			m_frames.push_back(CSegFrame(**i, m_version));
 		}
 		catch (invalid_argument& x) {
-			throw create_exception<invalid_argument>("Segset: Error reading frame ", distance(frames.begin(), i), 
+            throw create_exception<invalid_argument>("Segset: Error reading frame ", distance(frames.begin(), i),
 								 ":", x.what());  
 		}
 		++i;

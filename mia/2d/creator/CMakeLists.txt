@@ -20,8 +20,8 @@ SET(creator2d
 	    circle
 )
 
-PLUGINGROUP_WITH_PREFIX2(
+PLUGINGROUP_WITH_TEST_AND_PREFIX2(
   "2dimage" "creator"
   "${creator2d}" 
-  "${MIA2DLIBS}" 
+  "${MIA2DLIBS}"
 )

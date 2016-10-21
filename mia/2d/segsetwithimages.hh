@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,9 @@ private:
 };
 
 typedef CSegSetWithImages::Pointer PSegSetWithImages; 
+
+extern template class EXPORT_2DMYOCARD TPlugin<CSegSetWithImages, io_plugin_type>;
+extern template class EXPORT_2DMYOCARD TIOPlugin<CSegSetWithImages>; 
 
 typedef TIOPlugin<CSegSetWithImages> CSegSetWithImagesIOPlugin;
 typedef THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin > > CSegSetWithImagesIOPluginHandler;

@@ -29,7 +29,6 @@ SET(MIA2D_SRC_BASE
   image.cc
   imageio.cc
   interpolator.cc 
-  filterchain.cc
   fftkernel.cc
   fuzzyseg.cc
   fuzzyclustersolver_sor.cc
@@ -108,7 +107,6 @@ SET(MIA2D_HEADERS_BASE
   deformer.hh
   distance.hh
   fullcost.hh
-  filterchain.hh
   fftkernel.hh
   fuzzyseg.hh
   fuzzyclustersolver_sor.hh

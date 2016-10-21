@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,6 +234,11 @@ bool EXPORT_CORE operator == (const CAttributedData& a, const CAttributedData& b
 	return  *a.m_attr == *b.m_attr;
 }
 
+template class EXPORT_CORE TAttribute<unsigned char>;
+template class EXPORT_CORE TAttribute<signed char>; 
+
+template class EXPORT_CORE TAttribute<std::vector<unsigned char>>;
+template class EXPORT_CORE TAttribute<std::vector<signed char>>; 
 
 template class EXPORT_CORE  TTranslator<double>;
 template class EXPORT_CORE  TTranslator<std::vector<double> >;

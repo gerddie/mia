@@ -2,7 +2,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,10 +62,10 @@ public:
 			   size_t reference, size_t max_delta); 
 	
 	/// copy constructor 
-	TSimilarityProfile(const TSimilarityProfile<dim>& org); 
+	TSimilarityProfile(const TSimilarityProfile<dim>& org) = default; 
 	
 	/// assignment operator 
-	TSimilarityProfile<dim>& operator = (const TSimilarityProfile<dim>& org); 
+	TSimilarityProfile<dim>& operator = (const TSimilarityProfile<dim>& org)  = default; 
 
 	
 	/// \returns the peak frequency coefficent and its index

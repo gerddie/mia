@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@
 
 #include <mia/core/minimizer/gdas.hh>
 #include <mia/core/errormacro.hh>
-extern "C" {
-#include <cblas.h>
-}
+
+#include <gsl/gsl_cblas.h>
+
 
 NS_BEGIN(gdas)
 using namespace mia; 
@@ -89,7 +89,7 @@ int CGDSAMinimizer::do_run(CDoubleVector& x)
                 
                 
 		if (f < f_old) {
-                        cvinfo() << "Successfull step: [" << iter << "]: f=" << f 
+                        cvinfo() << "Successful step: [" << iter << "]: f=" << f 
                                  << ", gmax = " << gmax << ", step=" << step << "\n"; 
 
                         tries = 0; 
@@ -140,7 +140,7 @@ int CGDSAMinimizer::do_run(CDoubleVector& x)
 		cvmsg() << "Stop: dx below given limit\n"; 
 		
 	if (success & SUCCESS_FTOLR) 
-		cvmsg() << "Stop: relative cost funtion value decrease below limit "<< m_ftolr << ".\n"; 
+		cvmsg() << "Stop: relative cost function value decrease below limit "<< m_ftolr << ".\n"; 
 
 	return CMinimizer::success; 
 }

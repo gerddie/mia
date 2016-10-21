@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,8 +128,8 @@ CPNG2DImageIOPlugin::PData  CPNG2DImageIOPlugin::do_load(const string& fname) co
 		throw invalid_argument(errmsg.str());
 	}
 
-	if (bit_depth != 24)
-		throw create_exception<invalid_argument>("PNG-RGB: Only 24-bit images are supported, but got ",  bit_depth, " bit");
+	if (bit_depth != 8 )
+		throw create_exception<invalid_argument>("PNG-RGB: Only 8-bit per color components are supported, but got ",  bit_depth, " bit");
 
 	png_read_update_info(png_ptr, info_ptr);
 	

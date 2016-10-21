@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyopgt"
 #include <iomanip>
 #include <ostream>
 #include <fstream>
@@ -45,7 +44,7 @@ const SProgramDescription g_description = {
 	{pdi_short, "Run a registration of a series of 2D images."}, 
 	{pdi_description, "This program implements the non-linear registration based on Pseudo Ground "
 	 "Thruth for motion compensation of series of myocardial perfusion images given as a "
-	 "data set as decribed in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
+	 "data set as described in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
 	 "MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing and Computer-Assisted "
 	 "Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear motion correction "
 	 "a preceding linear registration step is usually required."},

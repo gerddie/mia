@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ struct C2DPerfusionAnalysisImpl {
 				 bool meanstrip); 
 	
 	vector<C2DFImage> get_references() const; 
-	bool run_ica(const vector<C2DFImage>& series);
+	bool run_ica(const vector<C2DFImage>& series, const CICAAnalysisFactory& icatool);
 	P2DFilter get_crop_filter(float scale, C2DBounds& crop_start,
 				  C2DPerfusionAnalysis::EBoxSegmentation approach, 
 				  const std::string& save_features) const; 
@@ -47,7 +47,7 @@ struct C2DPerfusionAnalysisImpl {
 						  C2DBounds& crop_start, 
 						  const string& save_features)const; 
 	
-	CICAAnalysis::IndexSet get_all_without_periodic()const; 
+    CICAAnalysis::IndexSet get_all_without_periodic()const;
 	void save_feature(const string& base, const string& feature, const C2DImage& image)const; 
 	P2DImage get_rvlv_delta_from_feature(const string& save_features)const; 
 	P2DImage get_rvlv_delta_from_peaks(const string& save_features)const; 
@@ -65,7 +65,7 @@ struct C2DPerfusionAnalysisImpl {
 	C2DBounds m_image_size; 
 	CWaveletSlopeClassifier m_cls; 
 	size_t m_length; 
-	int m_ica_approach; 
+	CICAAnalysis::EApproach m_ica_approach;
 	bool m_use_guess_model; 
 	C2DFImage m_image_attributes; 
 	float m_min_movement_frequency;  
@@ -109,7 +109,7 @@ void C2DPerfusionAnalysis::set_min_movement_frequency(float min_freq)
 
 
 
-void C2DPerfusionAnalysis::set_approach(size_t approach)
+void C2DPerfusionAnalysis::set_approach(CICAAnalysis::EApproach approach)
 {
 	assert(impl); 
 	impl->m_ica_approach = approach; 
@@ -131,10 +131,10 @@ P2DFilter C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_sta
 	return impl->get_crop_filter(scale, crop_start, approach, save_features); 
 }
 
-bool C2DPerfusionAnalysis::run(const vector<C2DFImage>& series)
+bool C2DPerfusionAnalysis::run(const vector<C2DFImage>& series, const CICAAnalysisFactory& icatool)
 {
 	assert(impl); 
-	return impl->run_ica(series); 
+    return impl->run_ica(series, icatool);
 }
 
 vector<C2DFImage> C2DPerfusionAnalysis::get_references() const
@@ -157,7 +157,7 @@ C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components,
 	m_meanstrip(meanstrip),
 	m_max_iterations(0),
 	m_length(0), 
-	m_ica_approach(FICA_APPROACH_DEFL), 
+    m_ica_approach(CICAAnalysis::appr_defl),
 	m_use_guess_model(false), 
 	m_min_movement_frequency(-1)
 {
@@ -228,7 +228,7 @@ P2DFilter C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop
 vector<C2DFImage> C2DPerfusionAnalysisImpl::get_references() const
 {
 	vector<C2DFImage> result(m_length); 
-	CICAAnalysis::IndexSet component_set = get_all_without_periodic(); 
+    CICAAnalysis::IndexSet component_set = get_all_without_periodic();
 	
 	for (size_t i = 0; i < m_length; ++i) {
 		result[i] = m_ica->get_partial_mix(i, component_set); 
@@ -242,18 +242,18 @@ vector<vector<float> > C2DPerfusionAnalysisImpl::create_guess(size_t rows)
 {
 	vector<vector<float> > result(3); 
 	
-	float rv_shift = 0.25 * rows;
-	float lv_shift = 0.4 * rows;
+    float rv_shift = 0.25f * rows;
+    float lv_shift = 0.4f * rows;
 
 	vector<float> lv_slope(rows); 
 	vector<float> rv_slope(rows); 
 	vector<float> perf_slope(rows); 
 	for (size_t x = 0; x < rows; ++x) {
-		rv_slope[x] = (tanh(12 * x /rows - 0.05 * rows) +   
-			       4.0 * exp(-(x-rv_shift) * (x-rv_shift) / rows) - 1)/5.0;
-		lv_slope[x] = (tanh(12 * x /rows - 0.05 * rows) +   
-			       4.0 * exp(-(x-lv_shift) * (x-lv_shift) / rows) - 1)/5.0;
-		perf_slope[x] = tanh(6 * x /rows - 0.05 * rows) / 5.0; 
+        rv_slope[x] = (tanh(12 * x /rows - 0.05f * rows) +
+                   4.0f * exp(-(x-rv_shift) * (x-rv_shift) / rows) - 1)/5.0f;
+        lv_slope[x] = (tanh(12 * x /rows - 0.05f * rows) +
+                   4.0f * exp(-(x-lv_shift) * (x-lv_shift) / rows) - 1)/5.0f;
+        perf_slope[x] = tanh(6 * x /rows - 0.05f * rows) / 5.0f;
 	}
 	result[0] = rv_slope; 
 	result[1] = lv_slope; 
@@ -261,7 +261,7 @@ vector<vector<float> > C2DPerfusionAnalysisImpl::create_guess(size_t rows)
 	return result; 
 }
 
-bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series) 
+bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series, const CICAAnalysisFactory& icatool)
 {
 	m_series = series; 
 	m_length = series.size(); 
@@ -270,10 +270,10 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 
 	m_image_attributes = series[0]; 
 		
-	srand(time(NULL));
+    srand(static_cast<unsigned>(time(NULL)));
 	m_image_size = series[0].get_size(); 
 	bool has_one = false; 
-	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
+    unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(icatool, series, false));
 
 	vector<vector<float> > guess; 
 	if (m_use_guess_model) 
@@ -283,7 +283,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		ica->set_approach(m_ica_approach); 
 			
 		if (!ica->run(m_components, m_meanstrip, m_normalize, guess) && 
-		    (m_ica_approach == FICA_APPROACH_DEFL))
+            (m_ica_approach == CICAAnalysis::appr_defl))
 			return false; 
 		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), false, m_min_movement_frequency);
 		if (m_cls.result() != CWaveletSlopeClassifier::wsc_fail)
@@ -292,11 +292,11 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 
 		size_t min_components_nonzero = 100;
 		for (int i = 6; i >= 4; --i) {
-			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
+            unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(icatool, series, false));
 			ica->set_approach(m_ica_approach); 
 			l_ica->set_max_iterations(m_max_iterations);
 
-			if (!l_ica->run(i, m_meanstrip, m_normalize, guess) && (m_ica_approach == FICA_APPROACH_DEFL)) {
+            if (!l_ica->run(i, m_meanstrip, m_normalize, guess) && (m_ica_approach == CICAAnalysis::appr_defl)) {
 				cvwarn() << "run_ica: " << i << " components didn't return a result\n"; 
 				continue; 
 			}
@@ -340,7 +340,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 	return has_one; 
 }
 
-CICAAnalysis::IndexSet C2DPerfusionAnalysisImpl::get_all_without_periodic()const 
+CICAAnalysis::IndexSet C2DPerfusionAnalysisImpl::get_all_without_periodic() const
 {
 	assert(m_ica); 
 	int movement_index = m_cls.get_movement_idx();
@@ -457,7 +457,6 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_f
 retry:
 	do {
 		do {
-			++nc;
 			stringstream kfd;
 			kfd << "kmeans:c=" << 2*nc + 1;
 			kmeans = run_filter(*pre_kmeans, kfd.str().c_str());
@@ -467,9 +466,16 @@ retry:
 			
 			RV = RV_filter_chain.run(kmeans_binarized);
 			
-			npixels = ::mia::filter(GetRegionSize(1), *RV);
+			npixels = 10 * ::mia::filter(GetRegionSize(1), *RV);
+			cvinfo() << "nc= "<< nc << ", got " << npixels << " RV pixels from size "
+				 << rvlv_feature->get_size().x * rvlv_feature->get_size().y << "\n";
+
+			if (npixels < rvlv_feature->get_size().x * rvlv_feature->get_size().y)
+				break; 
 			
-		} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 7);
+			++nc;
+			
+		} while (nc < 7);
 		
 		if (!save_features.empty()) {
 			save_feature(save_features, "kmeans", *kmeans); 
@@ -487,8 +493,18 @@ retry:
 		
 		label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 		lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
+
+		cvinfo() << "nc= "<< nc << ", got " << lv_pixels << " LV pixels from size "
+				 << rvlv_feature->get_size().x * rvlv_feature->get_size().y << "\n";
 		
-	} while (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 7);
+		if (10 * lv_pixels < rvlv_feature->get_size().x * rvlv_feature->get_size().y) {
+			cvinfo() << "Found LV\n"; 
+			break;
+		}else
+			++nc; 
+		
+		
+	} while (nc < 7);
 	
 	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y) {
 		cvmsg() << "LV classification failed\n"; 
@@ -521,8 +537,11 @@ retry:
 	float r = LV_mask_amplify * delta_center.norm();
 	cvinfo() << "r = " << r << "\n";
 	stringstream mask_lv;
-	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r));
+	int csy = int(LV_center.y - r);
+	
+	crop_start = C2DBounds(int(LV_center.x - r), csy < 0 ? 0 : csy);
 
+	cvinfo() << "crop_start= "<< crop_start << "\n"; 
 	// this is ugly and should be replaced
 	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y) {
 		if (nc < 7) 
@@ -667,6 +686,15 @@ int C2DPerfusionAnalysis::get_perfusion_idx() const
 	return impl->m_cls.get_perfusion_idx();
 }
 
+int C2DPerfusionAnalysis::get_movement_idx() const
+{
+	return impl->m_cls.get_movement_idx();
+}
+
+vector<float> C2DPerfusionAnalysis::get_mixing_curve(unsigned idx) const
+{
+	return impl->m_ica->get_mixing_curve(idx); 
+}
 
 template <typename T>
 int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
@@ -743,7 +771,7 @@ P2DImage C2DPerfusionAnalysis::get_feature_image(int index) const
 }
 
 
-TDictMap<C2DPerfusionAnalysis::EBoxSegmentation>::Table segmethod_table[] ={
+static TDictMap<C2DPerfusionAnalysis::EBoxSegmentation>::Table segmethod_table[] ={
 	{"delta-feature", C2DPerfusionAnalysis::bs_delta_feature, "difference of the feature images"},
 	{"delta-peak", C2DPerfusionAnalysis::bs_delta_peak, "difference of the peak enhancement images"},
 	{"features", C2DPerfusionAnalysis::bs_features, "feature images"},      

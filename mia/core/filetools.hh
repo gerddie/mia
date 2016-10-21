@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,11 +34,6 @@ class path;
 
 NS_MIA_BEGIN
 
-
-typedef std::vector<boost::filesystem::path> CPathNameArray; 
-
-CPathNameArray find_files(const CPathNameArray& searchpath, const std::string& pattern); 
-
 /**
    \ingroup misc
 
@@ -68,18 +63,6 @@ EXPORT_CORE const std::string get_filename_pattern_and_range(std::string const& 
 /**
    \ingroup misc
 
-   Based on an input pattern obtain a vector of file names that follow the same numbering pattern and
-   are all numberd consecutive and are within the given range.
-   \param in_filename a file name pattern, e.g. file0000.png
-   \param start minimum file number
-   \param end maximum file number
-   \returns a vector of filenames that follow above pattern
-*/
-EXPORT_CORE std::vector<std::string> get_consecutive_numbered_files_from_pattern(std::string const& in_filename, int start, int end);
-
-/**
-   \ingroup misc
-
    split a filename with a number part into a c-format string or a wildcard string
    \param fname input file name
    \param[out] base the resulting format string
@@ -88,15 +71,6 @@ EXPORT_CORE std::vector<std::string> get_consecutive_numbered_files_from_pattern
    example fname = file000.png -> wildcard ? file???.png : file%03d.png
 */
 EXPORT_CORE size_t fname_to_cformat(const char *fname, std::string& base, bool wildcard);
-
-/**
-   \ingroup misc
-
-   split a file name into directory and file
-   \remark obsolate - use BOOST functions
-*/
-
-EXPORT_CORE void split_dir_fname(const char *in_name, std::string& dir, std::string& sname);
 
 
 /**

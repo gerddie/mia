@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,9 +55,9 @@ T2DDatafield<T>::T2DDatafield(const C2DBounds& size,const T *_data):
 }
 
 template <class T> 
-T2DDatafield<T>::T2DDatafield(const C2DBounds& size, const data_array& data):
+T2DDatafield<T>::T2DDatafield(const C2DBounds& size, const std::vector<T>& data):
 	m_size(size),
-	m_data(new data_array(data))
+	m_data(new data_array(data.begin(), data.end()))
 {
 	assert(m_data->size() == m_size.x * m_size.y); 
 }
@@ -274,7 +274,7 @@ T2DDatafield<T>::end_range(const C2DBounds& begin, const C2DBounds& end)const
 
 
 template <class T> 
-const T T2DDatafield<T>::Zero = T();
+const typename  T2DDatafield<T>::value_type T2DDatafield<T>::Zero = T();
 
 NS_MIA_END
 

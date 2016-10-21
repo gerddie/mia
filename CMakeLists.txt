@@ -18,7 +18,8 @@
 
 PROJECT("mia")
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5 FATAL_ERROR)
+# now need OBJECT libraries 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.8 FATAL_ERROR)
 
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
@@ -51,10 +52,10 @@ include(CheckCXXSourceCompiles)
 SET(VENDOR "Gert Wollny")
 SET(PACKAGE_NAME "mia")
 SET(MAJOR_VERSION 2)
-SET(MINOR_VERSION 2)
-SET(MICRO_VERSION 7)
-SET(INTERFACE_AGE 3)
-SET(BINARY_AGE    3)
+SET(MINOR_VERSION 4)
+SET(MICRO_VERSION 4)
+SET(INTERFACE_AGE 0)
+SET(BINARY_AGE    2)
 
 #
 #SET(CMAKE_BUILD_WITH_INSTALL_RPATH 1)
@@ -78,6 +79,12 @@ OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are a
 OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" TRUE)
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
+OPTION(ENABLE_COVERAGE "Enable code coverage tests" FALSE)
+OPTION(DISABLE_PROGRAMS "Don't build the programs nor documentation (only for testing purposes)" FALSE)
+OPTION(MIA_CREATE_USERDOC "Enable creation of html user documentation" TRUE)
+OPTION(MIA_USE_BOOST_REGEX "Use the boost::regex library (instead of c++11 build in) " FALSE)
+
+
 
 INCLUDE(GNUInstallDirs)
 
@@ -105,6 +112,13 @@ IF(UNIX)
   
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${CXX_11_FLAG} -fvisibility=hidden")
 ENDIF(UNIX)
+
+IF (ENABLE_COVERAGE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g -DMIA_COVERAGE")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
+ENDIF()
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
@@ -211,7 +225,12 @@ MACRO(GET_BOOST_LINKERFLAG VAR LIBNAMES)
   SET(${VAR} "${flags}")
 ENDMACRO(GET_BOOST_LINKERFLAG)
 
-SET(BOOST_COMPONENTS   filesystem  regex unit_test_framework serialization system)
+SET(BOOST_COMPONENTS filesystem  unit_test_framework serialization system)
+
+IF (MIA_USE_BOOST_REGEX)
+  SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} regex)
+ENDIF()
+
 IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
 ENDIF(WIN32)
@@ -226,7 +245,12 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
 ADD_DEFINITIONS(-DBOOST_FILESYSTEM_VERSION=3)
 
-SET(BOOST_DEPS  ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+IF (MIA_USE_BOOST_REGEX)
+  SET(BOOST_DEPS ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+ELSE()
+  SET(BOOST_DEPS ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+ENDIF()
+
 SET(BOOST_UNITTEST  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 IF (WIN32 AND NOT UNIX)
@@ -257,14 +281,19 @@ ENDIF (MSYS OR MINGW)
 ################################################################################
 #
 # Intel Threading Building Blocks 
-# 
-FIND_PACKAGE(TBB REQUIRED)
-IF(TBB_FOUND) 
-  include_directories(${TBB_INCLUDE_DIRS})
-  link_directories(${TBB_LIBRARY_DIRS})
-ELSE(TBB_FOUND) 
-  MESSAGE(FATAL " TBB not found")
-ENDIF(TBB_FOUND)
+#
+OPTION(WITH_TBB "Use intel threading building blocks for threading, otherwise use c++11 threads" OFF)
+
+IF(WITH_TBB) 
+  FIND_PACKAGE(TBB REQUIRED)
+  IF(TBB_FOUND) 
+    include_directories(${TBB_INCLUDE_DIRS})
+    link_directories(${TBB_LIBRARY_DIRS})
+    SET(HAVE_TBB 1)
+  ELSE(TBB_FOUND) 
+    MESSAGE(FATAL " TBB not found")
+  ENDIF(TBB_FOUND)
+ENDIF()
 #
 # End Intel Threading Building Blocks 
 #
@@ -273,7 +302,7 @@ ENDIF(TBB_FOUND)
 ################################################################################
 #
 # Intel Threading Building Blocks 
-# 
+# why is this here? 
 
 SET(CMAKE_THREAD_PREFER_PTHREAD ON) 
 FIND_PACKAGE(Threads)
@@ -297,27 +326,10 @@ INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIRS})
 LINK_DIRECTORIES(${EIGEN3_LIBRARY_DIRS})
 
 
-################################################################################
-# 
-# search for some blas
-# 
-
-FIND_PACKAGE(BLAS)
-IF (NOT BLAS_LIBRARIES) 
-  MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
-ENDIF(NOT BLAS_LIBRARIES) 
-
 IF(UNIX)
   GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
-  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${BLAS_LIBRARIES} ${TBB_LIBRARIES} ${PTHREADLIB} -ldl")
+  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${TBB_LIBRARIES} ${PTHREADLIB} -ldl")
 ENDIF(UNIX)
-
-
-ADD_DEFINITIONS(-DHAVE_BLAS)
-#
-# End BLAS 
-# 
-##################################################################################
 
 ##################################################################################
 #
@@ -344,7 +356,7 @@ IF(NOT WIN32)
   IF(DL_NOTFOUND)
     MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
   ENDIF(DL_NOTFOUND)
-  SET(BASELIBS  ${BOOST_DEPS} ${PTHREADLIB} ${DL})
+  SET(BASELIBS  ${GSL_LIBRARIES} ${BOOST_DEPS} ${PTHREADLIB} ${DL})
 ENDIF(NOT WIN32)
 SET(PLUGSUFFIX ".mia")
 
@@ -383,9 +395,17 @@ ENDIF(WITH_FFTWD)
 ####################################################################################
 #
 # add xml library for loading/storing segmentations and document creation  
+# search it olny once
 #
-pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
+pkg_check_modules(XMLPP libxml++-3.0)
+
+IF (NOT XMLPP_FOUND)
+  pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
+ENDIF()
+
 IF (XMLPP_FOUND)
+STRING(REGEX MATCH "[0-9]*" XMLPP_MAJOR_VERSION "${XMLPP_VERSION}")
+  SET(LIBXMLPP_VERSION ${XMLPP_MAJOR_VERSION})
   INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
   LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
 ENDIF (XMLPP_FOUND)
@@ -459,22 +479,29 @@ ENDIF(ALWAYS_CREATE_DOC)
 #
 SET(CREATE_USERDOC FALSE)
 
-FIND_PACKAGE(PythonInterp)
-IF(PYTHONINTERP_FOUND) 
-  EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
-  IF(LXML_ERR) 
-    MESSAGE(python found, but no lxml, no user documantation will be created) 
-  ELSE(LXML_ERR)
-    SET(CREATE_USERDOC TRUE)
-  ENDIF(LXML_ERR) 
-ENDIF(PYTHONINTERP_FOUND)
-
+#if no programs are build, no userdoc can be created 
+IF (NOT DISABLE_PROGRAMS) 
+  FIND_PACKAGE(PythonInterp)
+  IF(PYTHONINTERP_FOUND) 
+    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
+    IF(LXML_ERR)
+      MESSAGE(python found, but no lxml, no user documantation will be created) 
+      IF(STRICT_DEPENDECIES)
+        MESSAGE(ERROR ": requested user Html documentation creation, but python-lxml not found")
+      ELSE(STRICT_DEPENDECIES)
+        MESSAGE(python found, but no lxml, no user documantation will be created)
+        SET(MIA_CREATEUSERDOC FALSE)
+      ENDIF(STRICT_DEPENDECIES)
+    ENDIF(LXML_ERR) 
+  ENDIF(PYTHONINTERP_FOUND)
+ENDIF()
 
 #############################################
 #
 # define plug-in related values and directories and add the test directory link target 
 # 
 
+DEFINE_PLUGIN_NAMES( fastica  "deflation;symmetric" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 1d  "cmeans;spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dmyocardsegset "io" ${PLUGIN_INSTALL_PATH})
@@ -491,7 +518,6 @@ DEFINE_PLUGIN_NAMES( mesh "filter;io" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( minimizer  "singlecost" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( rgbimage "io" ${PLUGIN_INSTALL_PATH})
 
-ADD_SUBDIRECTORY(gsl++   )
 ADD_SUBDIRECTORY(mia     )
 ADD_SUBDIRECTORY(addons  )
 ADD_SUBDIRECTORY(testdata)
@@ -540,6 +566,13 @@ INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COP
  
 ADD_CUSTOM_TARGET(dist bash ${CMAKE_SOURCE_DIR}/create_package "${PACKAGE_NAME}" "${PACKAGE_VERSION}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 
-ADD_SUBDIRECTORY(src)
+IF (NOT DISABLE_PROGRAMS)
+  ADD_SUBDIRECTORY(src)
+  ADD_SUBDIRECTORY(doc)
+ELSE()
+  MESSAGE(STATUS "NOT building programs nor documentation as requested")
+ENDIF()
+
 ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(doc)
+
+

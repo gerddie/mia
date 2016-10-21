@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyoica-pgt"
-
 #include <fstream>
 #include <itpp/signal/fastica.h>
 
@@ -28,6 +26,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
@@ -38,10 +37,7 @@
 #include <libxml++/libxml++.h> 
 #include <boost/filesystem/path.hpp>
 
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
+#include <mia/core/parallel.hh>
 
 using namespace std;
 using namespace mia;
@@ -158,7 +154,7 @@ struct SeriesRegistration {
                 global_reference(_global_reference)
 		{
 		}
-	P2DTransformation operator()( const blocked_range<int>& range, P2DTransformation init) const {
+	P2DTransformation operator()( const C1DParallelRange& range, P2DTransformation init) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
                 P2DTransformation result = init; 
@@ -195,26 +191,26 @@ void run_registration_pass(CSegSetWithImages& input_set,
 				imagecost, skip_images, global_reference); 
         
         P2DTransformation init; 
-	P2DTransformation inv_transf = parallel_reduce(blocked_range<int>( 0, references.size()), init, sreg, 
-                                                       [](P2DTransformation a, P2DTransformation b) {
-                                                               if (a) 
-                                                                       return a; 
-                                                               return b; 
-                                                       });
-
+	P2DTransformation inv_transf = preduce(C1DParallelRange( 0, references.size()), init, sreg, 
+					       [](P2DTransformation a, P2DTransformation b) {
+						       if (a) 
+							       return a; 
+						       return b; 
+					       });
+	
         // apply inverse to all images 
         if (inv_transf) {
 		cvmsg() << "Apply inverse for reference correction\n"; 
                 const C2DTransformation& inv_transf_ref = * inv_transf; 
-                parallel_for(blocked_range<int>( 0, references.size()), 
-                             [&inv_transf_ref, &frames, skip_images, global_reference, &input_images](const blocked_range<int>& range){
-                                     for( int i=range.begin(); i!=range.end(); ++i ) {
-                                             if (i != global_reference - skip_images) {
-                                                     input_images[i + skip_images] = inv_transf_ref(*input_images[i + skip_images]);
-                                                     frames[i + skip_images].inv_transform(inv_transf_ref);
-                                             }
-                                     }
-                             });
+                pfor(C1DParallelRange( 0, references.size()), 
+		     [&inv_transf_ref, &frames, skip_images, global_reference, &input_images](const C1DParallelRange& range){
+			     for( int i=range.begin(); i!=range.end(); ++i ) {
+				     if (i != global_reference - skip_images) {
+					     input_images[i + skip_images] = inv_transf_ref(*input_images[i + skip_images]);
+					     frames[i + skip_images].inv_transform(inv_transf_ref);
+				     }
+			     }
+		     });
         }
         input_set.set_images(input_images);
 }
@@ -255,10 +251,10 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
                                      int components, bool normalize, bool no_meanstrip, int max_ica_iterations, 
                                      int skip_images,  const string& minimizer, const string& linear_transform, 
                                      size_t mg_levels, int max_pass, const string& imagecost, int global_reference, 
-				     float min_rel_frequency)
+                                     float min_rel_frequency, const CICAAnalysisITPPFactory& icatool)
 {
-        int current_pass = 0; 
-	bool do_continue=true; 
+    int current_pass = 0;
+    bool do_continue=true;
 	bool lastpass = false; 
 	vector<C2DFImage> references_float; 
 	do {
@@ -282,9 +278,9 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
 		transform(input_set.get_images().begin() + skip_images, 
 			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
-		if (!ica2.run(series)) {
-			ica2.set_approach(FICA_APPROACH_SYMM); 
-			ica2.run(series); 
+        if (!ica2.run(series, icatool)) {
+            ica2.set_approach(CICAAnalysis::appr_symm);
+            ica2.run(series, icatool);
 		}
 		if (lastpass) 
 			break; 
@@ -340,7 +336,7 @@ float get_relative_min_breathing_frequency(const C2DImageSeries& images, int ski
 		double aq_time = image_end->get_attribute_as<double>(IDAcquisitionTime) - 
 			image_begin->get_attribute_as<double>(IDAcquisitionTime);
 		if (aq_time < 0) 
-			throw create_exception<runtime_error>("Got non-postive aquisition time range ", aq_time, 
+			throw create_exception<runtime_error>("Got non-postive acquisition time range ", aq_time, 
 							      ", can't handle this");  
 							      
 		double heart_rate = 60 * n_heartbeats / aq_time; 
@@ -384,7 +380,8 @@ int do_main( int argc, char *argv[] )
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
-		segmethod=C2DPerfusionAnalysis::bs_features; 
+            segmethod=C2DPerfusionAnalysis::bs_features;
+    CICAAnalysisITPPFactory icatool;
 
 	float min_breathing_frequency = -1.0f; 
 
@@ -431,10 +428,10 @@ int do_main( int argc, char *argv[] )
                              "linear transform to be used", 
                              CCmdOptionFlags::none, &C2DTransformCreatorHandler::instance()));
         
-        options.add(make_opt(nonlinear_minimizer, "non-linear-optimizer", 'O', 
-                             "Optimizer used for minimization in the non-linear registration.", 
-                             CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
-	options.add(make_opt( c_rate, "start-c-rate", 'a', 
+    options.add(make_opt(nonlinear_minimizer, "non-linear-optimizer", 'O',
+                         "Optimizer used for minimization in the non-linear registration.",
+                         CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
+    options.add(make_opt( c_rate, "start-c-rate", 'a',
                               "start coefficinet rate in spines,"
                               " gets divided by --c-rate-divider with every pass."));
 	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 
@@ -473,7 +470,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt(min_breathing_frequency, "min-breathing-frequency", 'b', 
 			     "minimal mean frequency a mixing curve can have to be considered to stem from brething. "
 			     "A healthy rest breating rate is 12 per minute. A negative value disables the test. "
-			     "A value 0.0 forces the series to be indentified as acquired with initial breath hold.")); 
+			     "A value 0.0 forces the series to be identified as acquired with initial breath hold.")); 
 	
 	
 	options.set_group("\nPseudo Ground Thruth estimation"); 
@@ -518,11 +515,11 @@ int do_main( int argc, char *argv[] )
 		ica->set_min_movement_frequency(rel_min_bf); 
 
 
-	ica->set_approach(FICA_APPROACH_DEFL); 
-	if (!ica->run(series)) {
+    ica->set_approach(CICAAnalysis::appr_defl);
+    if (!ica->run(series, icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-		ica->set_approach(FICA_APPROACH_SYMM); 
-		if (!ica->run(series)) 
+        ica->set_approach(CICAAnalysis::appr_symm);
+        if (!ica->run(series, icatool))
 			box_scale = false; 
 	}		
 
@@ -578,7 +575,7 @@ int do_main( int argc, char *argv[] )
                 run_linear_registration_passes (input_set, references,  
                                                 components, normalize, no_meanstrip,  max_ica_iterations, 
                                                 skip_images,  linear_minimizer, linear_transform, 
-                                                mg_levels, max_linear_passes, imagecost, global_reference, rel_min_bf); 
+                                                mg_levels, max_linear_passes, imagecost, global_reference, rel_min_bf, icatool);
 
         if (max_nonlinear_passes > 0) 
                 run_nonlinear_registration_passes (input_set,  pgt_alpha, pgt_beta, pgt_rho_thresh,

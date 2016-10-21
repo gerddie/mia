@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,15 @@
 
 #include <mia/2d/segstar.hh>
 #include <libxml++/libxml++.h>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#if LIBXMLPP_VERSION < 3
+#define add_child_element add_child
+#endif
+
 
 
 NS_MIA_BEGIN
@@ -58,7 +67,7 @@ CSegStar::CSegStar(const xmlpp::Node& n)
 
 
 	m_center = CSegPoint2D(node);
-	xmlpp::Attribute *rx = node.get_attribute ("r");
+	auto rx = node.get_attribute ("r");
 	if (!rx)
 		throw runtime_error("CSegStar: attribute r not found");
 
@@ -67,16 +76,15 @@ CSegStar::CSegStar(const xmlpp::Node& n)
 
 	cvdebug() << "Got star center (" << m_center.x << ", " << m_center.y << " @ " << m_radius << ")\n";
 
-	xmlpp::Node::NodeList points = node.get_children("point");
+	auto points = node.get_children("point");
 	size_t npoints  = points.size();
 
 	if (npoints != 3)
 		throw invalid_argument("Bogus: Star should have 3 direction points");
 
 	size_t k = 0;
-	for (xmlpp::Node::NodeList::const_iterator i = points.begin();
-	     i != points.end(); ++i, ++k) {
-		xmlpp::Element& node = dynamic_cast<xmlpp::Element&>(**i);
+	for (auto i = points.begin(); i != points.end(); ++i, ++k) {
+		auto& node = dynamic_cast<const xmlpp::Element&>(**i);
 		m_directions[k] = CSegPoint2D(node);
 	}
 }
@@ -164,9 +172,9 @@ void CSegStar::inv_transform(const C2DTransformation& t)
 	recenter_rays();
 }
 
-void CSegStar::write(xmlpp::Node& node) const
+void CSegStar::write(xmlpp::Element& node) const
 {
-	xmlpp::Element* nodeChild = node.add_child("star");
+	auto nodeChild = node.add_child_element("star");
 
 	nodeChild->set_attribute("y", to_string<float>(m_center.y));
 	nodeChild->set_attribute("x", to_string<float>(m_center.x));

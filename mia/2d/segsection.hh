@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,14 +62,14 @@ public:
 	   @param node root of the XML sub tree 
 	   \param version segmentation set version the node stems from. 
 	*/
-	CSegSection(xmlpp::Node& node, int version);
+	CSegSection(const xmlpp::Node& node, int version);
 
 	/**
 	   Store the segmented section into a XML sub-tree 
 	   @param node parent node to which the subtree should be added 
 	   \param version segmentation set version the node stems from. 
 	*/
-	void write(xmlpp::Node& node, int version) const;
+	void write(xmlpp::Element& node, int version) const;
 
 	/// \returns the ID of the section 
 	const std::string& get_id() const;

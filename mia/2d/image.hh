@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,10 @@ public:
         */
 	virtual C2DImage* clone() const __attribute__((warn_unused_result))  = 0;
 
+	virtual std::pair<double, double> get_minmax_intensity() const = 0; 
+
+	virtual void make_single_ref() = 0; 
+	
  protected:
          /** Constructor initializes the size and the pixel type
          */
@@ -158,7 +162,7 @@ public:
 	   \param size 
 	   \param init_data must at least be of size (size.x*size.y)
 	*/
-	T2DImage(const C2DBounds& size, const data_array& init_data);
+	T2DImage(const C2DBounds& size, const std::vector<T>& init_data);
 	/**
 	   Create a 2D image with thegiven size and attach the given meta-data list. 
 	   \param size image size 
@@ -308,6 +312,11 @@ public:
 	   \returns gradient at position p 
 	 */
 	C2DFVector get_gradient(const C2DFVector& p) const;
+
+	/// \returns a pair (minimum, maximum) pixel intensity 
+	std::pair<double, double> get_minmax_intensity() const;
+
+	void make_single_ref(); 
 private:
 	T2DDatafield<T> m_image;
 };

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -313,6 +313,10 @@ EXPORT_3D  std::istream& operator >> (std::istream& is, C3DOrientationAndPositio
 	
 	return is; 
 }
+
+template class EXPORT_3D TAttribute<E3DImageOrientation>;
+template class EXPORT_3D TAttribute<E3DPatientPositioning>;
+template class EXPORT_3D TAttribute<C3DOrientationAndPosition>; 
 
 template class  EXPORT_3D TTranslator<E3DImageOrientation>;
 template class  EXPORT_3D TTranslator<E3DPatientPositioning>;

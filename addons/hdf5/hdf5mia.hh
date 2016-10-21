@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,11 +183,12 @@ public:
 
 	static H5Dataset open(const H5Base& parent, const char *name);
 
-	template <typename Iterator> 
-	void  write(Iterator begin, Iterator end);
+	template <typename Image, typename T> 
+	void  write_data(const Image& img, T dummy); 
+		
 	
-	template <typename Iterator> 
-	void  read(Iterator begin, Iterator end) const;
+	template <typename Image, typename T> 
+	void  read_data(Image& image, T MIA_PARAM_UNUSED(dummy))const; 
 
 	std::vector <hsize_t> get_size() const; 
 	
@@ -251,7 +252,7 @@ struct Mia_to_h5_types<std::vector<T>>  {
 };
 
 
-template <typename Image> 
+template <typename Image, typename T = typename Image::value_type> 
 typename Image::Pointer read_image(typename Image::dimsize_type& size, const H5Dataset& dataset)
 {
 //	typedef typename Image::dimsize_type Bounds; 
@@ -261,7 +262,7 @@ typename Image::Pointer read_image(typename Image::dimsize_type& size, const H5D
 	typename Image::Pointer presult(result); 
 	
 	dataset.read_and_append_attributes(*result);
-	dataset.read(result->begin(), result->end());
+	dataset.read_data(*result, T());
 	
 	return presult; 
 }
@@ -296,18 +297,18 @@ struct __dispatch_h5dataset_rw<Iterator, bool> {
 }; 
 
 
-template <typename Iterator> 
-void  H5Dataset::write(Iterator begin, Iterator end)
+template <typename Image, typename T> 
+void  H5Dataset::write_data(const Image& image, T MIA_PARAM_UNUSED(dummy))
 {
-	typedef __dispatch_h5dataset_rw<Iterator, typename Iterator::value_type> h5dataset_rw; 
-	h5dataset_rw::apply_write(*this, begin, end); 
+	typedef __dispatch_h5dataset_rw<typename Image::const_iterator, T> h5dataset_rw; 
+	h5dataset_rw::apply_write(*this, image.begin(), image.end()); 
 }
 
-template <typename Iterator> 
-void  H5Dataset::read(Iterator begin, Iterator end)const
+template <typename Image, typename T> 
+void  H5Dataset::read_data(Image& image, T MIA_PARAM_UNUSED(dummy))const
 {
-	typedef __dispatch_h5dataset_rw<Iterator, typename Iterator::value_type> h5dataset_rw; 
-	h5dataset_rw::apply_read(*this, begin, end); 
+	typedef __dispatch_h5dataset_rw<typename Image::iterator, T> h5dataset_rw; 
+	h5dataset_rw::apply_read(*this, image.begin(), image.end()); 
 }
 
 

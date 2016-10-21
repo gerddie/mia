@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ private:
 	void do_shift();
 	void shift_buffer();
 	mia::C2DBounds m_slice_size;
-	std::auto_ptr<mia::C3DImage> m_buffer;
+	std::unique_ptr<mia::C3DImage> m_buffer;
 	size_t m_hw;
 
 	C2DImageFifoFilter::CShiftSlices m_ss;

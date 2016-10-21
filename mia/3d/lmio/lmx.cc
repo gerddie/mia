@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,17 @@
 #include <boost/filesystem.hpp>
 
 
-namespace
- bfs=boost::filesystem; 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#if LIBXMLPP_VERSION < 3
+#define get_first_child_text get_child_text
+#define set_first_child_text set_child_text
+#define add_child_element add_child
+#endif
+
+namespace  bfs=boost::filesystem;
 using namespace xmlpp;
 
 NS_MIA_USE
@@ -111,13 +120,13 @@ bool get_single_xml_value(const Node& node, const string& tag, Expect& result)
 			 << "' specified more then once. Only reading first."; 
 	}
 
-	auto  content = dynamic_cast<Element*>(*children.begin());
+	auto  content = dynamic_cast<const Element*>(*children.begin());
 	if (!content) {
 		cvdebug() << "  got empty node\n"; 
 		return false; 
 	}
 	
-	auto text = content->get_child_text(); 
+	auto text = content->get_first_child_text(); 
 	if (!text) {
 		cvdebug() << "  no text in node\n"; 
 		return false; 
@@ -237,15 +246,15 @@ void add_node(Element& parent, const string& name, const T& value)
 {
 	ostringstream s;
 	s << value; 
-	auto node = parent.add_child(name);
-	node->set_child_text(s.str());
+	auto node = parent.add_child_element(name);
+	node->set_first_child_text(s.str());
 }
 
 template <>
 void add_node(Element& parent, const string& name, const string& value) 
 {
-	auto node = parent.add_child(name);
-	node->set_child_text(value);
+	auto node = parent.add_child_element(name);
+	node->set_first_child_text(value);
 }
 
 template <typename T>
@@ -254,8 +263,8 @@ void add_node(Element& parent, const string& name, const T3DVector<T>& value)
 	ostringstream s;
 	s << value.x << " " << value.y << " " << value.z;
 
-	auto node = parent.add_child(name);
-	node->set_child_text(s.str());
+	auto node = parent.add_child_element(name);
+	node->set_first_child_text(s.str());
 }
 
 template <>
@@ -263,14 +272,14 @@ void add_node(Element& parent, const string& name, const Quaternion& value)
 {
 	ostringstream s;
 	s << value.x() << " " << value.y() << " " << value.z() << " " << value.w() ;
-	auto node = parent.add_child(name);
-	node->set_child_text(s.str());
+	auto node = parent.add_child_element(name);
+	node->set_first_child_text(s.str());
 }
 
 template <>
 void add_node(Element& parent, const string& name, const C3DCamera& value) 
 {
-	auto node = parent.add_child(name);
+	auto node = parent.add_child_element(name);
 	add_node(*node, "location", value.get_location()); 
 	add_node(*node, "rotation", value.get_rotation()); 
 	add_node(*node, "zoom", value.get_zoom()); 
@@ -294,7 +303,7 @@ bool C3DLMXLandmarklistIOPlugin::do_save(string const&  filename, const C3DLandm
 	add_node(*list, "name", data.get_name()); 
 	
 	for(auto i = data.begin(); i != data.end(); ++i) {
-		auto lmnode = list->add_child("landmark"); 
+		auto lmnode = list->add_child_element("landmark"); 
 		add_landmark(lmnode, *i->second);
 	}
 	

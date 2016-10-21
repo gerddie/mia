@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,6 +173,15 @@ T3DImage<T>::T3DImage(const T3DImage<T>& orig):
 }
 
 template <typename T>
+T3DImage<T>::T3DImage(const T3DDatafield<T>& orig):
+	C3DImage((EPixelType)pixel_type<T>::value),
+	m_image(orig)
+
+{
+}
+
+
+template <typename T>
 C3DImage::Pointer T3DImage<T>::clone() const
 {
 	return P3DImage(new T3DImage<T>(*this));
@@ -284,6 +293,13 @@ template <typename T>
 const C3DBounds& T3DImage<T>::get_size() const
 {
 	return m_image.get_size();
+}
+
+template <class T>
+std::pair<double, double> T3DImage<T>::get_minmax_intensity() const
+{
+	auto mm = std::minmax_element( m_image.begin(), m_image.end());
+	return std::pair<double, double>(*mm.first, *mm.second);
 }
 
 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,131 +49,11 @@ const SProgramDescription g_description = {
 	{pdi_example_code, "-i imageXXXX.png -o foreground -t png --histogram-tresh=30 --classes 2 --label 1"}
 }; 
 
-class CFullHistogram : public TFilter<size_t> {
-        
-public: 
-        CFullHistogram();
-
-        template <typename T>
-        size_t operator ()(const T2DImage<T>& image); 
-
-        vector<pair<int, unsigned long>> get_compressed_histogram()const; 
-        
-private: 
-        
-        vector<unsigned long> m_histogram; 
-
-        int m_shift; 
-        EPixelType m_pixeltype; 
-
-        
-        
-}; 
-
-template <typename T> 
-struct dispatch_by_pixeltype {
-        static void apply(const T2DImage<T>& MIA_PARAM_UNUSED(image), vector<unsigned long>& MIA_PARAM_UNUSED(histogram)){
-                throw invalid_argument("Input pixel type not supported"); 
-        }
-}; 
-
-template <> 
-struct dispatch_by_pixeltype<unsigned char> {
-        static void apply(const C2DUBImage& image, vector<unsigned long>& histogram){
-                for (auto p: image) {
-                        ++histogram[p]; 
-                }
-        }
-}; 
-
-template <> 
-struct dispatch_by_pixeltype<unsigned short> {
-        static void apply(const C2DUSImage& image, vector<unsigned long>& histogram){
-                for (auto p: image) {
-                        ++histogram[p]; 
-                }
-        }
-}; 
-
-template <> 
-struct dispatch_by_pixeltype<signed char> {
-        static void apply(const C2DSBImage& image, vector<unsigned long>& histogram){
-		int shift = -numeric_limits<signed char>::min(); 
-                for (auto p: image) {
-                        ++histogram[shift + p]; 
-                }
-        }
-}; 
-
-template <> 
-struct dispatch_by_pixeltype<signed short> {
-        static void apply(const C2DSSImage& image, vector<unsigned long>& histogram){
-                int shift = -numeric_limits<signed short>::min(); 
-                for (auto p: image) {
-                        ++histogram[shift + p]; 
-                }
-        }
-}; 
-
-CFullHistogram::CFullHistogram():
-        m_shift(0), 
-        m_pixeltype(it_none)
-{
-}
-
-template <typename T>
-size_t CFullHistogram::operator ()(const T2DImage<T>& image)
-{
-        if (m_pixeltype ==it_none) {
-                m_pixeltype = image.get_pixel_type();
-		m_shift = -numeric_limits<T>::min(); 
-                switch (m_pixeltype) {
-                case it_sbyte:
-                case it_ubyte:
-                        m_histogram.resize(256);
-                        break; 
-                case it_sshort:
-                case it_ushort:
-                        m_histogram.resize(65536);
-                        break; 
-                default:
-                        throw create_exception<invalid_argument>("Input pixel type '", CPixelTypeDict.get_name(m_pixeltype),
-                                                                 "' not supported."); 
-                }
-                        
-        } else if (m_pixeltype != image.get_pixel_type()){
-                throw create_exception<invalid_argument>("Input pixels not of consisted type, started with ",
-                                                         CPixelTypeDict.get_name(m_pixeltype), ", but got now ",
-                                                         CPixelTypeDict.get_name(image.get_pixel_type())); 
-        }
-
-        dispatch_by_pixeltype<T>::apply(image, m_histogram);
-
-        return image.size(); 
-}
-
-vector<pair<int, unsigned long>> CFullHistogram::get_compressed_histogram()const
-{
-
-        int nonzero_bins = 0;
-        for (auto b: m_histogram) {
-                if (b > 0)
-                        ++nonzero_bins; 
-        }
-
-        vector<pair<int, unsigned long>> result;
-        result.reserve(nonzero_bins);
-        for (unsigned i = 0; i < m_histogram.size(); ++i) {
-                if (m_histogram[i] != 0)
-                        result.push_back(make_pair(i - m_shift, m_histogram[i])); 
-        }
-        return result; 
-}
-
-typedef map<double, CMeans::DVector> Probmap; 
-
+typedef map<short, CMeans::DVector> Probmap; 
 class FGetClassSeedMask: public TFilter<P2DImage> {
-public: 
+public:
+
+	
 	FGetClassSeedMask(const Probmap& map,
 			  int low_end, int low_label, int high_end, int high_label,
 			  const int label, float prob_thresh);
@@ -207,7 +87,7 @@ FGetClassSeedMask::FGetClassSeedMask(const Probmap& map,
 {
 }
 
-P2DImage FGetClassSeedMask::operator() (const C2DBitImage& image) const
+P2DImage FGetClassSeedMask::operator() (const C2DBitImage& MIA_PARAM_UNUSED(image)) const
 {
 	throw invalid_argument("Unsupported input pixel type: This classification doesn't make sense for binary images"); 
 }
@@ -302,7 +182,7 @@ int do_main( int argc, char *argv[] )
 		throw invalid_argument(string("no files match pattern ") + src_basename);
 
 
-        CFullHistogram histo;
+        CSparseHistogram histo;
         size_t n_pixels = 0; 
         for (size_t i = start_filenum; i < end_filenum; ++i) {
                 string src_name = create_filename(src_basename.c_str(), i);
@@ -339,11 +219,11 @@ int do_main( int argc, char *argv[] )
                 --ie;
         }
 
-        vector<pair<int, unsigned long>> threshed_histo(ii, ie);
+	CSparseHistogram::Compressed threshed_histo(ii, ie);
 
 	CMeans::DVector class_centers; 
 	
-	CMeans cmeans(0.01, 0.00001, class_center_initializer);
+	CMeans cmeans(0.00001, class_center_initializer);
 	CMeans::SparseProbmap pv = cmeans.run(threshed_histo,  class_centers);
 
 	Probmap pmap; 

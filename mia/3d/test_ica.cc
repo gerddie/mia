@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 #include <mia/internal/autotest.hh>
 
+
+#include <mia/core/ica.hh>
 #include <mia/3d/ica.hh>
 
 using namespace mia;
@@ -46,13 +48,13 @@ protected:
 BOOST_AUTO_TEST_CASE ( test_empty_initialization )
 {
 	vector<C3DFImage> series;
-	BOOST_CHECK_THROW( C3DImageSeriesICA s(series, false), invalid_argument);
+    BOOST_CHECK_THROW( C3DImageSeriesICA s(CICAAnalysisITPPFactory(),  series, false), invalid_argument);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, false);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, false);
 
 	ica.run(3,false,false);
 
@@ -62,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICA3DSeriesFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, false);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, false);
 	C3DImageSeriesICA::IndexSet skip;
 	skip.insert(0);
 	skip.insert(1);
@@ -81,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICA3DSeriesFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, true);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, true);
 
 	ica.run(3,false,false);
 
@@ -91,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICA3DSeriesFixture 
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, true);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, true);
 
 	ica.run(4, false, false);
 
@@ -101,7 +103,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICA3DSeriesFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, true);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, true);
 
 	ica.run(4, true, true);
 
@@ -111,7 +113,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, 
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, false);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, false);
 
 	ica.run(4, true, true);
 
@@ -121,7 +123,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICA3DSeriesFi
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, false);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, false);
 
 	ica.run(4, true, true);
 
@@ -131,7 +133,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICA3DSeriesF
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, false);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, false);
 
 	ica.run(4, true, false);
 
@@ -141,7 +143,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICA3DSeri
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICA3DSeriesFixture )
 {
-	C3DImageSeriesICA ica(image_set, false);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), image_set, false);
 
 	ica.run(4, false, false);
 	for (size_t i = 0; i < slices; ++i)
@@ -161,7 +163,7 @@ BOOST_AUTO_TEST_CASE( test_ica_mean_substract )
 	images.push_back(C3DFImage(size, init_image1));
 	images.push_back(C3DFImage(size, init_image2));
 
-	C3DImageSeriesICA ica(images, true);
+    C3DImageSeriesICA ica(CICAAnalysisITPPFactory(), images, true);
 
 	const C3DFImage& mean = ica.get_mean_image();
 

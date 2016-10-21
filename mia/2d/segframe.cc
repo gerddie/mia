@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,13 @@
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp> 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
+#if LIBXMLPP_VERSION < 3
+#define add_child_element add_child
+#endif
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -96,7 +102,7 @@ CSegFrame::CSegFrame(const Node& node, int version):
 	}
 	m_filename = attr->get_value(); 
 	
-	Node::NodeList nodes = elm.get_children(); 
+	auto nodes = elm.get_children(); 
 	
 	for (auto i = nodes.begin(); i != nodes.end(); ++i) {
 
@@ -107,7 +113,7 @@ CSegFrame::CSegFrame(const Node& node, int version):
 		else if ((*i)->get_name() == "section") {
 			m_sections.push_back(CSegSection(**i, version)); 
 		}else {
-			cvinfo() << "ignoring unsuported element '" << (*i)->get_name() << "'\n"; 
+			cvinfo() << "ignoring unsupported element '" << (*i)->get_name() << "'\n"; 
 		}
 	}
 	
@@ -155,14 +161,14 @@ const CSegFrame::Sections& CSegFrame::get_sections()const
 const CSegStar& CSegFrame::get_star() const
 {
 	if (!m_has_star) 
-		cvwarn() << "CSegFrame::get_star(): returing fake star"; 
+		cvwarn() << "CSegFrame::get_star(): returning fake star"; 
 	return m_star; 
 }
 
 
-void CSegFrame::write(Node& node, int version) const
+void CSegFrame::write(xmlpp::Element& node, int version) const
 {
-	Element* self = node.add_child("frame"); 
+	Element* self = node.add_child_element("frame"); 
 	self->set_attribute("image", m_filename); 	
 
 	if (version > 1) {

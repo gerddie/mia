@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,7 @@
 #include <mia/2d/filter/mean.hh>
 #include <boost/type_traits/is_floating_point.hpp>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 NS_BEGIN(mean_2dimage_filter)
 NS_MIA_USE;
@@ -90,7 +89,10 @@ struct __dispatch_filter<bool, false> {
 			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {
 					if ( x >= 0 && x < (int)data.get_size().x) {
-						balance += data(x,y) ? 1 : -1; 
+						if (data(x,y))
+							++balance;
+						else
+							--balance; 
 					}
 				}
 		}
@@ -111,14 +113,14 @@ C2DMean::result_type C2DMean::operator () (const T2DImage<T>& data) const
 
 
 	int hw = m_hw; 
-        auto run_line  = [hw, data, tresult](const tbb::blocked_range<size_t>& range) {
+        auto run_line  = [hw, data, tresult](const C1DParallelRange& range) {
 		for (auto y = range.begin(); y !=  range.end(); ++y) {
 			typename T2DImage<T>::iterator i = tresult->begin_at(0, y);
 			for (size_t x = 0; x < data.get_size().x; ++x, ++i)
 				*i = __dispatch_filter<T, is_floating_point>::apply(data, x, y, hw);
 		}
 	};
-	tbb::parallel_for(tbb::blocked_range<size_t>(0, data.get_size().y, 1), run_line);
+	pfor(C1DParallelRange(0, data.get_size().y, 1), run_line);
 	
 	return result;
 }

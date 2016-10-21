@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,8 @@
  * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 #include <gsl/gsl_cblas.h>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 
 #include <mia/core/threadedmsg.hh>
 #include <mia/3d/vectorfield.hh>
@@ -47,7 +44,7 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 	C3DFVectorfield help(a.get_size());
 	std::copy(a.begin(), a.end(), help.begin());
 
-	auto callback = [&a, &b, &help](const tbb::blocked_range<size_t>& range) {
+	auto callback = [&a, &b, &help](const C1DParallelRange& range) {
 		
 		for (auto z = range.begin(); z != range.end();  ++z)  {
 			C3DFVectorfield::iterator i = a.begin_at(0,0,z);
@@ -60,7 +57,7 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 			}
 		}
 	}; 
-	tbb::parallel_for( tbb::blocked_range<size_t>(0, a.get_size().z, 1), callback); 
+	pfor( C1DParallelRange(0, a.get_size().z, 1), callback); 
 	return a;
 }
 
@@ -72,9 +69,10 @@ void C3DFVectorfield::update_as_inverse_of(const C3DFVectorfield& other, float t
 
 	C3DLinearVectorfieldInterpolator t(other); 
 
-	tbb::blocked_range<size_t> range(0, get_size().z, 1); 
+	C1DParallelRange range(0, get_size().z, 1); 
 	
-	auto callback = [this, &t, tol2, maxiter](const tbb::blocked_range<size_t>& range) {
+	auto callback = [this, &t, tol2, maxiter](const C1DParallelRange& range) {
+		CThreadMsgStream msg; 
 		for (auto z = range.begin(); z != range.end();  ++z)  {
 			auto i = begin_at(0,0,z);
 			for (size_t y = 0; y < get_size().y; ++y)  {
@@ -86,17 +84,23 @@ void C3DFVectorfield::update_as_inverse_of(const C3DFVectorfield& other, float t
 						C3DFVector r = pos - *i; 
 						C3DFVector ov = t(r); 
 						C3DFVector i_delta = r - ov - pos; 
-						dnorm = i_delta.norm2(); 
+						dnorm = i_delta.norm2();
+						
 						if ( dnorm < tol2)
 							break; 
-						*i += 0.5 * i_delta; 
+						*i += 0.5 * i_delta;
+						
+						cvdebug() << pos << ":" 
+							  << *i << ", " 
+							  << "dnorm= " <<  dnorm  << "\n"; 
+
 					}
 				}
 			}
 		}
 	};
 	
-	tbb::parallel_for( range, callback ); 
+	pfor( range, callback ); 
 }
 
 void C3DFVectorfield::update_by_velocity(const C3DFVectorfield& v, float step)
@@ -166,7 +170,7 @@ C3DFVector C3DSSELinearVectorfieldInterpolator::operator()(const C3DFVector& x) 
 			++linear_index; 
 			__m128 in111; 
 			
-			// we are somewhere inside the field, 
+			// we are somewhere inside the field?  
 			if (linear_index < m_field.size() - 1) {
 				in111 = _mm_loadu_ps(&m_field[linear_index].x); 
 				

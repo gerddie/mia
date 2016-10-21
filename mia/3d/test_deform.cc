@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ using namespace std;
 
 struct DeformFixture {
 	DeformFixture();
-	void check(EInterpolation ip);
+	void check(const string& ip);
 
 	C3DFVector voxel;
 	C3DBounds size;
@@ -51,10 +51,10 @@ DeformFixture::DeformFixture():
 	image.set_voxel_size(voxel);
 }
 
-void DeformFixture::check(EInterpolation ip)
+void DeformFixture::check(const string& ip)
 {
-	unique_ptr<C3DInterpolatorFactory> ipf(create_3dinterpolation_factory(ip,bc_mirror_on_bounds));
-	FDeformer3D d(transform, *ipf);
+	C3DInterpolatorFactory ipf(ip,"mirror");
+	FDeformer3D d(transform, ipf);
 	C3DImage& img = image;
 	P3DImage result = mia::filter(d, img);
 	const C3DFImage& r = dynamic_cast<const C3DFImage&>(*result);
@@ -68,11 +68,11 @@ void DeformFixture::check(EInterpolation ip)
 
 BOOST_FIXTURE_TEST_CASE( test_deform_nn, DeformFixture )
 {
-	check(ip_nn);
+	check("bspline:d=0");
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_deform_bspline3, DeformFixture )
 {
-	check(ip_bspline3);
+	check("bspline:d=3");
 }

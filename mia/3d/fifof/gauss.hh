@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,8 @@ private:
 	mia::P2DFilter m_gauss2d;
 	mia::C2DBounds m_slice_size;
 	mia::P1DSpacialKernel m_1dfilter;
-	std::auto_ptr<mia::C3DFImage> m_buffer;
-	std::auto_ptr<mia::C3DImage> m_dummy;
+	std::unique_ptr<mia::C3DFImage> m_buffer;
+	std::unique_ptr<mia::C3DImage> m_dummy;
 };
 
 NS_END

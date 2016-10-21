@@ -36,12 +36,12 @@ SET(MIADOCTOOLS_PYTHON_EXE
   miaxml2sgml.py
   )
 
-INSTALL(FILES ${MIADOCTOOLS_FILES} DESTINATION ${MIA_DOCTOOLS_INSTALL_ROOT})
 
-INSTALL(PROGRAMS ${MIADOCTOOLS_PYTHON_EXE} DESTINATION ${MIA_DOCTOOLS_INSTALL_ROOT})
+IF(MIA_CREATE_USERDOC) 
 
-
-IF(CREATE_USERDOC) 
+  INSTALL(FILES ${MIADOCTOOLS_FILES} DESTINATION ${MIA_DOCTOOLS_INSTALL_ROOT})
+  
+  INSTALL(PROGRAMS ${MIADOCTOOLS_PYTHON_EXE} DESTINATION ${MIA_DOCTOOLS_INSTALL_ROOT})
 
   ##################################################################
   #  for html userref xsltproc and the style sheet is needed
@@ -107,7 +107,9 @@ IF(CREATE_USERDOC)
     ENDIF(ALWAYS_CREATE_DOC)     
   ENDIF(HTML_CHUNK_FILEPATH) 
   
-ENDIF(CREATE_USERDOC)
+ENDIF(MIA_CREATE_USERDOC)
+
+OPTION(DOXYGEN_USE_MATHJAX "Use mathjax for formulas in html documentation" ON)
 
 IF (DOXYGEN_FOUND)
   ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
@@ -116,6 +118,20 @@ IF (DOXYGEN_FOUND)
   IF(DOXYGEN_DOT_FOUND)
     SET(HAVE_DOT YES)
   ENDIF(DOXYGEN_DOT_FOUND)
+
+  IF(DOXYGEN_USE_MATHJAX)
+    SET(USE_MATHJAX YES)
+    FIND_PATH(MATHJAX_CODEFILE MathJax.js
+      PATHS
+      /usr/share/mathjax/
+      /usr/share/javascript/
+      /usr/share/javascript/mathjax/
+      )
+    IF(NOT MATHJAX_CODEFILE)
+      MESSAGE(STATUS "No mathjax installation found, Doxygen will create the documentation linking to the on-line version") 
+    ENDIF()
+  ENDIF()
+  
   CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/reference.dox.cmake 
     ${CMAKE_CURRENT_BINARY_DIR}/reference.dox)
   

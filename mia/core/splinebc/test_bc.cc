@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@
 #include <iomanip>
 #include <mia/core/splinekernel.hh>
 #include <gsl/gsl_linalg.h>
-#include <gsl++/vector.hh>
-#include <gsl++/matrix.hh>
+#include <mia/core/gsl_vector.hh>
+#include <mia/core/gsl_matrix.hh>
 
 NS_MIA_USE
 using std::vector; 
@@ -116,7 +116,7 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundary
 	CSplineKernel::VWeight orig(f); 
 
 	auto m_A = gsl::Matrix(f.size(), f.size(),  true);
-	auto m_tau = gsl::DoubleVector(f.size(), false ); 
+	auto m_tau = gsl::Vector(f.size(), false ); 
 
 	for(size_t i = 0; i < f.size(); ++i) {
 		(*kernel)(i, weights, indices);
@@ -131,9 +131,9 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundary
 	gsl_linalg_QR_decomp(m_A, m_tau); 
 	
 
-	gsl::DoubleVector coefs(f.size(), false); 
-	gsl::DoubleVector residual(f.size(), false); 
-	gsl::DoubleVector input(f.size(), false); 
+	gsl::Vector coefs(f.size(), false); 
+	gsl::Vector residual(f.size(), false); 
+	gsl::Vector input(f.size(), false); 
 	copy(f.begin(), f.end(), input.begin()); 
 
 	gsl_linalg_QR_lssolve (m_A, m_tau, input, coefs, residual); 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ C2DImage::C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPi
 	m_pixel_type(type)
 {
 }
+
 
 C2DImage::~C2DImage()
 {
@@ -117,7 +118,7 @@ T2DImage<T>::T2DImage(const C2DBounds& size, const T* init_data):
 }
 
 template <typename T>
-T2DImage<T>::T2DImage(const C2DBounds& size, const typename T2DDatafield<T>::data_array& init_data):
+T2DImage<T>::T2DImage(const C2DBounds& size, const vector<T>& init_data):
 	C2DImage(size, (EPixelType)pixel_type<T>::value),
 	m_image(size, init_data)
 {
@@ -179,6 +180,11 @@ const T2DDatafield<T>& T2DImage<T>::data() const
 	return m_image;
 }
 
+template <typename T>
+void T2DImage<T>::make_single_ref()
+{
+	m_image.make_single_ref(); 
+}
 
 template <typename T>
 void T2DImage<T>::get_data_line_x(size_t y, std::vector<T>& buffer) const
@@ -290,6 +296,13 @@ C2DFVector T2DImage<bool>::get_gradient(const C2DFVector& p) const
 				  ( xp * ( H11 - H1_1 ) + xm * ( H12 - H10 ) ) * ym )  * 0.5f);
 }
 
+
+template <class T>
+std::pair<double, double> T2DImage<T>::get_minmax_intensity() const
+{
+	auto mm = std::minmax_element( m_image.begin(), m_image.end());
+	return std::pair<double, double>(*mm.first, *mm.second);
+}
 
 struct FGradientEvaluator: public TFilter<C2DFVectorfield> {
 	template <typename T>

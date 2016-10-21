@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ public:
 
 	/** general output routine; output is only given, if the data verbosity level is
 	    set higher or equal to the stream verbosity level.
-	    \param text the text to be written to the stream
+x1	    \param text the text to be written to the stream
 	    \returns a reference to this object
 	*/
 	template <class T>
@@ -329,19 +329,6 @@ inline vstream& cvmsg()
    \brief define a shortcut to the raw output stream 
 */
 #define cverb ::mia::vstream::instance()
-
-/**
-   \ingroup logging
-   \brief implements the direct streaming of std::vectors. 
-*/
-template <typename T> 
-vstream& operator << (vstream& os, const std::vector<T>& v) {
-	os << "["; 
-	for (auto i =v.begin(); i != v.end(); ++i) 
-		os << *i << ", "; 
-	os << "]"; 
-	return os; 
-}
 
 NS_MIA_END
 

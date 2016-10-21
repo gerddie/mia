@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
 #include <mia/2d/maskedcost/lncc.hh>
 #include <mia/core/nccsum.hh> 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 
 NS_BEGIN(NS)
@@ -65,7 +64,7 @@ public:
 	
 	template <typename T, typename R> 
 	float operator () ( const T& mov, const R& ref) const {
-		auto evaluate_local_cost = [this, &mov, &ref](const tbb::blocked_range<size_t>& range, const pair<float, int>& result) -> pair<float, int> {
+		auto evaluate_local_cost = [this, &mov, &ref](const C1DParallelRange& range, const pair<float, int>& result) -> pair<float, int> {
 			CThreadMsgStream msks; 
 			float lresult = 0.0; 
 			int count = 0; 
@@ -107,8 +106,10 @@ public:
 		};
 		
 		pair<float,int> init{0, 0}; 
-		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), init, evaluate_local_cost, 
-					 [](const pair<float,int>& x, const pair<float,int>& y){return make_pair(x.first + y.first, x.second + y.second);});	
+		auto r = preduce(C1DParallelRange(0, mov.get_size().y, 1), init, evaluate_local_cost, 
+				 [](const pair<float,int>& x, const pair<float,int>& y){
+					 return make_pair(x.first + y.first, x.second + y.second);
+				 });	
 		cvdebug() << "result={" << r.first << " /  " <<  r.second << "\n"; 
 		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
@@ -136,7 +137,7 @@ public:
 	template <typename T, typename R> 
 	float operator () ( const T& mov, const R& ref) const {
 		auto ag = get_gradient(mov); 
-		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const tbb::blocked_range<size_t>& range, 
+		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const C1DParallelRange& range, 
 									 const pair<float, int>& result) -> pair<float, int> {
 			
 			CThreadMsgStream msks; 		
@@ -187,10 +188,10 @@ public:
 			return make_pair(result.first + lresult, result.second + count); 
 		};
 		pair<float,int> init{0, 0}; 		
-		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), init, evaluate_local_cost_force, 
-					 [](const pair<float,int>& x, const pair<float,int>& y){
-						 return make_pair(x.first + y.first, x.second + y.second);
-					 });
+		auto r = preduce(C1DParallelRange(0, mov.get_size().y, 1), init, evaluate_local_cost_force, 
+				 [](const pair<float,int>& x, const pair<float,int>& y){
+					 return make_pair(x.first + y.first, x.second + y.second);
+				 });
 		
 		return r.second > 0 ? r.first / r.second : 0.0; 
 	}

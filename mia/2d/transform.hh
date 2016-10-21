@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ protected:
 		   Constructor to initialize the iterator at a certain point 
 		   @param pos current position of the iterator 
 		   @param size defines the grid of the domain of the iterator as 
-		      \f$[0,size.x-1] \times  [0,size.y-1]\f$
+		      \f$[pos.x, size.x-1] \times  [pos.y, size.y-1]\f$
 		   
 		 */
 		iterator_impl(const C2DBounds& pos, const C2DBounds& size); 

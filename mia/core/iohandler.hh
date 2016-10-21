@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ public:
 	/// the IO interface provided by this handler 
 	typedef typename TPluginHandler<I>::Interface Interface; 
 	
-	/// an iterator over the availabe plug-ins 
+	/// an iterator over the available plug-ins 
 	typedef typename TPluginHandler<I>::const_iterator const_iterator; 
 
 	/// The map that maps file name suffixes to IO plug-ins 
@@ -148,6 +148,8 @@ private:
 	std::string do_get_handler_type_string() const; 
         bool do_validate_parameter_string(const std::string& s) const;
 
+	virtual void check_file_exists(const std::string& fname) const; 
+	
 	/**
 	   Private plugin to handle the virtual data pool IO  
 	 */

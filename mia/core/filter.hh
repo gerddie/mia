@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,9 +110,18 @@ public:
 	 */ 
 	result_type filter(std::shared_ptr<D> pimage) const;
 
+
+	/**
+	   proved a pixel type conversion prediction based on the given input pixel type set. 
+	   \param in_types the pixel types that are fed into the pipeline 
+	   \returns the possible pixel types after running the pipeline
+	 */
+	std::set<EPixelType> test_pixeltype_conversion(const std::set<EPixelType>& in_types) const; 
 private:
 	virtual result_type do_filter(const Image& image) const = 0;
 	virtual result_type do_filter(std::shared_ptr<D> image) const;
+	
+	virtual std::set<EPixelType> do_test_pixeltype_conversion(const std::set<EPixelType>& in_type) const; 
 
 };
 
@@ -125,6 +134,7 @@ public:
 	void push_back(Pointer f) {
 		m_chain.push_back(f); 
 	}
+
 private: 
 	virtual result_type do_filter(const D& image) const {
 		assert(m_chain.size() > 0); 
@@ -137,6 +147,16 @@ private:
 		}
 		return result; 
 	}
+
+	std::set<EPixelType> do_test_pixeltype_conversion(const std::set<EPixelType>& in_type) const
+	{
+		std::set<EPixelType> result = in_type;
+		for(auto f: m_chain) {
+			result = f->test_pixeltype_conversion(result); 
+		}
+		return result; 
+	}
+	
 	std::vector<Pointer> m_chain; 
 }; 
 
@@ -640,6 +660,22 @@ TDataFilter<D>::do_filter(std::shared_ptr<D> pimage) const
 {
 	return do_filter(*pimage); 
 }
+
+
+template <class D>
+std::set<EPixelType>
+TDataFilter<D>::test_pixeltype_conversion(const std::set<EPixelType>& in_types) const
+{
+	return do_test_pixeltype_conversion(in_types); 
+}
+
+template <class D>
+std::set<EPixelType>
+TDataFilter<D>::do_test_pixeltype_conversion(const std::set<EPixelType>& in_types) const
+{
+	return in_types; 
+}
+
 
 NS_MIA_END
 

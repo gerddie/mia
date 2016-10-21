@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,11 +31,7 @@
 #include <mia/3d/imageio.hh>
 #include <mia/core/index.hh>
 
-#ifdef HAVE_BLAS
-extern "C" {
-#include <cblas.h>
-}
-#endif
+#include <gsl/gsl_cblas.h>
 
 NS_MIA_BEGIN
 using namespace std;
@@ -538,7 +534,7 @@ float C3DSplineTransformation::get_max_transform() const
 
 }
 
-#ifdef HAVE_BLAS
+
 /*
   This versions of the INIT-GRID function evaluate a 3D vector field comprising the deformations 
   at each grid point. Other then interpolating at each grid point on  request, this version 
@@ -654,95 +650,6 @@ void C3DSplineTransformation::init_grid()const
 	}
 	m_grid_valid = true; 
 }
-
-#else 
-/*
-  This versions of the INIT-GRID function evaluate a 3D vector field comprising the deformations 
-  at each grid point. The filtering is done per row/column/pillar. The number of operations should 
-  be the same, but the BLAS version works the data in larger batches and should, therefore, take 
-  more advantage of caching effects. 
-*/
-void C3DSplineTransformation::init_grid()const
-{
-	reinit();
-	if (m_grid_valid) 
-		return; 
-
-	TRACE_FUNCTION; 
-	CScopedLock lock(m_mutex); 
-	if (!m_grid_valid) {
-		cvdebug() << "initialize grid\n"; 
-		if (!m_current_grid || (m_current_grid->get_size() != m_range)) {
-			cvdebug() << "initialize grid field\n"; 
-			m_current_grid.reset(new C3DFVectorfield(m_range)); 
-		}
-		cvdebug() << "Current gris has size " << m_current_grid->get_size() << "\n"; 
-		// now filter 
-		C3DFVectorfield tmp(C3DBounds(m_coefficients.get_size().x, 
-					      m_coefficients.get_size().y, 
-					      m_range.z));
-		
-		vector<C3DFVector> out_buffer(m_range.z); 
-		vector<C3DFVector> in_buffer(m_coefficients.get_size().z);
-		
-		for (size_t iy = 0; iy < m_coefficients.get_size().y; ++iy) {
-			for (size_t ix = 0; ix < m_coefficients.get_size().x; ++ix) {
-				m_coefficients.get_data_line_z(ix, iy, in_buffer);
-				for(size_t z = 0; z < m_range.z; ++z) {
-					int start_z = m_z_indices[z];
-					auto w = m_z_weights[z]; 
-					
-					out_buffer[z] = inner_product(w.begin(), w.end(), 
-								      in_buffer.begin() + start_z, C3DFVector());
-				}
-				tmp.put_data_line_z(ix, iy, out_buffer);
-			}
-		}
-		
-		C3DFVectorfield tmp2(C3DBounds(m_coefficients.get_size().x, 
-					      m_range.y, 
-					      m_range.z));
-
-		out_buffer.resize(m_range.y); 
-		in_buffer.resize(m_coefficients.get_size().y);
-
-		for (size_t iz = 0; iz < tmp.get_size().z; ++iz) {
-			for (size_t ix = 0; ix < tmp.get_size().x; ++ix) {
-				tmp.get_data_line_y(ix, iz, in_buffer);
-				for(size_t y = 0; y < m_range.y; ++y) {
-					int start = m_y_indices[y];
-					auto w = m_y_weights[y]; 
-					
-					out_buffer[y] = inner_product(w.begin(), w.end(), 
-								      in_buffer.begin() + start, C3DFVector());
-				}
-				tmp2.put_data_line_y(ix, iz, out_buffer);
-			}
-		}
-
-		in_buffer.resize(m_coefficients.get_size().x);
-		out_buffer.resize(m_range.x); 
-
-		for (size_t iz = 0; iz < tmp2.get_size().z; ++iz) {
-			for (size_t iy = 0; iy < tmp2.get_size().y; ++iy) {
-				tmp2.get_data_line_x(iy, iz, in_buffer);
-				for(size_t x = 0; x < m_range.x; ++x) {
-					int start = m_x_indices[x];
-					auto w = m_x_weights[x]; 
-					
-					out_buffer[x] = C3DFVector(x,iy,iz) - 
-						inner_product(w.begin(), w.end(), 
-							      in_buffer.begin() + start, C3DFVector());
-				}
-				m_current_grid->put_data_line_x(iy, iz, out_buffer);
-			}
-		}
-		m_grid_valid = true; 
-	}
-}
-#endif 
-
-
 
 C3DTransformation::const_iterator C3DSplineTransformation::begin() const
 {
@@ -1092,7 +999,7 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 							 "will be overwritten by the 'rate' value."));
 
 	add_parameter("debug",
-		      new CBoolParameter(m_debug, false, "enable additional debuging output"));
+		      new CBoolParameter(m_debug, false, "enable additional debugging output"));
 	add_parameter("penalty", make_param(m_penalty, "", false, "transformation penalty energy term")); 
 
 }

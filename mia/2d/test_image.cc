@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,3 +126,26 @@ BOOST_AUTO_TEST_CASE( check_gradient )
 
 }
 
+BOOST_AUTO_TEST_CASE( check_comparison )
+{
+	C2DBounds size(1,2); 
+	C2DFImage fimage(size, {1.0f, 2.0f});
+	C2DUBImage ubimage(size);
+	C2DUBImage ubimage2(C2DBounds(2,2));
+	C2DFImage fimage2(fimage);
+
+	BOOST_CHECK(fimage == fimage2);
+	fimage2(0,0) = 3.0;
+	// data is still shared!!
+	BOOST_CHECK(fimage == fimage2);
+	
+	fimage2.make_single_ref(); 
+	fimage2(0,0) = 4.0;
+	BOOST_CHECK(fimage != fimage2);
+
+	BOOST_CHECK(fimage != ubimage);
+	BOOST_CHECK(ubimage != ubimage2);
+
+	
+	
+}

@@ -32,8 +32,7 @@
 #endif
 
 #cmakedefine HAVE_SYS_IOCTL_H 1
-#cmakedefine HAVE_CXXABI_H 1
-#cmakedefine HAVE_EXECINFO_h 1
+#cmakedefine LIBXMLPP_VERSION @LIBXMLPP_VERSION@
 
 #cmakedefine HAVE_MAXFLOW 1
 
@@ -47,6 +46,6 @@
 #cmakedefine HAVE_JPG 1
 
 #cmakedefine HAVE_NLOPT 1
-
+#cmakedefine MIA_USE_BOOST_REGEX 1
 
 #endif

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -216,6 +216,7 @@ TPluginHandler<CSegSetWithImagesIOPlugin>::m_help =
 	"Input/output of 2D image series with segmentations.";
 
 
+template class TPlugin<CSegSetWithImages, io_plugin_type>;
 template class TIOPlugin<CSegSetWithImages>;
 template class TIOPluginHandler<CSegSetWithImagesIOPlugin>;
 template class TPluginHandler<CSegSetWithImagesIOPlugin>;

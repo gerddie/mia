@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "mia-3dlandmark-distance"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/landmarklistio.hh>
 #include <mia/3d/transformio.hh>
@@ -35,7 +34,7 @@ const SProgramDescription g_description = {
         
         {pdi_description,
          "Evaluate Euclidian distances between the corresponding landmarks in two landmark sets. "
-         "The programs prints out only values for landmarks that are availabe and have location "
+         "The programs prints out only values for landmarks that are available and have location "
          "values in both sets "}, 
 	
         {pdi_example_descr,

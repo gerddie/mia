@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ void test_deformadd()
 	C2DUSImage *fimage = new C2DUSImage(size);
 	P2DImage image(fimage);
 
-	std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(ip_linear, bc_mirror_on_bounds));
+	C2DInterpolatorFactory ipf("bspline:d=1", "mirror");
 
 	C2DFVectorfield A(size);
 	C2DFVectorfield B(size);
@@ -158,12 +158,12 @@ void test_deformadd()
 		}
 	}
 
-	P2DImage im = filter(FDeformer2D(A, *ipf), *image);
-	P2DImage result_add = filter(FDeformer2D(B, *ipf), *im);
+	P2DImage im = filter(FDeformer2D(A, ipf), *image);
+	P2DImage result_add = filter(FDeformer2D(B, ipf), *im);
 
 	A += B;
 
-	P2DImage result_direct = filter(FDeformer2D(A, *ipf), *image);
+	P2DImage result_direct = filter(FDeformer2D(A, ipf), *image);
 
 	if (!filter_equal(FCompareImages(), *result_direct, *result_add)) {
 		if (!save(image, "original.png") ||

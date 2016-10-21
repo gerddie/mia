@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <type_traits>
+#include <iomanip>
 #include <boost/any.hpp>
 #include <boost/ref.hpp>
 #include <boost/lexical_cast.hpp>
@@ -148,7 +150,7 @@ private:
    \ingroup basic
     
    Helper function to get the value of an attribute. Thr function throws a bad_cast exception,
-   if the attribute doesn't hold a value ofthe requested type T
+   if the attribute doesn't hold a value of the requested type T
    \tparam T target type
    \param attr attribute to be read
  */
@@ -248,7 +250,7 @@ EXPORT_CORE  std::ostream& operator << (std::ostream& os, const CAttributeMap& d
     \brief A collection of attributes 
     
     This is the base class for all data that uses attributes. It provides all the needed functions to store 
-    and retrive attributes. 
+    and retrieve attributes. 
 */
 class EXPORT_CORE CAttributedData {
 public:
@@ -561,13 +563,28 @@ int TAttribute<T>::type_id() const
    \remark this should replace the parameter translation methods 
 */
 
+template <typename T, bool is_floating>
+struct __convert_to_string
+{
+	static std::string apply(const typename ::boost::reference_wrapper<T>::type value) {
+		return boost::lexical_cast<std::string>(value);
+	}
+}; 
+
+template <typename T>
+struct __convert_to_string<T, true> {
+	static std::string apply(const typename ::boost::reference_wrapper<T>::type value) {
+		std::stringstream sval;
+		sval << std::setprecision(10) << value; 
+		return sval.str();
+	}
+}; 
+
 
 template <typename T>
 struct dispatch_attr_string {
 	static std::string val2string(const typename ::boost::reference_wrapper<T>::type value) {
-		std::stringstream sval;
-		sval << boost::lexical_cast<std::string>(value);
-		return sval.str();
+		return __convert_to_string<T, std::is_floating_point<T>::value>::apply(value);
 	}
 	static T string2val(const std::string& str) {
 		T v;
@@ -584,8 +601,9 @@ struct dispatch_attr_string<std::vector<T> > {
 		std::stringstream sval;
 		sval << value.size();
 		for (size_t i = 0; i < value.size(); ++i)
-			sval << " " << boost::lexical_cast<std::string>(value[i]);
-		return sval.str();
+			sval << " "
+			     <<  __convert_to_string<T, std::is_floating_point<T>::value>::apply(value[i]); 
+	        return sval.str();
 	}
 	static std::vector<T> string2val(const std::string& str) {
 		size_t s;
@@ -756,6 +774,12 @@ const T CAttributedData::get_attribute_as(const std::string& key, T default_valu
 	}
 	return *attr; 
 }
+
+extern template class EXPORT_CORE TAttribute<unsigned char>;
+extern template class EXPORT_CORE TAttribute<signed char>; 
+
+extern template class EXPORT_CORE TAttribute<std::vector<unsigned char>>;
+extern template class EXPORT_CORE TAttribute<std::vector<signed char>>; 
 
 
 typedef TTranslator<double> CDoubleTranslator;

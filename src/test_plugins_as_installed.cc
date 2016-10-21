@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(test_CNoiseGeneratorPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C1DSpacialKernelPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"gauss", "cdiff"
+		"gauss", "cdiff", "scharr"
 	}; 
 	test(C1DSpacialKernelPluginHandler::instance().get_set(), test_data); 
 }
@@ -262,7 +262,8 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture)
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", "combiner",
 		"convert", "close", "crop", "dilate", "distance", 
 		"downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
-		"label", "labelmap", "labelscale", "load", "mask", "mean", "median", "mlv", 
+		"label", "labelmap", "labelscale", "load", "mask", "mean", "meanvar",
+		"median", "medianmad", "mlv", 
 		"ngfnorm", "noise", "open", "pruning", "regiongrow", "sandp", 
 		"scale", "selectbig", "sepconv", "shmean", "sobel",
 		"sort-label", "sws", "tee", "thinning", "thresh", "tmean", 

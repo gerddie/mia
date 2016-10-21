@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,7 @@
 
 #include <climits>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #include <boost/test/unit_test.hpp>
 #include <mia/3d/interpolator.hh>
@@ -142,30 +141,38 @@ extern const char bspline4[] = "bspline:d=4";
 extern const char bspline5[] = "bspline:d=5"; 
 extern const char omomsspl3[] = "omoms:d=3"; 
 
+const vector<const char*> interpolator_kernels = {
+	bspline0, bspline1, bspline2,
+	bspline3, bspline4, bspline5, omomsspl3 
+}; 
+
 
 BOOST_AUTO_TEST_CASE(test_external_cache_interpolator) 
 {
 	T3DDatafield<float> data(C3DBounds(10, 12, 11));
-	auto kernel = produce_spline_kernel(bspline3); 
-	
+
 	auto i = data.begin();
 	for (size_t z = 0; z < data.get_size().z; ++z)
 		for (size_t y = 0; y < data.get_size().y; ++y)
 			for (size_t x = 0; x < data.get_size().x; ++x, ++i)
 				*i = x + y + z + 1;
 
-	T3DConvoluteInterpolator<float>  src(data, kernel);
+	for (auto k: interpolator_kernels) {
+		auto kernel = produce_spline_kernel(k); 
+		
+		T3DConvoluteInterpolator<float>  src(data, kernel);
 	
-	auto cache = src.create_cache(); 
-	i = data.begin();
-
-	for (size_t z = 0; z < data.get_size().z; ++z)
-		for (size_t y = 0; y < data.get_size().y; ++y)
-			for (size_t x = 0; x < data.get_size().x; ++x, ++i) {
-				C3DFVector loc(x,y,z);
-				auto v = src(loc, cache);
-				BOOST_CHECK_CLOSE(v, *i, 0.01); 
-			}
+		auto cache = src.create_cache(); 
+		i = data.begin();
+		
+		for (size_t z = 0; z < data.get_size().z; ++z)
+			for (size_t y = 0; y < data.get_size().y; ++y)
+				for (size_t x = 0; x < data.get_size().x; ++x, ++i) {
+					C3DFVector loc(x,y,z);
+					auto v = src(loc, cache);
+					BOOST_CHECK_CLOSE(v, *i, 0.01); 
+				}
+	}
 }
 
 
@@ -180,7 +187,7 @@ struct FParallelInterpolator {
 		{
 		}
 
-	void operator()( const tbb::blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		
 		auto cache = src.create_cache(); 
 		for (auto z = range.begin(); z != range.end(); ++z)
@@ -213,7 +220,7 @@ struct FParallelInterpolator2 {
 		{
 		}
 
-	void operator()( const tbb::blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		auto cache = src.create_cache(); 
 		for (auto z = range.begin(); z != range.end(); ++z)
@@ -249,7 +256,7 @@ BOOST_AUTO_TEST_CASE(test_parallel_interpolator)
 	T3DDatafield<float> output(data.get_size());
 	FParallelInterpolator worker(output, src); 
 	
-	tbb::parallel_for(tbb::blocked_range<int>( 0, data.get_size().z), worker);
+	pfor(C1DParallelRange( 0, data.get_size().z), worker);
 	for (size_t z = 0; z < data.get_size().z; ++z)
 		for (size_t y = 0; y < data.get_size().y; ++y)
 			for (size_t x = 0; x < data.get_size().x; ++x)
@@ -281,7 +288,7 @@ BOOST_AUTO_TEST_CASE(test_parallel_interpolator_zerofill_shifted)
 	T3DDatafield<float> output(data.get_size());
 	FParallelInterpolator2 worker(output, src, shift, test_data); 
 	
-	tbb::parallel_for(tbb::blocked_range<int>( 0, data.get_size().z), worker);
+	pfor(C1DParallelRange( 0, data.get_size().z), worker);
 	for (size_t z = 0; z < data.get_size().z; ++z)
 		for (size_t y = 0; y < data.get_size().y; ++y)
 			for (size_t x = 0; x < data.get_size().x; ++x) {
@@ -345,4 +352,3 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_types, T , types )
 	test_type<T, bspline0>();
 	test_type<T, omomsspl3>();
 }
-

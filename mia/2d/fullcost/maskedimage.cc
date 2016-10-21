@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -242,7 +242,7 @@ void C2DMaskedImageFullCost::do_reinit()
         
 
 	if (m_src->get_pixel_size() != m_ref->get_pixel_size()) {
-		cvwarn() << "C2DMaskedImageFullCost: moving and reference image are of differnet pixel dimensions."
+		cvwarn() << "C2DMaskedImageFullCost: moving and reference image are of different pixel dimensions."
                          << "unless you optimize a transformation that supports global scaling this might "
                          << "not be what you want to do\n"; 
 	}

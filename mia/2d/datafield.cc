@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 NS_MIA_BEGIN
 
 #define INSTANCIATE(TYPE) \
-	template class  EXPORT_2D T2DDatafield<TYPE>;			\
+	template class EXPORT_2D EXPORT_2D T2DDatafield<TYPE>;			\
 	template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
 	template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>; \
 	template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
@@ -46,17 +46,18 @@ INSTANCIATE(unsigned int);
 INSTANCIATE(signed int);
 INSTANCIATE(unsigned short);
 INSTANCIATE(signed short);
-INSTANCIATE(bool);
 INSTANCIATE(unsigned char);
 INSTANCIATE(signed char);
+template class  EXPORT_2D T2DDatafield<bool>;
 
 DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds"); 
 DEFINE_TYPE_DESCR2(C2DFVector, "2dfvector"); 
 
 
-template class EXPORT_2D  CTParameter<C2DFVector>;
-template class EXPORT_2D  CTParameter<C2DBounds>;
-template class EXPORT_2D  TTranslator<C2DFVector>; 
+template class EXPORT_2D CTParameter<C2DFVector>;
+template class EXPORT_2D CTParameter<C2DBounds>;
+template class EXPORT_2D TTranslator<C2DFVector>; 
+template class EXPORT_2D TAttribute<C2DFVector>; 
 
 NS_MIA_END
 

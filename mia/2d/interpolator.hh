@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -175,8 +175,8 @@ private:
 	PSplineKernel m_kernel;
 	PSplineBoundaryCondition m_x_boundary; 
 	PSplineBoundaryCondition m_y_boundary; 
-	T m_min;
-	T m_max;
+	typename T2DDatafield<T>::value_type m_min;
+	typename T2DDatafield<T>::value_type m_max;
 
 	/// This part makes the class to be not thread save 
 	mutable CSplineKernel::VIndex m_x_index; 
@@ -263,12 +263,6 @@ private:
 /// Pointer type for the 2D interpolationfactory 
 typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 
-
-/**
-   create a 2D interpolation factory of a certain interpolation type 
-*/
-C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
-	__attribute__ ((warn_unused_result));
 
 // implementation
 

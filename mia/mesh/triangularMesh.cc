@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,16 +25,12 @@
 #include <set>
 #include <mia/mesh/triangularMesh.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 #include <mia/core/threadedmsg.hh>
 
 
 NS_MIA_BEGIN
 
-using namespace tbb;
 using namespace std;
 using namespace boost;
 
@@ -154,7 +150,7 @@ void CTriangleMeshData::evaluate_normals()
 	typedef CTriangleMesh::normal_type normal_type; 
 	typedef CTriangleMesh::triangle_type triangle_type; 
 
-	auto run_triangles = [this, &ctriangles, &normalize](const blocked_range<unsigned>& range, 
+	auto run_triangles = [this, &ctriangles, &normalize](const C1DParallelRange& range, 
 						 const vector<normal_type>& cnormals) {
 		vector<normal_type> normals(cnormals); 
 		CThreadMsgStream thread_stream;
@@ -188,30 +184,28 @@ void CTriangleMeshData::evaluate_normals()
 	
 	auto reduce_normals = [](const vector<normal_type>& lhs, const vector<normal_type>& rhs) -> vector<normal_type> {
 		vector<normal_type> result(lhs); 
-		parallel_for(blocked_range<unsigned>(0,result.size()), 
-			     [&result, &rhs](const blocked_range<unsigned>& range) {
-				     for (auto i= range.begin(); i != range.end(); ++i) 
-					     result[i] += rhs[i]; 
-			     }); 
+		pfor(C1DParallelRange(0,result.size()), 
+		     [&result, &rhs](const C1DParallelRange& range) {
+			     for (auto i= range.begin(); i != range.end(); ++i) 
+				     result[i] += rhs[i]; 
+		     }); 
 		return result; 
 	}; 
-
+	
 	vector<normal_type> normals_accumulator(m_normals->size());
 	
-	normals_accumulator = parallel_reduce(blocked_range<unsigned>(0, ctriangles.size(), 100), normals_accumulator, 
-					      run_triangles, reduce_normals);
-
-	parallel_for(blocked_range<unsigned>(0, normals_accumulator.size()),
-		     [this, &normals_accumulator](const blocked_range<unsigned>& range){
-			     for (auto i= range.begin(); i != range.end(); ++i) {
-				     C3DFVector n = normals_accumulator[i];
-				     auto nn = n.norm2();
-				     (*m_normals)[i] = (nn > 0) ? n / sqrt(nn) : C3DFVector::_0; 
-			     }
-		     });
+	normals_accumulator = preduce(C1DParallelRange(0, ctriangles.size(), 100), normals_accumulator, 
+				      run_triangles, reduce_normals);
 	
+	pfor(C1DParallelRange(0, normals_accumulator.size()),
+	     [this, &normals_accumulator](const C1DParallelRange& range){
+		     for (auto i= range.begin(); i != range.end(); ++i) {
+			     C3DFVector n = normals_accumulator[i];
+			     auto nn = n.norm2();
+			     (*m_normals)[i] = (nn > 0) ? n / sqrt(nn) : C3DFVector::_0; 
+		     }
+	     });
 }
-
 
 CTriangleMesh::CTriangleMesh(const CTriangleMesh& orig):
 	data(new CTriangleMeshData(*orig.data))
@@ -239,9 +233,8 @@ CTriangleMesh::CTriangleMesh(PTrianglefield triangles, PVertexfield vertices):
 
 CTriangleMesh CTriangleMesh::clone_connectivity()const
 {
-	PVertexfield vertices(new CVertexfield(vertices_size()));
-	CTriangleMesh result(data->m_triangles, vertices);
-	return result;
+	PVertexfield  vf(new CVertexfield(vertices_size())); 
+	return CTriangleMesh(data->m_triangles, vf);
 }
 
 CTriangleMesh *CTriangleMesh::clone() const
@@ -259,6 +252,23 @@ const void *CTriangleMesh::get_vertex_pointer()const
 {
 	return data->m_vertices ? &(*data->m_vertices)[0].x : NULL;
 }
+
+const CTriangleMesh::CVertexfield& CTriangleMesh::get_vertices() const
+{
+	if (data->m_vertices)
+		return *data->m_vertices;
+	else
+		throw logic_error("CTriangleMesh::get_vertices(): no vertices available"); 
+}
+
+const CTriangleMesh::CTrianglefield& CTriangleMesh::get_triangles() const
+{
+	if (data->m_triangles)
+		return *data->m_triangles;
+	else
+		throw logic_error("CTriangleMesh::get_triangles(): no triangles available"); 
+}
+
 
 const void *CTriangleMesh::get_normal_pointer()const
 {
@@ -402,7 +412,7 @@ CTriangleMesh::normal_iterator CTriangleMesh::normals_end()
 	else
 		ensure_single_refered(data->m_normals);
 
-	return data->m_normals->begin();
+	return data->m_normals->end();
 }
 
 CTriangleMesh::const_scale_iterator CTriangleMesh::scale_begin()const
@@ -589,11 +599,11 @@ template <> const char *  const
 TPluginHandler<CMeshIOPlugin>::m_help =  
    "These plug-ins implement loading and saving of simple triangular meshes from and to various file formats.";
 
-template class TIOPlugin<CTriangleMesh>;
-template class TPluginHandler<CMeshIOPlugin>;
-template class TIOPluginHandler<CMeshIOPlugin>;
-template class THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
-
+template class EXPORT_MESH TPlugin<CTriangleMesh, io_plugin_type>; 
+template class EXPORT_MESH TIOPlugin<CTriangleMesh>;
+template class EXPORT_MESH TPluginHandler<CMeshIOPlugin>;
+template class EXPORT_MESH TIOPluginHandler<CMeshIOPlugin>;
+template class EXPORT_MESH THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
 
 
 NS_MIA_END

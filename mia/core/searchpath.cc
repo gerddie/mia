@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,30 @@
  * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
+#include <mia/core/searchpath.hh>
+#include <mia/core/msgstream.hh>
+
 
 #include <stdexcept>
 #include <sstream>
 #include <cstdlib>
-
-#include <mia/core/searchpath.hh>
-#include <mia/core/msgstream.hh>
-
-#include <boost/regex.hpp>
 #include <boost/filesystem/operations.hpp>
 
 #include <config.h>
+
+#ifdef MIA_USE_BOOST_REGEX
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::regex_match; 
+#else 
+# if __cplusplus >= 201103
+# include <regex>
+using std::regex;
+using std::regex_match; 
+# else 
+# error must either use boost::regex or c++11 based regex
+# endif 
+#endif
 
 
 NS_MIA_BEGIN
@@ -115,7 +127,8 @@ std::vector<PPluginModule> CPluginSearchpath::find_modules(const std::string& da
 
         std::stringstream pattern; 
         pattern << ".*\\."<< MIA_MODULE_SUFFIX << "$";
-        boost::regex pat_expr(pattern.str());	
+
+        regex pat_expr(pattern.str());
 
 	std::vector<PPluginModule> result;
 	
@@ -138,7 +151,7 @@ std::vector<PPluginModule> CPluginSearchpath::find_modules(const std::string& da
                         
 			while (di != dend) {
 				cvdebug() << "    candidate:'" << di->path().string() << "'"; 
-				if (boost::regex_match(di->path().string(), pat_expr)) {
+				if (regex_match(di->path().string(), pat_expr)) {
 					candidates.push_back(*di); 
 					cverb << " add\n";
 				}else

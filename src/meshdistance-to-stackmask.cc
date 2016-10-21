@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
  * along with MIA; if not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-#define VSTREAM_DOMAIN "Distance Mesh to Mask" 
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -66,7 +64,7 @@ struct FDistAcummulator : public TFilter<void> {
 	template <typename T> 
 	void operator ()(const T2DImage<T>& image) {
 		C2DFImage buf(image.get_size()); 
-		distance_transform_prepare(image.begin(), image.end(), buf.begin()); 
+		distance_transform_prepare(image.begin(), image.end(), buf.begin(), __is_mask_pixel<T>::value); 
 		m_distance.push_slice(m_z, buf); 
 		++m_z; 
 	}

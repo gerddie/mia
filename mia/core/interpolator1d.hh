@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,6 +166,8 @@ public:
 	 */
 	C1DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& bc);
 
+	C1DInterpolatorFactory(const std::string& kernel_descr, const std::string& boundary_descr);
+
 	/// Copy constructor 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
 
@@ -204,9 +206,6 @@ typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
    neccessary. 
    @todo this should become the work of a plug-in handler 
  */
-
-C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type, EBoundaryConditions bc) 
-	__attribute__ ((warn_unused_result));
 
 // implementation
 template <class T>

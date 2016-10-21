@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ enum TMethod { meth_sor,
 
 
 const TDictMap<TMethod>::Table method_dict[] = {
-	{"sor", meth_sor, "succesive overrelaxation"}
+	{"sor", meth_sor, "successive overrelaxation"}
 	,{"sora",meth_sorex, "Gauss Southwell relexation"}
 //	,{"sorap",meth_sorap}
 	,{NULL, meth_sor, ""}
@@ -139,7 +139,7 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( params.InitialStepsize, "step", 0, "Initial stepsize"));
 	options.add(make_opt( interpolator_kernel, "bspline:d=3", "interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( params.Overrelaxation, "relax", 0, "overrelaxation factor vor method sor"));
-	options.add(make_opt( params.maxiter, "maxiter", 0, "maxium iterations"));
+	options.add(make_opt( params.maxiter, "maxiter", 0, "maximum iterations"));
 	options.add(make_opt( params.factor, "epsilon", 0, "truncation condition"));
 	options.add(make_opt( params.matter_threshold, "matter", 0, "intensity above which real "
 			      "matter is assumed (experimental)"));

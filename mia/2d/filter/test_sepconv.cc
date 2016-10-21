@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,6 +133,78 @@ BOOST_AUTO_TEST_CASE( test_sobel_y )
 	C2DFImage src(C2DBounds(5,4), in_image);
 
 	auto filtered = sobel_y->filter(src);
+
+	const C2DFImage& f = dynamic_cast<const C2DFImage&>(*filtered);
+
+	BOOST_CHECK_EQUAL(f.get_size(), src.get_size());
+
+	const float *t = test_image; 
+	for(auto i = f.begin(); i != f.end(); ++i, ++t) {
+		cvdebug() << *i << " " << *t << "\n"; 
+		BOOST_CHECK_CLOSE(*i, *t, 0.1);
+	}
+	
+}
+
+
+BOOST_AUTO_TEST_CASE( test_scharr_x )
+{
+	auto scharr_x = BOOST_TEST_create_from_plugin<C2DScharrFilterPlugin>("scharr:dir=x"); 
+
+	const float in_image[] = {
+		1, 2, 3, 4,                 
+		2, 3, 2, 5,
+		6, 7, 8, 9,
+		5, 4, 6, 3,
+		6, 7, 8, 3
+	};
+
+	
+	const float test_image[] = {
+		0, .625, 1, 0, 
+		0, .375, 1, 0, 
+		0, .71875, .71875, 0, 
+		0, .6875, -0.5, 0, 
+		0, .8125, -1.4375, 0
+	};
+
+	C2DFImage src(C2DBounds(4,5), in_image);
+
+	auto filtered = scharr_x->filter(src);
+
+	const C2DFImage& f = dynamic_cast<const C2DFImage&>(*filtered);
+
+	BOOST_CHECK_EQUAL(f.get_size(), src.get_size());
+
+	const float *t = test_image; 
+	for(auto i = f.begin(); i != f.end(); ++i, ++t) {
+		cvdebug() << *i << " " << *t << "\n"; 
+		BOOST_CHECK_CLOSE(*i, *t, 0.1);
+	}
+}
+
+BOOST_AUTO_TEST_CASE( test_scharr_y )
+{
+	auto scharr_y = BOOST_TEST_create_from_plugin<C2DScharrFilterPlugin>("scharr:dir=y"); 
+
+	const float in_image[] = {
+		1, 2, 6, 5, 6,
+		2, 3, 7, 4, 7,
+		3, 2, 8, 6, 8,
+		4, 5, 9, 3, 3
+	};
+
+	
+	const float test_image[] = {
+		0,  0,  0,  0,  0,
+		.625, 0.375, 0.71875, 0.6875, 0.8125,
+		1, 1, 0.71875, -0.5, -1.4375,
+		0,  0,  0,  0,  0
+	};
+
+	C2DFImage src(C2DBounds(5,4), in_image);
+
+	auto filtered = scharr_y->filter(src);
 
 	const C2DFImage& f = dynamic_cast<const C2DFImage&>(*filtered);
 

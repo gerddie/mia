@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 #include <config.h>
-//#include <miaconfig.h>
+#include <miaconfig.h>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -32,7 +32,15 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
+
+#ifdef HAVE_TBB 
 #include <tbb/task_scheduler_init.h>
+#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
+#define TBB_PREFERE_ONE_THREAD 1
+#endif 
+#else
+#include <mia/core/parallelcxx11.hh>
+#endif
 
 #include <mia/core/xmlinterface.hh>
 #include <mia/core/tools.hh>
@@ -42,15 +50,9 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/fixedwidthoutput.hh>
 
-#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
-#define TBB_PREFERE_ONE_THREAD 1
-#endif 
-
 extern void print_full_copyright(const char *name, const char *author);
 
-
 NS_MIA_BEGIN
-extern char const *get_revision(); 
 
 using std::ostream;
 using std::ofstream;
@@ -61,7 +63,7 @@ using std::logic_error;
 using std::vector; 
 using std::map; 
 using std::unique_ptr; 
-
+using std::setiosflags;
 
 #define ENTRY(X) {X, #X }
 const std::map<EProgramDescriptionEntry, const char *> g_DescriptionEntryNames = {
@@ -193,7 +195,7 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_default_author = "Gert Wollny"; 
 const char *g_basic_copyright1 = "This software is Copyright (c) "; 
-const char *g_basic_copyright2 = " 1999-2015 Leipzig, Germany and Madrid, Spain. "
+const char *g_basic_copyright2 = " 1999-2016 Leipzig, Germany and Madrid, Spain. "
 	      "It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
 	      "under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
 	      "For more information run the program with the option '--copyright'.\n"; 
@@ -203,12 +205,16 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	usage(false),
 	version(false), 
 	copyright(false),
-	verbose(vstream::ml_warning), 
+	verbose(vstream::ml_warning),
+#if HAVE_TBB 
 #if TBB_PREFERE_ONE_THREAD
 	max_threads(1), 
-#else 
+#else
 	max_threads(tbb::task_scheduler_init::automatic), 
-#endif 
+#endif
+#else
+	max_threads(-1),
+#endif 	
 	m_selftest_run(false), 
 	m_stdout_is_result(false), 
 	m_log(&std::cout)
@@ -384,10 +390,13 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	auto cr = nodeRoot->add_child("Author");
 	cr->set_child_text(m_author); 
 
-	ofstream xmlfile(help_xml.c_str());  
-	
-	xmlfile << doc->write_to_string_formatted();
-	xmlfile << "\n"; 
+	if (help_xml != "-") {
+		ofstream xmlfile(help_xml.c_str());  
+		xmlfile << doc->write_to_string_formatted();
+		xmlfile << std::endl;
+	}else{
+		std::cout << doc->write_to_string_formatted();
+	}
 }
 
 /**
@@ -682,6 +691,8 @@ void CCmdOptionList::set_stdout_is_result()
 	m_impl->m_stdout_is_result = true; 
 }
 
+#ifdef HAVE_TBB 
+
 struct TBBTaskScheduler {
 	static const tbb::task_scheduler_init& initialize(int max_threads);
 }; 
@@ -699,6 +710,7 @@ const tbb::task_scheduler_init& TBBTaskScheduler::initialize(int max_threads)
 	return init; 
 }
 
+#endif 
 
 CCmdOptionList::EHelpRequested
 CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional, 
@@ -767,6 +779,7 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 		m_impl->print_help(name_help, has_additional);
 		return hr_help;
 	}else if (!m_impl->help_xml.empty()) {
+		cvdebug() << "Write XML help\n";
 		m_impl->print_help_xml(name_help, additional_help);
 		return hr_help_xml;
 	} else if (m_impl->usage) {
@@ -808,10 +821,14 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 		throw invalid_argument(msg.str());
 	}
 	
+#ifdef HAVE_TBB 
 	// the return value and info output is mostly used to make sure the compiler 
 	// doesn't optimize anything away. 
 	const auto& ts  = TBBTaskScheduler::initialize(m_impl->max_threads); 
-	cvinfo() << "Task scheduler set to " << (ts.is_active() ? "active":"inactive") << "\n"; 
+	cvinfo() << "Task scheduler set to " << (ts.is_active() ? "active":"inactive") << "\n";
+#else
+	CMaxTasks::set_max_tasks(m_impl->max_threads); 
+#endif 	
 	return hr_no; 
 }
 

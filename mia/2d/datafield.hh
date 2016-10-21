@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ class EXPORT_2DDATAFIELD T2DDatafield  {
 public:
 
 	/// type for the flat reprentation of the 2D data field 
-	typedef  ::std::vector<T> data_array;
+	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
 	/// pointer type 
 	typedef  std::shared_ptr<data_array > data_pointer;
@@ -101,7 +101,7 @@ public:
 	   \param size 
 	   \param data must at least be of size (size.x*size.y)
 	*/
-	T2DDatafield(const C2DBounds& size, const data_array& data);
+	T2DDatafield(const C2DBounds& size, const std::vector<T>& data);
 
 	/** copy constructor, it does a shallow copy of the original, i.e. 
 	    the data is not copied, only the shared pointer increases its reference count.
@@ -292,7 +292,7 @@ public:
 private:
 	C2DBounds  m_size;
 	data_pointer m_data;
-	const static T Zero;
+	const static value_type Zero;
 };
 
 /// 2D scalar field that holds double values 
@@ -340,9 +340,36 @@ typedef TTranslator<C2DFVector> C2DFVectorTranslator;
 
 /// @cond NEVER 
 
+#define DEFINE_2DFIELD_TEMPLATE(TYPE) \
+	extern template class EXPORT_2D EXPORT_2D T2DDatafield<TYPE>;			\
+	extern template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
+	extern template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>; \
+	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
+	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::const_iterator>;
+
+DEFINE_2DFIELD_TEMPLATE(float); 
+
+#ifdef LONG_64BIT
+DEFINE_2DFIELD_TEMPLATE(signed long);
+DEFINE_2DFIELD_TEMPLATE(unsigned long);
+#endif
+DEFINE_2DFIELD_TEMPLATE(double);
+DEFINE_2DFIELD_TEMPLATE(unsigned int);
+DEFINE_2DFIELD_TEMPLATE(signed int);
+DEFINE_2DFIELD_TEMPLATE(unsigned short);
+DEFINE_2DFIELD_TEMPLATE(signed short);
+DEFINE_2DFIELD_TEMPLATE(unsigned char);
+DEFINE_2DFIELD_TEMPLATE(signed char);
+
 
 DECLARE_TYPE_DESCR(C2DBounds);
-DECLARE_TYPE_DESCR(C2DFVector); 
+DECLARE_TYPE_DESCR(C2DFVector);
+
+extern template class EXPORT_2D CTParameter<C2DFVector>;
+extern template class EXPORT_2D CTParameter<C2DBounds>;
+extern template class EXPORT_2D TTranslator<C2DFVector>; 
+extern template class EXPORT_2D TAttribute<C2DFVector>; 
+
 /// @endcond
 
 NS_MIA_END

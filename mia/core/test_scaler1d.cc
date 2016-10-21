@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ struct Scaler1DFixture  {
 	Scaler1DFixture(); 
 
 	double f(double x) const;
-	void test_size(EInterpolation type, size_t target_size);
+	void test_size(const string& interpolator_kernel, size_t target_size);
 	void test_scale_by_factor(const string& kernel_descr, double scale, size_t expected_size);
 
 
@@ -53,7 +53,7 @@ struct Scaler1DFixture  {
 
 BOOST_FIXTURE_TEST_CASE( test_bspline2_upscale, Scaler1DFixture)
 {
-	test_size(ip_bspline2, 500);
+	test_size("bspline:d=2", 500);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline2_upscale_scale, Scaler1DFixture)
@@ -78,44 +78,44 @@ BOOST_FIXTURE_TEST_CASE( test_bspline3_downscale_scale, Scaler1DFixture)
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_upscale, Scaler1DFixture)
 {
-	test_size(ip_bspline3, 500);
+	test_size("bspline:d=3", 500);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_downscale, Scaler1DFixture)
 {
-	test_size(ip_bspline3, 130);
+	test_size("bspline:d=3", 130);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_bspline4_upscale, Scaler1DFixture)
 {
-	test_size(ip_bspline4, 500);
+	test_size("bspline:d=4", 500);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline4_downscale, Scaler1DFixture)
 {
-	test_size(ip_bspline4, 130);
+	test_size("bspline:d=4", 130);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_bspline5_upscale, Scaler1DFixture)
 {
-	test_size(ip_bspline5, 500);
+	test_size("bspline:d=5", 500);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline5_downscale, Scaler1DFixture)
 {
-	test_size(ip_bspline5, 130);
+	test_size("bspline:d=5", 130);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_omoms3_upscale, Scaler1DFixture)
 {
-	test_size(ip_omoms3, 500);
+	test_size("omoms:d=3", 500);
 }
 BOOST_FIXTURE_TEST_CASE( test_omoms3_downscale, Scaler1DFixture)
 {
-	test_size(ip_omoms3, 130);
+	test_size("omoms:d=3", 130);
 }
 
 
@@ -134,12 +134,12 @@ Scaler1DFixture::Scaler1DFixture():
 		data[x] = 200*f(intervall * x);
 }
 
-void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
+void Scaler1DFixture::test_size(const string& interpolator_kernel, size_t target_size)
 {
 	C1DScalar::std_double_vector result(target_size); 
 	
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type, bc_mirror_on_bounds));	
-	C1DScalar scaler(*ipf->get_kernel(), data.size(), target_size); 
+	C1DInterpolatorFactory  ipf(interpolator_kernel, "mirror");	
+	C1DScalar scaler(*ipf.get_kernel(), data.size(), target_size); 
 
 	copy(data.begin(), data.end(), scaler.input_begin()); 
 	

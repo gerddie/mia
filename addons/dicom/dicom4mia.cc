@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,9 @@ const SLookupInit lookup_init[] = {
 	{IDPositionerPrimaryAngleIncrement, DCM_PositionerPrimaryAngleIncrement, false, tr_no, NULL},
 	{IDPositionerSecondaryAngleIncrement, DCM_PositionerSecondaryAngleIncrement, false, tr_no, NULL},
 	{IDPhotometricInterpretation, DCM_PhotometricInterpretation, false, tr_yes_defaulted, "MONOCHROME2"},
+
+	{IDRescaleIntercept, DCM_RescaleIntercept, false, tr_yes_defaulted, "0.0"},
+	{IDRescaleSlope, DCM_RescaleSlope, false, tr_yes_defaulted, "0.0"},
 	
 	{NULL, DcmTagKey(), false, tr_no, NULL}
 };
@@ -132,8 +135,9 @@ struct CDicomReaderData {
 	Uint16 getUint16(const DcmTagKey &tagKey, bool required, Uint16 default_value = 0);
 	Sint32 getSint32(const DcmTagKey &tagKey, bool required, Sint32 default_value = 0);
 	float getFloat32(const DcmTagKey &tagKey, bool required, float default_value = 0);
-	float getFloat64(const DcmTagKey &tagKey, bool required, double default_value = 0);
+	double getFloat64(const DcmTagKey &tagKey, bool required, double default_value = 0);
 	bool getFloat64ArrayFromString(const DcmTagKey &tagKey, vector<double>& values, const string& msg);
+	bool getFloat64ArrayFromString(const OFString &value_str, vector<double>& values, const string& msg); 
 	
 	string getAttribute(const string& key, bool required, const char *default_value = "");
 	string getAttribute(const DcmTagKey &tagKey, bool required, const char *default_value = "");
@@ -148,7 +152,7 @@ struct CDicomReaderData {
 
 	void getAcquisitionTimeIfAvailable(CAttributedData& image); 
 
-	C2DFVector getPixelSize();
+	C2DFVector getPixelSize(double *dz);
 
 	C2DFVector getImagePixelSpacing(); 
 	
@@ -204,13 +208,13 @@ C2DBounds CDicomReader::image_size()const
 
 C2DFVector CDicomReader::get_pixel_size() const
 {
-	return impl->getPixelSize();
+	return impl->getPixelSize(nullptr);
 }
 
 C3DFVector CDicomReader::get_voxel_size(bool warn) const
 {
-	auto size2d = impl->getPixelSize();
-	auto thinkness = impl->getFloat64(DCM_SpacingBetweenSlices, false,0); 
+	double thinkness = -1; 
+	auto size2d = impl->getPixelSize(&thinkness);
 	if (thinkness <= 0.0 && warn) 
 		cvwarn() << "DICOM: 3D multiframe image doesn't provide a spacing between slices, most likely "
 			 << "the input file does not constitute a volume"; 
@@ -447,13 +451,13 @@ void CDicomReaderData::getAcquisitionTimeIfAvailable(CAttributedData& image)
 	OFTime of_time; 
 	success = dcm_time->getOFTime(of_time); 
 	if (!success.good()) {
-		cverr() << "CDicomReader: Could not retrive OFTime string from DcmTime Element\n";
+		cverr() << "CDicomReader: Could not retrieve OFTime string from DcmTime Element\n";
 		return; 
 	}
 	image.set_attribute(IDAcquisitionTime, of_time.getTimeInSeconds()); 
 }						
 
-float CDicomReaderData::getFloat64(const DcmTagKey &tagKey, bool required, double default_value)
+double CDicomReaderData::getFloat64(const DcmTagKey &tagKey, bool required, double default_value)
 {
 	Float64 value = default_value;
 	OFCondition success = dcm.getDataset()->findAndGetFloat64(tagKey, value);
@@ -465,22 +469,11 @@ float CDicomReaderData::getFloat64(const DcmTagKey &tagKey, bool required, doubl
 	return value;
 }
 
-bool CDicomReaderData::getFloat64ArrayFromString(const DcmTagKey &tagKey, vector<double>& values, const string& msg)
+bool CDicomReaderData::getFloat64ArrayFromString(const OFString &value_str, vector<double>& values, const string& msg)
 {
-	if (!dcm.getDataset()->tagExistsWithValue(tagKey)) {
-		cvinfo() << msg << " tag empty or not available.\n"; 
-		return false; 
-	}
-	OFString help;
-	OFCondition success = dcm.getDataset()->findAndGetOFStringArray(tagKey, help);	
-	if (success.bad()) {
-		cvinfo() << msg << " available but is not a string.\n";
-		return false; 
-	}
-
-        vector<string> tockens; 
-	string svalues(help.begin(), help.end()); 
-        boost::split(tockens, svalues ,boost::is_any_of("\\"));
+	vector<string> tockens; 
+	string svalues(value_str.begin(), value_str.end()); 
+        boost::split(tockens, svalues, boost::is_any_of("\\"));
 
 	if (tockens.size() != values.size()) {
 		cvwarn() << "Bogus " << msg << " attribute of " << tockens.size() 
@@ -496,6 +489,19 @@ bool CDicomReaderData::getFloat64ArrayFromString(const DcmTagKey &tagKey, vector
 		}
         }
 	return true; 
+}
+
+
+bool CDicomReaderData::getFloat64ArrayFromString(const DcmTagKey &tagKey, vector<double>& values, const string& msg)
+{
+	OFString help;
+	OFCondition success = dcm.getDataset()->findAndGetOFStringArray(tagKey, help, OFTrue);	
+	if (success.bad()) {
+		cvinfo() << msg << " available but is not a string.\n";
+		return false; 
+	}
+	
+        return getFloat64ArrayFromString(help, values, msg); 
 
 }
 
@@ -632,25 +638,63 @@ C2DFVector CDicomReaderData::getImagePixelSpacing()
 	
 }
 
-C2DFVector CDicomReaderData::getPixelSize()
+C2DFVector CDicomReaderData::getPixelSize(double *dz)
 {
+
+	C2DFVector result = C2DFVector::_1;
 	OFString help;
-	OFCondition success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 0);
-	if (success.bad()) {
-		return getImagePixelSpacing(); 
+	
+	DcmDataset *dataset = dcm.getDataset(); 
+	DcmElement *pixel_spacing_element  = nullptr; 
+	
+	OFCondition success = dataset->findAndGetElement(DCM_PixelSpacing, pixel_spacing_element, OFTrue);
+	
+	if (success.good()) {
+		OFString str_val; 
+		OFCondition read_string = pixel_spacing_element->getOFStringArray (str_val);
+		
+		vector<double> values(2); 
+		bool success = read_string.good() && getFloat64ArrayFromString(str_val, values, "Reading Pixel spacing");
+
+		result.y = values[0];
+		result.x = values[1];
+
+		if (!success) {
+			cvwarn() << "DICOM: Pixel spacing element found, but unable to read its values\n"; 
+		}
+		
+	} else {
+		result = getImagePixelSpacing(); 
 	}
-	C2DFVector result;
 
-	istringstream swidth(help.data());
-	swidth >> result.x;
+	// do we want thickness? 
+	if (dz) {
+		bool found_dz = false;  
+		DcmElement *slice_distance_element  = nullptr;
+		DcmElement *slice_thickness_element  = nullptr; 
+		OFCondition success_sd = dataset->findAndGetElement(DCM_SpacingBetweenSlices, slice_distance_element, OFTrue);
+		if (success_sd.good() && slice_distance_element) {
+			OFCondition retval = slice_distance_element->getFloat64(*dz, 0);
+			found_dz = retval.good(); 
+		}
 
-	success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 1);
-	if (success.bad()) {
-		throw create_exception<runtime_error>( "Required attribute 'PixelSpacing' not found");
+		OFCondition success_sth = dataset->findAndGetElement(DCM_SliceThickness, slice_thickness_element, OFTrue);
+		if (success_sth.good() && slice_thickness_element)  {
+			if (found_dz) {
+				cvwarn() << "DICOM file defines slice thickness and distance."
+					 << " Since for volumes the slice distance defines the dimensions, "
+					"the slice thisckness will be ignored here\n";
+			}else{
+				OFCondition retval = slice_thickness_element->getFloat64(*dz, 0);
+				found_dz = retval.good(); 
+			}
+
+		}
+		if (!found_dz) {
+			cvwarn() << "DICOM: neither SliceThickness nor SliceDistance were found, defaulting to 1.0mm\n"; 
+		}
 	}
-	istringstream sheight(help.data());
-	sheight >> result.y;
-
+	
 	return result;
 }
 
@@ -858,7 +902,7 @@ void CDicomWriterData::setSize(const C2DBounds& size)
 void CDicomWriterData::setPixelSpacing(const DcmTagKey& key, const C2DFVector& value)
 {
 	stringstream pixelspacing;
-	pixelspacing << value.x << "\\" << value.y;
+	pixelspacing << value.y << "\\" << value.x;
 	setValueString(key, pixelspacing.str(), false);
 }
 

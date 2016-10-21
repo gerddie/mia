@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "series2set" 
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <mia/core/cmdlineparser.hh>
@@ -42,9 +41,9 @@ const SProgramDescription g_description = {
 	 "Used information is the z-location of the slice and the acquisition number. "
 	 "The code is taylored to used the according descriptors defined in the DICOM standard. "
 	 "All images with the same slice location will be grouped together in one segmentation "
-	 "set and ordered according to their aquisition number. "
+	 "set and ordered according to their acquisition number. "
 	 "Slice locations are rounded to three digits accuracy to make proper comparison "
-	 "of floating point values feasable."}, 
+	 "of floating point values feasible."}, 
 	{pdi_example_descr, "Create the segmentation sets from a series of DICOM images and "
 	 "copy the files to the output directory (copying is the default)."}, 
 	{pdi_example_code, "-o /home/user/series /net/dicoms/patient1/series1/*.dcm"}
@@ -61,8 +60,8 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 	// collect series 
 	// \todo maybe one should also look for SeriesNumber
 	typedef map<int, SImage> InstanceSeries; 
-	typedef map<int, InstanceSeries> AquisitionSeries; 
-	map<float, AquisitionSeries> series; 
+	typedef map<int, InstanceSeries> AcquisitionSeries; 
+	map<float, AcquisitionSeries> series; 
 	int aq_number = 0; 
 	int is_number = 0; 
 	for (auto i = images.begin(); i != images.end(); ++i) {
@@ -75,10 +74,10 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 		}
 		if (series.find(slice_location) == series.end()) {
 			cvmsg() << "Add location " << slice_location << "\n"; 
-			series[slice_location] = AquisitionSeries(); 
+			series[slice_location] = AcquisitionSeries(); 
 		}
 		
-		AquisitionSeries& aqs = series[slice_location]; 
+		AcquisitionSeries& aqs = series[slice_location]; 
 		
 		auto pAcquisitionNumber = dynamic_cast<const CIntAttribute *>(i->first->get_attribute(IDAcquisitionNumber).get());
 		if (pAcquisitionNumber) {
@@ -86,7 +85,7 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 		}else {
 			++aq_number; 
 		}
-		cvmsg() << "Add aquisition " << aq_number << "\n"; 
+		cvmsg() << "Add acquisition " << aq_number << "\n"; 
 
 		if (aqs.find(aq_number) == aqs.end()) {
 			aqs[aq_number] = InstanceSeries(); 
@@ -103,7 +102,7 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 		cvmsg() << "Add instance " << is_number << "\n"; 
 
 		if (is.find(is_number) != is.end()) {
-			cvwarn() << "got duplicate slice aquisition/instance/location = " 
+			cvwarn() << "got duplicate slice acquisition/instance/location = " 
 				 << aq_number << "/" << is_number << "/" << slice_location
 				 << ", Ignoring this slice\n"; 
 		}else {

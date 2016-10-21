@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 
 #include <mia/2d/cost/gncc.hh>
+#include <mia/core/parallel.hh>
 
 namespace mia_2d_gncc {
           
@@ -35,7 +36,7 @@ CGNCC2DImageCost::CGNCC2DImageCost():
 
 class SumNccPart {
 	SumNccPart(const C2DFImage& mov, const C2DFImage& ref); 
-	NCCSums operator ()(const tbb::blocked_range<size_t>& range, const NCCSums& sumacc) const; 
+	NCCSums operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const; 
 private: 
 	const C2DFImage& m_mov; 
 	const C2DFImage& m_ref; 
@@ -48,7 +49,7 @@ SumNccPart::SumNccPart(const C2DFImage& mov, const C2DFImage& ref):
 }
 	
 	
-NCCSums SumNccPart::operator ()(const tbb::blocked_range<size_t>& range, const NCCSums& sumacc) const
+NCCSums SumNccPart::operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const
 {
 	for (auto y = range.begin(); y != range.end(); ++y) {
 		auto iref = m_ref.begin_at(0,y);
@@ -78,16 +79,16 @@ double CGNCC2DImageCost::do_value(const mia::C2DImage& a,
 
 	
 	NCCSums sum; 
-	sum = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), sum, sum_part_x, 
-			      [](const NCCSums& x, const NCCSums& y){
-				      return x + y;
-			      });
-
-
-	sum = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), sum, sum_part_y, 
-			      [](const NCCSums& x, const NCCSums& y){
-				      return x + y;
-			      });
+	sum = preduce(C1DParallelRange(0, mov.get_size().y, 1), sum, sum_part_x, 
+		      [](const NCCSums& x, const NCCSums& y){
+			      return x + y;
+		      });
+	
+	
+	sum = preduce(C1DParallelRange(0, mov.get_size().y, 1), sum, sum_part_y, 
+		      [](const NCCSums& x, const NCCSums& y){
+			      return x + y;
+		      });
 	
 	return sum.value(); 
 }       
@@ -109,18 +110,18 @@ double CGNCC2DImageCost::do_evaluate_force(const mia::C2DImage& a,
 
 	
 	NCCSums sum_x; 
-	sum_x = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), sum_x, sum_part_x, 
-			      [](const NCCSums& x, const NCCSums& y){
-				      return x + y;
-			      });
-
+	sum_x = preduce(C1DParallelRange(0, mov.get_size().y, 1), sum_x, sum_part_x, 
+			[](const NCCSums& x, const NCCSums& y){
+				return x + y;
+			});
+	
 
 	NCCSums sum_y; 
-	sum_y = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), sum_y, sum_part_y, 
-			      [](const NCCSums& x, const NCCSums& y){
-				      return x + y;
-				});
-
+	sum_y = preduce(C1DParallelRange(0, mov.get_size().y, 1), sum_y, sum_part_y, 
+			[](const NCCSums& x, const NCCSums& y){
+				return x + y;
+			});
+	
 	NCCSums sum = sum_x + sum_y; 
 	double retval = sum.value(); 
 	// from here on we evaluate the gradinet 
@@ -131,7 +132,7 @@ double CGNCC2DImageCost::do_evaluate_force(const mia::C2DImage& a,
 	auto ddx = get_gradient(nagx);
 	auto ddy = get_gradient(nagy); 
 
-	auto eval_force = [this, &x_grad_helper, &y_grad_helper, &nagx, & nagy, &ddx, &ddy, &force](const tbb::blocked_range<size_t>& range) -> void {
+	auto eval_force = [this, &x_grad_helper, &y_grad_helper, &nagx, & nagy, &ddx, &ddy, &force](const C1DParallelRange& range) -> void {
 		for (auto y = range.begin(); y != range.end(); ++y) {
 			int offs = nagx.get_size().x * y; 
 			for (auto x = 0; x < nagx.get_size().x; ++x, ++offs) {
@@ -142,7 +143,7 @@ double CGNCC2DImageCost::do_evaluate_force(const mia::C2DImage& a,
 		}
 	}
 
-	parallel_for(tbb::blocked_range<size_t>(0, a.get_size().y, 1), eval_force);
+	pfor(C1DParallelRange(0, a.get_size().y, 1), eval_force);
 
 	return retval; 
 }       

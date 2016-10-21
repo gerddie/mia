@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,10 +70,10 @@ BOOST_AUTO_TEST_CASE( test_mixing_ica_without_mean )
 
 	itpp::mat mix(init_mix, rows, nica, false);
 	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<float> mean(rows, 0.0);
+	vector<double> mean(rows, 0.0);
 
-	CICAAnalysis ica(ic, mix, mean);
-
+	CICAAnalysisITPP ica(ic, mix, mean);
+	
 	for (int i = 0; i < rows; ++i) {
 		vector<float> mixed = ica.get_mix(i);
 		for (int k = 0; k < elms; ++k) {
@@ -116,9 +116,9 @@ BOOST_AUTO_TEST_CASE( test_mixing_ica_with_skip )
 
 	itpp::mat mix(init_mix, rows, nica, false);
 	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<float> mean(rows, 0.0);
-
-	CICAAnalysis ica(ic, mix, mean);
+	vector<double> mean(rows, 0.0);
+    
+	CICAAnalysisITPP ica(ic, mix, mean);
 	CICAAnalysis::IndexSet skip;
 	skip.insert(skipnr);
 
@@ -162,9 +162,9 @@ BOOST_AUTO_TEST_CASE( test_partial_ica_mix )
 
 	itpp::mat mix(init_mix, rows, nica, false);
 	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<float> mean(rows, 0.0);
+	vector<double> mean(rows, 0.0);
 
-	CICAAnalysis ica(ic, mix, mean);
+	CICAAnalysisITPP ica(ic, mix, mean);
 	CICAAnalysis::IndexSet components;
 	components.insert(1);
 	components.insert(2);
@@ -205,9 +205,9 @@ BOOST_AUTO_TEST_CASE( test_delta_ica_mix )
 
 	itpp::mat mix(init_mix, rows, nica, false);
 	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<float> mean(rows, 0.0);
+	vector<double> mean(rows, 0.0);
 
-	CICAAnalysis ica(ic, mix, mean);
+	CICAAnalysisITPP ica(ic, mix, mean);
 	CICAAnalysis::IndexSet plus_components;
 	plus_components.insert(1);
 	plus_components.insert(2);
@@ -236,8 +236,9 @@ BOOST_AUTO_TEST_CASE( test_ica_with_zero_mean )
 		{ 4, -4,  -5,  -3,  6, -4, 6, -3, -1, 4 } ,
 		{ 5, -5,  -6,  -1,  2, -2, 6, -3, -1, 5 }
 	};
-
-	CICAAnalysis ica(rows, elms);
+	
+	CICAAnalysisITPP ica;
+	ica.initialize(rows, elms);
 
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
@@ -266,8 +267,9 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean )
 		{ 4, -4,  -5,  -3,  6, -4,  6, -3, -1, 4 },
 		{ 1, -9,  -10,  -5,  -2, -6,  2, -7, -5, 1 }
 	};
-
-	CICAAnalysis ica(rows, elms);
+	
+	CICAAnalysisITPP ica; 
+	ica.initialize(rows, elms);
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 	ica.run(3, vector<vector<float> >());
@@ -291,7 +293,8 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown )
 		{ 1, -9,  -10,  -5,  -2, -6,  2, -7, -5, 1 }
 	};
 
-	CICAAnalysis ica(rows, elms);
+	CICAAnalysisITPP ica;
+	ica.initialize(rows, elms);
 
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
@@ -320,8 +323,9 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_SYMM )
 		{ 1, -9,  -10,  -5,  -2, -6,  2, -7, -5, 1 }
 	};
 
-	CICAAnalysis ica(rows, elms);
-	ica.set_approach(FICA_APPROACH_SYMM); 
+	CICAAnalysisITPP ica;
+	ica.initialize(rows, elms);
+	ica.set_approach(CICAAnalysis::appr_symm);
 
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
@@ -351,8 +355,9 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_normalized_mix )
 		{ 6, -2,  -5,  -13,  6, -4,  6, -3, -11, 14 },
 		{ 1, -9,  -10,  -5,  -2, -6,  2, -7, -5, 1 }
 	};
-
-	CICAAnalysis ica(rows, elms);
+	
+	CICAAnalysisITPP ica;
+	ica.initialize(rows, elms);
 
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
@@ -382,7 +387,8 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_normalized )
 		{ 1, -9,  -10,  -5,  -2, -6,  2, -7, -5, 1 }
 	};
 
-	CICAAnalysis ica(rows, elms);
+	CICAAnalysisITPP ica;
+	ica.initialize(rows, elms);
 
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
@@ -412,7 +418,8 @@ BOOST_AUTO_TEST_CASE( test_ica_saftey_against_stupid )
 		{ 1, -9,  -10,  -5,  -2, -6,  2, -7, -5, 1 }
 	};
 
-	CICAAnalysis ica(rows, elms);
+	CICAAnalysisITPP ica;
+	ica.initialize(rows, elms);
 
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
@@ -436,7 +443,8 @@ BOOST_AUTO_TEST_CASE( test_ica_access_failtures )
 		{ 1, -9,  -10,  -5,  -2, -6,  2, -7, -5, 1 }
 	};
 
-	CICAAnalysis ica(rows, elms);
+	CICAAnalysisITPP ica;
+	ica.initialize(rows, elms);
 
 	for (size_t i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);

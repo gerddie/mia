@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,7 @@
 #include <map>
 #include <boost/any.hpp>
 
-#include <mia/core/defines.hh>
-#include <tbb/recursive_mutex.h>
-
+#include <mia/core/parallel.hh>
 
 NS_MIA_BEGIN
 
@@ -99,7 +97,7 @@ private:
 	Anymap m_map;
 	typedef std::map<std::string,bool> Usagemap;
 	mutable Usagemap m_usage;
-	static tbb::recursive_mutex m_mutex; 
+	static CRecursiveMutex m_mutex; 
 };
 
 NS_MIA_END

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,7 +266,7 @@ struct add_2d_new<T2DDatafield< T >, 1> {
 }; 
 
 
-#ifdef __SSE__
+#ifdef __SSE2__
 template <>
 struct add_2d_new<T2DDatafield< double >, 4> {
 	static double value(const T2DDatafield< double >&  coeff, 
@@ -275,7 +275,7 @@ struct add_2d_new<T2DDatafield< double >, 4> {
 }; 
 #endif
 
-#ifdef __SSE2__
+#ifdef __SSE__
 
 template <>
 struct add_2d_new<T2DDatafield< float >, 4> {

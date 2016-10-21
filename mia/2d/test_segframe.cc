@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ void FrameTestRead::init(const char *init_str)
 	parser.parse_memory(init_str);
 	const xmlpp::Document *document = parser.get_document();
 	const xmlpp::Element *root = document->get_root_node ();
-	const xmlpp::Node::NodeList nodes = root->get_children();
+	auto nodes = root->get_children();
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
 	frame = CSegFrame (**nodes.begin(), 1);

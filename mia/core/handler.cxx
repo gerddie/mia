@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
 #include <iterator>
 #include <climits> 
 
-#include <boost/regex.hpp>
 #include <boost/filesystem/operations.hpp>
 
 #include <mia/core/module.hh>
@@ -310,19 +309,21 @@ T& THandlerSingleton<T>::do_instance(bool require_initialization)
 {
 	TRACE_FUNCTION; 
 	CScopedLock lock(m_creation_mutex); 
-	static THandlerSingleton<T> me; 
-	cvdebug() << "m_is_initialized = " << m_is_initialized << "\n"; 
-
-	if (!m_is_initialized && require_initialization) {
-		TRACE("Unitialized state"); 
-		CScopedLock lock_init(m_initialization_mutex);
+	static THandlerSingleton<T> me;
+	cvdebug() << "m_is_initialized = " << m_is_initialized << "\n";
+	
+	if (require_initialization) {
 		if (!m_is_initialized) {
-			TRACE("Enter locked unitialized state"); 
-			lock.release(); 
-			cvdebug() << "not yet initialized: second check passed\n"; 
-			me.initialise(m_searchpath);
-			m_is_initialized = true; 
-
+			TRACE("Uninitialized state"); 
+			CScopedLock lock_init(m_initialization_mutex);
+			if (!m_is_initialized) {
+				TRACE("Enter locked uninitialized state"); 
+				lock.release(); 
+				cvdebug() << "not yet initialized: second check passed\n"; 
+				me.initialise(m_searchpath);
+				m_is_initialized = true; 
+				
+			}
 		}
 	}
 	return me; 
@@ -345,10 +346,6 @@ void THandlerSingleton<T>::set_search_path(const CPluginSearchpath& searchpath)
 			 << ">::set_search_path: handler was already created\n"; 
 		
 	}
-#if 0 // work around the appearent icc bug, where the static member 
-      //variable is not initialised
-	::new (&m_searchpath) CPathNameArray; 
-#endif
 //	cvdebug() << "searchpath=" << searchpath << "\n"; 
 	m_searchpath = searchpath; 
 
@@ -362,7 +359,7 @@ template <typename T>
 bool THandlerSingleton<T>::m_is_created = false; 
 
 template <typename T>
-bool THandlerSingleton<T>::m_is_initialized = false; 
+std::atomic<bool> THandlerSingleton<T>::m_is_initialized(false); 
 
 template <typename T>
 CMutex THandlerSingleton<T>::m_creation_mutex; 

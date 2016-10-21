@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ bool  EXPORT_3D save_image(const std::string& filename, C3DImage& image)
       return save_image(filename, P3DImage(&image, void_destructor<C3DImage>())); 
 }
 
+template class TPlugin<io_3dimage_data, io_plugin_type>;
 template class TIOPlugin<io_3dimage_data>;
 template class THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
 template class TIOPluginHandler<C3DImageIOPlugin>;

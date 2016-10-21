@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,11 +46,10 @@ BOOST_AUTO_TEST_CASE(segpoint_read)
 
 	const Document *document = parser.get_document();
 	const Element *root = document->get_root_node ();
-	const Node::NodeList nodes = root->get_children("point");
+	auto nodes = root->get_children("point");
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
-	for (Node::NodeList::const_iterator i = nodes.begin();
-	     i != nodes.end(); ++i) {
+	for (auto i = nodes.begin(); i != nodes.end(); ++i) {
 		CSegPoint2D p(**i);
 		BOOST_CHECK_EQUAL(p.x, 10);
 		BOOST_CHECK_EQUAL(p.y, 20);
@@ -109,7 +108,7 @@ void SegStarFixture::init(const char *init_str)
 	parser.parse_memory(init_str);
 	const Document *document = parser.get_document();
 	const Element *root = document->get_root_node ();
-	const Node::NodeList nodes = root->get_children("star");
+	auto nodes = root->get_children("star");
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
 	star = CSegStar(**nodes.begin());
@@ -391,7 +390,7 @@ BOOST_AUTO_TEST_CASE(test_segstart_error_attribute)
 	parser.parse_memory(sestsection_error_r);
 	const xmlpp::Document *document = parser.get_document();
 	const xmlpp::Element *root = document->get_root_node ();
-	const xmlpp::Node::NodeList nodes = root->get_children();
+	auto nodes = root->get_children();
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 	BOOST_CHECK_THROW(CSegStar(**nodes.begin()), runtime_error); 
 }
@@ -411,7 +410,7 @@ BOOST_AUTO_TEST_CASE( test_segset_write_version1 )
 	segset.add_frame(CSegFrame("image.png", star1, CSegFrame::Sections()));
 	segset.add_frame(CSegFrame("image2.png", star2, CSegFrame::Sections()));
 
-	auto_ptr<xmlpp::Document> document(segset.write());
+	unique_ptr<xmlpp::Document> document(segset.write());
 
 	const string xmldoc = document->write_to_string("UTF-8");
 	const string testdoc(testset_init2);
@@ -603,7 +602,7 @@ void SectionTestRead::init(const char *init_str)
 	parser.parse_memory(init_str);
 	const xmlpp::Document *document = parser.get_document();
 	const xmlpp::Element *root = document->get_root_node ();
-	const xmlpp::Node::NodeList nodes = root->get_children();
+	auto nodes = root->get_children();
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 	section = CSegSection(**nodes.begin(), 1);
 

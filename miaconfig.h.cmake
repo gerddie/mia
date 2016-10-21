@@ -11,4 +11,5 @@
 #define PLUGIN_SEARCH_PATH  "@PLUGIN_SEARCH_PATH@"
 #define PLUGIN_INSTALL_PATH  "@PLUGIN_INSTALL_PATH@"
 
-#cmakedefine LONG_64BIT 1 
+#cmakedefine LONG_64BIT 1
+#cmakedefine HAVE_TBB 1 

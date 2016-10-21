@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ protected:
 	   @param type pixel type of this image  
 	 */
 	C3DImage(const CAttributedData& data, EPixelType type);
+
 	/**
 	   Constructor to create the base sceleton of the image 
 	   @param type pixel type of this image  
@@ -121,6 +122,9 @@ public:
 	    @remark orientation is currently not really used
 	*/
 	void set_orientation(E3DImageOrientation orient);
+
+	/// \returns a pair (minimum, maximum) pixel intensity 
+	virtual std::pair<double, double> get_minmax_intensity() const = 0; 
 private:
 	EPixelType m_pixel_type;
 };
@@ -191,6 +195,12 @@ public:
 	   copy constructor
 	 */
 	T3DImage(const T3DImage& orig);
+
+	/**
+	   Constructor to create the image by using a 3D data field 
+	   \param orig the input data field 
+	*/
+	T3DImage(const T3DDatafield<T>& orig);
 
 	/**
 	   standart costructor creates an image of size (0,0,0)
@@ -366,6 +376,8 @@ public:
 	/// \returns the 3D size of the image
 	virtual const C3DBounds& get_size() const;
 
+	/// \returns minimum and mximum pixel intensity of the image
+	std::pair<double, double> get_minmax_intensity() const; 
 private:
 	T3DDatafield<T> m_image;
 };

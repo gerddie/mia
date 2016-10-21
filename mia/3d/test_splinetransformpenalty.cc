@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -259,8 +259,8 @@ C3DSplineTransformPenalty *C3DSplinePenaltyMock::do_clone() const
 }
   
 
-BOOST_AUTO_TEST_CASE(test_available_plugins)
+BOOST_AUTO_TEST_CASE(test_available_plugins_spline_penalty)
 {
 	std::set<std::string> test_data = {"divcurl"}; 
-	test_availabe_plugins(C3DSplineTransformPenaltyPluginHandler::instance(), test_data); 
+	test_available_plugins(C3DSplineTransformPenaltyPluginHandler::instance(), test_data); 
 }

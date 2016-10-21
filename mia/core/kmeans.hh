@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,15 @@
 #include <limits>
 #include <mia/core/defines.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/core/msgstream.hh>
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
 
 NS_MIA_BEGIN
-/// helper function called by kmeans - don't call it directly 
+
+int EXPORT_CORE kmeans_get_closest_clustercenter(const std::vector<double>& classes, size_t l, double value); 
+
+
 template <typename InputIterator, typename OutputIterator> 
 bool kmeans_step(InputIterator ibegin, InputIterator iend, OutputIterator obegin, 
 		 std::vector<double>& classes, size_t l, int& biggest_class ) 
@@ -57,20 +61,9 @@ bool kmeans_step(InputIterator ibegin, InputIterator iend, OutputIterator obegin
 		// assign closest cluster center
 		OutputIterator ob = obegin; 
 		for (InputIterator b = ibegin; b != iend; ++b, ++ob) {
-			const double val = *b;
-			double dmin = std::numeric_limits<double>::max();
-			int c = 0;
-			for (size_t i = 0; i <= l; i++) {
-				double d = fabs (val - classes[i]);
-				if (d < dmin) {
-					dmin = d;
-					c = i;
-				};
-			};
-			*ob = c; 
-			
-			++count[c];
-			sums[c] += val;
+			*ob = kmeans_get_closest_clustercenter(classes,l, *b); 
+			++count[*ob];
+			sums[*ob] += *b;
 		};
 		
 		// recompute cluster centers
@@ -99,7 +92,74 @@ bool kmeans_step(InputIterator ibegin, InputIterator iend, OutputIterator obegin
 		};
 	};
 
-	cvinfo()<<  "kmeans: " << l + 1 << " classes " << 50 - iter << "  iterations";
+	cvinfo()<<  "kmeans: " << l + 1 << " classes, " << 50 - iter << "  iterations";
+	for (size_t i = 0; i <= l; ++i )
+		cverb << std::setw(8) << classes[i]<< " ";  
+	cverb << "\n"; 
+	
+	return conv; 
+}
+
+
+template <typename InputIterator, typename OutputIterator> 
+bool kmeans_step_with_fixed_centers(InputIterator ibegin, InputIterator iend, OutputIterator obegin, 
+				    std::vector<double>& classes, const std::vector<bool>& fixed_center,
+				    size_t l, int& biggest_class ) 
+{
+	cvdebug()<<  "kmeans enter: ";
+	for (size_t i = 0; i <= l; ++i )
+		cverb << std::setw(8) << classes[i]<< " ";  
+	cverb << "\n"; 
+	
+	biggest_class = -1; 
+	const double convLimit = 0.005;	// currently fixed
+	std::vector<double> sums(classes.size()); 
+	std::vector<size_t> count(classes.size()); 
+	
+	bool conv = false;
+	int iter = 50; 
+	
+	while( iter-- && !conv) {
+
+		sort(classes.begin(), classes.end()); 
+		
+		// assign closest cluster center
+		OutputIterator ob = obegin; 
+		for (InputIterator b = ibegin; b != iend; ++b, ++ob) {
+			*ob = kmeans_get_closest_clustercenter(classes,l, *b); 
+			++count[*ob];
+			sums[*ob] += *b;
+		};
+		
+		// recompute cluster centers
+		conv = true;
+		size_t max_count = 0; 
+		for (size_t i = 0; i <= l; i++) {
+			if (fixed_center[i])
+				continue; 
+			if (count[i]) {
+				double a = sums[i] / count[i];
+				if (a  && fabs ((a - classes[i]) / a) > convLimit)
+					conv = false;
+				classes[i] = a;
+				
+				if (max_count < count[i]) {
+					max_count  = count[i]; 
+					biggest_class = i; 
+				}
+			} else { // if a class is empty move it closer to neighbour 
+				if (i == 0)
+					classes[i] = (classes[i] + classes[i + 1]) / 2.0; 
+				else
+					classes[i] = (classes[i] + classes[i - 1])  / 2.0; 
+				conv = false;
+			}
+			sums[i] = 0;
+			count[i] = 0;
+		};
+	};
+
+	cvinfo()<<  "kmeans: " << l + 1 << " classes, " << 50 - iter << "  iterations";
 	for (size_t i = 0; i <= l; ++i )
 		cverb << std::setw(8) << classes[i]<< " ";  
 	cverb << "\n"; 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,19 +266,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 			}
 }
 
-BOOST_AUTO_TEST_CASE (test_vectorfield_as_inverse_of) 
+BOOST_AUTO_TEST_CASE (test_vectorfield_as_inverse_of)
 {
-	C3DBounds size(10,10,10); 
+	C3DBounds size(10,10,10);
 	
-	C3DFVectorfield other(size); 
+	C3DFVectorfield other(size);
 	
-	for (auto io = other.begin_range(C3DBounds::_0, size); 
+	for (auto io = other.begin_range(C3DBounds::_0, size);
 	     io != other.end_range(C3DBounds::_0, size); ++io)  {
 		*io = C3DFVector(sin(io.pos().x * M_PI / 9), sin(io.pos().y * M_PI / 9), sin(io.pos().z * M_PI / 9));
 	}
-		
-	C3DFVectorfield me(size); 
-	me.update_as_inverse_of(other, 1e-14f, 50); 
+	
+	C3DFVectorfield me(size);
+	me.update_as_inverse_of(other, 1e-14f, 50);
 	
 	C3DLinearVectorfieldInterpolator interp_me(me);
 	C3DLinearVectorfieldInterpolator interp_other(other);
@@ -287,23 +287,22 @@ BOOST_AUTO_TEST_CASE (test_vectorfield_as_inverse_of)
 		for(unsigned y = 0; y < 10; ++y)
 			for(unsigned x = 0; x < 10; ++x) {
 				
-				C3DFVector pos(x,y,z); 
-				C3DFVector pos_t = pos - interp_me(pos); 
-				C3DFVector pos_tt = pos_t - interp_other(pos_t) - pos; 
+				C3DFVector pos(x,y,z);
+				C3DFVector pos_t = pos - interp_me(pos);
+				C3DFVector pos_tt = pos_t - interp_other(pos_t) - pos;
 				
-				cvdebug() << pos << ": delta = " << pos_tt << "\n";  
+				cvdebug() << pos << ": delta = " << pos_tt << "\n";
 
-				BOOST_CHECK_SMALL(pos_tt.x, 1e-5f); 
-				BOOST_CHECK_SMALL(pos_tt.y, 1e-5f); 
-				BOOST_CHECK_SMALL(pos_tt.z, 1e-5f); 
+				BOOST_CHECK_SMALL(pos_tt.x, 1e-5f);
+				BOOST_CHECK_SMALL(pos_tt.y, 1e-5f);
+				BOOST_CHECK_SMALL(pos_tt.z, 1e-5f);
 
 
-				// test also the inverse, but with a higher tolerance, 
+				// test also the inverse, but with a higher tolerance,
 				// since this was not optimized 
 				C3DFVector pos_it = pos - interp_other(pos); 
-				C3DFVector pos_itt = pos_it - interp_me(pos_it) - pos
-					;
-				cvdebug() << pos << ": inv delta = " << pos_itt << "\n";  				
+				C3DFVector pos_itt = pos_it - interp_me(pos_it) - pos;
+				cvdebug() << pos << ": inv delta = " << pos_itt << "\n";
 
 				BOOST_CHECK_SMALL(pos_itt.x, 0.05f); 
 				BOOST_CHECK_SMALL(pos_itt.y, 0.05f); 

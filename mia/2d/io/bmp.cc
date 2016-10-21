@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@ using namespace std;
 using namespace boost;
 
 
-enum EDataType {dt_8bit, dt_16bit, dt_32bit};
 enum ECompression {c_none = 0,
 		   c_8bit_rle,
 		   c_4bit_rle,
@@ -96,7 +95,6 @@ private:
 CBMP2DImageIO::CBMP2DImageIO():
 	C2DImageIOPlugin("bmp")
 {
-	add_supported_type(it_ushort);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_bit);
 	add_suffix(".bmp");
@@ -143,9 +141,77 @@ static P2DImage  read_bit_pixels(CFile& image, unsigned int width, unsigned int 
         return presult;
 }
 
+static P2DImage  read_4bit_pixels_c(CFile& image, unsigned int width, unsigned int height)
+{
+	C2DUBImage *result = new C2DUBImage(C2DBounds(width, height));
+	P2DImage presult(result); 
+	cvdebug() << "read_4bit_pixels compressed\n";
+
+	
+	int y = height-1;
+	int x = 0; 
+	while (y >= 0) {
+		int inbyte_1 = fgetc(image);
+		
+		//rle encoded pixels
+		if (inbyte_1 > 0) {
+			int inbyte_2 = fgetc(image);
+			if (inbyte_2 == EOF) 
+				throw runtime_error("BPM::Load: incomplete image");
+			char hi = (inbyte_2 >> 4) & 0xF;
+			char lo = inbyte_2 & 0xF;
+			
+			while (inbyte_1--) {
+				(*result)(x,y) = hi;
+				cvdebug() << inbyte_1 << " x=" << x << ", y=" << y << " -> " << (int)hi << "\n"; 
+				swap(hi, lo);
+				++x;
+			}
+		}else{
+			int inbyte_2 = fgetc(image);
+
+			// literal pixels 
+			if ( inbyte_2 > 2){
+				vector<char> buffer( (inbyte_2 + 3) / 2);
+				if (fread(&buffer[0], 1, buffer.size(), image) != buffer.size())
+					throw runtime_error("BPM::Load: incomplete image");
+				for (auto c = buffer.begin(); c != buffer.end() && inbyte_2 > 0; ++c) {
+					(*result)(x,y) = (*c >> 4) & 0xF;
+					++x; 
+					inbyte_2--;
+					if (inbyte_2--) {
+						(*result)(x,y) = *c & 0xF;
+						++x; 
+					}
+				}
+			}else if (inbyte_2 == 0){
+				cvdebug() << "End of row\n"; 
+				--y;
+				x = 0;
+			}else if (inbyte_2 == 1){
+				cvdebug() << "End of image\n"; 
+				// end of image 
+				break;
+			}else { // if inbyte_2 == 2
+				// offset
+				int dx = fgetc(image);
+				int dy = fgetc(image);
+
+				if (dx == EOF || dy == EOF) {
+					throw runtime_error("BPM::Load: incomplete image");
+				}
+				y -= dy;
+				x += dx;
+			}
+		}
+	}
+	
+	return presult;
+}
+
 static P2DImage  read_4bit_pixels(CFile& image, unsigned int width, unsigned int height)
 {
-	C2DBitImage *result = new C2DBitImage(C2DBounds(width, height));
+	C2DUBImage *result = new C2DUBImage(C2DBounds(width, height));
 	P2DImage presult(result); 
 	cvdebug() << "read_4bit_pixels\n";
 
@@ -251,54 +317,6 @@ static P2DImage  read_8bit_pixels_c(CFile& image, unsigned int width, unsigned i
 	return presult;
 }
 
-
-static P2DImage  read_16bit_pixels(CFile& image, unsigned int width, unsigned int height)
-{
-	C2DUSImage *result = new C2DUSImage(C2DBounds(width, height));
-	P2DImage presult(result); 
-	int row_count = width % 2;
-	cvdebug() << "read_16bit_pixels\n";
-
-	for (int y = height-1; y >= 0; --y) {
-		unsigned short *p = &(*result)(0,y);
-		if (fread( p, width, 2, image) != 2)
-			throw runtime_error("BMP::Load: incomplete image");
-#ifdef WORDS_BIGENDIAN
-		for (size_t x = 0; x < width; ++x, ++p)
-			ENDIANADAPT(*p);
-#endif
-		int remain = row_count;
-		while (remain--) {
-			if (fgetc(image) == EOF) 
-				throw runtime_error("BPM::Load: incomplete image");
-			if (fgetc(image) == EOF) 
-				throw runtime_error("BPM::Load: incomplete image");
-		}
-	}
-	return presult;
-}
-
-
-
-static P2DImage  read_24bit_pixels(CFile& image, unsigned int width, unsigned int height)
-{
-	cvdebug() << "read_24bit_pixels\n";
-
-	C2DUIImage *result = new C2DUIImage(C2DBounds(width, height));
-	P2DImage presult(result); 
-
-	for (int y = height-1; y >= 0; --y) {
-		unsigned int *p = &(*result)(0,y);
-		if (fread( p, width, 4, image) != 4)
-			throw runtime_error("BMP::Load: incomplete image");
-#ifdef WORDS_BIGENDIAN
-		for (size_t x = 0; x < width; ++x, ++p)
-			ENDIANADAPT(*p);
-#endif
-	}
-	return presult;
-}
-
 #ifdef WORDS_BIGENDIAN
 void endian_adapt_header(CBMP2DImageIO::BMPHeader& header)
 {
@@ -357,22 +375,17 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 #ifdef WORDS_BIGENDIAN
 	endian_adapt_info_header(info_header);
 #endif
-
-
-	if (info_header.size != 40)
-		throw runtime_error("CBMP2DImageIO::load: incompatible header size");
-
-	cvdebug() << "validated infor header size\n";
-
-	if (info_header.bits <= 8) {
-		// eat the palette
-		size_t palette_size = (1 << info_header.bits);
-		cvdebug() << "Read palette of size " << palette_size << "\n";
-		vector<char> buffer(palette_size * 4);
-		if (fread(&buffer[0], palette_size, 4, f) != 4) {
-			throw runtime_error("bmp: error reading palette");
-		}
+	switch (info_header.size) {
+	case 40:cvdebug() << "BMP: Windows NT, 3.1x style bitmap\n"; 
+		break;
+	case 108: cvdebug() << "BMP: Windows NT 4.0, 95 style bitmap\n"; 
+		break;
+	case 124: cvdebug() << "BMP: Windows NT 5.0, 98 style bitmap\n";
+	default: 
+		throw create_exception<runtime_error>("CBMP2DImageIO::load: incompatible header size=", info_header.size);
 	}
+
+	cvdebug() << "validated info header size\n";
 
 	if ((info_header.width < 1) || (info_header.height < 1))
 		throw create_exception<runtime_error>("CBMP2DImageIO::load: Image has unsupported dimensions", 
@@ -388,6 +401,11 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 		throw create_exception<runtime_error>("CBMP2DImageIO::load: Image has too big", 
 						      " width=", info_header.width, ", height=", 
 						      info_header.height);
+	if (fseek(f, header.offset, SEEK_SET) != 0) {
+		throw create_exception<runtime_error>("CBMP2DImageIO::load: '", filename,
+						      "' ", strerror(errno)); 
+	}
+	
 	
 	PData result = PData(new C2DImageVector());
 
@@ -401,10 +419,6 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 			break;
 		case 8: result->push_back(read_8bit_pixels_uc(f, info_header.width, info_header.height));
 			break;
-		case 16:result->push_back(read_16bit_pixels(f, info_header.width, info_header.height));
-			break;
-		case 24:result->push_back(read_24bit_pixels(f, info_header.width, info_header.height));
-			break;
 		default: {
 			stringstream errmsg;
 			errmsg << "CBMP2DImageIO::load: unsupported pixel size: " << info_header.bits;
@@ -413,10 +427,13 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 		} // end switch
 	}else{
 		switch (info_header.bits) {
+		case 4: result->push_back(read_4bit_pixels_c(f, info_header.width, info_header.height));
+			break;
 		case 8: result->push_back(read_8bit_pixels_c(f, info_header.width, info_header.height));
 			break;
 		default:
-			throw runtime_error("CBMP2DImageIO::load: compressed images not (yet) supported");
+			throw create_exception<runtime_error>("CBMP2DImageIO::load: compressed images with ",
+							      info_header.bits, " bits per pixel not supported");
 		}
 	}
 	cvdebug() << "CBMP2DImageIO::load done\n";
@@ -453,20 +470,8 @@ struct TBMPIOPixelTrait<C2DBitImage> {
 };
 
 template <>
-struct TBMPIOPixelTrait<C2DUIImage> {
-	enum { pixel_size = 24 };
-	enum { supported = 1 };
-};
-
-template <>
 struct TBMPIOPixelTrait<C2DUBImage> {
 	enum { pixel_size = 8 };
-	enum { supported = 1 };
-};
-
-template <>
-struct TBMPIOPixelTrait<C2DUSImage> {
-	enum { pixel_size = 16 };
 	enum { supported = 1 };
 };
 
@@ -645,7 +650,9 @@ bool CBMP2DImageIO::do_save(string const& filename, const C2DImageVector& data) 
 
 const string  CBMP2DImageIO::do_get_descr()const
 {
-	return string("BMP 2D-image input/output support");
+	return string("BMP 2D-image input/output support. The plug-in supports reading and writing of binary images and "
+		      "8-bit gray scale images. read-only support is provided for 4-bit gray scale images. "
+		      "The color table is ignored and the pixel values are taken as literal gray scale values.");
 }
 
 

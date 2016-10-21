@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,7 +211,7 @@ void C3DMaskedImageFullCost::do_reinit()
 			m_src_mask = m_src_mask_prefilter->filter(*m_src_mask); 
 
                 if (m_src->get_size() != m_src_mask->get_size()) {
-                        throw create_exception<runtime_error>("C3DMaskedImageFullCost: moving image has size [", 
+                        throw create_exception<invalid_argument>("C3DMaskedImageFullCost: moving image has size [", 
                                                               m_src->get_size(), "], but corresponding mask is of size [", 
                                                               m_src_mask->get_size(), "]"); 
                 }
@@ -235,9 +235,9 @@ void C3DMaskedImageFullCost::do_reinit()
 			m_ref_mask = m_src_mask_prefilter->filter(*m_ref_mask); 
 				
                 if (m_ref->get_size() != m_ref_mask->get_size()) {
-                        throw create_exception<runtime_error>("C3DMaskedImageFullCost: reference image has size [", 
-                                                              m_src->get_size(), "], but corresponding mask is of size [",
-                                                              m_src_mask->get_size(), "]"); 
+                        throw create_exception<invalid_argument>("C3DMaskedImageFullCost: reference image has size [", 
+                                                              m_ref->get_size(), "], but corresponding mask is of size [",
+                                                              m_ref_mask->get_size(), "]"); 
                 }
 
 
@@ -256,7 +256,7 @@ void C3DMaskedImageFullCost::do_reinit()
         
 
 	if (m_src->get_voxel_size() != m_ref->get_voxel_size()) {
-		cvwarn() << "C3DMaskedImageFullCost: moving and reference image are of differnet pixel dimensions."
+		cvwarn() << "C3DMaskedImageFullCost: moving and reference image are of different pixel dimensions."
                          << "unless you optimize a transformation that supports global scaling this might "
                          << "not be what you want to do\n"; 
 	}

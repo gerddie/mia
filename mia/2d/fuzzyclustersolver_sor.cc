@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <cmath> 
 #include <mia/2d/fuzzyclustersolver_sor.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/parallel.hh>
 
 
 NS_MIA_BEGIN
@@ -43,28 +44,27 @@ void C2DFuzzyClusterSolver::solve(const C2DFImage& force, C2DFImage& gain)
 
 	const float lambda = 4 * m_lambda1 + 20 * m_lambda2; 
 	const float omega = 1.75; 
-	const float eps = 0.00001; 
-
-	auto size = m_weight.get_size(); 
+	const float eps = 0.00001;
+	auto size = m_weight.get_size();
 	const int dx = size.x; 
-	float n0 = 0.0; 
-	for (int i = 0; i < m_max_iter; ++i) {
-		float norm = 0.0; 
-		for(size_t y = 2; y < size.y - 2; ++y) {
+
+	auto run_y = [&](const C1DParallelRange& range, float norm) -> float{
+		for(auto y = range.begin(); y != range.end(); ++y) {
 			auto igain = gain.begin_at(2, y); 
 			auto iforce = force.begin_at(2, y); 
-			auto iweight = m_weight.begin_at(2, y); 
+			auto iweight = m_weight.begin_at(2, y);
+			
 			
 			for(size_t x = 2; x < size.x - 2; ++x, ++igain, ++iforce, ++iweight) {
 				float d = *iweight + lambda; 
 				if ( fabsf(d) < 1e-8) 
 					continue; 
-
+				
 				float m1 = igain[-dx] + igain[-1] + igain[1] + igain[dx];  
 				float m2 = igain[-dx -1 ] + igain[-dx + 1]
 					+ igain[dx - 1] + igain[dx + 1];  
 				float m3 = igain[-2 * dx] + igain[-2] + igain[2] + igain[2 * dx];  
-
+				
 				float h = m_lambda1 * m1 + 
 					m_lambda2 * (8 * m1 - 2 * m2 - m3); 
 				float r = omega * (d * *igain - h - *iforce) / d; 
@@ -73,6 +73,18 @@ void C2DFuzzyClusterSolver::solve(const C2DFImage& force, C2DFImage& gain)
 				
 			}
 		}
+		return norm; 
+	};
+
+
+	
+
+
+	float n0 = 0.0; 
+	for (int i = 0; i < m_max_iter; ++i) {
+		float norm = 0.0;
+		norm = preduce( C1DParallelRange(2, size.y - 2), norm, run_y, [](float x, float y){return x+y;}); 
+		
 		cvinfo() << "FuzzyComputeGain: [" << i << "] n=" << norm <<"\n"; 
 		if (i == 0) 
 			n0 = norm; 

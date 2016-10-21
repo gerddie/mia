@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
  *
  */
 
-
-#define VSTREAM_DOMAIN "2dmyoseries-dice"
 
 #include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
@@ -91,7 +89,7 @@ int do_main( int argc, char *argv[] )
 		throw invalid_argument("Both series must contain the same number of frames"); 
 	
 	if (skip  >= original_frames.size())
-		throw create_exception<invalid_argument>( "skip (", skip, ") must be smaller then number of availabe frames(", 
+		throw create_exception<invalid_argument>( "skip (", skip, ") must be smaller then number of available frames(", 
 						original_frames.size(), ")"); 
 	
 

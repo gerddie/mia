@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/histogram.hh>
+#include <mia/core/kmeans.hh>
+#include <mia/core/cmeans.hh>
 #include <mia/3d/fuzzyclustersolver_cg.hh>
 #include <mia/3d/fuzzyseg.hh>
 
@@ -42,7 +44,7 @@ using namespace std;
 #define _MAXIT 5
 
 
-typedef vector<C3DFImage*> C3DFImageVec;
+typedef vector<C3DFImage> C3DFImageVec;
 
 
 class CSegment3d : public TFilter<C3DFImageVec> {
@@ -70,110 +72,6 @@ private:
 
 using namespace std;
 
-template <class Data3D>
-vector<double> Isodata3d (const Data3D& src_image, unsigned int nClasses, unsigned int  maxPixVal)
-{
-	vector<double> clCenter(nClasses);
-
-	/** classmembership of each possible pixelvalue 0-maxPixVal */
-	vector<unsigned int> classOfGreyval( maxPixVal + 1 );
-
-	// discard all intensities below
-	unsigned int ignore = 0;
-
-	if (nClasses <= 1 || nClasses > maxPixVal) {
-		string out_of_range = ("Isodata3d: parameter --no-of-classes out of range");
-		throw invalid_argument(out_of_range);
-
-	};
-
-	// let initial cluster centers be evenly distributed between 0...maxPixelVal
-	double dCenters = (double)(maxPixVal)/(nClasses+1);  		 // get distance between clCenters
-	for (unsigned int i = 0; i < nClasses; i++)
-		clCenter[i] = (i+1) *dCenters; //save clCenters
-
-	// first pass: build a histogram
-	THistogram<THistogramFeeder<int> > histo(THistogramFeeder<int>(0, maxPixVal + 1, maxPixVal + 1));
-	histo.push_range (src_image.begin(), src_image.end ());
-
-	// now find cluster centers
-	double diff = HUGE;
-	for (unsigned int t = 0; diff > 1.0 && t < 15; t++) {
-
-		// for every grey value
-		for (unsigned int gV = ignore+1; gV < maxPixVal+1; gV++) {
-
-			double dmin = maxPixVal * maxPixVal;
-			// for each class
-			for (unsigned int nc = 0; nc < nClasses; nc++) {
-
-				//distance: shade of grey to class center
-				double dx = gV - clCenter[nc];
-				dx *= dx;
-
-				if (dx < dmin) {
-					//match nearest class
-					classOfGreyval[gV] = nc;
-					dmin = dx;
-				};
-
-			};
-
-		};
-
-		diff = 0;
-
-		for (unsigned int c = 0; c < nClasses; c++) {
-
-			//sum up #pixels belonging to class c
-			//multiply #pixel with grey value (g) & sum up
-			double nPixels = 0;
-			double sumPixelVal = 0;
-
-			for (unsigned int g = ignore+1; g < maxPixVal+1; g++) {
-				if (classOfGreyval[g] == c) {
-
-					nPixels 	+= histo[g];
-					sumPixelVal += histo[g] * g;
-				};
-			};
-
-			//if pixels in class -> get average grey value of cls
-			sumPixelVal = nPixels? sumPixelVal/nPixels : 0;
-			double dx   = sumPixelVal - clCenter[c];
-			clCenter[c] = sumPixelVal;
-			diff += dx*dx;
-
-		};
-	};
-
-	// compute classOfGreyvalue for classification
-	for (unsigned int i = 0; i < ignore+1; i++)
-		classOfGreyval[i] = 0;
-
-	for (unsigned int gV = ignore+1; gV < maxPixVal+1; gV++) {
-
-		double dmin = HUGE;
-		int newClass = 0;
-
-		for (unsigned int c = 0; c < nClasses; c++) {
-
-			// distance: grey value to current cluster center
-			double dValCtr = abs((double)gV - clCenter[c]);
-			// save class-1 with shortest distance
-			if (dValCtr < dmin) {
-				dmin = dValCtr;
-				newClass = c;
-			};
-		};
-		// set classOfGreyvalue
-		classOfGreyval[gV] = newClass + 1;
-	};
-
-	return clCenter;
-};
-
-
 
 // solves the PDE  (W + lambda1 * H1 + lambda2 * H2) = f
 void solvePDE (C3DFImage& weight_image, C3DFImage& force_image, C3DFImage& gain_image, double lambda1, double lambda2, double *firstnormr0, double relres, double min_res)
@@ -189,7 +87,7 @@ void solvePDE (C3DFImage& weight_image, C3DFImage& force_image, C3DFImage& gain_
 }
 
 template <class Data3D>
-int estimateGain (C3DFImage& gain_image, const Data3D& src_image, vector<C3DFImage*>& cls_image,
+int estimateGain (C3DFImage& gain_image, const Data3D& src_image, vector<C3DFImage>& cls_image,
 		  vector<double> &clCenter, unsigned int classes, double * firstnormr0, float relres, const vector<char>& border)
 {
 
@@ -209,7 +107,7 @@ int estimateGain (C3DFImage& gain_image, const Data3D& src_image, vector<C3DFIma
 				double forcePixel = 0;
 				double weightPixel = 0;
 				for (unsigned int k = 0; k < classes; k++)  {
-					double uk = (*cls_image[k])(x, y, z);
+					double uk = cls_image[k](x, y, z);
 					double vk = clCenter[k];
 					double v = uk * uk * vk;
 					forcePixel += v;
@@ -299,19 +197,6 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 	vector<char> border(noOfPixels);
 
 	double firstnormr0 = 1.0;
-	double dumax, sum, nom, den, dist;
-
-	// get type of iterator
-	typedef T itype;
-
-	// maximum pixel value in image
-	typename T3DImage<T>::const_iterator maximum =
-		max_element(data.begin(), data.end());
-	assert(maximum == data.end() || *maximum >= 1);
-	itype iMax = *maximum;
-
-	// increment maximum Pixel Value by one to take 0 into account
-	cvmsg()  << " The Maximum pixel value is " << (double) iMax << endl;
 
 	unsigned long k = 0;
 	typename T3DImage<T>::const_iterator data_itr = data.begin();
@@ -334,20 +219,20 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 	fill (gainBegin, gainEnd, 1.0);
 
 	// class probability image, compute initial class centers
-	vector<double> clCenter = Isodata3d (data, m_nClasses, (unsigned int) iMax);
+	vector<double> clCenter(m_nClasses);
+	vector<unsigned short> buffer(data.size()); 
+	kmeans(data.begin(), data.end(), buffer.begin(), clCenter); 
+
 
 	// some verbose output
-	cvmsg()  << "intl. class centers:" ;
-	for (unsigned int k = 0; k < m_nClasses; k++)
-		cverb << " [" << k << "] " << clCenter[k];
-	cverb << endl;
+	cvmsg()  << "intl. class centers:"  << clCenter << "\n"; 
 
 	// Algorithm step 1
 	// create class membership volumes
 
 	C3DFImageVec cls_image;
 	for (size_t i = 0; i < m_nClasses; ++i)  {
-		cls_image.push_back(new C3DFImage ( data.get_size(), data));
+		cls_image.push_back(C3DFImage ( data.get_size(), data));
 	}
 
 	for (unsigned int t = 0; t < _MAXIT; t++)  {
@@ -362,67 +247,13 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 
 		// Algorithm step 3:
 		// recompute class memberships
-		dumax = 0;
-		typename T3DImage<T>::const_iterator sp  = data.begin();
+		cmeans_evaluate_probabilities(data, gain_image, clCenter, cls_image); 
 
-		// Compute each pixel of the layer
-		for (unsigned int z = 0; z < nz; z++)  {
-			for (unsigned int y = 0; y < ny; y++)  {
-				for (unsigned int x = 0; x < nx; x++, sp++)  {
-					// get Value
-					double pixVal = *sp;
-					if (pixVal == 0)
-						continue;
-					sum = 0;
-					// get difference from gain-field
-					double gainVal = gain_image(x, y, z);
-					for (unsigned int k = 0; k < m_nClasses; k++)  {
-						dist = pixVal-gainVal*clCenter[k];
-						u[k] = dist? 1/(dist*dist): HUGE;
-						sum += u[k];
-					};
+		double residuum = cmeans_update_class_centers(data, gain_image, cls_image, clCenter); 
 
-					for (unsigned int k = 0; k < m_nClasses; k++)  {
-						double un = u[k]/sum;
-						double uk = (*cls_image[k])(x, y, z);
-						if (::fabs(un-uk) > dumax)
-							dumax = ::fabs(un-uk);
-						(*cls_image[k])(x, y, z) = un;
-					}
-				}
-			}
-		}
-
-		// Algorithm step 4:
-		// recompute class clCenters
-		for (unsigned int k = 0; k < m_nClasses; k++) {
-			nom = 0;
-			den = 0;
-			typename T3DImage<T>::const_iterator sp = data.begin();
-			for (unsigned int z = 0; z < nz; z++)  {
-				for (unsigned int y = 0; y < ny; y++)  {
-					for (unsigned int x = 0; x < nx; x++, sp++)  {
-						double pixVal = *sp;
-						if (pixVal == 0)
-							continue;
-						double gainVal = gain_image(x, y, z);
-						double uj      = (*cls_image[k])(x, y, z);
-						nom += uj*uj*gainVal*pixVal;
-						den += uj*uj*gainVal*gainVal;
-					}
-				}
-			}
-			clCenter[k] = den ? nom/den: 0;
-
-		}
-
-		cvmsg() << "\r[" << t << "/4]" << flush;
-		cvmsg() << " class centers:";
-
-		for (unsigned int k = 0; k < m_nClasses; k++)
-			cverb << " [" << k << "] " << clCenter[k];
-		cverb << endl;
-		if (dumax < 0.01)
+		
+		cvmsg() << "\r[" << t << "/4]" << " class centers:" << clCenter << ", r= " << residuum << "\n"; 
+		if (residuum < 0.0001)
 			break;
 
 	};
@@ -446,9 +277,9 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 				       PAttribute(new CVDoubleAttribute( clCenter)));
 	m_out.reset(corrected_image);
 	for (size_t i = 0; i < cls_image.size(); ++i) {
-		cls_image[i]->set_attribute("class_number",
+		cls_image[i].set_attribute("class_number",
 					    PAttribute(new CIntAttribute( i )));
-		cls_image[i]->set_attribute("class_centers",
+		cls_image[i].set_attribute("class_centers",
 					    PAttribute(new CVDoubleAttribute( clCenter)));
 	}
 	return cls_image;
@@ -468,7 +299,7 @@ EXPORT_3D P3DImage fuzzy_segment_3d(const C3DImage& src, size_t noOfClasses, flo
 	C3DFImageVec imagesVector = mia::accumulate (segment3D, src);
 
 	for (size_t i=0; i < noOfClasses; i++) {
-		classes.push_back( P3DImage(imagesVector[i]) );
+		classes.push_back( P3DImage(imagesVector[i].clone()) );
 	}
 	return segment3D.get_out_image();
 }

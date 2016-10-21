@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/histogram.hh>
+#include <mia/core/kmeans.hh>
+#include <mia/core/cmeans.hh>
 #include <mia/2d/fuzzyclustersolver_cg.hh>
 #include <mia/2d/fuzzyclustersolver_sor.hh>
 #include <mia/2d/fuzzyseg.hh>
@@ -40,10 +42,10 @@ using namespace std;
 
 
 /* maximum number of iterations for EM-Algorithm */
-#define _MAXIT 200 
+#define _MAXIT 400 
 
 
-typedef vector<C2DFImage*> C2DFImageVec;
+typedef vector<C2DFImage> C2DFImageVec;
 
 
 class CSegment2d : public TFilter<C2DFImageVec> {
@@ -70,110 +72,6 @@ private:
 
 using namespace std;
 
-template <class Data2D>
-vector<double> Isodata2d (const Data2D& src_image, unsigned int nClasses, unsigned int  maxPixVal)
-{
-	vector<double> clCenter(nClasses);
-
-	/** classmembership of each possible pixelvalue 0-maxPixVal */
-	vector<unsigned int> classOfGreyval( maxPixVal + 1 );
-
-	// discard all intensities below
-	unsigned int ignore = 0;
-
-	if (nClasses <= 1 || nClasses > maxPixVal) {
-		string out_of_range = ("Isodata2d: parameter --no-of-classes out of range");
-		throw invalid_argument(out_of_range);
-
-	};
-
-	// let initial cluster centers be evenly distributed between 0...maxPixelVal
-	double dCenters = (double)(maxPixVal)/(nClasses+1);  		 // get distance between clCenters
-	for (unsigned int i = 0; i < nClasses; i++)
-		clCenter[i] = (i+1) *dCenters; //save clCenters
-
-	// first pass: build a histogram
-	THistogram<THistogramFeeder<int> > histo(THistogramFeeder<int>(0, maxPixVal + 1, maxPixVal + 1));
-	histo.push_range (src_image.begin(), src_image.end ());
-
-	// now find cluster centers
-	double diff = HUGE;
-	for (unsigned int t = 0; diff > 1.0 && t < 15; t++) {
-
-		// for every grey value
-		for (unsigned int gV = ignore+1; gV < maxPixVal+1; gV++) {
-
-			double dmin = maxPixVal * maxPixVal;
-			// for each class
-			for (unsigned int nc = 0; nc < nClasses; nc++) {
-
-				//distance: shade of grey to class center
-				double dx = gV - clCenter[nc];
-				dx *= dx;
-
-				if (dx < dmin) {
-					//match nearest class
-					classOfGreyval[gV] = nc;
-					dmin = dx;
-				};
-
-			};
-
-		};
-
-		diff = 0;
-
-		for (unsigned int c = 0; c < nClasses; c++) {
-
-			//sum up #pixels belonging to class c
-			//multiply #pixel with grey value (g) & sum up
-			double nPixels = 0;
-			double sumPixelVal = 0;
-
-			for (unsigned int g = ignore+1; g < maxPixVal+1; g++) {
-				if (classOfGreyval[g] == c) {
-
-					nPixels 	+= histo[g];
-					sumPixelVal += histo[g] * g;
-				};
-			};
-
-			//if pixels in class -> get average grey value of cls
-			sumPixelVal = nPixels? sumPixelVal/nPixels : 0;
-			double dx   = sumPixelVal - clCenter[c];
-			clCenter[c] = sumPixelVal;
-			diff += dx*dx;
-
-		};
-	};
-
-	// compute classOfGreyvalue for classification
-	for (unsigned int i = 0; i < ignore+1; i++)
-		classOfGreyval[i] = 0;
-
-	for (unsigned int gV = ignore+1; gV < maxPixVal+1; gV++) {
-
-		double dmin = HUGE;
-		int newClass = 0;
-
-		for (unsigned int c = 0; c < nClasses; c++) {
-
-			// distance: grey value to current cluster center
-			double dValCtr = abs((double)gV - clCenter[c]);
-			// save class-1 with shortest distance
-			if (dValCtr < dmin) {
-				dmin = dValCtr;
-				newClass = c;
-			};
-		};
-		// set classOfGreyvalue
-		classOfGreyval[gV] = newClass + 1;
-	};
-
-	return clCenter;
-};
-
-
 
 // solves the PDE  (W + lambda1 * H1 + lambda2 * H2) = f
 void solvePDE (C2DFImage& weight_image, C2DFImage& force_image, C2DFImage& gain_image, const SFuzzySegParams& params)
@@ -183,7 +81,7 @@ void solvePDE (C2DFImage& weight_image, C2DFImage& force_image, C2DFImage& gain_
 }
 
 template <class Data2D>
-int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFImage*>& cls_image,
+int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFImage>& cls_image,
 		  vector<double> &clCenter, unsigned int classes, const SFuzzySegParams& params)
 {
 
@@ -201,7 +99,7 @@ int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFIma
 			double forcePixel = 0;
 			double weightPixel = 0;
 			for (unsigned int k = 0; k < classes; k++)  {
-				double uk = (*cls_image[k])(x, y);
+				double uk = cls_image[k](x, y);
 				double vk = clCenter[k];
 				double v = uk * uk * vk;
 				forcePixel += v;
@@ -263,8 +161,6 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 	// Field to store the border
 	vector<char> border(noOfPixels);
 
-	double nom, den, dist;
-
 	// get type of iterator
 	typedef T itype;
 
@@ -296,42 +192,19 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 	fill (gain_image.begin(), gain_image.end(), 1.0);
 
 	// class probability image, compute initial class centers
-	vector<double> clCenter = Isodata2d (data, m_nClasses, (unsigned int) iMax);
+	vector<double> clCenter(m_nClasses);
+	vector<unsigned short> buffer(data.size()); 
+	
+	kmeans(data.begin(), data.end(), buffer.begin(), clCenter); 
 
-	// some verbose output
-	cvmsg()  << "intl. class centers:" ;
-	for (unsigned int k = 0; k < m_nClasses; k++)
-		cverb << " [" << k << "] " << clCenter[k];
-	cverb << endl;
+	cvmsg()  << "intl. class centers:" << clCenter << "\n"; 
 
 	// Algorithm step 1
 	// create class membership volumes
 
 	C2DFImageVec cls_image;
 	for (size_t i = 0; i < m_nClasses; ++i)  {
-		cls_image.push_back(new C2DFImage ( data.get_size(), data));
-	}
-	if (0) {
-		vector<C2DFImage::iterator> cls_it( m_nClasses ); 
-		transform(cls_image.begin(), cls_image.end(), cls_it.begin(), 
-			  [](C2DFImage *cls) { return cls->begin(); }); 
-			
-		for(auto sp = data.begin(); sp != data.end(); ++sp) {
-			double pixVal = *sp;
-			//if (pixVal == 0)
-			//	continue;
-			double sum = 0;
-			for (unsigned int k = 0; k < m_nClasses; k++)  {
-				dist = pixVal - clCenter[k];
-				u[k] = dist? 1/(dist*dist): 1e+32;
-				sum += u[k];
-			};
-				
-			for (unsigned int k = 0; k < m_nClasses; k++)  {
-				double un = u[k]/sum;
-				*cls_it[k] = un;
-			}
-		}
+		cls_image.push_back(C2DFImage ( data.get_size(), data));
 	}
 
 	for (unsigned int t = 0; t < _MAXIT; t++)  {
@@ -343,69 +216,18 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 
 		// Algorithm step 3:
 		// recompute class memberships
-		double dumax = 0;
-		auto sp  = data.begin();
 
-		// Compute each pixel of the layer
-		
-		for (unsigned int y = 0; y < ny; y++)  {
-			for (unsigned int x = 0; x < nx; x++, sp++)  {
-				// get Value
-				double pixVal = *sp;
-				//if (pixVal == 0)
-				//	continue;
-				double sum = 0;
-				// get difference from gain-field
-				double gainVal = gain_image(x, y);
-				for (unsigned int k = 0; k < m_nClasses; k++)  {
-					dist = pixVal-gainVal*clCenter[k];
-					u[k] = dist? 1/(dist*dist): HUGE;
-					sum += u[k];
-				};
-				
-				for (unsigned int k = 0; k < m_nClasses; k++)  {
-					double un = u[k]/sum;
-					double uk = (*cls_image[k])(x, y);
-					if (::fabs(un-uk) > dumax)
-						dumax = ::fabs(un-uk);
-					(*cls_image[k])(x, y) = un;
-				}
-			}
-		}
+		cmeans_evaluate_probabilities(data, gain_image, clCenter, cls_image); 
 		
 		// Algorithm step 4:
 		// recompute class clCenters
-		for (unsigned int k = 0; k < m_nClasses; k++) {
-			nom = 0;
-			den = 0;
-			typename T2DImage<T>::const_iterator sp = data.begin();
-			for (unsigned int y = 0; y < ny; y++)  {
-				for (unsigned int x = 0; x < nx; x++, sp++)  {
-					double pixVal = *sp;
-					//if (pixVal == 0)
-					//	continue;
-					double gainVal = gain_image(x, y);
-					double uj      = (*cls_image[k])(x, y);
-					nom += uj*uj*gainVal*pixVal;
-					den += uj*uj*gainVal*gainVal;
-				}
-			}
-			clCenter[k] = den ? nom/den: 0;
-			
-		}
-		
-		cvmsg() << "\r[" << t << "]" << flush;
-		cvmsg() << " class centers:";
-		
-		for (unsigned int k = 0; k < m_nClasses; k++)
-			cverb << " [" << k << "] " << clCenter[k];
+		double residuum = cmeans_update_class_centers(data, gain_image, cls_image, clCenter); 
 
-		cverb << " dumax=" << dumax << "\n"; 
-		if (dumax < 0.01)
+		cvmsg() << "I[" << t << "]: cc=" << clCenter << ", r=" << residuum << "\n"; 
+		if (residuum < 0.0001)
 			break;
 		
 	};
-	
 	
 	// compute corrected image
 	T2DImage<T> *corrected_image = new T2DImage<T> (data.get_size(), data);
@@ -425,9 +247,9 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 				       PAttribute(new CVDoubleAttribute( clCenter)));
 	m_out.reset(corrected_image);
 	for (size_t i = 0; i < cls_image.size(); ++i) {
-		cls_image[i]->set_attribute("class_number",
+		cls_image[i].set_attribute("class_number",
 					    PAttribute(new CIntAttribute( i )));
-		cls_image[i]->set_attribute("class_centers",
+		cls_image[i].set_attribute("class_centers",
 					    PAttribute(new CVDoubleAttribute( clCenter)));
 	}
 	m_gain_image.reset(new C2DFImage(gain_image)); 
@@ -448,7 +270,7 @@ EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, con
 	C2DFImageVec imagesVector = mia::accumulate (segment2D, src);
 
 	for (size_t i=0; i < noOfClasses; i++) {
-		classes.push_back( P2DImage(imagesVector[i]) );
+		classes.push_back( P2DImage(new C2DFImage(imagesVector[i])));
 	}
 	gain = segment2D.get_gain_image(); 
 	return segment2D.get_out_image();

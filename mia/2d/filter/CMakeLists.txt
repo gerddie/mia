@@ -53,8 +53,10 @@ SET(filters2dNew_base
   labelscale
   load
   mask
-  mean 
+  mean
+  meanvar 
   median
+  medianmad
   mlv
   morphological
   ngfnorm

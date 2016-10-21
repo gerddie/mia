@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -117,7 +117,7 @@ SET(MIA3D_HEADERS
   register.hh
   rigidregister.hh
   rot.hh
-  shape.hh 
+  shape.hh
   similarity_profile.hh
   stackdisttrans.hh
   splinetransformpenalty.hh
@@ -200,6 +200,7 @@ ELSE (WIN32)
 ENDIF(WIN32)
 
 TEST_3D(affine_matrix affine_matrix)
+TEST_3D(critical_points)
 TEST_3D(2dimagefifofilter imagefifofilter)
 TEST_3D(nfg nfg)
 TEST_3D(vectorfield vectorfield)
@@ -228,6 +229,8 @@ TEST_3D(imagecollect imagecollect)
 TEST_3D(imagedraw imagedraw)
 TEST_3D(rot rot)
 TEST_3D(splinetransformpenalty splinetransformpenalty)
+
+TEST_3D(imageio imageio)
 #
 # installation 
 #

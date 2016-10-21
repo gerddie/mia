@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,13 +122,15 @@ CMeans::DVector CKMeansInitializer::run(const CMeans::NormalizedHistogram& nh) c
 	
 	double sum = 0.0;
 	for(auto h : nh) {
-		sum += h.first * h.second; 
+		sum += h.first * h.second;
 	}; 
 
 	
 	// simple initialization splitting at the mean 
 	classes[0] = sum / 1.99;  
-	classes[1] = sum / 2.01; 
+	classes[1] = sum / 2.01;
+
+	cvinfo() << "kmeans: initial classes: " << classes << "\n"; 
 	
 	// first run calles directly 
 	int biggest_class = 0; 

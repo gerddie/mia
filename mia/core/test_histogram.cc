@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,6 +104,22 @@ BOOST_AUTO_TEST_CASE( test_float_histogram)
 	BOOST_CHECK_CLOSE(h2.average(), 3.7, 0.1);
 	BOOST_CHECK_CLOSE(h2.deviation(), sqrt((155.0 - 37.0 * 3.7) / 9.0), 0.1);
 
+}
+
+BOOST_AUTO_TEST_CASE( test_histogram_excess_kurtosis_1 )
+{
+	vector<double> input{1,2,3,2,5,6,1,2,1,5}; 
+	THistogram<THistogramFeeder<float> > h(THistogramFeeder<float>(1,6,6));
+	h.push_range(input.begin(), input.end()); 
+
+	// test values have been evaluated by using octave 3.8.2
+	BOOST_CHECK_CLOSE(h.average(),  2.8, 0.1); 
+	BOOST_CHECK_CLOSE(h.deviation(), sqrt(3.5111), 0.1); 
+	BOOST_CHECK_CLOSE(h.skewness(), 0.62378, 0.1); 
+	BOOST_CHECK_CLOSE(h.excess_kurtosis(),  -1.1530, 0.1); 
+
+
+	
 }
 
 BOOST_AUTO_TEST_CASE( test_histogram2)

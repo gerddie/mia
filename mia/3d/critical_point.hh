@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ NS_MIA_BEGIN
 */
 
 
-class C3DCriticalPoint {
+class EXPORT_3D C3DCriticalPoint {
 public:
 
 	/// A list of critical points 
@@ -56,7 +56,7 @@ public:
 
 	/** 
 	    Construct a critical point at a certain location. 
-	    Magnitude and pahse portrait are set to zero. 
+	    Magnitude and phase portrait are set to zero. 
 	    \param x0_ location of the new critical point
 	*/
 
@@ -92,11 +92,12 @@ public:
 	/** \retval the magnitude of the critical point */
 	float get_gamma()const;
 
-	/** \retval the location of the critical point \a writable */
-	C3DFVector& get_point();
+	/** \retval the location of the critical point */
+	void set_point(const C3DFVector&);
 	
-	/** \retval the phase portrait of the critical point \a writable */
-	C3DFMatrix& get_a();
+	/** \retval the phase portrait of the critical point */
+	void  set_a(const C3DFMatrix&);
+
 	
 	/** set the magnitude if the critical point 
 	    \param gamma_ the new magnitude of the critical point
@@ -110,7 +111,13 @@ public:
 	    \retval value of vector field created by this crtitical point at \a x
 	*/
 	C3DFVector at(const C3DFVector& x) const;
-	
+
+	/** return the magniture of the critical point at location \a x according to 
+	    \f[ \frac {A \dot (x - x0)}{ | \| \mathbf{x} - \mathbf{x_0} \|_2 - gamma |}  \f]
+	    \param x location weher to evaluate the vector field 
+	    \retval value of vector field created by this crtitical point at \a x
+	*/
+
 	C3DFVector at_alt(const C3DFVector& x) const;
 
 	/** compare two critical points 
@@ -132,9 +139,6 @@ private:
 typedef C3DCriticalPoint::List C3DCriticalPointList;
 
 
-typedef std::complex<float> fcomplex; 
-typedef T3DVector<fcomplex> C3DCVector; 
-
 /** 
     \ingroup basic 
     \brief A class to hold a criticalpoint with eigenvalues and eigenvectors.
@@ -142,8 +146,10 @@ typedef T3DVector<fcomplex> C3DCVector;
     @remark untested 
 */
 
-class C3DCriticalPointEigen {
-	/// where is the critical point 
+class EXPORT_3D C3DCriticalPointEigen {
+	
+	
+        /// where is the critical point 
 	C3DFVector location; 
 
 
@@ -158,13 +164,13 @@ class C3DCriticalPointEigen {
 	float eval3;
 	
 	/// first eigenvector (always real)
-	C3DFVector evec1;
+	T3DCVector<float> evec1;
 	
 	/// second real eigenvector, or real part of a the conjugated complex eigenvectors
-	C3DFVector evec2; 
+	T3DCVector<float> evec2; 
 	
 	/// third real eigenvector, or imaginary part of a the conjugated complex eigenvectors
-	C3DFVector evec3;
+	T3DCVector<float> evec3;
 	
 public:	
 	/// types of critical points
@@ -229,12 +235,12 @@ public:
 	/** \retval get second eigenvalue as complex
 	    \remark asserts whether eigenvalue is really complex
 	*/	
-	fcomplex get_complex_eval2()const; 
+	std::complex<float> get_complex_eval2()const; 
 	
 	/** \retval get third eigenvalue as complex
 	    \remark asserts whether eigenvalue is really complex
 	*/	
-	fcomplex get_complex_eval3()const;
+	std::complex<float> get_complex_eval3()const;
 	
 	/** \retval a copy of the phase portrait
 	 */
@@ -251,17 +257,11 @@ public:
 	/** \retval a copy of the second eigenvector as real
 	    \remark use only for loading and storing
 	 */
-	const C3DFVector get_evect2()const; 
-	/** \retval a copy of the third eigenvector as real
-	    \remark use only for loading and storing
-	 */
-	const C3DFVector get_evect3()const; 
 
-	
 	const C3DFVector get_real_evect2()const; 
 	const C3DFVector get_real_evect3()const; 
-	const C3DCVector get_complex_evect2()const; 
-	const C3DCVector get_complex_evect3()const; 
+	const T3DCVector<float> get_complex_evect2()const; 
+	const T3DCVector<float> get_complex_evect3()const; 
 	
 
 private:
@@ -298,52 +298,40 @@ inline float C3DCriticalPointEigen::get_real_eval3()const
 	assert(type != ev_complex);
 	return eval3; 
 }     
-inline fcomplex C3DCriticalPointEigen::get_complex_eval2()const
+inline std::complex<float> C3DCriticalPointEigen::get_complex_eval2()const
 {
 	assert(type == ev_complex);
-	return fcomplex(eval2,eval3); 
+	return std::complex<float>(eval2,eval3); 
 }
-inline fcomplex C3DCriticalPointEigen::get_complex_eval3()const
+inline std::complex<float> C3DCriticalPointEigen::get_complex_eval3()const
 {
 	assert(type == ev_complex);
-	return fcomplex(eval2,-eval3); 
+	return std::complex<float>(eval2,eval3); 
 }
 
 inline const C3DFVector C3DCriticalPointEigen::get_evect1()const
 {
-	return evec1; 
-}
-inline const C3DFVector C3DCriticalPointEigen::get_evect2()const
-{
-	return evec2; 
-}
-inline const C3DFVector C3DCriticalPointEigen::get_evect3()const
-{
-	return evec3; 
+	return C3DFVector(evec1.x.real(), evec1.y.real(), evec1.z.real()); 
 }
 inline const C3DFVector C3DCriticalPointEigen::get_real_evect2()const
 {
 	assert(type != ev_complex);	
-	return evec2; 
+	return C3DFVector(evec2.x.real(), evec2.y.real(), evec2.z.real()); 
 }
 inline const C3DFVector C3DCriticalPointEigen::get_real_evect3()const
 {
 	assert(type != ev_complex);
-	return evec3; 
+	return C3DFVector(evec3.x.real(), evec3.y.real(), evec3.z.real()); ; 
 }
-inline const C3DCVector C3DCriticalPointEigen::get_complex_evect2()const
+inline const T3DCVector<float> C3DCriticalPointEigen::get_complex_evect2()const
 {
 	assert(type == ev_complex);
-	return C3DCVector(fcomplex(evec2.x,evec3.x),
-			  fcomplex(evec2.y,evec3.y),
-			  fcomplex(evec2.z,evec3.z));
+	return evec2;
 }
-inline const C3DCVector C3DCriticalPointEigen::get_complex_evect3()const
+inline const T3DCVector<float> C3DCriticalPointEigen::get_complex_evect3()const
 {
 	assert(type == ev_complex);
-	return C3DCVector(fcomplex(evec2.x,-evec3.x),
-			  fcomplex(evec2.y,-evec3.y),
-			  fcomplex(evec2.z,-evec3.z));
+	return evec3;
 }
 
 inline const C3DFVector C3DCriticalPointEigen::get_location()const
@@ -371,15 +359,17 @@ inline const C3DFMatrix  C3DCriticalPoint::get_a()const
 	return A;
 }
 
-inline C3DFVector& C3DCriticalPoint::get_point()
+
+inline void C3DCriticalPoint::set_point(const C3DFVector& x) 
 {
-	return x0;
+	x0 = x;
 }
 
-inline C3DFMatrix& C3DCriticalPoint::get_a()
+inline void C3DCriticalPoint::set_a(const C3DFMatrix& a) 
 {
-	return A;
+	A = a;
 }
+
 
 inline  float C3DCriticalPoint::get_gamma()const
 {
