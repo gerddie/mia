@@ -58,7 +58,8 @@ using std::ostream;
 using std::ofstream;
 using std::ostringstream;
 using std::string;
-using std::invalid_argument; 
+using std::invalid_argument;
+using std::runtime_error; 
 using std::logic_error; 
 using std::vector; 
 using std::map; 
@@ -394,6 +395,9 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 		ofstream xmlfile(help_xml.c_str());  
 		xmlfile << doc->write_to_string_formatted();
 		xmlfile << std::endl;
+		if (!xmlfile.good()) {
+			throw create_exception<runtime_error>("Unable to write '", help_xml, "'"); 
+		}
 	}else{
 		std::cout << doc->write_to_string_formatted();
 	}
