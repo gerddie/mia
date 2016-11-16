@@ -52,6 +52,10 @@ public:
 		m_mutex.lock();
 		own_lock = true; 
 	};
+
+	TScopedLock(const TScopedLock<Mutex>& other) = delete;
+	TScopedLock& operator = (const TScopedLock<Mutex>& other) = delete;
+
 	~TScopedLock(){
 		if (own_lock) 
 			m_mutex.unlock();
