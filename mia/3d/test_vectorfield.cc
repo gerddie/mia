@@ -129,7 +129,7 @@ C3DVectorfieldFixture::C3DVectorfieldFixture():
 
 
 typedef bmpl::vector<
-#ifdef __SSE__
+#ifdef __SSE__NO
 	C3DSSELinearVectorfieldInterpolator,
 #endif 
 	C3DLinearVectorfieldInterpolator>::type test_types; 
@@ -300,9 +300,12 @@ BOOST_AUTO_TEST_CASE (test_vectorfield_as_inverse_of)
 
 				// test also the inverse, but with a higher tolerance,
 				// since this was not optimized 
-				C3DFVector pos_it = pos - interp_other(pos); 
-				C3DFVector pos_itt = pos_it - interp_me(pos_it) - pos;
-				cvdebug() << pos << ": inv delta = " << pos_itt << "\n";
+				C3DFVector pos_it = pos - interp_other(pos);
+				C3DFVector pos_inv = interp_me(pos_it);
+				C3DFVector pos_itt = pos_it - pos_inv - pos;
+				cvdebug() << pos << ": pos-other = "<< pos_it
+					  << ", intp = " << pos_inv
+					  << ", inv delta = " << pos_itt << "\n";
 
 				BOOST_CHECK_SMALL(pos_itt.x, 0.05f); 
 				BOOST_CHECK_SMALL(pos_itt.y, 0.05f); 

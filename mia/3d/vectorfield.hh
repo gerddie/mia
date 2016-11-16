@@ -131,7 +131,7 @@ private:
 	const C3DFVectorfield& m_field; 
 }; 
 
-#ifdef __SSE__
+#ifdef __SSE__NO
 class EXPORT_3D C3DSSELinearVectorfieldInterpolator {
 public: 
 	C3DSSELinearVectorfieldInterpolator(const C3DFVectorfield& field); 
