@@ -122,30 +122,19 @@ typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
 EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& lhs, const C3DFVectorfield& rhs);
 
 
-class EXPORT_3D C3DDefaultLinearVectorfieldInterpolator {
+struct C3DLinearVectorfieldInterpolatorImpl;  
+class EXPORT_3D C3DLinearVectorfieldInterpolator {
 public: 
-	C3DDefaultLinearVectorfieldInterpolator(const C3DFVectorfield& field); 
+	C3DLinearVectorfieldInterpolator(const C3DFVectorfield& field);
+	~C3DLinearVectorfieldInterpolator(); 
 	
 	C3DFVector operator () (const C3DFVector& x) const; 
 private: 
-	const C3DFVectorfield& m_field; 
+	const C3DFVectorfield& m_field;
+	const size_t m_save_index_range;
+	const size_t m_field_size_m1;
+	C3DLinearVectorfieldInterpolatorImpl *impl; 
 }; 
-
-#ifdef __SSE__NO
-class EXPORT_3D C3DSSELinearVectorfieldInterpolator {
-public: 
-	C3DSSELinearVectorfieldInterpolator(const C3DFVectorfield& field); 
-	
-	C3DFVector operator ()(const C3DFVector& x) const; 
-private: 
-	const C3DFVectorfield& m_field; 
-}; 
-typedef C3DSSELinearVectorfieldInterpolator C3DLinearVectorfieldInterpolator; 
-#else 
-typedef C3DDefaultLinearVectorfieldInterpolator C3DLinearVectorfieldInterpolator; 
-#endif 
-
-
 
 NS_MIA_END
 

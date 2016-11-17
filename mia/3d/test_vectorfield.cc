@@ -128,13 +128,7 @@ C3DVectorfieldFixture::C3DVectorfieldFixture():
 }
 
 
-typedef bmpl::vector<
-#ifdef __SSE__NO
-	C3DSSELinearVectorfieldInterpolator,
-#endif 
-	C3DLinearVectorfieldInterpolator>::type test_types; 
-
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
+BOOST_AUTO_TEST_CASE( test_interpolation)
 {			
 	
 						
@@ -150,7 +144,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 			}
 
 	
-	Interpolator ip(f); 
+	C3DLinearVectorfieldInterpolator ip(f); 
 
 	unsigned  n = 10; 
 	float d = n / 2.0;
@@ -159,16 +153,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 	for (size_t iz = 1; iz < n; ++iz) 
 		for (size_t iy = 1; iy < n; ++iy) 
 			for (size_t ix = 1; ix < n; ++ix) {
-				C3DFVector dx(ix / d, iy / d,  iz / d); 
-				C3DFVector value = ip(dx);
+				C3DFVector v(ix / d, iy / d,  iz / d); 
+				C3DFVector value = ip(v);
 
-				int x = static_cast<int>( floor(dx.x) ); 
-				int y = static_cast<int>( floor(dx.y) ); 
-				int z = static_cast<int>( floor(dx.z) ); 
+				int x = static_cast<int>( floor(v.x) ); 
+				int y = static_cast<int>( floor(v.y) ); 
+				int z = static_cast<int>( floor(v.z) ); 
 
-				dx.x = dx.x - x; 
-				dx.y = dx.y - y; 
-				dx.z = dx.z - z; 
+				C3DFVector dx(v.x - x, v.y - y, v.z - z); 
 
 				C3DFVector px = C3DFVector::_1 - dx; 
 				
@@ -179,6 +171,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolation, Interpolator ,  test_types)
 					dx.z * (px.y * ( px.x * f(x,y,z+1) + dx.x * f(x+1,y,z+1)) + 
 						dx.y * ( px.x * f(x,y+1,z+1) + dx.x * f(x+1,y+1,z+1))); 
 
+				cvdebug() << "x= " << v << ", dx = " << dx << "\n"; 
+				
 				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
 				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
 				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
