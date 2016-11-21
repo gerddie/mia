@@ -24,6 +24,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/filter.hh>
+#include <mia/core/convergence_measure.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/filter.hh>
 #include <mia/3d/transformio.hh>

@@ -19,38 +19,59 @@
  */
 
 #include <mia/core/convergence_measure.hh>
+#include <mia/core/msgstream.hh>
 #include <limits>
+#include <numeric>
 
 using std::numeric_limits; 
 
 namespace mia {
 
 CConvergenceMeasure::CConvergenceMeasure(uint32_t size):
-        m_size(size),
-        m_current_sum(0.0)
+        m_size(size)
 {
         
 }
 
 void CConvergenceMeasure::push(double value)
 {
-        m_values.push(value);
-        m_current_sum += value;
+        m_v.push_back(value);
 
-        if (m_values.size() > m_size) {
-                m_current_sum -= m_values.front();
-                m_values.pop();
+        if (m_v.size() > m_size) {
+                m_v.pop_front();
         }
 }
 
 double CConvergenceMeasure::value() const
 {
-        return m_values.empty() ? numeric_limits<double>::max() : m_current_sum / fill(); 
+	double retval = numeric_limits<double>::max(); 
+	if (!m_v.empty())
+		retval = std::accumulate(m_v.begin(), m_v.end(), 0.0)/m_v.size();
+	return retval; 
+}
+
+double CConvergenceMeasure::rate() const
+{
+	double retval = 0.0;
+	if (m_v.size() > 1) {
+		double sum_v = 0.0;
+		double sum_xv = 0.0;
+		double sum_x2 = 0.0; 
+		for (std::size_t i = 0, k=1; i < m_v.size(); ++i, ++k) {
+			sum_v  += m_v[i];
+			sum_xv += k * m_v[i];
+			sum_x2 += k*k; 
+		}
+		double x_mean = (m_v.size() + 1.0) / 2.0;
+		retval = ((sum_xv - sum_v  *  x_mean) / m_v.size()) /
+			(sum_x2 / m_v.size()  - x_mean * x_mean); 
+	}
+	return retval; 
 }
 
 uint32_t CConvergenceMeasure::fill() const
 {
-        return m_values.size(); 
+        return m_v.size(); 
 }
             
 

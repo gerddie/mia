@@ -24,34 +24,78 @@
 #include <limits>
 
 
-BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure )
+BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_0 )
 {
-        mia::CConvergenceMeasure cm(3);
+        mia::CConvergenceMeasure cm(4);
 
         BOOST_CHECK_EQUAL( cm.value(), std::numeric_limits<double>::max());
         BOOST_CHECK( !cm.is_full_size()); 
-        BOOST_CHECK_EQUAL( cm.fill(), 0u); 
-        
-        cm.push(1.0);
+        BOOST_CHECK_EQUAL( cm.fill(), 0u);
+	BOOST_CHECK_EQUAL( cm.rate(), 0.0);
+}
 
+BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_1 )
+{
+        mia::CConvergenceMeasure cm(4);
+        cm.push(1.0);
         BOOST_CHECK( !cm.is_full_size());
         BOOST_CHECK_EQUAL( cm.fill(), 1u); 
         BOOST_CHECK_EQUAL( cm.value(), 1.0);
+	BOOST_CHECK_EQUAL( cm.rate(), 0.0);
+}
 
+BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_2 )
+{
+        mia::CConvergenceMeasure cm(4);
+        cm.push(1.0);
         cm.push(2.0);
         BOOST_CHECK( !cm.is_full_size());
         BOOST_CHECK_EQUAL( cm.fill(), 2u); 
         BOOST_CHECK_CLOSE( cm.value(), 1.5, 1e-8);
+	BOOST_CHECK_CLOSE( cm.rate(), 1.0, 1e-8);
 
+}
+
+BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_3 )
+{
+        mia::CConvergenceMeasure cm(4);
+        cm.push(1.0);
+        cm.push(2.0);
         cm.push(3.0);
-        BOOST_CHECK( cm.is_full_size());
+        BOOST_CHECK( !cm.is_full_size());
         BOOST_CHECK_EQUAL( cm.fill(), 3u); 
         BOOST_CHECK_CLOSE( cm.value(), 2.0, 1e-8);
+	BOOST_CHECK_CLOSE( cm.rate(), 1.0, 1e-8);
 
-        cm.push(4.0);
+}
+
+BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_4 )
+{
+        mia::CConvergenceMeasure cm(4);
+        cm.push(1.0);
+        cm.push(2.0);
+        cm.push(3.0);
+	cm.push(4.0);
         BOOST_CHECK( cm.is_full_size());
-        BOOST_CHECK_EQUAL( cm.fill(), 3u); 
-        BOOST_CHECK_CLOSE( cm.value(), 3.0, 1e-8);
+        BOOST_CHECK_EQUAL( cm.fill(), 4u); 
+        BOOST_CHECK_CLOSE( cm.value(), 2.5, 1e-8);
+	BOOST_CHECK_CLOSE( cm.rate(), 1.0, 1e-8);
+
+        
+}
+
+BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_5 )
+{
+        mia::CConvergenceMeasure cm(4);
+        cm.push(1.0);
+        cm.push(2.0);
+        cm.push(3.0);
+	cm.push(4.0);
+	cm.push(5.0);
+        BOOST_CHECK( cm.is_full_size());
+        BOOST_CHECK_EQUAL( cm.fill(), 4u); 
+        BOOST_CHECK_CLOSE( cm.value(), 3.5, 1e-8);
+	BOOST_CHECK_CLOSE( cm.rate(), 1.0, 1e-8);
 
         
 }
