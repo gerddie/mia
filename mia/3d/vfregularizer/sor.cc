@@ -126,5 +126,9 @@ const std::string C3DSORVectorfieldRegularizerPlugin::do_get_descr() const
 }
 
 
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C3DSORVectorfieldRegularizerPlugin();
+}
 
 NS_MIA_END
