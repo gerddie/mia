@@ -20,11 +20,18 @@
 
 
 #include <mia/internal/main.hh>
+#include <mia/template/filter_chain.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/filter.hh>
 #include <mia/3d/imageio.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/transformio.hh>
+#include <mia/3d/transformfactory.hh>
 #include <mia/3d/vfregularizer.hh>
+#include <mia/3d/cost.hh>
+#include <mia/3d/deformer.hh>
+
 
 NS_MIA_USE;
 using namespace std;
@@ -46,9 +53,9 @@ const SProgramDescription g_description = {
 
 void check_number_of_levels_consistency(size_t nvalues, size_t levels, const std::string& value_name)
 {
-        if (nvalues != 1 && nvalues != mg_levels) {
-                throw create_exception<invalid_argument>(iterations_per_level.size(), " ", 
-                                                         value_name, "  values given, but ", mg_levels, 
+        if (nvalues != 1 && nvalues != levels) {
+                throw create_exception<invalid_argument>(levels, " ", 
+                                                         value_name, "  values given, but ", nvalues, 
                                                          " multiresolution levels requested"); 
         }
 }
@@ -94,8 +101,8 @@ P3DTransformation wrap_vectorfield_in_transformation(const C3DFVectorfield& fiel
 
 C3DFImage get_asfloat_pixel(P3DImage image) 
 {
-        if (image.get_pixel_type() != it_float)
-                image = run_filter(*image, "convert:map=copy,repn=float");
+        if (image->get_pixel_type() != it_float)
+                image = run_filters(image, "convert:map=copy,repn=float");
         return dynamic_cast<const C3DFImage&>(*image); 
 }
 
@@ -122,9 +129,9 @@ int do_main( int argc, char *argv[] )
         CCmdOptionList options(g_description);
         options.set_group("IO"); 
 	options.add(make_opt( src_filename, "in-image", 'i', "test image", 
-			      CCmdOptionFlags::required_input, &image3dio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image", 
-			      CCmdOptionFlags::required_input, &image3dio));
+			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( out_transform_filename, "transform", 't', "output transformation", 
 			      CCmdOptionFlags::required_output, &transio));
 	options.add(make_opt( out_inv_transform_filename, "inverse-transform", 'T', 
@@ -132,7 +139,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_output, &transio));
 
         options.set_group("Registration"); 
-        options.add(make_opt( cost, "ssd", 'c', "cost", "Image similarity function to be minimized"));
+        options.add(make_opt( cost, "ssd", "cost", 'c', "Image similarity function to be minimized"));
         options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
         options.add(make_opt( iterations_per_level, "niter", 'n', 
                               "maximum number of iterations of the optimizer at each multi-resolution level. "
@@ -140,14 +147,13 @@ int do_main( int argc, char *argv[] )
                               "otherwise the number of values must coincide with the number of registration levels."
                               "(default=100)"));
 
-	options.add(make_opt( regularizer, "sor:kernel=fluid", 'R', "regularizer",
+	options.add(make_opt( regularizer, "sor:kernel=fluid", "regularizer", 'R', 
 			      "Regularization for the force to transformation update")); 
 	
         options.add(make_opt( epsilon_per_level, "frel", 0, 
                               "Breaking condition: relative change of the cost function. "
                               "If only one value is given, the this will be used foe all levels, "
-                              "otherwise the number of values must coincide with the number of registration levels. ", 
-                              "(default=1e-7)"));
+                              "otherwise the number of values must coincide with the number of registration levels. ""regularizer"));
         
                               
         if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -173,13 +179,13 @@ int do_main( int argc, char *argv[] )
         auto vftranscreator  = produce_3dtransform_factory("vf:imgkernel=[bspline:d=1],imgboundary=zero");
         
         
-        P3DTransformation t_src_ref = wrap_vectorfield_in_transformation(result.first, *vftranscreator); 
+        P3DTransformation t_src_ref = wrap_vectorfield_in_transformation(*result.first, *vftranscreator); 
         
         if (!C3DTransformationIOPluginHandler::instance().save(out_transform_filename, *t_src_ref)) 
 		throw create_exception<runtime_error>( "Unable to save transformation to '", 
                                                        out_transform_filename, "'"); 
         
-        P3DTransformation t_ref_src = wrap_vectorfield_in_transformation(result.second, *vftranscreator);
+        P3DTransformation t_ref_src = wrap_vectorfield_in_transformation(*result.second, *vftranscreator);
         
         if (!C3DTransformationIOPluginHandler::instance().save(out_inv_transform_filename, *t_src_ref)) 
 		throw create_exception<runtime_error>( "Unable to save transformation to '", 
@@ -214,8 +220,8 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 	float iy_mult = 1.0f / y_mult;
 	float iz_mult = 1.0f / z_mult;
 
-	auto callback = [&](const tbb::blocked_range<size_t>& range){
-		CThreadMsgStream thread_stream;
+	auto callback = [&](const C1DParallelRange& range){
+		//	CThreadMsgStream thread_stream;
 		
 		for (auto z = range.begin(); z != range.end();++z) { 
 			auto i = Result->begin_at(0,0,z);
@@ -227,14 +233,15 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 				}
 		}
 	}; 
-	tbb::parallel_for(tbb::blocked_range<size_t>(0, size.z, 1), callback);
+	pfor(C1DParallelRange(0, size.z, 1), callback);
 
 	return Result;
 }
 
 class C3DSymScaledRegister {
 public: 
-        C3DSymScaledRegister(P3DImageCost cost, unsigned iter, double epsilon, P3DVectorfieldRegularizer regularizer); 
+        C3DSymScaledRegister(P3DImageCost cost, double iter,
+			     double epsilon, P3DVectorfieldRegularizer regularizer); 
         void run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const; 
 private: 
         void deform(const C3DFImage& src, const C3DFVectorfield& t, C3DFImage& result) const;
@@ -248,7 +255,7 @@ private:
 }; 
 
 TransformPair
-C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref)
+C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref) const 
 {
         TransformPair transforms;
         
@@ -263,8 +270,8 @@ C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref)
                 auto downscaler =
                         C3DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
                 
-                auto scaled_src_p = downscaler.filter(src); 
-                auto scaled_ref_p = downscaler.filter(ref); 
+                auto scaled_src_p = downscaler->filter(src); 
+                auto scaled_ref_p = downscaler->filter(ref); 
 
                 const C3DFImage& scaled_src = dynamic_cast<const C3DFImage&>(*scaled_src_p); 
                 const C3DFImage& scaled_ref = dynamic_cast<const C3DFImage&>(*scaled_ref_p); 
@@ -282,7 +289,7 @@ C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref)
                 unsigned level_epsilon = m_epsilon_per_level.size() == 1 ? m_epsilon_per_level[0]:
                         m_epsilon_per_level[l]; 
 
-                C3DSymScaledRegister level_worker(m_cost, level_iter, level_epsilon, regularizer); 
+                C3DSymScaledRegister level_worker(m_cost, level_iter, level_epsilon, m_regularizer); 
                 
                 level_worker.run(scaled_src, scaled_ref, transforms);
                 
@@ -290,10 +297,11 @@ C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref)
         return transforms; 
 }
 
-C3DSymScaledRegister::C3DSymScaledRegister(P3DImageCost cost, unsigned iter, double epsilon, P3DVectorfieldRegularizer regularizer):
+C3DSymScaledRegister::C3DSymScaledRegister(P3DImageCost cost, double iter,
+					   double epsilon, P3DVectorfieldRegularizer regularizer):
 	m_cost(cost), 
-	m_iter(level_iter), 
-	m_epsilon(level_epsilon), 
+	m_iter(iter), 
+	m_epsilon(epsilon), 
 	m_ipfac("bspline:d=0", "zero"), 
 	m_current_step(0.25),
 	m_regularizer(regularizer)
@@ -320,20 +328,19 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
         C3DFVectorfield grad(src.get_size()); 
         C3DFVectorfield v(src.get_size()); 
 
-        while (iter < m_level_iter) {
+        while (iter < m_iter) {
                 ++iter; 
 
-                m_cost->set_reference(ref_tmp); 
+		m_cost->set_reference(ref_tmp); 
                 m_cost->evaluate_force(src_tmp, grad);
                 
                 float max_v = m_regularizer->run(v, grad, *transforms.first); 
                 
 		transforms.first->update_by_velocity(v, m_current_step / max_v); 
-
-		vectorfield_as_inverse_of(*transforms.first, *transforms.second, 1e-5, 20);
+		transforms.second->update_as_inverse_of(*transforms.first, 1e-5, 20);
 
                 deform(src, *transforms.first, src_tmp); 
-                deform(ref, *transforms.first, ref_tmp);
+                deform(ref, *transforms.second, ref_tmp);
                 
                 m_cost->set_reference(src_tmp); 
                 m_cost->evaluate_force(ref_tmp, grad);
@@ -341,12 +348,10 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
                 max_v = m_regularizer->run(v, grad, *transforms.second); 
                 
 		transforms.second->update_by_velocity(v, m_current_step / max_v); 
-
-		
-		vectorfield_as_inverse_of(*transforms.first, *transforms.second, 1e-5, 20);
+		transforms.first->update_as_inverse_of(*transforms.first, 1e-5, 20);
                 
                 deform(src, *transforms.first, src_tmp); 
-                deform(ref, *transforms.first, ref_tmp);
+                deform(ref, *transforms.second, ref_tmp);
 
         }
 }
