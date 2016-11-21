@@ -19,10 +19,7 @@
  */
 
 #include <mia/core/convergence_measure.hh>
-
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
+#include <mia/internal/autotest.hh>
 
 #include <limits>
 
@@ -54,7 +51,7 @@ BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure )
         cm.push(4.0);
         BOOST_CHECK( cm.is_full_size());
         BOOST_CHECK_EQUAL( cm.fill(), 3u); 
-        BOOST_CHECK_CLOSE( cm.value(), 4.5, 1e-8);
+        BOOST_CHECK_CLOSE( cm.value(), 3.0, 1e-8);
 
         
 }
