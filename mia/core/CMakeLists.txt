@@ -43,6 +43,7 @@ SET(MIACORE_SRC_BASE
   callback.cc 
   cost.cc 
   combiner.cc
+  convergence_measure.cc
   cmdlineparser.cc
   cmdoption.cc
   cmdstringoption.cc
@@ -130,6 +131,7 @@ SET(MIACORE_HEADER_BASE
   cmdstringoption.hh
   cmeans.hh
   combiner.hh
+  convergence_measure.hh
   cost.hh
   cost.cxx
   combiner.hh
@@ -328,8 +330,9 @@ NEW_TEST_WITH_PARAM(cmdxmlhelp miacore "${cmdxmlhelp_params}")
 
 NEW_TEST(Vector miacore)
 NEW_TEST(attributes miacore)
-NEW_TEST(boundary_conditions  miacore)
+NEW_TEST(boundary_conditions miacore)
 NEW_TEST(callback miacore)
+NEW_TEST(convergence_measure miacore)
 NEW_TEST(cmdoptionflags miacore)
 NEW_TEST(cmdparamoption miacore)
 NEW_TEST(cmdlineparser miacore)
