@@ -46,9 +46,9 @@ void C2DTranslateTransformation::translate(float x, float y)
 	m_transform.y += y;
 }
 
-C2DFVector C2DTranslateTransformation::apply(const C2DFVector& x) const
+C2DFVector C2DTranslateTransformation::get_displacement_at(const C2DFVector& x) const
 {
-	return transform(x);
+	return x - transform(x);
 }
 
 

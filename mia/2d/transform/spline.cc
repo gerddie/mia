@@ -236,7 +236,7 @@ C2DFVector C2DSplineTransformation::interpolate(const C2DFVector& x) const
 	return result; 
 }
 
-C2DFVector C2DSplineTransformation::apply(const C2DFVector& x) const
+C2DFVector C2DSplineTransformation::get_displacement_at(const C2DFVector& x) const
 {
 	TRACE_FUNCTION;
 	assert(m_interpolator_valid);
@@ -277,7 +277,7 @@ C2DTransformation *C2DSplineTransformation::invert() const
 
 C2DFVector C2DSplineTransformation::operator () (const C2DFVector& x) const
 {
-	return x - apply(x);
+	return x - get_displacement_at(x);
 }
 
 C2DFVector C2DSplineTransformation::scale( const C2DFVector& x) const

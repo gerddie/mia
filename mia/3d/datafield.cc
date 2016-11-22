@@ -42,34 +42,6 @@ T3DDatafield<bool>::strip_avg()
 }
 
 
-template <>
-T3DDatafield<bool>::value_type
-T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
-{
-        // Calculate the coordinates and the distances
-        size_t  x = (size_t )p.x;
-        size_t  y = (size_t )p.y;
-        size_t  z = (size_t )p.z;
-        float  fx = p.x-x;
-        float  fy = p.y-y;
-        float  fz = p.z-z;
-
-        float  dx = 1-fx;
-        float  dy = 1-fy;
-        float  dz = 1-fz;
-
-        float a1,a3,a5,a7;
-
-	a1 = (dx * (*this)(x  , y  , z  ) + fx * (*this)(x+1, y  , z  ));
-	a3 = (dx * (*this)(x  , y+1, z  ) + fx * (*this)(x+1, y+1, z  ));
-	a5 = (dx * (*this)(x  , y  , z+1) + fx * (*this)(x+1, y  , z+1));
-	a7 = (dx * (*this)(x  , y+1, z+1) + fx * (*this)(x+1, y+1, z+1));
-
-        float b1 = dy * a1 + fy * a3;
-	float b2 = dy * a5 + fy * a7;
-
-	return  (dz * b1 + fz * b2) > 0.5;
-}
 
 #define INSTANCIATE(TYPE)						\
 	template class  T3DDatafield<TYPE>;				\

@@ -114,7 +114,7 @@ float C2DTransformMock::pertuberate(C2DFVectorfield&) const
 	return 1.1;
 }
 
-C2DFVector C2DTransformMock::apply(const C2DFVector& x) const
+C2DFVector C2DTransformMock::get_displacement_at(const C2DFVector& x) const
 {
 	if (x.x == 0.0 && x.y == 0.0)
 		return C2DFVector(-1.2, -2.3);
@@ -124,7 +124,7 @@ C2DFVector C2DTransformMock::apply(const C2DFVector& x) const
 
 C2DFVector C2DTransformMock::operator () (const C2DFVector& x) const
 {
-	return x - apply(x);
+	return x - get_displacement_at(x);
 }
 
 float C2DTransformMock::get_jacobian(const C2DFVectorfield&, float delta) const

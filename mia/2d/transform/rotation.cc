@@ -68,9 +68,9 @@ void C2DRotationTransformation::initialize()
 	m_rot_center = C2DFVector(m_size -C2DBounds::_1) * m_relative_rot_center; 
 }
 
-C2DFVector C2DRotationTransformation::apply(const C2DFVector& x) const
+C2DFVector C2DRotationTransformation::get_displacement_at(const C2DFVector& x) const
 {
-	return transform(x);
+	return x - transform(x);
 }
 
 
@@ -189,10 +189,10 @@ void C2DRotationTransformation::evaluate_matrix() const
 float C2DRotationTransformation::get_max_transform() const
 {
 	// check the corners
-	float m =      (C2DFVector(get_size() - C2DBounds::_1) -  apply(C2DFVector(get_size()  - C2DBounds::_1))).norm2();
-	float test0Y = (C2DFVector(0, get_size().y - 1) - apply(C2DFVector(0, get_size().y - 1))).norm2();
-	float testX0 = (C2DFVector(get_size().x - 1, 0) - apply(C2DFVector(get_size().x - 1, 0))).norm2();
-	float test00 = apply(C2DFVector(0, 0)).norm2();
+	float m =      (C2DFVector(get_size() - C2DBounds::_1) -  transform(C2DFVector(get_size()  - C2DBounds::_1))).norm2();
+	float test0Y = (C2DFVector(0, get_size().y - 1) - transform(C2DFVector(0, get_size().y - 1))).norm2();
+	float testX0 = (C2DFVector(get_size().x - 1, 0) - transform(C2DFVector(get_size().x - 1, 0))).norm2();
+	float test00 = transform(C2DFVector(0, 0)).norm2();
 
 	if (m < test0Y)
 		m = test0Y;
@@ -208,7 +208,7 @@ float C2DRotationTransformation::get_max_transform() const
 
 C2DFVector C2DRotationTransformation::operator () (const C2DFVector& x) const
 {
-	return apply(x); 
+	return transform(x); 
 }
 
 float C2DRotationTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /*delta*/) const

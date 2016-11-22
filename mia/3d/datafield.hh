@@ -216,15 +216,6 @@ public:
         /** Interpolate the value of Field at p default uses tri-linear interpolation */
         value_type get_interpol_val_at(const T3DVector<float >& p) const __attribute__((deprecated));
 
-        /* some rough interpolation using barycentric coordinates, needs less addition and
-            multiplications then tri-linear interp. but is usally of low quality
-            \remark this function may vanish
-        value_type get_barycent_interpol_val_at(const T3DVector<float >& p) const;
-	*/
-
-        /** just as the name says */
-        value_type get_trilin_interpol_val_at(const T3DVector<float >& p) const  __attribute__((deprecated));
-
         /** Get the average over a given Block
          Attn: Type T must be able to hold the Sum of all Elements in Block */
         value_type get_block_avrg(const C3DBounds& Start, const C3DBounds& BlockSize) const;
@@ -262,10 +253,6 @@ public:
         /** Strip average from data
          \returns the stripped average */
         value_type strip_avg();
-
-
-        /** interpolating access operator */
-        value_type operator()(const T3DVector<float >& pos)const;
 
         /** read-only indx operator */
         const_reference operator()(size_t  x, size_t  y, size_t  z) const

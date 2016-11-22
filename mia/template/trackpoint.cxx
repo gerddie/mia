@@ -84,7 +84,7 @@ void TTrackPoint<Transformation>::print(std::ostream& os) const
 template <typename Transformation>
 void TTrackPoint<Transformation>::move(float timestep, const Transformation& t)
 {
-	m_pos -= timestep * t.apply(m_pos);
+	m_pos -= timestep * t.get_displacement_at(m_pos);
 	m_time += timestep; 
 }
 

@@ -37,7 +37,7 @@ public:
 
 	void translate(float x, float y);
 
-	C2DFVector apply(const C2DFVector& x) const;
+	C2DFVector get_displacement_at(const C2DFVector& x) const;
 
 
 	class EXPORT_2D iterator_impl: public C2DTransformation::iterator_impl  {

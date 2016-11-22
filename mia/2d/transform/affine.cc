@@ -29,9 +29,9 @@ NS_MIA_BEGIN
 
 using namespace std;
 
-C2DFVector C2DAffineTransformation::apply(const C2DFVector& x) const
+C2DFVector C2DAffineTransformation::get_displacement_at(const C2DFVector& x) const
 {
-	return transform(x);
+	return x - transform(x);
 }
 
 
@@ -203,10 +203,10 @@ void C2DAffineTransformation::set_identity()
 float C2DAffineTransformation::get_max_transform() const
 {
 	// check the corners
-	float m =      (apply(C2DFVector(get_size())) - C2DFVector(get_size())).norm2();
-	float test0Y = (apply(C2DFVector(0, get_size().y)) - C2DFVector(0, get_size().y)).norm2();
-	float testX0 = (apply(C2DFVector(get_size().x, 0)) - C2DFVector(get_size().x, 0)).norm2();
-	float test00 = (apply(C2DFVector(0, 0)) - C2DFVector(0, 0)).norm2();
+	float m =      (transform(C2DFVector(get_size())) - C2DFVector(get_size())).norm2();
+	float test0Y = (transform(C2DFVector(0, get_size().y)) - C2DFVector(0, get_size().y)).norm2();
+	float testX0 = (transform(C2DFVector(get_size().x, 0)) - C2DFVector(get_size().x, 0)).norm2();
+	float test00 = (transform(C2DFVector(0, 0)) - C2DFVector(0, 0)).norm2();
 
 	if (m < test0Y)
 		m = test0Y;
@@ -221,7 +221,7 @@ float C2DAffineTransformation::get_max_transform() const
 
 C2DFVector C2DAffineTransformation::operator () (const C2DFVector& x) const
 {
-	return apply(x); 
+	return transform(x); 
 }
 
 float C2DAffineTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /*delta*/) const
@@ -256,9 +256,9 @@ C2DAffineTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, cons
 						      const C2DAffineTransformation& trans):
 	C2DTransformation::iterator_impl(pos, size),
 	m_trans(trans), 
-	m_value(trans.apply(C2DFVector(pos)))
+	m_value(trans.transform(C2DFVector(pos)))
 {
-	m_dx = m_trans.apply(C2DFVector(pos.x + 1.0, pos.y)) - m_value;
+	m_dx = m_trans.transform(C2DFVector(pos.x + 1.0, pos.y)) - m_value;
 }
 
 C2DTransformation::iterator_impl * C2DAffineTransformation::iterator_impl::clone() const
@@ -278,8 +278,8 @@ void C2DAffineTransformation::iterator_impl::do_x_increment()
 
 void C2DAffineTransformation::iterator_impl::do_y_increment()
 {
-	m_value = m_trans.apply(C2DFVector(get_pos())); 
-	m_dx = m_trans.apply(C2DFVector(get_pos().x + 1.0, get_pos().y)) - m_value;
+	m_value = m_trans.transform(C2DFVector(get_pos())); 
+	m_dx = m_trans.transform(C2DFVector(get_pos().x + 1.0, get_pos().y)) - m_value;
 }
 
 

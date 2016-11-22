@@ -52,9 +52,6 @@ BOOST_AUTO_TEST_CASE(test_3ddatafield)
 	       fabs(grad_22.y - 2.0) < 0.0001 &&
 	       fabs(grad_22.z + 1.0) < 0.0001);
 
-	float ip = data.get_interpol_val_at(C3DFVector(2.25, 1.5, 1.5));
-	BOOST_CHECK(fabs(ip - 5.875) < 0.0001);
-
 	std::vector<float> xbuffer;
 	data.get_data_line_x(2, 1, xbuffer);
 	BOOST_CHECK(xbuffer.size() == 5);

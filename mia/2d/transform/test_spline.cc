@@ -168,7 +168,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_EQUAL(stransf.degrees_of_freedom(), field.size() * 2);
 
 	C2DFVector testx(15, 20);
-	C2DFVector result = stransf.apply(testx);
+	C2DFVector result = stransf.get_displacement_at(testx);
 
 	BOOST_CHECK_EQUAL(stransf.get_size(), range);
 
@@ -201,7 +201,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 
 	C2DFVector test2(15.4, 20.3);
 
-	C2DFVector result2 = stransf_upscaled->apply(fscale * test2);
+	C2DFVector result2 = stransf_upscaled->get_displacement_at(fscale * test2);
 
 	BOOST_CHECK_CLOSE(result2.x, fscale.x * fx(test2.x, test2.y), 0.1);
 	BOOST_CHECK_CLOSE(result2.y, fscale.y * fy(test2.x, test2.y), 0.1);
@@ -353,7 +353,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	stransf.update(2.0, update);
 
 	C2DFVector testx(20.4, 42.4);
-	C2DFVector result = stransf.apply(testx);
+	C2DFVector result = stransf.get_displacement_at(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx.x, testx.y) + 2.0f, 0.1);
 	BOOST_CHECK_CLOSE(result.y, fy(testx.x, testx.y) + 4.0f, 0.1);

@@ -50,7 +50,7 @@ public:
 	void rotate(float angle);
 	void shear(float v);
 
-	C2DFVector apply(const C2DFVector& x) const;
+	C2DFVector transform(const C2DFVector& x) const;
 
 	class EXPORT_2D iterator_impl: public C2DTransformation::iterator_impl  {
 	public:
@@ -86,7 +86,7 @@ public:
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
-	C2DFVector transform(const C2DFVector& x)const;
+	C2DFVector get_displacement_at(const C2DFVector& x)const;
 private:
 	virtual C2DTransformation *do_clone() const;
 	void evaluate_t() const;

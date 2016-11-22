@@ -338,8 +338,14 @@ public:
 	   \returns the displacement at coordinate x
 	   \remark rename the function to something that explains better whats going on
 	 */
-	virtual C2DFVector apply(const C2DFVector& x) const = 0;
+	virtual C2DFVector apply(const C2DFVector& x) const __attribute__((deprecated)){
+		return get_displacement_at(x); 
+	}
 
+	/**
+	   \returns the displacement at coordinate x
+	*/
+	virtual C2DFVector get_displacement_at(const C2DFVector& x) const =0; 
         /**
 	   apply the actual transformation to point x
 	   \returns transformed point

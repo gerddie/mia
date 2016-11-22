@@ -87,59 +87,6 @@ void T3DDatafield<T>::make_single_ref()
 {
 }
 
-template <typename T>
-typename T3DDatafield<T>::value_type
-T3DDatafield<T>::get_interpol_val_at(const T3DVector<float >& p) const
-{
-        return get_trilin_interpol_val_at(p);
-}
-
-template <typename T>
-typename T3DDatafield<T>::value_type
-T3DDatafield<T>::operator()(const T3DVector<float >& pos)const
-{
-        return get_trilin_interpol_val_at(pos);
-}
-
-template <typename T>
-typename T3DDatafield<T>::value_type
-T3DDatafield<T>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
-{
-        // Calculate the coordinates and the distances
-        size_t  x = (size_t)p.x;
-        size_t  y = (size_t)p.y;
-        size_t  z = (size_t)p.z;
-        float  fx = p.x-x;
-        float  fy = p.y-y;
-        float  fz = p.z-z;
-
-        float  dx = 1-fx;
-        float  dy = 1-fy;
-        float  dz = 1-fz;
-
-        if ( x < m_size.x-1 && y  < m_size.y -1 && z < m_size.z -1 ) {
-
-                const T *ptr = &(*this)[x + m_size.x * (y +m_size.y * z)];
-                const T *ptr_h = &ptr[m_size.x];
-                const T *ptr2 = &ptr[m_xy];
-                const T *ptr2_h = &ptr2[m_size.x];
-                const T a1 = T(dx * ptr[0]    + fx * ptr[1]);
-                const T a3 = T(dx * ptr_h[0]  + fx * ptr_h[1]);
-                const T a5 = T(dx * ptr2[0]   + fx * ptr2[1]);
-                const T a7 = T(dx * ptr2_h[0] + fx * ptr2_h[1]);
-		const T b1 = T(dy * a1 + fy * a3);
-		const T b2 = T(dy * a5 + fy * a7);
-		return  T(dz * b1 + fz * b2);
-        } else {
-                const T a1 = T(dx * (*this)(x  , y  , z  ) + fx * (*this)(x+1, y  , z  ));
-                const T a3 = T(dx * (*this)(x  , y+1, z  ) + fx * (*this)(x+1, y+1, z  ));
-                const T a5 = T(dx * (*this)(x  , y  , z+1) + fx * (*this)(x+1, y  , z+1));
-                const T a7 = T(dx * (*this)(x  , y+1, z+1) + fx * (*this)(x+1, y+1, z+1));
-		const T b1 = T(dy * a1 + fy * a3);
-		const T b2 = T(dy * a5 + fy * a7);
-		return  T(dz * b1 + fz * b2);
-        }
-}
 
 
 template <typename T>

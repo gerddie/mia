@@ -71,7 +71,7 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_basic_props, GridTransformFixture)
 	BOOST_CHECK_EQUAL(field.degrees_of_freedom(), size.x * size.y * 2);
 
 	C2DFVector testx(20.2, 21.9);
-	C2DFVector result = field.apply(testx);
+	C2DFVector result = field.get_displacement_at(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx.x, testx.y), 1);
 	BOOST_CHECK_CLOSE(result.y, fy(testx.x, testx.y), 1);
@@ -191,9 +191,9 @@ BOOST_AUTO_TEST_CASE( test_gridtransform_add )
 
 	C2DGridTransformation c = a + b;
 
-	BOOST_CHECK_EQUAL( c.apply(C2DFVector(1,1)), C2DFVector(3,4));
-	BOOST_CHECK_EQUAL( c.apply(C2DFVector(2,1)), C2DFVector(0.0,-0.5));
-	BOOST_CHECK_EQUAL( c.apply(C2DFVector(1,2)), C2DFVector(-0.5,0.0));
+	BOOST_CHECK_EQUAL( c.get_displacement_at(C2DFVector(1,1)), C2DFVector(3,4));
+	BOOST_CHECK_EQUAL( c.get_displacement_at(C2DFVector(2,1)), C2DFVector(0.0,-0.5));
+	BOOST_CHECK_EQUAL( c.get_displacement_at(C2DFVector(1,2)), C2DFVector(-0.5,0.0));
 
 }
 

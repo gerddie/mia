@@ -80,6 +80,10 @@ public:
 	void set_voxel_size(const C3DFVector& voxel){
 		set_attribute("voxel", PAttribute(new CVoxelAttribute(voxel)));
 	}
+
+	/** Interpolate the value of Field at p default uses tri-linear interpolation */
+        T get_interpol_val_at(const C3DFVector& p) const;
+
 	
 };
 

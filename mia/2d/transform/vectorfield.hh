@@ -43,7 +43,7 @@ public:
 
 	//	operator C2DFVectorfield&();
 
-	C2DFVector apply(const  C2DFVector& x) const;
+	C2DFVector get_displacement_at(const  C2DFVector& x) const;
 
 	//	C2DFVectorfield& field() __attribute__((deprecated)) ;
 	//	const C2DFVectorfield& field() const __attribute__((deprecated)) ;
@@ -104,7 +104,7 @@ private:
 	EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, const C2DGridTransformation& b);
 };
 
-inline C2DFVector C2DGridTransformation::apply(const  C2DFVector& x) const
+inline C2DFVector C2DGridTransformation::get_displacement_at(const  C2DFVector& x) const
 {
 	return m_field.get_interpol_val_at(x);
 }

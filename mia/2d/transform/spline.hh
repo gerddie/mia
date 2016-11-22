@@ -44,7 +44,7 @@ public:
 	void set_coefficients(const C2DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C2DFVectorfield& field);
 	virtual void reinit();
-	C2DFVector apply( const C2DFVector& x) const;
+	C2DFVector get_displacement_at( const C2DFVector& x) const;
 	C2DFVector scale( const C2DFVector& x) const;
 
 	virtual const C2DBounds& get_size() const;
