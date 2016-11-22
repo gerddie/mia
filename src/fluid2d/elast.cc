@@ -198,7 +198,6 @@ void TElastReg::work(C2DFVectorfield *Shift, const C2DInterpolatorFactory& ipfac
 
 	// init displacement field
 	u = *Shift;
-	Shift->make_single_ref();
 	Template = C2DFImage(Model.get_size());
 	{
 		FDeformer2D deformer(*Shift, ipfac);
@@ -245,7 +244,6 @@ void TElastReg::work(C2DFVectorfield *Shift, const C2DInterpolatorFactory& ipfac
 			float delta = dmin - diff;
 			cvdebug() << " delta cost " <<  delta << "\n";
 			usave = u;
-			u.make_single_ref();
 
 			if (delta < 100)
 				break;

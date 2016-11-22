@@ -85,7 +85,7 @@ public:
 
 	virtual std::pair<double, double> get_minmax_intensity() const = 0; 
 
-	virtual void make_single_ref() = 0; 
+	virtual void make_single_ref() __attribute__((deprecated)) = 0; 
 	
  protected:
          /** Constructor initializes the size and the pixel type
@@ -316,7 +316,7 @@ public:
 	/// \returns a pair (minimum, maximum) pixel intensity 
 	std::pair<double, double> get_minmax_intensity() const;
 
-	void make_single_ref(); 
+	void make_single_ref() __attribute__((deprecated)); 
 private:
 	T2DDatafield<T> m_image;
 };

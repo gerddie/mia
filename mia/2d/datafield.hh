@@ -106,30 +106,20 @@ public:
 	*/
 	T2DDatafield(const C2DBounds& size, const std::vector<T>& data);
 
-	/** copy constructor, it does a shallow copy of the original, i.e. 
-	    the data is not copied, only the shared pointer increases its reference count.
-	    If you want a truely unique copy, call make_single_ref() afterwards. 
+	/** copy constructor, it does a deep copy.
+
 	 */ 
 	T2DDatafield(const T2DDatafield<T>& org);
 
 	/**
-	   Assignment operator, Just like the copy constructor this call does only increment 
-	   the reference count to the data. 
-	   If you want a truely unique copy, call make_single_ref() afterwards. 
+	   Assignment operator, does a deep copy. 
 	*/
 	T2DDatafield<T>& operator = (const T2DDatafield<T>& org);
 
-	/** copy constructor, it does a shallow copy of the original, i.e. 
-	    the data is not copied, only the shared pointer increases its reference count.
-	    If you want a truely unique copy, call make_single_ref() afterwards. 
-	 */ 
+	/** move constructor */ 
 	T2DDatafield(T2DDatafield<T>&& org);
 
-	/**
-	   Assignment operator, Just like the copy constructor this call does only increment 
-	   the reference count to the data. 
-	   If you want a truely unique copy, call make_single_ref() afterwards. 
-	*/
+	/**   Assignment move operator */
 	T2DDatafield<T>& operator = (T2DDatafield<T>&& org);
 	
 	
@@ -143,14 +133,13 @@ public:
 	   Since the data is internally stored by a shared pointer, this 
 	   function ensures that the data is not shared with any other object 
 	 */
-	void make_single_ref();
+	void make_single_ref() __attribute__((deprecated));
 
 	/// \returns the size of the data field 
 	const C2DBounds&  get_size() const;
 
 	/**
-	   This function first ensures that the copy of the data is unique by calling make_single_ref()
-	   and then sets the elements of data to T(). 
+	   This function sets the elements of data to T(). 
 	 */
 	void clear();
 

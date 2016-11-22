@@ -183,7 +183,6 @@ const T2DDatafield<T>& T2DImage<T>::data() const
 template <typename T>
 void T2DImage<T>::make_single_ref()
 {
-	m_image.make_single_ref(); 
 }
 
 template <typename T>

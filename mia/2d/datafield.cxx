@@ -140,7 +140,6 @@ const C2DBounds&  T2DDatafield<T>::get_size() const
 template <class T> 
 void T2DDatafield<T>::clear()
 {
-	make_single_ref();
 	std::fill(begin(), end(),T()); 
 }
 	
@@ -221,7 +220,6 @@ void T2DDatafield<T>::put_data_line_x(size_t y,  const std::vector<T>& buffer)
 {
 	assert(y < m_size.y); 
 	assert(buffer.size() == m_size.x); 
-	make_single_ref();
 
 	std::copy(buffer.begin(), buffer.end(), m_data.begin() + m_size.x * y ); 
 }
@@ -232,7 +230,6 @@ void T2DDatafield<T>::put_data_line_y(size_t x, const std::vector<T>& buffer)
 	assert(x < m_size.x); 
 	assert(buffer.size() == m_size.y); 
 	
-	make_single_ref();
 	auto src_i = buffer.begin();
 	auto src_e = buffer.end();
 	
