@@ -85,21 +85,19 @@ class  EXPORT_3D T3DDatafield {
 
 	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
-        typedef std::shared_ptr<data_array>  ref_data_type;
-
 public:
 	
 
         /** makes a single reference of the data, after calling this, it is save to write to the data field
          */
-        void make_single_ref();
+        void make_single_ref() __attribute__((deprecated));
 
 	/**
 	   Checks whether the data hold by the data field is unique. 
 	   \returns true if it is 
 	 */
-	bool holds_unique_data()const { 
-		return m_data.unique(); 
+	bool holds_unique_data()const __attribute__((deprecated)){ 
+		return true; 
 	}
 			
 
@@ -175,7 +173,7 @@ public:
 	T3DDatafield();
 
         /** Constructor to create empty Datafield if given size */
-        T3DDatafield(const C3DBounds& _Size);
+        explicit T3DDatafield(const C3DBounds& _Size);
 
         /** Constructor to create Datafield if given size and with initialization data
             \param size the size of the 3D-field
@@ -193,6 +191,9 @@ public:
 
         /** copy - Constructor */
         T3DDatafield(const T3DDatafield<T>& org);
+
+	/** move constructor */
+	T3DDatafield(T3DDatafield<T>&& org);
 
         /// make sure the destructor is virtual
         virtual ~T3DDatafield();
@@ -234,6 +235,9 @@ public:
         */
         T3DDatafield& operator = (const T3DDatafield& org);
 
+	/// Moave asignment 
+	T3DDatafield& operator = (T3DDatafield&& org);
+
         /** \returns the 3D-size of the data field */
         const C3DBounds&  get_size() const
         {
@@ -246,7 +250,7 @@ public:
         /** \returns the number of elements in the datafield */
         size_type size()const
         {
-                return m_data->size();
+                return m_data.size();
         }
 
 	/// swap the data ofthis 3DDatafield with another one 
@@ -268,8 +272,7 @@ public:
 	{
         	// Look if we are inside, and give reference, else give the zero
 	        if (x < m_size.x && y < m_size.y && z < m_size.z) {
-	                const data_array& data = *m_data;
-	                return data[x+ m_size.x * (y  + m_size.y * z)];
+	                return m_data[x+ m_size.x * (y  + m_size.y * z)];
 	        }
 		return Zero;
 	}
@@ -287,7 +290,7 @@ public:
         	// Look if we are inside, and give reference, else throw exception
 	        // since write access is wanted
 	        assert(x < m_size.x && y < m_size.y && z < m_size.z);
-		return (*m_data)[x + m_size.x *(y + m_size.y * z)];
+		return m_data[x + m_size.x *(y + m_size.y * z)];
 	}
 
 
@@ -427,7 +430,7 @@ public:
         /** \returns an read only forward iterator over the whole data field */
         const_iterator begin()const
         {
-                return m_data->begin();
+                return m_data.begin();
         }
 	
 	/**
@@ -435,7 +438,7 @@ public:
 	 */
 	const_iterator begin_at(size_t x, size_t y, size_t z)const
         {
-                return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
+                return m_data.begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 
@@ -444,7 +447,7 @@ public:
 	 */
         const_iterator end()const
         {
-                return m_data->end();
+                return m_data.end();
         }
 
         /** \returns an read/write random access iterator over the whole data
@@ -452,8 +455,7 @@ public:
             The functions ensures, that the field uses a single referenced datafield */
         iterator begin()
         {
-                make_single_ref();
-                return m_data->begin();
+                return m_data.begin();
         }
 	
 	Range get_range(const C3DBounds& start, const C3DBounds& end);
@@ -500,8 +502,7 @@ public:
 	 */
 	iterator begin_at(size_t x, size_t y, size_t z)
         {
-		make_single_ref();
-		return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
+		return m_data.begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 	/** \returns an read/write random access iterator over the whole data
@@ -509,14 +510,13 @@ public:
             The functions ensures, that the field uses a single referenced datafield */
         iterator end()
         {
-                make_single_ref();
-                return m_data->end();
+                return m_data.end();
         }
 
         /** a linear read only access operator */
         const_reference operator[](int i)const
         {
-                return (*m_data)[i];
+                return m_data[i];
         }
 
         /** A linear read/write access operator. The refcount of Data must be 1,
@@ -524,8 +524,7 @@ public:
         */
         reference operator[](int i)
         {
-		assert(m_data.unique());
-                return (*m_data)[i];
+                return m_data[i];
         }
 
 
@@ -543,7 +542,7 @@ private:
         size_t  m_xy;
 
         /** Pointer to the Field of Data hold by this class */
-        ref_data_type m_data;
+        data_array m_data;
 
         /** helper: represents the zero-value */
         static const value_type Zero;
@@ -595,13 +594,12 @@ template <class T>
 template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(size_t  x, size_t  y, size_t  z) const
 {
-	const std::vector<T>& data = *m_data;
 	const int sizex = m_size.x;
 	// Look if we are inside the used space
 	if (x - 1 < m_size.x - 2 &&  y - 1 < m_size.y - 2 &&  z - 1 < m_size.z - 2) {
 
                 // Lookup all neccessary Values
-		const T *H  = &data[x + m_size.x * (y + m_size.y * z)];
+		const T *H  = &m_data[x + m_size.x * (y + m_size.y * z)];
 
 		return T3DVector<Out> (Out((H[1] - H[-1]) * 0.5),
 				       Out((H[sizex] - H[-sizex]) * 0.5),
@@ -618,7 +616,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(int hardcode) const
 {
 	const int sizex = m_size.x;
 	// Lookup all neccessary Values
-	const T *H  = &(*m_data)[hardcode];
+	const T *H  = &m_data[hardcode];
 
 	return T3DVector<Out> (Out((H[1] - H[-1]) * 0.5),
 			       Out((H[sizex] - H[-sizex]) * 0.5),
@@ -635,9 +633,9 @@ T3DVector<Out> T3DDatafield<bool>::get_gradient(int hardcode) const
 {
 
 	// Lookup all neccessary Values
-	return T3DVector<Out> (Out(((*m_data)[hardcode + 1] - (*m_data)[hardcode -1]) * 0.5),
-			       Out(((*m_data)[hardcode + m_size.x] - (*m_data)[hardcode -m_size.x]) * 0.5),
-			       Out(((*m_data)[hardcode + m_xy] - (*m_data)[hardcode -m_xy]) * 0.5));
+	return T3DVector<Out> (Out((m_data[hardcode + 1] - m_data[hardcode -1]) * 0.5),
+			       Out((m_data[hardcode + m_size.x] - m_data[hardcode -m_size.x]) * 0.5),
+			       Out((m_data[hardcode + m_xy] - m_data[hardcode -m_xy]) * 0.5));
 }
 
 template <class T>
@@ -646,7 +644,6 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 {
         // This will become really funny
 	const int sizex = m_size.x;
-        const std::vector<T>& data = *m_data;
         // Calculate the int coordinates near the POI
         // and the distances
         size_t  x = size_t (p.x);
@@ -662,7 +659,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 	// Look if we are inside the used space
         if (x-1 < m_size.x-3 &&  y -1 < m_size.y-3 && z - 1 < m_size.z-3 ) {
                 // Lookup all neccessary Values
-                const T *H000  = &data[x + sizex * y + m_xy * z];
+                const T *H000  = &m_data[x + sizex * y + m_xy * z];
 
                 const T* H_100 = &H000[-m_xy];
                 const T* H_101 = &H_100[1];

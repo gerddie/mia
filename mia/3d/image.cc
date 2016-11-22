@@ -173,6 +173,35 @@ T3DImage<T>::T3DImage(const T3DImage<T>& orig):
 }
 
 template <typename T>
+T3DImage<T>::T3DImage(T3DImage<T>&& orig):
+	C3DImage(orig),
+	m_image(orig.m_image)
+{
+}	
+
+template <typename T>
+T3DImage<T>& T3DImage<T>::operator = (const T3DImage<T>& orig)
+{
+	if (this != &orig) {
+		C3DImage::operator =(orig);
+		m_image = orig.m_image;
+	}
+	return *this; 
+}
+
+
+template <typename T>
+T3DImage<T>& T3DImage<T>::operator = (T3DImage<T>&& orig)
+{
+	if (this != &orig) {
+		C3DImage::operator =(std::move(orig));
+		m_image = std::move(orig.m_image);
+	}
+	return *this;
+}
+
+
+template <typename T>
 T3DImage<T>::T3DImage(const T3DDatafield<T>& orig):
 	C3DImage((EPixelType)pixel_type<T>::value),
 	m_image(orig)
