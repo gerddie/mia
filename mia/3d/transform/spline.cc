@@ -290,7 +290,7 @@ C3DFVector C3DSplineTransformation::interpolate(const C3DFVector& x) const
 	return sum(start, xweights, yweights, zweights);
 }
 
-C3DFVector C3DSplineTransformation::apply(const C3DFVector& x) const
+C3DFVector C3DSplineTransformation::get_displacement_at(const C3DFVector& x) const
 {
 	TRACE_FUNCTION;
 	assert(m_scales_valid);
@@ -314,7 +314,7 @@ C3DTransformation *C3DSplineTransformation::invert() const
 C3DFVector C3DSplineTransformation::operator () (const C3DFVector& x) const
 {
 	TRACE_FUNCTION;
-	return x - apply(x);
+	return x - get_displacement_at(x);
 }
 
 C3DFVector C3DSplineTransformation::scale( const C3DFVector& x) const

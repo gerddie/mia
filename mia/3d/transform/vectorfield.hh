@@ -43,7 +43,7 @@ public:
 
 	//	operator C3DFVectorfield&();
 
-	C3DFVector apply(const  C3DFVector& x) const;
+	C3DFVector get_displacement_at(const  C3DFVector& x) const;
 
 	//	C3DFVectorfield& field() __attribute__((deprecated)) ;
 	//	const C3DFVectorfield& field() const __attribute__((deprecated)) ;
@@ -109,7 +109,7 @@ private:
 	EXPORT_3D C3DGridTransformation operator + (const C3DGridTransformation& a, const C3DGridTransformation& b);
 };
 
-inline C3DFVector C3DGridTransformation::apply(const  C3DFVector& x) const
+inline C3DFVector C3DGridTransformation::get_displacement_at(const  C3DFVector& x) const
 {
 	return m_field.get_interpol_val_at(x);
 }

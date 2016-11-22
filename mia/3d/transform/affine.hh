@@ -35,7 +35,7 @@ public:
 	C3DAffineTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
 	C3DAffineTransformation(const C3DBounds& size,  std::vector<double> transform, const C3DInterpolatorFactory& ipf);
 
-	C3DFVector apply(const C3DFVector& x) const;
+	C3DFVector get_displacement_at(const C3DFVector& x) const;
 
 	class EXPORT_3D iterator_impl: public C3DTransformation::iterator_impl  {
 	public:

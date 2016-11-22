@@ -67,9 +67,9 @@ void C3DRotationTransformation::initialize()
 	m_rot_center = C3DFVector(m_size - C3DBounds::_1) * m_relative_rot_center; 
 }
 
-C3DFVector C3DRotationTransformation::apply(const C3DFVector& x) const
+C3DFVector C3DRotationTransformation::get_displacement_at(const C3DFVector& x) const
 {
-	return transform(x);
+	return transform(x) - x;
 }
 
 
@@ -227,9 +227,9 @@ float C3DRotationTransformation::get_max_transform() const
 		C3DFVector(get_size()) - C3DFVector::_1
 	};
 
-	float result = apply(C3DFVector()).norm2(); 
+	float result = transform(C3DFVector()).norm2(); 
 	for(int i = 0; i < 7; ++i) {
-		float h = (apply(corners[i]) - corners[i]).norm2(); 
+		float h = (transform(corners[i]) - corners[i]).norm2(); 
 		if (result < h) 
 			result = h; 
 	}
@@ -241,7 +241,7 @@ float C3DRotationTransformation::get_max_transform() const
 
 C3DFVector C3DRotationTransformation::operator () (const C3DFVector& x) const
 {
-	return apply(x); 
+	return transform(x); 
 }
 
 float C3DRotationTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
@@ -291,7 +291,7 @@ C3DRotationTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, co
 						     const C3DRotationTransformation& trans):
 	C3DTransformation::iterator_impl(pos, begin, end, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.transform(C3DFVector(pos)))
 {
 	m_dx = m_trans.transform(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }

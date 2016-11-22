@@ -37,7 +37,7 @@ public:
 				 const mia::C3DFVector& rot_axis, 
 				 const mia::C3DInterpolatorFactory& ipf); 
 	
-	mia::C3DFVector apply(const mia::C3DFVector& x) const;
+	mia::C3DFVector get_displacement_at(const mia::C3DFVector& x) const;
 
 	class EXPORT_3D iterator_impl: public mia::C3DTransformation::iterator_impl  {
 	public:

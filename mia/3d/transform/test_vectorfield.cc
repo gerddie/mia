@@ -102,21 +102,21 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_basic_props, GridTransformFixture)
 
 
 	C3DFVector testx0(22, 22, 23);
-	C3DFVector result0 = field.apply(testx0);
+	C3DFVector result0 = field.get_displacement_at(testx0);
 
 	BOOST_CHECK_CLOSE(result0.x, fx(testx0), 1);
 	BOOST_CHECK_CLOSE(result0.y, fy(testx0), 1);
 	BOOST_CHECK_CLOSE(result0.z, fz(testx0), 1);
 
 	C3DFVector testx1(32.5, 22, 23);
-	C3DFVector result1 = field.apply(testx1);
+	C3DFVector result1 = field.get_displacement_at(testx1);
 
 	BOOST_CHECK_CLOSE(result1.x, fx(testx1), 1);
 	BOOST_CHECK_CLOSE(result1.y, fy(testx1), 1);
 	BOOST_CHECK_CLOSE(result1.z, fz(testx1), 1);
 
 	C3DFVector testx2(32, 22, 23);
-	C3DFVector result2 = field.apply(testx2);
+	C3DFVector result2 = field.get_displacement_at(testx2);
 
 	BOOST_CHECK_CLOSE(result2.x, fx(testx2), 1);
 	BOOST_CHECK_CLOSE(result2.y, fy(testx2), 1);
@@ -125,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_basic_props, GridTransformFixture)
 
 	// the non-linearity of the test function is quite high ... 
 	C3DFVector testx(32.2, 21.9, 22.9);
-	C3DFVector result = field.apply(testx);
+	C3DFVector result = field.get_displacement_at(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx), 4);
 	BOOST_CHECK_CLOSE(result.y, fy(testx), 4);
@@ -136,6 +136,15 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_basic_props, GridTransformFixture)
 	BOOST_CHECK_CLOSE(result.x, testx.x - fx(testx), 0.1);
 	BOOST_CHECK_CLOSE(result.y, testx.y - fy(testx), 0.1);
 	BOOST_CHECK_CLOSE(result.z, testx.z - fz(testx), 0.1);
+
+
+	// 4.25 * 0.25 + 6.25 *0.75
+	C3DFVector ip_loc( 2.25, 1.75, 3.2); 
+	auto ip = field.get_displacement_at(ip_loc);
+
+	BOOST_CHECK_CLOSE(ip.x, fx(ip_loc), 0.001);
+	BOOST_CHECK_CLOSE(ip.y, fy(ip_loc), 0.001);
+	BOOST_CHECK_CLOSE(ip.y, fz(ip_loc), 0.001);
 
 }
 
@@ -364,10 +373,10 @@ BOOST_AUTO_TEST_CASE( test_gridtransform_add )
 
 	C3DGridTransformation c = a + b;
 
-	BOOST_CHECK_EQUAL( c.apply(C3DFVector(1,1,0)), C3DFVector(3,4,2));
-	BOOST_CHECK_EQUAL( c.apply(C3DFVector(1,1,1)), C3DFVector(3,4,3));
-	BOOST_CHECK_EQUAL( c.apply(C3DFVector(2,1,0)), C3DFVector(0.0,-0.5,0));
-	BOOST_CHECK_EQUAL( c.apply(C3DFVector(1,2,0)), C3DFVector(-0.5,0.0,0));
+	BOOST_CHECK_EQUAL( c.get_displacement_at(C3DFVector(1,1,0)), C3DFVector(3,4,2));
+	BOOST_CHECK_EQUAL( c.get_displacement_at(C3DFVector(1,1,1)), C3DFVector(3,4,3));
+	BOOST_CHECK_EQUAL( c.get_displacement_at(C3DFVector(2,1,0)), C3DFVector(0.0,-0.5,0));
+	BOOST_CHECK_EQUAL( c.get_displacement_at(C3DFVector(1,2,0)), C3DFVector(-0.5,0.0,0));
 
 }
 

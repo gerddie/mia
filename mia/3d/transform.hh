@@ -321,8 +321,16 @@ public:
 	   @returns the displacement at coordinate x
 	   \remark rename the function to something that explains better whats going on
 	 */
-	virtual C3DFVector apply(const C3DFVector& x) const = 0;
+	virtual C3DFVector apply(const C3DFVector& x) const  __attribute__((deprecated));
 
+	/**
+	   Returns the displacement of the transformation at a given coordinate
+	   \param x coordinate
+	   \returns actual displacement 
+	 */
+	
+	virtual C3DFVector get_displacement_at(const C3DFVector& x) const = 0;
+	
         /**
 	   apply the actual transformation to point x
 	   @returns transformed point

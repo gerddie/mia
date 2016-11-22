@@ -296,7 +296,7 @@ void C3DGridTransformation::iterator_impl::do_z_increment()
 
 C3DFVector C3DGridTransformation::operator ()(const  C3DFVector& x) const
 {
-	return x - apply(x);
+	return x - get_displacement_at(x);
 }
 
 C3DGridTransformation::const_iterator C3DGridTransformation::begin() const
@@ -406,7 +406,7 @@ EXPORT_3D C3DGridTransformation operator + (const C3DGridTransformation& a, cons
 		for (size_t y = 0; y < a.get_size().y; ++y)  {
 			for (size_t x = 0; x < a.get_size().x; ++x, ++ri, ++bi)  {
 				const C3DFVector xi = C3DFVector(x,y,z) - *bi;
-				*ri = a.apply(xi) +  *bi;
+				*ri = a.get_displacement_at(xi) +  *bi;
 			}
 		}
 	}

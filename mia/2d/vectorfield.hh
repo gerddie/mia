@@ -57,6 +57,10 @@ public:
 
 	void set_pixel_size(const C2DFVector& pixel); 
 
+	/// This function should really go away 
+	T get_interpol_val_at(const C2DFVector& p) const;
+
+	
 };
 
 /// 2D vector field to store single precicion 2D vectors 

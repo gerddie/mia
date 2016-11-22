@@ -120,7 +120,7 @@ float C3DTransformMock::pertuberate(C3DFVectorfield&) const
 	return 1.1;
 }
 
-C3DFVector C3DTransformMock::apply(const C3DFVector& x) const
+C3DFVector C3DTransformMock::get_displacement_at(const C3DFVector& x) const
 {
 	if (x.x == 0.0 && x.y == 0.0)
 		return C3DFVector(-1.2, -2.3, -4.3);
@@ -130,7 +130,7 @@ C3DFVector C3DTransformMock::apply(const C3DFVector& x) const
 
 C3DFVector C3DTransformMock::operator () (const C3DFVector& x) const
 {
-	return x - apply(x);
+	return x - get_displacement_at(x);
 }
 
 float C3DTransformMock::get_jacobian(const C3DFVectorfield&, float delta) const

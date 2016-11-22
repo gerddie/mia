@@ -245,6 +245,11 @@ const C3DBounds& C3DTransformation::const_iterator::get_size()const
 	return m_holder->get_size(); 
 }
 
+C3DFVector C3DTransformation::apply(const C3DFVector& x) const
+{
+	return get_displacement_at(x); 
+}
+
 bool C3DTransformation::refine()
 {
 	return false; 

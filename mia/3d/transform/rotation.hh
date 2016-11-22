@@ -42,7 +42,7 @@ public:
 
 	void rotate(float xy, float xz, float yz);
 
-	C3DFVector apply(const C3DFVector& x) const;
+	C3DFVector get_displacement_at(const C3DFVector& x) const;
 
 
 	class EXPORT_3D iterator_impl: public C3DTransformation::iterator_impl  {

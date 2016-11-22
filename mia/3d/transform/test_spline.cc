@@ -235,7 +235,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(scaled.y, testscale.y, 0.1);
 	BOOST_CHECK_CLOSE(scaled.z, testscale.z, 0.1);
 	
-	C3DFVector result_apply = stransf.apply(testx);
+	C3DFVector result_apply = stransf.get_displacement_at(testx);
 	BOOST_CHECK_CLOSE(result_apply.x, fx(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_apply.y, fy(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_apply.z, fz(testx), 0.1);
@@ -465,7 +465,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	stransf.reinit();
 
 	C3DFVector testx(33.4, 20.4, 21.9);
-	C3DFVector result = stransf.apply(testx);
+	C3DFVector result = stransf.get_displacement_at(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx) + 2.0f, 0.1);
 	BOOST_CHECK_CLOSE(result.y, fy(testx) + 4.0f, 0.1);

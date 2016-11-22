@@ -71,6 +71,17 @@ float FieldSplineFixture::fy(float x, float y)
 	return (y + 1) / (x * x + y + 10);
 }
 
+BOOST_FIXTURE_TEST_CASE( test_vector_trilininterp , FieldSplineFixture )
+{
+	C2DFVector iploc(20.4, 17.3);
+	auto ip = field.get_interpol_val_at(iploc);
+
+	BOOST_CHECK_CLOSE(ip.x, fx(iploc.x, iploc.y), 0.001);
+	BOOST_CHECK_CLOSE(ip.y, fy(iploc.x, iploc.y), 0.001); 
+	
+}
+
+
 BOOST_FIXTURE_TEST_CASE( test_vector_field2d_splines, FieldSplineFixture )
 {
 	std::shared_ptr<T2DInterpolator<C2DFVector>  > source(ipf.create(field));

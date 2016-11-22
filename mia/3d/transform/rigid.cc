@@ -31,7 +31,7 @@ NS_MIA_BEGIN
 using namespace std;
 
 
-C3DFVector C3DRigidTransformation::apply(const C3DFVector& x) const
+C3DFVector C3DRigidTransformation::get_displacement_at(const C3DFVector& x) const
 {
 	CScopedLock lock(m_mutex); 
 	if (!m_matrix_valid) 
@@ -273,9 +273,9 @@ float C3DRigidTransformation::get_max_transform() const
 		C3DFVector(get_size().x-1, get_size().y-1, get_size().z-1), 
 	};
 
-	float result = apply(C3DFVector()).norm2(); 
+	float result = get_displacement_at(C3DFVector()).norm2(); 
 	for(int i = 0; i < 8; ++i) {
-		float h = (apply(corners[i]) - corners[i]).norm2(); 
+		float h = (get_displacement_at(corners[i]) - corners[i]).norm2(); 
 		if (result < h) 
 			result = h; 
 	}
@@ -286,7 +286,7 @@ float C3DRigidTransformation::get_max_transform() const
 
 C3DFVector C3DRigidTransformation::operator () (const C3DFVector& x) const
 {
-	return apply(x); 
+	return get_displacement_at(x); 
 }
 
 float C3DRigidTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
@@ -339,9 +339,9 @@ C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const
 						      const C3DRigidTransformation& trans):
 	C3DTransformation::iterator_impl(pos, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.get_displacement_at(C3DFVector(pos)))
 {
-	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.get_displacement_at(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
@@ -349,9 +349,9 @@ C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const
 						     const C3DRigidTransformation& trans):
 	C3DTransformation::iterator_impl(pos, begin, end, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.get_displacement_at(C3DFVector(pos)))
 {
-	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.get_displacement_at(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 		
 C3DTransformation::iterator_impl * C3DRigidTransformation::iterator_impl::clone() const
@@ -371,14 +371,14 @@ void C3DRigidTransformation::iterator_impl::do_x_increment()
 
 void C3DRigidTransformation::iterator_impl::do_y_increment()
 {
-	m_value = m_trans.apply(C3DFVector(get_pos())); 
-	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.get_displacement_at(C3DFVector(get_pos())); 
+	m_dx = m_trans.get_displacement_at(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 void C3DRigidTransformation::iterator_impl::do_z_increment()
 {
-	m_value = m_trans.apply(C3DFVector(get_pos())); 
-	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.get_displacement_at(C3DFVector(get_pos())); 
+	m_dx = m_trans.get_displacement_at(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 C3DTransformation::const_iterator C3DRigidTransformation::begin() const

@@ -214,7 +214,7 @@ public:
 	T3DVector<Out> get_gradient(int index) const;
 
         /** Interpolate the value of Field at p default uses tri-linear interpolation */
-        value_type get_interpol_val_at(const T3DVector<float >& p) const;
+        value_type get_interpol_val_at(const T3DVector<float >& p) const __attribute__((deprecated));
 
         /* some rough interpolation using barycentric coordinates, needs less addition and
             multiplications then tri-linear interp. but is usally of low quality
@@ -223,7 +223,7 @@ public:
 	*/
 
         /** just as the name says */
-        value_type get_trilin_interpol_val_at(const T3DVector<float >& p) const;
+        value_type get_trilin_interpol_val_at(const T3DVector<float >& p) const  __attribute__((deprecated));
 
         /** Get the average over a given Block
          Attn: Type T must be able to hold the Sum of all Elements in Block */

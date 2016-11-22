@@ -82,6 +82,25 @@ void T2DVectorfield<T>::set_pixel_size(const C2DFVector& pixel)
 	set_attribute("pixel", PAttribute(new TAttribute<C2DFVector>(pixel)));
 }
 
+template <class T> 
+T T2DVectorfield<T>::get_interpol_val_at(const C2DFVector& p) const
+{
+	size_t  x = (size_t )p.x;
+	size_t  y = (size_t )p.y;
+	float  xp = p.x - x; float  xm = 1.0 - xp;
+	float  yp = p.y - y; float  ym = 1.0 - yp;
+	
+	const T& H00 = (*this)(x  ,y  );
+	const T& H01 = (*this)(x  ,y+1);
+	const T& H10 = (*this)(x+1,y  );
+	const T& H11 = (*this)(x+1,y+1);
+	
+	return T(ym * ( xm * H00 + xp * H10) + 
+		 yp * ( xm * H01 + xp * H11));
+
+}
+
+
 template <typename T>
 const char *T2DVectorfield<T>::data_descr = "2dvf"; 
 

@@ -47,7 +47,7 @@ void C3DTranslateTransformation::translate(float x, float y, float z)
 	m_transform.z += z;
 }
 
-C3DFVector C3DTranslateTransformation::apply(const C3DFVector& x) const
+C3DFVector C3DTranslateTransformation::get_displacement_at(const C3DFVector& x) const
 {
 	return transform(x);
 }

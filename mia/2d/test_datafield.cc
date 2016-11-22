@@ -46,9 +46,6 @@ BOOST_AUTO_TEST_CASE( test_2ddatafield )
 	BOOST_CHECK(data(0,0) == 0);
 	BOOST_CHECK(data(2,2) == 6);
 
-	// 4.25 * 0.25 + 6.25 *0.75
-	float ip = data.get_interpol_val_at(C2DFVector(2.25, 1.75));
-	BOOST_CHECK(fabs(ip - 5.75) < 0.0001);
 
 	std::vector<float> xbuffer;
 	data.get_data_line_x(2, xbuffer);

@@ -30,9 +30,9 @@ using namespace std;
 
 
 
-C3DFVector C3DRotBendTransformation::apply(const C3DFVector& x) const
+C3DFVector C3DRotBendTransformation::get_displacement_at(const C3DFVector& x) const
 {
-	return transform(x);
+	return transform(x) - x;
 }
 
 
@@ -159,9 +159,9 @@ float C3DRotBendTransformation::get_max_transform() const
 		C3DFVector(get_size())
 	};
 
-	float result = apply(C3DFVector()).norm2(); 
+	float result = transform(C3DFVector()).norm2(); 
 	for(int i = 0; i < 7; ++i) {
-		float h = (apply(corners[i]) - corners[i]).norm2(); 
+		float h = (transform(corners[i]) - corners[i]).norm2(); 
 		if (result < h) 
 			result = h; 
 	}
@@ -172,7 +172,7 @@ float C3DRotBendTransformation::get_max_transform() const
 
 C3DFVector C3DRotBendTransformation::operator () (const C3DFVector& x) const
 {
-	return apply(x); 
+	return transform(x); 
 }
 
 float C3DRotBendTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
@@ -192,9 +192,9 @@ C3DRotBendTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, con
 						      const C3DRotBendTransformation& trans):
 	C3DTransformation::iterator_impl(pos, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.transform(C3DFVector(pos)))
 {
-	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.transform(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DRotBendTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
@@ -202,9 +202,9 @@ C3DRotBendTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, con
 						      const C3DRotBendTransformation& trans):
 	C3DTransformation::iterator_impl(pos, begin, end, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.transform(C3DFVector(pos)))
 {
-	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.transform(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DTransformation::iterator_impl * C3DRotBendTransformation::iterator_impl::clone() const
@@ -224,14 +224,14 @@ void C3DRotBendTransformation::iterator_impl::do_x_increment()
 
 void C3DRotBendTransformation::iterator_impl::do_y_increment()
 {
-	m_value = m_trans.apply(C3DFVector(get_pos())); 
-	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.transform(C3DFVector(get_pos())); 
+	m_dx = m_trans.transform(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 void C3DRotBendTransformation::iterator_impl::do_z_increment()
 {
-	m_value = m_trans.apply(C3DFVector(get_pos())); 
-	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.transform(C3DFVector(get_pos())); 
+	m_dx = m_trans.transform(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 

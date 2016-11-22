@@ -43,7 +43,7 @@ public:
 	void set_coefficients(const C3DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C3DFVectorfield& field);
 	void reinit()const;
-	C3DFVector apply( const C3DFVector& x) const;
+	C3DFVector get_displacement_at( const C3DFVector& x) const;
 	C3DFVector scale( const C3DFVector& x) const;
 
 	virtual const C3DBounds& get_size() const;

@@ -37,7 +37,7 @@ public:
 
 	void translate(float x, float y, float z);
 
-	C3DFVector apply(const C3DFVector& x) const;
+	C3DFVector get_displacement_at(const C3DFVector& x) const;
 
 
 	class EXPORT_3D iterator_impl: public C3DTransformation::iterator_impl  {
