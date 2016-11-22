@@ -135,11 +135,7 @@ BOOST_AUTO_TEST_CASE( check_comparison )
 	C2DFImage fimage2(fimage);
 
 	BOOST_CHECK(fimage == fimage2);
-	fimage2(0,0) = 3.0;
-	// data is still shared!!
-	BOOST_CHECK(fimage == fimage2);
 	
-	fimage2.make_single_ref(); 
 	fimage2(0,0) = 4.0;
 	BOOST_CHECK(fimage != fimage2);
 

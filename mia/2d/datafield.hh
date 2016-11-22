@@ -57,8 +57,7 @@ public:
 	/// type for the flat reprentation of the 2D data field 
 	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
-	/// pointer type 
-	typedef  std::shared_ptr<data_array > data_pointer;
+	
 
 	/// \cond SELFEXPLAINING 
 	typedef typename data_array::iterator iterator;
@@ -87,13 +86,17 @@ public:
 	   Create a 2D data field with the given size 
 	   \param size 
 	*/
-	T2DDatafield(const C2DBounds& size);
+	explicit T2DDatafield(const C2DBounds& size);
 
 	/**
 	   Create a 2D data field with the given size and initialize it with the given data 
 	   \param size 
 	   \param _data must at least be of size (size.x*size.y)
 	*/
+
+
+
+
 	T2DDatafield(const C2DBounds& size, const T *_data);
 
 	/**
@@ -114,7 +117,21 @@ public:
 	   the reference count to the data. 
 	   If you want a truely unique copy, call make_single_ref() afterwards. 
 	*/
-	T2DDatafield& operator = (const T2DDatafield& org);
+	T2DDatafield<T>& operator = (const T2DDatafield<T>& org);
+
+	/** copy constructor, it does a shallow copy of the original, i.e. 
+	    the data is not copied, only the shared pointer increases its reference count.
+	    If you want a truely unique copy, call make_single_ref() afterwards. 
+	 */ 
+	T2DDatafield(T2DDatafield<T>&& org);
+
+	/**
+	   Assignment operator, Just like the copy constructor this call does only increment 
+	   the reference count to the data. 
+	   If you want a truely unique copy, call make_single_ref() afterwards. 
+	*/
+	T2DDatafield<T>& operator = (T2DDatafield<T>&& org);
+	
 	
 	virtual ~T2DDatafield();
 
@@ -162,7 +179,7 @@ public:
 	   \returns read-only reference to the data	   
 	 */
 	const_reference operator[](size_t  idx) const{
-			return (*m_data)[idx];
+			return m_data[idx];
 	}
 
 	/**
@@ -174,7 +191,7 @@ public:
 	   \returns read-write reference to the data	   
 	 */
 	reference operator[](size_t  idx){
-			return (*m_data)[idx];
+			return m_data[idx];
 	}
 
 	/// \overload const_reference  operator()(size_t  x, size_t  y) const;
@@ -219,14 +236,12 @@ public:
 
 	/// \returns a read-only iterator to the begin of the data field with x being the fastest changing index   
 	const_iterator begin()const {
-		const data_array& data = *m_data;
-		return data.begin();
+		return m_data.begin();
 	}
 	
 	/// \returns a read-only iterator to the end of the data field with x being the fastest changing index   
 	const_iterator end()const {
-		const data_array& data = *m_data;
-		return data.end();
+		return m_data.end();
 	}
 
 	/** Get a read-write iterator to iterate over the whole field. 
@@ -234,8 +249,7 @@ public:
 	    \returns a read-write iterator to the begin of the data field
 	 */
 	iterator begin() {
-		make_single_ref();
-		return m_data->begin();
+		return m_data.begin();
 	}
 
 	/** Get a read-write iterator to iterate over the whole field. 
@@ -244,8 +258,7 @@ public:
 	 */
 
 	iterator end() {
-		make_single_ref();
-		return m_data->end();
+		return m_data.end();
 	}
 
 	/** Get a read-write iterator to iterate over the field staring from the given position. 
@@ -291,7 +304,7 @@ public:
 
 private:
 	C2DBounds  m_size;
-	data_pointer m_data;
+	data_array m_data;
 	const static value_type Zero;
 };
 
