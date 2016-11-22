@@ -31,6 +31,10 @@
 
 NS_MIA_BEGIN
 
+#if defined(HAVE_CXXABI_H) && defined(HAVE_EXEINFO_H)
+void append_stacktrace(ostream& os); 
+#endif 
+
 template <typename V>
 void __append_message(std::ostream& os, const V& v)
 {
@@ -52,7 +56,10 @@ template <typename... T>
 const std::string __create_message(T ...t)
 {
 	std::stringstream msg; 
-	::mia::__append_message(msg, t...); 
+	::mia::__append_message(msg, t...);
+#if defined(HAVE_CXXABI_H) && defined(HAVE_EXEINFO_H)
+	append_stacktrace(msg); 
+#endif 	
 	return msg.str(); 
 }
 

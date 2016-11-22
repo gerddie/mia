@@ -24,9 +24,16 @@
 #include <mia/internal/autotest.hh>
 
 
+#include <set>
+
 #include <mia/core.hh>
 #include <mia/3d/vectorfield.hh>
 
+#include <boost/mpl/vector.hpp>
+
+#include <cmath>
+
+namespace bmpl=boost::mpl;
 NS_MIA_USE; 
 using namespace std; 
 
@@ -119,6 +126,190 @@ C3DVectorfieldFixture::C3DVectorfieldFixture():
 			for (size_t x = 0; x < size.x; ++x, ++i)
 				*i = C3DFVector(x+1, y+1, z+1); 
 }
+
+
+BOOST_AUTO_TEST_CASE( test_interpolation)
+{			
+	
+						
+	C3DBounds size(3,3,3); 
+	C3DFVectorfield f(size); 
+
+	
+	auto ifield = f.begin(); 
+	for (size_t iz = 0; iz < size.z; ++iz) 
+		for (size_t iy = 0; iy < size.y; ++iy) 
+			for (size_t ix = 0; ix < size.x; ++ix, ++ifield) {
+				*ifield = C3DFVector(2* ix+1, 3* iy +2, 4 * iz+1); 
+			}
+
+	
+	C3DLinearVectorfieldInterpolator ip(f); 
+
+	unsigned  n = 10; 
+	float d = n / 2.0;
+	
+
+	for (size_t iz = 1; iz < n; ++iz) 
+		for (size_t iy = 1; iy < n; ++iy) 
+			for (size_t ix = 1; ix < n; ++ix) {
+				C3DFVector v(ix / d, iy / d,  iz / d); 
+				C3DFVector value = ip(v);
+
+				int x = static_cast<int>( floor(v.x) ); 
+				int y = static_cast<int>( floor(v.y) ); 
+				int z = static_cast<int>( floor(v.z) ); 
+
+				C3DFVector dx(v.x - x, v.y - y, v.z - z); 
+
+				C3DFVector px = C3DFVector::_1 - dx; 
+				
+				C3DFVector test_value = 
+					px.z * (px.y * ( px.x * f(x,y,z) + dx.x * f(x+1,y,z) ) + 
+						dx.y * ( px.x * f(x,y+1,z) + dx.x * f(x+1,y+1,z) )) + 
+					
+					dx.z * (px.y * ( px.x * f(x,y,z+1) + dx.x * f(x+1,y,z+1)) + 
+						dx.y * ( px.x * f(x,y+1,z+1) + dx.x * f(x+1,y+1,z+1))); 
+
+				cvdebug() << "x= " << v << ", dx = " << dx << "\n"; 
+				
+				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
+				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
+				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
+	
+			}
+
+
+	std::set<int> index_set; 
+	index_set.insert(0); 
+	index_set.insert(2); 
+	
+
+	// z \in {0,2}
+	for (auto iz: index_set)
+		for (size_t iy = 1; iy < n; ++iy) 
+			for (size_t ix = 1; ix < n; ++ix) {
+				C3DFVector dx(ix / d, iy / d,  iz); 
+				C3DFVector value = ip(dx);
+
+				int x = static_cast<int>( floor(dx.x) ); 
+				int y = static_cast<int>( floor(dx.y) ); 
+
+				
+				dx.y = dx.y - y; 
+				dx.x = dx.x - x; 
+				
+				C3DFVector px = C3DFVector::_1 - dx; 
+				C3DFVector test_value = 
+					(px.y * ( px.x * f(x,y,iz)   + dx.x * f(x+1,y,iz) ) + 
+					 dx.y * ( px.x * f(x,y+1,iz) + dx.x * f(x+1,y+1,iz) )); 
+				
+				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
+				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
+				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
+				
+			}
+	
+	// y \in {0,1}
+	for (size_t iz = 1; iz < n; ++iz) 
+		for (auto iy : index_set)
+			for (size_t ix = 1; ix < n; ++ix) {
+				
+				C3DFVector dx(ix / d, iy, iz / d); 
+				C3DFVector value = ip(dx);
+				
+				int x = static_cast<int>( floor(dx.x) ); 
+				int z = static_cast<int>( floor(dx.z) ); 
+
+				dx.z = dx.z - z; 
+				dx.x = dx.x - x; 
+				
+				C3DFVector px = C3DFVector::_1 - dx; 
+				C3DFVector test_value = 
+					px.z * ( px.x * f(x,iy,z) + dx.x * f(x+1,iy,z) ) + 
+					dx.z * ( px.x * f(x,iy,z+1) + dx.x * f(x+1,iy,z+1)); 
+				
+				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
+				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
+				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
+				
+			}
+	
+	for (size_t iz = 1; iz < n; ++iz) 
+		for (size_t iy = 1; iy < n; ++iy) 
+			for (auto ix : index_set) {
+				C3DFVector dx(ix, iy / d, iz / d); 
+				C3DFVector value = ip(dx);
+				
+				int y = static_cast<int>( floor(dx.y) ); 
+				int z = static_cast<int>( floor(dx.z) ); 
+
+				dx.z = dx.z - z; 
+				dx.y = dx.y - y; 
+				
+				C3DFVector px = C3DFVector::_1 - dx; 
+				
+				C3DFVector test_value = 
+					px.z * (px.y * f(ix,y,z) +  dx.y *  f(ix,y+1,z) ) + 
+					dx.z * (px.y * f(ix,y,z+1) + dx.y * f(ix,y+1,z+1) ); 
+				
+				BOOST_CHECK_CLOSE(value.x, test_value.x, 0.1); 
+				BOOST_CHECK_CLOSE(value.y, test_value.y, 0.1); 
+				BOOST_CHECK_CLOSE(value.z, test_value.z, 0.1); 
+				
+			}
+}
+
+BOOST_AUTO_TEST_CASE (test_vectorfield_as_inverse_of)
+{
+	C3DBounds size(10,10,10);
+	
+	C3DFVectorfield other(size);
+	
+	for (auto io = other.begin_range(C3DBounds::_0, size);
+	     io != other.end_range(C3DBounds::_0, size); ++io)  {
+		*io = C3DFVector(sin(io.pos().x * M_PI / 9), sin(io.pos().y * M_PI / 9), sin(io.pos().z * M_PI / 9));
+	}
+	
+	C3DFVectorfield me(size);
+	me.update_as_inverse_of(other, 1e-14f, 50);
+	
+	C3DLinearVectorfieldInterpolator interp_me(me);
+	C3DLinearVectorfieldInterpolator interp_other(other);
+
+	for(unsigned z = 0; z < 10; ++z)
+		for(unsigned y = 0; y < 10; ++y)
+			for(unsigned x = 0; x < 10; ++x) {
+				
+				C3DFVector pos(x,y,z);
+				C3DFVector pos_t = pos - interp_me(pos);
+				C3DFVector pos_tt = pos_t - interp_other(pos_t) - pos;
+				
+				cvdebug() << pos << ": delta = " << pos_tt << "\n";
+
+				BOOST_CHECK_SMALL(pos_tt.x, 1e-5f);
+				BOOST_CHECK_SMALL(pos_tt.y, 1e-5f);
+				BOOST_CHECK_SMALL(pos_tt.z, 1e-5f);
+
+
+				// test also the inverse, but with a higher tolerance,
+				// since this was not optimized 
+				C3DFVector pos_it = pos - interp_other(pos);
+				C3DFVector pos_inv = interp_me(pos_it);
+				C3DFVector pos_itt = pos_it - pos_inv - pos;
+				cvdebug() << pos << ": pos-other = "<< pos_it
+					  << ", intp = " << pos_inv
+					  << ", inv delta = " << pos_itt << "\n";
+
+				BOOST_CHECK_SMALL(pos_itt.x, 0.05f); 
+				BOOST_CHECK_SMALL(pos_itt.y, 0.05f); 
+				BOOST_CHECK_SMALL(pos_itt.z, 0.05f); 
+				
+			}
+
+	
+}
+
 
 
 NS_MIA_USE

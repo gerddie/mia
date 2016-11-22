@@ -93,6 +93,7 @@ INCLUDE (TestBigEndian)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/pluginmacro.cmake)
 INCLUDE (CheckTypeSize)
+INCLUDE (CheckIncludeFileCXX)
 
 include(CheckCXXCompilerFlag)
 
@@ -154,6 +155,11 @@ ENDIF(${LONG_TYPE_SIZE} EQUAL 8)
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 CHECK_INCLUDE_FILES (unistd.h HAVE_UNISTD_H)
 CHECK_INCLUDE_FILES (sys/ioctl.h HAVE_SYS_IOCTL_H)
+CHECK_INCLUDE_FILES (execinfo.h HAVE_EXEINFO_H)
+
+
+CHECK_INCLUDE_FILE_CXX (cxxabi.h HAVE_CXXABI_H)
+
 
 # find additional packages
 #
@@ -506,7 +512,7 @@ DEFINE_PLUGIN_NAMES( 2dvf  "io" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dlandmarklist "io"  ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
-DEFINE_PLUGIN_NAMES( 3dvf "io"  ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dvf "io;regularizer;regularizerkernel"  ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( generator  "noise" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( mesh "filter;io" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( minimizer  "singlecost" ${PLUGIN_INSTALL_PATH})

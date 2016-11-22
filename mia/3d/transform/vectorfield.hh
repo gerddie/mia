@@ -109,10 +109,6 @@ private:
 	EXPORT_3D C3DGridTransformation operator + (const C3DGridTransformation& a, const C3DGridTransformation& b);
 };
 
-inline C3DFVector C3DGridTransformation::get_displacement_at(const  C3DFVector& x) const
-{
-	return m_field.get_interpol_val_at(x);
-}
 
 EXPORT_3D C3DGridTransformation operator + (const C3DGridTransformation& a, const C3DGridTransformation& b);
 

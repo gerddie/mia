@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2014 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,29 @@
  *
  */
 
-#include "eqn_solver.hh"
 
-TIterLinEqnSolver::TIterLinEqnSolver(int _max_steps, float _rel_res, float _abs_res):
-	max_steps(_max_steps),
-	rel_res(_rel_res),
-	abs_res(_abs_res)
-{
+#include <mia/3d/vectorfieldregularizer.hh>
 
-}
+NS_BEGIN(fluid_vfregularizer) 
+
+class C3DFluidVectorfieldRegularizer: public mia::C3DFVectorfieldRegularizer {
+public: 
+        C3DFluidVectorfieldRegularizer(float mu, float lambda, size_t maxiter, float omega, float epsilon);  
+        
+private: 
+        virtual double do_run(C3DFVectorfield& output, C3DFVectorfield& input) const; 
+        virtual void on_size_changed(); 
+
+        float m_mu;
+	float m_lambda;
+	float m_omega;
+	float m_epsilon;
+	size_t m_max_iter;
+	float m_a,  m_c, m_a_b, m_b_4;
+	int m_dx;
+	int m_dxy;
 
 
-TFluidHomogenSolver::TFluidHomogenSolver(int _max_steps, float _rel_res, float _abs_res,
-					 float mu, float lambda):
-	TIterLinEqnSolver(_max_steps,_rel_res,_abs_res)
-{
-	assert(mu != 0.0 && lambda != 0.0);
-	a = mu;
-	b = lambda + mu;
-	c = 1/(6*a+2*b);
-	a_b = a + b;
-	b_4 = b * 0.25;
 
-}
+}; 
+                

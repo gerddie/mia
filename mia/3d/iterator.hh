@@ -287,6 +287,10 @@ public:
 	*/
 	range3d_iterator_with_boundary_flag<I> with_boundary_flag() const;
 
+	/**
+	   access elements relative to the iterator position 
+	 */
+	const reference operator[] (int i) const;
 
 private: 
 
@@ -331,6 +335,12 @@ range3d_iterator<I>::range3d_iterator(const range3d_iterator<AI>& other):
 {
 }	
 
+template <typename I> 
+const typename range3d_iterator<I>::reference
+range3d_iterator<I>::operator[] (int i) const
+{
+	return m_iterator[i];
+}
 
 /**
    Compare two range iterators. There equivalence is only decided based on the grid position. 

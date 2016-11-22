@@ -168,6 +168,7 @@ DEFEXE(3dcombine-mr-segmentations mia3d)
 DEFEXE(3dcombine-imageseries mia3d)
 DEFEXE(3dpropose-boundingbox mia3d)
 DEFEXE(3dimagestatistics-in-mask mia3d)
+DEFEXE(3dfluid-syn-registration mia3d)
 
 DEFEXE(3dlandmarks-transform mia3d)
 DEFEXE(3dlandmarks-distances mia3d)

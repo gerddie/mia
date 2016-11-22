@@ -121,8 +121,7 @@ PTriangleMesh DeformableModel::run(const CTriangleMesh& mesh, const C3DFImage& r
 	C3DInterpolatorFactory ipf("bspline:d=1", "zero");
 	
         unique_ptr<T3DConvoluteInterpolator<float>> R(ipf.create(reference.data())); 
-        const auto gradient = get_gradient(reference);
-
+	C3DLinearVectorfieldInterpolator gradient(get_gradient(reference)); 
 
         PTriangleMesh result(new CTriangleMesh(mesh)); 
 	if (m_reorient_mesh) {

@@ -33,6 +33,11 @@ C3DGridTransformation::C3DGridTransformation(const C3DBounds& size, const C3DInt
 {
 }
 
+C3DFVector C3DGridTransformation::get_displacement_at(const C3DFVector& x) const
+{
+	return m_field.get_interpol_val_at(x);
+}
+
 P3DTransformation C3DGridTransformation::do_upscale(const C3DBounds& size) const
 {
 	/* This implementation could be improved by using something like the spline interpolator 

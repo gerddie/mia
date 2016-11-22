@@ -70,6 +70,8 @@ SET(MIA3D_SRC
   transformfactory.cc
   transformio.cc
   vectorfield.cc
+  vfregularizer.cc
+  vfregularizerkernel.cc
   vfio.cc
   ${ITPP_SRC}
   )
@@ -84,9 +86,6 @@ SET(MIA3D_HEADERS
   imageio.hh
   imagetest.hh
   imageiotest.hh
-  vector.hh
-  vfio.hh
-  vfiotest.hh
   camera.hh
   cost.hh
   creator.hh
@@ -131,7 +130,12 @@ SET(MIA3D_HEADERS
   transformmock.hh
   ${ITPP_HEADER}
   valueattributetranslator.hh
+  vector.hh
   vectorfield.hh
+  vfregularizer.hh
+  vfregularizerkernel.hh
+  vfio.hh
+  vfiotest.hh
   )
 
 SET(MIA3DTEST_SRC
@@ -244,10 +248,13 @@ ADD_SUBDIRECTORY(filter   )
 ADD_SUBDIRECTORY(fifof    )
 ADD_SUBDIRECTORY(fullcost )
 ADD_SUBDIRECTORY(io       )
+ADD_SUBDIRECTORY(lmio)
 ADD_SUBDIRECTORY(maskedcost )
 ADD_SUBDIRECTORY(reg3d    )
 ADD_SUBDIRECTORY(shapes   )
 ADD_SUBDIRECTORY(splinepenalty  )
 ADD_SUBDIRECTORY(transform)
 ADD_SUBDIRECTORY(transio)
-ADD_SUBDIRECTORY(lmio)
+ADD_SUBDIRECTORY(vfregularizerkernel)
+ADD_SUBDIRECTORY(vfregularizer)
+
