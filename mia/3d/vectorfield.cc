@@ -142,10 +142,10 @@ void C3DFVectorfield::update_as_inverse_of(const C3DFVectorfield& other, float t
 	pfor( range, callback ); 
 }
 
-void C3DFVectorfield::update_by_velocity(const C3DFVectorfield& v, float step)
+void C3DFVectorfield::update_by_velocity(const C3DFVectorfield& velocity_field, float time_step)
 {
 	// hoping that the cblas implementation takes care of threading
-	cblas_saxpy(v.size() * 3, step, &v[0].x, 1, &(*this)[0].x, 1); 
+	cblas_saxpy(velocity_field.size() * 3, time_step, &velocity_field[0].x, 1, &(*this)[0].x, 1); 
 }
 
 struct C3DLinearVectorfieldInterpolatorImpl {

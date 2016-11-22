@@ -88,7 +88,7 @@ public:
 
 };
 
-extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
+extern template class EXPORT_3D T3DVectorfield<C3DFVector>;   
 /**
    @ingroup basic 
    @brief a 3D field of floating point single accuracy 3D vectors 
@@ -96,12 +96,27 @@ extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
 class EXPORT_3D C3DFVectorfield : public T3DVectorfield<C3DFVector> {
 public: 
 	static const char *data_descr;
-
-	using T3DVectorfield<C3DFVector>::T3DVectorfield; 
 	
+	using T3DVectorfield<C3DFVector>::T3DVectorfield; 
+
+	/**
+	   \brief evaluate this vector field as the inverse of another 
+	   
+	   This functions corrects the vector field to describe the inverse transformation 
+	   of a given input vector field 
+
+	   \param other the vector field this one should be inverse of
+	   \param tol tolerance for inverse accuracy 
+	   \param maxiter maximum number of interations for one vector to be optimized 
+	 */
 	void update_as_inverse_of(const C3DFVectorfield& other, float tol, int maxiter);
 
-	void update_by_velocity(const C3DFVectorfield& v, float step); 
+	/**
+	   Update this vector field by using a velocity field
+	   \param velocity_field the velocity field 
+	   \param time_step the time step to be used for the update 
+	 */
+	void update_by_velocity(const C3DFVectorfield& velocity_field, float time_step); 
 	
 };
 
