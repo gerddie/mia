@@ -471,31 +471,28 @@ EXPORT_3D C3DFVectorfield get_gradient(const C3DImage& image);
 typedef T3DImage<bool> C3DBitImage;
 
 /// \brief 3D image with signed 8 bit integer values 
-typedef T3DImage<signed char> C3DSBImage;
+typedef T3DImage<int8_t> C3DSBImage;
 
 /// \brief 3D image with unsigned 8 bit integer values 
-typedef T3DImage<unsigned char> C3DUBImage;
+typedef T3DImage<uint8_t> C3DUBImage;
 
 /// \brief 3D image with signed 16 bit integer values 
-typedef T3DImage<signed short> C3DSSImage;
+typedef T3DImage<int16_t> C3DSSImage;
 
 /// \brief 3D image with unsigned 16 bit integer values 
-typedef T3DImage<unsigned short> C3DUSImage;
+typedef T3DImage<uint16_t> C3DUSImage;
 
 /// \brief 3D image with signed 32 bit integer values 
-typedef T3DImage<signed int> C3DSIImage;
+typedef T3DImage<int32_t> C3DSIImage;
 
 /// \brief 3D image with unsigned 32 bit integer values 
-typedef T3DImage<unsigned int> C3DUIImage;
-
-#ifdef LONG_64BIT
+typedef T3DImage<uint32_t> C3DUIImage;
 
 /// \brief 3D image with signed 64 bit integer values 
-typedef T3DImage<signed long> C3DSLImage;
+typedef T3DImage<int64_t> C3DSLImage;
 
 /// \brief 3D image with unsigned 64 bit integer values 
-typedef T3DImage<unsigned long> C3DULImage;
-#endif
+typedef T3DImage<uint64_t> C3DULImage;
 
 /// \brief 3D image with signed 32 bit floating point values 
 typedef T3DImage<float> C3DFImage;

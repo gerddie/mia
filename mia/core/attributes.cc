@@ -234,11 +234,11 @@ bool EXPORT_CORE operator == (const CAttributedData& a, const CAttributedData& b
 	return  *a.m_attr == *b.m_attr;
 }
 
-template class EXPORT_CORE TAttribute<unsigned char>;
-template class EXPORT_CORE TAttribute<signed char>; 
+template class EXPORT_CORE TAttribute<uint8_t>;
+template class EXPORT_CORE TAttribute<int8_t>; 
 
-template class EXPORT_CORE TAttribute<std::vector<unsigned char>>;
-template class EXPORT_CORE TAttribute<std::vector<signed char>>; 
+template class EXPORT_CORE TAttribute<std::vector<uint8_t>>;
+template class EXPORT_CORE TAttribute<std::vector<int8_t>>; 
 
 template class EXPORT_CORE  TTranslator<double>;
 template class EXPORT_CORE  TTranslator<std::vector<double> >;
@@ -246,31 +246,29 @@ template class EXPORT_CORE  TTranslator<std::vector<double> >;
 template class EXPORT_CORE  TTranslator<float>;
 template class EXPORT_CORE  TTranslator<std::vector<float> >;
 
-#ifdef LONG_64BIT
-template class EXPORT_CORE  TTranslator<unsigned long>;
-template class EXPORT_CORE  TTranslator<std::vector<unsigned long> >;
+template class EXPORT_CORE  TTranslator<uint64_t>;
+template class EXPORT_CORE  TTranslator<std::vector<uint64_t> >;
 
-template class EXPORT_CORE  TTranslator<signed long>;
-template class EXPORT_CORE  TTranslator<std::vector<signed long> >;
-#endif
+template class EXPORT_CORE  TTranslator<int64_t>;
+template class EXPORT_CORE  TTranslator<std::vector<int64_t> >;
 
-template class EXPORT_CORE  TTranslator<unsigned int>;
-template class EXPORT_CORE  TTranslator<std::vector<unsigned int> >;
+template class EXPORT_CORE  TTranslator<uint32_t>;
+template class EXPORT_CORE  TTranslator<std::vector<uint32_t> >;
 
-template class EXPORT_CORE  TTranslator<signed int>;
-template class EXPORT_CORE  TTranslator<std::vector<signed int> >;
+template class EXPORT_CORE  TTranslator<int32_t>;
+template class EXPORT_CORE  TTranslator<std::vector<int32_t> >;
 
-template class EXPORT_CORE  TTranslator<unsigned short>;
-template class EXPORT_CORE  TTranslator<std::vector<unsigned short> >;
+template class EXPORT_CORE  TTranslator<uint16_t>;
+template class EXPORT_CORE  TTranslator<std::vector<uint16_t> >;
 
-template class EXPORT_CORE  TTranslator<signed short>;
-template class EXPORT_CORE  TTranslator<std::vector<signed short> >;
+template class EXPORT_CORE  TTranslator<int16_t>;
+template class EXPORT_CORE  TTranslator<std::vector<int16_t> >;
 
-template class EXPORT_CORE  TTranslator<unsigned char>;
-template class EXPORT_CORE  TTranslator<std::vector<unsigned char> >;
+template class EXPORT_CORE  TTranslator<uint8_t>;
+template class EXPORT_CORE  TTranslator<std::vector<uint8_t> >;
 
-template class EXPORT_CORE  TTranslator<signed char>;
-template class EXPORT_CORE  TTranslator<std::vector<signed char> >;
+template class EXPORT_CORE  TTranslator<int8_t>;
+template class EXPORT_CORE  TTranslator<std::vector<int8_t> >;
 
 template class EXPORT_CORE  TTranslator<bool>;
 template class EXPORT_CORE  TTranslator<std::vector<bool> >;

@@ -452,21 +452,19 @@ C3DFVectorfield get_gradient(const C3DImage& image)
 	return filter(gg, image);
 }
 
+
 template class T3DImage<bool>;
-template class T3DImage<signed char>;
-template class T3DImage<unsigned char>;
-template class T3DImage<signed short>;
-template class T3DImage<unsigned short>;
-template class T3DImage<signed int>;
-template class T3DImage<unsigned int>;
-
-#ifdef LONG_64BIT
-template class T3DImage<signed long>;
-template class T3DImage<unsigned long>;
-#endif
-
+template class T3DImage<int8_t>;
+template class T3DImage<uint8_t>;
+template class T3DImage<int16_t>;
+template class T3DImage<uint16_t>;
+template class T3DImage<int32_t>;
+template class T3DImage<uint32_t>;
+template class T3DImage<int64_t>;
+template class T3DImage<uint64_t>;
 template class T3DImage<float>;
 template class T3DImage<double>;
+
 
 template <typename T>
 C3DValueAttribute<T>::C3DValueAttribute(const T3DVector<T>& value):

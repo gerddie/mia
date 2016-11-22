@@ -372,16 +372,14 @@ EXPORT_2D bool operator == (const C2DImage& a, const C2DImage& b)
 }
 
 template class T2DImage<bool>;
-template class T2DImage<signed char>;
-template class T2DImage<unsigned char>;
-template class T2DImage<signed short>;
-template class T2DImage<unsigned short>;
-template class T2DImage<signed int>;
-template class T2DImage<unsigned int>;
-#ifdef LONG_64BIT
-template class T2DImage<signed long>;
-template class T2DImage<unsigned long>;
-#endif
+template class T2DImage<int8_t>;
+template class T2DImage<uint8_t>;
+template class T2DImage<int16_t>;
+template class T2DImage<uint16_t>;
+template class T2DImage<int32_t>;
+template class T2DImage<uint32_t>;
+template class T2DImage<int64_t>;
+template class T2DImage<uint64_t>;
 template class T2DImage<float>;
 template class T2DImage<double>;
 

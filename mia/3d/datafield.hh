@@ -56,18 +56,16 @@ NS_MIA_BEGIN
 
 DECLARE_EXTERN_ITERATORS(double);
 DECLARE_EXTERN_ITERATORS(float);
-DECLARE_EXTERN_ITERATORS(unsigned int);
-DECLARE_EXTERN_ITERATORS(int);
-DECLARE_EXTERN_ITERATORS(short);
-DECLARE_EXTERN_ITERATORS(unsigned short);
-DECLARE_EXTERN_ITERATORS(unsigned char );
-DECLARE_EXTERN_ITERATORS(signed char);
+DECLARE_EXTERN_ITERATORS(uint32_t);
+DECLARE_EXTERN_ITERATORS(int32_t);
+DECLARE_EXTERN_ITERATORS(int16_t);
+DECLARE_EXTERN_ITERATORS(uint16_t);
+DECLARE_EXTERN_ITERATORS(int8_t);
+DECLARE_EXTERN_ITERATORS(uint8_t);
 DECLARE_EXTERN_ITERATORS(bool);
+DECLARE_EXTERN_ITERATORS(int64_t);
+DECLARE_EXTERN_ITERATORS(uint64_t);
 
-#ifdef LONG_64BIT
-DECLARE_EXTERN_ITERATORS(signed long);
-DECLARE_EXTERN_ITERATORS(unsigned long);
-#endif
 
 DECLARE_EXTERN_ITERATORS(C3DFVector)
 DECLARE_EXTERN_ITERATORS(C3DDVector)
@@ -542,20 +540,29 @@ private:
 typedef T3DDatafield<float>  C3DFDatafield;
 
 /// a data field of 32 bit unsigned int values
-typedef T3DDatafield<unsigned int> C3DUIDatafield;
+typedef T3DDatafield<uint32_t> C3DUIDatafield;
 
 /// a data field of 32 bit signed int values
-typedef T3DDatafield<int>  C3DIDatafield;
-
+typedef T3DDatafield<int32_t>  C3DSIDatafield;
 
 /// a data field of 32 bit unsigned int values
-typedef T3DDatafield<unsigned long> C3DULDatafield;
+typedef T3DDatafield<uint16_t> C3DUSDatafield;
 
 /// a data field of 32 bit signed int values
-typedef T3DDatafield<long>  C3DLDatafield;
+typedef T3DDatafield<int16_t>  C3DSSDatafield;
 
-	/// a data field of float values
-typedef T3DDatafield<unsigned char>  C3DUBDatafield;
+/// a data field of 32 bit unsigned int values
+typedef T3DDatafield<uint64_t> C3DULDatafield;
+
+/// a data field of 32 bit signed int values
+typedef T3DDatafield<int64_t>  C3DLDatafield;
+
+/// a data field of 8 bit int values
+typedef T3DDatafield<uint8_t>  C3DUBDatafield;
+
+/// a data field of 8 bit int values
+typedef T3DDatafield<int8_t>  C3DSBDatafield;
+
 
 	/// a data field of float values
 typedef T3DDatafield<bool>  C3DBitDatafield;
@@ -724,17 +731,14 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 
 DECLARE_EXTERN(double);
 DECLARE_EXTERN(float);
-DECLARE_EXTERN(unsigned int);
-DECLARE_EXTERN(int);
-DECLARE_EXTERN(short);
-DECLARE_EXTERN(unsigned short);
-DECLARE_EXTERN(unsigned char );
-DECLARE_EXTERN(signed char);
-
-#ifdef LONG_64BIT
-DECLARE_EXTERN(signed long);
-DECLARE_EXTERN(unsigned long);
-#endif
+DECLARE_EXTERN(uint8_t);
+DECLARE_EXTERN(uint16_t);
+DECLARE_EXTERN(uint32_t);
+DECLARE_EXTERN(uint64_t);
+DECLARE_EXTERN(int8_t);
+DECLARE_EXTERN(int16_t);
+DECLARE_EXTERN(int32_t);
+DECLARE_EXTERN(int64_t);
 
 DECLARE_EXTERN(C3DFVector);
 DECLARE_EXTERN(C3DDVector);

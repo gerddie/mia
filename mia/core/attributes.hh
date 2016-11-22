@@ -775,11 +775,11 @@ const T CAttributedData::get_attribute_as(const std::string& key, T default_valu
 	return *attr; 
 }
 
-extern template class EXPORT_CORE TAttribute<unsigned char>;
-extern template class EXPORT_CORE TAttribute<signed char>; 
+extern template class EXPORT_CORE TAttribute<uint8_t>;
+extern template class EXPORT_CORE TAttribute<int8_t>; 
 
-extern template class EXPORT_CORE TAttribute<std::vector<unsigned char>>;
-extern template class EXPORT_CORE TAttribute<std::vector<signed char>>; 
+extern template class EXPORT_CORE TAttribute<std::vector<uint8_t>>;
+extern template class EXPORT_CORE TAttribute<std::vector<int8_t>>; 
 
 
 typedef TTranslator<double> CDoubleTranslator;
@@ -788,31 +788,29 @@ typedef TTranslator<std::vector<double> > CVDoubleTranslator;
 typedef TTranslator<float> CFloatTranslator;
 typedef TTranslator<std::vector<float> > CVFloatTranslator;
 
-#ifdef LONG_64BIT
-typedef TTranslator<unsigned long> CULTranslator;
-typedef TTranslator<std::vector<unsigned long> > CVULTranslator;
+typedef TTranslator<uint64_t> CULTranslator;
+typedef TTranslator<std::vector<uint64_t> > CVULTranslator;
 
-typedef TTranslator<signed long> CSLTranslator;
-typedef TTranslator<std::vector<signed long> > CVSLTranslator;
-#endif
+typedef TTranslator<int64_t> CSLTranslator;
+typedef TTranslator<std::vector<int64_t> > CVSLTranslator;
 
 typedef TTranslator<unsigned int> CUITranslator;
-typedef TTranslator<std::vector<unsigned int> > CVUITranslator;
+typedef TTranslator<std::vector<uint32_t> > CVUITranslator;
 
 typedef TTranslator<signed int>   CSITranslator;
-typedef TTranslator<std::vector<signed int> > CVSITranslator;
+typedef TTranslator<std::vector<int32_t> > CVSITranslator;
 
-typedef TTranslator<unsigned short> CUSTranslator;
-typedef TTranslator<std::vector<unsigned short> > CVUSTranslator;
+typedef TTranslator<uint16_t> CUSTranslator;
+typedef TTranslator<std::vector<uint16_t> > CVUSTranslator;
 
-typedef TTranslator<signed short> CSSTranslator;
-typedef TTranslator<std::vector<signed short> > CVSSTranslator;
+typedef TTranslator<int16_t> CSSTranslator;
+typedef TTranslator<std::vector<int16_t> > CVSSTranslator;
 
-typedef TTranslator<unsigned char> CUBTranslator;
-typedef TTranslator<std::vector<unsigned char> > CVUBTranslator;
+typedef TTranslator<uint8_t> CUBTranslator;
+typedef TTranslator<std::vector<uint8_t> > CVUBTranslator;
 
-typedef TTranslator<signed char> CSBTranslator;
-typedef TTranslator<std::vector<signed char> > CVSBTranslator;
+typedef TTranslator<int8_t> CSBTranslator;
+typedef TTranslator<std::vector<int8_t> > CVSBTranslator;
 
 typedef TTranslator<bool> CBitTranslator;
 typedef TTranslator<std::vector<bool> > CVBitTranslator;

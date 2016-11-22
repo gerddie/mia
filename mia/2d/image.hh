@@ -393,30 +393,28 @@ public:
 typedef T2DImage<bool> C2DBitImage;
 
 /// \brief 2D image with signed 8 bit integer values 
-typedef T2DImage<signed char> C2DSBImage;
+typedef T2DImage<int8_t> C2DSBImage;
 
 /// \brief 2D image with unsigned 8 bit integer values 
-typedef T2DImage<unsigned char> C2DUBImage;
+typedef T2DImage<uint8_t> C2DUBImage;
 
 /// \brief 2D image with signed 16 bit integer values 
-typedef T2DImage<signed short> C2DSSImage;
+typedef T2DImage<int16_t> C2DSSImage;
 
 /// \brief 2D image with unsigned 16 bit integer values 
-typedef T2DImage<unsigned short> C2DUSImage;
+typedef T2DImage<uint16_t> C2DUSImage;
 
 /// \brief 2D image with signed 32 bit integer values 
-typedef T2DImage<signed int> C2DSIImage;
+typedef T2DImage<int32_t> C2DSIImage;
 
 /// \brief 2D image with unsigned 32 bit integer values 
-typedef T2DImage<unsigned int> C2DUIImage;
+typedef T2DImage<uint32_t> C2DUIImage;
 
-#ifdef LONG_64BIT
 /// \brief 2D image with signed 64 bit integer values 
-typedef T2DImage<signed long> C2DSLImage;
+typedef T2DImage<int64_t> C2DSLImage;
 
 /// \brief 2D image with unsigned 64 bit integer values 
-typedef T2DImage<unsigned long> C2DULImage;
-#endif
+typedef T2DImage<uint64_t> C2DULImage;
 
 /// \brief 2D image with single precsion floating point values 
 typedef T2DImage<float> C2DFImage;

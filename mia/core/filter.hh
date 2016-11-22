@@ -28,6 +28,8 @@
 #include <mia/core/factory.hh>
 #include <mia/core/import_handler.hh>
 
+#include <cinttypes> 
+
 NS_MIA_BEGIN
 
 /** @cond INTERNAL
@@ -197,16 +199,14 @@ struct plugin_can_chain<TDataFilterPlugin<D>> {
 template <template <class> class  D>
 struct __bind_all {
 	typedef D<bool> Dbool;
-	typedef D<signed char> Dsc;
-	typedef D<unsigned char> Duc;
-	typedef D<signed short> Dss;
-	typedef D<unsigned short> Dus;
-	typedef D<signed int> Dsi;
-	typedef D<unsigned int> Dui;
-#ifdef LONG_64BIT
-	typedef D<signed long> Dsl;
-	typedef D<unsigned long> Dul;
-#endif
+	typedef D<int8_t> Dsc;
+	typedef D<uint8_t> Duc;
+	typedef D<int16_t> Dss;
+	typedef D<uint16_t> Dus;
+	typedef D<int32_t> Dsi;
+	typedef D<uint32_t> Dui;
+	typedef D<int64_t> Dsl;
+	typedef D<uint64_t> Dul;
 	typedef D<float> Dfloat;
 	typedef D<double> Ddouble;
 };

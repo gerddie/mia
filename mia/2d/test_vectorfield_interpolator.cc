@@ -39,7 +39,7 @@ struct FieldSplineFixture {
 		    *produce_spline_boundary_condition("mirror"), 
 		    *produce_spline_boundary_condition("mirror"))
 	{
-		C2DFVectorfield::iterator i = field.begin();
+		auto i = field.begin();
 		for (size_t y = 0; y < size.y; ++y)
 			for (size_t x = 0; x < size.x; ++x, ++i) {
 				*i = C2DFVector( fx(x, y), fy(x, y));
@@ -61,7 +61,7 @@ float FieldSplineFixture::fx(float x, float y)
 {
 	x /= 25.0;
 	y /= 50.0;
-	return (x + 1) / (x +  y  * x + 2);
+	return (x + 1.0) / (x +  y  * x + 2.0);
 }
 
 float FieldSplineFixture::fy(float x, float y)
@@ -76,8 +76,8 @@ BOOST_FIXTURE_TEST_CASE( test_vector_trilininterp , FieldSplineFixture )
 	C2DFVector iploc(20.4, 17.3);
 	auto ip = field.get_interpol_val_at(iploc);
 
-	BOOST_CHECK_CLOSE(ip.x, fx(iploc.x, iploc.y), 0.001);
-	BOOST_CHECK_CLOSE(ip.y, fy(iploc.x, iploc.y), 0.001); 
+	BOOST_CHECK_CLOSE(ip.x, fx(iploc.x, iploc.y), 0.005);
+	BOOST_CHECK_CLOSE(ip.y, fy(iploc.x, iploc.y), 0.005); 
 	
 }
 

@@ -56,17 +56,15 @@ T3DDatafield<bool>::strip_avg()
 
 INSTANCIATE(double);
 INSTANCIATE(float);
-INSTANCIATE(unsigned int);
-INSTANCIATE(int);
+INSTANCIATE(int8_t);
+INSTANCIATE(int16_t);
+INSTANCIATE(int32_t);
+INSTANCIATE(int64_t);
+INSTANCIATE(uint8_t);
+INSTANCIATE(uint16_t);
+INSTANCIATE(uint32_t);
+INSTANCIATE(uint64_t);
 
-#ifdef LONG_64BIT
-INSTANCIATE(signed long);
-INSTANCIATE(unsigned long);
-#endif
-INSTANCIATE(short);
-INSTANCIATE(unsigned short);
-INSTANCIATE(unsigned char );
-INSTANCIATE(signed char);
 template class  T3DDatafield<bool>;
 
 DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds"); 

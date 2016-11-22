@@ -33,6 +33,7 @@
 #include <mia/2d/datafield.cxx>
 #include <mia/2d/iterator.cxx>
 
+#include <cmath>
 NS_MIA_BEGIN
 
 
@@ -85,8 +86,8 @@ void T2DVectorfield<T>::set_pixel_size(const C2DFVector& pixel)
 template <class T> 
 T T2DVectorfield<T>::get_interpol_val_at(const C2DFVector& p) const
 {
-	size_t  x = (size_t )p.x;
-	size_t  y = (size_t )p.y;
+	size_t  x = (size_t )floor(p.x);
+	size_t  y = (size_t )floor(p.y);
 	float  xp = p.x - x; float  xm = 1.0 - xp;
 	float  yp = p.y - y; float  ym = 1.0 - yp;
 	

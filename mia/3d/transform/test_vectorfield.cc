@@ -142,9 +142,9 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_basic_props, GridTransformFixture)
 	C3DFVector ip_loc( 2.25, 1.75, 3.2); 
 	auto ip = field.get_displacement_at(ip_loc);
 
-	BOOST_CHECK_CLOSE(ip.x, fx(ip_loc), 0.001);
-	BOOST_CHECK_CLOSE(ip.y, fy(ip_loc), 0.001);
-	BOOST_CHECK_CLOSE(ip.y, fz(ip_loc), 0.001);
+	BOOST_CHECK_CLOSE(ip.x, fx(ip_loc), 0.02);
+	BOOST_CHECK_CLOSE(ip.y, fy(ip_loc), 0.02);
+	BOOST_CHECK_CLOSE(ip.z, fz(ip_loc), 0.02);
 
 }
 
@@ -158,7 +158,7 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_derivative_1, GridTransformFixture)
 	BOOST_CHECK_CLOSE(dv.x.z,      - dfz_x(v), 1);
 	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(v), 1);
 	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(v), 1);
-	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(v), 1);
+ 	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(v), 1);
 	BOOST_CHECK_CLOSE(dv.z.x,      - dfx_z(v), 1);
 	BOOST_CHECK_CLOSE(dv.z.y,      - dfy_z(v), 1);
 	BOOST_CHECK_CLOSE(dv.z.z, 1.0f - dfz_z(v), 1);

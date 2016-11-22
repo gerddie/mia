@@ -301,29 +301,27 @@ typedef T2DDatafield<double> C2DDDatafield;
 typedef T2DDatafield<float>  C2DFDatafield;
 
 /// 2D scalar field that holds unsigned int values 
-typedef T2DDatafield<unsigned int> C2DUIDatafield;
+typedef T2DDatafield<uint32_t> C2DUIDatafield;
 
 /// 2D scalar field that holds signed int values 
-typedef T2DDatafield<signed int>  C2DSIDatafield;
+typedef T2DDatafield<int32_t>  C2DSIDatafield;
 
-#ifdef LONG_64BIT
-typedef T2DDatafield<unsigned long> C2DULDatafield;
+typedef T2DDatafield<uint64_t> C2DULDatafield;
 
 /// long  instanziation of a 2D data field
-typedef T2DDatafield<signed long>  C2DSLDatafield;
-#endif
+typedef T2DDatafield<int64_t>  C2DSLDatafield;
 
 /// 2D scalar field that holds unsigned short values 
-typedef T2DDatafield<unsigned short> C2DUSDatafield;
+typedef T2DDatafield<uint16_t> C2DUSDatafield;
 
 /// 2D scalar field that holds signed short values 
-typedef T2DDatafield<signed short>  C2DSSDatafield;
+typedef T2DDatafield<int16_t>  C2DSSDatafield;
 
 /// 2D scalar field that holds unsigned char (=byte) values 
-typedef T2DDatafield<unsigned char> C2DUBDatafield;
+typedef T2DDatafield<uint8_t> C2DUBDatafield;
 
 /// 2D scalar field that holds signed char values 
-typedef T2DDatafield<signed char>  C2DSBDatafield;
+typedef T2DDatafield<int8_t>  C2DSBDatafield;
 
 /// 2D scalar field that holds bool values
 typedef T2DDatafield<bool>  C2DBitDatafield;
@@ -346,19 +344,16 @@ typedef TTranslator<C2DFVector> C2DFVectorTranslator;
 	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
 	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::const_iterator>;
 
-DEFINE_2DFIELD_TEMPLATE(float); 
-
-#ifdef LONG_64BIT
-DEFINE_2DFIELD_TEMPLATE(signed long);
-DEFINE_2DFIELD_TEMPLATE(unsigned long);
-#endif
 DEFINE_2DFIELD_TEMPLATE(double);
-DEFINE_2DFIELD_TEMPLATE(unsigned int);
-DEFINE_2DFIELD_TEMPLATE(signed int);
-DEFINE_2DFIELD_TEMPLATE(unsigned short);
-DEFINE_2DFIELD_TEMPLATE(signed short);
-DEFINE_2DFIELD_TEMPLATE(unsigned char);
-DEFINE_2DFIELD_TEMPLATE(signed char);
+DEFINE_2DFIELD_TEMPLATE(float); 
+DEFINE_2DFIELD_TEMPLATE(int64_t);
+DEFINE_2DFIELD_TEMPLATE(uint64_t);
+DEFINE_2DFIELD_TEMPLATE(uint32_t);
+DEFINE_2DFIELD_TEMPLATE(int32_t);
+DEFINE_2DFIELD_TEMPLATE(uint16_t);
+DEFINE_2DFIELD_TEMPLATE(int16_t);
+DEFINE_2DFIELD_TEMPLATE(uint8_t);
+DEFINE_2DFIELD_TEMPLATE(int8_t);
 
 
 DECLARE_TYPE_DESCR(C2DBounds);

@@ -36,23 +36,19 @@ NS_MIA_BEGIN
 
 
 INSTANCIATE(float); 
-
-#ifdef LONG_64BIT
-INSTANCIATE(signed long);
-INSTANCIATE(unsigned long);
-#endif
 INSTANCIATE(double);
-INSTANCIATE(unsigned int);
-INSTANCIATE(signed int);
-INSTANCIATE(unsigned short);
-INSTANCIATE(signed short);
-INSTANCIATE(unsigned char);
-INSTANCIATE(signed char);
+INSTANCIATE(int64_t);
+INSTANCIATE(uint64_t);
+INSTANCIATE(int32_t);
+INSTANCIATE(uint32_t);
+INSTANCIATE(int16_t);
+INSTANCIATE(uint16_t);
+INSTANCIATE(int8_t);
+INSTANCIATE(uint8_t);
 template class  EXPORT_2D T2DDatafield<bool>;
 
 DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds"); 
 DEFINE_TYPE_DESCR2(C2DFVector, "2dfvector"); 
-
 
 template class EXPORT_2D CTParameter<C2DFVector>;
 template class EXPORT_2D CTParameter<C2DBounds>;

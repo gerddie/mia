@@ -177,18 +177,16 @@ void test_deformadd()
 
 
 
-typedef bmpl::list<signed char,
-		   unsigned char,
-		   signed short,
-		   unsigned short,
-		   signed int,
-		   unsigned int,
+typedef bmpl::list<int8_t,
+		   uint8_t,
+		   int16_t,
+		   uint16_t,
+		   int32_t,
+		   uint32_t,
+		   int64_t, 
+		   uint64_t, 
 		   float,
 		   double
-#ifdef LONG_64BIT
-		   ,signed long
-		   ,unsigned long
-#endif
 		   > test_types;
 
 
