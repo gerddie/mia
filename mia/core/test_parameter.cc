@@ -30,8 +30,10 @@
 
 #include <mia/core/parameter.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/paramarray.hh>
 
 #include <mia/core/parameter.cxx>
+
 
 NS_MIA_USE
 
@@ -262,6 +264,25 @@ BOOST_AUTO_TEST_CASE( test_bounded_param_unsignedshort_min_close_negative_input)
 	BOOST_CHECK_THROW(testv.set(" -1"), std::invalid_argument); 
 }
 
+
+BOOST_AUTO_TEST_CASE( test_paramarray_uint32_success )
+{
+        CPerLevelScalarParam<uint32_t> value(128000);
+
+        PCmdOption opt =
+                value.create_level_params_option("long_name",'l',
+                                                 EParameterBounds::bf_min_closed,
+                                                 {100}, "this is the help");
+
+
+        opt->set_value("200,400,70000");
+
+        BOOST_CHECK_EQUAL(value[0], 200u);
+        BOOST_CHECK_EQUAL(value[1], 400u);
+        BOOST_CHECK_EQUAL(value[2], 70000u);
+        BOOST_CHECK_EQUAL(value[3], 70000u);
+        
+}
 
 
 

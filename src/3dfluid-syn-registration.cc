@@ -61,23 +61,60 @@ void check_number_of_levels_consistency(size_t nvalues, size_t levels, const std
         }
 }
 
+
 typedef pair<P3DFVectorfield, P3DFVectorfield> TransformPair;
+
+struct C3DSymScaledRegisterParams {
+	P3DImageCost m_cost; 
+        C3DInterpolatorFactory m_ipfac; 
+        float m_current_step;
+	P3DVectorfieldRegularizer m_regularizer;
+	unsigned m_conv_count;
+	double m_stop_decline_rate;
+	double m_stop_cost;
+
+	C3DSymScaledRegisterParams();
+
+	void add_options(CCmdOptionList& options);
+}; 
+
+C3DSymScaledRegisterParams::C3DSymScaledRegisterParams():
+        m_current_step(0.25), 
+	m_conv_count(10), 
+	m_stop_decline_rate(0.001), 
+	m_stop_cost(0.1)
+{
+}
+
+void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
+{
+	options.set_group("Registration");
+	
+	options.add(make_opt( regularizer, "sor:kernel=fluid", "regularizer", 'R', 
+			      "Regularization for the force to transformation update")); 
+	
+        options.add(make_opt( epsilon_per_level, "frel", 0, 
+                              "Breaking condition: relative change of the cost function. "
+                              "If only one value is given, the this will be used foe all levels, "
+                              "otherwise the number of values must coincide with the number of registration levels. ""regularizer"));
+
+	
+}
+
 
 class C3DSymFluidReistration {
 public: 
-        C3DSymFluidReistration(P3DImageCost cost, unsigned mg_levels, 
+        C3DSymFluidReistration(unsigned mg_levels, 
                                const vector<unsigned>& iterations_per_level, 
                                const vector<double>& epsilon_per_level,
-			       P3DVectorfieldRegularizer regularizer
-		);
+			       const C3DSymScaledRegisterParams& params);
         
         TransformPair run(const C3DFImage& src, const C3DFImage& ref) const; 
-private: 
-        P3DImageCost m_cost; 
-        unsigned m_mg_levels; 
+private:
+	unsigned m_mg_levels;
         const vector<unsigned>& m_iterations_per_level; 
         const vector<double>& m_epsilon_per_level;
-	P3DVectorfieldRegularizer m_regularizer; 
+	const C3DSymScaledRegisterParams& params; 
 }; 
 
 P3DTransformation wrap_vectorfield_in_transformation(const C3DFVectorfield& field, 
@@ -198,7 +235,7 @@ int do_main( int argc, char *argv[] )
 MIA_MAIN(do_main); 
 
 
-C3DSymFluidReistration::C3DSymFluidReistration(P3DImageCost cost, unsigned mg_levels, 
+C3DSymFluidReistration::C3DSymFluidReistration(unsigned mg_levels, 
                                                const vector<unsigned>& iterations_per_level, 
                                                const vector<double>& epsilon_per_level,
 					       P3DVectorfieldRegularizer regularizer):
@@ -239,20 +276,16 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 	return Result;
 }
 
+
+
 class C3DSymScaledRegister {
 public: 
-        C3DSymScaledRegister(P3DImageCost cost, double iter,
-			     double epsilon, P3DVectorfieldRegularizer regularizer); 
+        C3DSymScaledRegister(const C3DSymScaledRegisterParams& params); 
         void run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const; 
 private: 
         void deform(const C3DFImage& src, const C3DFVectorfield& t, C3DFImage& result) const;
 
-        P3DImageCost m_cost; 
-        unsigned m_iter; 
-        double m_epsilon;
-        C3DInterpolatorFactory m_ipfac; 
-        float m_current_step;
-	P3DVectorfieldRegularizer m_regularizer; 
+        
 }; 
 
 TransformPair
@@ -312,7 +345,7 @@ C3DSymScaledRegister::C3DSymScaledRegister(P3DImageCost cost, double iter,
 
 void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const
 {
-	
+	CConvergenceMeasure conv_measure(m_conv_measure); 
         
         // deform the images with the input transformations
         C3DFImage src_tmp(src.get_size()); 
@@ -324,16 +357,20 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
         // now this runs ping-pong 
         unsigned iter = 0; 
 
-        double cost = numeric_limits<double>::max(); 
-
-        C3DFVectorfield grad(src.get_size()); 
+	C3DFVectorfield grad(src.get_size()); 
         C3DFVectorfield v(src.get_size()); 
 
-        while (iter < m_iter) {
+	double decline_rate = numeric_limits<double>::max();
+	double avg_cost = numeric_limits<double>::max();
+        while (!conv_measure.is_full_size() &&
+	       decline_rate > m_stop_decline_rate &&
+	       avg_cost > m_stop_cost &&
+	       iter < m_iter) {
                 ++iter; 
 
-		m_cost->set_reference(ref_tmp); 
-                m_cost->evaluate_force(src_tmp, grad);
+		m_cost->set_reference(ref_tmp);
+
+		conv_measure.push(m_cost->evaluate_force(src_tmp, grad)); 
                 
                 float max_v = m_regularizer->run(v, grad, *transforms.first); 
                 
@@ -345,6 +382,7 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
                 
                 m_cost->set_reference(src_tmp); 
                 m_cost->evaluate_force(ref_tmp, grad);
+		conv_measure.push(m_cost->evaluate_force(src_tmp, grad)); 
 
                 max_v = m_regularizer->run(v, grad, *transforms.second); 
                 
@@ -354,6 +392,14 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.second, ref_tmp);
 
+		decline_rate = - conv_measure.rate();
+		avg_cost = conv_measure.value();
+
+		cvinfo() << "[" << setw(4) << iter << "]:"
+			 << "cost(n="<< conv_measure.fill()<< ")=" << avg_cost
+			 << ", rate=" <<  decline_rate
+			 << "\n"; 
+			
         }
 }
 
