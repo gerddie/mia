@@ -199,12 +199,12 @@ void CStringParameter::do_add_dependend_handler(HandlerHelpMap& handler_map)cons
 
 template <typename T> 
 TBoundedParameter<T>::TBoundedParameter(T& value, EParameterBounds flags, 
-					const vector<T>& boundaries, 
+					const vector<boundary_type>& boundaries, 
 					bool required, const char *descr): 
 	CTParameter<T>(value, required, descr),
 	// this silences coverty warnings but it should actually not be necessary 
-	m_min(T()),
-	m_max(T()),
+	m_min(boundary_type()),
+	m_max(boundary_type()),
 	m_flags(flags)
 {
 	assert(!boundaries.empty());
@@ -220,30 +220,49 @@ TBoundedParameter<T>::TBoundedParameter(T& value, EParameterBounds flags,
 	}
 }
 
+template <typename T>
+struct __adjust_param {
+	static void test_boundaries(EParameterBounds flags, T value, T minval, T maxval,
+			       const std::string& descr, int idx) {
+		if (has_flag(flags, EParameterBounds::bf_min_closed)&& value < minval) {
+			throw create_exception<invalid_argument>("Parameters value[", idx, "]=", value, " given, but ", 
+								 "expected a value >= ", minval, ". Parameter is ", 
+								 descr, " flags=", flags); 
+		}
+		if (has_flag(flags, EParameterBounds::bf_min_open) && value <= minval) {
+			throw create_exception<invalid_argument>("Parameters value[", idx, "]=", value, " given, but ",
+								 "expected a value > ", minval, ". Parameter is ", 
+								 descr, " flags=", flags); 
+		}
+		
+		if (has_flag(flags, EParameterBounds::bf_max_closed)&& value > maxval) {
+			throw create_exception<invalid_argument>("Parameters value[", idx, "]=", value, " given, but ",
+								 "expected a value <= ", maxval, ". Parameter is ", 
+								 descr, " flags=", flags); 
+		}
+		if (has_flag(flags, EParameterBounds::bf_max_open) && value >= maxval) {
+			throw create_exception<invalid_argument>("Parameters value[", idx, "]=", value, " given, but "
+								 "expected a value < ", maxval, ". Parameter is ", 
+								 descr, " flags=", flags ); 
+		}
+	}
+}; 
+
+template <typename T>
+struct __adjust_param< std::vector<T> > {
+	static void test_boundaries(EParameterBounds flags, const std::vector<T>& value, T minval, T maxval,
+			       const std::string& descr, int MIA_PARAM_UNUSED(idx)) {
+		for(unsigned i = 0; i < value.size(); ++i) {
+			__adjust_param<T>::test_boundaries(flags, value[i], minval, maxval, descr, i); 
+		}
+	}
+}; 
+
+
 template <typename T> 
 void TBoundedParameter<T>::adjust(T& value)
 {
-	if (has_flag(m_flags, EParameterBounds::bf_min_closed)&& value < m_min) {
-		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ", 
-							 "expected a value >= ", m_min, ". Parameter is ", 
-							 this->get_descr(), " flags=", m_flags); 
-	}
-	if (has_flag(m_flags, EParameterBounds::bf_min_open) && value <= m_min) {
-		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ",
-							 "expected a value > ", m_min, ". Parameter is ", 
-							 this->get_descr(), " flags=", m_flags); 
-	}
-
-	if (has_flag(m_flags, EParameterBounds::bf_max_closed)&& value > m_max) {
-		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ",
-							 "expected a value <= ", m_max, ". Parameter is ", 
-							 this->get_descr(), " flags=", m_flags); 
-	}
-	if (has_flag(m_flags, EParameterBounds::bf_max_open) && value >= m_max) {
-		throw create_exception<invalid_argument>("Parameters value ", value, " given, but "
-							 "expected a value < ", m_max, ". Parameter is ", 
-							 this->get_descr(), " flags=", m_flags ); 
-	}
+	__adjust_param<T>::test_boundaries(m_flags, value, m_min, m_max, this->get_descr(), 0); 
 }
 
 template <typename T> 
@@ -320,22 +339,33 @@ EXPORT_CORE std::ostream& operator << (std::ostream& os, EParameterBounds flags)
 
 
 
-template class TBoundedParameter<unsigned short>;
-template class TBoundedParameter<unsigned int>;
-template class TBoundedParameter<unsigned long>;
-template class TBoundedParameter<short>;
-template class TBoundedParameter<int>;
-template class TBoundedParameter<long>;
+template class TBoundedParameter<uint16_t>;
+template class TBoundedParameter<uint32_t>;
+template class TBoundedParameter<uint64_t>;
+template class TBoundedParameter<int16_t>;
+template class TBoundedParameter<int32_t>;
+template class TBoundedParameter<int64_t>;
+
 template class TBoundedParameter<float>;
 template class TBoundedParameter<double>; 
 
+template class TBoundedParameter<vector<uint16_t>>;
+template class TBoundedParameter<vector<uint32_t>>;
+template class TBoundedParameter<vector<uint64_t>>;
+template class TBoundedParameter<vector<int16_t>>;
+template class TBoundedParameter<vector<int32_t>>;
+template class TBoundedParameter<vector<int64_t>>;
 
-template class CTParameter<unsigned short>;
-template class CTParameter<unsigned int>;
-template class CTParameter<unsigned long>;
-template class CTParameter<short>;
-template class CTParameter<int>;
-template class CTParameter<long>;
+template class TBoundedParameter<vector<float>>;
+template class TBoundedParameter<vector<double>>; 
+
+
+template class CTParameter<uint16_t>;
+template class CTParameter<uint32_t>;
+template class CTParameter<uint64_t>;
+template class CTParameter<int16_t>;
+template class CTParameter<int32_t>;
+template class CTParameter<int64_t>;
 template class CTParameter<float>;
 template class CTParameter<double>; 
 

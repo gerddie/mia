@@ -227,7 +227,19 @@ template <typename T>
 class EXPORT_CORE TBoundedParameter : public CTParameter<T> {
 
 public:
+	template <typename S> 
+	struct boundary {
+		typedef S value_type; 
+	};
+	
+	template <typename S> 
+		struct boundary<std::vector<S>> {
+		typedef S value_type; 
+	};
 
+	typedef typename boundary<T>::value_type boundary_type; 
+
+	
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
 	   \param flags boundary flags 
@@ -238,17 +250,19 @@ public:
 	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
-	TBoundedParameter(T& value, EParameterBounds flags, const std::vector<T>& boundaries, bool required, const char *descr);
+	TBoundedParameter(T& value, EParameterBounds flags, const std::vector<boundary_type>& boundaries,
+			  bool required, const char *descr);
 protected:
 	/**
 	   the implementation of the description-function
 	 */
 	void do_descr(std::ostream& os) const;
 private:
+	
 	virtual void adjust(T& value);
 	virtual void do_get_help_xml(CXMLElement& self) const;
-	T m_min;
-	T m_max;
+	boundary_type m_min;
+	boundary_type m_max;
 	EParameterBounds m_flags; 
 };
 
@@ -533,23 +547,43 @@ typedef CTParameter<bool> CBoolParameter;
 
 
 /// an unsigned short parameter (with possible boundaries)
-typedef TBoundedParameter<unsigned short> CUSBoundedParameter;
+typedef TBoundedParameter<uint16_t> CUSBoundedParameter;
 /// an unsigned int parameter (with possible boundaries)
-typedef TBoundedParameter<unsigned int> CUIBoundedParameter;
+typedef TBoundedParameter<uint32_t> CUIBoundedParameter;
 /// an unsigned long parameter (with possible boundaries)
-typedef TBoundedParameter<unsigned long> CULBoundedParameter;
+typedef TBoundedParameter<uint64_t> CULBoundedParameter;
 
 /// an signed short parameter (with possible boundaries)
-typedef TBoundedParameter<short> CSSBoundedParameter;
+typedef TBoundedParameter<int16_t> CSSBoundedParameter;
 /// an signed int parameter (with possible boundaries)
-typedef TBoundedParameter<int>   CSIBoundedParameter;
+typedef TBoundedParameter<int32_t>   CSIBoundedParameter;
 /// an signed long parameter (with possible boundaries)
-typedef TBoundedParameter<long>  CSLBoundedParameter;
+typedef TBoundedParameter<int64_t>  CSLBoundedParameter;
 
 /// an float parameter, single accuracy (with possible boundaries)
 typedef TBoundedParameter<float> CFBoundedParameter;
 /// an float parameter, double accuracy (with possible boundaries)
 typedef TBoundedParameter<double> CDBoundedParameter; 
+
+/// an unsigned short parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<uint16_t>> CVUSBoundedParameter;
+/// an unsigned int parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<uint32_t>> CVUIBoundedParameter;
+/// an unsigned long parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<uint64_t>> CVULBoundedParameter;
+
+/// an signed short parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<int16_t>> CVSSBoundedParameter;
+/// an signed int parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<int32_t>> CVSIBoundedParameter;
+/// an signed long parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<int64_t>> CVSLBoundedParameter;
+
+/// an float parameter, single accuracy (with possible boundaries)
+typedef TBoundedParameter<std::vector<float>> CVFBoundedParameter;
+/// an float parameter, double accuracy (with possible boundaries)
+typedef TBoundedParameter<std::vector<double>> CVDBoundedParameter; 
+
 
 /**    
       \ingroup cmdline

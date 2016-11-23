@@ -198,6 +198,31 @@ BOOST_AUTO_TEST_CASE( test_bounded_param_int_min_close)
 }
 
 
+BOOST_AUTO_TEST_CASE( test_bounded_param_vint_min_close)
+{
+	vector<int32_t> v; 
+	CVSIBoundedParameter testv(v, EParameterBounds::bf_min_closed, 
+				  {-2}, false, "a bounded test value"); 
+	
+	
+	BOOST_CHECK(testv.set("-2,2,3"));
+	BOOST_CHECK_EQUAL(v.size(), 3u);
+	BOOST_CHECK_EQUAL(v[0], -2);
+	BOOST_CHECK_EQUAL(v[1], 2);
+	BOOST_CHECK_EQUAL(v[2], 3);
+
+	v.clear(); 
+	BOOST_CHECK(testv.set("2,-2"));
+	BOOST_CHECK_EQUAL(v.size(), 2u);
+	BOOST_CHECK_EQUAL(v[0], 2);
+	BOOST_CHECK_EQUAL(v[1], -2);
+
+	v.clear(); 
+	BOOST_CHECK_THROW(testv.set("-3,3"), std::invalid_argument); 
+}
+
+
+
 BOOST_AUTO_TEST_CASE( test_bounded_param_unsignedshort_min_open)
 {
 	unsigned short v = 0; 
