@@ -329,20 +329,22 @@ BOOST_AUTO_TEST_CASE(test_omoms3)
 	}
 }
 
-typedef bmpl::vector<unsigned char,
-		     signed char, 
-		     unsigned short, 
-		     signed short, 
-#ifdef LONG_64BIT
-		     signed long, 
-		     unsigned long, 
-#endif
-		     float, 
-		     double> types; 
+typedef bmpl::vector<int8_t,
+		     uint8_t,
+		     int16_t,
+		     uint16_t,
+		     int32_t,
+		     uint32_t,
+		     int64_t,
+		     uint64_t,
+		     float,
+		     double
+		     > test_types;
 
 
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_types, T , types )
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolator_kernels , T , test_types )
 {	
 	test_type<T, bspline1>(); 
 	test_type<T, bspline2>();

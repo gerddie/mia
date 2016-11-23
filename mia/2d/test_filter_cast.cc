@@ -41,21 +41,18 @@ struct FTestFilter : public TFilter<bool> {
 	
 }; 
 
-
-typedef bmpl::list<bool, 
-		   signed char,
-		   unsigned char,
-		   signed short,
-		   unsigned short,
-		   signed int,
-		   unsigned int,
-#ifdef LONG_64BIT
-		   signed long,
-		   unsigned long,
-#endif
-		   float,
-		   double
-		   > test_types;
+typedef bmpl::vector<bool,
+		     int8_t,
+		     uint8_t,
+		     int16_t,
+		     uint16_t,
+		     int32_t,
+		     uint32_t,
+		     int64_t,
+		     uint64_t,
+		     float,
+		     double
+		     > test_types;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_test_type, T, test_types )
 {	

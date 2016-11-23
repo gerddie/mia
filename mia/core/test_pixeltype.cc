@@ -33,13 +33,8 @@ NS_MIA_USE
 BOOST_AUTO_TEST_CASE( test_pixeltype_translation )
 {
 
-#ifdef LONG_64BIT
 	BOOST_CHECK(CPixelTypeDict.get_name_set().size() == 12);
 	BOOST_CHECK(it_none == 11);
-#else
-	BOOST_CHECK(CPixelTypeDict.get_name_set().size() == 10);
-	BOOST_CHECK(it_none == 9);
-#endif
 
 	BOOST_CHECK(CPixelTypeDict.get_value("bit")    == it_bit);
 	BOOST_CHECK(CPixelTypeDict.get_value("ubyte")  == it_ubyte);
@@ -48,10 +43,8 @@ BOOST_AUTO_TEST_CASE( test_pixeltype_translation )
 	BOOST_CHECK(CPixelTypeDict.get_value("sshort") == it_sshort);
 	BOOST_CHECK(CPixelTypeDict.get_value("uint")   == it_uint);
 	BOOST_CHECK(CPixelTypeDict.get_value("sint")   == it_sint);
-#ifdef LONG_64BIT
 	BOOST_CHECK(CPixelTypeDict.get_value("ulong")  == it_ulong);
 	BOOST_CHECK(CPixelTypeDict.get_value("slong")  == it_slong);
-#endif
 	BOOST_CHECK(CPixelTypeDict.get_value("float")  == it_float);
 	BOOST_CHECK(CPixelTypeDict.get_value("double") == it_double);
 	BOOST_CHECK(CPixelTypeDict.get_value("none") == it_none);

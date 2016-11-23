@@ -81,21 +81,22 @@ static void creat_and_check(EPixelType type)
 	BOOST_CHECK(voxel2 == timg->get_voxel_size());
 }
 
-BOOST_AUTO_TEST_CASE( check_data_types )
+typedef boost::mpl::vector<bool,
+		     int8_t,
+		     uint8_t,
+		     int16_t,
+		     uint16_t,
+		     int32_t,
+		     uint32_t,
+		     int64_t,
+		     uint64_t,
+		     float,
+		     double
+		     > test_types;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( check_data_types , T, test_types)
 {
-	creat_and_check<bool>(it_bit);
-	creat_and_check<unsigned char>(it_ubyte);
-	creat_and_check<signed char>(it_sbyte);
-	creat_and_check<unsigned short>(it_ushort);
-	creat_and_check<signed short>(it_sshort);
-	creat_and_check<unsigned int>(it_uint);
-	creat_and_check<signed int>(it_sint);
-#ifdef LONG_64BIT
-	creat_and_check<unsigned long>(it_ulong);
-	creat_and_check<signed long>(it_slong);
-#endif
-	creat_and_check<float>(it_float);
-	creat_and_check<double>(it_double);
+	creat_and_check<T>(pixel_type<T>::value);
 }
 
 

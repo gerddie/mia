@@ -78,16 +78,16 @@ struct __vtk_data_array {
 
 
 VTK_ARRAY_TRANSLATE(bool, vtkBitArray, VTK_BIT); 
- VTK_ARRAY_TRANSLATE(signed char, vtkSignedCharArray, VTK_SIGNED_CHAR); 
-VTK_ARRAY_TRANSLATE(unsigned char, vtkUnsignedCharArray, VTK_UNSIGNED_CHAR); 
-VTK_ARRAY_TRANSLATE(signed short, vtkShortArray, VTK_SHORT); 
-VTK_ARRAY_TRANSLATE(unsigned short, vtkUnsignedShortArray, VTK_UNSIGNED_SHORT); 
-VTK_ARRAY_TRANSLATE(signed int, vtkIntArray, VTK_INT); 
-VTK_ARRAY_TRANSLATE(unsigned int, vtkUnsignedIntArray, VTK_UNSIGNED_INT); 
+VTK_ARRAY_TRANSLATE(int8_t, vtkSignedCharArray, VTK_SIGNED_CHAR); 
+VTK_ARRAY_TRANSLATE(uint8_t, vtkUnsignedCharArray, VTK_UNSIGNED_CHAR); 
+VTK_ARRAY_TRANSLATE(int16_t, vtkShortArray, VTK_SHORT); 
+VTK_ARRAY_TRANSLATE(uint16_t, vtkUnsignedShortArray, VTK_UNSIGNED_SHORT); 
+VTK_ARRAY_TRANSLATE(int32_t, vtkIntArray, VTK_INT); 
+VTK_ARRAY_TRANSLATE(uint32_t, vtkUnsignedIntArray, VTK_UNSIGNED_INT); 
 
 #ifdef LONG_64BIT
-VTK_ARRAY_TRANSLATE(signed long, vtkLongArray, VTK_LONG); 
-VTK_ARRAY_TRANSLATE(unsigned long, vtkUnsignedLongArray, VTK_UNSIGNED_LONG); 
+VTK_ARRAY_TRANSLATE(int64_t, vtkLongArray, VTK_LONG); 
+VTK_ARRAY_TRANSLATE(uint64_t, vtkUnsignedLongArray, VTK_UNSIGNED_LONG); 
 #endif
 
 VTK_ARRAY_TRANSLATE(float, vtkFloatArray, VTK_FLOAT); 
@@ -161,15 +161,15 @@ static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname)
 	C3DImage *result_image = nullptr; 
 	switch 	 (vtk_image->GetScalarType()) {
 	case VTK_BIT:            result_image=read_image<bool>::apply(size, array); break; 
-	case VTK_SIGNED_CHAR:    result_image=read_image<signed char>::apply(size, array); break; 
-	case VTK_UNSIGNED_CHAR:  result_image=read_image<unsigned char>::apply(size, array); break; 
-	case VTK_SHORT:          result_image=read_image<signed short>::apply(size, array); break; 
-	case VTK_UNSIGNED_SHORT: result_image=read_image<unsigned short>::apply(size, array); break; 
-	case VTK_INT:            result_image=read_image<signed int>::apply(size, array); break;  
-	case VTK_UNSIGNED_INT:   result_image=read_image<unsigned int>::apply(size, array); break; 
+	case VTK_SIGNED_CHAR:    result_image=read_image<int8_t>::apply(size, array); break; 
+	case VTK_UNSIGNED_CHAR:  result_image=read_image<uint8_t>::apply(size, array); break; 
+	case VTK_SHORT:          result_image=read_image<int16_t>::apply(size, array); break; 
+	case VTK_UNSIGNED_SHORT: result_image=read_image<uint16_t>::apply(size, array); break; 
+	case VTK_INT:            result_image=read_image<int32_t>::apply(size, array); break;  
+	case VTK_UNSIGNED_INT:   result_image=read_image<uint32_t>::apply(size, array); break; 
 #ifdef LONG_64BIT
-	case VTK_LONG:           result_image=read_image<signed long>::apply(size, array); break; 
-	case VTK_UNSIGNED_LONG:  result_image=read_image<unsigned long>::apply(size, array); break; 
+	case VTK_LONG:           result_image=read_image<int64_t>::apply(size, array); break; 
+	case VTK_UNSIGNED_LONG:  result_image=read_image<uint64_t>::apply(size, array); break; 
 #endif 
 	case VTK_FLOAT:          result_image=read_image<float>::apply(size, array); break; 
 	case VTK_DOUBLE:         result_image=read_image<double>::apply(size, array); break;  

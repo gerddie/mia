@@ -79,12 +79,8 @@ C3DImageIOPlugin("nifti")
 	add_supported_type(it_ushort);
 	add_supported_type(it_sint);
 	add_supported_type(it_uint);
-
-#ifdef LONG_64BIT
 	add_supported_type(it_slong);
 	add_supported_type(it_ulong);
-#endif 
-
 	add_supported_type(it_float);
 	add_supported_type(it_double);
 
@@ -254,10 +250,8 @@ CNifti3DImageIOPlugin::PData CNifti3DImageIOPlugin::do_load(const std::string&  
 	case DT_INT8:   return read_images<C3DSBImage>(size, *image); 
 	case DT_UINT16: return read_images<C3DUSImage>(size, *image); 
 	case DT_UINT32: return read_images<C3DUIImage>(size, *image); 
-#ifdef LONG_64BIT
 	case DT_INT64:  return read_images<C3DSLImage>(size, *image); 
 	case DT_UINT64: return read_images<C3DULImage>(size, *image); 
-#endif
 	default:
 		throw create_exception<invalid_argument>("NIFTI: input format ", image->datatype, " not supported");
 	}
@@ -273,10 +267,8 @@ static int datatype_to_nifti(EPixelType ptype)
         case it_ushort: return DT_UINT16; 
         case it_sint: return DT_INT32; 
         case it_uint: return DT_UINT32; 
-#ifdef LONG_64BIT
         case it_slong: return DT_INT64; 
         case it_ulong: return DT_UINT64; 
-#endif
         case it_float: return DT_FLOAT32; 
         case it_double: return DT_FLOAT64; 
         default: 

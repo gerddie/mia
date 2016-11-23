@@ -122,16 +122,14 @@ BOOST_AUTO_TEST_CASE( test_translator )
 	check_translate_type("bit", true, "1");
 	check_translate_type("double", 1.8, "1.8");
 	check_translate_type("float", 1.75f, "1.75");
-	check_translate_type("ubyte", (unsigned char)129, "129");
-	check_translate_type("sbyte", (signed char)-120, "-120");
-	check_translate_type("sshort", (signed short)-1231, "-1231");
-	check_translate_type("ushort", (unsigned short)3213, "3213");
-#ifdef LONG_64BIT
+	check_translate_type("ubyte", (uint8_t)129, "129");
+	check_translate_type("sbyte", (int8_t)-120, "-120");
+	check_translate_type("sshort", (int16_t)-1231, "-1231");
+	check_translate_type("ushort", (uint16_t)3213, "3213");
 	CULTranslator::register_for("ulong");
 	CSLTranslator::register_for("slong");
-	check_translate_type("slong", (signed long)-1212321, "-1212321");
-	check_translate_type("ulong", (unsigned long)1238763, "1238763");
-#endif
+	check_translate_type("slong", (int64_t)-1212321, "-1212321");
+	check_translate_type("ulong", (uint64_t)1238763, "1238763");
 
 }
 
@@ -166,16 +164,14 @@ void test_type_attribute()
 
 
 typedef bmpl::vector<bool,
-		     signed char,
-		     unsigned char,
-		     signed short,
-		     unsigned short,
-		     signed int,
-		     unsigned int,
-#ifdef LONG_64BIT
-		     signed long,
-		     unsigned long,
-#endif
+		     int8_t,
+		     uint8_t,
+		     int16_t,
+		     uint16_t,
+		     int32_t,
+		     uint32_t,
+		     int64_t,
+		     uint64_t,
 		     float,
 		     double
 		     > test_types;

@@ -70,19 +70,17 @@ struct attribute_type : public EAttributeType {
         };
 
 ATTR_TYPEID(bool, attr_bool); 
-ATTR_TYPEID(unsigned char, attr_uchar); 
-ATTR_TYPEID(signed char, attr_schar); 
+ATTR_TYPEID(uint8_t, attr_uchar); 
+ATTR_TYPEID(int8_t, attr_schar); 
 
-ATTR_TYPEID(unsigned short, attr_ushort); 
-ATTR_TYPEID(signed short, attr_sshort); 
+ATTR_TYPEID(uint16_t, attr_ushort); 
+ATTR_TYPEID(int16_t, attr_sshort); 
 
-ATTR_TYPEID(unsigned int, attr_uint); 
-ATTR_TYPEID(signed int, attr_sint); 
+ATTR_TYPEID(uint32_t, attr_uint); 
+ATTR_TYPEID(int32_t, attr_sint); 
 
-#ifdef LONG_64BIT
-ATTR_TYPEID(unsigned long, attr_ulong); 
-ATTR_TYPEID(signed long, attr_slong); 
-#endif
+ATTR_TYPEID(uint64_t, attr_ulong); 
+ATTR_TYPEID(int64_t, attr_slong); 
 
 ATTR_TYPEID(float, attr_float); 
 ATTR_TYPEID(double, attr_double); 

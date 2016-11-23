@@ -30,21 +30,19 @@
 
 NS_MIA_USE
 using namespace std;
+namespace bmpl=boost::mpl;
 
-typedef boost::mpl::vector<signed char,
-			   unsigned char,
-			   signed short,
-			   unsigned short,
-			   signed int,
-			   unsigned int,
-#ifdef LONG_64BIT
-			   signed long,
-			   unsigned long,
-#endif
-			   float,
-			   double
-			   > test_pixel_types;
-
+typedef bmpl::vector<int8_t,
+		     uint8_t,
+		     int16_t,
+		     uint16_t,
+		     int32_t,
+		     uint32_t,
+		     int64_t,
+		     uint64_t,
+		     float,
+		     double
+		     > test_types;
 
 class HDF5CoreFileFixture {
 	
@@ -245,7 +243,7 @@ void TestDatasetIOInGroupFixture<T>::run()
 	this->test(path, dims, data); 
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_dataset_io, T , test_pixel_types )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_dataset_io, T , test_types )
 {
 	TestDatasetIOInGroupFixture<T>().run(); 
 }
@@ -281,7 +279,7 @@ void TestAttrfixture<T>::run()
 	BOOST_CHECK_EQUAL(*rattr, value); 
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_attributes , T , test_pixel_types )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_attributes , T , test_types )
 {
 	TestAttrfixture<T>().run(); 
 }
@@ -323,7 +321,7 @@ void TestVectorAttrfixture<T>::run()
 
 
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_attributes , T , test_pixel_types )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_attributes , T , test_types )
 {
 	TestVectorAttrfixture<T>().run(); 
 }

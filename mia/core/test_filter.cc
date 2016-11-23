@@ -25,6 +25,7 @@
 
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/unit_test.hpp>
+#include <boost/mpl/vector.hpp>
 
 #include <mia/core/filter.hh>
 
@@ -104,16 +105,14 @@ template <typename T>
 void do_test_combiner_call(DualFilter dual)
 {
 	do_test_combiner_call_b<T, bool>(dual);
-	do_test_combiner_call_b<T, signed char>(dual);
-	do_test_combiner_call_b<T, unsigned char>(dual);
-	do_test_combiner_call_b<T, signed short>(dual);
-	do_test_combiner_call_b<T, unsigned short>(dual);
-	do_test_combiner_call_b<T, signed int>(dual);
-	do_test_combiner_call_b<T, unsigned int>(dual);
-#ifdef LONG_64BIT
-	do_test_combiner_call_b<T, unsigned long>(dual);
-	do_test_combiner_call_b<T, signed long>(dual);
-#endif
+	do_test_combiner_call_b<T, int8_t>(dual);
+	do_test_combiner_call_b<T, int16_t>(dual);
+	do_test_combiner_call_b<T, int32_t>(dual);
+	do_test_combiner_call_b<T, int64_t>(dual);
+	do_test_combiner_call_b<T, uint8_t>(dual);
+	do_test_combiner_call_b<T, uint16_t>(dual);
+	do_test_combiner_call_b<T, uint32_t>(dual);
+	do_test_combiner_call_b<T, uint64_t>(dual);
 	do_test_combiner_call_b<T, float>(dual);
 	do_test_combiner_call_b<T, double>(dual);
 }
@@ -122,40 +121,27 @@ NS_MIA_END
 
 NS_MIA_USE
 
-BOOST_AUTO_TEST_CASE( test_filter_call)
+typedef boost::mpl::vector<bool,
+		     int8_t,
+		     uint8_t,
+		     int16_t,
+		     uint16_t,
+		     int32_t,
+		     uint32_t,
+		     int64_t,
+		     uint64_t,
+		     float,
+		     double
+		     > test_types;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_filter_call, T, test_types)
 {
 	UniFilter uni;
-
-	do_test_filter_call<bool>(uni);
-	do_test_filter_call<signed char>(uni);
-	do_test_filter_call<unsigned char>(uni);
-	do_test_filter_call<signed short>(uni);
-	do_test_filter_call<unsigned short>(uni);
-	do_test_filter_call<signed int>(uni);
-	do_test_filter_call<unsigned int>(uni);
-#ifdef LONG_64BIT
-	do_test_filter_call<signed long>(uni);
-	do_test_filter_call<unsigned long>(uni);
-#endif
-	do_test_filter_call<float>(uni);
-	do_test_filter_call<double>(uni);
+	do_test_filter_call<T>(uni);
 }
 
-BOOST_AUTO_TEST_CASE( test_combiner_call )
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_combiner_call, T, test_types)
 {
 	DualFilter dual;
-
-	do_test_combiner_call<bool>(dual);
-	do_test_combiner_call<signed char>(dual);
-	do_test_combiner_call<unsigned char>(dual);
-	do_test_combiner_call<signed short>(dual);
-	do_test_combiner_call<unsigned short>(dual);
-	do_test_combiner_call<signed int>(dual);
-	do_test_combiner_call<unsigned int>(dual);
-#ifdef LONG_64BIT
-	do_test_combiner_call<signed long>(dual);
-	do_test_combiner_call<unsigned long>(dual);
-#endif
-	do_test_combiner_call<float>(dual);
-	do_test_combiner_call<double>(dual);
+	do_test_combiner_call<T>(dual);
 }

@@ -234,7 +234,9 @@ BOOST_AUTO_TEST_CASE( test_3ddatafield_get_put_yz )
 }
 
 
-#ifdef LONG_64BIT
+// this test should only be run on a machine with more than 4GB
+// of working memory, so for now it is disabled  
+#if 0 
 
 BOOST_AUTO_TEST_CASE( test_3ddatafield_larger_than_4GB )
 {

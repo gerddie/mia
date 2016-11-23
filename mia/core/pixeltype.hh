@@ -36,10 +36,8 @@ enum EPixelType {it_bit,  /**< bit/bool pixels */
 		 it_ushort, /**< unsigned short pixels (16-bit) */
 		 it_sint,   /**< signed int pixels (32-bit)*/
 		 it_uint,   /**< unsigned int pixels (32-bit)*/
-#ifdef LONG_64BIT
 		 it_slong,  /**< signed long pixels (64 bit)*/
 		 it_ulong,  /**< unsigned long pixels (64 bit) */
-#endif
 		 it_float,  /**< float pixels (32 bit)*/
 		 it_double, /**< double pixels (63 bit)*/
 		 it_none,   /**< type not set */
