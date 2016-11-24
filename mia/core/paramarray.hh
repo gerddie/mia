@@ -37,7 +37,11 @@ public:
                                               EParameterBounds flags,
                                               const std::vector<T>& boundaries,
                                               const char* help);
-	
+
+	PCmdOption create_level_params_option(const char* long_name,
+                                              char short_name,
+					      const char* help);
+
 	
 	T operator [](unsigned l)const; 
 private:
@@ -61,6 +65,15 @@ PCmdOption TPerLevelScalarParam<T>::create_level_params_option(const char* long_
         return PCmdOption(new CParamOption( short_opt, long_opt, 
                                             new TBoundedParameter<std::vector<T> >(m_params, bflags,
 										   boundaries, false, help))); 
+}
+
+template <typename T>
+PCmdOption TPerLevelScalarParam<T>::create_level_params_option(const char* long_opt,
+							       char short_opt,
+							       const char* help)
+{
+	return PCmdOption(new CParamOption( short_opt, long_opt, 
+                                            new CTParameter<std::vector<T> >(m_params, false, help))); 
 }
 
 template <typename T>

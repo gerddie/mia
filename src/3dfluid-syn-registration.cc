@@ -93,7 +93,6 @@ C3DSymScaledRegisterParams::C3DSymScaledRegisterParams():
 void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 {
 	options.set_group("Registration");
-
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "Number of multi-resolution levels to run the registration on. "
 			      "Not that some registration parameters can be given as a coma seperated list to "
 			      "indicate per level values. In these cases  if the number of given values is smaller "
@@ -123,7 +122,7 @@ void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 			    ));
 	
 	options.add(stop_cost.
-		    create_level_params_option("stop-cost", 'C', EParameterBounds::bf_min_closed, {0},
+		    create_level_params_option("stop-cost", 'C',
 					       "Stopping criterium for registration based on the cost value. "
 					       "If the cost drops below this value, the iteration is stopped. "
 					       "This parameter can be given as a coma-seperated list with values corresponding "

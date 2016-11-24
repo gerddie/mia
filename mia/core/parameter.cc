@@ -345,7 +345,6 @@ template class TBoundedParameter<uint64_t>;
 template class TBoundedParameter<int16_t>;
 template class TBoundedParameter<int32_t>;
 template class TBoundedParameter<int64_t>;
-
 template class TBoundedParameter<float>;
 template class TBoundedParameter<double>; 
 
@@ -355,7 +354,6 @@ template class TBoundedParameter<vector<uint64_t>>;
 template class TBoundedParameter<vector<int16_t>>;
 template class TBoundedParameter<vector<int32_t>>;
 template class TBoundedParameter<vector<int64_t>>;
-
 template class TBoundedParameter<vector<float>>;
 template class TBoundedParameter<vector<double>>; 
 
@@ -368,9 +366,18 @@ template class CTParameter<int32_t>;
 template class CTParameter<int64_t>;
 template class CTParameter<float>;
 template class CTParameter<double>; 
-
 template class CTParameter<string>;
 template class CTParameter<bool>;
+
+template class CTParameter<vector<uint16_t>>;
+template class CTParameter<vector<uint32_t>>;
+template class CTParameter<vector<uint64_t>>;
+template class CTParameter<vector<int16_t>>;
+template class CTParameter<vector<int32_t>>;
+template class CTParameter<vector<int64_t>>;
+template class CTParameter<vector<float>>;
+template class CTParameter<vector<double>>; 
+template class CTParameter<vector<string>>;
 
 
 NS_MIA_END
