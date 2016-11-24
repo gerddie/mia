@@ -100,12 +100,12 @@ void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 			      "is used for all subsequest multi-resolution levels."));
 	
 	options.add(make_opt( cost, "ssd", "cost", 'c', "Image similarity function to be minimized"));
-	options.add(make_opt( regularizer, "sor:kernel=fluid", "regularizer", 'R', 
+	options.add(make_opt( regularizer, "sor:kernel=fluid,maxiter=1000", "regularizer", 'R', 
 			      "Regularization for the force to transformation update")); 
 
 
 	options.add(conv_count.
-		    create_level_params_option("conv-test-intervall",'T', EParameterBounds::bf_min_closed, {4}, 
+		    create_level_params_option("conv-test-interval",'T', EParameterBounds::bf_min_closed, {4}, 
 					       "Convergence test interations intervall: In order to measure "
 					       "convergence the cost function value is averaged over this "
 					       "amount of iterations, and the decline rate is evaluated based on the "
@@ -321,15 +321,20 @@ C3DSymFluidRegistration::run(const C3DFImage& src, const C3DFImage& ref) const
 C3DSymScaledRegister::C3DSymScaledRegister(unsigned level, const C3DSymScaledRegisterParams& params):
 	m_level(level),
 	m_params(params),
-	m_ipfac("zero", "bspline:d=1")
+	m_ipfac("bspline:d=1", "zero")
 {
 
 }
 
 void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const
 {
+	cvmsg() << "Enter registration at level "<< m_level << " with size " << src.get_size() << "\n";
+	cvmsg() << "  Running at most " << m_params.iterations[m_level] << " iterations\n"; 
+
 	auto current_step = m_params.current_step; 
-	CConvergenceMeasure conv_measure(m_params.conv_count[m_level]); 
+	CConvergenceMeasure conv_measure(m_params.conv_count[m_level]);
+
+	m_params.regularizer->set_size(src.get_size()); 
         
         // deform the images with the input transformations
         C3DFImage src_tmp(src.get_size()); 
@@ -346,42 +351,50 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 
 	double decline_rate = numeric_limits<double>::max();
 	double avg_cost = numeric_limits<double>::max();
-        while (!conv_measure.is_full_size() &&
+        while (!conv_measure.is_full_size() || (
 	       decline_rate > m_params.stop_decline_rate[m_level] &&
 	       avg_cost > m_params.stop_cost[m_level] &&
-	       iter < m_params.iterations[m_level]) {
+	       iter < m_params.iterations[m_level])) {
+		
                 ++iter; 
 
 		m_params.cost->set_reference(ref_tmp);
-
-		conv_measure.push(m_params.cost->evaluate_force(src_tmp, grad)); 
+		double cost_fw = m_params.cost->evaluate_force(src_tmp, grad); 
+		
                 
-                float max_v = m_params.regularizer->run(v, grad, *transforms.first); 
+                float max_v_fw = m_params.regularizer->run(v, grad, *transforms.first); 
                 
-		transforms.first->update_by_velocity(v, current_step / max_v); 
+		transforms.first->update_by_velocity(v, current_step / max_v_fw); 
 		transforms.second->update_as_inverse_of(*transforms.first, 1e-5, 20);
 
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.second, ref_tmp);
-                
-                m_params.cost->set_reference(src_tmp); 
-                conv_measure.push(m_params.cost->evaluate_force(ref_tmp, grad)); 
+		
+		m_params.cost->set_reference(src_tmp);
+		double cost_bw = m_params.cost->evaluate_force(ref_tmp, grad); 
+		conv_measure.push(cost_bw + cost_fw);
+		
+		decline_rate = - conv_measure.rate();
+		avg_cost = conv_measure.value();
 
-                max_v = m_params.regularizer->run(v, grad, *transforms.second); 
-                
-		transforms.second->update_by_velocity(v, current_step / max_v); 
+		float max_v_bw = m_params.regularizer->run(v, grad, *transforms.second); 
+
+		cvmsg() << "[" << setw(4) << iter << "]:"
+			<< "cost = "<< cost_fw + cost_bw
+			<< ", max_v_fw = "<< max_v_fw
+			<< ", max_v_bw = "<< max_v_bw
+			<< ", cost_avg(n="<< conv_measure.fill()<< ")=" << avg_cost
+			<< ", rate=" <<  decline_rate
+			<< "\n"; 
+
+		
+		transforms.second->update_by_velocity(v, current_step / max_v_bw); 
 		transforms.first->update_as_inverse_of(*transforms.first, 1e-5, 20);
                 
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.second, ref_tmp);
 
-		decline_rate = - conv_measure.rate();
-		avg_cost = conv_measure.value();
-
-		cvinfo() << "[" << setw(4) << iter << "]:"
-			 << "cost(n="<< conv_measure.fill()<< ")=" << avg_cost
-			 << ", rate=" <<  decline_rate
-			 << "\n"; 
+		
 			
         }
 }
