@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE (test_vectorfield_as_inverse_of)
 	
 	for (auto io = other.begin_range(C3DBounds::_0, size);
 	     io != other.end_range(C3DBounds::_0, size); ++io)  {
-		*io = C3DFVector(sin(io.pos().x * M_PI / 9), sin(io.pos().y * M_PI / 9), sin(io.pos().z * M_PI / 9));
+		*io = C3DFVector(sin(io.pos().x * M_PI / 9), sin(io.pos().y * M_PI / 18), sin(io.pos().z * M_PI / 9));
 	}
 	
 	C3DFVectorfield me(size);
