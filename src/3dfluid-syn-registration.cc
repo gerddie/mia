@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,6 +98,10 @@ void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 			      "indicate per level values. In these cases  if the number of given values is smaller "
 			      "than the number of multi-resolution levels (this parameter), the the last given value "
 			      "is used for all subsequest multi-resolution levels."));
+
+	options.add(make_opt(current_step, "step", 'S',
+			     EParameterBounds::bf_min_open | EParameterBounds::bf_max_closed, {0.0, 0.5}, 
+			     "Initial step size for all levels")); 
 	
 	options.add(make_opt( cost, "ssd", "cost", 'c', "Image similarity function to be minimized"));
 	options.add(make_opt( regularizer, "sor:kernel=fluid,maxiter=1000", "regularizer", 'R', 
@@ -105,7 +109,7 @@ void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 
 
 	options.add(conv_count.
-		    create_level_params_option("conv-test-interval",'T', EParameterBounds::bf_min_closed, {4}, 
+		    create_level_params_option("conv-test-interval",'T', EParameterBounds::bf_closed_interval, {4}, 
 					       "Convergence test interations intervall: In order to measure "
 					       "convergence the cost function value is averaged over this "
 					       "amount of iterations, and the decline rate is evaluated based on the "
