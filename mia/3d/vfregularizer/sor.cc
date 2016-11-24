@@ -19,6 +19,7 @@
  */
 
 #include <mia/3d/vfregularizer/sor.hh>
+#include <mia/core/parallel.hh>
 
 NS_MIA_BEGIN
 
@@ -51,38 +52,55 @@ double C3DSORVectorfieldRegularizer::do_run(C3DFVectorfield& velocity, C3DFVecto
                 residuum = 0.0f; 
 
 		// to be parallized, needs reduce for residuum
-                auto buffers = m_kernel->get_buffers(); 
-                for (unsigned z = padding; z < work_size_z; ++z) {
-                        m_kernel->start_slice(z, *buffers);
-                        for (unsigned y = padding; y < work_size_y; ++y) {
-                                residuum += m_kernel->evaluate_row(y, z, *buffers);
-                        }
-                }
 
-                if (first_rel_residuum < 0) 
-                        first_rel_residuum = m_rel_epsilon * residuum; 
+		auto callback_solver  = [this, padding, work_size_y]
+			(const C1DParallelRange& range, float res) {
+			auto buffers = m_kernel->get_buffers(); 
+			for (auto  z = range.begin(); z < range.end(); ++z) {
+				m_kernel->start_slice(z, *buffers);
+				for (unsigned y = padding; y < work_size_y; ++y) {
+					res += m_kernel->evaluate_row(y, z, *buffers);
+				}
+			}
+			return res; 
+		};
+		
+		residuum = preduce(C1DParallelRange(padding, work_size_z), 0.0f, callback_solver,
+					[](float a, float b){ return a+b;}); 
+				
+		if (first_rel_residuum < 0) 
+			first_rel_residuum = m_rel_epsilon * residuum; 
                 
                 
 		cvinfo() << "[" << iter << "] res=" << residuum << "\n"; 
         } while (iter < m_maxiter && 
                  residuum > m_abs_epsilon && 
-                 residuum > first_rel_residuum); 
-        
+                 residuum > first_rel_residuum);
+
+       
         float max_pert = 0.0f; 
         if (m_kernel->has_pertuberation()) {
                 m_kernel->set_data_fields(&velocity, &deform);
 
-		// to be parallized (reduce because of max ) 
-                auto buffers = m_kernel->get_buffers(); 
-		for (unsigned z = padding; z < work_size_z; ++z) {
-                        m_kernel->start_slice(z, *buffers);
-                        for (unsigned y = padding; y < work_size_y; ++y) {
-                                float pert = m_kernel->evaluate_pertuberation_row(y, z, *buffers);
-                                if (max_pert < pert) 
-                                        max_pert = pert; 
-                        }
-                }
-        }else{
+		auto callback_pert = [this, padding, work_size_y]
+			(const C1DParallelRange& range, float maxpert) {
+			
+			// to be parallized (reduce because of max ) 
+			auto buffers = m_kernel->get_buffers();
+			for (auto  z = range.begin(); z < range.end(); ++z) {
+				m_kernel->start_slice(z, *buffers);
+				for (unsigned y = padding; y < work_size_y; ++y) {
+					float pert = m_kernel->evaluate_pertuberation_row(y, z, *buffers);
+					if (maxpert < pert) 
+						maxpert = pert; 
+				}
+			}
+			return maxpert; 
+                };
+		
+		max_pert = preduce(C1DParallelRange(padding, work_size_z), 0.0f, callback_pert,
+				   [](float a, float b){ return std::max(a,b);});
+	}else{
                 // find maximum in velocity field 
                 for (auto v : velocity) {
                         float pert = v.norm2(); 
