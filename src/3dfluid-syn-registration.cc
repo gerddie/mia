@@ -99,9 +99,8 @@ void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 			      "than the number of multi-resolution levels (this parameter), the the last given value "
 			      "is used for all subsequest multi-resolution levels."));
 
-	options.add(make_opt(current_step, "step", 'S',
-			     EParameterBounds::bf_min_open | EParameterBounds::bf_max_closed, {0.0, 0.5}, 
-			     "Initial step size for all levels")); 
+	options.add(make_opt(current_step,  EParameterBounds::bf_min_open | EParameterBounds::bf_max_closed,
+			     {0.0f, 0.5f},  "step", 'S', "Initial step size for all levels")); 
 	
 	options.add(make_opt( cost, "ssd", "cost", 'c', "Image similarity function to be minimized"));
 	options.add(make_opt( regularizer, "sor:kernel=fluid,maxiter=1000", "regularizer", 'R', 
@@ -109,7 +108,7 @@ void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 
 
 	options.add(conv_count.
-		    create_level_params_option("conv-test-interval",'T', EParameterBounds::bf_closed_interval, {4}, 
+		    create_level_params_option("conv-test-interval",'T', EParameterBounds::bf_closed_interval, {4,40}, 
 					       "Convergence test interations intervall: In order to measure "
 					       "convergence the cost function value is averaged over this "
 					       "amount of iterations, and the decline rate is evaluated based on the "
@@ -118,7 +117,7 @@ void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 					       "to the multi-resolution levels, see option --mg-levels for more information."
 			    ));
 	options.add(stop_decline_rate.
-		    create_level_params_option("stop-decline-rate", 'S', EParameterBounds::bf_min_closed, {0},
+		    create_level_params_option("stop-decline-rate", 'D', EParameterBounds::bf_min_closed, {0},
 					       "Stopping criterium for registration based on the cost decline rate. "
 					       "If the rate below this value, the iteration is stopped. "
 					       "This parameter can be given as a coma-seperated list with values corresponding "

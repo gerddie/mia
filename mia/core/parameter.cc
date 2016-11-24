@@ -209,9 +209,9 @@ TBoundedParameter<T>::TBoundedParameter(T& value, EParameterBounds flags,
 {
 	assert(!boundaries.empty());
 	unsigned idx = 0; 
-
+	
 	if (has_flag(flags, EParameterBounds::bf_min)) {
-		m_min = boundaries[0]; 
+		m_min = boundaries[idx]; 
 		++idx; 
 	}
 	if (has_flag(flags, EParameterBounds::bf_max)) {
