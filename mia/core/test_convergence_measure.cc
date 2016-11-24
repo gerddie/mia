@@ -99,3 +99,25 @@ BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_5 )
 
         
 }
+
+BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_inv )
+{
+        mia::CConvergenceMeasure cm(4);
+        cm.push(90);
+        cm.push(10);
+        BOOST_CHECK_EQUAL( cm.fill(), 2u); 
+        BOOST_CHECK_CLOSE( cm.value(), 50, 1e-8);
+	BOOST_CHECK_CLOSE( cm.rate(), -80, 1e-8);
+}
+
+
+BOOST_AUTO_TEST_CASE ( test_CConvergenceMeasure_inv_big )
+{
+        mia::CConvergenceMeasure cm(4);
+        cm.push(5.1401e+07);
+        cm.push(5.01538e+07);
+        BOOST_CHECK_EQUAL( cm.fill(), 2u); 
+        BOOST_CHECK_CLOSE( cm.value(), (5.1401e+07 + 5.01538e+07)/2, 1e-8);
+	BOOST_CHECK_CLOSE( cm.rate(), 5.01538e+07 - 5.1401e+07, 1e-8);
+}
+

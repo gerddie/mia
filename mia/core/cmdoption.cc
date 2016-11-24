@@ -24,6 +24,8 @@
 #include <mia/core/cmdoption.hh>
 #include <mia/core/tools.hh>
 
+#include <cassert>
+
 using std::ostream; 
 using std::string; 
 using std::ostringstream; 

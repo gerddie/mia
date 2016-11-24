@@ -275,6 +275,7 @@ BOOST_AUTO_TEST_CASE( test_paramarray_uint32_success )
 	BOOST_CHECK_EQUAL(value[0], 128000);
 	BOOST_CHECK_EQUAL(value[1], 128000);
 
+
         PCmdOption opt =
                 value.create_level_params_option("long_name",'l',
                                                  EParameterBounds::bf_min_closed,

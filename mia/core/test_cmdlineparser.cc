@@ -25,6 +25,7 @@
 #include <miaconfig.h>
 
 #include <mia/core/cmdlineparser.hh>
+#include <mia/core/paramarray.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/internal/autotest.hh>
 
@@ -560,6 +561,29 @@ BOOST_FIXTURE_TEST_CASE( test_repeat_option, CmdlineParserFixture )
 	
 	BOOST_CHECK_EQUAL(value[0], 1);
 	BOOST_CHECK_EQUAL(value[1], 2);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_array_param_option_parsing, CmdlineParserFixture )
+{
+
+	CCmdOptionList olist(general_help);
+
+	TPerLevelScalarParam<uint32_t> conv_count(10);
+	
+		
+	olist.add(conv_count.
+		    create_level_params_option("conv-test-intervall",'T', EParameterBounds::bf_min_closed, {4}, 
+					       "Convergence test interations intervall: In order to measure "));
+	vector<const char *> options;
+	
+	options.push_back("self");
+	
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
+	
+	
+	BOOST_CHECK_EQUAL(conv_count[0], 10);
+	BOOST_CHECK_EQUAL(conv_count[1], 10);
 }
 
 
