@@ -63,7 +63,7 @@ double C3DSORVectorfieldRegularizer::do_run(C3DFVectorfield& velocity, C3DFVecto
                         first_rel_residuum = m_rel_epsilon * residuum; 
                 
                 
-		cvmsg() << "[" << iter << "] res=" << residuum << "\n"; 
+		cvinfo() << "[" << iter << "] res=" << residuum << "\n"; 
         } while (iter < m_maxiter && 
                  residuum > m_abs_epsilon && 
                  residuum > first_rel_residuum); 
