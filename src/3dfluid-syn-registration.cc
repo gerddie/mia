@@ -103,7 +103,7 @@ void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 			     {0.0f, 0.5f},  "step", 'S', "Initial step size for all levels")); 
 	
 	options.add(make_opt( cost, "ssd", "cost", 'c', "Image similarity function to be minimized"));
-	options.add(make_opt( regularizer, "sor:kernel=fluid,maxiter=1000", "regularizer", 'R', 
+	options.add(make_opt( regularizer, "sor:kernel=fluid,maxiter=50", "regularizer", 'R', 
 			      "Regularization for the force to transformation update")); 
 
 
