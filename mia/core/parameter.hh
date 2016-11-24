@@ -206,6 +206,7 @@ private:
 */
 
 enum class EParameterBounds : int {
+	bf_none = 0, 
 	bf_min = 1,  
 	bf_min_open = 3, 
 	bf_min_closed = 5, 
