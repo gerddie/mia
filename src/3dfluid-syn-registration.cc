@@ -351,6 +351,7 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 
 	double decline_rate = numeric_limits<double>::max();
 	double avg_cost = numeric_limits<double>::max();
+	
         while (!conv_measure.is_full_size() || (
 	       decline_rate > m_params.stop_decline_rate[m_level] &&
 	       avg_cost > m_params.stop_cost[m_level] &&
@@ -360,13 +361,12 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 
 		m_params.cost->set_reference(ref_tmp);
 		double cost_fw = m_params.cost->evaluate_force(src_tmp, grad); 
-		
-                
-                float max_v_fw = m_params.regularizer->run(v, grad, *transforms.first); 
-                
-		transforms.first->update_by_velocity(v, current_step / max_v_fw); 
+		float max_v_fw = m_params.regularizer->run(v, grad, *transforms.first); 
+		transforms.first->update_by_velocity(v, current_step / max_v_fw);
 		transforms.second->update_as_inverse_of(*transforms.first, 1e-5, 20);
+		
 
+		
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.second, ref_tmp);
 		
@@ -380,7 +380,7 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 		float max_v_bw = m_params.regularizer->run(v, grad, *transforms.second); 
 
 		cvmsg() << "[" << setw(4) << iter << "]:"
-			<< "cost = "<< cost_fw + cost_bw
+			<< "cost = "<< cost_fw + cost_bw << "[" << cost_fw << ", " << cost_bw << "]"
 			<< ", max_v_fw = "<< max_v_fw
 			<< ", max_v_bw = "<< max_v_bw
 			<< ", cost_avg(n="<< conv_measure.fill()<< ")=" << avg_cost
@@ -389,7 +389,7 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 
 		
 		transforms.second->update_by_velocity(v, current_step / max_v_bw); 
-		transforms.first->update_as_inverse_of(*transforms.first, 1e-5, 20);
+		transforms.first->update_as_inverse_of(*transforms.second, 1e-5, 20);
                 
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.second, ref_tmp);
