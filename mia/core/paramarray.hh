@@ -28,9 +28,9 @@
 namespace mia {
 
 template <typename T>
-class CPerLevelScalarParam {
+class TPerLevelScalarParam {
 public: 
-	CPerLevelScalarParam(T default_value);
+	TPerLevelScalarParam(T default_value);
 
 	PCmdOption create_level_params_option(const char* long_name,
                                               char short_name,
@@ -39,32 +39,32 @@ public:
                                               const char* help);
 	
 	
-	T operator [](unsigned l); 
+	T operator [](unsigned l)const; 
 private:
-	vector<T> m_params;
+	std::vector<T> m_params;
 	T m_default_value; 
 }; 
 
 template <typename T>
-CPerLevelScalarParam<T>::CPerLevelScalarParam(T default_value):
+TPerLevelScalarParam<T>::TPerLevelScalarParam(T default_value):
 	m_default_value(default_value)
 {
 }
 
 template <typename T>
-PCmdOption CPerLevelScalarParam<T>::create_level_params_option(const char* long_opt,
+PCmdOption TPerLevelScalarParam<T>::create_level_params_option(const char* long_opt,
                                                                char short_opt,
                                                                EParameterBounds bflags,
                                                                const std::vector<T>& boundaries,
                                                                const char* help)
 {
         return PCmdOption(new CParamOption( short_opt, long_opt, 
-                                            new TBoundedParameter<vector<T> >(m_params, bflags,
-                                                                              boundaries, false, help))); 
+                                            new TBoundedParameter<std::vector<T> >(m_params, bflags,
+										   boundaries, false, help))); 
 }
 
 template <typename T>
-T CPerLevelScalarParam<T>::operator [](unsigned l)
+T TPerLevelScalarParam<T>::operator [](unsigned l) const
 {
 	if (m_params.empty())
 		return m_default_value; 

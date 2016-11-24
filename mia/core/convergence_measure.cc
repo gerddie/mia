@@ -22,6 +22,7 @@
 #include <mia/core/msgstream.hh>
 #include <limits>
 #include <numeric>
+#include <cmath>
 
 using std::numeric_limits; 
 

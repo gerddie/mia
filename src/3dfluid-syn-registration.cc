@@ -25,6 +25,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/convergence_measure.hh>
+#include <mia/core/paramarray.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/filter.hh>
 #include <mia/3d/transformio.hh>
@@ -65,56 +66,85 @@ void check_number_of_levels_consistency(size_t nvalues, size_t levels, const std
 typedef pair<P3DFVectorfield, P3DFVectorfield> TransformPair;
 
 struct C3DSymScaledRegisterParams {
-	P3DImageCost m_cost; 
-        C3DInterpolatorFactory m_ipfac; 
-        float m_current_step;
-	P3DVectorfieldRegularizer m_regularizer;
-	unsigned m_conv_count;
-	double m_stop_decline_rate;
-	double m_stop_cost;
-
+	uint32_t mg_levels; 
+	P3DImageCost cost; 
+        float current_step;
+	P3DVectorfieldRegularizer regularizer;
+	TPerLevelScalarParam<uint32_t> conv_count;
+	TPerLevelScalarParam<double> stop_decline_rate;
+	TPerLevelScalarParam<double> stop_cost;
+        TPerLevelScalarParam<unsigned> iterations; 
+	
 	C3DSymScaledRegisterParams();
 
 	void add_options(CCmdOptionList& options);
 }; 
 
 C3DSymScaledRegisterParams::C3DSymScaledRegisterParams():
-        m_current_step(0.25), 
-	m_conv_count(10), 
-	m_stop_decline_rate(0.001), 
-	m_stop_cost(0.1)
+	mg_levels(3), 
+        current_step(0.25), 
+	conv_count(10), 
+	stop_decline_rate(0.1), 
+	stop_cost(0.1), 
+        iterations(100)
 {
 }
 
 void C3DSymScaledRegisterParams::add_options(CCmdOptionList& options)
 {
 	options.set_group("Registration");
+
+	options.add(make_opt( mg_levels, "mg-levels", 'l', "Number of multi-resolution levels to run the registration on. "
+			      "Not that some registration parameters can be given as a coma seperated list to "
+			      "indicate per level values. In these cases  if the number of given values is smaller "
+			      "than the number of multi-resolution levels (this parameter), the the last given value "
+			      "is used for all subsequest multi-resolution levels."));
 	
+	options.add(make_opt( cost, "ssd", "cost", 'c', "Image similarity function to be minimized"));
 	options.add(make_opt( regularizer, "sor:kernel=fluid", "regularizer", 'R', 
 			      "Regularization for the force to transformation update")); 
-	
-        options.add(make_opt( epsilon_per_level, "frel", 0, 
-                              "Breaking condition: relative change of the cost function. "
-                              "If only one value is given, the this will be used foe all levels, "
-                              "otherwise the number of values must coincide with the number of registration levels. ""regularizer"));
 
+
+	options.add(conv_count.
+		    create_level_params_option("conv-test-intervall",'T', EParameterBounds::bf_min_closed, {4}, 
+					       "Convergence test interations intervall: In order to measure "
+					       "convergence the cost function value is averaged over this "
+					       "amount of iterations, and the decline rate is evaluated based on the "
+					       "linare regression of the cost function values in this intervall. "
+					       "This parameter can be given as a coma-seperated list with values corresponding "
+					       "to the multi-resolution levels, see option --mg-levels for more information."
+			    ));
+	options.add(stop_decline_rate.
+		    create_level_params_option("stop-decline-rate", 'S', EParameterBounds::bf_min_closed, {0},
+					       "Stopping criterium for registration based on the cost decline rate. "
+					       "If the rate below this value, the iteration is stopped. "
+					       "This parameter can be given as a coma-seperated list with values corresponding "
+					       "to the multi-resolution levels, see option --mg-levels for more information."
+			    ));
 	
+	options.add(stop_cost.
+		    create_level_params_option("stop-cost", 'C', EParameterBounds::bf_min_closed, {0},
+					       "Stopping criterium for registration based on the cost value. "
+					       "If the cost drops below this value, the iteration is stopped. "
+					       "This parameter can be given as a coma-seperated list with values corresponding "
+					       "to the multi-resolution levels, see option --mg-levels for more information."
+			    ));
+	
+	options.add(iterations.
+		    create_level_params_option("iter", 'I', EParameterBounds::bf_min_closed, {4},
+					       "Naximum number if iterations done on each multi-resolution level. "
+					       "This parameter can be given as a coma-seperated list with values corresponding "
+					       "to the multi-resolution levels, see option --mg-levels for more information."));
 }
 
 
-class C3DSymFluidReistration {
+class C3DSymFluidRegistration {
 public: 
-        C3DSymFluidReistration(unsigned mg_levels, 
-                               const vector<unsigned>& iterations_per_level, 
-                               const vector<double>& epsilon_per_level,
-			       const C3DSymScaledRegisterParams& params);
+        C3DSymFluidRegistration(const C3DSymScaledRegisterParams& params);
         
         TransformPair run(const C3DFImage& src, const C3DFImage& ref) const; 
 private:
-	unsigned m_mg_levels;
-        const vector<unsigned>& m_iterations_per_level; 
-        const vector<double>& m_epsilon_per_level;
-	const C3DSymScaledRegisterParams& params; 
+	const C3DSymScaledRegisterParams& m_params;
 }; 
 
 P3DTransformation wrap_vectorfield_in_transformation(const C3DFVectorfield& field, 
@@ -152,14 +182,6 @@ int do_main( int argc, char *argv[] )
 	string out_transform_filename;
 	string out_inv_transform_filename;
 
-        unsigned mg_levels = 3; 
-
-        P3DImageCost cost;
-
-        vector<unsigned> iterations_per_level; 
-        vector<double>   epsilon_per_level;
-
-	P3DVectorfieldRegularizer regularizer; 
 
         const auto& imageio = C3DImageIOPluginHandler::instance();
         const auto& transio = C3DTransformationIOPluginHandler::instance();
@@ -170,52 +192,28 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::required_input, &imageio));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image", 
 			      CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( out_transform_filename, "transform", 't', "output transformation", 
+	options.add(make_opt( out_transform_filename, "transform", 'o', "output transformation", 
 			      CCmdOptionFlags::required_output, &transio));
-	options.add(make_opt( out_inv_transform_filename, "inverse-transform", 'T', 
+	options.add(make_opt( out_inv_transform_filename, "inverse-transform", 'O', 
                               "inverse output transformation", 
 			      CCmdOptionFlags::required_output, &transio));
 
-        options.set_group("Registration"); 
-        options.add(make_opt( cost, "ssd", "cost", 'c', "Image similarity function to be minimized"));
-        options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
-        options.add(make_opt( iterations_per_level, "niter", 'n', 
-                              "maximum number of iterations of the optimizer at each multi-resolution level. "
-                              "If only one value is given, the this will be used foe all levels, "
-                              "otherwise the number of values must coincide with the number of registration levels."
-                              "(default=100)"));
-
-	options.add(make_opt( regularizer, "sor:kernel=fluid", "regularizer", 'R', 
-			      "Regularization for the force to transformation update")); 
-	
-        options.add(make_opt( epsilon_per_level, "frel", 0, 
-                              "Breaking condition: relative change of the cost function. "
-                              "If only one value is given, the this will be used foe all levels, "
-                              "otherwise the number of values must coincide with the number of registration levels. ""regularizer"));
+	C3DSymScaledRegisterParams params; 
+	params.add_options(options); 
         
                               
         if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-        // set some defaults if not given (This should go into the command line parameter) 
-        if (iterations_per_level.empty()) 
-                iterations_per_level[0] = 100; 
-        
-        if (epsilon_per_level.empty()) 
-                epsilon_per_level[0] = 1e-7; 
-        
-        check_number_of_levels_consistency(iterations_per_level.size(), mg_levels, "iterations"); 
-        check_number_of_levels_consistency(epsilon_per_level.size(), mg_levels, "epsilon"); 
         
         P3DImage src = load_image3d(src_filename); 
         P3DImage ref = load_image3d(ref_filename); 
         
-        C3DSymFluidReistration registration(cost, mg_levels, iterations_per_level, epsilon_per_level, regularizer); 
+        C3DSymFluidRegistration registration(params); 
         
         auto result = registration.run(get_asfloat_pixel(src), get_asfloat_pixel(ref));
         
         auto vftranscreator  = produce_3dtransform_factory("vf:imgkernel=[bspline:d=1],imgboundary=zero");
-        
         
         P3DTransformation t_src_ref = wrap_vectorfield_in_transformation(*result.first, *vftranscreator); 
         
@@ -235,16 +233,8 @@ int do_main( int argc, char *argv[] )
 MIA_MAIN(do_main); 
 
 
-C3DSymFluidReistration::C3DSymFluidReistration(unsigned mg_levels, 
-                                               const vector<unsigned>& iterations_per_level, 
-                                               const vector<double>& epsilon_per_level,
-					       P3DVectorfieldRegularizer regularizer):
-	m_cost(cost),
-	m_mg_levels(mg_levels),
-	m_iterations_per_level(iterations_per_level), 
-	m_epsilon_per_level(epsilon_per_level),
-	m_regularizer(regularizer)
-											
+C3DSymFluidRegistration::C3DSymFluidRegistration(const C3DSymScaledRegisterParams& params):
+	m_params(params)
 {
 }
 
@@ -280,21 +270,24 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 
 class C3DSymScaledRegister {
 public: 
-        C3DSymScaledRegister(const C3DSymScaledRegisterParams& params); 
+        C3DSymScaledRegister(unsigned level, const C3DSymScaledRegisterParams& params); 
         void run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const; 
 private: 
         void deform(const C3DFImage& src, const C3DFVectorfield& t, C3DFImage& result) const;
 
+	unsigned m_level;
+	const C3DSymScaledRegisterParams& m_params;
+	C3DInterpolatorFactory m_ipfac; 
         
 }; 
 
 TransformPair
-C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref) const 
+C3DSymFluidRegistration::run(const C3DFImage& src, const C3DFImage& ref) const 
 {
         TransformPair transforms;
         
-        for (unsigned l = 0; l < m_mg_levels; ++l) {
-                unsigned scale_block = 1 << (m_mg_levels - l - 1);
+        for (unsigned l = 0; l < m_params.mg_levels; ++l) {
+                unsigned scale_block = 1 << (m_params.mg_levels - l - 1);
                 
                 stringstream downscale_descr;
                 downscale_descr << "downscale:bx=" << scale_block
@@ -318,12 +311,7 @@ C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref) const
                         transforms.second = upscale(*transforms.second, scaled_src.get_size());
                 }
                 
-                unsigned level_iter = m_iterations_per_level.size() == 1 ? m_iterations_per_level[0]: 
-                        m_iterations_per_level[l]; 
-                unsigned level_epsilon = m_epsilon_per_level.size() == 1 ? m_epsilon_per_level[0]:
-                        m_epsilon_per_level[l]; 
-
-                C3DSymScaledRegister level_worker(m_cost, level_iter, level_epsilon, m_regularizer); 
+                C3DSymScaledRegister level_worker(l, m_params); 
                 
                 level_worker.run(scaled_src, scaled_ref, transforms);
                 
@@ -331,21 +319,18 @@ C3DSymFluidReistration::run(const C3DFImage& src, const C3DFImage& ref) const
         return transforms; 
 }
 
-C3DSymScaledRegister::C3DSymScaledRegister(P3DImageCost cost, double iter,
-					   double epsilon, P3DVectorfieldRegularizer regularizer):
-	m_cost(cost), 
-	m_iter(iter), 
-	m_epsilon(epsilon), 
-	m_ipfac("bspline:d=0", "zero"), 
-	m_current_step(0.25),
-	m_regularizer(regularizer)
+C3DSymScaledRegister::C3DSymScaledRegister(unsigned level, const C3DSymScaledRegisterParams& params):
+	m_level(level),
+	m_params(params),
+	m_ipfac("zero", "bspline:d=1")
 {
 
 }
 
 void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const
 {
-	CConvergenceMeasure conv_measure(m_conv_measure); 
+	auto current_step = m_params.current_step; 
+	CConvergenceMeasure conv_measure(m_params.conv_count[m_level]); 
         
         // deform the images with the input transformations
         C3DFImage src_tmp(src.get_size()); 
@@ -363,30 +348,29 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 	double decline_rate = numeric_limits<double>::max();
 	double avg_cost = numeric_limits<double>::max();
         while (!conv_measure.is_full_size() &&
-	       decline_rate > m_stop_decline_rate &&
-	       avg_cost > m_stop_cost &&
-	       iter < m_iter) {
+	       decline_rate > m_params.stop_decline_rate[m_level] &&
+	       avg_cost > m_params.stop_cost[m_level] &&
+	       iter < m_params.iterations[m_level]) {
                 ++iter; 
 
-		m_cost->set_reference(ref_tmp);
+		m_params.cost->set_reference(ref_tmp);
 
-		conv_measure.push(m_cost->evaluate_force(src_tmp, grad)); 
+		conv_measure.push(m_params.cost->evaluate_force(src_tmp, grad)); 
                 
-                float max_v = m_regularizer->run(v, grad, *transforms.first); 
+                float max_v = m_params.regularizer->run(v, grad, *transforms.first); 
                 
-		transforms.first->update_by_velocity(v, m_current_step / max_v); 
+		transforms.first->update_by_velocity(v, current_step / max_v); 
 		transforms.second->update_as_inverse_of(*transforms.first, 1e-5, 20);
 
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.second, ref_tmp);
                 
-                m_cost->set_reference(src_tmp); 
-                m_cost->evaluate_force(ref_tmp, grad);
-		conv_measure.push(m_cost->evaluate_force(src_tmp, grad)); 
+                m_params.cost->set_reference(src_tmp); 
+                conv_measure.push(m_params.cost->evaluate_force(ref_tmp, grad)); 
 
-                max_v = m_regularizer->run(v, grad, *transforms.second); 
+                max_v = m_params.regularizer->run(v, grad, *transforms.second); 
                 
-		transforms.second->update_by_velocity(v, m_current_step / max_v); 
+		transforms.second->update_by_velocity(v, current_step / max_v); 
 		transforms.first->update_as_inverse_of(*transforms.first, 1e-5, 20);
                 
                 deform(src, *transforms.first, src_tmp); 
@@ -405,7 +389,7 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 
 void C3DSymScaledRegister::deform(const C3DFImage& src, const C3DFVectorfield& t, C3DFImage& result) const
 {
-        FDeformer3D src_deformer(t ,m_ipfac); 
+        FDeformer3D src_deformer(t, m_ipfac); 
         src_deformer(src,result); 
 }
 

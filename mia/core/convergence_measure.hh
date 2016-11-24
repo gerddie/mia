@@ -65,8 +65,8 @@ public:
 
 
 	/** \returns the (linear) rate of change as linear regression of
-	    the values currently in the buffer 
-	 */
+	    the values currently in the buffer. 
+	*/
 	double rate() const; 
 	
         ///  \returns the number of values currently in the buffer

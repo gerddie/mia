@@ -219,11 +219,14 @@ BOOST_AUTO_TEST_CASE( test_bounded_param_vint_min_close)
 	BOOST_CHECK_EQUAL(v[0], 2);
 	BOOST_CHECK_EQUAL(v[1], -2);
 
+	// throw if boundary is not respected 
 	v.clear(); 
-	BOOST_CHECK_THROW(testv.set("-3,3"), std::invalid_argument); 
+	BOOST_CHECK_THROW(testv.set("-3,3"), std::invalid_argument);
+
+	// throw if expected size is given 
+	v.resize(2);
+	BOOST_CHECK_THROW(testv.set("-2,2,10,5"), std::invalid_argument);
 }
-
-
 
 BOOST_AUTO_TEST_CASE( test_bounded_param_unsignedshort_min_open)
 {
@@ -267,7 +270,7 @@ BOOST_AUTO_TEST_CASE( test_bounded_param_unsignedshort_min_close_negative_input)
 
 BOOST_AUTO_TEST_CASE( test_paramarray_uint32_success )
 {
-        CPerLevelScalarParam<uint32_t> value(128000);
+        TPerLevelScalarParam<uint32_t> value(128000);
 
         PCmdOption opt =
                 value.create_level_params_option("long_name",'l',
