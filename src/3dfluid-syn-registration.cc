@@ -26,6 +26,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/convergence_measure.hh>
 #include <mia/core/paramarray.hh>
+#include <mia/core/watch.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/filter.hh>
 #include <mia/3d/transformio.hh>
@@ -286,11 +287,14 @@ private:
 TransformPair
 C3DSymFluidRegistration::run(const C3DFImage& src, const C3DFImage& ref) const 
 {
-	
+	const CWatch& watch = CWatch::instance();
+
+	double start_time_global = watch.get_seconds(); 
 
 	TransformPair transforms;
         
         for (unsigned l = 0; l < m_params.mg_levels; ++l) {
+		double start_time_level = watch.get_seconds(); 
                 unsigned scale_block = 1 << (m_params.mg_levels - l - 1);
                 
                 stringstream downscale_descr;
@@ -318,6 +322,7 @@ C3DSymFluidRegistration::run(const C3DFImage& src, const C3DFImage& ref) const
                 C3DSymScaledRegister level_worker(l, m_params); 
                 
                 level_worker.run(scaled_src, scaled_ref, transforms);
+		cvmsg() << "Level " << l << " time=" << watch.get_seconds() - start_time_level << "\n"; 
                 
         }
         return transforms; 
@@ -362,6 +367,7 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 	       avg_cost > m_params.stop_cost[m_level] &&
 	       iter < m_params.iterations[m_level])) {
 		
+		double start_time_level = CWatch::instance().get_seconds(); 
                 ++iter; 
 
 		m_params.cost->set_reference(ref_tmp);
@@ -385,11 +391,10 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 		float max_v_bw = m_params.regularizer->run(v, grad, *transforms.second); 
 
 		cvmsg() << "[" << setw(4) << iter << "]:"
-			<< "cost = "<< cost_fw + cost_bw << "[" << cost_fw << ", " << cost_bw << "]"
-			<< ", max_v_fw = "<< max_v_fw
-			<< ", max_v_bw = "<< max_v_bw
+			<< "cost = "<< cost_fw + cost_bw 
 			<< ", cost_avg(n="<< conv_measure.fill()<< ")=" << avg_cost
 			<< ", rate=" <<  decline_rate
+			<< ", ct=" << CWatch::instance().get_seconds() - start_time_level << "s"
 			<< "\n"; 
 
 		
