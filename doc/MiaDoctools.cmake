@@ -111,9 +111,11 @@ MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
     COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2nipype.py -i ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml -o ${${prefix}-${name}-nipype-interface}
     MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml)
 
+
   FILE(APPEND ${NIPYPE_INTERFACE_INIT_FILE} "from .${prefix}_${PythonName} import ${prefix}_${PythonName}\n")
   
   ADD_CUSTOM_TARGET(${prefix}-${name}-nipype DEPENDS ${${prefix}-${name}-nipype-interface})
+  ADD_DEPENDENCIES(${prefix}-${name}-nipype ${prefix}-${name}-xml)
   ADD_DEPENDENCIES(nipypeinterfaces ${prefix}-${name}-nipype)
   
   INSTALL(FILES ${${prefix}-${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR})
@@ -128,11 +130,13 @@ MACRO(MIA_CREATE_MANPAGE_FROM_XML prefix name)
   SET(${prefix}-${name}-manfile ${CMAKE_CURRENT_BINARY_DIR}/${prefix}-${name}.1)
   ADD_CUSTOM_COMMAND(OUTPUT   ${${prefix}-${name}-manfile}
     COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2man.py ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml >${${prefix}-${name}-manfile}
-      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
-      )
-    ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})
-    add_dependencies(manpages ${prefix}-${name}-man)
-    INSTALL(FILES ${${prefix}-${name}-manfile} DESTINATION "share/man/man1")
+    MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
+    DEPENDS ${prefix}-${name}-xml
+    )
+  ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})
+  ADD_DEPENDENCIES(${prefix}-${name}-man ${prefix}-${name}-xml)
+  add_dependencies(manpages ${prefix}-${name}-man)
+  INSTALL(FILES ${${prefix}-${name}-manfile} DESTINATION "share/man/man1")
 ENDMACRO(MIA_CREATE_MANPAGE_FROM_XML)
 
 
