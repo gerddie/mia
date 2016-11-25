@@ -45,7 +45,8 @@ private:
 	static void overlap_handler(int p_sig); 
 	double do_get_seconds() const; 
 	
-	static uint64_t overlaps; 
+	static uint64_t m_overlaps;
+	struct sigaction m_old_action; 
 }; 
 
 CWatch::CWatch()
@@ -63,7 +64,12 @@ CWatchUnix::CWatchUnix()
 	value.it_value.tv_sec  = TIMERSPAN;
 	value.it_value.tv_usec = 0;
 
-	if (signal(SIGVTALRM,CWatchUnix::overlap_handler)==SIG_ERR)
+	struct sigaction act;
+	sigemptyset (&act.sa_mask);
+	act.sa_flags = 0;
+	act.sa_handler = CWatchUnix::overlap_handler; 
+	
+	if (sigaction(SI_TIMER, &act, &m_old_action) < 0 )
 		cvwarn() << "Unable to catch  signal:" << strerror(errno) << "\n"; 
 	
 	if (setitimer(ITIMER_VIRTUAL,&value,&oldvalue))
@@ -72,8 +78,9 @@ CWatchUnix::CWatchUnix()
 
 CWatchUnix::~CWatchUnix()
 {
-	
+	sigaction(SIGVTALRM, &m_old_action, NULL);
 }
+
 
 const CWatch& CWatch::instance()
 {
@@ -95,13 +102,13 @@ double CWatchUnix::do_get_seconds() const
 
 	double result = TIMERSPAN - value.it_value.tv_sec;
 	double resultlow = value.it_value.tv_usec/1e+6;
-	return (result - resultlow) + TIMERSPAN*double(overlaps);
+	return (result - resultlow) + TIMERSPAN*double(m_overlaps);
 }
 
 void CWatchUnix::overlap_handler(int p_sig)
 {
 	if (p_sig == SIGVTALRM) {
-		overlaps++;
+		m_overlaps++;
 	}
 	signal(SIGVTALRM,CWatchUnix::overlap_handler);
 }
@@ -119,7 +126,7 @@ void CWatch::overlap_handler(int p_sig)
 {
 }
 #endif
-uint64_t CWatchUnix::overlaps=0;
+uint64_t CWatchUnix::m_overlaps=0;
 
 
 NS_MIA_END
