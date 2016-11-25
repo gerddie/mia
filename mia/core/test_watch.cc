@@ -47,7 +47,7 @@ void don_t_optimize_x_away(double /*x*/)
 */
 BOOST_AUTO_TEST_CASE( test_watch ) 
 {
-	CWatch watch; 
+	CWatch& watch = CWatch::instance(); 
 #ifndef WIN32	
 	timeval tv_start, tv_end; 
 	double start = watch.get_seconds();

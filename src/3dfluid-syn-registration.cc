@@ -286,7 +286,9 @@ private:
 TransformPair
 C3DSymFluidRegistration::run(const C3DFImage& src, const C3DFImage& ref) const 
 {
-        TransformPair transforms;
+	
+
+	TransformPair transforms;
         
         for (unsigned l = 0; l < m_params.mg_levels; ++l) {
                 unsigned scale_block = 1 << (m_params.mg_levels - l - 1);

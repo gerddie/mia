@@ -71,8 +71,6 @@ mia::P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver
 				     const mia::C3DInterpolatorFactory& ipf
 				);
 
-extern mia::CWatch Clock;
-
 
 class TFluidReg  {
 

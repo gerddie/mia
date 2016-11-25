@@ -41,7 +41,6 @@
 
 NS_MIA_USE
 
-CWatch Clock;
 int  STARTSIZE=16;
 
 using namespace std;
@@ -421,11 +420,11 @@ void  TFluidReg::ApplyShift()
 
 void TFluidReg::solvePDE()
 {
-	float t_start = Clock.get_seconds();
+	float t_start = CWatch::instance().get_seconds();
 	Measurement.PDEEval++;
 	solver->solve(*B,V);
 	Measurement.niter = -1;
-	Measurement.PDETime += Clock.get_seconds() - t_start;
+	Measurement.PDETime += CWatch::instance().get_seconds() - t_start;
 }
 
 double g_start;
@@ -480,7 +479,7 @@ static P3DFVectorfield do_transform(const TFluidRegParams& params,
 			break;
 		}
 	}
-	Measure.allovertime = Clock.get_seconds() - g_start;
+	Measure.allovertime = CWatch::instance().get_seconds() - g_start;
 	cvmsg() << "time: " <<  Measure.allovertime << endl;
 	measure_list->insert(measure_list->end(),Measure);
 

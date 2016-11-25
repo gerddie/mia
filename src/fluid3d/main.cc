@@ -160,7 +160,7 @@ int do_main(int argc, char *argv[])
 
 	std::shared_ptr<TLinEqnSolver > ensure_solver_delete(solver);
 
-	g_start = Clock.get_seconds();
+	g_start = CWatch::instance().get_seconds();
 
 	P3DFVectorfield result = fluid_transform(params,solver,!disable_multigrid,
 						 !disable_fullres,&g_MeasureList, ipf);
