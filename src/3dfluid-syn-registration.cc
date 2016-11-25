@@ -434,9 +434,15 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 			}
 		}else if ( cost_val > old_cost ) {
 			current_step *= 0.5;
-			transforms = transforms_best;
 			cvmsg() << "Increasing cost = " << cost_val
-				<< ", Discard step and retry with step size" << current_step; 
+				<< ", Discard step and retry with step size" << current_step <<"\n";
+
+			// reset transform and re-evaluate gradient 
+			transforms = transforms_best;
+			deform(src, *transforms.first, src_tmp); 
+			deform(ref, *transforms.second, ref_tmp);
+			m_params.cost->set_reference(src_tmp);
+			m_params.cost->evaluate_force(ref_tmp, grad);
 		}
 				
 		float max_v_bw = m_params.regularizer->run(v, grad, *transforms.second); 
