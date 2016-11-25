@@ -154,18 +154,28 @@ P3DTransformation wrap_vectorfield_in_transformation(const C3DFVectorfield& fiel
                                                      const C3DTransformCreator& vftcreator) 
 {
         
-	
+	// the final transformation is twice the distance 
 	auto transform = vftcreator.create(field.get_size()); 
 	CDoubleVector buffer(transform->degrees_of_freedom(), false);
+
+	double max_transform = 0.0;
+	C3DFVector max_vec; 
 	
 	auto ib = buffer.begin(); 
 	for (auto ivf = field.begin(); ivf != field.end(); ++ivf) {
 		cvdebug() << *ivf << "\n"; 
-		*ib++ = ivf->x; 
-		*ib++ = ivf->y; 
-		*ib++ = ivf->z; 
+		*ib++ = 2.0f * ivf->x; 
+		*ib++ = 2.0f * ivf->y; 
+		*ib++ = 2.0f * ivf->z;
+
+		double vm = ivf->norm();
+		if (vm > max_transform) {
+			max_transform = vm;
+			max_vec = *ivf; 
+		}
 	}
-	
+
+	cvmsg() << "Max-transform = " << max_vec << " norm=" << max_transform << "\n"; 
 	transform->set_parameters(buffer); 
         return transform; 
 }
@@ -226,7 +236,7 @@ int do_main( int argc, char *argv[] )
         
         P3DTransformation t_ref_src = wrap_vectorfield_in_transformation(*result.second, *vftranscreator);
         
-        if (!C3DTransformationIOPluginHandler::instance().save(out_inv_transform_filename, *t_src_ref)) 
+        if (!C3DTransformationIOPluginHandler::instance().save(out_inv_transform_filename, *t_ref_src)) 
 		throw create_exception<runtime_error>( "Unable to save transformation to '", 
                                                        out_inv_transform_filename, "'"); 
         return EXIT_SUCCESS; 
@@ -251,6 +261,7 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 	float iy_mult = 1.0f / y_mult;
 	float iz_mult = 1.0f / z_mult;
 
+	double max_defo = 0.0; 
 	auto callback = [&](const C1DParallelRange& range){
 		//	CThreadMsgStream thread_stream;
 		
@@ -261,11 +272,17 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 					C3DFVector help(ix_mult * x, iy_mult * y, iz_mult * z);
 					C3DFVector val = vf.get_interpol_val_at(help);
 					*i = C3DFVector(val.x * x_mult,val.y * y_mult, val.z * z_mult);
+
+					double defo = i->norm();
+					if (max_defo < defo)
+						max_defo = defo; 
 				}
 		}
 	}; 
 	pfor(C1DParallelRange(0, size.z, 1), callback);
-
+	// race condition !! 
+	cvmsg() << "max-defo at size (" << size << ")=" << max_defo << "\n"; 
+	
 	return Result;
 }
 
@@ -325,6 +342,7 @@ C3DSymFluidRegistration::run(const C3DFImage& src, const C3DFImage& ref) const
 		cvmsg() << "Level " << l << " time=" << watch.get_seconds() - start_time_level << "\n"; 
                 
         }
+	cvmsg() << "Global run time " << watch.get_seconds() - start_time_global << "\n"; 
         return transforms; 
 }
 
@@ -338,6 +356,7 @@ C3DSymScaledRegister::C3DSymScaledRegister(unsigned level, const C3DSymScaledReg
 
 void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, TransformPair& transforms) const
 {
+	TransformPair transforms_best = transforms; 
 	cvmsg() << "Enter registration at level "<< m_level << " with size " << src.get_size() << "\n";
 	cvmsg() << "  Running at most " << m_params.iterations[m_level] << " iterations\n"; 
 
@@ -361,11 +380,14 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 
 	double decline_rate = numeric_limits<double>::max();
 	double avg_cost = numeric_limits<double>::max();
+
+	double old_cost = numeric_limits<double>::max();
 	
         while (!conv_measure.is_full_size() || (
 	       decline_rate > m_params.stop_decline_rate[m_level] &&
 	       avg_cost > m_params.stop_cost[m_level] &&
-	       iter < m_params.iterations[m_level])) {
+	       iter < m_params.iterations[m_level] &&
+	       current_step > 0.0001)) {
 		
 		double start_time_level = CWatch::instance().get_seconds(); 
                 ++iter; 
@@ -376,37 +398,56 @@ void C3DSymScaledRegister::run (const C3DFImage& src, const C3DFImage& ref, Tran
 		transforms.first->update_by_velocity(v, current_step / max_v_fw);
 		transforms.second->update_as_inverse_of(*transforms.first, 1e-5, 20);
 		
-
-		
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.second, ref_tmp);
 		
 		m_params.cost->set_reference(src_tmp);
-		double cost_bw = m_params.cost->evaluate_force(ref_tmp, grad); 
-		conv_measure.push(cost_bw + cost_fw);
-		
-		decline_rate = - conv_measure.rate();
-		avg_cost = conv_measure.value();
+		double cost_bw = m_params.cost->evaluate_force(ref_tmp, grad);
+		double cost_val = cost_bw + cost_fw; 
 
+                // update step length 
+		if ( cost_val <= old_cost ) {
+			
+			transforms_best = transforms;
+
+			old_cost = cost_val;
+			conv_measure.push(cost_val);
+			
+			decline_rate = - conv_measure.rate();
+			avg_cost = conv_measure.value();
+			
+			cvmsg() << "[" << setw(4) << iter << "]:"
+				<< "cost = "<< cost_fw + cost_bw
+				<< ", step = " << current_step
+				<< ", cost_avg(n="<< conv_measure.fill()<< ")=" << avg_cost
+				<< ", rate=" <<  decline_rate
+				<< ", ct=" << CWatch::instance().get_seconds() - start_time_level << "s"
+				<< "\n";
+			
+		}
+		
+		if ( cost_val < 0.9 * old_cost ) {
+			if (current_step < 0.25) {
+				current_step *= 1.25;
+				if (current_step > 0.25)
+					current_step = 0.25;
+			}
+		}else if ( cost_val > old_cost ) {
+			current_step *= 0.5;
+			transforms = transforms_best;
+			cvmsg() << "Increasing cost = " << cost_val
+				<< ", Discard step and retry with step size" << current_step; 
+		}
+				
 		float max_v_bw = m_params.regularizer->run(v, grad, *transforms.second); 
-
-		cvmsg() << "[" << setw(4) << iter << "]:"
-			<< "cost = "<< cost_fw + cost_bw 
-			<< ", cost_avg(n="<< conv_measure.fill()<< ")=" << avg_cost
-			<< ", rate=" <<  decline_rate
-			<< ", ct=" << CWatch::instance().get_seconds() - start_time_level << "s"
-			<< "\n"; 
-
 		
-		transforms.second->update_by_velocity(v, current_step / max_v_bw); 
+		transforms.second->update_by_velocity(v, current_step / max_v_bw);  
 		transforms.first->update_as_inverse_of(*transforms.second, 1e-5, 20);
                 
                 deform(src, *transforms.first, src_tmp); 
                 deform(ref, *transforms.second, ref_tmp);
-
-		
-			
         }
+	transforms = transforms_best; 
 }
 
 void C3DSymScaledRegister::deform(const C3DFImage& src, const C3DFVectorfield& t, C3DFImage& result) const
