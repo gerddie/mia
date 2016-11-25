@@ -69,7 +69,7 @@ CWatchUnix::CWatchUnix()
 	act.sa_flags = 0;
 	act.sa_handler = CWatchUnix::overlap_handler; 
 	
-	if (sigaction(SI_TIMER, &act, &m_old_action) < 0 )
+	if (sigaction(SIGVTALRM, &act, &m_old_action) < 0 )
 		cvwarn() << "Unable to catch  signal:" << strerror(errno) << "\n"; 
 	
 	if (setitimer(ITIMER_VIRTUAL,&value,&oldvalue))
