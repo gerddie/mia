@@ -120,60 +120,6 @@ MACRO(ASSERT_SIZE  NAME EXPECTED)
   ENDIF(NOT ${${NAME}_TYPE_SIZE} EQUAL ${EXPECTED})
 ENDMACRO(ASSERT_SIZE)
 
-
-
-MACRO(CREATE_NIPYPE_FROM_XML name)
-  IF(CREATE_NIPYPE_INTERFACES)
-    STRING(REPLACE "-" "_" PythonName ${name})
-
-    SET(${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/mia_${PythonName}.py)
-
-    # depending on mia-${name}-man is only a measure to make sure 
-    ADD_CUSTOM_COMMAND(OUTPUT ${${name}-nipype-interface} 
-      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2nipype.py 
-      -i ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml -o ${${name}-nipype-interface}
-      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      )
-
-    # depending on mia-${name}-man is done to persuade cmake/make to create 
-    # a dependecy chain that will not try to build the *.xml file twice inparallel builds 
-    # because without this dependency the man page and the nipype interface may be build
-    # at the same time and then *.xml file build will run twice, creating a race condition 
-    ADD_CUSTOM_TARGET(mia-${name}-nipype DEPENDS ${${name}-nipype-interface} mia-${name}-man)
-    ADD_DEPENDENCIES(nipypeinterfaces mia-${name}-nipype)
-    
-    INSTALL(FILES ${${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR}/mia)
-
-  ENDIF(CREATE_NIPYPE_INTERFACES)
-ENDMACRO(CREATE_NIPYPE_FROM_XML)
-#
-#
-# man pages can only be created if the python + lxml packages are available 
-#
-MACRO(CREATE_MANPAGE_FROM_XML name)
-  IF(CREATE_USERDOC) 
-    
-    SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
-    
-    ADD_CUSTOM_COMMAND(OUTPUT   ${${name}-manfile}
-      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-      ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${${name}-manfile}
-      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      DEPENDS mandir mia-${name}-xml
-      )
-    ADD_CUSTOM_TARGET(mia-${name}-man DEPENDS ${${name}-manfile})
-    add_dependencies(manpages mia-${name}-man)    
-  ENDIF(CREATE_USERDOC)
-
-ENDMACRO(CREATE_MANPAGE_FROM_XML)
-
-
-#MACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE name)
-#  CREATE_EXE_XML_HELP(${name})
-#  CREATE_MANPAGE_FROM_XML(${name})
-#  CREATE_NIPYPE_FROM_XML(${name})
-# ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
-
 MACRO(DEFEXE name libraries) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
   SET_TARGET_PROPERTIES(mia-${name} PROPERTIES COMPILE_FLAGS -DVSTREAM_DOMAIN='"${name}"')

@@ -32,7 +32,9 @@ MACRO(MIA_PREPARE_AUTODOC prefix)
   OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml), Recommended" ON)
   OPTION(MIA_CREATE_NIPYPE_INTERFACES "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype), Recommended" ON)
   
-  IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE)
+
+  # these targets require python 
+  IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE_INTERFACES OR MIA_CREATE_USERDOC)
     
     FIND_PACKAGE(PythonInterp REQUIRED)
     EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
@@ -40,40 +42,39 @@ MACRO(MIA_PREPARE_AUTODOC prefix)
       MESSAGE(FATAL "Python found, but no pythonl-xml")
     ENDIF(LXML_ERR)
     
-    IF(MIA_CREATE_MANPAGES) 
-      ADD_CUSTOM_TARGET(manpages ALL)
+  ENDIF()
+  
+  IF(MIA_CREATE_MANPAGES) 
+    ADD_CUSTOM_TARGET(manpages ALL)
+  ENDIF()
+    
+  IF(MIA_CREATE_NIPYPE_INTERFACES)
+    file(WRITE ${NIPYPE_INTERFACE_INIT_FILE} "# Automatically generated file, do not edit\n")
+    
+    STRING(COMPARE EQUAL "${CMAKE_INSTALL_PREFIX}" "/usr" INSTALLROOT_IS_USER)
+    
+    IF(INSTALLROOT_IS_USER)
+      EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib\nimport sys\nsys.stdout.write(get_python_lib())"
+	RESULT_VARIABLE SITEPACKGE_ERR
+	OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
+    ELSE()
+      EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import site\nimport sys\nsys.stdout.write(site.getusersitepackages())"
+	RESULT_VARIABLE SITEPACKGE_ERR
+	OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
     ENDIF()
     
-    IF(MIA_CREATE_NIPYPE_INTERFACES)
-      file(WRITE ${NIPYPE_INTERFACE_INIT_FILE} "# Automatically generated file, do not edit\n")
-
-      STRING(COMPARE EQUAL "${CMAKE_INSTALL_PREFIX}" "/usr" INSTALLROOT_IS_USER)
-      
-      IF(INSTALLROOT_IS_USER)
-	EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib\nimport sys\nsys.stdout.write(get_python_lib())"
-	  RESULT_VARIABLE SITEPACKGE_ERR
-	  OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
-      ELSE()
-	EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import site\nimport sys\nsys.stdout.write(site.getusersitepackages())"
-	  RESULT_VARIABLE SITEPACKGE_ERR
-	  OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
-      ENDIF()
-
-      IF(SITEPACKGE_ERR) 
-        MESSAGE(FATAL "Something went wrong identifying the nipype installation loaction") 
-      ENDIF()
-
-      SET(NIPYPE_INTERFACE_DIR "${SITEPACKGE_BASE_PATH}/${prefix}/nipype/interfaces/")
-      
-      
-      
-      MESSAGE(STATUS "Will create nipype interfaces and install to " ${NIPYPE_INTERFACE_DIR}) 
-      
-      ADD_CUSTOM_TARGET(nipypeinterfaces ALL)
-      INSTALL(FILES ${NIPYPE_INTERFACE_INIT_FILE} DESTINATION ${NIPYPE_INTERFACE_DIR})
+    IF(SITEPACKGE_ERR) 
+      MESSAGE(FATAL "Something went wrong identifying the nipype installation loaction") 
     ENDIF()
+    
+    SET(NIPYPE_INTERFACE_DIR "${SITEPACKGE_BASE_PATH}/${prefix}/nipype/interfaces/")
+    MESSAGE(STATUS "Will create nipype interfaces and install to " ${NIPYPE_INTERFACE_DIR}) 
+    
+    ADD_CUSTOM_TARGET(nipypeinterfaces ALL)
+    INSTALL(FILES ${NIPYPE_INTERFACE_INIT_FILE} DESTINATION ${NIPYPE_INTERFACE_DIR})
   ENDIF()
-
+  
+  
   # install empty init files 
   INSTALL(FILES ${MIA_DOCTOOLS_ROOT}/__init__.py DESTINATION ${SITEPACKGE_BASE_PATH}/${prefix})
   INSTALL(FILES ${MIA_DOCTOOLS_ROOT}/__init__.py DESTINATION ${SITEPACKGE_BASE_PATH}/${prefix}/nipype)
