@@ -54,11 +54,11 @@ FastICA::FastICA(int num_ic):
         m_approach(CIndepCompAnalysis::appr_defl), 
         m_numOfIC(num_ic), 
         m_finetune(true), 
-        m_mu(1.0), 
+        m_mu(0.9), 
         m_epsilon(1e-10), 
         m_sampleSize(1.0), 
         m_stabilization(true), 
-        m_maxNumIterations(4000), 
+        m_maxNumIterations(1000), 
         m_maxFineTune(200),
 	m_firstEig(-1), 
 	m_lastEig(-1),
@@ -238,7 +238,7 @@ bool FastICA::fpica_defl_round(int component, Vector& w, Matrix& B)
 		delta = sqrt(dot(w_help, w_help));
 
 		cvmsg() << "DEFL["<<iter<<"]: delta = " << delta << "\n"; 
-
+		
 		if (delta < m_epsilon) {
 			if (m_finetune && !is_finetuning) {
 				cvinfo() << "DEFL: start fine tuning\n"; 
@@ -249,10 +249,20 @@ bool FastICA::fpica_defl_round(int component, Vector& w, Matrix& B)
 				converged = true; 
 			}
 		} else if (m_stabilization) {
-			cvinfo() << "DEFL: stabelize\n"; 
+			// this checks whether the values just pig-pong
+
+			Vector w_old2_copy = w_old2; 
 			gsl_vector_sub(w_old2, w);
+			gsl_vector_add(w_old2_copy, w); 
 			double delta2 = sqrt(dot(w_old2, w_old2));
-			if ( (stroke == 0.0) && (delta2 < m_epsilon)) {
+			double delta3 = sqrt(dot(w_old2_copy, w_old2_copy));
+			cvinfo() << "DEFL: stabelize, mu=" << mu
+				 << ", stroke=" << stroke
+				 << ", delta2= " << delta2
+				 << ", delta3= " << delta3 
+				 <<"\n";
+			if ( (stroke == 0.0) &&
+			     ((delta2 < m_epsilon) || (delta3 < m_epsilon))) {
 				stroke = mu; 
 				mu *= 0.5; 
 			}else if (stroke != 0.0) {

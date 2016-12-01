@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE ( test_fastica_symm )
 	FastICA ica(3);
 
 	ica.set_approach(CIndepCompAnalysis::appr_symm); 
- 	ica.set_epsilon (1e-10); 
+ 	ica.set_epsilon (1e-8); 
 	ica.set_finetune(true); 
 	ica.set_nonlinearity(produce_fastica_nonlinearity("pow3")); 
 	BOOST_CHECK(ica.separate(mix)); 
@@ -475,7 +475,8 @@ BOOST_AUTO_TEST_CASE( test_miaica_with_some_mean_unknown_SYMM )
 	CICAAnalysisMIA ica;
 	ica.initialize(rows, elms);
 	ica.set_approach(CIndepCompAnalysis::appr_symm);
-
+	ica.set_deterministic_seed(1);
+	
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 
