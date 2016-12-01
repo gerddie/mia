@@ -14,8 +14,8 @@ IF(WITH_ITPP)
   IF(ITPP_FOUND)
     INCLUDE_DIRECTORIES(${ITPP_INCLUDE_DIRS})
     LINK_DIRECTORIES(${ITPP_LIBRARY_DIRS})
-    
-    #if ITPP was found check if it supports the return value in separate 
+    #if ITPP was found check if it supports the return value in separate
+    SET(CMAKE_REQUIRED_LIBRARIES ${ITPP_LIBRARIES})
     CHECK_CXX_SOURCE_COMPILES(
 "#include <itpp/signal/fastica.h>
 
