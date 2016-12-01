@@ -221,7 +221,7 @@ void run_nonlinear_registration_passes (CSegSetWithImages& input_set,
                                         double divcurlweight, double divcurlweight_divider,
                                         int max_pass, const string& imagecost,
                                         int global_reference, float min_rel_frequency,
-                                        const CICAAnalysisFactory& icatool)
+                                        const CIndepCompAnalysisFactory& icatool)
 {
     int current_pass = 0;
     bool do_continue=true;
@@ -252,7 +252,7 @@ void run_nonlinear_registration_passes (CSegSetWithImages& input_set,
                   input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn());
 
         if (!ica2.run(series, icatool)) {
-            ica2.set_approach(CICAAnalysis::appr_symm);
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
             ica2.run(series, icatool);
 		}
 		
@@ -277,7 +277,7 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
                                      int components, bool normalize, bool no_meanstrip, int max_ica_iterations, 
                                      int skip_images,  const string& minimizer, const string& linear_transform, 
                                      size_t mg_levels, int max_pass, const string& imagecost, int global_reference, 
-                                     float min_rel_frequency, const CICAAnalysisFactory& icatool)
+                                     float min_rel_frequency, const CIndepCompAnalysisFactory& icatool)
 {
         int current_pass = 0; 
 	bool do_continue=true; 
@@ -309,7 +309,7 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
 			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
         if (!ica2.run(series, icatool)) {
-            ica2.set_approach(CICAAnalysis::appr_symm);
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
             ica2.run(series, icatool);
 		}
 		
@@ -410,12 +410,12 @@ int do_main( int argc, char *argv[] )
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
 		segmethod=C2DPerfusionAnalysis::bs_features; 
-
+	PIndepCompAnalysisFactory icatool;
 	float min_breathing_frequency = -1.0f; 
 
 	size_t max_linear_passes = 3; 
 	size_t max_nonlinear_passes = 3; 
-        int global_reference = -1; 
+        int global_reference = -1;
 
 	CCmdOptionList options(g_description);
 	
@@ -450,34 +450,35 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt(linear_transform, "linear-transform", 0, 
                              "linear transform to be used", 
                              CCmdOptionFlags::none, &C2DTransformCreatorHandler::instance()));
-        
-    options.add(make_opt(nonlinear_minimizer, "non-linear-optimizer", 'O',
-                         "Optimizer used for minimization in the non-linear registration.",
-                         CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
-    options.add(make_opt( c_rate, "start-c-rate", 'a',
-                          "start coefficinet rate in spines,"
-                          " gets divided by --c-rate-divider with every pass."));
-    options.add(make_opt( c_rate_divider, "c-rate-divider", 0,
-                          "Cofficient rate divider for each pass."));
-    options.add(make_opt( divcurlweight, "start-divcurl", 'd',
-                          "Start divcurl weight, gets divided by"
-                          " --divcurl-divider with every pass."));
-    options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
-                          "Divcurl weight scaling with each new pass."));
-    options.add(make_opt( global_reference, "reference", 'R', "Global reference all image should be aligned to. If set "
-                                                              "to a non-negative value, the images will be aligned to this references, and the cropped "
-                                                              "output image date will be injected into the original images. Leave at -1 if "
-                                                              "you don't care. In this case all images with be registered to a mean position of the movement"));
-
-    // why do I allow to set this parameter, it should always be image:cost=ssd
-    options.add(make_opt( imagecost, "imagecost", 'w',
+	
+	options.add(make_opt(nonlinear_minimizer, "non-linear-optimizer", 'O',
+			     "Optimizer used for minimization in the non-linear registration.",
+			     CCmdOptionFlags::none, &CMinimizerPluginHandler::instance()));
+	options.add(make_opt( c_rate, "start-c-rate", 'a',
+			      "start coefficinet rate in spines,"
+			      " gets divided by --c-rate-divider with every pass."));
+	options.add(make_opt( c_rate_divider, "c-rate-divider", 0,
+			      "Cofficient rate divider for each pass."));
+	options.add(make_opt( divcurlweight, "start-divcurl", 'd',
+			      "Start divcurl weight, gets divided by"
+			      " --divcurl-divider with every pass."));
+	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
+			      "Divcurl weight scaling with each new pass."));
+	options.add(make_opt( global_reference, "reference", 'R', "Global reference all image should be aligned to. If set "
+			      "to a non-negative value, the images will be aligned to this references, and the cropped "
+			      "output image date will be injected into the original images. Leave at -1 if "
+			      "you don't care. In this case all images with be registered to a mean position of the movement"));
+	
+	// why do I allow to set this parameter, it should always be image:cost=ssd
+	options.add(make_opt( imagecost, "imagecost", 'w',
 			      "image cost, do not specify the src and ref parameters, these will be set by the program.",
 			      CCmdOptionFlags::none, &C2DFullCostPluginHandler::instance())); 
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( max_linear_passes, "linear-passes", 'p', "linear registration passes (0 to disable)")); 
 	options.add(make_opt( max_nonlinear_passes, "nonlinear-passes", 'P', "non-linear registration passes (0 to disable)")); 
 
-	options.set_group("ICA"); 
+	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -504,41 +505,41 @@ int do_main( int argc, char *argv[] )
 	CSegSetWithImages  input_set(in_filename, true);
 	C2DImageSeries input_images = input_set.get_images(); 
 
-    // copy the original image if the global reference it set, because in this case we
-    // want the original sized data as result
-
-    C2DImageSeries original_images;
-    if (global_reference >= 0)
-        original_images = input_set.get_images();
-
-
-    float rel_min_bf = get_relative_min_breathing_frequency(input_images,  skip_images, min_breathing_frequency);
-
-    // now start the first ICA to run the segmentation etc.
+	// copy the original image if the global reference it set, because in this case we
+	// want the original sized data as result
+	
+	C2DImageSeries original_images;
+	if (global_reference >= 0)
+		original_images = input_set.get_images();
+	
+	
+	float rel_min_bf = get_relative_min_breathing_frequency(input_images,  skip_images, min_breathing_frequency);
+	
+	// now start the first ICA to run the segmentation etc.
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
-    transform(input_images.begin() + skip_images, input_images.end(),
-              series.begin(), FCopy2DImageToFloatRepn());
+	transform(input_images.begin() + skip_images, input_images.end(),
+		  series.begin(), FCopy2DImageToFloatRepn());
 
 
-    // run ICA
-    unique_ptr<C2DPerfusionAnalysis> ica(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip));
+	// run ICA
+	unique_ptr<C2DPerfusionAnalysis> ica(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip));
 	if (max_ica_iterations) 
-        ica->set_max_ica_iterations(max_ica_iterations);
-
-    if (rel_min_bf >= 0)
+		ica->set_max_ica_iterations(max_ica_iterations);
+	
+	if (rel_min_bf >= 0)
 		ica->set_min_movement_frequency(rel_min_bf); 
+	
+	
 
-
-    CICAAnalysisITPPFactory icatool;
-    ica->set_approach(CICAAnalysis::appr_defl);
-    if (!ica->run(series, icatool)) {
+	ica->set_approach(CIndepCompAnalysis::appr_defl);
+	if (!ica->run(series, *icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-        ica->set_approach(CICAAnalysis::appr_symm);
-        if (!ica->run(series, icatool))
+		ica->set_approach(CIndepCompAnalysis::appr_symm);
+		if (!ica->run(series, *icatool))
 			box_scale = false; 
 	}		
-
+	
 	if( input_set.get_RV_peak() < 0)  {
 		if (ica->get_RV_peak_time() > 0)
 			input_set.set_RV_peak(ica->get_RV_peak_time() + skip_images); 
@@ -591,7 +592,8 @@ int do_main( int argc, char *argv[] )
                 run_linear_registration_passes (input_set, references,  
                                                 components, normalize, no_meanstrip,  max_ica_iterations, 
                                                 skip_images,  linear_minimizer, linear_transform, 
-                                                mg_levels, max_linear_passes, imagecost, global_reference, rel_min_bf, icatool);
+                                                mg_levels, max_linear_passes, imagecost, global_reference,
+						rel_min_bf, *icatool);
 
         if (max_nonlinear_passes > 0) {
 		// if we come from the linear registration, then the references must be re-generated
@@ -607,9 +609,9 @@ int do_main( int argc, char *argv[] )
 			transform(input_set.get_images().begin() + skip_images, 
 				  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 			
-            if (!ica2.run(series, icatool)) {
-                ica2.set_approach(CICAAnalysis::appr_symm);
-                ica2.run(series, icatool);
+            if (!ica2.run(series, *icatool)) {
+                ica2.set_approach(CIndepCompAnalysis::appr_symm);
+                ica2.run(series, *icatool);
 			}
 			
 			references_float = ica2.get_references(); 
@@ -622,13 +624,15 @@ int do_main( int argc, char *argv[] )
                                                    skip_images,  nonlinear_minimizer, 
                                                    mg_levels, c_rate, c_rate_divider, 
                                                    divcurlweight, divcurlweight_divider, 
-                                                   max_nonlinear_passes, imagecost, global_reference, rel_min_bf, icatool);
+                                                   max_nonlinear_passes, imagecost, global_reference, rel_min_bf, *icatool);
 	}
 	cvmsg() << "Registration finished\n"; 
 
 	// copy the data back to the original images if requested 
         	// re-insert the registered sub-images if we have a global reference
-	if (global_reference >= 0 && box_scale &&  input_set.get_images()[0]->get_size() != original_images[0]->get_size()) {
+	if (global_reference >= 0 && box_scale &&
+	    input_set.get_images()[0]->get_size() !=
+	    original_images[0]->get_size()) {
 		cvmsg() << "Put cropped and aligned data back into the original images\n"; 
 		auto registered_images = input_set.get_images(); 
 		const FInsertData id(crop_start, crop_start + registered_images[0]->get_size()); 

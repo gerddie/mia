@@ -775,12 +775,14 @@ const T CAttributedData::get_attribute_as(const std::string& key, T default_valu
 	return *attr; 
 }
 
+
+/// \cond NEVER
 extern template class EXPORT_CORE TAttribute<uint8_t>;
 extern template class EXPORT_CORE TAttribute<int8_t>; 
 
-extern template class EXPORT_CORE TAttribute<std::vector<uint8_t>>;
-extern template class EXPORT_CORE TAttribute<std::vector<int8_t>>; 
-
+extern template class EXPORT_CORE TAttribute<std::vector<uint8_t> >;
+extern template class EXPORT_CORE TAttribute<std::vector<int8_t> >; 
+/// \endcond NEVER
 
 typedef TTranslator<double> CDoubleTranslator;
 typedef TTranslator<std::vector<double> > CVDoubleTranslator;

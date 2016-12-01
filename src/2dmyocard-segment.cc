@@ -421,7 +421,8 @@ int do_main( int argc, char *argv[] )
 	bool normalize = false; 
 	bool no_meanstrip = false; 
 	size_t skip_images = 2; 
-	size_t max_ica_iterations = 400; 
+	size_t max_ica_iterations = 400;
+	PIndepCompAnalysisFactory icatool;
 
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 
@@ -435,6 +436,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::output)); 
 
 	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation testing 4 and 5"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -467,10 +469,9 @@ int do_main( int argc, char *argv[] )
 		if (max_ica_iterations) 
 			ica->set_max_ica_iterations(max_ica_iterations); 
 		
-        CICAAnalysisITPPFactory icaatool;
-        if (!ica->run(series, icaatool)) {
-            ica->set_approach(CICAAnalysis::appr_symm);
-            ica->run(series, icaatool);
+        if (!ica->run(series, *icatool)) {
+            ica->set_approach(CIndepCompAnalysis::appr_symm);
+            ica->run(series, *icatool);
 		}
 		
 		rv_idx = ica->get_RV_idx(); 

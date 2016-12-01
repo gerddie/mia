@@ -55,7 +55,6 @@ SET(MIACORE_SRC_BASE
   dlloader.cc
   dummyhandler.cc
   errormacro.cc
-  fastica.cc
   fastica_nonlinearity.cc
   file.cc 
   filetools.cc 
@@ -67,7 +66,7 @@ SET(MIACORE_SRC_BASE
   fullstats.cc
   handlerbase.cc
   history.cc
-  icaanalysisbase.cc
+  ica.cc
   index.cc
   info.cc
   interpolator1d.cc
@@ -148,7 +147,6 @@ SET(MIACORE_HEADER_BASE
   export_handler.hh
   factory.hh
   factory_trait.hh
-  fastica.hh
   fastica_nonlinearity.hh
   fft1d_r2c.hh
   fftslopeclassifier.hh
@@ -164,7 +162,9 @@ SET(MIACORE_HEADER_BASE
   handler.cxx handler.hh
   history.hh
   histogram.hh
-  icaanalysisbase.hh
+  ica.hh
+  ica_template.hh
+  ica_template.cxx
   index.hh
   import_handler.hh
   iodata.hh
@@ -229,16 +229,6 @@ SET(MIACORE_HEADER_BASE
 SET(MIACORETEST_SRC 
   test_core_combined.cc
 )
-
-IF(ITPP_FOUND)
-  SET(ITPP_SRC 
-    ica.cc 
-    )
-  SET(ITPP_HEADER 
-    ica.hh
-    ica_template.hh ica_template.cxx
-    )
-ENDIF(ITPP_FOUND)
 
 IF(NOT TBB_FOUND)
   SET(MIACORE_SRC_PARALLELCXX11 
@@ -342,7 +332,6 @@ NEW_TEST(datapool miacore)
 NEW_TEST(delayedparameter miacore)
 NEW_TEST(distance miacore)
 NEW_TEST(factoryoption miacore)
-NEW_TEST(fastica miacore)
 NEW_TEST(fftslopeclassifier miacore)
 NEW_TEST(filetools miacore)
 NEW_TEST(fixedwidthoutput miacore)
@@ -384,11 +373,6 @@ NEW_TEST(gsl_matrix_vector_ops miacore)
 NEW_TEST(gsl_multimin miacore)
 NEW_TEST(gsl_pca miacore)
 NEW_TEST(gsl_vector miacore)
-
-
-IF(ITPP_FOUND)
-  NEW_TEST(ica miacore)
-ENDIF(ITPP_FOUND)
 
 IF(FFTWF_FOUND AND WITH_FFTWF)
   NEW_TEST(fft1d miacore)

@@ -24,7 +24,7 @@
 #include <vector>
 #include <mia/core/dictmap.hh>
 #include <mia/core/waveletslopeclassifier.hh>
-#include <mia/core/icaanalysisbase.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/image.hh>
 #include <mia/2d/filter.hh>
 
@@ -72,7 +72,7 @@ public:
        \param icatool Generator for the used ICA analyis method
 	 */
 
-	bool run(const std::vector<C2DFImage>& series, const CICAAnalysisFactory& icatool);
+	bool run(const std::vector<C2DFImage>& series, const CIndepCompAnalysisFactory& icatool);
 
 
 	/**
@@ -109,7 +109,7 @@ public:
 	   \param approach FICA_APPROACH_SYMM or FICA_APPROACH_DEFL
 	   \todo the parameter should be an enum
 	 */
-	void set_approach(CICAAnalysis::EApproach approach);
+	void set_approach(CIndepCompAnalysis::EApproach approach);
 
 	/**
 	   \returns the RV peak enhancement IC index of -1 if it could not be identified

@@ -138,7 +138,7 @@ int do_main( int argc, char *argv[] )
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
-	
+	PIndepCompAnalysisFactory icatool;
 	size_t current_pass = 0; 
 	size_t pass = 2; 
 
@@ -168,7 +168,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
 
-	options.set_group("ICA"); 
+	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -214,13 +215,12 @@ int do_main( int argc, char *argv[] )
 	if (use_guess_model) 
 		ica.set_use_guess_model(); 
 
-    CICAAnalysisITPPFactory icatool;
-    if (!ica.run(series, icatool)) {
-        ica.set_approach(CICAAnalysis::appr_symm);
-        if (!ica.run(series, icatool) )
+	if (!ica.run(series, *icatool)) {
+		ica.set_approach(CIndepCompAnalysis::appr_symm);
+		if (!ica.run(series, *icatool) )
 			cvwarn() << "ICA analysis didn't converge, results might by bougus\n";
 	}
-
+	
 	int RV_peak_idx = ica.get_RV_idx(); 
 	int LV_peak_idx = ica.get_LV_idx(); 
 
@@ -301,9 +301,9 @@ int do_main( int argc, char *argv[] )
 	
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), FCopy2DImageToFloatRepn()); 
-        if (!ica2.run(series, icatool))
-            ica2.set_approach(CICAAnalysis::appr_symm);
-        if (ica2.run(series, icatool) ) {
+        if (!ica2.run(series, *icatool))
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
+        if (ica2.run(series, *icatool) ) {
 			references_float = ica2.get_references(); 
 
 			transform(references_float.begin(), references_float.end(), 

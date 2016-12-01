@@ -67,7 +67,6 @@ void CParamOption::do_get_long_help_xml(std::ostream& os, CXMLElement& parent, H
 {
 	m_param->add_dependend_handler(handler_map); 
 	m_param->get_help_xml(parent);
-	//os << m_param->get_descr(); 
 }
 
 NS_MIA_END

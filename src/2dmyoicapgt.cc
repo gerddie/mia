@@ -251,7 +251,7 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
                                      int components, bool normalize, bool no_meanstrip, int max_ica_iterations, 
                                      int skip_images,  const string& minimizer, const string& linear_transform, 
                                      size_t mg_levels, int max_pass, const string& imagecost, int global_reference, 
-                                     float min_rel_frequency, const CICAAnalysisITPPFactory& icatool)
+                                     float min_rel_frequency, const CIndepCompAnalysisFactory& icatool)
 {
     int current_pass = 0;
     bool do_continue=true;
@@ -279,7 +279,7 @@ void run_linear_registration_passes (CSegSetWithImages& input_set,
 			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
         if (!ica2.run(series, icatool)) {
-            ica2.set_approach(CICAAnalysis::appr_symm);
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
             ica2.run(series, icatool);
 		}
 		if (lastpass) 
@@ -380,9 +380,8 @@ int do_main( int argc, char *argv[] )
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
-            segmethod=C2DPerfusionAnalysis::bs_features;
-    CICAAnalysisITPPFactory icatool;
-
+		segmethod=C2DPerfusionAnalysis::bs_features;
+	PIndepCompAnalysisFactory icatool;
 	float min_breathing_frequency = -1.0f; 
 
 	size_t max_linear_passes = 3; 
@@ -454,7 +453,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( max_linear_passes, "linear-passes", 'p', "linear registration passes (0 to disable)")); 
 	options.add(make_opt( max_nonlinear_passes, "nonlinear-passes", 'P', "non-linear registration passes (0 to disable)")); 
 
-	options.set_group("ICA"); 
+	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -515,11 +515,11 @@ int do_main( int argc, char *argv[] )
 		ica->set_min_movement_frequency(rel_min_bf); 
 
 
-    ica->set_approach(CICAAnalysis::appr_defl);
-    if (!ica->run(series, icatool)) {
+    ica->set_approach(CIndepCompAnalysis::appr_defl);
+    if (!ica->run(series, *icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-        ica->set_approach(CICAAnalysis::appr_symm);
-        if (!ica->run(series, icatool))
+        ica->set_approach(CIndepCompAnalysis::appr_symm);
+        if (!ica->run(series, *icatool))
 			box_scale = false; 
 	}		
 
@@ -575,7 +575,7 @@ int do_main( int argc, char *argv[] )
                 run_linear_registration_passes (input_set, references,  
                                                 components, normalize, no_meanstrip,  max_ica_iterations, 
                                                 skip_images,  linear_minimizer, linear_transform, 
-                                                mg_levels, max_linear_passes, imagecost, global_reference, rel_min_bf, icatool);
+                                                mg_levels, max_linear_passes, imagecost, global_reference, rel_min_bf, *icatool);
 
         if (max_nonlinear_passes > 0) 
                 run_nonlinear_registration_passes (input_set,  pgt_alpha, pgt_beta, pgt_rho_thresh,

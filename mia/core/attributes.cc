@@ -234,11 +234,11 @@ bool EXPORT_CORE operator == (const CAttributedData& a, const CAttributedData& b
 	return  *a.m_attr == *b.m_attr;
 }
 
-template class EXPORT_CORE TAttribute<uint8_t>;
-template class EXPORT_CORE TAttribute<int8_t>; 
+template class TAttribute<uint8_t>;
+template class TAttribute<int8_t>; 
 
-template class EXPORT_CORE TAttribute<std::vector<uint8_t>>;
-template class EXPORT_CORE TAttribute<std::vector<int8_t>>; 
+template class TAttribute<std::vector<uint8_t>>;
+template class TAttribute<std::vector<int8_t>>; 
 
 template class EXPORT_CORE  TTranslator<double>;
 template class EXPORT_CORE  TTranslator<std::vector<double> >;

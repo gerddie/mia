@@ -21,7 +21,7 @@
 #ifndef mia_core_ica_template_hh
 #define mia_core_ica_template_hh
 
-#include <mia/core/icaanalysisbase.hh>
+#include <mia/core/ica.hh>
 #include <vector>
 
 
@@ -62,7 +62,7 @@ class  EXPORT_TDataSeriesICA TDataSeriesICA {
 public:
 	/** a set of indices used for addressing a subset of the independend componsts 
 	 */
-        typedef CICAAnalysis::IndexSet IndexSet;
+        typedef CIndepCompAnalysis::IndexSet IndexSet;
 
 	/** a (shared) pointer to itself */
 	typedef typename Data::Pointer PData; 
@@ -77,7 +77,7 @@ public:
 	 */
 
 
-        TDataSeriesICA(const CICAAnalysisFactory&  icatool, const std::vector<Data>& initializer, bool strip_mean);
+        TDataSeriesICA(const CIndepCompAnalysisFactory&  icatool, const std::vector<Data>& initializer, bool strip_mean);
 	
 	/**  Runs the ICA 
 	     \param ncomponents retained components 
@@ -163,12 +163,12 @@ public:
 	   Set the ICA approach to either FICA_APPROACH_DEFL(default) or FICA_APPROACH_SYMM. 
 	   \param approach
 	 */
-        void set_approach(CICAAnalysis::EApproach approach);
+        void set_approach(CIndepCompAnalysis::EApproach approach);
 	
 
 	~TDataSeriesICA();
 private:
-        PICAAnalysis m_analysis;
+        PIndepCompAnalysis m_analysis;
 	typedef typename Data::dimsize_type dimsize_type; 
 	dimsize_type m_size;
 	Data m_mean;

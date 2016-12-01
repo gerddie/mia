@@ -210,7 +210,7 @@ int do_main( int argc, char *argv[] )
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
 		segmethod=C2DPerfusionAnalysis::bs_features; 
-
+	PIndepCompAnalysisFactory icatool;
 	float min_breathing_frequency = -1.0f; 
 
 	size_t current_pass = 0; 
@@ -257,7 +257,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 	
-	options.set_group("ICA"); 
+	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -297,12 +298,11 @@ int do_main( int argc, char *argv[] )
 	if (rel_min_bf > 0) 
 		ica->set_min_movement_frequency(rel_min_bf); 
 
-    CICAAnalysisITPPFactory icatool;
-    ica->set_approach(CICAAnalysis::appr_defl);
-    if (!ica->run(series, icatool)) {
+    ica->set_approach(CIndepCompAnalysis::appr_defl);
+    if (!ica->run(series, *icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-        ica->set_approach(CICAAnalysis::appr_symm);
-        if (!ica->run(series, icatool))
+        ica->set_approach(CIndepCompAnalysis::appr_symm);
+        if (!ica->run(series, *icatool))
 			box_scale = false; 
 	}
 	
@@ -361,9 +361,9 @@ int do_main( int argc, char *argv[] )
 		transform(input_set.get_images().begin() + skip_images, 
 			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
-        if (!ica2.run(series, icatool)) {
-            ica2.set_approach(CICAAnalysis::appr_symm);
-            ica2.run(series, icatool);
+        if (!ica2.run(series, *icatool)) {
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
+            ica2.run(series, *icatool);
 		}
 		if (lastpass) 
 			break; 
@@ -390,9 +390,9 @@ int do_main( int argc, char *argv[] )
 	transform(input_set.get_images().begin() + skip_images, 
 		  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 	
-    if (!ica_final.run(series, icatool)) {
-            ica_final.set_approach(CICAAnalysis::appr_symm);
-            ica_final.run(series, icatool);
+    if (!ica_final.run(series, *icatool)) {
+            ica_final.set_approach(CIndepCompAnalysis::appr_symm);
+            ica_final.run(series, *icatool);
 	}
 	if( input_set.get_RV_peak() < 0) 
 		input_set.set_RV_peak(ica_final.get_RV_peak_time() + skip_images); 

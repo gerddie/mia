@@ -164,7 +164,7 @@ int do_main( int argc, char *argv[] )
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
 		segmethod=C2DPerfusionAnalysis::bs_features; 
-
+	PIndepCompAnalysisFactory icatool;
 	size_t current_pass = 0; 
 	size_t pass = 3; 
 
@@ -203,7 +203,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
-	options.set_group("\nICA"); 
+	options.set_group("\nICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "don't normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -240,12 +241,11 @@ int do_main( int argc, char *argv[] )
 	if (max_ica_iterations) 
 		ica->set_max_ica_iterations(max_ica_iterations); 
 
-    CICAAnalysisITPPFactory icatool;
-    ica->set_approach(CICAAnalysis::appr_defl);
-    if (!ica->run(series, icatool)) {
+    ica->set_approach(CIndepCompAnalysis::appr_defl);
+    if (!ica->run(series, *icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-        ica->set_approach(CICAAnalysis::appr_symm);
-        if (!ica->run(series, icatool))
+        ica->set_approach(CIndepCompAnalysis::appr_symm);
+        if (!ica->run(series, *icatool))
 			box_scale = false; 
 	}
 
@@ -299,10 +299,10 @@ int do_main( int argc, char *argv[] )
 		transform(registered.begin() + skip_images, 
 			  registered.end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
-        if (!ica2.run(series, icatool))
-            ica2.set_approach(CICAAnalysis::appr_symm);
+        if (!ica2.run(series, *icatool))
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
 
-        ica2.run(series, icatool);
+        ica2.run(series, *icatool);
 		divcurlweight /= divcurlweight_divider; 
 		if (c_rate > 1) 
 			c_rate /= c_rate_divider; 

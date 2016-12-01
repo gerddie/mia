@@ -22,10 +22,7 @@
 #include <climits>
 
 #include <mia/internal/autotest.hh>
-
-
 #include <mia/2d/perfusion.hh>
-#include <mia/core/ica.hh>
 
 NS_MIA_USE
 using std::vector; 
@@ -129,13 +126,13 @@ void check_pa(const C2DPerfusionAnalysis& pa)
 	
 }
 
-BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets )
+BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets_defl )
 {
 	C2DBounds size(16,16);
 	C2DFImage prototype(size);
 	prototype.set_pixel_size(C2DFVector(4, 4)); 
 	std::vector<C2DFImage> series(nframes, prototype);
-
+	
 	
 	for (unsigned i = 0; i < nframes; ++i) {
 		for (unsigned k = 0; k < ncomponents; ++k) {
@@ -148,23 +145,59 @@ BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets )
 		}
 	}
 	
-	CICAAnalysisITPPFactory ica_factory;
+	auto ica_factory = produce_ica_factory("internal");
+	ica_factory->set_deterministic_seed(1000); 
 	
 	C2DPerfusionAnalysis pa(5, true, true);
+	pa.set_approach(CIndepCompAnalysis::appr_defl); 
 
-	BOOST_CHECK(pa.run(series, ica_factory));
+	BOOST_CHECK(pa.run(series, *ica_factory));
 	check_pa(pa);
 
 	C2DBounds crop_start;
 	P2DFilter crop_filter = pa.get_crop_filter(1.0, crop_start, C2DPerfusionAnalysis::bs_delta_feature); 
 	BOOST_REQUIRE(crop_filter);
 	
-#if 0 // this is a very shaky test, probably depends on the BLAS library used with it++ 
-	BOOST_CHECK_EQUAL(crop_start.x, 2);
-	BOOST_CHECK_EQUAL(crop_start.y, 0); 
-#endif 	
 	C2DPerfusionAnalysis pa0(0, true, true);
-	BOOST_CHECK(pa0.run(series, ica_factory));
+	BOOST_CHECK(pa0.run(series, *ica_factory));
+	check_pa(pa0); 
+}
+
+
+BOOST_AUTO_TEST_CASE( test_series_with_movement_fixed_componenets_symm )
+{
+	C2DBounds size(16,16);
+	C2DFImage prototype(size);
+	prototype.set_pixel_size(C2DFVector(4, 4)); 
+	std::vector<C2DFImage> series(nframes, prototype);
+	
+	
+	for (unsigned i = 0; i < nframes; ++i) {
+		for (unsigned k = 0; k < ncomponents; ++k) {
+			const vector<float>& m = mix[k]; 
+			float mix_factor = m[i] * scale[k];
+			transform(init[k].begin(), init[k].end(), series[i].begin(), series[i].begin(),
+				  [mix_factor](float comp, float pixel) {
+					  return comp * mix_factor + pixel; 
+				  }); 
+		}
+	}
+	
+	auto ica_factory = produce_ica_factory("internal");
+	ica_factory->set_deterministic_seed(1); 
+	
+	C2DPerfusionAnalysis pa(5, true, true);
+	pa.set_approach(CIndepCompAnalysis::appr_symm); 
+
+	BOOST_CHECK(pa.run(series, *ica_factory));
+	check_pa(pa);
+
+	C2DBounds crop_start;
+	P2DFilter crop_filter = pa.get_crop_filter(1.0, crop_start, C2DPerfusionAnalysis::bs_delta_feature); 
+	BOOST_REQUIRE(crop_filter);
+	
+	C2DPerfusionAnalysis pa0(0, true, true);
+	BOOST_CHECK(pa0.run(series, *ica_factory));
 	check_pa(pa0); 
 }
 

@@ -941,16 +941,16 @@ extern template class EXPORT_CORE TBoundedParameter<int64_t>;
 extern template class EXPORT_CORE TBoundedParameter<float>;
 extern template class EXPORT_CORE TBoundedParameter<double>; 
 
-extern template class EXPORT_CORE TBoundedParameter<std::vector<uint16_t>>;
-extern template class EXPORT_CORE TBoundedParameter<std::vector<uint32_t>>;
-extern template class EXPORT_CORE TBoundedParameter<std::vector<uint64_t>>;
-extern template class EXPORT_CORE TBoundedParameter<std::vector<int16_t>>;
-extern template class EXPORT_CORE TBoundedParameter<std::vector<int32_t>>;
-extern template class EXPORT_CORE TBoundedParameter<std::vector<int64_t>>;
-extern template class EXPORT_CORE TBoundedParameter<std::vector<float>>;
-extern template class EXPORT_CORE TBoundedParameter<std::vector<double>>; 
+extern template class EXPORT_CORE TBoundedParameter<std::vector<uint16_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<uint32_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<uint64_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<int16_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<int32_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<int64_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<float> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<double> >; 
 
-extern template class EXPORT_CORE CTParameter<std::vector<std::string>>;
+extern template class EXPORT_CORE CTParameter<std::vector<std::string> >;
 
 extern template class EXPORT_CORE CTParameter<std::string>;
 extern template class EXPORT_CORE CTParameter<bool>;

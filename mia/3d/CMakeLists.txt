@@ -16,17 +16,6 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-
-IF(ITPP_FOUND)
-  SET(ITPP_SRC 
-    ica.cc 
-    )
-  SET(ITPP_HEADER 
-    ica.hh
-    )
-ENDIF(ITPP_FOUND)
-
-
 SET(MIA3D_SRC 
   affine_matrix.cc
   camera.cc
@@ -40,6 +29,7 @@ SET(MIA3D_SRC
   fullcost.cc
   fuzzyseg.cc
   fuzzyclustersolver_cg.cc
+  ica.cc 
   image.cc
   imagedraw.cc
   imageio.cc
@@ -82,6 +72,7 @@ SET(MIA3D_HEADERS
   datafield.hh datafield.cxx
   image.hh
   filter.hh
+  ica.hh
   imagedraw.cc
   imageio.hh
   imagetest.hh

@@ -415,42 +415,6 @@ ENDIF (XMLPP_FOUND)
 # 
 ###################################################################################
 
-###################################################################################
-#
-# Look for IT++ for FastICA
-#
-OPTION(WITH_ITPP "Use IT++ for some additional features" ${SEARCH_LIBS_DEFAULT})
-IF(WITH_ITPP)
-  
-  IF (STRICT_DEPENDECIES)
-    pkg_check_modules(ITPP itpp REQUIRED)
-  ELSE (STRICT_DEPENDECIES)
-    pkg_check_modules(ITPP itpp)
-  ENDIF(STRICT_DEPENDECIES)
-  
-  IF(ITPP_FOUND)
-    INCLUDE_DIRECTORIES(${ITPP_INCLUDE_DIRS})
-    LINK_DIRECTORIES(${ITPP_LIBRARY_DIRS})
-    SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} itpp")
-    SET(CMAKE_REQUIRED_LIBRARIES ${ITPP_LIBRARIES})
-    #if ITPP was found check if it supports the return value in separate 
-    INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkITPPBoolseparate.cmake)
-    IF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-      MESSAGE(WARNING "You are using  an unpatched version of IT++. "
-	"In this version using APPROACH_DEFL may run forever, and FastICA::separate " 
-	"doesn't return a value indicating success, "
-	"therefore, APPROACH_DEFL will not be used. See also: "
-	"https://sourceforge.net/tracker/?func=detail&aid=3028968&group_id=37044&atid=418758")
-      SET(ICA_ALWAYS_USE_SYMM 1)
-    ELSE(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-      SET(ICA_ALWAYS_USE_SYMM 0)
-    ENDIF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-  ENDIF(ITPP_FOUND)
-ENDIF(WITH_ITPP)
-#
-# End looking for IT++ 
-#
-##################################################################################
 
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
@@ -501,7 +465,7 @@ ENDIF()
 # define plug-in related values and directories and add the test directory link target 
 # 
 
-DEFINE_PLUGIN_NAMES( fastica  "deflation;symmetric" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( fastica  "deflation;symmetric;implementation" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 1d  "cmeans;spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dmyocardsegset "io" ${PLUGIN_INSTALL_PATH})

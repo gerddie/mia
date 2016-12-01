@@ -57,12 +57,9 @@ const SProgramDescription g_description = {
 	{pdi_example_code, "-i imageXXXX.exr -o ref -k 2 -C 5 -m -n"}
 }; 
 
-
-// this needs to be replaced by a parameter
-CICAAnalysisITPPFactory icatool;
-
 unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean,
-				      size_t& components, bool ica_normalize, int max_iterations)
+				      size_t& components, bool ica_normalize, int max_iterations,
+				      const CIndepCompAnalysisFactory& icatool)
 {
 	srand(time(NULL));
 
@@ -153,12 +150,12 @@ void save_coefs(const string&  coefs_name, const C2DImageSeriesICA& ica)
 		throw create_exception<runtime_error>( "unable to save coefficients to '", coefs_name, "'");
 }
 
-CICAAnalysis::IndexSet get_all_without_periodic(const CSlopeClassifier::Columns& curves, bool strip_mean)
+CIndepCompAnalysis::IndexSet get_all_without_periodic(const CSlopeClassifier::Columns& curves, bool strip_mean)
 {
 	CSlopeClassifier cls(curves, strip_mean);
 	int periodic_index = cls.get_periodic_idx();
 
-	CICAAnalysis::IndexSet result;
+	CIndepCompAnalysis::IndexSet result;
 	for (int i = 0; i < (int)curves.size(); ++i) {
 		if (i != periodic_index)
 			result.insert(i);
@@ -295,7 +292,7 @@ P2DFilter create_LV_cropper(P2DImage rvlv_feature,
 }
 
 
-CICAAnalysis::IndexSet get_LV_RV_Perfusion(const CSlopeClassifier::Columns& curves)
+CIndepCompAnalysis::IndexSet get_LV_RV_Perfusion(const CSlopeClassifier::Columns& curves)
 {
 
 	priority_queue<element> sorted;
@@ -308,7 +305,7 @@ CICAAnalysis::IndexSet get_LV_RV_Perfusion(const CSlopeClassifier::Columns& curv
 		sorted.push(e);
 	}
 
-	CICAAnalysis::IndexSet result;
+	CIndepCompAnalysis::IndexSet result;
 
 	result.insert(sorted.top().second);
 	cvinfo() << "add " << sorted.top().first << " as " << sorted.top().second << "\n";
@@ -355,7 +352,8 @@ int do_main( int argc, char *argv[] )
 	string numbered_feature_image;
 	float LV_mask = 0.0; // no mask
 	int max_iterations = 0;
-
+	PIndepCompAnalysisFactory icatool;
+	
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 	
 	CCmdOptionList options(g_description); 
@@ -376,6 +374,7 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt(skip_only_periodic,"strip-periodic",'p', "strip only periodic component"));
 
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt(max_iterations,"max-ica-iterations",'x', "max ICA solver iterations"));
 
 	options.add(make_opt( ica_normalize, "ica-normalize", 'n', "ica_normalize feature images"));
@@ -420,10 +419,10 @@ int do_main( int argc, char *argv[] )
 	cvmsg()<< "Got series of " << series.size() << " images\n";
 	// always strip mean
 	unique_ptr<C2DImageSeriesICA> ica = 
-		get_ica(series, strip_mean, components, ica_normalize, max_iterations);
+		get_ica(series, strip_mean, components, ica_normalize, max_iterations, *icatool);
 	CSlopeClassifier::Columns curves = ica->get_mixing_curves();
 
-	CICAAnalysis::IndexSet component_set = skip_only_periodic ?
+	CIndepCompAnalysis::IndexSet component_set = skip_only_periodic ?
 		get_all_without_periodic(curves, strip_mean):
 		get_LV_RV_Perfusion(curves);
 

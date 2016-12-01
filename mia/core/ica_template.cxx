@@ -32,7 +32,7 @@
 NS_MIA_BEGIN
 
 template <class Data>
-TDataSeriesICA<Data>::TDataSeriesICA(const CICAAnalysisFactory& icatool, const std::vector<Data>& initializer,
+TDataSeriesICA<Data>::TDataSeriesICA(const CIndepCompAnalysisFactory& icatool, const std::vector<Data>& initializer,
                                      bool strip_mean):
         m_analysis(icatool.create())
 {
@@ -195,7 +195,7 @@ void TDataSeriesICA<Data>::set_max_iterations(int n)
 }
 
 template <class Data> 
-void TDataSeriesICA<Data>::set_approach(CICAAnalysis::EApproach approach)
+void TDataSeriesICA<Data>::set_approach(CIndepCompAnalysis::EApproach approach)
 {
         m_analysis->set_approach(approach);
 }

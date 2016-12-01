@@ -24,11 +24,12 @@
 #include <cmath>
 #include <iomanip>
 
-#include <mia/core/ica.hh>
+#include <addons/itpp/ica.hh>
 
 
 using namespace std;
 using namespace mia;
+using namespace itpp_fastica; 
 
 
 template <typename T>
@@ -43,23 +44,23 @@ ostream& operator << (ostream& os, const vector<T>& v)
 
 BOOST_AUTO_TEST_CASE( test_mixing_ica_without_mean )
 {
-	const int rows = 5;
+	const int time_steps = 5;
 	const int elms = 10;
 	const int nica = 3;
 
-	const double init_mix[nica * rows] = {
+	const double init_mix[nica * time_steps] = {
 		1, 2, 3, 4, 5,
 		1, 3, 5, 3, 1,
 		1, 1, 1, 1, 1
 	};
 
-	const double init_ic[rows * elms] = {
+	const double init_ic[time_steps * elms] = {
 		1, 1, 1, 0, 0, 0, 0, 0, 0, 1,
 		0, 0, 0, 1, 2,-1, 0, 0, 0, 0,
 		0, 0, 1, 0, 0, 1, 4, 3, 2, 0
 	};
 
-	double test_rows[rows][elms] = {
+	double test_time_steps[time_steps][elms] = {
 		{ 1, 1, 2, 1, 2,  0, 4, 3, 2, 1 } ,
 		{ 2, 2, 3, 3, 6, -2, 4, 3, 2, 2 } ,
 		{ 3, 3, 4, 5,10, -4, 4, 3, 2, 3 } ,
@@ -68,19 +69,19 @@ BOOST_AUTO_TEST_CASE( test_mixing_ica_without_mean )
 	};
 
 
-	itpp::mat mix(init_mix, rows, nica, false);
-	itpp::mat ic(init_ic,  rows, elms, true);
-	vector<double> mean(rows, 0.0);
+	itpp::mat mix(init_mix, time_steps, nica, false);
+	itpp::mat ic(init_ic,  time_steps, elms, true);
+	vector<double> mean(time_steps, 0.0);
 
 	CICAAnalysisITPP ica(ic, mix, mean);
 	
-	for (int i = 0; i < rows; ++i) {
+	for (int i = 0; i < time_steps; ++i) {
 		vector<float> mixed = ica.get_mix(i);
 		for (int k = 0; k < elms; ++k) {
-			if (mixed[k] != test_rows[i][k])
-				cverr() << i << ", " << k << " expect " << test_rows[i][k]
+			if (mixed[k] != test_time_steps[i][k])
+				cverr() << i << ", " << k << " expect " << test_time_steps[i][k]
 					<< " get " <<  mixed[k] << "\n";
-			BOOST_CHECK_CLOSE(mixed[k], test_rows[i][k], 0.001);
+			BOOST_CHECK_CLOSE(mixed[k], test_time_steps[i][k], 0.001);
 		}
 	}
 }
@@ -119,7 +120,7 @@ BOOST_AUTO_TEST_CASE( test_mixing_ica_with_skip )
 	vector<double> mean(rows, 0.0);
     
 	CICAAnalysisITPP ica(ic, mix, mean);
-	CICAAnalysis::IndexSet skip;
+	CIndepCompAnalysis::IndexSet skip;
 	skip.insert(skipnr);
 
 	for (int i = 0; i < rows; ++i) {
@@ -165,7 +166,7 @@ BOOST_AUTO_TEST_CASE( test_partial_ica_mix )
 	vector<double> mean(rows, 0.0);
 
 	CICAAnalysisITPP ica(ic, mix, mean);
-	CICAAnalysis::IndexSet components;
+	CIndepCompAnalysis::IndexSet components;
 	components.insert(1);
 	components.insert(2);
 
@@ -208,11 +209,11 @@ BOOST_AUTO_TEST_CASE( test_delta_ica_mix )
 	vector<double> mean(rows, 0.0);
 
 	CICAAnalysisITPP ica(ic, mix, mean);
-	CICAAnalysis::IndexSet plus_components;
+	CIndepCompAnalysis::IndexSet plus_components;
 	plus_components.insert(1);
 	plus_components.insert(2);
 
-	CICAAnalysis::IndexSet minus_components;
+	CIndepCompAnalysis::IndexSet minus_components;
 	minus_components.insert(0);
 
 	vector<float> mixed = ica.get_delta_feature(plus_components, minus_components);
@@ -325,7 +326,7 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_SYMM )
 
 	CICAAnalysisITPP ica;
 	ica.initialize(rows, elms);
-	ica.set_approach(CICAAnalysis::appr_symm);
+	ica.set_approach(CIndepCompAnalysis::appr_symm);
 
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
@@ -464,45 +465,5 @@ BOOST_AUTO_TEST_CASE( test_ica_access_failtures )
 
 }
 
-/**
- This test needs more data to work properly
-BOOST_AUTO_TEST_CASE( test_autorun )
-{
-	const int comps = 3;
-	const int rows = 10;
-	const int elms = 40;
-	double ic_rows[comps * elms] =
-		{ 1.1, -0.9,  -1.9,  0.9,  2.1, 1.9,  6.1, -2.9,  0.9, 1.1,
-		  1.1,  1.9,  -1.1,  2.9,  3.1, 1.9,  0.1,  2.9,  1.9, 2.1,
-		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
-		  2.3, -2.7,   2.2,   2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2,
-
-		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
-		  2.3, -2.7,  -2.2,  -2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2,
-		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
-		  2.3, -2.7,  -2.2,  -2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2 ,
-
-		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
-		  2,   4.4,    -5,    6,    9,   -7,    5,   -4,   2,   2,
-		  1.1,  1.9,  -1.1,  2.9,  3.1, 1.9,  0.1,  2.9,  1.9, 2.1,
-		  2.1, 4.1,  -5.2,  6.4,  -9.2, -7.1,  -5.3, 4.4,  -2.1,  2.1
-	};
-
-	CICAAnalysis ica(rows, elms);
-
-	for (int i = 0; i < rows; ++i) {
-		vector <float> input(elms);
-		for (int j = 0; j < elms; ++j)
-			for (int k = 0; k < comps; ++k)
-				input[j] += ic_rows[k * elms + j] * cos(i  +  k);
-
-		ica.set_row(i, input.begin(), input.end());
-	}
-	ica.run_auto(6,2,0.9);
-	BOOST_CHECK_EQUAL(ica.get_ncomponents(), comps);
 
 
-}
-
-
-*/

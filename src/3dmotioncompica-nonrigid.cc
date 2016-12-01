@@ -180,7 +180,8 @@ int do_main( int argc, char *argv[] )
 	bool no_normalize = false; 
 	bool no_meanstrip = false; 
 	size_t skip_images = 0; 
-	size_t max_ica_iterations = 400; 
+	size_t max_ica_iterations = 400;
+	PIndepCompAnalysisFactory icatool;
 
 	size_t current_pass = 0; 
 	size_t pass = 3; 
@@ -218,7 +219,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
-	options.set_group("ICA"); 
+	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -254,12 +256,11 @@ int do_main( int argc, char *argv[] )
 	
 
 	// run ICA
-    CICAAnalysisITPPFactory icatool;
-    C3DImageSeriesICA ica(icatool, series, false);
+	C3DImageSeriesICA ica(*icatool, series, false);
 	if (max_ica_iterations) 
 		ica.set_max_iterations(max_ica_iterations); 
 	if (!ica.run(components, !no_meanstrip, !no_normalize)) {
-        ica.set_approach(CICAAnalysis::appr_symm);
+        ica.set_approach(CIndepCompAnalysis::appr_symm);
 		if (!ica.run(components, !no_meanstrip, !no_normalize))
 			cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...\n";
 	}
@@ -317,11 +318,11 @@ int do_main( int argc, char *argv[] )
 
 		
 		
-        C3DImageSeriesICA ica2(icatool, series, false);
+        C3DImageSeriesICA ica2(*icatool, series, false);
 		if (max_ica_iterations) 
 			ica2.set_max_iterations(max_ica_iterations); 
 		if (!ica2.run(components, !no_meanstrip, !no_normalize)) {
-            ica2.set_approach(CICAAnalysis::appr_symm);
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
 			ica2.run(components, !no_meanstrip, !no_normalize); 
 		}
 		

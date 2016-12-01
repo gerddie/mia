@@ -95,7 +95,8 @@ int do_main( int argc, char *argv[] )
 	bool no_meanstrip = false; 
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
-
+	PIndepCompAnalysisFactory icatool;
+	
 	int reference = -1; 
 	int nsegments = 12; 
 
@@ -105,6 +106,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( out_filename, "out-file", 'o', "output file with curves", CCmdOptionFlags::required_output));
 
 	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 

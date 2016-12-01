@@ -16,6 +16,12 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(NAMES deflationnonlinearity) 
+SET(NL_NAMES deflationnonlinearity) 
 
-PLUGINGROUP_WITH_TEST_AND_PREFIX2("fastica" "deflation" "${NAMES}" "${MIACORE}")
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("fastica" "deflation" "${NL_NAMES}" "${MIACORE}")
+
+SET(IMPL_NAMES fastica) 
+
+PLUGINGROUP_WITH_TEST_AND_PREFIX2("fastica" "implementation" "${IMPL_NAMES}" "${MIACORE}")
+
+
