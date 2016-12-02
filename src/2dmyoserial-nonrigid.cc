@@ -20,7 +20,6 @@
 
 #include <fstream>
 #include <libxml++/libxml++.h>
-#include <itpp/signal/fastica.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/core/msgstream.hh>
