@@ -74,7 +74,7 @@ IF (ZLIB_FOUND)
 	${DCMTK_DIR}/lib
 	)
       IF(NOT t_${n}) 
-	MESSAGE(ERROR "Required library ${n} not found")
+	MESSAGE(STATUS "library ${n} not found")
       ENDIF(NOT t_${n}) 
       SET(files "${files}" "${t_${n}}")
     ENDFOREACH(n)
