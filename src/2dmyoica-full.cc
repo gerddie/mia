@@ -19,7 +19,6 @@
  */
 
 #include <fstream>
-#include <itpp/signal/fastica.h>
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/threadedmsg.hh>

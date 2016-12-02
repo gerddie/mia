@@ -21,7 +21,6 @@
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
-#include <itpp/signal/fastica.h>
 
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
