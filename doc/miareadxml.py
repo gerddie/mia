@@ -22,7 +22,7 @@ from lxml import etree
 import re
 
 xml_namespace = "http://docbook.org/ns/docbook"
-xmlns = "{%s}" % xml_namespace
+xmlns = "{{}}".format(xml_namespace)
 
 # supported tags: 
 #   program      main tag 
@@ -82,7 +82,7 @@ def get_dict_table(dictionary, tabletype):
 class CTextNode: 
     def __init__(self, node, expect = None):
         if not expect is None and node.tag != expect:
-            raise ValueError("expected '%s' got '%s'" % (expect, node.tag))
+            raise ValueError("expected '{}' got '{}'".format (expect, node.tag))
 
         self.required = False
         self.is_input = False
@@ -96,7 +96,7 @@ class CTextNode:
             self.text = self.text + node.text
 
         for child in node.iter("flags"):
-            f = string.split(child.text)
+            f = child.text.split()
             for ff in f: 
                 self.flags.add(ff) 
             if child.tail is not None:
@@ -159,26 +159,26 @@ class COption(CTextNode):
                     else:
                         flagstring = flagstring + ', ' + f
             if self.value_range is not None: 
-                print ".IP \"%s \-\-%s=(%s); %s in %s\""% (short, self.long, flagstring, self.type, self.value_range)
+                print(".IP \"{} \-\-{}=({}); {} in {}\"".format (short, self.long, flagstring, self.type, self.value_range))
             else:
                 if not self.type == "bool":
-                    print ".IP \"%s \-\-%s=(%s); %s\""% (short, self.long, flagstring, self.type)
+                    print( ".IP \"{} \-\-{}=({}); {}\"".format (short, self.long, flagstring, self.type))
                 else:
-                    print ".IP \"%s \-\-%s\""% (short, self.long)
+                    print( ".IP \"{} \-\-{}\"".format (short, self.long))
         else:
             if not self.type == "bool":
                 if self.value_range is not None: 
-                    print ".IP \"%s \-\-%s=%s; %s in %s\""% (short, self.long, escape_dash(self.default), self.type, self.value_range)
+                    print( ".IP \"{} \-\-{}={}; {} in {}\"".format (short, self.long, escape_dash(self.default), self.type, self.value_range))
                 else:
-                    print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
+                    print( ".IP \"{} \-\-{}={}\"".format (short, self.long, escape_dash(self.default)))
             else:
-                print ".IP \"%s \-\-%s\""% (short, self.long)
-        print escape_dash(self.text), 
+                print( ".IP \"{} \-\-{}\"".format (short, self.long))
+        print( escape_dash(self.text), )
         self.do_print_man()
 
 
     def do_print_man(self):
-            print "" 
+            print( "" )
 
     def write_xml(self, entry):
         # create the terminal text 
@@ -236,13 +236,13 @@ class CDictOption(COption):
 
     def do_print_man(self):
         if len(self.dict) > 0:
-            print ""
+            print( "" )
             for k in self.dict.keys(): 
-                print ".RS 10"
-                print ".I" 
-                print escape_dash(k)
-                print "\(hy %s" % (self.dict[k])
-                print ".RE"
+                print( ".RS 10" )
+                print( ".I" )
+                print( escape_dash(k) )
+                print( "\(hy {}".format (self.dict[k]) )
+                print( ".RE" )
 
 
     def do_write_xml(self, parent):
@@ -267,15 +267,15 @@ class CSetOption(COption):
 
     def do_print_man(self):
         if len(self.set) > 0:
-            print ""
-            print ".RS 10"
-            print ".I" 
+            print( "" )
+            print( ".RS 10" )
+            print( ".I" )
 
-            print "Supported values are:(", 
+            print( "Supported values are:(", )
             for k in self.set:
-                print "%s, " % (escape_dash(k)), 
-            print ")"
-            print ".RE"
+                print( "{}, ".format (escape_dash(k)), )
+            print( ")" )
+            print( ".RE" )
 
 
     def do_write_xml(self, parent):
@@ -284,7 +284,7 @@ class CSetOption(COption):
             str_list = [" Supported values are:("]
             
             for k in self.set:
-                str_list.append("%s, " % (k))
+                str_list.append("{}, ".format (k))
             str_list.append(")")
             e.text = ''.join(str_list)
                 
@@ -302,7 +302,7 @@ class CIOOption(COption):
                     self.text = child.tail
 
     def do_print_man(self):
-        print " For supported file types see PLUGINS:%s" % (self.factory)
+        print( " For supported file types see PLUGINS:{}".format (self.factory) )
 
     def do_write_xml(self, parent):
         parent.text = parent.text + ". For supported file types see "
@@ -321,7 +321,7 @@ class CFactoryOption(COption):
                     self.text = child.tail
 
     def do_print_man(self):
-        print " For supported plugins see PLUGINS:%s" % (self.factory)
+        print( " For supported plugins see PLUGINS:{}".format (self.factory))
 
     def do_write_xml(self, parent):
         parent.text = parent.text + ". For supported plug-ins see "
@@ -337,13 +337,13 @@ class CExample(CTextNode):
             if child.tag == "Code": 
                 self.code.append(CTextNode(child, "Code"))
             else:
-                print "unexpected subnode '%s' in example"% (child.tag)
+                print( "unexpected subnode '{}' in example".format (child.tag) )
 
 
 class CGroup:
     def __init__(self, node):
         if node.tag != "group":
-            raise ValueError("expected 'group' got '%s'" % (node.tag))
+            raise ValueError("expected 'group' got '{}'".format (node.tag))
 
         self.entry = node.tag
         self.name  = node.get("name")
@@ -359,18 +359,18 @@ class CGroup:
                     }.get(child.get("type"), lambda n: COption(n))(child)
                 self.options.append(p)
             else:
-                print "unexpected subnode '%s' in 'group'"% (child.tag)
+                print( "unexpected subnode '{}' in 'group'".format (child.tag) )
 
 def get_text_element(root, name):
     xname = etree.SubElement(root, name)
     if xname is None:
-        raise ValueError("Program description misses the tag %s"% (name))
+        raise ValueError("Program description misses the tag {}".format (name))
     return xname.text
 
 class CParam: 
     def __init__(self, node):
         if node.tag != "param":
-            raise ValueError("expected 'param' got '%s'" % (node.tag))
+            raise ValueError("expected 'param' got '{}'".format (node.tag))
         self.name = node.get("name")
         self.type = node.get("type")
         self.default = node.get("default")
@@ -380,7 +380,7 @@ class CParam:
         self.flags = set()
 
         for child in node.iter("flags"):
-            f = string.split(child.text)
+            f = child.text.split()
             for ff in f: 
                 self.flags.add(ff) 
             if child.tail is not None:
@@ -416,8 +416,8 @@ class CParam:
 
 
     def print_man(self):
-        print ".I"
-        print self.name
+        print( ".I" )
+        print( self.name )
 
 
         if len(self.flags) > 0:
@@ -430,19 +430,19 @@ class CParam:
                 else:
                     termtext = termtext + ', ' + f
 
-            termtext = termtext + ", %s)"
-            print termtext % (self.type)
+            termtext = termtext + ", {})"
+            print( termtext.format(self.type))
         elif self.required:
-            print "= (required); %s " % (self.type)
+            print( "= (required); {} ".format (self.type))
         else:
-            print "= %s; %s " % (escape_dash(self.default), self.type)
-        print ".RS 2"
-        print "%s." % (escape_dash(self.text))
+            print( "= {}; {} ".format (escape_dash(self.default), self.type))
+        print( ".RS 2" )
+        print( "{}.".format (escape_dash(self.text)) )
         self.do_print_man()
-        print ".RE"
+        print( ".RE" )
 
     def do_print_man(self):
-        print ""
+        print( "" )
 
     def print_xml_help(self, root):
         row = etree.SubElement(root, "row")
@@ -505,13 +505,13 @@ class CDictParam(CParam):
                     self.dict[v.get("name")] = v.text
 
     def do_print_man(self):
-        print "Supported values are:"
+        print( "Supported values are:" )
         for k in self.dict.keys(): 
-            print ".RS 4"
-            print ".I" 
-            print escape_dash(k)
-            print "\(hy %s" % (self.dict[k])
-            print ".RE"
+            print( ".RS 4" )
+            print( ".I" )
+            print( escape_dash(k) )
+            print( "\(hy {}".format (self.dict[k]) )
+            print( ".RE" )
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
@@ -544,10 +544,10 @@ class CSetParam(CParam):
                         self.set.append(v.get("name"))
 
     def do_print_man(self):
-        print "Supported values are:(", 
+        print( "Supported values are:(",  )
         for k in self.set:
-            print "%s, " % (escape_dash(k)), 
-        print ")"
+            print( "{}, ".format (escape_dash(k)),  )
+        print( ")" )
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
@@ -555,7 +555,7 @@ class CSetParam(CParam):
         str_list = [self.text, " Supported values are:("]
 
         for k in self.set:
-            str_list.append("%s, " % (k))
+            str_list.append("{}, ".format (k))
         str_list.append(")")
         e.text = ''.join(str_list)
 
@@ -568,7 +568,7 @@ class CFactoryParam(CParam):
                 self.factory = n.get("name")
 
     def do_print_man(self):
-        print "For supported plug-ins see PLUGINS:%s" % (self.factory)
+        print( "For supported plug-ins see PLUGINS:{}".format (self.factory) )
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
@@ -578,10 +578,10 @@ class CFactoryParam(CParam):
 
 
     def append_to_handler(self, handlers, link):
-        if handlers.has_key(self.factory):
+        if self.factory in handlers:
             handlers[self.factory].append_user(link)
         else:
-            raise RuntimeError("Handler %s is used by plugin %s, but is not available" % (self.factory, link))
+            raise RuntimeError("Handler {} is used by plugin {}, but is not available".format (self.factory, link))
 
 
 class CIOParam(CParam):
@@ -593,7 +593,7 @@ class CIOParam(CParam):
                 self.factory = n.get("name")
 
     def do_print_man(self):
-        print "For supported file types see PLUGINS:%s" % (self.factory)
+        print( "For supported file types see PLUGINS:{}".format (self.factory) )
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
@@ -603,15 +603,15 @@ class CIOParam(CParam):
 
 
     def append_to_handler(self, handlers, link):
-        if handlers.has_key(self.factory):
+        if self.factory in handlers:
             handlers[self.factory].append_user(link)
         else:
-            raise RuntimeError("Handler %s is used by plugin %s, but is not available" % (self.factory, link))
+            raise RuntimeError("Handler {} is used by plugin {}, but is not available".format (self.factory, link))
 
 class CPlugin: 
     def __init__(self, node, handlername):
         if node.tag != "plugin":
-            raise ValueError("expected 'plugin' got '%s'" % (node.tag))
+            raise ValueError("expected 'plugin' got '{}'".format (node.tag))
         self.name = node.get("name")
         self.text = node.text
         self.handlername = handlername
@@ -642,7 +642,7 @@ class CPlugin:
             elif child.tag == "suffixes":
                 self.suffixes = child.text
             else:
-                print "unexpected subnode '%s' in 'plugin'"% (child.tag)
+                print( "unexpected subnode '{}' in 'plugin'".format (child.tag) )
 
     def append_to_handler(self, handlers):
         for p in self.params:
@@ -706,7 +706,7 @@ class CPlugin:
 class CHandler: 
     def __init__(self, node):
         if node.tag != "handler":
-            raise ValueError("expected 'handler' got '%s'" % (node.tag))
+            raise ValueError("expected 'handler' got '{}'".format (node.tag))
         self.entry = node.tag
         self.name =  node.get("name")
         self.users = set([])
@@ -717,7 +717,7 @@ class CHandler:
             if child.tag == "plugin": 
                 self.plugins.append(CPlugin(child, self.name))
             else:
-                print "unexpected subnode '%s' in 'handler'" % (child.tag)
+                print( "unexpected subnode '{}' in 'handler'".format (child.tag) )
 
     def append_user(self, user):
         self.users.add(user)
@@ -762,7 +762,7 @@ class CDescription:
             elif n.tag == "stdout-is-result":
                 self.stdout_is_result = True
             else: 
-                print "unknown tag '%s'"% (n.tag)
+                print( "unknown tag '{}'".format (n.tag) )
         self.anchor = make_sec_ancor("Sec", self.name)
         self.link_handler_consumers()
 

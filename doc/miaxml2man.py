@@ -24,7 +24,13 @@ import sys
 import time
 import calendar
 import string
-import htmlentitydefs
+
+python_version = sys.version_info.major
+if python_version >= 3:
+    from html.entities import name2codepoint
+else:
+    from htmlentitydefs  import name2codepoint
+
 import re
 
 sys.dont_write_bytecode = True
@@ -37,7 +43,7 @@ from miareadxml import parse_file
 
 def get_date_string():
     lt = time.localtime(time.time())
-    return "%d %s %d"% (lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
+    return "{} {} {}".format (lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
 
 #taken from http://effbot.org/zone/re-sub.htm#unescape-html
     
@@ -56,7 +62,7 @@ def unescape(text):
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = unichr(name2codepoint[text[1:-1]])
             except KeyError:
                 pass
         return text # leave as is
@@ -71,79 +77,78 @@ def clean (text):
 
 def write_man_file(descr):
     name = escape_dash(descr.name)
-    print ".TH %s 1 \"v%s\"  \"USER COMMANDS\"" %(escape_dash(descr.name), descr.version)
-    print ".SH NAME"
-    print name, 
-    print "\- %s" % (clean(descr.whatis))
-    print ".SH SYNOPSIS"
-    print ".B %s"% (clean(descr.basic_usage))
-    print ".SH DESCRIPTION"
-    print ".B %s"% (name)
-    print descr.description
-    print ".SH OPTIONS"
+    print(".TH {} 1 \"v{}\"  \"USER COMMANDS\"".format(escape_dash(descr.name), descr.version))
+    print(".SH NAME")
+    print(name,) 
+    print("\- {}".format (clean(descr.whatis)))
+    print(".SH SYNOPSIS")
+    print(".B {}".format (clean(descr.basic_usage)))
+    print(".SH DESCRIPTION")
+    print(".B {}".format (name))
+    print(descr.description)
+    print(".SH OPTIONS")
     for g in descr.option_groups:
         if len(g.name) > 0:
-            print ".SS %s"% (g.name)
+            print(".SS {}".format(g.name))
 
-        print ".RS"
+        print(".RS")
         for o in g.options:
             o.print_man()
-        print ".RE"
+        print(".RE")
     
-    handlerkeys = descr.handlers.keys()
-    handlerkeys.sort()
+    handlerkeys = sorted(descr.handlers.keys())
     for k in handlerkeys: 
         h = descr.handlers[k]
-        print ".SH PLUGINS: %s" % (h.name)
+        print(".SH PLUGINS: {}".format (h.name))
         for p in h.plugins:
-            print ".TP 10"
-            print ".B %s" % p.name
+            print(".TP 10")
+            print(".B {}".format(p.name))
             if len(p.params) > 0: 
-                print "%s, supported parameters are: " % (p.text) 
-                print ".P"
+                print("{}, supported parameters are: ".format (p.text))
+                print(".P")
                 for o in p.params:
-                    print ".RS 14"
+                    print(".RS 14")
                     o.print_man()
-                    print ".RE"
+                    print(".RE")
             else:
-                print p.text
-                print ".P"
+                print(p.text)
+                print(".P")
                 if not p.no_params_info: 
-                    print ".RS 14"
-                    print "(no parameters)"
-                    print ".RE"
+                    print(".RS 14")
+                    print("(no parameters)")
+                    print(".RE")
                     
             if p.suffixes is not None:
-                print ".RS 14"
-                print "Recognized file extensions: ", p.suffixes
-                print ".RE"
-                print " "
+                print(".RS 14")
+                print("Recognized file extensions: ", p.suffixes)
+                print(".RE")
+                print(" ")
 
             if p.supported_types is not None:
-                print ".RS 14"
-                print "Supported element types: "
-                print ".RS 2"
-                print p.supported_types
-                print ".RE"
-                print " "
-                print ".RE"
+                print(".RS 14")
+                print("Supported element types: ")
+                print(".RS 2")
+                print(p.supported_types)
+                print(".RE")
+                print(" ")
+                print(".RE")
 
 
     if descr.Example.text is not None and len(descr.Example.text) > 0:
-            print ".SH EXAMPLE"
-            print clean(descr.Example.text)
+            print(".SH EXAMPLE")
+            print(clean(descr.Example.text))
             for c in descr.Example.code:
-                print ".HP"
-                print "%s %s" % (name, clean(c.text))
+                print(".HP")
+                print("{} {}".format (name, clean(c.text)))
 
-    print ".SH AUTHOR(s)"
-    print clean(descr.author)
+    print(".SH AUTHOR(s)")
+    print(clean(descr.author))
     
-    print ".SH COPYRIGHT"
-    print """This software is Copyright (c) 1999\(hy2015 Leipzig, Germany and Madrid, Spain.
+    print(".SH COPYRIGHT")
+    print("""This software is Copyright (c) 1999\(hy2015 Leipzig, Germany and Madrid, Spain.
 It comes  with  ABSOLUTELY  NO WARRANTY  and  you  may redistribute it under the terms of the GNU 
 GENERAL PUBLIC LICENSE Version 3 (or later). For more 
-information run the program with the option '\-\-copyright'."""
+information run the program with the option '\-\-copyright'.""")
 
 
 X=parse_file(sys.argv[1])

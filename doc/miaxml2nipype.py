@@ -24,9 +24,14 @@ import sys
 import time
 import calendar
 import string
-import htmlentitydefs
 import re
 from os import path
+
+python_version = sys.version_info.major
+if python_version >= 3:
+    from html.entities import name2codepoint
+else:
+    from htmlentitydefs  import name2codepoint
 
 from argparse import ArgumentParser
 from argparse import RawTextHelpFormatter
@@ -51,7 +56,7 @@ from miareadxml import parse_file
 
 def get_date_string():
     lt = time.localtime(time.time())
-    return "%d %s %d"% (lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
+    return "{} {} {}".format(lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
 
 #taken from http://effbot.org/zone/re-sub.htm#unescape-html
     
