@@ -21,16 +21,19 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <sstream>
+#include <cstdarg>
 
 #include <mia/core/xmlinterface.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/errormacro.hh>
 
 NS_MIA_BEGIN
 
 using std::string;
 using std::stringstream; 
 using std::make_shared; 
-using std::vector; 
+using std::vector;
+using std::runtime_error; 
 
 struct CXMLElementImpl {
         CXMLElementImpl(const char *name);
@@ -38,7 +41,9 @@ struct CXMLElementImpl {
         
         xmlNodePtr element;
         vector<CXMLElement::Pointer> children;
-}; 
+
+};
+
 
 CXMLElementImpl::CXMLElementImpl(const char *name)
 {
@@ -96,17 +101,35 @@ struct CXMLDocumentImpl {
         CXMLDocumentImpl();
         ~CXMLDocumentImpl();
 
+	static void error_handler(void *ctx, const char *msg, ...);
+	
         xmlDocPtr doc;
 }; 
 
+void CXMLDocumentImpl::error_handler(void *ctx, const char *msg, ...)
+{
+	const int TMP_BUF_SIZE = 1024; 
+	char s[TMP_BUF_SIZE];
+	va_list arg_ptr;
+	
+	va_start(arg_ptr, msg);
+	vsnprintf(s, TMP_BUF_SIZE, msg, arg_ptr);
+	va_end(arg_ptr);
+
+	throw create_exception<runtime_error>("Error creating xml docuument:", s); 
+}
+
+
 CXMLDocumentImpl::CXMLDocumentImpl()
 {
-        doc = xmlNewDoc(BAD_CAST "1.0");
+	xmlSetGenericErrorFunc(NULL, (xmlGenericErrorFunc)CXMLDocumentImpl::error_handler);
+	doc = xmlNewDoc(BAD_CAST "1.0");
 }
 
 CXMLDocumentImpl::~CXMLDocumentImpl()
 {
         xmlFreeDoc(doc);
+	xmlSetGenericErrorFunc(NULL, NULL);
 }
 
        

@@ -48,7 +48,7 @@ void CParameter::reset()
 
 const char *CParameter::type() const
 {
-	return m_type;
+	return m_type.c_str();
 }
 
 void CParameter::get_help_xml(CXMLElement& param) const
@@ -132,12 +132,19 @@ std::string CParameter::get_default_value() const
 
 CStringParameter::CStringParameter(std::string& value,CCmdOptionFlags flags , const char *descr, 
 				   const CPluginHandlerBase *plugin_hint):
-	CParameter(__type_descr<std::string>::value, has_flag(flags, CCmdOptionFlags::required), descr),
+	CParameter(plugin_hint ?
+		   plugin_hint->get_handler_type_string().c_str(): 
+		   __type_descr<std::string>::value,
+		   has_flag(flags, CCmdOptionFlags::required), descr),
 	m_value(value), 
 	m_default_value(value), 
 	m_flags(flags), 
 	m_plugin_hint(plugin_hint)
 {
+	if (plugin_hint)  {
+		cvdebug() << "plugin_hint->get_handler_type_string()=" << plugin_hint->get_handler_type_string() << "\n";
+		cvdebug() << "Reported type = " << type() << "\n"; 
+	}
 }
 
 void CStringParameter::do_reset()

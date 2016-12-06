@@ -146,7 +146,7 @@ private:
 	virtual void do_get_help_xml(CXMLElement& self) const;
 	bool m_required;
 	bool m_is_required; 
-	const char *m_type;
+	const std::string m_type;
 	const char *m_descr;
 };
 
