@@ -90,19 +90,19 @@ BOOST_FIXTURE_TEST_CASE(test_core_hdf5_io_driver,  HDF5CoreFileFixture)
 BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 {
 	hsize_t dims[2] = {2,3}; 
-	vector<int> data = {1,2,3,4,5,6}; 
-	auto mem_type_in = Mia_to_h5_types<int>::mem_datatype(); 
+	vector<int32_t> data = {1,2,3,4,5,6}; 
+	auto mem_type_in = Mia_to_h5_types<int32_t>::mem_datatype(); 
 
 	// write the data set 
 	{
 		
-		auto file_type = Mia_to_h5_types<int>::file_datatype(); 
+		auto file_type = Mia_to_h5_types<int32_t>::file_datatype(); 
 
 		
 		auto space = H5Space::create(2, dims); 
 		auto dataset = H5Dataset::create(get_file(), "/testset", file_type, space);
 		
-		dataset.write_data(data, int());
+		dataset.write_data(data, int32_t());
 	}
 	// close data set automatically, and now reopen it 
 	{
@@ -119,7 +119,7 @@ BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 
 		vector<int> read_data(6);
 		
-		dataset.read_data(read_data, int()); 
+		dataset.read_data(read_data, int32_t()); 
 
 		for (int i = 0; i < 6; ++i)
 			BOOST_CHECK_EQUAL(read_data[i], data[i]); 
