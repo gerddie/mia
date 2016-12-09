@@ -103,11 +103,25 @@ BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 		auto dataset = H5Dataset::create(get_file(), "/testset", file_type, space);
 		
 		dataset.write_data(data, int32_t());
+
+
+		cvdebug() << "Get the data set back (first)\n"; 
+		
+		auto dataset2 = H5Dataset::open(get_file(), "/testset");
+		auto size = dataset2.get_size();
+				
+		BOOST_CHECK_EQUAL(size.size(), 2u); 
+		BOOST_CHECK_EQUAL(size[0],2u);
+		BOOST_CHECK_EQUAL(size[1],3u); 
+
 	}
-	// close data set automatically, and now reopen it 
+	// close data set automatically, and now reopen it
+	cvdebug() << "second part\n"; 
 	{
 		auto dataset = H5Dataset::open(get_file(), "/testset");
-		auto size = dataset.get_size(); 
+		
+		auto size = dataset.get_size();
+		
 		BOOST_CHECK_EQUAL(size.size(), 2u); 
 		BOOST_CHECK_EQUAL(size[0],2u);
 		BOOST_CHECK_EQUAL(size[1],3u); 
@@ -117,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(test_simple_dataset,  HDF5CoreFileFixture)
 
 		BOOST_CHECK(H5Tequal( mem_type, mem_type_in ) > 0); 
 
-		vector<int> read_data(6);
+		vector<int32_t> read_data(6);
 		
 		dataset.read_data(read_data, int32_t()); 
 
