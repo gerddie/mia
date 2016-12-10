@@ -59,19 +59,11 @@ MACRO(CREATE_PLUGIN_COMMON plugname files)
 ENDMACRO(CREATE_PLUGIN_COMMON plugname) 
 
 MACRO(CREATE_PLUGIN_MODULE plugname libs)
-#  add_library(${plugname} MODULE NO_SOURCE_FILES)
   add_library(${plugname} MODULE $<TARGET_OBJECTS:${plugname}-common>)
-#  MESSAGE("Remark: Ignore this warning, calling ADD_LIBRARY without source files was done intentionally.")
   set_target_properties(${plugname} PROPERTIES 
     PREFIX ""  
     SUFFIX ${PLUGSUFFIX})
-  IF(NOT WIN32)
-#    set_target_properties(${plugname} PROPERTIES 
-#      LINK_FLAGS "-Wl,--no-gc-sections -Wl,--undefined,get_plugin_interface"
-#      )
-  ENDIF(NOT WIN32)
   target_link_libraries(${plugname} ${libs})
-#  MESSAGE(STATUS "${plugname} depends on ${libs}")
 ENDMACRO(CREATE_PLUGIN_MODULE plugname)
 
 MACRO(CREATE_PLUGIN_TEST plugname file libs)
@@ -85,7 +77,6 @@ MACRO(CREATE_PLUGIN_TEST plugname file libs)
     set_target_properties(test-${plugname} PROPERTIES
       COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
   ENDIF(NOT WIN32)
-#  target_link_libraries(test-${plugname} ${plugname}-common)
   target_link_libraries(test-${plugname} ${libs} ${BOOST_UNITTEST} "${PLUGIN_TESTLIBS}")
   add_test(${plugname} test-${plugname})
 ENDMACRO(CREATE_PLUGIN_TEST plugname file)

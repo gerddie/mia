@@ -59,35 +59,6 @@ struct max_hold_type<T2DVector<T> > {
 };
 /// @endcond 
 
-/**
-   \ingroup interpol 
-
-   \tparam T data type to be interpolated 
-
-   \brief The base class template for all kinds of interpolators 
-
-   Basic Interpolator type for 2D Data.
-*/
-template <typename T>
-class  EXPORT_2D T2DInterpolator  {
-public:
-
-	/** a virtual destructor is neccessary for some of the interpolators */
-	virtual  ~T2DInterpolator(){}
-	/**
-	   \param x location of data value to read
-	   \returns interpolated value at location x
-	 */
-	virtual T operator () (const C2DFVector& x) const = 0;
-	
-	/**
-	   \param x location of data value to read
-	   \returns interpolated gradient at location x
-	*/
-	virtual T2DVector<T> derivative_at(const C2DFVector& x) const = 0;
-
-};
-
 /** 
     @cond INTERNAL 
 */
@@ -97,6 +68,20 @@ struct coeff_map<T2DVector<U> > {
 	typedef C2DDVector   coeff_type;
 };
 
+/// @endcond 
+
+
+/**
+   @cond INTERNAL 
+*/
+struct C2DWeightCache {
+	CSplineKernel::SCache x; 
+	CSplineKernel::SCache y; 
+	
+	C2DWeightCache(int kernel_size, 
+		       const CSplineBoundaryCondition& xbc, 
+		       const CSplineBoundaryCondition& ybc); 
+}; 
 /// @endcond 
 
 /**
@@ -110,7 +95,7 @@ struct coeff_map<T2DVector<U> > {
    spacial convolution, like e.g. by using B-splines. 
 */
 template <class T>
-class EXPORT_2D T2DConvoluteInterpolator: public T2DInterpolator<T> {
+class EXPORT_2D T2DInterpolator {
 public:
 	/**
 	   Constructor for the interpolator. The input data is pre-filtered in order to 
@@ -118,7 +103,7 @@ public:
 	   \param data input data to base th einterpolation on 
 	   \param kernel the B-spline kernel to be used. 
 	*/
-	T2DConvoluteInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel);
+	T2DInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel);
 
 	/**
 	   Construtor to prefilter the input for proper interpolation 
@@ -128,10 +113,17 @@ public:
 	   \param ybc boundary conditions to be applied along the y-axis when interpolating  
 	 */
 
-	T2DConvoluteInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel, 
+	T2DInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel, 
 				 const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc);
 
-	~T2DConvoluteInterpolator();
+	~T2DInterpolator();
+
+	/**
+	   Create the cache structure needed to run the interpolation in a multi-threaded 
+	   environment. This function must be called in each thread once. 
+	   \returns the cache structure 
+	*/
+	C2DWeightCache create_cache() const; 
 
 
 	/**
@@ -142,6 +134,9 @@ public:
 	 */
 	T  operator () (const C2DFVector& x) const;
 
+	
+	T  operator () (const C2DFVector& x, C2DWeightCache& cache) const; 
+	
 	/**
 	   Evaluate the first order derivative on the given coordinate 
 	   \param x location 
@@ -178,15 +173,9 @@ private:
 	typename T2DDatafield<T>::value_type m_min;
 	typename T2DDatafield<T>::value_type m_max;
 
-	/// This part makes the class to be not thread save 
-	mutable CSplineKernel::VIndex m_x_index; 
-	mutable CSplineKernel::VIndex m_y_index; 
-	mutable CSplineKernel::VWeight m_x_weight; 
-	mutable CSplineKernel::VWeight m_y_weight; 
-	mutable CSplineKernel::SCache m_x_cache; 
-	mutable CSplineKernel::SCache m_y_cache; 
+	mutable CMutex m_cache_lock;
+	mutable C2DWeightCache m_cache; 
 
-	
 
 };
 
@@ -269,7 +258,7 @@ typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 template <class T>
 T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) const
 {
-	return new T2DConvoluteInterpolator<T>(src, m_kernel, *m_xbc, *m_ybc);
+	return new T2DInterpolator<T>(src, m_kernel, *m_xbc, *m_ybc);
 }
 
 NS_MIA_END

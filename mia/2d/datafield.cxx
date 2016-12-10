@@ -227,6 +227,21 @@ void T2DDatafield<T>::put_data_line_y(size_t x, const std::vector<T>& buffer)
 }
 
 template <typename T>
+typename T2DDatafield<T>::Range
+T2DDatafield<T>::get_range(const C2DBounds& start, const C2DBounds& end)
+{
+	return Range(start, end, *this); 
+}
+
+template <typename T>
+typename T2DDatafield<T>::ConstRange
+T2DDatafield<T>::get_range(const C2DBounds& start, const C2DBounds& end) const
+{
+	return ConstRange(start, end, *this); 
+}
+
+
+template <typename T>
 typename T2DDatafield<T>::range_iterator 
 T2DDatafield<T>::begin_range(const C2DBounds& begin, const C2DBounds& end)
 {
@@ -256,6 +271,50 @@ T2DDatafield<T>::end_range(const C2DBounds& begin, const C2DBounds& end)const
 {
 	return const_range_iterator(end, get_size(), begin, end, 
 				    begin_at(end.x, end.y)); 
+}
+
+template <typename T>
+typename T2DDatafield<T>::Range::iterator T2DDatafield<T>::Range::begin()
+{
+	return m_begin; 
+}
+
+template <typename T>
+typename T2DDatafield<T>::Range::iterator T2DDatafield<T>::Range::end()
+{
+	return m_end; 
+}
+
+template <typename T>
+T2DDatafield<T>::Range::Range(const C2DBounds& start, const C2DBounds& end, T2DDatafield<T>& field):
+	m_begin(field.begin_range(start, end)), m_end(field.end_range(start, end))
+{
+}
+					    
+
+template <typename T>
+typename T2DDatafield<T>::ConstRange::iterator T2DDatafield<T>::ConstRange::begin() const 
+{
+	return m_begin; 
+}
+
+template <typename T>
+typename T2DDatafield<T>::ConstRange::iterator T2DDatafield<T>::ConstRange::end() const 
+{
+	return m_end; 
+}
+
+
+template <typename T>
+T2DDatafield<T>::ConstRange::ConstRange(const C2DBounds& start, const C2DBounds& end, const T2DDatafield<T>& field):
+	m_begin(field.begin_range(start, end)), m_end(field.end_range(start, end))
+{
+}
+
+template <typename T>
+T2DDatafield<T>::ConstRange::ConstRange(const Range& range):
+	m_begin(range.m_begin), m_end(range.m_end)
+{
 }
 
 

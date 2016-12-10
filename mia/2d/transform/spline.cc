@@ -328,7 +328,7 @@ bool C2DSplineTransformation::refine()
 	// now interpolate the new coefficients 
 	// \todo this should be done faster by a filter 
 	reinit();
-	T2DConvoluteInterpolator<C2DFVector> interp(m_coefficients, m_kernel);
+	T2DInterpolator<C2DFVector> interp(m_coefficients, m_kernel);
 
 	C2DFVectorfield coeffs(csize);
 	C2DFVector dx((float)(m_coefficients.get_size().x - 1 - m_enlarge.x) / (float)(csize.x - 1 - m_enlarge.x),

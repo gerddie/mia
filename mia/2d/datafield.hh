@@ -41,6 +41,42 @@
 
 NS_MIA_BEGIN
 
+#define DECLARE_EXTERN_ITERATORS(TYPE)						\
+	extern template class  EXPORT_2D range2d_iterator<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_2D range2d_iterator<std::vector<TYPE>::const_iterator>; \
+	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<std::vector<TYPE>::const_iterator>;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
+DECLARE_EXTERN_ITERATORS(double);
+DECLARE_EXTERN_ITERATORS(float);
+DECLARE_EXTERN_ITERATORS(uint32_t);
+DECLARE_EXTERN_ITERATORS(int32_t);
+DECLARE_EXTERN_ITERATORS(int16_t);
+DECLARE_EXTERN_ITERATORS(uint16_t);
+DECLARE_EXTERN_ITERATORS(int8_t);
+DECLARE_EXTERN_ITERATORS(uint8_t);
+DECLARE_EXTERN_ITERATORS(bool);
+DECLARE_EXTERN_ITERATORS(int64_t);
+DECLARE_EXTERN_ITERATORS(uint64_t);
+
+DECLARE_EXTERN_ITERATORS(C2DBounds)
+DECLARE_EXTERN_ITERATORS(C2DFVector)
+DECLARE_EXTERN_ITERATORS(C2DDVector)
+
+#undef DECLARE_EXTERN_ITERATORS
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
+
+
 /**
    \ingroup basic
    \brief A class to hold data on a regular 2D grid 
@@ -80,6 +116,44 @@ public:
 	typedef C2DFVector coord_type;
 	/// \endcond 
 
+	class EXPORT_2DDATAFIELD Range {
+		friend class T2DDatafield<T>;
+		friend class ConstRange;
+	public:
+		
+		typedef T2DDatafield<T>::range_iterator iterator;
+		
+		iterator begin();
+		
+		iterator end();
+		
+	private:
+		Range(const C2DBounds& start, const C2DBounds& end, T2DDatafield<T>& field);
+
+		iterator m_begin;
+		iterator m_end;
+	}; 
+	
+	class EXPORT_2D ConstRange {
+	public:
+		friend class T2DDatafield<T>;
+
+		typedef T2DDatafield<T>::const_range_iterator iterator;
+		
+		iterator begin() const;
+		
+		iterator end() const;
+
+	private:
+		ConstRange(const C2DBounds& start, const C2DBounds& end, const T2DDatafield<T>& field);
+
+		ConstRange(const Range& range); 
+		
+		iterator m_begin;
+		iterator m_end;
+	}; 
+
+	
 	T2DDatafield();
 
 	/**
@@ -272,6 +346,11 @@ public:
 		return b;
 	}
 
+	Range get_range(const C2DBounds& start, const C2DBounds& end);
+
+	ConstRange get_range(const C2DBounds& start, const C2DBounds& end) const; 
+
+	
         /** \returns an read/write forward iterator over a subset of the data. 
             The functions ensures, that the field uses a single referenced datafield */
         range_iterator begin_range(const C2DBounds& begin, const C2DBounds& end); 
@@ -338,11 +417,20 @@ typedef TTranslator<C2DFVector> C2DFVectorTranslator;
 /// @cond NEVER 
 
 #define DEFINE_2DFIELD_TEMPLATE(TYPE) \
-	extern template class EXPORT_2D EXPORT_2D T2DDatafield<TYPE>;			\
-	extern template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
-	extern template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>; \
-	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
-	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::const_iterator>;
+	extern template class EXPORT_2D T2DDatafield<TYPE>;			\
+	extern template class EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
+	extern template class EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>; \
+	extern template class EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
+	extern template class EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::const_iterator>;
+
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
 
 DEFINE_2DFIELD_TEMPLATE(double);
 DEFINE_2DFIELD_TEMPLATE(float); 
@@ -355,9 +443,18 @@ DEFINE_2DFIELD_TEMPLATE(int16_t);
 DEFINE_2DFIELD_TEMPLATE(uint8_t);
 DEFINE_2DFIELD_TEMPLATE(int8_t);
 
+DEFINE_2DFIELD_TEMPLATE(C2DBounds);
+DEFINE_2DFIELD_TEMPLATE(C2DFVector)
+DEFINE_2DFIELD_TEMPLATE(C2DDVector)
 
 DECLARE_TYPE_DESCR(C2DBounds);
 DECLARE_TYPE_DESCR(C2DFVector);
+DECLARE_TYPE_DESCR(C2DDVector);
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
+
 
 extern template class EXPORT_2D CTParameter<C2DFVector>;
 extern template class EXPORT_2D CTParameter<C2DBounds>;

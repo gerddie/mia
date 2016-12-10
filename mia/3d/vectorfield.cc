@@ -392,6 +392,13 @@ C3DFVector C3DLinearVectorfieldInterpolator::operator ()(const C3DFVector& x) co
 	template class  range2d_iterator<T2DDatafield<TYPE>::const_iterator>;
 
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
 INSTANCIATE2D(C3DFVector); 
 INSTANCIATE2D(C3DDVector);
 
@@ -399,6 +406,11 @@ INSTANCIATE(C3DFVector);
 INSTANCIATE(C3DDVector);
 template class EXPORT_3D T3DVectorfield<C3DFVector>;
 template class EXPORT_3D T3DVectorfield<C3DDVector>;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
+
 
 
 

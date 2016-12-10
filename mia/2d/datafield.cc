@@ -33,6 +33,13 @@ NS_MIA_BEGIN
 	template class EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
 	template class EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::const_iterator>;
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
 
 
 INSTANCIATE(float); 
@@ -45,6 +52,11 @@ INSTANCIATE(int16_t);
 INSTANCIATE(uint16_t);
 INSTANCIATE(int8_t);
 INSTANCIATE(uint8_t);
+
+INSTANCIATE(C2DBounds);
+INSTANCIATE(C2DFVector)
+INSTANCIATE(C2DDVector)
+
 template class  EXPORT_2D T2DDatafield<bool>;
 
 DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds"); 
@@ -54,6 +66,10 @@ template class EXPORT_2D CTParameter<C2DFVector>;
 template class EXPORT_2D CTParameter<C2DBounds>;
 template class EXPORT_2D TTranslator<C2DFVector>; 
 template class EXPORT_2D TAttribute<C2DFVector>; 
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 
 NS_MIA_END
 

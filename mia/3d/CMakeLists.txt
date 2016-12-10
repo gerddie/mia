@@ -63,7 +63,6 @@ SET(MIA3D_SRC
   vfregularizer.cc
   vfregularizerkernel.cc
   vfio.cc
-  ${ITPP_SRC}
   )
 
 SET(MIA3D_HEADERS
@@ -119,7 +118,6 @@ SET(MIA3D_HEADERS
   transformfactory.hh
   transformio.hh
   transformmock.hh
-  ${ITPP_HEADER}
   valueattributetranslator.hh
   vector.hh
   vectorfield.hh
@@ -197,9 +195,7 @@ TEST_3D(nfg nfg)
 TEST_3D(vectorfield vectorfield)
 TEST_3D(orientation orientation)
 TEST_3D(deform deform)
-IF(ITPP_FOUND)
-  TEST_3D(ica ica)
-ENDIF(ITPP_FOUND)
+TEST_3D(ica ica)
 TEST_3D(transformfactory transformfactory)
 TEST_3D(rigidregister rigidregister)
 TEST_3D(nonrigidregister nonrigidregister)

@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost )
 	}
 	auto kernel = produce_spline_kernel("bspline:d=4"); 
 
-	T2DConvoluteInterpolator<C2DFVector> source(coef, kernel);
+	T2DInterpolator<C2DFVector> source(coef, kernel);
 	auto coeff_double = source.get_coefficients(); 
 	transform(coeff_double.begin(), coeff_double.end(), coef.begin(), 
 		  [](const C2DDVector& x) { return C2DFVector(x);}); 
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_weight )
 	}
 	auto kernel = produce_spline_kernel("bspline:d=4"); 
 
-	T2DConvoluteInterpolator<C2DFVector> source(coef, kernel);
+	T2DInterpolator<C2DFVector> source(coef, kernel);
 	auto coeff_double = source.get_coefficients(); 
 	transform(coeff_double.begin(), coeff_double.end(), coef.begin(), 
 		  [](const C2DDVector& x) { return C2DFVector(x);}); 
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_div_weight )
 	}
 	auto kernel = produce_spline_kernel("bspline:d=4"); 
 
-	T2DConvoluteInterpolator<C2DFVector> source(coef, kernel);
+	T2DInterpolator<C2DFVector> source(coef, kernel);
 	auto coeff_double = source.get_coefficients(); 
 	transform(coeff_double.begin(), coeff_double.end(), coef.begin(), 
 		  [](const C2DDVector& x) { return C2DFVector(x);}); 
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_curl_weight )
 	}
 	auto kernel = produce_spline_kernel("bspline:d=4"); 
 
-	T2DConvoluteInterpolator<C2DFVector> source(coef, kernel);
+	T2DInterpolator<C2DFVector> source(coef, kernel);
 	auto coeff_double = source.get_coefficients(); 
 	transform(coeff_double.begin(), coeff_double.end(), coef.begin(), 
 		  [](const C2DDVector& x) { return C2DFVector(x);}); 

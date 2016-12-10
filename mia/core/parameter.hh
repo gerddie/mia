@@ -931,7 +931,7 @@ std::string TParameter<T>::do_get_value_as_string() const
 	return __dispatch_param_translate<T>::apply(m_value);	
 }
 
-
+/// @cond never
 extern template class EXPORT_CORE TBoundedParameter<uint16_t>;
 extern template class EXPORT_CORE TBoundedParameter<uint32_t>;
 extern template class EXPORT_CORE TBoundedParameter<uint64_t>;
@@ -955,6 +955,7 @@ extern template class EXPORT_CORE CTParameter<std::vector<std::string> >;
 extern template class EXPORT_CORE CTParameter<std::string>;
 extern template class EXPORT_CORE CTParameter<bool>;
 
+/// @endcond never 
 NS_MIA_END
 
 #endif

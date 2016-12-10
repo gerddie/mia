@@ -20,7 +20,7 @@
 
 #include <climits>
 
-#define VSTREAM_DOMAIN "test-transio"
+#define VSTREAM_DOMAIN "test-3d-vectorfield"
 #include <mia/internal/autotest.hh>
 
 

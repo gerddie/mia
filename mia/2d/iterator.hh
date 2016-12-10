@@ -39,7 +39,7 @@ NS_MIA_BEGIN
  */
 
 template <typename I> 
-class range2d_iterator_with_boundary_flag: public std::forward_iterator_tag {
+class EXPORT_2D range2d_iterator_with_boundary_flag: public std::forward_iterator_tag {
 public: 
 	/// data type reference 
 	typedef typename I::reference reference; 
@@ -211,8 +211,8 @@ bool operator != (const range2d_iterator_with_boundary_flag<T>& left, const rang
 
 
 template <typename I> 
-class range2d_iterator: public  std::iterator<std::forward_iterator_tag, typename I::value_type>
- {
+class EXPORT_2D range2d_iterator: public  std::iterator<std::forward_iterator_tag, typename I::value_type>
+{
 public: 
 	/// data type reference 
 	typedef typename I::reference reference; 
@@ -301,7 +301,13 @@ public:
 	internal_iterator get_point(); 
 
 	
-	range2d_iterator_with_boundary_flag<I> with_boundary_flag() const; 
+	range2d_iterator_with_boundary_flag<I> with_boundary_flag() const;
+
+	 /**
+	    access elements relative to the iterator position 
+	 */
+	 const reference operator[] (int i) const;
+
 private: 
 
 	void increment_y(); 
@@ -369,6 +375,14 @@ bool operator != (const range2d_iterator<I>& a, const range2d_iterator<I>& b)
 {
 	return !(a == b); 
 }
+
+template <typename I> 
+const typename range2d_iterator<I>::reference
+range2d_iterator<I>::operator[] (int i) const
+{
+	return m_iterator[i];
+}
+
 
 NS_MIA_END
 

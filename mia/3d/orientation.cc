@@ -314,6 +314,13 @@ EXPORT_3D  std::istream& operator >> (std::istream& is, C3DOrientationAndPositio
 	return is; 
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
 template class EXPORT_3D TAttribute<E3DImageOrientation>;
 template class EXPORT_3D TAttribute<E3DPatientPositioning>;
 template class EXPORT_3D TAttribute<C3DOrientationAndPosition>; 
@@ -321,6 +328,10 @@ template class EXPORT_3D TAttribute<C3DOrientationAndPosition>;
 template class  EXPORT_3D TTranslator<E3DImageOrientation>;
 template class  EXPORT_3D TTranslator<E3DPatientPositioning>;
 template class  EXPORT_3D TTranslator<C3DOrientationAndPosition>; 
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 
 
 NS_MIA_END

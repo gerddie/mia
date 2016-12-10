@@ -23,15 +23,14 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/2d/vectorfield.hh>
-#include <mia/2d/datafield.cxx>
-#include <mia/2d/iterator.cxx>
 #include <mia/2d/image.hh>
 
 NS_MIA_USE;
 
+
+
 typedef C2DFVectorfield::range_iterator range2d_vfiterator; 
 typedef C2DFVectorfield::const_range_iterator const_range2d_vfiterator; 
-
 
 struct VFIteratorFixture {
 	VFIteratorFixture(); 

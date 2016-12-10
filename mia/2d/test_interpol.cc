@@ -66,7 +66,7 @@ void test_direct_interpolator(const T2DDatafield<T>& data)
 template <class T>
 void test_conv_interpolator(const T2DDatafield<T>& data, PSplineKernel kernel)
 {
-	T2DConvoluteInterpolator<T>  src(data, kernel);
+	T2DInterpolator<T>  src(data, kernel);
 	test_interpolator(data, src);
 }
 
