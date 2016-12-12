@@ -110,13 +110,21 @@ class  NipypeOutput:
             "vdouble"   :lambda i : self.create_vfloat_param(i), 
             "vfloat"    :lambda i : self.create_vfloat_param(i), 
 
-            "bool"  : lambda i : self.create_Bool_param(i), 
+            "bool"  : lambda i : self.create_Bool_param(i),
+            
             "short" : lambda i : self.create_Integral_param(i), 
             "int"   : lambda i : self.create_Integral_param(i), 
             "long"  : lambda i : self.create_Integral_param(i),
             "ushort": lambda i : self.create_Integral_param(i), 
             "uint"  : lambda i : self.create_Integral_param(i), 
-            "ulong" : lambda i : self.create_Integral_param(i), 
+            "ulong" : lambda i : self.create_Integral_param(i),
+            
+            "int16_t" : lambda i : self.create_Integral_param(i), 
+            "int32_t"   : lambda i : self.create_Integral_param(i), 
+            "int64_t"  : lambda i : self.create_Integral_param(i),
+            "uint16_t": lambda i : self.create_Integral_param(i), 
+            "uint32_t"  : lambda i : self.create_Integral_param(i), 
+            "uint64_t" : lambda i : self.create_Integral_param(i), 
             "float" : lambda i : self.create_Float_param(i), 
             "double": lambda i : self.create_Float_param(i), 
 

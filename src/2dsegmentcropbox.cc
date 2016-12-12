@@ -38,7 +38,6 @@
 
 using namespace std;
 using namespace mia;
-using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
