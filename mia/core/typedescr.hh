@@ -80,26 +80,26 @@ struct __type_descr {
 
 /// @cond NEVER 
 
-DECLARE_TYPE_DESCR(signed char); 
-DECLARE_TYPE_DESCR(unsigned char); 
-DECLARE_TYPE_DESCR(short); 
-DECLARE_TYPE_DESCR(int); 
-DECLARE_TYPE_DESCR(long); 
-DECLARE_TYPE_DESCR(unsigned int);
-DECLARE_TYPE_DESCR(unsigned short);
-DECLARE_TYPE_DESCR(unsigned long);
+DECLARE_TYPE_DESCR(int8_t); 
+DECLARE_TYPE_DESCR(uint8_t); 
+DECLARE_TYPE_DESCR(int16_t); 
+DECLARE_TYPE_DESCR(int32_t); 
+DECLARE_TYPE_DESCR(int64_t); 
+DECLARE_TYPE_DESCR(uint16_t);
+DECLARE_TYPE_DESCR(uint32_t);
+DECLARE_TYPE_DESCR(uint64_t);
 DECLARE_TYPE_DESCR(float); 
 DECLARE_TYPE_DESCR(double); 
 DECLARE_TYPE_DESCR(bool); 
 DECLARE_TYPE_DESCR(std::string); 
 
 
-DECLARE_TYPE_DESCR(std::vector<short>); 
-DECLARE_TYPE_DESCR(std::vector<int>); 
-DECLARE_TYPE_DESCR(std::vector<long>); 
-DECLARE_TYPE_DESCR(std::vector<unsigned int>);
-DECLARE_TYPE_DESCR(std::vector<unsigned short>);
-DECLARE_TYPE_DESCR(std::vector<unsigned long>);
+DECLARE_TYPE_DESCR(std::vector<int16_t>); 
+DECLARE_TYPE_DESCR(std::vector<int32_t>); 
+DECLARE_TYPE_DESCR(std::vector<int64_t>); 
+DECLARE_TYPE_DESCR(std::vector<uint32_t>);
+DECLARE_TYPE_DESCR(std::vector<uint16_t>);
+DECLARE_TYPE_DESCR(std::vector<uint64_t>);
 DECLARE_TYPE_DESCR(std::vector<float>); 
 DECLARE_TYPE_DESCR(std::vector<double>); 
 DECLARE_TYPE_DESCR(std::vector<bool>); 

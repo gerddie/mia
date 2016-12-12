@@ -25,27 +25,27 @@ NS_MIA_BEGIN
 const char *timestep_type::type_descr = "timestep";
 
 
-DEFINE_TYPE_DESCR(short); 
-DEFINE_TYPE_DESCR(int); 
-DEFINE_TYPE_DESCR(long); 
+DEFINE_TYPE_DESCR(int16_t); 
+DEFINE_TYPE_DESCR(int32_t); 
+DEFINE_TYPE_DESCR(int64_t); 
 DEFINE_TYPE_DESCR(float); 
 DEFINE_TYPE_DESCR(double); 
 DEFINE_TYPE_DESCR(bool); 
 
-DEFINE_TYPE_DESCR2(signed char, "sbyte"); 
-DEFINE_TYPE_DESCR2(unsigned char, "ubyte"); 
+DEFINE_TYPE_DESCR2(int8_t, "sbyte"); 
+DEFINE_TYPE_DESCR2(uint8_t, "ubyte"); 
 
-DEFINE_TYPE_DESCR2(unsigned short, "ushort"); 
-DEFINE_TYPE_DESCR2(unsigned int, "uint"); 
-DEFINE_TYPE_DESCR2(unsigned long, "ulong");
+DEFINE_TYPE_DESCR2(uint16_t, "ushort"); 
+DEFINE_TYPE_DESCR2(uint32_t, "uint"); 
+DEFINE_TYPE_DESCR2(uint64_t, "ulong");
 DEFINE_TYPE_DESCR2(std::string, "string");
 
-DEFINE_TYPE_DESCR2(std::vector<short>, "vshort"); 
-DEFINE_TYPE_DESCR2(std::vector<int>, "vint"); 
-DEFINE_TYPE_DESCR2(std::vector<long>, "vlong"); 
-DEFINE_TYPE_DESCR2(std::vector<unsigned int>, "vuint");
-DEFINE_TYPE_DESCR2(std::vector<unsigned short>,  "vushort");
-DEFINE_TYPE_DESCR2(std::vector<unsigned long>, "vulong");
+DEFINE_TYPE_DESCR2(std::vector<int16_t>, "vshort"); 
+DEFINE_TYPE_DESCR2(std::vector<int32_t>, "vint"); 
+DEFINE_TYPE_DESCR2(std::vector<int64_t>, "vlong"); 
+DEFINE_TYPE_DESCR2(std::vector<uint32_t>, "vuint");
+DEFINE_TYPE_DESCR2(std::vector<uint16_t>,  "vushort");
+DEFINE_TYPE_DESCR2(std::vector<uint64_t>, "vulong");
 DEFINE_TYPE_DESCR2(std::vector<float>, "vfloat"); 
 DEFINE_TYPE_DESCR2(std::vector<double>, "vdouble"); 
 DEFINE_TYPE_DESCR2(std::vector<bool>, "vbool"); 
