@@ -25,9 +25,9 @@ NS_MIA_BEGIN
 const char *timestep_type::type_descr = "timestep";
 
 
-DEFINE_TYPE_DESCR(int16_t); 
-DEFINE_TYPE_DESCR(int32_t); 
-DEFINE_TYPE_DESCR(int64_t); 
+DEFINE_TYPE_DESCR2(int16_t, "short"); 
+DEFINE_TYPE_DESCR2(int32_t, "int"); 
+DEFINE_TYPE_DESCR2(int64_t, "long"); 
 DEFINE_TYPE_DESCR(float); 
 DEFINE_TYPE_DESCR(double); 
 DEFINE_TYPE_DESCR(bool); 
