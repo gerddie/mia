@@ -149,7 +149,7 @@ float Mock2DVectorfieldRegularizerKernel::do_evaluate_row(unsigned y,
 
 }
 
-float Mock2DVectorfieldRegularizerKernel::do_evaluate_row_sparse(unsigned y, 
+float Mock2DVectorfieldRegularizerKernel::do_evaluate_row_sparse(unsigned MIA_PARAM_UNUSED(y), 
                                                                  CBuffers& MIA_PARAM_UNUSED(buffers))
 {
         return numeric_limits<float>::max(); 

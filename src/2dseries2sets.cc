@@ -19,7 +19,6 @@
  */
 
 #include <fstream>
-#include <libxml++/libxml++.h>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/imageio.hh>
@@ -153,11 +152,11 @@ bool save_series(int index, const C2DImageVectorWithName& series, const string& 
 	fname << "segment" << index << ".set"; 
 	
 	bfs::path outfilename = bfs::path(out_directory) / bfs::path(fname.str()); 
-	
-	unique_ptr<xmlpp::Document> outset(set.write());
+
+	auto outset = set.write();
 	ofstream outfile(outfilename.string().c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << outset.write_to_string();
 	else 
 		cverr() << "Unable to open file '" << outfilename.string() << "'\n"; 
 	return outfile.good();

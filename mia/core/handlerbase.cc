@@ -21,6 +21,7 @@
 #include <mia/core/handlerbase.hh>
 #include <mia/core/msgstream.hh>
 #include <boost/filesystem/path.hpp>
+#include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
 

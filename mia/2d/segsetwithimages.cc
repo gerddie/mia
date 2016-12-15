@@ -45,7 +45,7 @@ CSegSetWithImages::CSegSetWithImages(int version):CSegSet(version)
 {
 }
 
-CSegSetWithImages::CSegSetWithImages(const xmlpp::Document& node, const string& fileroot):
+CSegSetWithImages::CSegSetWithImages(const CXMLDocument& node, const string& fileroot):
 	CSegSet(node)
 {
 	

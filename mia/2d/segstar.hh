@@ -56,13 +56,13 @@ public:
 	   Constructor to create a CSegStar from a XML sub tree
 	   @param node root of the sub tree 
 	 */
-	CSegStar(const xmlpp::Node& node);
+	CSegStar(const CXMLElement& node);
 
 	/**
 	   write the CSegStar info to a XML node 
 	   @param node root node to add the info to 
 	 */
-	void write(xmlpp::Element& node) const;
+	void write(CXMLElement& node) const;
 
 	/**
 	   Shift the segmentation data 

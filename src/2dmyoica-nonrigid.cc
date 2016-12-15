@@ -19,7 +19,6 @@
  */
 
 #include <fstream>
-#include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/internal/main.hh>
@@ -328,10 +327,9 @@ int do_main( int argc, char *argv[] )
 		input_set.rename_base(cf.filename().string()); 
 		input_set.save_images(cropped_filename);
 
-		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
 		ofstream outfile(cropped_filename, ios_base::out );
 		if (outfile.good())
-			outfile << test_cropset->write_to_string_formatted();
+			outfile << input_set.write().write_to_string();
 		else 
 			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 
@@ -412,10 +410,9 @@ int do_main( int argc, char *argv[] )
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	
-	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << input_set.write().write_to_string();
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 

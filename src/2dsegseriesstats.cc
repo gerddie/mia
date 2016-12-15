@@ -18,15 +18,12 @@
  *
  */
 
-#include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/2d/segsetwithimages.hh>
 #include <mia/internal/main.hh>
 #include <ostream>
 #include <fstream>
-
-using xmlpp::DomParser;
 
 using namespace mia; 
 using namespace std; 
@@ -171,7 +168,6 @@ int do_main( int argc, char *argv[] )
 	vector<vector<SResult> > curves; 
 	vector<vector<SResult> > varcurves; 
 
-	
 	C2DUBImage org_mask = original_frames[reference].get_section_masks(n_sections); 
 	C2DUBImage reg_mask = registered_frames[reference].get_section_masks(n_sections); 
 	for (size_t i = skip; i < original_frames.size(); ++i)  {

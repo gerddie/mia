@@ -62,14 +62,14 @@ public:
 	   @param node root of the XML sub tree 
 	   \param version segmentation set version the node stems from. 
 	*/
-	CSegSection(const xmlpp::Node& node, int version);
+	CSegSection(const CXMLElement& node, int version);
 
 	/**
 	   Store the segmented section into a XML sub-tree 
 	   @param node parent node to which the subtree should be added 
 	   \param version segmentation set version the node stems from. 
 	*/
-	void write(xmlpp::Element& node, int version) const;
+	void write(CXMLElement& node, int version) const;
 
 	/// \returns the ID of the section 
 	const std::string& get_id() const;

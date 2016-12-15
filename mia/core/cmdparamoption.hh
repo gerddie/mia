@@ -346,7 +346,7 @@ void TCmdOption<T>::do_get_long_help_xml(std::ostream& os, CXMLElement& parent,
 					 HandlerHelpMap& /*handler_map*/) const
 {
 	do_get_long_help(os);
-	parent.set_attribute("type", __type_descr<T>::value);
+	xmlhelp_set_attribute(parent, "type", __type_descr<T>::value);
 }
 
 template <typename T>
@@ -372,8 +372,8 @@ void TRepeatableCmdOption<T>::do_get_long_help_xml(std::ostream& os, CXMLElement
                                                    HandlerHelpMap& MIA_PARAM_UNUSED(handler_map)) const
 {
 	do_get_long_help(os);
-	parent.set_attribute("type", __type_descr<T>::value);
-        parent.set_attribute("repeatable", "1");
+	xmlhelp_set_attribute(parent, "type", __type_descr<T>::value);
+	xmlhelp_set_attribute(parent, "repeatable", "1");
 }
 
 template <typename T>

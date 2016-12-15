@@ -24,7 +24,6 @@
 #include <ostream>
 #include <fstream>
 #include <map>
-#include <mia/core/xmlinterface.hh>
 
 #include <mia/core/defines.hh>
 
@@ -32,7 +31,7 @@ NS_MIA_BEGIN
 
 
 
-
+class CXMLElement; 
 class CPluginHandlerBase; 
 
 /**

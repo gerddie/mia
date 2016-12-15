@@ -160,7 +160,8 @@ float Mock3DVectorfieldRegularizerKernel::do_evaluate_row(unsigned y, unsigned z
 
 }
 
-float Mock3DVectorfieldRegularizerKernel::do_evaluate_row_sparse(unsigned y, unsigned z, 
+float Mock3DVectorfieldRegularizerKernel::do_evaluate_row_sparse(unsigned MIA_PARAM_UNUSED(y),
+								 unsigned MIA_PARAM_UNUSED(z), 
                                                                  CBuffers& MIA_PARAM_UNUSED(buffers))
 {
         return numeric_limits<float>::max(); 

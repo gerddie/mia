@@ -27,7 +27,6 @@
 #include <list>
 #include <cassert>
 #include <boost/filesystem.hpp>
-#include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
 #include <mia/2d/segset.hh>
@@ -37,7 +36,6 @@
 
 using namespace std;
 using namespace mia;
-using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
@@ -55,14 +53,6 @@ const SProgramDescription g_description = {
 	
 	{pdi_example_code, "-i segment.set -o shifted.set -g shifted -S shift"},  
 }; 
-
-CSegSet load_segmentation(const string& s)
-{
-	DomParser parser;
-	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-	parser.parse_file(s);
-	return CSegSet(*parser.get_document());
-}
 
 static string get_number(const string& fname)
 {
@@ -96,7 +86,7 @@ int do_main(int argc, char *argv[])
 		return EXIT_SUCCESS; 
 
 
-	CSegSet src_segset = load_segmentation(src_filename);
+	CSegSet src_segset(src_filename);
 	CSegSet::Frames& frames = src_segset.get_frames();
 
 	for (auto i = frames.begin(); i != frames.end(); ++i) {
@@ -110,11 +100,11 @@ int do_main(int argc, char *argv[])
 	}
 
 
-	unique_ptr<xmlpp::Document> outset(src_segset.write());
+	auto  outset = src_segset.write();
 
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << outset.write_to_string();
 
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

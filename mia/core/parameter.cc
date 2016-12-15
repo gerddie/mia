@@ -56,7 +56,6 @@ void CParameter::get_help_xml(CXMLElement& param) const
 	TRACE_FUNCTION; 
 	param.set_attribute("type", m_type); 
 	param.set_attribute("default", get_default_value());
-	ostringstream d; 
 	param.set_child_text(m_descr);
 	do_get_help_xml(param); 
 	if (m_is_required) {
@@ -128,6 +127,22 @@ void CParameter::do_add_dependend_handler(HandlerHelpMap& /*handler_map*/)const
 std::string CParameter::get_default_value() const
 {
 	return do_get_default_value(); 
+}
+
+CXMLElement& CParameter::add_xmlhelp_childnode(CXMLElement& parent, const std::string& tag)const
+{
+	auto child =  parent.add_child(tag.c_str()); 
+	return *child; 
+}
+
+void CParameter::add_xmlhelp_attribute(CXMLElement& node, const std::string& tag, const std::string& value)const
+{
+	node.set_attribute(tag.c_str(), value); 
+}
+
+void CParameter::add_xmlhelp_text(CXMLElement& node, const std::string& value)const
+{
+	node.set_child_text(value);
 }
 
 CStringParameter::CStringParameter(std::string& value,CCmdOptionFlags flags , const char *descr, 

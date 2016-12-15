@@ -25,8 +25,7 @@
 #include <mia/2d/boundingbox.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/imageio.hh>
-
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
 
 namespace bfs=boost::filesystem;
 
@@ -34,18 +33,15 @@ namespace bfs=boost::filesystem;
 NS_MIA_USE
 using namespace std;
 using namespace ::boost::unit_test;
-using namespace xmlpp;
 
 const char *testpoint_init  =
-	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><point y=\"20\" x=\"10\"/></test>\n";
+	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><point x=\"10\" y=\"20\"/></test>\n";
 
 BOOST_AUTO_TEST_CASE(segpoint_read)
 {
-	DomParser parser;
-	parser.parse_memory(testpoint_init);
+	CXMLDocument document(testpoint_init);
 
-	const Document *document = parser.get_document();
-	const Element *root = document->get_root_node ();
+	auto root = document.get_root_node ();
 	auto nodes = root->get_children("point");
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
@@ -58,12 +54,12 @@ BOOST_AUTO_TEST_CASE(segpoint_read)
 
 BOOST_AUTO_TEST_CASE(segpoint_write)
 {
-	Document document;
-	Element* nodeRoot = document.create_root_node("test");
+	CXMLDocument document;
+	auto nodeRoot = document.create_root_node("test");
 	CSegPoint2D point(10,20);
 	point.write(*nodeRoot);
 
-	const string xmldoc = document.write_to_string("UTF-8");
+	const string xmldoc = document.write_to_string("UTF-8", false);
 	const string testdoc(testpoint_init);
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
@@ -104,10 +100,9 @@ struct SegStarFixture {
 
 void SegStarFixture::init(const char *init_str)
 {
-	DomParser parser;
-	parser.parse_memory(init_str);
-	const Document *document = parser.get_document();
-	const Element *root = document->get_root_node ();
+	CXMLDocument document(init_str);
+
+	auto root = document.get_root_node ();
 	auto nodes = root->get_children("star");
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
@@ -155,11 +150,11 @@ BOOST_AUTO_TEST_CASE(segstar_write)
 		      CSegPoint2D(20, 10),
 		      CSegPoint2D(0, 4));
 
-	Document document;
-	Element* nodeRoot = document.create_root_node("test");
+	CXMLDocument document;
+	auto nodeRoot = document.create_root_node("test");
 	star.write(*nodeRoot);
 
-	const string xmldoc = document.write_to_string("UTF-8");
+	const string xmldoc = document.write_to_string("UTF-8", false);
 
 	string teststar(teststar_init);
 	BOOST_CHECK_EQUAL(xmldoc.size(), teststar.size());
@@ -220,11 +215,11 @@ BOOST_AUTO_TEST_CASE(segment_section_write)
 
 	CSegSection section("white", points, 1);
 
-	xmlpp::Document document;
-	xmlpp::Element* nodeRoot = document.create_root_node("test");
+	CXMLDocument document;
+	auto nodeRoot = document.create_root_node("test");
 	section.write(*nodeRoot, 1);
 
-	const string xmldoc = document.write_to_string("UTF-8");
+	const string xmldoc = document.write_to_string("UTF-8", false);
 	const string testdoc(testsection_init);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -333,10 +328,10 @@ BOOST_FIXTURE_TEST_CASE(test_segsection_draw2, SectionTestRead)
 {
 	const char *sestsection_for_draw2 = 
 		"<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
-		"<point y=\"2\" x=\"1\"/>"
-		"<point y=\"4\" x=\"1\"/>"
-		"<point y=\"4\" x=\"3\"/>"
-		"<point y=\"2\" x=\"3\"/>"
+		"<point x=\"1\" y=\"2\"/>"
+		"<point x=\"1\" y=\"4\"/>"
+		"<point x=\"3\" y=\"4\"/>"
+		"<point x=\"3\" y=\"2\"/>"
 		"</section></test>\n";
 
 
@@ -358,7 +353,7 @@ BOOST_FIXTURE_TEST_CASE(test_segsection_error_attribute, SectionTestRead)
 {
 	const char *sestsection_error_x = 
 		"<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
-		"<point y=\"2\" x=\"1a\"/>"
+		"<point x=\"1 y=\"2\"a\"/>"
 		"</section></test>\n";
 
 
@@ -378,21 +373,15 @@ BOOST_AUTO_TEST_CASE(test_segstart_error_attribute)
 {
 	const char *sestsection_error_r = 
 		"<?xml version=\"1.0\"?>\n<test>"
-		"<star y=\"118\" x=\"109\" r=\"21a\">"
-		"<point y=\"20\" x=\"10\"/>"
-		"<point y=\"10\" x=\"20\"/>"
-		"<point y=\"4\" x=\"0\"/>"
+		"<star  r=\"21a\"x=\"109\" y=\"118\">"
+		"<point x=\"10\" y=\"20\"/>"
+		"<point x=\"20\" y=\"10\"/>"
+		"<point x=\"0\" y=\"4\"/>"
 		"</star>"
 		"</test>"; 
 
-
-	xmlpp::DomParser parser;
-	parser.parse_memory(sestsection_error_r);
-	const xmlpp::Document *document = parser.get_document();
-	const xmlpp::Element *root = document->get_root_node ();
-	auto nodes = root->get_children();
-	BOOST_CHECK_EQUAL(nodes.size(),1u);
-	BOOST_CHECK_THROW(CSegStar(**nodes.begin()), runtime_error); 
+	CXMLDocument doc; 
+	BOOST_CHECK(!doc.read_from_string(sestsection_error_r));
 }
 
 
@@ -410,9 +399,9 @@ BOOST_AUTO_TEST_CASE( test_segset_write_version1 )
 	segset.add_frame(CSegFrame("image.png", star1, CSegFrame::Sections()));
 	segset.add_frame(CSegFrame("image2.png", star2, CSegFrame::Sections()));
 
-	unique_ptr<xmlpp::Document> document(segset.write());
+	CXMLDocument document(segset.write());
 
-	const string xmldoc = document->write_to_string("UTF-8");
+	const string xmldoc = document.write_to_string("UTF-8", false);
 	const string testdoc(testset_init2);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -424,8 +413,8 @@ BOOST_FIXTURE_TEST_CASE( test_segset_shift_and_rename, SegSetReadFixture )
 	init(testset_bboxtest);
 	C2DFVector shift(-3.0f, -10.0f);
 	CSegSet result = segset.shift_and_rename(0, shift, "moved");
-	unique_ptr<xmlpp::Document> document(result.write());
-	const string xmldoc = document->write_to_string("UTF-8");
+	CXMLDocument document(result.write());
+	const string xmldoc = document.write_to_string("UTF-8", false);
 	const string testdoc(testset_shift_and_rename);
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
@@ -488,8 +477,8 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read_write, SegSetReadFixture )
 		BOOST_CHECK_EQUAL(i->y, test_y);
 	}
 
-	unique_ptr<xmlpp::Document> document(segset.write());
-	const string xmldoc = document->write_to_string("UTF-8");
+	CXMLDocument document(segset.write());
+	const string xmldoc = document.write_to_string("UTF-8", false);
 	const string testdoc(testset_version_2);
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
@@ -503,22 +492,22 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw, SegSetReadFixture )
 		"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
 		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
 		"<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
-		"<star y=\"128\" x=\"112\" r=\"21\">"
-		"<point y=\"20\" x=\"10\"/>"
-		"<point y=\"10\" x=\"20\"/>"
-		"<point y=\"4\" x=\"0\"/>"
+		"<star r=\"21\" x=\"112\" y=\"128\">"
+		"<point x=\"10\" y=\"20\"/>"
+		"<point x=\"20\" y=\"10\"/>"
+		"<point x=\"0\" y=\"4\"/>"
 		"</star>"
 		"<section color=\"white\" open=\"false\">"
-		"<point y=\"1\" x=\"2\"/>"
-		"<point y=\"9\" x=\"2\"/>"
-		"<point y=\"9\" x=\"8\"/>"
-		"<point y=\"1\" x=\"8\"/>"
+		"<point x=\"2\" y=\"1\"/>"
+		"<point x=\"2\" y=\"9\"/>"
+		"<point x=\"8\" y=\"9\"/>"
+		"<point x=\"8\" y=\"1\"/>"
 		"</section>"
 		"<section color=\"blue\" open=\"false\">"
-		"<point y=\"3\" x=\"4\"/>"
-		"<point y=\"7\" x=\"4\"/>"
-		"<point y=\"7\" x=\"6\"/>"
-		"<point y=\"3\" x=\"6\"/>"
+		"<point x=\"4\" y=\"3\"/>"
+		"<point x=\"4\" y=\"7\"/>"
+		"<point x=\"6\" y=\"7\"/>"
+		"<point x=\"6\" y=\"3\"/>"
 		"</section>"
 		"</frame></workset>\n";
 	
@@ -561,22 +550,22 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw_fail, SegSetReadFixture )
 		"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
 		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
 		"<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
-		"<star y=\"128\" x=\"112\" r=\"21\">"
-		"<point y=\"20\" x=\"10\"/>"
-		"<point y=\"10\" x=\"20\"/>"
-		"<point y=\"4\" x=\"0\"/>"
+		"<star r=\"21\" x=\"112\" y=\"128\">"
+		"<point x=\"10\" y=\"20\"/>"
+		"<point x=\"20\" y=\"10\"/>"
+		"<point x=\"0\" y=\"4\"/>"
 		"</star>"
 		"<section color=\"white\" open=\"true\">"
-		"<point y=\"1\" x=\"2\"/>"
-		"<point y=\"9\" x=\"2\"/>"
-		"<point y=\"9\" x=\"8\"/>"
-		"<point y=\"1\" x=\"8\"/>"
+		"<point x=\"2\" y=\"1\"/>"
+		"<point x=\"2\" y=\"9\"/>"
+		"<point x=\"8\" y=\"9\"/>"
+		"<point x=\"8\" y=\"1\"/>"
 		"</section>"
 		"<section color=\"blue\" open=\"false\">"
-		"<point y=\"3\" x=\"4\"/>"
-		"<point y=\"7\" x=\"4\"/>"
-		"<point y=\"7\" x=\"6\"/>"
-		"<point y=\"3\" x=\"6\"/>"
+		"<point x=\"4\" y=\"3\"/>"
+		"<point x=\"4\" y=\"7\"/>"
+		"<point x=\"6\" y=\"7\"/>"
+		"<point x=\"6\" y=\"3\"/>"
 		"</section>"
 		"</frame></workset>\n";
 	
@@ -589,20 +578,16 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw_fail, SegSetReadFixture )
 
 void SegSetReadFixture::init(const char *data)
 {
-	xmlpp::DomParser parser;
-	parser.parse_memory(data);
-	const xmlpp::Document *document = parser.get_document();
-	segset = CSegSet(*document);
+	CXMLDocument document(data);
+	segset = CSegSet(document);
 }
 
 
 void SectionTestRead::init(const char *init_str)
 {
-	xmlpp::DomParser parser;
-	parser.parse_memory(init_str);
-	const xmlpp::Document *document = parser.get_document();
-	const xmlpp::Element *root = document->get_root_node ();
-	auto nodes = root->get_children();
+	CXMLDocument document(init_str);
+	auto root = document.get_root_node ();
+	auto nodes = root->get_all_children();
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
 	section = CSegSection(**nodes.begin(), 1);
 
@@ -625,43 +610,43 @@ void SectionTestRead::check(const float *x_data, const float *y_data) const
 
 
 const char *sestsection_for_draw = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><section color=\"white\">"
-	"<point y=\"4\" x=\"1\"/>"
-	"<point y=\"8\" x=\"1\"/>"
-	"<point y=\"8\" x=\"7\"/>"
-	"<point y=\"1\" x=\"7\"/>"
-	"<point y=\"1\" x=\"4\"/>"
-	"<point y=\"6\" x=\"4\"/>"
-	"<point y=\"6\" x=\"3\"/>"
-	"<point y=\"4\" x=\"3\"/>"
+	"<point x=\"1\" y=\"4\"/>"
+	"<point x=\"1\" y=\"8\"/>"
+	"<point x=\"7\" y=\"8\"/>"
+	"<point x=\"7\" y=\"1\"/>"
+	"<point x=\"4\" y=\"1\"/>"
+	"<point x=\"4\" y=\"6\"/>"
+	"<point x=\"3\" y=\"6\"/>"
+	"<point x=\"3\" y=\"4\"/>"
 	"</section></test>\n";
 
 const char *teststar_init  =
 	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
-	"<star y=\"118\" x=\"109\" r=\"21\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<star r=\"21\" x=\"109\" y=\"118\">"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</star></test>\n";
 
 
 const char *teststar_init2  =
 	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
-	"<star y=\"118\" x=\"109\" r=\"21\">"
-	"  <point y=\"20\" x=\"10\"/>"
-	"  <point y=\"10\" x=\"20\"/>"
-	"  <point y=\"4\" x=\"0\"/>"
+	"<star r=\"21\" x=\"109\" y=\"118\">"
+	"  <point x=\"10\" y=\"20\"/>"
+	"  <point x=\"20\" y=\"10\"/>"
+	"  <point x=\"0\" y=\"4\"/>"
 	"</star></test>\n";
 
 const char *testsection_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><section color=\"white\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</section></test>\n";
 
 const char *testsection_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><section color=\"white\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"some text"
 	"</section></test>\n";
 
@@ -670,37 +655,37 @@ const char *testsection_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<te
 const char *testset_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"0\"/><LVpeak value=\"1\"/><PreferedRef value=\"1\"/></description>"
 	"<frame image=\"image.png\">"
-	"<star y=\"118\" x=\"109\" r=\"21\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<star r=\"21\" x=\"109\" y=\"118\">"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</star>"
 	"<section color=\"white\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</section>"
 	"<section color=\"red\">"
-	"<point y=\"21\" x=\"11\"/>"
-	"<point y=\"11\" x=\"21\"/>"
-	"<point y=\"5\" x=\"1\"/>"
+	"<point x=\"11\" y=\"21\"/>"
+	"<point x=\"21\" y=\"11\"/>"
+	"<point x=\"1\" y=\"5\"/>"
 	"</section>"
 	"</frame>"
 	"<frame image=\"image2.png\">"
-	"<star y=\"118\" x=\"109\" r=\"22\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<star r=\"22\" x=\"109\" y=\"118\">"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</star>"
 	"<section color=\"white\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</section>"
 	"<section color=\"red\">"
-	"<point y=\"21\" x=\"11\"/>"
-	"<point y=\"11\" x=\"21\"/>"
-	"<point y=\"5\" x=\"1\"/>"
+	"<point x=\"11\" y=\"21\"/>"
+	"<point x=\"21\" y=\"11\"/>"
+	"<point x=\"1\" y=\"5\"/>"
 	"</section>"
 	"</frame>"
 	"</workset>\n";
@@ -708,17 +693,17 @@ const char *testset_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset
 const char *testset_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/><PreferedRef value=\"-1\"/></description>"
 	"<frame image=\"image.png\">"
-	"<star y=\"118\" x=\"109\" r=\"21\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<star r=\"21\" x=\"109\" y=\"118\">"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</star>"
 	"</frame>"
 	"<frame image=\"image2.png\">"
-	"<star y=\"118\" x=\"109\" r=\"22\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"1\"/>"
+	"<star r=\"22\" x=\"109\" y=\"118\">"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"1\" y=\"4\"/>"
 	"</star>"
 	"</frame>"
 	"</workset>\n";
@@ -726,17 +711,17 @@ const char *testset_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workse
 const char *testset_init3 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/><PreferedRef value=\"-1\"/></description>"
 	" <frame image=\"image.png\">"
-	"  <star y=\"118\" x=\"109\" r=\"21\">"
-	"   <point y=\"20\" x=\"10\"/>"
-	"   <point y=\"10\" x=\"20\"/>"
-	"   <point y=\"4\" x=\"0\"/>"
+	"  <star r=\"21\" x=\"109\" y=\"118\">"
+	"   <point x=\"10\" y=\"20\"/>"
+	"   <point x=\"20\" y=\"10\"/>"
+	"   <point x=\"0\" y=\"4\"/>"
 	"  </star>"
 	" </frame>"
 	" <frame image=\"image2.png\">"
-	"  <star y=\"118\" x=\"109\" r=\"22\">"
-	"  <point y=\"20\" x=\"10\"/>"
-	"  <point y=\"10\" x=\"20\"/>"
-	"  <point y=\"4\" x=\"0\"/>"
+	"  <star r=\"22\" x=\"109\" y=\"118\">"
+	"  <point x=\"10\" y=\"20\"/>"
+	"  <point x=\"20\" y=\"10\"/>"
+	"  <point x=\"0\" y=\"4\"/>"
 	"  </star>"
 	" </frame>"
 	"</workset>\n";
@@ -749,32 +734,32 @@ const char *testset_bboxtest =
 	"<PreferedRef value=\"1\"/>"
   "</description>"
   "<frame image=\"data0000.png\">"
-      "<star y=\"118\" x=\"109\" r=\"21\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+      "<star r=\"21\" x=\"109\" y=\"118\">"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
       "</star>"
     "<section color=\"white\">"
-      "<point y=\"106.24\" x=\"91.520000\"/>"
-      "<point y=\"97.6\" x=\"102.080000\"/>"
-      "<point y=\"101.44\" x=\"111.360000\"/>"
-      "<point y=\"106.56\" x=\"100.480000\"/>"
-      "<point y=\"109.44\" x=\"94.400000\"/>"
+      "<point x=\"91.520000\" y=\"106.24\"/>"
+      "<point x=\"102.080000\" y=\"97.6\"/>"
+      "<point x=\"111.360000\" y=\"101.44\"/>"
+      "<point x=\"100.480000\" y=\"106.56\"/>"
+      "<point x=\"94.400000\" y=\"109.44\"/>"
     "</section>"
     "<section color=\"cyan\">"
-      "<point y=\"109.44\" x=\"96.32\"/>"
-      "<point y=\"124.16\" x=\"96.64\"/>"
-      "<point y=\"115.52\" x=\"85.76\"/>"
-      "<point y=\"105.28\" x=\"92.16\"/>"
+      "<point x=\"96.32\" y=\"109.44\"/>"
+      "<point x=\"96.64\" y=\"124.16\"/>"
+      "<point x=\"85.76\" y=\"115.52\"/>"
+      "<point x=\"92.16\" y=\"105.28\"/>"
     "</section>"
   "</frame>"
   "<frame image=\"data0001.png\">"
     "<section color=\"white\">"
-      "<point y=\"102.4\" x=\"90.88\"/>"
-      "<point y=\"97.60\" x=\"95.04\"/>"
-      "<point y=\"94.72\" x=\"115.52\"/>"
-      "<point y=\"101.44\" x=\"101.44\"/>"
-      "<point y=\"104.96\" x=\"94.08\"/>"
+      "<point x=\"90.88\" y=\"102.4\"/>"
+      "<point x=\"95.04\" y=\"97.60\"/>"
+      "<point x=\"115.52\" y=\"94.72\"/>"
+      "<point x=\"101.44\" y=\"101.44\"/>"
+      "<point x=\"94.08\" y=\"104.96\"/>"
     "</section>"
   "</frame></workset>";
 
@@ -784,32 +769,32 @@ const char *testset_shift_and_rename =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"2\"/><LVpeak value=\"3\"/><PreferedRef value=\"1\"/></description>"
   "<frame image=\"moved0000.png\">"
-      "<star y=\"128\" x=\"112\" r=\"21\">"
-        "<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+      "<star r=\"21\" x=\"112\" y=\"128\">"
+        "<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
       "</star>"
     "<section color=\"white\">"
-      "<point y=\"116.24\" x=\"94.52\"/>"
-      "<point y=\"107.6\" x=\"105.08\"/>"
-      "<point y=\"111.44\" x=\"114.36\"/>"
-      "<point y=\"116.56\" x=\"103.48\"/>"
-      "<point y=\"119.44\" x=\"97.4\"/>"
+      "<point x=\"94.52\" y=\"116.24\"/>"
+      "<point x=\"105.08\" y=\"107.6\"/>"
+      "<point x=\"114.36\" y=\"111.44\"/>"
+      "<point x=\"103.48\" y=\"116.56\"/>"
+      "<point x=\"97.4\" y=\"119.44\"/>"
     "</section>"
     "<section color=\"cyan\">"
-      "<point y=\"119.44\" x=\"99.32\"/>"
-      "<point y=\"134.16\" x=\"99.64\"/>"
-      "<point y=\"125.52\" x=\"88.76\"/>"
-      "<point y=\"115.28\" x=\"95.16\"/>"
+      "<point x=\"99.32\" y=\"119.44\"/>"
+      "<point x=\"99.64\" y=\"134.16\"/>"
+      "<point x=\"88.76\" y=\"125.52\"/>"
+      "<point x=\"95.16\" y=\"115.28\"/>"
     "</section>"
   "</frame>"
   "<frame image=\"moved0001.png\">"
     "<section color=\"white\">"
-      "<point y=\"112.4\" x=\"93.88\"/>"
-      "<point y=\"107.6\" x=\"98.04\"/>"
-      "<point y=\"104.72\" x=\"118.52\"/>"
-      "<point y=\"111.44\" x=\"104.44\"/>"
-      "<point y=\"114.96\" x=\"97.08\"/>"
+      "<point x=\"93.88\" y=\"112.4\"/>"
+      "<point x=\"98.04\" y=\"107.6\"/>"
+      "<point x=\"118.52\" y=\"104.72\"/>"
+      "<point x=\"104.44\" y=\"111.44\"/>"
+      "<point x=\"97.08\" y=\"114.96\"/>"
     "</section>"
   "</frame></workset>\n";
 
@@ -817,21 +802,21 @@ const char *testset_shift_and_rename =
 const char *testset_version_2 =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset version=\"2\">"
 	"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
-  "<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
-      "<star y=\"128\" x=\"112\" r=\"21\">"
-        "<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+  "<frame brightness=\"0.625\" contrast=\"1.5\" image=\"moved0000.png\" quality=\"4\">"
+      "<star r=\"21\" x=\"112\" y=\"128\">"
+        "<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
       "</star>"
     "<section color=\"white\" open=\"true\">"
-      "<point y=\"1.1\" x=\"2.1\"/>"
-      "<point y=\"2.1\" x=\"3.1\"/>"
-      "<point y=\"3.1\" x=\"4.1\"/>"
+      "<point x=\"2.1\" y=\"1.1\"/>"
+      "<point x=\"3.1\" y=\"2.1\"/>"
+      "<point x=\"4.1\" y=\"3.1\"/>"
     "</section>"
     "<section color=\"green\" open=\"false\">"
-      "<point y=\"1.2\" x=\"2.25\"/>"
-      "<point y=\"2.2\" x=\"3.25\"/>"
-      "<point y=\"3.2\" x=\"4.25\"/>"
+      "<point x=\"2.25\" y=\"1.2\"/>"
+      "<point x=\"3.25\" y=\"2.2\"/>"
+      "<point x=\"4.25\" y=\"3.2\"/>"
     "</section>"
   "</frame></workset>\n";
 

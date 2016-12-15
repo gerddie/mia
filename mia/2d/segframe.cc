@@ -18,28 +18,25 @@
  *
  */
 
-#include <stdexcept>
-#include <string>
-#include <mia/2d/segframe.hh>
-#include <mia/core/msgstream.hh>
-#include <mia/core/errormacro.hh>
-#include <mia/2d/imageio.hh>
-#include <mia/2d/angle.hh>
-
-#include <libxml++/libxml++.h>
-#include <boost/filesystem.hpp> 
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#if LIBXMLPP_VERSION < 3
-#define add_child_element add_child
-#endif
+#include <mia/2d/imageio.hh>
+#include <mia/2d/angle.hh>
+#include <mia/2d/segframe.hh>
+#include <mia/core/msgstream.hh>
+#include <mia/core/errormacro.hh>
+#include <mia/core/xmlinterface.hh>
+
+#include <boost/filesystem.hpp>
+
+#include <stdexcept>
+#include <string>
+
 
 NS_MIA_BEGIN
 using namespace std; 
-using namespace xmlpp; 
 
 namespace bfs=boost::filesystem; 
 
@@ -67,23 +64,23 @@ CSegFrame::CSegFrame(const string& image, const CSegStar& star, const Sections& 
 
 
 template <typename T>
-void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required)
+void read_attribute_from_node(const CXMLElement& elm, const std::string& key, T& out_value, bool required)
 {
 	auto attr = elm.get_attribute(key);
-	if (!attr) {
+	if (attr.empty()) {
 		if (required) 
 			throw create_exception<std::runtime_error>( elm.get_name(), ":required attribute '", key, "' not found"); 
 		else 
 			return; 
 	}
 	
-	if (!from_string(attr->get_value(), out_value)) 
+	if (!from_string(attr, out_value)) 
 		throw create_exception<std::runtime_error>( elm.get_name(), ":attribute '", key, "' has bogus value '", 
-						       attr->get_value(), "'");
+							    attr, "'");
 }
 
 
-CSegFrame::CSegFrame(const Node& node, int version):
+CSegFrame::CSegFrame(const CXMLElement& elm, int version):
 	m_has_star(false), 
 	m_quality(0),
 	m_brightness(0), 
@@ -91,29 +88,27 @@ CSegFrame::CSegFrame(const Node& node, int version):
 	m_version(version)
 {
 	TRACE("CSegFrame::CSegFrame"); 
-	const Element& elm = dynamic_cast<const Element&>(node); 
-		
+	
 	if (elm.get_name() != "frame")
 		throw invalid_argument(string("CSegFrame: unexpected node type: ") + elm.get_name()); 
 	
-	const Attribute *attr = elm.get_attribute("image"); 
-	if (!attr) {
+	m_filename = elm.get_attribute("image"); 
+	if (m_filename.empty()) {
 		throw invalid_argument("CSegFrame: image attribute not found"); 
 	}
-	m_filename = attr->get_value(); 
 	
-	auto nodes = elm.get_children(); 
+	auto nodes = elm.get_all_children(); 
 	
-	for (auto i = nodes.begin(); i != nodes.end(); ++i) {
+	for (auto i: nodes) {
 
-		if ((*i)->get_name() == "star") {
-			m_star = CSegStar(**i); 
+		if (i->get_name() == "star") {
+			m_star = CSegStar(*i); 
 			m_has_star = true; 
 		}
-		else if ((*i)->get_name() == "section") {
-			m_sections.push_back(CSegSection(**i, version)); 
+		else if (i->get_name() == "section") {
+			m_sections.push_back(CSegSection(*i, version)); 
 		}else {
-			cvinfo() << "ignoring unsupported element '" << (*i)->get_name() << "'\n"; 
+			cvinfo() << "ignoring unsupported element '" << i->get_name() << "'\n"; 
 		}
 	}
 	
@@ -166,9 +161,9 @@ const CSegStar& CSegFrame::get_star() const
 }
 
 
-void CSegFrame::write(xmlpp::Element& node, int version) const
+void CSegFrame::write(CXMLElement& node, int version) const
 {
-	Element* self = node.add_child_element("frame"); 
+	auto self = node.add_child("frame"); 
 	self->set_attribute("image", m_filename); 	
 
 	if (version > 1) {

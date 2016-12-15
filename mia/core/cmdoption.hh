@@ -26,11 +26,11 @@
 #include <iostream>
 #include <mia/core/cmdoptionflags.hh>
 #include <mia/core/handlerbase.hh>
-#include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
 
 class CCmdOption;
+class CXMLElement; 
 
 /// Class to provide a maping from short option names to options
 typedef std::map<char,  CCmdOption *>        CShortoptionMap;
@@ -149,7 +149,9 @@ protected:
 	*/
 	virtual void do_get_long_help(std::ostream& os) const;
 
-	bool has_flag(CCmdOptionFlags test_flags) const; 
+	bool has_flag(CCmdOptionFlags test_flags) const;
+
+	void xmlhelp_set_attribute(CXMLElement& node, const char *name, const std::string& value) const; 
 private:
 	std::string get_flag_string() const; 
 	const char *get_short_help() const;

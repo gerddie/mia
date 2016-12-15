@@ -28,8 +28,6 @@
 
 //#include <mia/core/fft1d_r2c.hh>
 #include <queue>
-#include <libxml++/libxml++.h>
-
 
 #include <mia/core.hh>
 #include <mia/core/ica.hh>
@@ -177,10 +175,9 @@ int do_main( int argc, char *argv[] )
 		input_set.rename_base(cf.string()); 
 		input_set.save_images(cropped_filename);
 		
-		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
 		ofstream outfile(cropped_filename, ios_base::out );
 		if (outfile.good())
-			outfile << test_cropset->write_to_string_formatted();
+			outfile << input_set.write().write_to_string();
 		else 
 			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 	}
@@ -193,11 +190,9 @@ int do_main( int argc, char *argv[] )
 		input_set.rename_base(reff.filename().string()); 
 		input_set.save_images(reference_filename);
 		
-		
-		unique_ptr<xmlpp::Document> test_regset(input_set.write());
 		ofstream outfile2(reference_filename, ios_base::out );
 		if (outfile2.good())
-			outfile2 << test_regset->write_to_string_formatted();
+			outfile2 << input_set.write().write_to_string();
 		else 
 			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 	}

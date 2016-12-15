@@ -22,7 +22,6 @@
 #include <sstream>
 #include <iomanip>
 #include <queue>
-#include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/core/msgstream.hh>
@@ -425,10 +424,9 @@ int do_main( int argc, char *argv[] )
 	}
 	
 	input_set.set_preferred_reference(mpr.get_ref_idx() + skip); 
-	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << input_set.write().write_to_string();
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

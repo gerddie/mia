@@ -26,10 +26,10 @@
 
 #include <mia/core/parameter.hh>
 #include <mia/core/optionparser.hh>
-#include <mia/core/xmlinterface.hh>
-
 
 NS_MIA_BEGIN
+
+class CXMLElement; 
 
 /**
    \ingroup cmdline

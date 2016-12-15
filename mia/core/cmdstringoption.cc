@@ -22,6 +22,7 @@
 #include <mia/core/cmdstringoption.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/typedescr.hh>
+#include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
 

@@ -24,6 +24,7 @@
 
 #include <mia/core/optparam.hh>
 #include <mia/core/tools.hh>
+#include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
 

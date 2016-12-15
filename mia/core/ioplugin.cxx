@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <mia/core/plugin_base.cxx>
+#include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
 

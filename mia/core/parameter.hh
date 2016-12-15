@@ -134,6 +134,11 @@ protected:
 
 	/// create an error message by using the given value that raises the error 
 	const std::string errmsg(const std::string& err_value) const;
+
+	CXMLElement& add_xmlhelp_childnode(CXMLElement& parent, const std::string& tag) const;
+	void add_xmlhelp_attribute(CXMLElement& node, const std::string& tag, const std::string& value)const;
+	void add_xmlhelp_text(CXMLElement& node, const std::string& value)const;
+	
 private:
 	/** the actual (abstract) function to set the parameter that needs to be overwritten
 	    \param str_value the parameter value as string
@@ -144,6 +149,7 @@ private:
 	virtual std::string do_get_default_value() const = 0;
 	virtual std::string do_get_value_as_string() const = 0;
 	virtual void do_get_help_xml(CXMLElement& self) const;
+	
 	bool m_required;
 	bool m_is_required; 
 	const std::string m_type;
@@ -685,11 +691,12 @@ template <typename T>
 void CDictParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	TRACE_FUNCTION; 
-	auto dict = self.add_child("dict"); 
+	auto& dict = this->add_xmlhelp_childnode(self, "dict"); 
 	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
-		auto v = dict->add_child("value"); 
-		v->set_attribute("name", i->second.first);
-		v->set_child_text(i->second.second); 
+		
+		auto& v = this->add_xmlhelp_childnode(dict, "value");
+		this->add_xmlhelp_attribute(v, "name", i->second.first);
+		this->add_xmlhelp_text(v, i->second.second); 
 	}
 }
 
@@ -753,8 +760,8 @@ void TFactoryParameter<T>::do_descr(std::ostream& os) const
 template <typename T>
 void TFactoryParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
-	auto dict = self.add_child("factory"); 
-	dict->set_attribute("name", T::instance().get_descriptor());
+	auto& node = this->add_xmlhelp_childnode(self, "factory"); 
+	this->add_xmlhelp_attribute(node, "name", T::instance().get_descriptor());
 }
 
 template <typename T>
@@ -851,10 +858,10 @@ void CSetParameter<T>::do_descr(std::ostream& os) const
 template <typename T>
 void CSetParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
-	auto set = self.add_child("set"); 
+	auto& node = this->add_xmlhelp_childnode(self, "set"); 
 	for (auto i = m_valid_set.begin(); i != m_valid_set.end(); ++i) {
-		auto v = set->add_child("value"); 
-		v->set_attribute("name", __dispatch_param_translate<T>::apply(*i));   
+		auto& v = this->add_xmlhelp_childnode(node, "value"); 
+		this->add_xmlhelp_attribute(v, "name", __dispatch_param_translate<T>::apply(*i));
 	}
 }
 

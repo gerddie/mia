@@ -27,8 +27,6 @@
 
 
 #include <queue>
-#include <libxml++/libxml++.h>
-
 
 #include <mia/core.hh>
 #include <mia/2d/imageio.hh>

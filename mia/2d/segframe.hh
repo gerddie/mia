@@ -65,7 +65,7 @@ public:
 	   \param node
 	   \param version segmentation set version the node stems from. 
 	 */
-	CSegFrame(const xmlpp::Node& node, int version);
+	CSegFrame(const CXMLElement& node, int version);
 
 	/// \returns the file name of the corresponding image 
 	const std::string& get_imagename() const;
@@ -104,7 +104,7 @@ public:
 	   @param node parent node to append the frame description to 
 	   @param version segmentation set file version that should be used to save the data
 	 */
-	void write(xmlpp::Element& node, int version) const;
+	void write(CXMLElement& node, int version) const;
 
 	/**
 	   Shift the segmentation frame and change the file name to the new name 

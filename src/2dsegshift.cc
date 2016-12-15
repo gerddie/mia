@@ -27,7 +27,6 @@
 #include <list>
 #include <cassert>
 #include <boost/filesystem.hpp>
-#include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
 #include <mia/2d/segset.hh>
@@ -37,7 +36,6 @@
 
 using namespace std;
 using namespace mia;
-using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 
@@ -55,14 +53,6 @@ const SProgramDescription g_description = {
 	{pdi_example_code, "-i segment.set -o translate.set -g translated -S \"<20,30>\""}
 }; 
 
-
-CSegSet load_segmentation(const string& s)
-{
-	DomParser parser;
-	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-	parser.parse_file(s);
-	return CSegSet(*parser.get_document());
-}
 
 int do_main(int argc, char *argv[])
 {
@@ -88,16 +78,14 @@ int do_main(int argc, char *argv[])
 		return EXIT_SUCCESS; 
 
 
-	CSegSet src_segset = load_segmentation(src_filename);
+	CSegSet src_segset(src_filename);
 
 	cvinfo() << "shift by " << shift << ", skip " << skip << " and rename to base " << shift_filename << "\n";
 	CSegSet shifted = src_segset.shift_and_rename(skip, shift, shift_filename);
 
-	unique_ptr<xmlpp::Document> outset(shifted.write());
-
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << shifted.write().write_to_string();
 
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

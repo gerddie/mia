@@ -19,6 +19,7 @@
  */
 
 #include <mia/core/paramtranslator.hh>
+#include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
 using std::invalid_argument; 

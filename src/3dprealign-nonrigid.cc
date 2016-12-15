@@ -22,7 +22,6 @@
 #include <sstream>
 #include <iomanip>
 #include <queue>
-#include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/core/msgstream.hh>

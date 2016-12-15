@@ -33,6 +33,7 @@
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/xmlinterface.hh>
 
 
 

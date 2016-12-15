@@ -21,6 +21,7 @@
 #include <cassert>
 #include <mia/core/typedescr.hh>
 #include <mia/core/cmdbooloption.hh>
+#include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
 

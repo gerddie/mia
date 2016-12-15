@@ -27,7 +27,6 @@
 #include <list>
 #include <cassert>
 #include <boost/filesystem.hpp>
-#include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
 #include <mia/2d/segset.hh>
@@ -37,7 +36,6 @@
 
 using namespace std;
 using namespace mia;
-using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 
@@ -50,14 +48,6 @@ const SProgramDescription g_description = {
 	{pdi_example_descr, "Evaluate the per-slice Hausdorff distance of input.set and reference.set."}, 
 	{pdi_example_code, "-i input.set -r reference.set"}
 }; 
-
-CSegSet load_segmentation(const string& s)
-{
-	DomParser parser;
-	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-	parser.parse_file(s);
-	return CSegSet(*parser.get_document());
-}
 
 int do_main(int argc, char *argv[])
 {
@@ -73,8 +63,8 @@ int do_main(int argc, char *argv[])
 		return EXIT_SUCCESS; 
 
 
-	CSegSet src_segset = load_segmentation(src_filename);
-	CSegSet ref_segset = load_segmentation(ref_filename);
+	CSegSet src_segset(src_filename);
+	CSegSet ref_segset(ref_filename);
 
 	const CSegSet::Frames& src_frames = src_segset.get_frames();
 	const CSegSet::Frames& ref_frames = ref_segset.get_frames();

@@ -27,8 +27,6 @@
 
 //#include <mia/core/fft1d_r2c.hh>
 #include <queue>
-#include <libxml++/libxml++.h>
-
 
 #include <mia/core.hh>
 #include <mia/core/meanvar.hh>

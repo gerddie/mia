@@ -18,11 +18,13 @@
  *
  */
 
-#include <libxml++/libxml++.h>
 #include <mia/2d/segset.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/filetools.hh>
+#include <mia/core/xmlinterface.hh>
 #include <mia/core/tools.hh>
+
+#include <iterator>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -35,7 +37,6 @@
 
 NS_MIA_BEGIN
 using namespace std;
-using namespace xmlpp;
 
 
 CSegSet::CSegSet():
@@ -60,18 +61,18 @@ CSegSet::CSegSet(const std::string& src_filename):
 	m_preferred_reference(-1), 
 	m_version(2)
 {
-	DomParser parser;
-	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-	parser.parse_file(src_filename);
+	ifstream infile(src_filename);
+	string xml_init(std::istreambuf_iterator<char>{infile}, {});
+	
+	if (!infile.good())
+		throw create_exception<runtime_error>("CSegSet: Unable to read input file: '", src_filename, "'");
 
-	if (!parser)
-		throw runtime_error(string("CSegSet: Unable to parse input file:") + src_filename);
-
-	read(*parser.get_document());
-
+	CXMLDocument doc(xml_init.c_str()); 
+	
+	read(doc);
 }
 
-CSegSet::CSegSet(const xmlpp::Document& doc):
+CSegSet::CSegSet(const CXMLDocument& doc):
 	m_RV_peak(-1),
 	m_LV_peak(-1), 
 	m_preferred_reference(-1), 
@@ -112,104 +113,102 @@ const C2DBoundingBox CSegSet::get_boundingbox() const
 	return result;
 }
 
-xmlpp::Document *CSegSet::write() const
+CXMLDocument CSegSet::write() const
 {
-	xmlpp::Document *doc = new xmlpp::Document;
-	xmlpp::Element* nodeRoot = doc->create_root_node("workset");
+	CXMLDocument result;
+	
+	auto nodeRoot = result.create_root_node("workset");
 
 	if (m_version > 1) {
 		nodeRoot->set_attribute("version", to_string<int>(m_version));
 	}
 
-	Element* description = nodeRoot->add_child_element("description"); 
-	Element* RVPeak = description->add_child_element("RVpeak"); 
+	auto description = nodeRoot->add_child("description"); 
+	auto  RVPeak = description->add_child("RVpeak"); 
 	RVPeak->set_attribute("value", to_string<int>(m_RV_peak));
-	Element* LVPeak = description->add_child_element("LVpeak"); 
+	auto  LVPeak = description->add_child("LVpeak"); 
 	LVPeak->set_attribute("value", to_string<int>(m_LV_peak));
-	Element* PreferedRef = description->add_child_element("PreferedRef"); 
+	auto  PreferedRef = description->add_child("PreferedRef"); 
 	PreferedRef->set_attribute("value", to_string<int>(m_preferred_reference));
 
 
-	for(Frames::const_iterator i = m_frames.begin(); i != m_frames.end(); ++i) {
-		i->write(*nodeRoot, m_version);
-	}
+	for(auto i: m_frames)
+		i.write(*nodeRoot, m_version);
 
-	return doc;
+	return result;
 }
 
-void CSegSet::read(const xmlpp::Document& node)
+void CSegSet::read(const CXMLDocument& doc)
 {
-	const xmlpp::Element *root = node.get_root_node ();
+	auto root = doc.get_root_node();
+	assert(root); 
+	
 	if (root->get_name() != "workset") {
 		throw invalid_argument(string("CSegSet: Document root node: expected 'workset', but got ") +
 				       root->get_name());
 	}
 
 	// without attribute its version 1, otherwise read the version. 
-	const Attribute *attr = root->get_attribute("version"); 
-	if (attr) {
-		if (!from_string(attr->get_value(), m_version)) 
+	auto attr = root->get_attribute("version"); 
+	if (!attr.empty()) {
+		if (!from_string(attr, m_version)) 
 			throw create_exception<invalid_argument>("bogus version '", 
-								 attr->get_value(), 
+								 attr, 
 								 "' in segmentation set"); 
 	}
-
+	cvdebug() << "Read version " << m_version << "\n"; 
+	
 	auto frames = root->get_children("frame");
-	auto i = frames.begin();
-	auto e = frames.end();
 
-	while (i != e) {
+	for (auto i: frames) {
 		try {
-			m_frames.push_back(CSegFrame(**i, m_version));
+			m_frames.push_back(CSegFrame(*i, m_version));
 		}
 		catch (invalid_argument& x) {
-            throw create_exception<invalid_argument>("Segset: Error reading frame ", distance(frames.begin(), i),
-								 ":", x.what());  
+			throw create_exception<invalid_argument>("Segset: Error reading frames:", x.what());  
 		}
-		++i;
 	}
 
 	auto descr = root->get_children("description");
 	if (!descr.empty()) 
-		descr = (*descr.begin())->get_children();
-	for(auto i = descr.begin(); i != descr.end(); ++i) {
-		cvdebug() << "description element '" << (*i)->get_name() << "'\n"; 
-		if ((*i)->get_name() == "RVpeak") {
-			const Element& elm = dynamic_cast<const Element&>(**i); 
-			const Attribute *attr = elm.get_attribute("value"); 
-			if (!attr)
+		descr = descr[0]->get_all_children();
+	
+	for(auto i : descr) {
+		cvdebug() << "description element '" << i->get_name() << "'\n"; 
+		if (i->get_name() == "RVpeak") {
+			auto attr = i->get_attribute("value"); 
+			if (attr.empty())
 				cvwarn() << "CSegFrame: LVpeak without attribute"; 
 			else 
-				if (!from_string(attr->get_value(), m_RV_peak)) {
-					cvwarn() << "Could't convert RV_peak attribute '" << attr->get_value() 
-						 <<"' to an integer; ignoring\n"; 
+				if (!from_string(attr, m_RV_peak)) {
+					cvwarn() << "Could't convert RV_peak attribute '" << attr
+						 <<"' to an integer; ignoring\n";
 					m_RV_peak = -1; 
+
 				}
-		} else if ((*i)->get_name() == "LVpeak") {
-			const Element& elm = dynamic_cast<const Element&>(**i); 
-			const Attribute *attr = elm.get_attribute("value"); 
-			if (!attr)
+		} else if (i->get_name() == "LVpeak") {
+			auto attr = i->get_attribute("value"); 
+			if (attr.empty())
 				cvwarn() << "CSegFrame: LVpeak without attribute"; 
 			else 	
-				if (!from_string(attr->get_value(), m_LV_peak)) {
-					cvwarn() << "Could't convert LV_peak attribute '" << attr->get_value() 
+				if (!from_string(attr, m_LV_peak)) {
+					cvwarn() << "Could't convert LV_peak attribute '" << attr
 						 <<"' to an integer; ignoring\n"; 
 					m_LV_peak = -1; 
 				}
-		} else if ((*i)->get_name() == "PreferedRef") {
-			const Element& elm = dynamic_cast<const Element&>(**i); 
-			const Attribute *attr = elm.get_attribute("value"); 
-			if (!attr)
+		} else if (i->get_name() == "PreferedRef") {
+			auto attr = i->get_attribute("value"); 
+			if (attr.empty())
 				cvwarn() << "CSegFrame: PreferedRef without attribute"; 
 			else 	
-				if (!from_string(attr->get_value(), m_preferred_reference)) {
-					cvwarn() << "Could't convert PreferedRef attribute '" << attr->get_value() 
+				if (!from_string(attr, m_preferred_reference)) {
+					cvwarn() << "Could't convert PreferedRef attribute '" << attr
 						 <<"' to an integer; ignoring\n"; 
 					m_preferred_reference = -1; 
 				}
 		}
 		else {
-			cvinfo() << "Ignoring unknown element '" << (*i)->get_name() << "'\n"; 
+			cvinfo() << "Ignoring unknown element '" << i->get_name() << "'\n"; 
 		}
 	}
 }

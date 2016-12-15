@@ -19,7 +19,6 @@
  */
 
 #include <fstream>
-#include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/core/filetools.hh>

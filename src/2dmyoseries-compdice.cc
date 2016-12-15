@@ -19,15 +19,12 @@
  */
 
 
-#include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
 #include <mia/internal/main.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/2d/segsetwithimages.hh>
 #include <ostream>
 #include <fstream>
-
-using xmlpp::DomParser;
 
 using namespace mia; 
 using namespace std; 

@@ -27,7 +27,6 @@
 #include <list>
 #include <cassert>
 #include <boost/filesystem.hpp>
-#include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
 #include <mia/2d/segsetwithimages.hh>
@@ -121,12 +120,9 @@ int do_main(int argc, char *argv[])
 		++iimages;
 	}
 
-	// save output
-	unique_ptr<xmlpp::Document> outset(cropped.write());
-
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << cropped.write().write_to_string();
 
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

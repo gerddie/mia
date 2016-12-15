@@ -18,12 +18,13 @@
  *
  */
 
-#include <sstream>
-#include <stdexcept>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdoption.hh>
 #include <mia/core/tools.hh>
+#include <mia/core/xmlinterface.hh>
 
+#include <sstream>
+#include <stdexcept>
 #include <cassert>
 
 using std::ostream; 
@@ -168,6 +169,11 @@ void CCmdOption::do_get_opt_help(std::ostream& os) const
 	os << "--" << get_long_option();
 	write_value(os);
 	os << " ";
+}
+
+void CCmdOption::xmlhelp_set_attribute(CXMLElement& node, const char *name, const std::string& value) const
+{
+	node.set_attribute(name, value); 
 }
 
 void CCmdOption::set_value(const char *str_value)

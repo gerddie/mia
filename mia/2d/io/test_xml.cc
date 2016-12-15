@@ -36,17 +36,17 @@ const char *testset_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset
 	"<description><RVpeak value=\"2\"/>"
 	"<LVpeak value=\"1\"/><PreferedRef value=\"0\"/></description>"
 	" <frame image=\"image.bmp\">"
-	"  <star y=\"118\" x=\"109\" r=\"21\">"
-	"   <point y=\"20\" x=\"10\"/>"
-	"   <point y=\"10\" x=\"20\"/>"
-	"   <point y=\"4\" x=\"0\"/>"
+	"  <star r=\"21\" x=\"109\" y=\"118\">"
+	"   <point x=\"10\" y=\"20\"/>"
+	"   <point x=\"20\" y=\"10\"/>"
+	"   <point x=\"0\" y=\"4\"/>"
 	"  </star>"
 	" </frame>"
 	" <frame image=\"image2.bmp\">"
-	"  <star y=\"117\" x=\"119\" r=\"22\">"
-	"  <point y=\"21\" x=\"11\"/>"
-	"  <point y=\"11\" x=\"21\"/>"
-	"  <point y=\"5\" x=\"1\"/>"
+	"  <star r=\"22\" x=\"119\" y=\"117\">"
+	"  <point x=\"11\" y=\"21\"/>"
+	"  <point x=\"21\" y=\"11\"/>"
+	"  <point x=\"1\" y=\"5\"/>"
 	"  </star>"
 	" </frame>"
 	"</workset>\n";
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_read_simple )
 	BOOST_CHECK_EQUAL(frames.size(), 2u);
 
 
-	unlink("segset.set"); 
+//	unlink("segset.set"); 
 	unlink("image.bmp"); 
 	unlink("image2.bmp");
 	

@@ -21,16 +21,21 @@
 
 
 #include <boost/filesystem.hpp>
-#include <libxml++/libxml++.h>
 #include <mia/core/tools.hh>
+#include <mia/core/xmlinterface.hh>
 #include <mia/2d/io/xml.hh>
+
+#include <iterator>
+
 
 NS_BEGIN(myosegset2d)
 
 using namespace mia; 
 using std::string; 
-using std::ofstream; 
-using std::unique_ptr; 
+using std::ofstream;
+using std::ifstream; 
+using std::unique_ptr;
+using std::runtime_error;
 namespace bfs=boost::filesystem;
 
 CXMLSegSetWithImagesIOPlugin::CXMLSegSetWithImagesIOPlugin():
@@ -43,36 +48,40 @@ CXMLSegSetWithImagesIOPlugin::CXMLSegSetWithImagesIOPlugin():
 
 PSegSetWithImages CXMLSegSetWithImagesIOPlugin::do_load(const string& fname) const
 {
-	xmlpp::DomParser parser;
-	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-	parser.parse_file(fname);
-
-	if (!parser){
-		cvdebug() << "CXMLSegSetWithImagesIOPlugin:'" << fname << "' is not a XML document\n"; 
-		return PSegSetWithImages(); 
-	}
+	ifstream infile(fname);
+	string xml_init(std::istreambuf_iterator<char>{infile}, {});
 	
-	const auto *document = parser.get_document(); 
-	const auto *root = document->get_root_node ();
+	if (!infile.good())
+		throw create_exception<runtime_error>("CXMLSegSetWithImagesIOPlugin: Unable to read input file: '", fname, "'");
+	
+	CXMLDocument doc;
+	if (!doc.read_from_string(xml_init.c_str())) {
+		cvdebug() << "CXMLSegSetWithImagesIOPlugin:'" << fname 
+			  << "' not an XML file\n";
+		return PSegSetWithImages();
+	}
+
+	auto root = doc.get_root_node ();
+	
 	if (root->get_name() != "workset") {
 		cvdebug() << "CXMLSegSetWithImagesIOPlugin:'" << fname 
 			  << "' XML file is not a segmentation set\n"; 
 		return PSegSetWithImages();
 	}
-
+	
 	bfs::path src_path_(fname);
 	src_path_.remove_filename();
 	auto src_path = src_path_.string();
+	return  PSegSetWithImages(new CSegSetWithImages(doc, src_path));
 
-	return  PSegSetWithImages(new CSegSetWithImages(*document, src_path)); 
 }
 
 bool CXMLSegSetWithImagesIOPlugin::do_save(const string& fname, const CSegSetWithImages& data) const
 {
-	unique_ptr<xmlpp::Document> outset(data.write());
+	auto outset = data.write();
 	ofstream outfile(fname.c_str() );
 	if (outfile.good()) {
-		outfile << outset->write_to_string_formatted();
+		outfile << outset.write_to_string();
 		data.save_images(fname); 
 	}
 	return outfile.good();

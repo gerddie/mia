@@ -25,12 +25,9 @@
 #include <mia/2d/defines2d.hh>
 #include <mia/2d/transform.hh>
 
-namespace xmlpp {
-class Node;
-class Element; 
-}
-
 NS_MIA_BEGIN
+
+class CXMLElement; 
 
 /**
    @ingroup perf 
@@ -57,16 +54,18 @@ public:
 	 */
 	CSegPoint2D(float x, float y);
 
-	/**
+	
+	
+        /**
 	   Construct the point from a XML node
 	   \param node
 	 */
-	CSegPoint2D(const xmlpp::Node& node);
+	CSegPoint2D(const CXMLElement& node);
 
 	/** Write the point as child-node to a given XML tree
 	    \param node 
 	*/
-	void write(xmlpp::Element& node) const;
+	void write(CXMLElement& node) const;
 
 	/**
 	   Tranform the point according to the given tranformation 
@@ -84,9 +83,9 @@ public:
 
 
 template <typename T>
-void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required); 
+void read_attribute_from_node(const CXMLElement& elm, const std::string& key, T& out_value, bool required); 
 
-void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, bool& out_value, bool required); 
+void read_attribute_from_node(const CXMLElement& elm, const std::string& key, bool& out_value, bool required); 
 
 NS_MIA_END
 
