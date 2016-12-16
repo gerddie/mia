@@ -430,7 +430,7 @@ static VistaIOGraph create_vngraph(const CTriangleMesh& mesh)
 
 static VistaIOGraph create_vsgraph(const CTriangleMesh& mesh)
 {
-	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 11, VistaIOFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 5, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_scale_iterator si = mesh.scale_begin();
