@@ -232,9 +232,13 @@ C3DFVector C3DLinearVectorfieldInterpolator::operator()(const C3DFVector& x) con
 			}else {
 				// We can not assume that all access would be to the data inside
 				// the allocated range
-				memset(in, 0, 8*sizeof(__m128)); 
-				in[0] = _mm_loadu_ps(&m_field[linear_index].x);
+				memset(in, 0, 8*sizeof(__m128));
 				if (linear_index < m_field_size_m1)
+					in[0] = _mm_loadu_ps(&m_field[linear_index].x);
+				else
+					in[0] = impl->last_elm;
+				
+				if (linear_index < impl->m_field_size_m2)
 					in[1] = _mm_loadu_ps(&m_field[linear_index + 1].x);
 				else
 					in[1] = impl->last_elm;

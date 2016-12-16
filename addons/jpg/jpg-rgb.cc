@@ -129,7 +129,6 @@ bool CJpegRGB2DImageIOPlugin::do_save_jpeg(FILE *f, const CRGB2DImage& image) co
 
 	miajpeg::JpegCompress compress; 
 
-	jpeg_create_compress(&compress.info);
 	compress.err.error_exit = mia_jpeg_save_error_exit;
 	
 	compress.info.image_width = image.get_size().x; 

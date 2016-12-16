@@ -127,7 +127,6 @@ bool CJpeg2DImageIOPlugin::do_save_jpeg(FILE *f, const C2DUBImage& image) const
 
 	miajpeg::JpegCompress compress; 
 
-	jpeg_create_compress(&compress.info);
 	compress.err.error_exit = mia_jpeg_save_error_exit;
 
 	
