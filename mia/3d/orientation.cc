@@ -270,9 +270,6 @@ EXPORT_3D  istream& operator >> (istream& is, E3DPatientPositioning& pp)
 	return is; 
 }
 
-EXPORT_3D const char * IDPatientPosition = "PatientPosition"; 
-
-
 void C3DOrientationAndPosition::print(std::ostream& os)const
 {
 	os << "[" << m_axisorder << " [" << m_origin << "] [" 
