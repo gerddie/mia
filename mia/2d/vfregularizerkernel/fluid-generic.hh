@@ -32,7 +32,7 @@ public:
 	void multiply_with_matrix(C2DFVectorfield& out, const C2DFVectorfield& in);  
 
 private: 
-	void post_set_data_fields(); 
+	void post_set_data_fields() override; 
 
         float do_evaluate_row(unsigned y, CBuffers& buf) override; 
                 

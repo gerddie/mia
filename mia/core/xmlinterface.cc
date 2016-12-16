@@ -42,6 +42,7 @@ using std::runtime_error;
 using std::stack;
 using std::pair;
 using std::make_pair; 
+using std::unique_ptr; 
 
 struct CXMLElementImpl {
         CXMLElementImpl(const char *name);
@@ -225,16 +226,23 @@ CXMLDocument::CXMLDocument(const char *init)
 	}
 }
 
+
+struct xmlDocDeleter {
+	void operator() (xmlDoc *p) {
+		xmlFreeDoc(p);
+	}
+}; 
+
 bool CXMLDocument::read_from_string(const char *init)
 {
 	CXMLErrorHandler error_handler("XML Reader", m_last_error);
-	
-	auto doc = xmlParseDoc(reinterpret_cast<const xmlChar *>(init));
+
+	unique_ptr<xmlDoc,  xmlDocDeleter> doc(xmlParseDoc(reinterpret_cast<const xmlChar *>(init)));
 
 	if (!doc)
 		return false; 
 
-	auto root = xmlDocGetRootElement(doc);
+	auto root = xmlDocGetRootElement(doc.get());
 
 	if (!root)
 		return false;
@@ -316,6 +324,7 @@ bool CXMLDocument::read_from_string(const char *init)
 	return m_last_error.empty(); 
 }
 
+
 std::string CXMLDocument::write_to_string(const char *encoding, bool formatted) const
 {
 	string error_msg; 
@@ -323,22 +332,22 @@ std::string CXMLDocument::write_to_string(const char *encoding, bool formatted) 
 	
 	xmlChar *doc_txt_ptr = NULL;
         int doc_txt_len = 0;
-	
-	xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
+
+	unique_ptr<xmlDoc,  xmlDocDeleter> doc(xmlNewDoc(BAD_CAST "1.0"));
 	
 	xmlNodePtr root = m_root->impl->write_to_node();
-	xmlDocSetRootElement(doc, root);
+	xmlDocSetRootElement(doc.get(), root);
 	
         xmlKeepBlanksDefault(0);
 	
 	if (encoding) 
-		xmlDocDumpFormatMemoryEnc(doc, 
+		xmlDocDumpFormatMemoryEnc(doc.get(), 
 					  &doc_txt_ptr, 
 					  &doc_txt_len,
 					  encoding,
 					  formatted ? 1 : 0);
 	else
-		xmlDocDumpFormatMemory(doc, 
+		xmlDocDumpFormatMemory(doc.get(), 
                                &doc_txt_ptr, 
                                &doc_txt_len, 
                                formatted ? 1 : 0);
@@ -346,7 +355,6 @@ std::string CXMLDocument::write_to_string(const char *encoding, bool formatted) 
 	stringstream out_string;
         out_string << doc_txt_ptr;
         free(doc_txt_ptr);
-	xmlFreeDoc(doc); 
 
 	if (!error_msg.empty())
 		throw runtime_error(error_msg); 

@@ -118,7 +118,8 @@ void Matrix::reset(size_t rows, size_t columns, bool clean)
 	swap(help, m_matrix); 
 	if (help && m_owner) 
 		gsl_matrix_free(help);
-	m_const_matrix = m_matrix; 
+	m_const_matrix = m_matrix;
+	m_owner = true; 
 }
 
 void Matrix::reset(size_t rows, size_t columns, double init) 
@@ -130,7 +131,8 @@ void Matrix::reset(size_t rows, size_t columns, double init)
 	swap(help, m_matrix); 
 	if (help && m_owner) 
 		gsl_matrix_free(help);
-	m_const_matrix = m_matrix; 
+	m_const_matrix = m_matrix;
+	m_owner = true; 
 }
 
 Matrix::~Matrix()

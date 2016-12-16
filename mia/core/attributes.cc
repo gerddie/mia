@@ -163,9 +163,11 @@ bool CStringAttrTranslatorMap::add(const string& key, CAttrTranslator* t)
 {
 	CMap::const_iterator k = m_translators.find(key);
 	if ( k != m_translators.end()) {
-		if ( typeid(*t) != typeid(*k->second))
-			throw invalid_argument(string("translator with key '") + key + ("' already defined otherwise"));
-		else
+		if ( typeid(*t) != typeid(*k->second)) {
+			delete t; 
+			throw create_exception<invalid_argument>(string("translator with key '") +
+								 key + ("' already defined otherwise"));
+		} else
 			return false;
 	}
 	cvdebug() << "add translator type '" << typeid(*t).name() << "' for '" << key << "'\n";

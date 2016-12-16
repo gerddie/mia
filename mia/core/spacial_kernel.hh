@@ -164,6 +164,9 @@ typedef TFactory<C1DFoldingKernel> C1DSpacialKernelPlugin;
 
 typedef std::shared_ptr<C1DFoldingKernel> P1DSpacialKernel; 
 
+template<>  const char * const 
+TPluginHandler<TFactory<C1DFoldingKernel>>::m_help; 
+
 /// plugin handler for spaciel filter kernels 
 typedef THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> > C1DSpacialKernelPluginHandler;
 

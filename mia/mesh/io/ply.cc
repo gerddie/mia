@@ -321,11 +321,11 @@ public:
 		if (m_next)
 			m_next->append(w);
 		else
-			m_next = w; 
+			m_next.reset(w); 
 	}
 private:
 	virtual void do_write(const CTriangleMesh& mesh, ostream& os, unsigned i) = 0; 
-	CElementWriter *m_next; 
+	unique_ptr<CElementWriter> m_next; 
 }; 
 
 class CVertexWriter : public CElementWriter{

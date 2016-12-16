@@ -108,7 +108,7 @@ void InterpolatorIDFixture::test_case(const string& interpolator_kernel, double 
 	BOOST_CHECK_CLOSE( (*interp)(0) + 1, f(0.0) + 1, tolerance);
 	for(size_t x = 0; x < 512; ++x) {
 		double interpx = (*interp)(x);
-		if (abs(interpx > 1e-10) || f(x) >1e-10)
+		if ((abs(interpx) > 1e-10) || f(x) >1e-10)
 			BOOST_CHECK_CLOSE( interpx, f(x), tolerance);
 	}
 
@@ -116,7 +116,7 @@ void InterpolatorIDFixture::test_case(const string& interpolator_kernel, double 
 	// at the boundaries unreliable 
 	for(size_t x = 10; x < 502; ++x) {
 		double interpdx = interp->derivative_at(x); 
-		if (abs(interpdx > 1e-3) || df(x) >1e-3)
+		if ((abs(interpdx) > 1e-3) || df(x) >1e-3)
 			BOOST_CHECK_CLOSE( interpdx, df(x), 2*tolerance);
 	}
 }

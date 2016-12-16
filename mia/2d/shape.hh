@@ -37,6 +37,8 @@ typedef std::shared_ptr<C2DShape > P2DShape;
 /// Base class for Shape generating plug-ins 
 typedef TFactory<C2DShape> C2DShapePlugin;
 
+template <> const char *  const TPluginHandler<TFactory<C2DShape>>::m_help; 
+
 /// Plug-in handler for the shape plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
 

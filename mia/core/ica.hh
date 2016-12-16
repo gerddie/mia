@@ -186,6 +186,9 @@ typedef THandlerSingleton<TFactoryPluginHandler<CIndepCompAnalysisFactoryPlugin>
 CIndepCompAnalysisFactoryPluginHandler;
 
 
+template<>  const char * const 
+TPluginHandler<TFactory<CIndepCompAnalysisFactory>>::m_help; 
+
 extern template class EXPORT_CORE  TPluginHandler<TFactory<CIndepCompAnalysisFactory>>;
 
 /// @cond NEVER

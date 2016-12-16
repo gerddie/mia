@@ -147,7 +147,7 @@ public:
 
 	void set_deterministic_seed(int seed) override;
 private:
-	void set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean);
+	void set_row_internal(unsigned row, const std::vector<double>&  buffer, double mean)  override;
 	
 	struct CICAAnalysisITPPImpl *impl;
 	

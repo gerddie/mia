@@ -631,7 +631,9 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t remaining_args, con
 						       "parameter for multiple parameters");
 			}
 		}else {
-			cvdebug() << "remaining_args = " << remaining_args << ", and " << nargs << " needed\n"; 
+
+			// this is the last flag
+						cvdebug() << "remaining_args = " << remaining_args << ", and " << nargs << " needed\n"; 
 			if (remaining_args < nargs ) {
 				throw create_exception<invalid_argument>("Option -", opt->get_short_option(), 
 							       ": requires ", nargs, " arguments, but only ", 
@@ -641,13 +643,11 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t remaining_args, con
 			switch (nargs) {
 			case 0:
 				opt->set_value(NULL);
-				bool_options_only = true;
 				break;
 			case 1:
                                 // this handles when the option value is not attacted to the flag 
 				// like in -b somevalue
 				opt->set_value(args[0]);
-				bool_options_only = false;
 				break;
 			default:// actually currently multiple 
 				throw logic_error("Command line parameters that take more then"

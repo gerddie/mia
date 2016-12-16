@@ -292,6 +292,9 @@ typedef std::shared_ptr<CSplineKernel> PSplineKernel;
 /// base plugin for spline kernels
 typedef TFactory<CSplineKernel> CSplineKernelPlugin; 
 
+
+template<>  const char * const 
+TPluginHandler<TFactory<CSplineKernel>>::m_help; 
 /**
    \ingroup interpol 
    Plugin handler for the creation of spline kernels 

@@ -62,12 +62,12 @@ public:
          */
         Compressed get_compressed_histogram()const; 
  private: 
-        std::vector<unsigned long> m_histogram; 
-        int m_shift; 
+        std::vector<uint64_t> m_histogram; 
+        int64_t m_shift; 
         EPixelType m_pixeltype; 
 }; 
 
-EXPORT_CORE std::ostream& operator << (std::ostream& os, const std::pair<short, unsigned long>& pair); 
+EXPORT_CORE std::ostream& operator << (std::ostream& os, const std::pair<short, uint64_t>& pair); 
 
 //   Implementation
 
@@ -76,14 +76,14 @@ EXPORT_CORE std::ostream& operator << (std::ostream& os, const std::pair<short, 
 template <typename InIterator, bool sig> 
 struct dispatch_by_pixeltype {
         static size_t  apply(InIterator MIA_PARAM_UNUSED(begin), InIterator MIA_PARAM_UNUSED(end),
-                             std::vector<unsigned long>& MIA_PARAM_UNUSED(histogram)){
+                             std::vector<uint64_t>& MIA_PARAM_UNUSED(histogram)){
                 throw std::invalid_argument("Input pixel type not supported"); 
         }
 }; 
 
 template <typename InIterator> 
 struct dispatch_by_pixeltype<InIterator, false> {
-        static size_t apply(InIterator begin, InIterator end, std::vector<unsigned long>& histogram){
+        static size_t apply(InIterator begin, InIterator end, std::vector<uint64_t>& histogram){
                 size_t n = 0; 
                 while ( begin != end) {
                         ++histogram[*begin];
@@ -96,9 +96,9 @@ struct dispatch_by_pixeltype<InIterator, false> {
 
 template <typename InIterator> 
 struct dispatch_by_pixeltype<InIterator, true> {
-        static size_t apply(InIterator begin, InIterator end, std::vector<unsigned long>& histogram){
+        static size_t apply(InIterator begin, InIterator end, std::vector<uint64_t>& histogram){
                 typedef typename InIterator::value_type in_pixels;
-		int shift = -std::numeric_limits<in_pixels>::min();
+		int64_t shift = -std::numeric_limits<in_pixels>::min();
                 size_t n = 0; 
                 while ( begin != end) {
                         ++histogram[*begin + shift];

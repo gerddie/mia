@@ -125,6 +125,7 @@ typedef TImageCombiner< C2DImage > C2DImageCombiner;
 typedef std::shared_ptr<C2DImageCombiner> P2DImageCombiner; 
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
 
+
 /// Plugin handler for image combiner plugins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > 
         C2DImageCombinerPluginHandler;

@@ -34,9 +34,9 @@ BOOST_AUTO_TEST_CASE( test_closes_class_center )
 
 	BOOST_CHECK_EQUAL(kmeans_get_closest_clustercenter(classes, 3, -2), 0);
 	BOOST_CHECK_EQUAL(kmeans_get_closest_clustercenter(classes, 1, 30), 1);
-	BOOST_CHECK_EQUAL(kmeans_get_closest_clustercenter(classes, 4, 24), 2);
+	BOOST_CHECK_EQUAL(kmeans_get_closest_clustercenter(classes, 3, 24), 2);
 	BOOST_CHECK_EQUAL(kmeans_get_closest_clustercenter(classes, 3, 28), 3);
-	BOOST_CHECK_EQUAL(kmeans_get_closest_clustercenter(classes, 4, 18), 2);
+	BOOST_CHECK_EQUAL(kmeans_get_closest_clustercenter(classes, 3, 18), 2);
 
 }
 

@@ -192,6 +192,9 @@ private:
 */
 typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> > CSplineBoundaryConditionPluginHandler;
 
+template<> 
+const char * const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help;
+
 extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> >; 
 
 /// make spline boundary conditions parsable by the command line 

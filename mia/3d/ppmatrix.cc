@@ -247,7 +247,6 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 				const double r101101 = r11x * r00y * r11z; 
 				const double r011011 = r00x * r11y * r11z; 
 				
-				bool zero = true; 
 				cell.vxx = global_scale * (
 					r002002 * wrot + 
 					r011011 * 2.0 * wrot + 
@@ -256,8 +255,6 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 					r110110 * wsum + 
 					r200200 * wdiv); 
 				
-				zero &= cell.vxx == 0.0; 
-				
 				cell.vyy = global_scale * (
 					r002002 * wrot + 
 					r011011 * wsum + 
@@ -265,7 +262,6 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 					r101101 * 2* wrot + 
 					r110110 * wsum + 
 					r200200 * wrot); 
-				zero &= cell.vyy == 0.0; 
 				
 				cell.vzz = global_scale * (
 					r002002 * wdiv + 
@@ -275,26 +271,22 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 					r110110 * wrot * 2 + 
 					r200200 * wrot); 
 				
-				zero &= cell.vzz == 0.0; 
-				
+			
 				if (wdelta != 0.0) {
 					cell.vxy = global_scale * wdelta * 
 						(r21x * r01y * r00z + 
 						 r10x * r12y * r00z + 
 						 r01x * r10y * r11z); 
-					zero &= cell.vxy == 0.0; 
 					
 					cell.vxz = global_scale * wdelta * 
 						(r21x * r00y * r01z + 
 						 r10x * r11y * r01z + 
 						 r10x * r00y * r12z); 
-					zero &= cell.vxz == 0.0;
 					
 					cell.vyz = global_scale * wdelta * (
 						r11x * r10y * r01z + 
 						r00x * r21y * r01z + 
 						r00x * r10y * r12z);
-					zero &= cell.vyz == 0.0;
 					
 				}
 				*p = cell; 
