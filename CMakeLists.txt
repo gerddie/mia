@@ -97,7 +97,17 @@ INCLUDE (CheckIncludeFileCXX)
 
 include(CheckCXXCompilerFlag)
 
-IF(UNIX)
+
+MESSAGE(STATUS "Compiler is ${CMAKE_CXX_COMPILER_ID} version ${CMAKE_CXX_COMPILER_VERSION}")
+
+IF (((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
+      (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.4.0)) OR
+    ((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang") AND
+      (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.8.0)))
+  MESSAGE(STATUS "Compiler  has full c++11 support") 
+  SET(CXX_11_FLAG "-std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${CXX_11_FLAG} -fvisibility=hidden")
+ELSE()
   CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_GNU_CXX11_FLAG)
   IF(HAS_GNU_CXX11_FLAG)
     SET(CXX_11_FLAG "-std=c++11")
@@ -109,9 +119,18 @@ IF(UNIX)
       MESSAGE(WARNING "Don't know how to enable C++11, if you are lucky, they are enabled by default")
     ENDIF(HAS_GNU_CXX0X_FLAG)
   ENDIF(HAS_GNU_CXX11_FLAG)
-  
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${CXX_11_FLAG} -fvisibility=hidden")
-ENDIF(UNIX)
+  INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
+  INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
+  IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
+    MESSAGE(FATAL_ERROR 
+      "This source code requires the C++0x auto type and lambda features. "
+      "If your compiler is supposed to support this feature, "
+      "please enable the appropriate flags and delete the CMakeCache.txt file before "
+      "re-running cmake.\n"
+      "For g++ >= 4.8 this is '-std=c++0x' ")
+  ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
+ENDIF()
 
 IF (ENABLE_COVERAGE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g -DMIA_COVERAGE")
@@ -120,19 +139,7 @@ IF (ENABLE_COVERAGE)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
 ENDIF()
 
-INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
-INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkSSEAttributeVectorCanUseSubscript.cmake)
-
-
-IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
-  MESSAGE(FATAL_ERROR 
-    "This source code requires the C++0x auto type and lambda features. "
-    "If your compiler is supposed to support this feature, "
-    "please enable the appropriate flags and delete the CMakeCache.txt file before "
-    "re-running cmake.\n"
-    "For g++ >= 4.6 this is '-std=c++0x' ")
-ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkAltivecEnabled.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkSSEEnabled.cmake)
