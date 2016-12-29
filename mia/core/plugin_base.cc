@@ -116,7 +116,7 @@ const char *g_plugin_root = nullptr;
 
 PrepareTestPluginPath::PrepareTestPluginPath()
 {
-	g_plugin_root = MIA_BUILD_ROOT "/plugintest/" PLUGIN_INSTALL_PATH; 
+	g_plugin_root = MIA_BUILD_ROOT "/plugintest/";
 }
 
 PrepareTestPluginPath::~PrepareTestPluginPath()

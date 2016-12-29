@@ -58,13 +58,25 @@ MACRO(CREATE_PLUGIN_COMMON plugname files)
 #  target_link_libraries(${plugname}-common ${libs})
 ENDMACRO(CREATE_PLUGIN_COMMON plugname) 
 
-MACRO(CREATE_PLUGIN_MODULE plugname libs)
+MACRO(CREATE_PLUGIN_MODULE_OLD plugname libs)
   add_library(${plugname} MODULE $<TARGET_OBJECTS:${plugname}-common>)
   set_target_properties(${plugname} PROPERTIES 
     PREFIX ""  
     SUFFIX ${PLUGSUFFIX})
   target_link_libraries(${plugname} ${libs})
+ENDMACRO(CREATE_PLUGIN_MODULE_OLD plugname)
+
+MACRO(CREATE_PLUGIN_MODULE plugname libs plugindir)
+  add_library(${plugname} MODULE $<TARGET_OBJECTS:${plugname}-common>)
+  set_target_properties(${plugname} PROPERTIES 
+    PREFIX ""  
+    SUFFIX ${PLUGSUFFIX}
+    LIBRARY_OUTPUT_DIRECTORY "${plugindir}"
+    )
+  target_link_libraries(${plugname} ${libs})
+  ADD_DEPENDENCIES(plugin_test_links ${plugname})
 ENDMACRO(CREATE_PLUGIN_MODULE plugname)
+
 
 MACRO(CREATE_PLUGIN_TEST plugname file libs)
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
@@ -81,10 +93,10 @@ MACRO(CREATE_PLUGIN_TEST plugname file libs)
   add_test(${plugname} test-${plugname})
 ENDMACRO(CREATE_PLUGIN_TEST plugname file)
 
-MACRO(PLUGIN_WITH_TEST plugname file libs)
+MACRO(PLUGIN_WITH_TEST plugname file libs plugindir)
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
   CREATE_PLUGIN_COMMON(${plugname} ${file} )
-  CREATE_PLUGIN_MODULE(${plugname} "${libs}")
+  CREATE_PLUGIN_MODULE(${plugname} "${libs}" ${plugindir})
   CREATE_PLUGIN_TEST(${plugname} test_${file} "${libs}" TESTLIBS "${PLUGIN_TESTLIBS}")
 ENDMACRO(PLUGIN_WITH_TEST plugname file libs)
 
@@ -92,7 +104,7 @@ MACRO(PLUGIN_WITH_TEST_AND_PREFIX_NOINST prefix plugname libs)
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
   SET(name ${prefix}-${plugname})
   CREATE_PLUGIN_COMMON(${name} ${plugname}.cc "${libs}")
-  CREATE_PLUGIN_MODULE(${name})
+  CREATE_PLUGIN_MODULE_OLD(${name})
   CREATE_PLUGIN_TEST(${name} test_${plugname}.cc TESTLIBS "${PLUGIN_TESTLIBS}")
 ENDMACRO(PLUGIN_WITH_TEST_AND_PREFIX_NOINST  prefix  plugname file libs)
 
@@ -100,7 +112,7 @@ MACRO(DEFINE_PLUGIN_NAMES type data rootdir)
   FOREACH(d ${data})
     SET(${type}_${d}_prefix "${type}-${d}")
     SET(${type}_${d}_dir "${rootdir}/${type}/${d}")
-    ADD_CUSTOM_TARGET(${type}_${d}_testdir mkdir -p "${PLUGIN_TEST_ROOT}/${${type}_${d}_dir}")  
+    SET(${type}_${d}_binary "${type}/${d}")
   ENDFOREACH(d)
 ENDMACRO(DEFINE_PLUGIN_NAMES type data rootdir) 
 
@@ -115,13 +127,11 @@ ENDMACRO(TEST_PREFIX type data)
 MACRO(PLUGIN_WITH_PREFIX2 type data plugname libs)
   TEST_PREFIX(${type} ${data})
   SET(install_path ${${type}_${data}_dir})
+  SET(plugin_build_path ${${type}_${data}_binary})
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
   SET(name ${${type}_${data}_prefix}-${plugname})
   CREATE_PLUGIN_COMMON(${name} ${plugname}.cc)
-  CREATE_PLUGIN_MODULE(${name} "${libs}")
-  ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
-    ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${type}_${data}_testdir ${name})
-  ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
+  CREATE_PLUGIN_MODULE(${name} "${libs}" ${PLUGIN_TEST_ROOT}/${plugin_build_path})
   INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
   IF(WARN_MISSING_OR_OLD_PLUGINTESTS)
   MESSAGE("WARNING: Plugin ${name} does provide no or only old-style testing")
@@ -132,15 +142,13 @@ ENDMACRO(PLUGIN_WITH_PREFIX2 type data plugname libs)
 MACRO(PLUGIN_WITH_TEST_AND_PREFIX2 type data plugname libs)
   TEST_PREFIX(${type} ${data})
   SET(install_path ${${type}_${data}_dir})
+  SET(plugin_build_path ${${type}_${data}_binary})
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
 
   SET(name ${${type}_${data}_prefix}-${plugname})
   CREATE_PLUGIN_COMMON(${name} ${plugname}.cc)
-  CREATE_PLUGIN_MODULE(${name} "${libs}")
+  CREATE_PLUGIN_MODULE(${name} "${libs}" "${PLUGIN_TEST_ROOT}/${plugin_build_path}")
   CREATE_PLUGIN_TEST(${name} test_${plugname}.cc "${libs}" TESTLIBS "${PLUGIN_TESTLIBS}")
-  ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
-    ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${type}_${data}_testdir ${name})
-  ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
   INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
 ENDMACRO(PLUGIN_WITH_TEST_AND_PREFIX2 type data plugname libs)
 
@@ -164,22 +172,28 @@ MACRO(PLUGIN_WITH_TEST_MULTISOURCE name type data src libs)
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
   TEST_PREFIX(${type} ${data})
   SET(install_path ${${type}_${data}_dir})
+  SET(plugin_build_path ${${type}_${data}_binary})
   SET(plugname ${${type}_${data}_prefix}-${name})
 
   # create common library 
   ADD_LIBRARY(${plugname}-common OBJECT ${src})
   IF(NOT WIN32)
 	set_source_files_properties(${src}  PROPERTIES COMPILE_FLAGS "-fPIC")
-	set_target_properties(${plugname}-common  PROPERTIES COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"') 
+	set_target_properties(${plugname}-common
+          PROPERTIES
+          COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"') 
   ENDIF(NOT WIN32)
 
   # create module 
   ADD_LIBRARY(${plugname} MODULE $<TARGET_OBJECTS:${plugname}-common>)
-  SET_TARGET_PROPERTIES(${plugname} PROPERTIES  PREFIX "" SUFFIX ${PLUGSUFFIX})
+  SET_TARGET_PROPERTIES(${plugname} PROPERTIES
+    PREFIX "" SUFFIX ${PLUGSUFFIX}
+    LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_TEST_ROOT}/${plugin_build_path}")
   IF(NOT WIN32)
 #    SET_TARGET_PROPERTIES(${plugname} PROPERTIES LINK_FLAGS "-Wl,--no-gc-sections -Wl,--undefined,get_plugin_interface")
   ENDIF(NOT WIN32)
   TARGET_LINK_LIBRARIES(${plugname} ${libs})
+  ADD_DEPENDENCIES(plugin_test_links ${plugname})
   
   # create tests
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
@@ -197,9 +211,6 @@ MACRO(PLUGIN_WITH_TEST_MULTISOURCE name type data src libs)
   target_link_libraries(test-${plugname} ${BOOST_UNITTEST} "${PLUGIN_TESTLIBS}")
   add_test(${plugname} test-${plugname})
   
-  ADD_CUSTOM_TARGET(${plugname}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${plugname}.mia" 
-    ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${type}_${data}_testdir ${plugname})
-  ADD_DEPENDENCIES(plugin_test_links ${plugname}_test_link)
   INSTALL(TARGETS ${plugname} LIBRARY DESTINATION ${install_path})
 ENDMACRO(PLUGIN_WITH_TEST_MULTISOURCE) 
 

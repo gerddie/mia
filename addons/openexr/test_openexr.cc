@@ -31,36 +31,20 @@ using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
-struct PathInitFixture {
-	PathInitFixture(); 
-}; 
-
-PathInitFixture::PathInitFixture()
-{
-	CPluginSearchpath searchpath(true);
-	searchpath.add(".");
-
-	C2DImageIOPluginHandler::set_search_path(searchpath);
-	C2DVFIOPluginHandler::set_search_path(searchpath);
-}
-
-BOOST_FIXTURE_TEST_CASE(test_2dimage_plugin_handler, PathInitFixture)
+BOOST_AUTO_TEST_CASE(test_2dimage_plugin_handler)
 {
 	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance();
-	BOOST_REQUIRE(handler.size() == 2u);
-	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
+	BOOST_REQUIRE(handler.size() >= 2u);
+	auto plugins = handler.get_set();
+	BOOST_REQUIRE(plugins.find("exr") != plugins.end()); 
 }
 
-BOOST_FIXTURE_TEST_CASE(test_2dvf_plugin_handler, PathInitFixture)
+BOOST_AUTO_TEST_CASE(test_2dvf_plugin_handler)
 {
 	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance();
-	BOOST_REQUIRE(handler.size() == 2u);
-	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
-}
-
-BOOST_FIXTURE_TEST_CASE(test_2dimage_plugin, PathInitFixture)
-{
-	test_2dimageio_plugins(); 
+	BOOST_REQUIRE(handler.size() >= 2u);
+	auto plugins = handler.get_set();
+	BOOST_REQUIRE(plugins.find("exr") != plugins.end()); 
 }
 
 BOOST_AUTO_TEST_CASE ( test_2dvfio )

@@ -44,14 +44,8 @@ IF(WITH_OpenEXR)
     PLUGIN_WITH_PREFIX2("2dimage" "io" 2dimgexr "${DEPS2D}")
     PLUGIN_WITH_PREFIX2("2dvf" "io"    2dvfexr "${DEPS2D}")
     
-    # test programs 
-    ADD_EXECUTABLE(test-openexr test_openexr.cc)
-    
     SET(DEPLIBS mia2dtest mia2d ${BASELIBS})
-    TARGET_LINK_LIBRARIES(test-openexr ${DEPLIBS} ${BOOST_UNITTEST})
-    
-    ADD_TEST(exr test-openexr)
-    
+    NEW_TEST(openexr ${DEPLIBS})
     
   ENDIF(EXR_LIBRARIES AND EXR_INCLUDE_DIRS)
   
