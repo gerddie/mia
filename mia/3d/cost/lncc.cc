@@ -34,6 +34,7 @@ using std::make_pair;
 CLNCC3DImageCost::CLNCC3DImageCost(int hw):
 m_hwidth(hw)
 {
+	m_copy_to_double = produce_3dimage_filter("convert:repn=double,map=copy"); 
 }
 
 inline pair<C3DBounds, C3DBounds> prepare_range(const C3DBounds& size, int cx, int cy, int cz, int hw) 
@@ -65,8 +66,7 @@ public:
 		m_hw(hw)
 		{}
 	
-	template <typename T, typename R> 
-	float operator () ( const T& mov, const R& ref) const {
+	float operator () ( const C3DDImage& mov, const C3DDImage& ref) const {
 		auto evaluate_local_cost = [this, &mov, &ref](const C1DParallelRange& range, const pair<float, int>& result) -> pair<float, int> {
 			CThreadMsgStream msks; 
 			float lresult = 0.0; 
@@ -113,8 +113,12 @@ public:
 
 double CLNCC3DImageCost::do_value(const Data& a, const Data& b) const
 {
-	FEvalCost ecost(m_hwidth); 
-	return mia::filter(ecost, a, b); 
+	FEvalCost ecost(m_hwidth);
+	auto a_double_ptr = m_copy_to_double->filter(a);
+	auto b_double_ptr = m_copy_to_double->filter(b);
+	const C3DDImage& mov = static_cast<const C3DDImage&>(*a_double_ptr);
+	const C3DDImage& ref = static_cast<const C3DDImage&>(*b_double_ptr);
+	return ecost(mov, ref); 
 }
 
 
@@ -127,8 +131,7 @@ public:
 		m_force(force)
 		{}
 	
-	template <typename T, typename R> 
-	float operator () ( const T& mov, const R& ref) const {
+	float operator () ( const C3DDImage& mov, const C3DDImage& ref) const {
 		auto ag = get_gradient(mov); 
 		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const C1DParallelRange& range, 
 									 const pair<float, int>& result) -> pair<float, int> {
@@ -185,8 +188,13 @@ public:
 
 double CLNCC3DImageCost::do_evaluate_force(const Data& a, const Data& b, Force& force) const
 {
-	FEvalCostForce ecostforce(m_hwidth, force); 
-	return mia::filter(ecostforce, a, b); 
+	FEvalCostForce ecostforce(m_hwidth, force);
+	auto a_double_ptr = m_copy_to_double->filter(a);
+	auto b_double_ptr = m_copy_to_double->filter(b);
+	const C3DDImage& mov = static_cast<const C3DDImage&>(*a_double_ptr);
+	const C3DDImage& ref = static_cast<const C3DDImage&>(*b_double_ptr);
+	
+	return ecostforce(mov, ref); 
 }
 
 
