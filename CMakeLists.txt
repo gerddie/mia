@@ -82,7 +82,7 @@ OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
 OPTION(ENABLE_COVERAGE "Enable code coverage tests" FALSE)
 OPTION(DISABLE_PROGRAMS "Don't build the programs nor documentation (only for testing purposes)" FALSE)
 OPTION(MIA_CREATE_USERDOC "Enable creation of html user documentation" TRUE)
-OPTION(MIA_USE_BOOST_REGEX "Use the boost::regex library (instead of c++11 build in) " FALSE)
+
 
 
 
@@ -101,11 +101,17 @@ include(CheckCXXCompilerFlag)
 MESSAGE(STATUS "Compiler is ${CMAKE_CXX_COMPILER_ID} version ${CMAKE_CXX_COMPILER_VERSION}")
 
 IF (((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
-      (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.4.0)) OR
+      (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.3.0)) OR
     ((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang") AND
-      (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.8.0)))
-  MESSAGE(STATUS "Compiler  has full c++11 support") 
-  SET(CXX_11_FLAG "-std=c++11")
+      (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.3.0)))
+  MESSAGE(STATUS "Compiler  has full c++11 support")
+
+  # g++ >= 6.0 sets std=c++14 by default
+  IF ((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
+      (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0.0))  
+    SET(CXX_11_FLAG "-std=c++11")
+  ENDIF()
+  
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${CXX_11_FLAG} -fvisibility=hidden")
 ELSE()
   CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_GNU_CXX11_FLAG)
@@ -131,6 +137,17 @@ ELSE()
       "For g++ >= 4.8 this is '-std=c++0x' ")
   ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
 ENDIF()
+
+# older versions of g++ libstdc++ don't implement regex sufficiently good
+# to be useful
+IF ((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
+    (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.3.0))
+  SET(MIA_USE_BOOST_REGEX_PRESET FALSE)
+ELSE()
+  SET(MIA_USE_BOOST_REGEX_PRESET TRUE)
+ENDIF()
+  
+OPTION(MIA_USE_BOOST_REGEX "Use the boost::regex library (instead of c++11 build in) " ${MIA_USE_BOOST_REGEX_PRESET})
 
 IF (ENABLE_COVERAGE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g -DMIA_COVERAGE")
