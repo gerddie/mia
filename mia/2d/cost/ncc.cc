@@ -31,27 +31,25 @@ using namespace mia;
 
 CNCC2DImageCost::CNCC2DImageCost()
 {
+	m_copy_to_double = produce_2dimage_filter("convert:repn=double,map=copy"); 
 }
 
-template <typename T, typename S> 
 struct FEvaluateNCCSum {
-	FEvaluateNCCSum(const T& mov, const S& ref); 
+	FEvaluateNCCSum(const C2DDImage& mov, const C2DDImage& ref); 
 	NCCSums operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const; 
 private: 
-	T m_mov; 
-	S m_ref; 
+	const C2DDImage& m_mov; 
+	const C2DDImage& m_ref; 
 };
 
 
-template <typename T, typename S> 
-FEvaluateNCCSum<T,S>::FEvaluateNCCSum(const T& mov, const S& ref):
+FEvaluateNCCSum::FEvaluateNCCSum(const C2DDImage& mov, const C2DDImage& ref):
 	m_mov(mov), m_ref(ref) 
 {
 	
 }
 
-template <typename T, typename S> 
-NCCSums FEvaluateNCCSum<T,S>::operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const
+NCCSums FEvaluateNCCSum::operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const
 {
 	CThreadMsgStream msks; 
 	
@@ -69,79 +67,60 @@ NCCSums FEvaluateNCCSum<T,S>::operator ()(const C1DParallelRange& range, const N
 	return sum + sumacc; 
 };
 
-
-class FEvalCost : public TFilter<float> {
-public:
-	template <typename T, typename R> 
-	float operator () ( const T& mov, const R& ref) const {
-
-		FEvaluateNCCSum<T,R> ev(mov, ref); 
-		NCCSums sum; 
-		sum = preduce(C1DParallelRange(0, mov.get_size().y, 1), sum, ev, 
-				      [](const NCCSums& x, const NCCSums& y){
-					      return x + y;
-				      });
-		return sum.value(); 
-	}
-}; 
-
-
 double CNCC2DImageCost::do_value(const Data& a, const Data& b) const
 {
-	FEvalCost ecost; 
-	return mia::filter(ecost, a, b); 
+	auto a_double_ptr = m_copy_to_double->filter(a);
+	auto b_double_ptr = m_copy_to_double->filter(b);
+	const C2DDImage& a_double = static_cast<const C2DDImage&>(*a_double_ptr);
+	const C2DDImage& b_double = static_cast<const C2DDImage&>(*b_double_ptr);
+
+	FEvaluateNCCSum ev(a_double, b_double); 
+	NCCSums sum;
+	
+	sum = preduce(C1DParallelRange(0, a_double.get_size().y, 1), sum, ev, 
+		      [](const NCCSums& x, const NCCSums& y){
+			      return x + y;
+		      });
+	return sum.value(); 
 }
-
-
-class FEvalCostForce : public TFilter<float> {
-	C2DFVectorfield& m_force; 
-public: 
-	FEvalCostForce(C2DFVectorfield& force):
-		m_force(force)
-		{}
-	
-	template <typename T, typename R> 
-	float operator () ( const T& mov, const R& ref) const {
-		CThreadMsgStream msks;
-		
-		NCCSums sum; 
-		FEvaluateNCCSum<T,R> ev(mov, ref); 
-		sum = preduce(C1DParallelRange(0, mov.get_size().y, 1), sum, ev, 
-					 [](const NCCSums& x, const NCCSums& y){
-					      return x + y;
-				      });
-		
-		auto geval = sum.get_grad_helper(); 
-
-		auto grad = get_gradient(mov); 
-		auto grad_eval = [this, &mov, &ref, &grad, &geval](const C1DParallelRange& range) {
-			for (auto y = range.begin(); y != range.end(); ++y) {
-				auto ig = grad.begin_at(0,y); 
-				auto iforce = m_force.begin_at(0,y); 
-				auto ia = mov.begin_at(0,y); 
-				auto ib = ref.begin_at(0,y); 
-				auto eb = ref.begin_at(0,y+1); 
-				
-				while (ib != eb) {
-					*iforce = geval.second.get_gradient_scale(*ia, *ib) * *ig; 
-					++ig; 
-					++iforce; 
-					++ia; ++ib;
-				}
-			}; 
-		}; 
-		
-		pfor(C1DParallelRange(0, mov.get_size().y, 1), grad_eval); 
-
-		return geval.first; 
-	}
-	
-};
 
 double CNCC2DImageCost::do_evaluate_force(const Data& a, const Data& b, Force& force) const
 {
-	FEvalCostForce ecostforce(force); 
-	return mia::filter(ecostforce, a, b); 
+	auto a_double_ptr = m_copy_to_double->filter(a);
+	auto b_double_ptr = m_copy_to_double->filter(b);
+	const C2DDImage& a_double = static_cast<const C2DDImage&>(*a_double_ptr);
+	const C2DDImage& b_double = static_cast<const C2DDImage&>(*b_double_ptr);
+	
+	NCCSums sum; 
+	FEvaluateNCCSum ev(a_double, b_double); 
+	sum = preduce(C1DParallelRange(0, a_double.get_size().y, 1), sum, ev, 
+		      [](const NCCSums& x, const NCCSums& y){
+			      return x + y;
+		      });
+	
+	auto geval = sum.get_grad_helper(); 
+
+	auto grad = get_gradient(a_double); 
+	auto grad_eval = [&force, &a_double, &b_double, &grad, &geval](const C1DParallelRange& range) {
+		for (auto y = range.begin(); y != range.end(); ++y) {
+			auto ig = grad.begin_at(0,y); 
+			auto iforce = force.begin_at(0,y); 
+			auto ia = a_double.begin_at(0,y); 
+			auto ib = b_double.begin_at(0,y); 
+			auto eb = b_double.begin_at(0,y+1); 
+			
+			while (ib != eb) {
+				*iforce = geval.second.get_gradient_scale(*ia, *ib) * *ig; 
+				++ig; 
+				++iforce; 
+				++ia; ++ib;
+			}
+		}; 
+	}; 
+		
+	pfor(C1DParallelRange(0, a_double.get_size().y, 1), grad_eval); 
+	
+	return geval.first; 
 }
 
 

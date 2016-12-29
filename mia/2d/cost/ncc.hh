@@ -22,6 +22,7 @@
 #define mia_2d_cost_ncc_hh
 
 #include <mia/2d/cost.hh>
+#include <mia/2d/filter.hh>
 
 #define NS mia_2d_ncc
 
@@ -35,7 +36,8 @@ public:
 	CNCC2DImageCost();
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const;
+	mia::P2DFilter m_copy_to_double; 
 };
 
 class CNCC2DImageCostPlugin: public mia::C2DImageCostPlugin {
