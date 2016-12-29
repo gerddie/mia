@@ -22,6 +22,7 @@
 #define mia_3d_cost_ncc_hh
 
 #include <mia/3d/cost.hh>
+#include <mia/3d/filter.hh>
 
 #define NS mia_3d_ncc
 
@@ -35,7 +36,8 @@ public:
 	CNCC3DImageCost();
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const;
+	mia::P3DFilter m_copy_to_double; 
 };
 
 class CNCC3DImageCostPlugin: public mia::C3DImageCostPlugin {
