@@ -49,8 +49,8 @@ NS_MIA_BEGIN
 #endif
 #endif
 
-template class EXPORT_2D T2DDatafield<C2DFVector>;
-template class EXPORT_2D T2DDatafield<C2DDVector>;
+//template class EXPORT_2D T2DDatafield<C2DFVector>;
+//template class EXPORT_2D T2DDatafield<C2DDVector>;
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
