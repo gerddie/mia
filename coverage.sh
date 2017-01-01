@@ -1,6 +1,10 @@
 #!/bin/sh
 
-make -j8 && make test
+if [ -e Makefile ]; then 
+	make -j8 && make test
+elif [-e rules.ninja ]; then 
+	ninja && ninja test
+fi
 
 if [ "x$?" = "x0" ]; then 
 
