@@ -88,9 +88,9 @@ C3DImageIOPlugin("nifti")
 	add_suffix(".NII");
 
         CVFloatTranslator::register_for(AttrID_nifti_sform); 
-        CSSTranslator::register_for(AttrID_nifti_sform_code); 
-        CSSTranslator::register_for(AttrID_nifti_qform_code);
-        CSSTranslator::register_for(AttrID_nifti_intent_code); 
+        CSITranslator::register_for(AttrID_nifti_sform_code); 
+        CSITranslator::register_for(AttrID_nifti_qform_code);
+        CSITranslator::register_for(AttrID_nifti_intent_code); 
 	
 	CFloatTranslator::register_for("nifti-intent_p1"); 
 	CFloatTranslator::register_for("nifti-intent_p2"); 
