@@ -244,7 +244,7 @@ CMeansImpl::run(const CMeans::NormalizedHistogram& nh, CMeans::DVector& class_ce
 CMeansInitializerSizedPlugin::CMeansInitializerSizedPlugin(const char *name):
         CMeansInitializerPlugin(name)
 {
-        add_parameter("nc", make_lo_param(m_size, 2, true, "Number of classes to use for the fuzzy-cmeans classification")); 
+        add_parameter("nc", make_lc_param(m_size, 2, true, "Number of classes to use for the fuzzy-cmeans classification")); 
 }
 
 size_t CMeansInitializerSizedPlugin::get_size_param() const

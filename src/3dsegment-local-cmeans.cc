@@ -18,6 +18,19 @@
  *
  */
 
+/*
+  Todo: 
+  - parallelize local cmeans runs 
+  - adaptive filter sizes? 
+  - boundaries of blocks create problems because classes might be discarded differently 
+  - Consider different tresholds for larger filter width
+
+  - BUG: start slices are ignored 
+
+  
+
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -84,6 +97,7 @@ private:
 	const Probmap& m_global_probmap;
 	const float m_rel_cluster_threshold; 
 	const map<int, unsigned>& m_segmap;
+
 	vector<C3DFDatafield>& m_prob_buffer;
 	size_t m_count; 
 	
