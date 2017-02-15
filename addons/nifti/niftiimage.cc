@@ -180,7 +180,8 @@ void copy_attributes(C3DImage& image, const nifti_image& ni)
 	image.set_attribute(AttrID_nifti_intent_p1, ni.intent_p1);
 	image.set_attribute(AttrID_nifti_intent_p2, ni.intent_p2);
 	image.set_attribute(AttrID_nifti_intent_p3, ni.intent_p3);
-	image.set_attribute(AttrID_nifti_intent_name, string(ni.intent_name));
+	if (strlen(ni.intent_name) > 0)
+		image.set_attribute(AttrID_nifti_intent_name, string(ni.intent_name));
 	image.set_attribute(IDRescaleSlope, ni.scl_slope);
 	image.set_attribute(IDRescaleIntercept, ni.scl_inter); 
 }
