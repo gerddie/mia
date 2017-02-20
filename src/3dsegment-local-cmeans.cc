@@ -226,14 +226,14 @@ int do_main(int argc, char *argv[])
 		}
 	}
 	
-	int  nx = (in_image->get_size().x + blocksize - 1) / blocksize;
-	int  ny = (in_image->get_size().y + blocksize - 1) / blocksize;
-	int  nz = (in_image->get_size().z + blocksize - 1) / blocksize;
-	int  start_x = (nx * blocksize - in_image->get_size().x) / 2; 
-	int  start_y = (ny * blocksize - in_image->get_size().y) / 2;
-	int  start_z = (nz * blocksize - in_image->get_size().z) / 2; 
+	int  nx = (in_image->get_size().x + blocksize - 1) / blocksize + 1;
+	int  ny = (in_image->get_size().y + blocksize - 1) / blocksize + 1;
+	int  nz = (in_image->get_size().z + blocksize - 1) / blocksize + 1;
+	int  start_x = - static_cast<int>(nx * blocksize - in_image->get_size().x) / 2; 
+	int  start_y = - static_cast<int>(ny * blocksize - in_image->get_size().y) / 2;
+	int  start_z = - static_cast<int>(nz * blocksize - in_image->get_size().z) / 2; 
 
-	
+	cvinfo() << "Start at " << start_x << ", " << start_y << ", " << start_z << "\n"; 
 	
 	vector<C3DFDatafield> prob_buffer(global_class_centers.size());
 	for (unsigned i = 0; i < global_class_centers.size(); ++i)
@@ -371,9 +371,13 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 		transform(partition.begin(), partition.end(), v.begin(),
 			  partition.begin(), [n](double p, double value){return p + n * value;}); 
 	}
-	auto part_thresh = std::accumulate(partition.begin(), partition.end(), 0.0) * m_rel_cluster_threshold; 
+
+	// don't count background class in partition
+	auto part_thresh = std::accumulate(partition.begin() + 1, partition.end(), 0.0) * m_rel_cluster_threshold; 
 	
-	cvinfo() << "Partition = " << partition << "\n";
+	cvinfo() << "Partition=" << partition
+		 << ", thresh="  << part_thresh
+		 << "\n";
 
 	// select the classes that should be used further on
 	vector<double> retained_class_centers;
@@ -395,7 +399,7 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 		
 		ostringstream cci_descr;
 		cci_descr << "predefined:cc=[" << retained_class_centers<<"]";
-		cvinfo() << "Initializing local cmeans with '" << cci_descr.str()
+		cvmsg() << "Initializing local cmeans with '" << cci_descr.str()
 			 << " for retained classes " << used_classed << "'\n"; 
 		auto cci = CMeansInitializerPluginHandler::instance().produce(cci_descr.str()); 
 
@@ -447,7 +451,7 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 		
 		
 	}else{// only one class retained, add 1.0 to probabilities, linearly smoothed 
-		cvdebug() << "Only one class used:" << used_classed[0] << "\n"; 
+		cvmsg() << "Only one class used:" << used_classed[0] << "\n"; 
 		auto ii = m_prob_buffer[used_classed[0]].begin_range(m_start, m_end);
 		auto ie = m_prob_buffer[used_classed[0]].end_range(m_start, m_end);
 		
