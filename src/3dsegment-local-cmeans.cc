@@ -293,7 +293,7 @@ int do_main(int argc, char *argv[])
 	}
 	
 	
-	// now for each pixel we have a probability sume that should take inhomogeinities
+	// now for each pixel we have a probability sum that should take inhomogeinities
 	// into account
 
 	C3DUBImage out_image(in_image->get_size(), *in_image);
@@ -348,6 +348,8 @@ FLocalCMeans::FLocalCMeans(float epsilon, const vector<double>& global_class_cen
 	m_count((m_end - m_start).product())
 {
 }
+
+
 
 template <typename T> 
 void FLocalCMeans::operator()(const T3DImage<T>& image)
