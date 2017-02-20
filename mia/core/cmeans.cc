@@ -107,9 +107,9 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 		 << ", " << nhist[nhist.size()-1].first << "]\n"; 
 
 	class_centers = m_cci->run(nhist);
-	cvmsg() << "Initial class centers =" << class_centers << "\n"; 
+	cvinfo() << "Initial class centers =" << class_centers << "\n"; 
 	auto internal_result = impl->run(nhist, class_centers);
-	cvmsg() << "Finale class centers =" << class_centers << "\n"; 
+	cvinfo() << "Finale class centers =" << class_centers << "\n"; 
 
 	SparseProbmap result(internal_result.size()); 
 	
@@ -230,7 +230,7 @@ CMeansImpl::run(const CMeans::NormalizedHistogram& nh, CMeans::DVector& class_ce
 	while (cont) {
 		evaluate_probabilities(class_centers, pv);
 		double residuum = update_class_centers(class_centers, nh, pv);
-		cvmsg() << "Class centers: " << class_centers
+		cvdebug() << "Class centers: " << class_centers
 			<<  ", res=" << residuum
 			<< "\n";
 		cont = residuum > m_epsilon; 
