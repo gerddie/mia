@@ -92,7 +92,8 @@ public:
 		     const Probmap& global_probmap,
 		     float rel_cluster_threshold, 
 		     const map<int, unsigned>& segmap, 
-		     ProtectedProbBuffer& prob_buffer);
+		     ProtectedProbBuffer& prob_buffer,
+		     bool partition_with_background);
 	
 	template <typename T> 
 	void operator()(const T3DImage<T>& image);
@@ -108,7 +109,7 @@ private:
 
 	ProtectedProbBuffer& m_prob_buffer;
 	size_t m_count; 
-	
+	bool m_partition_with_background; 
 }; 
 
 class FCrispSeg: public TFilter<P3DImage> {
@@ -144,7 +145,9 @@ int do_main(int argc, char *argv[])
         int blocksize = 15;
 	double rel_cluster_threshold = 0.02;
 
-	float cmeans_epsilon = 0.0001; 
+	float cmeans_epsilon = 0.0001;
+
+	bool ignore_partition_with_background = false; 
 	
 	CMeans::PInitializer class_center_initializer; 
 		
@@ -173,7 +176,8 @@ int do_main(int argc, char *argv[])
 	opts.add(make_opt( rel_cluster_threshold, EParameterBounds::bf_min_closed | EParameterBounds::bf_max_open,
 			   {0.0,1.0}, "relative-cluster-threshold", 't', "threshhold to ignore classes when initializing"
 			   " the local cmeans from the global one.")); 
-
+	opts.add(make_opt(ignore_partition_with_background, "ignore-background", 'B',
+			  "Don't take background probablities into account when deciding whether classes are to be ignored"));  
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -196,7 +200,7 @@ int do_main(int argc, char *argv[])
 	auto global_sparse_probmap = globale_cmeans.run(gh, global_class_centers, false);
 
 	cvinfo() << "Histogram range: [" << gh[0].first << ", " << gh[gh.size()-1].first << "]\n"; 
-	cvinfo() << "Global class centers: " << global_class_centers << "\n";
+	cvmsg() << "Global class centers: " << global_class_centers << "\n";
 	cvinfo() << "Probmap size = " << global_sparse_probmap.size()
 		 << " weight number " << global_sparse_probmap[0].second.size() << "\n"; 
 
@@ -242,7 +246,7 @@ int do_main(int argc, char *argv[])
 	int  start_y = - static_cast<int>(ny * blocksize - in_image->get_size().y) / 2;
 	int  start_z = - static_cast<int>(nz * blocksize - in_image->get_size().z) / 2; 
 
-	cvinfo() << "Start at " << start_x << ", " << start_y << ", " << start_z << "\n"; 
+	cvdebug() << "Start at " << start_x << ", " << start_y << ", " << start_z << "\n"; 
 	
 	
 	int max_threads = CMaxTasks::get_max_tasks();
@@ -270,7 +274,8 @@ int do_main(int argc, char *argv[])
 			if (iz_end > in_image->get_size().z)
 				iz_end = in_image->get_size().z;
 
-			cvwarn() << "Run slices " << iz_base << " - " <<  iz_end << " with buffer " << my_prob_buffer <<"\n"; 
+			cvmsg() << "Run slices " << iz_base << " - " <<  iz_end
+				<< " with buffer " << my_prob_buffer << "\n"; 
 			
 			for (int  iy_base = start_y; iy_base < (int)in_image->get_size().y; iy_base +=  blocksize) {
 				unsigned iy = iy_base < 0 ? 0 : iy_base;
@@ -291,7 +296,8 @@ int do_main(int argc, char *argv[])
 							 global_probmap,
 							 rel_cluster_threshold,
 							 segmap, 
-							 prob_buffers[my_prob_buffer]);
+							 prob_buffers[my_prob_buffer],
+							 !ignore_partition_with_background);
 					
 					mia::accumulate(lcm, *in_image); 
 				}
@@ -305,7 +311,7 @@ int do_main(int argc, char *argv[])
 	
 	// sum the probabilities 
 	for (unsigned i = 1; i < prob_buffers.size(); ++i) {
-		for (unsigned c = 1; c < n_classes; ++c) {
+		for (unsigned c = 0; c < n_classes; ++c) {
 			transform(prob_buffers[i].probmap[c].begin(), prob_buffers[i].probmap[c].end(),
 				  prob_buffers[0].probmap[c].begin(), prob_buffers[0].probmap[c].begin(),
 				  [](float x, float y){return x+y;}); 
@@ -385,11 +391,12 @@ CSparseHistogram::Compressed FRunHistogram::get_histogram() const
 
 
 FLocalCMeans::FLocalCMeans(float epsilon, const vector<double>& global_class_centers,
-		     const C3DBounds& start, const C3DBounds& end,
-		     const Probmap& global_probmap,
-		     float rel_cluster_threshold, 
-		     const map<int, unsigned>& segmap, 
-		     ProtectedProbBuffer& prob_buffer):
+			   const C3DBounds& start, const C3DBounds& end,
+			   const Probmap& global_probmap,
+			   float rel_cluster_threshold, 
+			   const map<int, unsigned>& segmap, 
+			   ProtectedProbBuffer& prob_buffer,
+			   bool partition_with_background):
 	m_epsilon(epsilon),
 	m_global_class_centers(global_class_centers),
 	m_start(start),
@@ -398,7 +405,8 @@ FLocalCMeans::FLocalCMeans(float epsilon, const vector<double>& global_class_cen
 	m_rel_cluster_threshold(rel_cluster_threshold),
 	m_segmap(segmap), 
 	m_prob_buffer(prob_buffer),
-	m_count((m_end - m_start).product())
+	m_count((m_end - m_start).product()),
+	m_partition_with_background(partition_with_background)
 {
 }
 
@@ -407,7 +415,8 @@ FLocalCMeans::FLocalCMeans(float epsilon, const vector<double>& global_class_cen
 template <typename T> 
 void FLocalCMeans::operator()(const T3DImage<T>& image)
 {
-	cvmsg() << "Start subrange ["<< m_start << "]-["<< m_end<<"]\n";
+	cvinfo() << "Run subrange ["<< m_start << "]-["<< m_end<<"]\n";
+	
 	
 	// obtain the histogram for the current patch 
 	CSparseHistogram histogram;
@@ -426,7 +435,9 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 	}
 
 	// don't count background class in partition
-	auto part_thresh = std::accumulate(partition.begin() + 1, partition.end(), 0.0) * m_rel_cluster_threshold; 
+	int start_class = m_partition_with_background ? 0 : 1;
+
+	auto part_thresh = std::accumulate(partition.begin() + start_class, partition.end(), 0.0) * m_rel_cluster_threshold; 
 	
 	cvinfo() << "Partition=" << partition
 		 << ", thresh="  << part_thresh
@@ -452,7 +463,7 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 		
 		ostringstream cci_descr;
 		cci_descr << "predefined:cc=[" << retained_class_centers<<"]";
-		cvmsg() << "Initializing local cmeans with '" << cci_descr.str()
+		cvinfo() << "Initializing local cmeans with '" << cci_descr.str()
 			 << " for retained classes " << used_classed << "'\n"; 
 		auto cci = CMeansInitializerPluginHandler::instance().produce(cci_descr.str()); 
 
@@ -505,7 +516,7 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 		
 		
 	}else{// only one class retained, add 1.0 to probabilities, linearly smoothed 
-		cvmsg() << "Only one class used:" << used_classed[0] << "\n"; 
+		cvinfo() << "Only one class used:" << used_classed[0] << "\n"; 
 		auto ii = m_prob_buffer.probmap[used_classed[0]].begin_range(m_start, m_end);
 		auto ie = m_prob_buffer.probmap[used_classed[0]].end_range(m_start, m_end);
 		CScopedLock prob_lock(m_prob_buffer.mutex); 
@@ -516,7 +527,7 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 		}
 		
 	}
-	cvmsg() << "Done subrange ["<< m_start << "]-["<< m_end<<"]\n"; 
+	cvinfo() << "Done subrange ["<< m_start << "]-["<< m_end<<"]\n"; 
 }
 
 #include <mia/internal/main.hh>

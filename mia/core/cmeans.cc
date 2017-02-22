@@ -125,7 +125,7 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 			  [inv_bin_scale, bin_shift](double x) {
 				  return inv_bin_scale * x +  bin_shift; 
 			  });
-		cvmsg() << "Finale class rescaled =" << class_centers << "\n"; 
+		cvinfo() << "Finale class rescaled =" << class_centers << "\n"; 
 	}
 	
 	return result; 
