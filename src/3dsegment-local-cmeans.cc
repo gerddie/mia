@@ -22,12 +22,8 @@
   Todo: 
   - parallelize local cmeans runs 
   - adaptive filter sizes? 
-  - boundaries of blocks create problems because classes might be discarded differently 
   - Consider different tresholds for larger filter width
-
-  - BUG: start slices are ignored 
-
-  
+ 
 
 */
 
@@ -38,6 +34,8 @@
 #include <mia/core/histogram.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/cmeans.hh>
+#include <mia/core/parallel.hh>
+#include <mia/core/threadedmsg.hh>
 #include <mia/3d.hh>
 
 #include <memory>
@@ -74,6 +72,16 @@ private:
 	CSparseHistogram m_sparse_histogram; 
 }; 
 
+struct ProtectedProbBuffer {
+	CMutex mutex;
+	vector<C3DFDatafield> probmap;
+
+	ProtectedProbBuffer(int n_classes, const C3DBounds& size);
+
+	ProtectedProbBuffer(const ProtectedProbBuffer& orig);
+}; 
+
+
 class FLocalCMeans: public TFilter<void> {
 public: 
 	typedef map<int, CMeans::DVector> Probmap; 
@@ -84,7 +92,7 @@ public:
 		     const Probmap& global_probmap,
 		     float rel_cluster_threshold, 
 		     const map<int, unsigned>& segmap, 
-		     vector<C3DFDatafield>& prob_buffer);
+		     ProtectedProbBuffer& prob_buffer);
 	
 	template <typename T> 
 	void operator()(const T3DImage<T>& image);
@@ -98,7 +106,7 @@ private:
 	const float m_rel_cluster_threshold; 
 	const map<int, unsigned>& m_segmap;
 
-	vector<C3DFDatafield>& m_prob_buffer;
+	ProtectedProbBuffer& m_prob_buffer;
 	size_t m_count; 
 	
 }; 
@@ -121,6 +129,7 @@ public:
 private:
 	const map<int, unsigned>& m_segmap;
 }; 
+
 
 
 int do_main(int argc, char *argv[])
@@ -235,44 +244,78 @@ int do_main(int argc, char *argv[])
 
 	cvinfo() << "Start at " << start_x << ", " << start_y << ", " << start_z << "\n"; 
 	
-	vector<C3DFDatafield> prob_buffer(global_class_centers.size());
-	for (unsigned i = 0; i < global_class_centers.size(); ++i)
-		prob_buffer[i] = C3DFDatafield(in_image->get_size()); 
+	
+	int max_threads = CMaxTasks::get_max_tasks();
+	assert(max_threads > 0); 
 
-	for (int  iz_base = start_z; iz_base < (int)in_image->get_size().z; iz_base +=  blocksize) {
-		unsigned iz = iz_base < 0 ? 0 : iz_base;
-		unsigned iz_end = iz_base +  2 * blocksize;
-		if (iz_end > in_image->get_size().z)
-			iz_end = in_image->get_size().z; 
+	CMutex current_probbuffer_mutex; 
+	int current_probbuffer = 0; 
+	
+	vector<ProtectedProbBuffer> prob_buffers(max_threads,
+						 ProtectedProbBuffer(global_class_centers.size(),
+								     in_image->get_size())); 
+
+	auto block_runner = [&](const C1DParallelRange& z_range) -> void {
+		CThreadMsgStream msg_stream; 
+		current_probbuffer_mutex.lock();
+		int my_prob_buffer = current_probbuffer++;
+		if (current_probbuffer >= max_threads)
+			current_probbuffer = 0; 
+		current_probbuffer_mutex.unlock();
 		
-		for (int  iy_base = start_y; iy_base < (int)in_image->get_size().y; iy_base +=  blocksize) {
-			unsigned iy = iy_base < 0 ? 0 : iy_base;
-			unsigned iy_end = iy_base +  2 * blocksize;
-			if (iy_end > in_image->get_size().y)
-				iy_end = in_image->get_size().y; 
+		for (int  i = z_range.begin(); i < z_range.end(); ++i) {
+			int iz_base = start_z + i * blocksize; 
+			unsigned iz = iz_base < 0 ? 0 : iz_base;
+			unsigned iz_end = iz_base +  2 * blocksize;
+			if (iz_end > in_image->get_size().z)
+				iz_end = in_image->get_size().z;
+
+			cvwarn() << "Run slices " << iz_base << " - " <<  iz_end << " with buffer " << my_prob_buffer <<"\n"; 
 			
-			for (int ix_base = start_x; ix_base < (int)in_image->get_size().x; ix_base +=  blocksize) {
-				unsigned ix = ix_base < 0 ? 0 : ix_base;
-				unsigned ix_end = ix_base +  2 * blocksize;
-				if (ix_end > in_image->get_size().x)
-					ix_end = in_image->get_size().x; 
+			for (int  iy_base = start_y; iy_base < (int)in_image->get_size().y; iy_base +=  blocksize) {
+				unsigned iy = iy_base < 0 ? 0 : iy_base;
+				unsigned iy_end = iy_base +  2 * blocksize;
+				if (iy_end > in_image->get_size().y)
+					iy_end = in_image->get_size().y; 
 				
-				
-				FLocalCMeans lcm(cmeans_epsilon, global_class_centers,
-						 C3DBounds(ix, iy, iz),
-						 C3DBounds(ix_end, iy_end, iz_end),
-						 global_probmap,
-						 rel_cluster_threshold,
-						 segmap, 
-						 prob_buffer);
-				
-				mia::accumulate(lcm, *in_image); 
+				for (int ix_base = start_x; ix_base < (int)in_image->get_size().x; ix_base +=  blocksize) {
+					unsigned ix = ix_base < 0 ? 0 : ix_base;
+					unsigned ix_end = ix_base +  2 * blocksize;
+					if (ix_end > in_image->get_size().x)
+						ix_end = in_image->get_size().x; 
+					
+					
+					FLocalCMeans lcm(cmeans_epsilon, global_class_centers,
+							 C3DBounds(ix, iy, iz),
+							 C3DBounds(ix_end, iy_end, iz_end),
+							 global_probmap,
+							 rel_cluster_threshold,
+							 segmap, 
+							 prob_buffers[my_prob_buffer]);
+					
+					mia::accumulate(lcm, *in_image); 
+				}
 			}
+		}
+		
+	}; 
+
+	pfor(C1DParallelRange(0, nz, 1), block_runner); 
+	
+	
+	// sum the probabilities 
+	for (unsigned i = 1; i < prob_buffers.size(); ++i) {
+		for (unsigned c = 1; c < n_classes; ++c) {
+			transform(prob_buffers[i].probmap[c].begin(), prob_buffers[i].probmap[c].end(),
+				  prob_buffers[0].probmap[c].begin(), prob_buffers[0].probmap[c].begin(),
+				  [](float x, float y){return x+y;}); 
 		}
 	}
 	
-	// save the prob images ?
+	
 	// normalize probability images
+	vector<C3DFDatafield>& prob_buffer = prob_buffers[0].probmap; 
+		
 	C3DFImage sum(prob_buffer[0]);
 	for (unsigned c = 1; c < n_classes; ++c) {
 		transform(sum.begin(), sum.end(), prob_buffer[c].begin(), sum.begin(),
@@ -319,6 +362,16 @@ int do_main(int argc, char *argv[])
 }
 
 
+ProtectedProbBuffer::ProtectedProbBuffer(int n_classes, const C3DBounds& size):
+	probmap(n_classes, C3DFDatafield(size))
+{
+}
+
+ProtectedProbBuffer::ProtectedProbBuffer(const ProtectedProbBuffer& orig):
+	probmap(orig.probmap)
+{
+}
+
 template <typename T> 
 void FRunHistogram::operator()(const T3DImage<T>& image)
 {
@@ -336,7 +389,7 @@ FLocalCMeans::FLocalCMeans(float epsilon, const vector<double>& global_class_cen
 		     const Probmap& global_probmap,
 		     float rel_cluster_threshold, 
 		     const map<int, unsigned>& segmap, 
-		     vector<C3DFDatafield>& prob_buffer):
+		     ProtectedProbBuffer& prob_buffer):
 	m_epsilon(epsilon),
 	m_global_class_centers(global_class_centers),
 	m_start(start),
@@ -431,6 +484,7 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 		// now add the new probabilities to the global maps.
 		auto ii = image.begin_range(m_start, m_end);
 		auto ie = image.end_range(m_start, m_end);
+		CScopedLock prob_lock(m_prob_buffer.mutex); 
 		while (ii != ie) {
 			auto probs = mapper.find(*ii);
 			auto delta = (C3DFVector(ii.pos()) - center) / max_distance;
@@ -438,12 +492,12 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 			
 			if (probs != mapper.end()) {
 				for (unsigned c = 0; c < used_classed.size();  ++c) {
-					m_prob_buffer[used_classed[c]](ii.pos()) += lin_scale * probs->second[c];
+					m_prob_buffer.probmap[used_classed[c]](ii.pos()) += lin_scale * probs->second[c];
 				}
 			}else{ // not in local map: retain global probabilities 
 				auto v = m_global_probmap.at(*ii);
 				for (unsigned c = 0; c < v.size();  ++c) {
-					m_prob_buffer[c](ii.pos()) += lin_scale * v[c];
+					m_prob_buffer.probmap[c](ii.pos()) += lin_scale * v[c];
 				}
 			}
 			++ii;
@@ -452,9 +506,9 @@ void FLocalCMeans::operator()(const T3DImage<T>& image)
 		
 	}else{// only one class retained, add 1.0 to probabilities, linearly smoothed 
 		cvmsg() << "Only one class used:" << used_classed[0] << "\n"; 
-		auto ii = m_prob_buffer[used_classed[0]].begin_range(m_start, m_end);
-		auto ie = m_prob_buffer[used_classed[0]].end_range(m_start, m_end);
-		
+		auto ii = m_prob_buffer.probmap[used_classed[0]].begin_range(m_start, m_end);
+		auto ie = m_prob_buffer.probmap[used_classed[0]].end_range(m_start, m_end);
+		CScopedLock prob_lock(m_prob_buffer.mutex); 
 		while (ii != ie)  {
 			auto delta = (C3DFVector(ii.pos()) - center) / max_distance;
 			*ii += (1.0 - std::fabs(delta.x))* (1.0 - std::fabs(delta.y)); ;
