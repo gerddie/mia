@@ -2,7 +2,7 @@
  *
  * This file is part of MIA - a toolbox for medical image analysis 
  * 
- * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  *
  * pez-tools is free software; you can redistribute it and/or modify
