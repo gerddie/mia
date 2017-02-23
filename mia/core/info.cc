@@ -22,7 +22,7 @@
 #include <cstdlib>
 
 static const char info[] = "%s is Copyright %s\n"
-	"    (c) 1999-2016 Leipzig, Germany and Madrid, Spain \n"
+	"    (c) 1999-2017 Leipzig, Germany and Madrid, Spain \n"
 	""
 	"and it comes with  ABSOLUTELY NO WARRANTY. You may redistribute .\n"
 	"it under the terms of the GNU GENERAL PUBLIC LICENSE (see below).\n"

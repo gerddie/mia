@@ -445,7 +445,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "Example usage:\n  Example text\n"
 			  "    \n    test-program Example command\n\n"
 			  "Copyright:\n"
-			  "  This software is Copyright (c) Gert Wollny 1999-2016 Leipzig, \n"
+			  "  This software is Copyright (c) Gert Wollny 1999-2017 Leipzig, \n"
 			  "  Germany and Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and\n"
 			  "  you may redistribute it under the terms of the GNU GENERAL PUBLIC \n"
 			  "  LICENSE Version 3 (or later). For more information run the program \n"
