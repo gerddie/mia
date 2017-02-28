@@ -146,6 +146,7 @@ int do_main(int argc, char *argv[])
 	double rel_cluster_threshold = 0.02;
 
 	float cmeans_epsilon = 0.0001;
+	float class_label_thresh = 0.0f; 
 
 	bool ignore_partition_with_background = false; 
 	
@@ -177,7 +178,16 @@ int do_main(int argc, char *argv[])
 			   {0.0,1.0}, "relative-cluster-threshold", 't', "threshhold to ignore classes when initializing"
 			   " the local cmeans from the global one.")); 
 	opts.add(make_opt(ignore_partition_with_background, "ignore-background", 'B',
-			  "Don't take background probablities into account when deciding whether classes are to be ignored"));  
+			  "Don't take background probablities into account when desiding whether classes are to be ignored"));
+	opts.add(make_opt(class_label_thresh, 
+			  EParameterBounds::bf_min_closed | EParameterBounds::bf_max_closed,
+			  {0.0f, 1.0f},
+			  "label-threshold", 'L',
+			  "for values <= 0.5: create segmentation based on highest class probability, "
+			  "labels staat at 0. For values >0.5: create labels only for voxels with a "
+			  "class probability higher than theg given value, labels start at 1 and voxels "
+			  "without an according class probability are set to 0; this output is suitable "
+			  "for the seeded watershed filter.")); 
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -204,7 +214,7 @@ int do_main(int argc, char *argv[])
 	cvinfo() << "Probmap size = " << global_sparse_probmap.size()
 		 << " weight number " << global_sparse_probmap[0].second.size() << "\n"; 
 
-	auto n_classes = global_class_centers.size(); 
+	const unsigned n_classes = global_class_centers.size(); 
 	
 	// need the normalized class centers
 	
@@ -348,22 +358,37 @@ int do_main(int argc, char *argv[])
 	C3DUBImage out_image(in_image->get_size(), *in_image);
 	fill(out_image.begin(), out_image.end(), 0);
 
-	for (unsigned c = 1; c < n_classes; ++c) {
-		auto iout = out_image.begin();
-		auto eout = out_image.end();
-		
-		auto itest = prob_buffer[0].begin();
-		auto iprob = prob_buffer[c].begin();
+	if (class_label_thresh <= 0.5f) {
 
-		while ( iout != eout ){
-			if (*itest < *iprob) {
-				*itest = *iprob;
-				*iout = c; 
+		for (unsigned c = 1; c < n_classes; ++c) {
+			auto iout = out_image.begin();
+			auto eout = out_image.end();
+			
+			auto itest = prob_buffer[0].begin();
+			auto iprob = prob_buffer[c].begin();
+			
+			while ( iout != eout ){
+				if (*itest < *iprob) {
+					*itest = *iprob;
+					*iout = c; 
+				}
+				++iout; ++itest; ++iprob; 
 			}
-			++iout; ++itest; ++iprob; 
+		}
+	}else{
+		for (unsigned c = 0; c < n_classes; ++c) {
+			auto iout = out_image.begin();
+			auto eout = out_image.end();
+			auto iprob = prob_buffer[c].begin();
+			
+			while ( iout != eout ){
+				if (class_label_thresh < *iprob) {
+					*iout = c +1; 
+				}
+				++iout;  ++iprob; 
+			}
 		}
 	}
-
 	return save_image(out_filename, out_image) ? EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
