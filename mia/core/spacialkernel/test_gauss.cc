@@ -35,11 +35,15 @@ BOOST_AUTO_TEST_CASE( test_gauss )
 	success &= (kernel[2] == 0.25); 
 
 	const double input[5] = {0,0,1,0,0 }; 
-	const double input2[5] = {1,1,1,1,1 }; 
+	const double input2[5] = {1,1,1,1,1 };
+	const double input3[5] = {2,1,1,1,3 }; 
 	const double test_out_1[5] = {0,0.25,0.5,0.25,0 }; 
 	const double test_out_2[5] = {0.0625,0.25,0.375,0.25,0.0625 }; 
 	const double test_out_3[5] = {1,1,1,1,1}; 
-	const double test_out_4[5] = {0.109375, 0.234375, 0.3125, 0.234375, 0.109375}; 
+	const double test_out_4[5] = {0.109375, 0.234375, 0.3125, 0.234375, 0.109375};
+
+	// this is  mirror on boundary 
+	const double test_out_31[5] = {1.75, 1.25, 1, 1.5, 2.5}; 
 
 	vector<double> in1(5); 
 	copy(input, input+5, in1.begin()); 
@@ -93,5 +97,15 @@ BOOST_AUTO_TEST_CASE( test_gauss )
 	}
 
 
+	copy(input3, input3+5, in1.begin()); 
+	kernel.apply_inplace(in1);
+
+	success &= (equal(in1.begin(), in1.end(), test_out_31, equal_double()));
+
+	if (!success)  {
+		for (size_t i = 0; i < 5; ++i) 
+			cvfail() << in1[i] << " vs " << test_out_31[i] << "\n"; 
+	}
+	
 }
 
