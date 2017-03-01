@@ -111,31 +111,45 @@ BOOST_AUTO_TEST_CASE( test_sobel_x )
 	}
 }
 
-#if 0 
 BOOST_AUTO_TEST_CASE( test_sobel_y )
 {
-	auto sobel_y = BOOST_TEST_create_from_plugin<C2DSobelFilterPlugin>("sobel:dir=y"); 
+	auto sobel_y = BOOST_TEST_create_from_plugin<C3DSobelFilterPlugin>("sobel:dir=y"); 
 
 	const float in_image[] = {
-		1, 2, 6, 5, 6,
-		2, 3, 7, 4, 7,
-		3, 2, 8, 6, 8,
-		4, 5, 9, 3, 3
+		1, 2, 3,
+		4, 2, 3,
+		2, 5, 6,
+
+		7, 8, 9,
+		5, 4, 6,
+		3, 6, 7,
+		
+		8, 3, 4,
+		7, 6, 4,
+		1, 3, 2, 
+		
 	};
 
 	
 	const float test_image[] = {
-		0,  0,  0,  0,  0,
-		0.75, 0.5, 2.5/4, 0.75, 3.5/4,
-		1, 1, 0.625, -0.5, -6.5/4,
-		0,  0,  0,  0,  0
+		0, 0, 0, 
+		0.125,	0.625,	0.875,
+		0, 0, 0, 
+		
+		0, 0, 0, 
+		-1.34375, -0.59375, -0.3125, 
+		0, 0, 0,
+
+		0, 0, 0, 
+		-2.40625,	-1.15625,	-0.8125, 
+		0, 0, 0
 	};
 
-	C2DFImage src(C2DBounds(5,4), in_image);
+	C3DFImage src(C3DBounds(3,3,3), in_image);
 
 	auto filtered = sobel_y->filter(src);
 
-	const C2DFImage& f = dynamic_cast<const C2DFImage&>(*filtered);
+	const C3DFImage& f = dynamic_cast<const C3DFImage&>(*filtered);
 
 	BOOST_CHECK_EQUAL(f.get_size(), src.get_size());
 
@@ -147,4 +161,4 @@ BOOST_AUTO_TEST_CASE( test_sobel_y )
 	
 }
 
-#endif 
+
