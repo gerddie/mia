@@ -161,4 +161,54 @@ BOOST_AUTO_TEST_CASE( test_sobel_y )
 	
 }
 
+BOOST_AUTO_TEST_CASE( test_sobel_z )
+{
+	auto sobel_z = BOOST_TEST_create_from_plugin<C3DSobelFilterPlugin>("sobel:dir=z"); 
+
+	const float in_image[] = {
+		1, 2, 3,
+		4, 2, 3,
+		2, 5, 6,
+
+		7, 8, 9,
+		5, 4, 6,
+		3, 6, 7,
+		
+		8, 3, 4,
+		7, 6, 4,
+		1, 3, 2, 
+		
+	};
+
+	
+	const float test_image[] = {
+		0, 0, 0, 
+		0, 0, 0,
+		0, 0, 0,
+
+		2.46875,  1.3125,   0.59375,
+		1.34375,  0.78125,  0.125,
+		-0.0625, -0.46875, -1.09375,
+
+		0, 0, 0, 
+		0, 0, 0,
+		0, 0, 0
+	};
+
+	C3DFImage src(C3DBounds(3,3,3), in_image);
+
+	auto filtered = sobel_z->filter(src);
+
+	const C3DFImage& f = dynamic_cast<const C3DFImage&>(*filtered);
+
+	BOOST_CHECK_EQUAL(f.get_size(), src.get_size());
+
+	const float *t = test_image; 
+	for(auto i = f.begin(); i != f.end(); ++i, ++t) {
+		cvdebug() << *i << " " << *t << "\n"; 
+		BOOST_CHECK_CLOSE(*i, *t, 0.1);
+	}
+	
+}
+
 
