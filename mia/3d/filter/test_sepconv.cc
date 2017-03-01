@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/3d/filter/sepconv.hh>
 
 NS_MIA_USE
@@ -62,35 +62,45 @@ BOOST_AUTO_TEST_CASE( test_sepconv )
 		BOOST_CHECK_CLOSE(*i, gauss_ref[j], 0.01);
 }
 
-#if 0 
 BOOST_AUTO_TEST_CASE( test_sobel_x )
 {
-	auto sobel_x = BOOST_TEST_create_from_plugin<C2DSobelFilterPlugin>("sobel:dir=x"); 
+	auto sobel_x = BOOST_TEST_create_from_plugin<C3DSobelFilterPlugin>("sobel:dir=x"); 
 
 	const float in_image[] = {
-		1, 2, 3, 4,                 
-		2, 3, 2, 5,
-		6, 7, 8, 9,
-		5, 4, 6, 3,
-		6, 7, 8, 3
+		1, 2, 3,
+		4, 2, 3,
+		2, 5, 6,
 
+		7, 8, 9,
+		5, 4, 6,
+		3, 6, 7,
+		
+		8, 3, 4,
+		7, 6, 4,
+		1, 3, 2, 
 		
 	};
 
 	
 	const float test_image[] = {
-		0, 0.75,    1, 0, 
-		0, 0.5,    1, 0, 
-		0, 2.5/4,      0.625, 0,       
-		0, 0.75, -0.5, 0,     
-		0, 3.5/4, -6.5 / 4, 0        
+		0, 0.6875f, 0, 
+		0, 0.625f,  0, 
+		0, 1.4375f, 0, 
+		
+		0, 0.125f,   0,
+		0, 0.34375f, 0,
+		0, 1.15625f, 0,
+		
+		0, -1.1875f, 0, 
+		0, -0.59375, 0, 
+		0, 0.40625,  0
 	};
 
-	C2DFImage src(C2DBounds(4,5,3), in_image);
+	C3DFImage src(C3DBounds(3,3,3), in_image);
 
 	auto filtered = sobel_x->filter(src);
 
-	const C2DFImage& f = dynamic_cast<const C2DFImage&>(*filtered);
+	const C3DFImage& f = dynamic_cast<const C3DFImage&>(*filtered);
 
 	BOOST_CHECK_EQUAL(f.get_size(), src.get_size());
 
@@ -101,6 +111,7 @@ BOOST_AUTO_TEST_CASE( test_sobel_x )
 	}
 }
 
+#if 0 
 BOOST_AUTO_TEST_CASE( test_sobel_y )
 {
 	auto sobel_y = BOOST_TEST_create_from_plugin<C2DSobelFilterPlugin>("sobel:dir=y"); 
