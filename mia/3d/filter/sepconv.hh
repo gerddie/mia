@@ -69,6 +69,28 @@ private:
 	int m_w;
 };
 
+enum EGradientDirection {gd_x, gd_y, gd_z, gd_undefined};
+
+class C3DSobelFilterPlugin: public mia::C3DFilterPlugin {
+public:
+	C3DSobelFilterPlugin();
+	virtual mia::C3DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+private:
+	EGradientDirection m_direction; 
+};
+
+class C3DScharrFilterPlugin: public mia::C3DFilterPlugin {
+public:
+	C3DScharrFilterPlugin();
+	virtual mia::C3DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+private:
+	EGradientDirection m_direction; 
+};
+
+
+
 NS_END
 
 #endif
