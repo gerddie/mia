@@ -30,7 +30,13 @@ NS_MIA_BEGIN
 const char *C3DFVectorfieldRegularizerKernel::type_descr = "regularizerkernel";
 
 C3DFVectorfieldRegularizerKernel::C3DFVectorfieldRegularizerKernel(bool has_pertuberation):
-m_has_pertuberation(has_pertuberation)
+	m_output(nullptr), 
+        m_input(nullptr), 
+        m_residua(nullptr), 
+        m_update_flags(nullptr), 
+        m_set_flags(nullptr), 
+	m_residual_thresh(0.0), 
+	m_has_pertuberation(has_pertuberation)
 {
 }
 
