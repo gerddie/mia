@@ -142,7 +142,7 @@ void pfor_callback(Range& range, Func f)
 }
 
 template <typename Range, typename Func>
-void pfor(Range range, Func& f) {
+void pfor(Range range, const Func& f) {
 	
 	int max_treads = CMaxTasks::get_max_tasks(); 
 	
@@ -201,7 +201,7 @@ void preduce_callback(Range& range, ReduceValue<Value>& v, Func f, Reduce r)
 }
 
 template <typename Range, typename Value, typename Func, typename Reduce>
-Value preduce(Range range, Value identity, Func& f, Reduce r)
+Value preduce(Range range, Value identity, const Func&  f, Reduce r)
 {
 	int max_treads = CMaxTasks::get_max_tasks();
 
