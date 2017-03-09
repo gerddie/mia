@@ -68,6 +68,8 @@ BOOST_AUTO_TEST_CASE( test_pool_get_and_remove )
 	CDatapool::instance().add("param1", 10);
 	any p1 = CDatapool::instance().get_and_remove("param1");
 	BOOST_CHECK(!CDatapool::instance().has_key("param1"));
+
+	BOOST_CHECK_THROW(CDatapool::instance().get_and_remove("param1"), std::invalid_argument); 
 }
 
 BOOST_AUTO_TEST_CASE( test_pool_has_unused )
@@ -82,6 +84,12 @@ BOOST_AUTO_TEST_CASE( test_pool_has_key )
 	BOOST_CHECK(CDatapool::instance().has_key("param1"));
 	BOOST_CHECK(!CDatapool::instance().has_key("unknown"));
 }
+
+BOOST_AUTO_TEST_CASE( test_pool_remove_unknown_key_no_throw )
+{
+	BOOST_CHECK_NO_THROW(CDatapool::instance().remove("unknown"));
+}
+
 
 BOOST_AUTO_TEST_CASE( test_pool_clear )
 {
