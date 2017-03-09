@@ -118,8 +118,9 @@ void COffMeshIO::skip_to_newline(istream& inp)const
 static bool read_line(char *buf, size_t size, FILE *f)
 {
 	char *success;
+	buf[size-1] = 0; 
 	do {
-		success = fgets( buf, size, f);
+		success = fgets( buf, size-1, f);
 		while (success && (*success == ' ' || *success == '\t'))  ++success;
 	} while (success && (*success == '#' || *success == '\n' || *success == '\r'));
 	return success != NULL;
@@ -153,7 +154,6 @@ bool COffMeshIO::load_vertices(CInputFile& inf,
 	}
 
 	char buf[2048];
-
 	bool success = read_line(buf, 2048, inf);
 	if (!success)
 		return false;
@@ -420,7 +420,7 @@ PTriangleMesh COffMeshIO::do_load_it(CInputFile& inp)const
 	int n_faces = 0;
 	int n_edges = 0;
 
-	char buffer[2049];
+	char buffer[2048];
 	if (!read_line(buffer, 2048, inp))
 		throw create_exception<runtime_error>("OFF: Unable to read from input file.");
 	
