@@ -121,7 +121,8 @@ BOOST_AUTO_TEST_CASE(test_sor_solver)
 }
 
 Mock2DVectorfieldRegularizerKernel::Mock2DVectorfieldRegularizerKernel():
-C2DFVectorfieldRegularizerKernel(false)
+	C2DFVectorfieldRegularizerKernel(false),
+	m_dx(0)
 {
 }
 
