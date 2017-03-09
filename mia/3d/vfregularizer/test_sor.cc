@@ -132,7 +132,9 @@ BOOST_AUTO_TEST_CASE(test_sor_solver)
 }
 
 Mock3DVectorfieldRegularizerKernel::Mock3DVectorfieldRegularizerKernel():
-C3DFVectorfieldRegularizerKernel(false)
+	C3DFVectorfieldRegularizerKernel(false),
+	m_dx(0),
+	m_dxy(0)
 {
 }
 
