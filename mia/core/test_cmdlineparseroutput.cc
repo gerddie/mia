@@ -153,14 +153,20 @@ int main(int argc, const char **args)
 				options.push_back("-h");
 				
 				olist.add(make_opt(test, "lala", 'i', "a string option"));
-				if (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no) {
-					ws.ws_col = old_width;
-					if (ioctl(0,TIOCSWINSZ,&ws) !=0) {
-						cverr() << "Resetting console width failed\n"; 
+				try {
+					if (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no) {
+						ws.ws_col = old_width;
+						if (ioctl(0,TIOCSWINSZ,&ws) !=0) {
+							cverr() << "Resetting console width failed\n"; 
+							retvalue = -1;
+						}
+					}else
 						retvalue = -1;
-					}
-				}else
+				}
+				catch (const std::logic_error& x) {
+					cvfail() << x.what() << "\n"; 
 					retvalue = -1;
+				}
 			}else
 				retvalue = -1;
                 }else
