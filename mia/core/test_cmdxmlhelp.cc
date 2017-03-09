@@ -170,7 +170,10 @@ int do_main(int argc, char **args)
 	vector<const char*> arg{args[0],"--help-xml", "-", NULL};
 	
 
-	bool failed = false; 
+	bool failed = false;
+	
+	// args[0] is well defined, i.e. it is the name of the current program
+	// coverity[TAINTED_STRING]
 	if (!fork_and_run_check(args[0], arg, expect_xml_help)) {
 		failed = true; 
 	}
