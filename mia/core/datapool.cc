@@ -51,6 +51,19 @@ boost::any CDatapool::get_and_remove(const std::string& key)
 	return retval;
 }
 
+void CDatapool::remove(const std::string& key)
+{
+	CRecursiveScopedLock lock(m_mutex);
+	try{
+		Anymap::const_iterator i = get_iterator(key);
+		m_map.erase(key);
+		m_usage.erase(key);
+	}
+	catch (std::invalid_argument& x) {
+		cvwarn() << "CDatapool::remove: key '" << key << "' not in pool\n";
+	}
+}
+
 void CDatapool::add(const std::string& key, boost::any value)
 {
 	CRecursiveScopedLock lock(m_mutex);

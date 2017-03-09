@@ -47,7 +47,7 @@ LoadFixture::LoadFixture()
 
 LoadFixture::~LoadFixture()
 {
-	boost::any dummy = CDatapool::instance().get_and_remove("test.@");
+	CDatapool::instance().remove("test.@");
 }
 	
 

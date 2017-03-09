@@ -95,7 +95,7 @@ Combiner3DFilterFixture::Combiner3DFilterFixture():
 
 Combiner3DFilterFixture::~Combiner3DFilterFixture()
 {
-        boost::any dummy = CDatapool::instance().get_and_remove("other.@");
+        CDatapool::instance().remove("other.@");
 }
 
 

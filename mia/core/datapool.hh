@@ -68,6 +68,13 @@ public:
 	boost::any get_and_remove(const std::string& key);
 
 	/**
+	   remove this data from the pool
+	   \param key key of data to be retrieved
+	*/
+	void remove(const std::string& key);
+
+	
+	/**
 	   \param key 
 	   \returns \a true if key exists in pool and \a false if not
 	*/
