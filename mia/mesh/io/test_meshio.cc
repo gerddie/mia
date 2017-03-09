@@ -376,7 +376,7 @@ static void run_simple_octaedron_test(const char *in_file, const char *test_file
 	char buffer[2000];
 	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length(); //don't count terminating 0 
-	size_t read_bytes = fread(buffer, 1, 2000, testfile);
+	size_t read_bytes = fread(buffer, 1, 1999, testfile);
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
@@ -412,7 +412,7 @@ static void run_octaedron_vertex_normal_test(const char *in_file, const char *te
 	char buffer[2000];
 	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length();
-	size_t read_bytes = fread(buffer, 1, 2000, testfile);
+	size_t read_bytes = fread(buffer, 1, 1999, testfile);
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
@@ -448,7 +448,7 @@ void run_octaedron_vertex_normal_color_test(const char *in_file, const char *tes
 	char buffer[2000];
 	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length(); //don't count terminating 0 
-	size_t read_bytes = fread(buffer, 1, 2000, testfile);
+	size_t read_bytes = fread(buffer, 1, 1999, testfile);
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
@@ -483,7 +483,7 @@ void run_octaedron_vertex_normal_scale_test(const char *in_file, const char *tes
 	char buffer[2000];
 	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length(); //don't count terminating 0 
-	size_t read_bytes = fread(buffer, 1, 2000, testfile);
+	size_t read_bytes = fread(buffer, 1, 1999, testfile);
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE( test_load_save_octaedron_stl )
 	char buffer[2000];
 	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length(); //don't count terminating 0 
-	size_t read_bytes = fread(buffer, 1, 2000, testfile);
+	size_t read_bytes = fread(buffer, 1, 1999, testfile);
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
