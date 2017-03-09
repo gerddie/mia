@@ -95,7 +95,7 @@ Combiner2DFilterFixture::Combiner2DFilterFixture():
 
 Combiner2DFilterFixture::~Combiner2DFilterFixture()
 {
-        boost::any dummy = CDatapool::instance().get_and_remove("other.@");
+        CDatapool::instance().remove("other.@");
 }
 
 
