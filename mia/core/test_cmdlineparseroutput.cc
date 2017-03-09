@@ -90,7 +90,7 @@ bool fork_and_run_check(const char *me, const char *console_width, string& child
                         perror("redirecting stdout");
                         return false;
                 }
-                
+
 		execlp(me, me,
 		       "-w", console_width,
 		       "--internal",
@@ -181,7 +181,10 @@ int main(int argc, const char **args)
 		
                 int retval = 0; 
                 // fork the tests
-                string child_output_100; 
+                string child_output_100;
+
+		// args[0] is well defined, i.e. it is the name of the current program
+		// coverity[TAINTED_STRING]
                 if (fork_and_run_check(args[0], "100", child_output_100)) {
                         if (child_output_100.size() != 1796) {
                                 cvfail() << "Output 100: expected 1796 bytes, got "
@@ -192,7 +195,10 @@ int main(int argc, const char **args)
                         retval = -2;
 		
 		
-                string child_output_50; 
+                string child_output_50;
+
+		// args[0] is well defined, i.e. it is the name of the current program
+		// coverity[TAINTED_STRING]
                 if (fork_and_run_check(args[0], "50", child_output_50)) {
                         if (child_output_50.size() != 2241) {
                                 cvfail() << "Output 50: expected 2241 bytes, got "
