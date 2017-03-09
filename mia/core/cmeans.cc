@@ -317,6 +317,8 @@ CMeans::SparseProbmap::SparseProbmap(const std::string& filename)
 	*is >> buf;
 	size_t hsize, nclasses;
 
+	
+	// coverity[TAINTED_SCALAR]
 	if (buf != map_signature) {
 		throw create_exception<runtime_error>("CMeans::SparseProbmap::load: Input file '",
 						      filename, "'is not a sparse probability map: signature:'",
