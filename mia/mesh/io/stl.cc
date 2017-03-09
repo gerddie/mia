@@ -96,6 +96,7 @@ bool CSTLMeshIO::read_vertex(CVertexMap& vmap, unsigned int& index, istream& f)c
 	C3DFVector vertex;
 
 	f >> tag >> vertex.x >> vertex.y >> vertex.z;
+	// coverity[TAINTED_SCALAR]
 	if (tag != vertex_tag) {
 		cverr() << "not a valid ascii STL file\n";
 		return false;
@@ -126,25 +127,33 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 
 	f >> attribute;
 
+        // coverity is complaining when a tainted string is used in
+	// std::string::operator !=
+	// 
+        // coverity[TAINTED_SCALAR]
 	if (attribute != start_solid)
 		return PTriangleMesh();
 
 	f >> tag;
+	// coverity[TAINTED_SCALAR]
 	if (tag != start_face) {
 		cvdebug() << "Loading solid " <<tag  << "\n";
 		f >> tag;
 	}
 
+	// coverity[TAINTED_SCALAR]
 	while (tag != end_solid) {
 		CTriangleMesh::triangle_type face;
 		C3DFVector face_normal;
 
+		// coverity[TAINTED_SCALAR]
 		if (tag != start_face)
 			goto fail;
 
 		cverb << "start face ";
 
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != normal_tag)
 			goto fail;
 
@@ -153,10 +162,12 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 
 		cverb << " normal " << face_normal;
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != start_loop)
 			goto fail;
 
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != tag_loop)
 			goto fail;
 
@@ -168,10 +179,12 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 			goto fail;
 
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != end_loop)
 			goto fail;
 
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != end_face)
 			goto fail;
 
