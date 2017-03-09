@@ -143,6 +143,36 @@ BOOST_FIXTURE_TEST_CASE(segstar_shift, SegStarFixture)
 	check(C2DFVector(108, 116), 21, x_init, y_init);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_segstart_no_radius, SegStarFixture)
+{
+	const char *sestsection_error_r = 
+		"<?xml version=\"1.0\"?>\n<test>"
+		"<star  x=\"109\" y=\"118\">"
+		"<point x=\"10\" y=\"20\"/>"
+		"<point x=\"20\" y=\"10\"/>"
+		"<point x=\"0\" y=\"4\"/>"
+		"</star>"
+		"</test>"; 
+
+	CXMLDocument doc;
+	BOOST_CHECK_THROW(init(sestsection_error_r), runtime_error); 
+}
+
+BOOST_FIXTURE_TEST_CASE(test_segstart_radius_no_number, SegStarFixture)
+{
+	const char *sestsection_error_r = 
+		"<?xml version=\"1.0\"?>\n<test>"
+		"<star  x=\"109\" y=\"118\" r=\"12a\">"
+		"<point x=\"10\" y=\"20\"/>"
+		"<point x=\"20\" y=\"10\"/>"
+		"<point x=\"0\" y=\"4\"/>"
+		"</star>"
+		"</test>"; 
+
+	CXMLDocument doc;
+	BOOST_CHECK_THROW(init(sestsection_error_r), runtime_error); 
+}
+
 BOOST_AUTO_TEST_CASE(segstar_write)
 {
 	CSegStar star(CSegPoint2D(109, 118), 21,
@@ -373,7 +403,7 @@ BOOST_AUTO_TEST_CASE(test_segstart_error_attribute)
 {
 	const char *sestsection_error_r = 
 		"<?xml version=\"1.0\"?>\n<test>"
-		"<star  r=\"21a\"x=\"109\" y=\"118\">"
+		"<star  r=\"21\"x=\"109\" y=\"118\">"
 		"<point x=\"10\" y=\"20\"/>"
 		"<point x=\"20\" y=\"10\"/>"
 		"<point x=\"0\" y=\"4\"/>"
@@ -383,6 +413,9 @@ BOOST_AUTO_TEST_CASE(test_segstart_error_attribute)
 	CXMLDocument doc; 
 	BOOST_CHECK(!doc.read_from_string(sestsection_error_r));
 }
+
+
+
 
 
 /*
