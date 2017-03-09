@@ -220,7 +220,10 @@ pair<int, map<string, int>> get_data_flags(const vector<pair<string, vector<stri
 PTriangleMesh TPlyMeshIO::do_load(string const &  filename) const
 {
 	cvdebug() << "Load as PLY?\n"; 
-	char buffer[2048];
+	char buffer[2049];
+
+	// make sure buffer is null-terminated 
+	buffer[2048] = 0; 
 	int n_vertices = 0;
 	unsigned n_face = 0;
 
