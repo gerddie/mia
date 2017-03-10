@@ -132,12 +132,18 @@ int main(int argc, const char **args)
         CCmdOptionList options(general_help);
         options.add(make_opt(console_width, "width", 'w', "set console width"));
         options.add(make_opt(internal, "internal", 'i', "was forked" ));
-        
-        if (options.parse(argc, args) != CCmdOptionList::hr_no)
-                return -1;
-        
-        if (internal) {
 
+	try {
+		if (options.parse(argc, args) != CCmdOptionList::hr_no)
+			return -1;
+	}
+	catch (const std::logic_error& x) {
+		cvfail() << x.what() << "\n"; 
+		return -1;
+	}
+	
+	if (internal) {
+			
 		int retvalue = 0; 
                 struct winsize ws;
                 int old_width = 100; 
