@@ -41,6 +41,8 @@ using namespace std;
 
 static char const * const format = "ply";
 
+static const int buflen = 2048; 
+
 class TPlyMeshIO: public CMeshIOPlugin {
 public:
 	TPlyMeshIO();
@@ -72,19 +74,22 @@ const string  TPlyMeshIO::do_get_descr()const
 
 // read the next line and skip comments
 // 
-static void get_line(char *buffer, string const &  filename, FILE *file)
+static void get_line(char *buffer, int buflen, string const &  filename, FILE *file)
 {
 	do {
-		if (!fgets(buffer, 2048, file)) {
+		if (!fgets(buffer, buflen, file)) {
 			throw create_exception<runtime_error>("Ply: Bougus file '", filename, "'");		
 		}
 	} while (!strncmp(buffer, "comment ", 8));
-	cvdebug() << "Read line '"  << buffer << "'\n"; 
 	
+	// ensure the buffer is null-terminated 
+	buffer[buflen] = 0; 
+	cvdebug() << "Read line '"  << buffer << "'\n";
+
 }
 
 
-static vector<pair<string, vector<string>> > get_properties(char *buffer, string const &filename, FILE *file)
+static vector<pair<string, vector<string>> > get_properties(char *buffer, int buflen, string const &filename, FILE *file)
 {
 	vector<pair<string, vector<string>>> result;
 	while (!strncmp(buffer, "property ", 9)) {
@@ -102,7 +107,8 @@ static vector<pair<string, vector<string>> > get_properties(char *buffer, string
 			is >> name;
 			result.push_back(make_pair(type, vector<string>{name}));
 		}
-		get_line(buffer, filename, file); 
+		get_line(buffer, buflen, filename, file);
+		buffer[buflen] = 0; 
 	}
 	return result; 
 }
@@ -123,10 +129,12 @@ void read_vertex_data(CTriangleMesh::CVertexfield& v,
 		      CTriangleMesh::PNormalfield n, 
 		      CTriangleMesh::PColorfield c,
 		      CTriangleMesh::PScalefield s,
-		      char *buffer, const string&  filename, FILE *file)
+		      const string&  filename, FILE *file)
 {
+	char buffer[buflen +1]; 
 	for (unsigned i = 0; i < v.size(); ++i) {
-		get_line(buffer, filename, file);
+		get_line(buffer, buflen, filename, file);
+		buffer[buflen] = 0; 
 		
 		istringstream buf(buffer);
 
@@ -145,8 +153,9 @@ void read_vertex_data(CTriangleMesh::CVertexfield& v,
 
 void read_faces(CTriangleMesh::CTrianglefield& triangles, unsigned n_faces, 
 		const CTriangleMesh::CVertexfield& vertices,
-		char *buffer, const string&  filename, FILE *file)
+		const string&  filename, FILE *file)
 {
+	char buffer[buflen+1]; 
 	unsigned count;
 	vector<unsigned> v(3);
 	typedef TPolyTriangulator<CTriangleMesh::CVertexfield, vector<unsigned int> >  CPolyTriangulator;
@@ -154,8 +163,8 @@ void read_faces(CTriangleMesh::CTrianglefield& triangles, unsigned n_faces,
 	CPolyTriangulator triangulator(vertices); 
 	
 	for (unsigned i = 0; i < n_faces; ++i) {
-		get_line(buffer, filename, file);
-
+		get_line(buffer, buflen, filename, file);
+		
 		istringstream buf(buffer);
 		buf >> count;
 		if (count > v.max_size()) {
@@ -219,11 +228,10 @@ pair<int, map<string, int>> get_data_flags(const vector<pair<string, vector<stri
 
 PTriangleMesh TPlyMeshIO::do_load(string const &  filename) const
 {
-	cvdebug() << "Load as PLY?\n"; 
-	char buffer[2049];
+	cvdebug() << "Load as PLY?\n";
+	char buffer[buflen +1];
 
 	// make sure buffer is null-terminated 
-	buffer[2048] = 0; 
 	int n_vertices = 0;
 	unsigned n_face = 0;
 
@@ -231,33 +239,33 @@ PTriangleMesh TPlyMeshIO::do_load(string const &  filename) const
 	if (!f)
 		return PTriangleMesh();
 
-	if ( (!fgets(buffer, 1024, f)) || strncmp(buffer,"ply",3)) {
+	if ( (!fgets(buffer, buflen, f)) || strncmp(buffer,"ply",3)) {
 		cvdebug() << "Not a PLY file\n"; 
 		return PTriangleMesh();
 	}
 
-	if ( (!fgets(buffer, 1024, f)) || strncmp(buffer,"format ",7)) {
+	if ( (!fgets(buffer, buflen, f)) || strncmp(buffer,"format ",7)) {
 		throw create_exception<runtime_error>("Ply: Format specifier missing '", filename, "'");
 	}
 
 	// now we must check the type of file, only support ascii though
 	
-	get_line(buffer, filename, f);
+	get_line(buffer, buflen, filename, f);
 	
 	if (sscanf(buffer,"element vertex %d",&n_vertices)!= 1)
 		throw create_exception<runtime_error>("Ply: Bougus file '", filename,
 						      "', can't parse vertex count from '",buffer,"'.");
 	
-	get_line(buffer, filename, f);
+	get_line(buffer, buflen, filename, f);
 
-	auto vertex_properties = get_properties(buffer, filename, f); 
+	auto vertex_properties = get_properties(buffer, buflen, filename, f); 
 
 	if (sscanf(buffer,"element face %d",&n_face)!= 1)
 		throw create_exception<runtime_error>("Ply: Unsupported file '", filename, "', can't parse face count from '",
 						      buffer, "'");
 
-	get_line(buffer, filename, f);
-	auto face_properties = get_properties(buffer, filename, f); 
+	get_line(buffer, buflen, filename, f);
+	auto face_properties = get_properties(buffer, buflen, filename, f); 
 
 	if (strncmp(buffer,"end_header",10))
 		throw create_exception<runtime_error>("Ply: Header end marker not found in '", filename, "'.");
@@ -283,7 +291,7 @@ PTriangleMesh TPlyMeshIO::do_load(string const &  filename) const
 	if (flags & CTriangleMesh::ed_scale)
 		scales.reset(new CTriangleMesh::CScalefield(n_vertices));
 
-	read_vertex_data(*vertices, normals, colors, scales, buffer, filename, f);
+	read_vertex_data(*vertices, normals, colors, scales, filename, f);
 	
 	CTriangleMesh::PTrianglefield triangles(new  CTriangleMesh::CTrianglefield);
 
@@ -294,7 +302,7 @@ PTriangleMesh TPlyMeshIO::do_load(string const &  filename) const
 		
 	triangles->reserve(n_face); 
 
-	read_faces(*triangles, n_face, *vertices, buffer, filename, f);
+	read_faces(*triangles, n_face, *vertices, filename, f);
 
 	return PTriangleMesh(new CTriangleMesh(triangles, vertices, normals, colors, scales));
 }
