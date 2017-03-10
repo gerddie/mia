@@ -118,11 +118,11 @@ void COffMeshIO::skip_to_newline(istream& inp)const
 static bool read_line(char *buf, size_t size, FILE *f)
 {
 	char *success;
-	buf[size-1] = 0; 
 	do {
 		success = fgets( buf, size-1, f);
 		while (success && (*success == ' ' || *success == '\t'))  ++success;
 	} while (success && (*success == '#' || *success == '\n' || *success == '\r'));
+	buf[size-1] = 0; 
 	return success != NULL;
 }
 
