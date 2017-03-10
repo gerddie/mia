@@ -89,9 +89,21 @@ public:
 	Vector(const Vector& other); 
 
 	/**
+	   Move  constructor, does move the internal data structure to the new object. 
+	 */
+	Vector(Vector&& other); 
+	
+	
+	/**
 	   Copy operator, does a deep copy of the internal data structures. 
 	 */
 	Vector& operator = (const Vector& other); 
+
+	/**
+	   Move operator, does move the internal data structure to the new object. 
+	 */
+	Vector& operator = (Vector&& other); 
+
 	
 	/// Destructor 
 	~Vector(); 
@@ -157,7 +169,10 @@ public:
 	   Write the vector to a stream 
 	   \param os the output stream 
 	*/
-	void print(std::ostream& os) const;  
+	void print(std::ostream& os) const;
+
+	bool is_writable() const;
+	bool is_valid() const; 
 
 protected:
 	

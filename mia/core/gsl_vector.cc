@@ -55,6 +55,39 @@ Vector::Vector(const Vector& other):
 	gsl_vector_memcpy(data, other.cdata); 
 }
 
+Vector::Vector(Vector&& other)
+{
+	owner = other.owner; 
+	cdata = other.cdata;
+	data = other.data;
+
+	other.cdata = other.data = nullptr;
+	other.owner = false;
+}
+
+Vector& Vector::operator = (Vector&& other)
+{
+	if (&other != this) {
+		owner = other.owner; 
+		cdata = other.cdata;
+		data = other.data;
+		
+		other.cdata = other.data = nullptr;
+		other.owner = false;
+	}
+	return *this; 
+}
+
+bool Vector::is_writable() const
+{
+	return data != nullptr; 
+}
+
+bool Vector::is_valid() const
+{
+	return cdata != nullptr;
+}
+
 Vector& Vector::operator = (const Vector& other)
 {
 	if (&other != this) {

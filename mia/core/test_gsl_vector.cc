@@ -75,6 +75,42 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_copy_to, T ,test_types )
 	
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_move_to, T ,test_types ) 
+{									
+	
+	const typename T::value_type init[5] = {1, 2, 3, 4, 5}; 
+	std::vector<typename T::value_type> a(init, init+5); 
+	T gsl_vector(5,false);
+	std::copy(a.begin(), a.end(), gsl_vector.begin()); 
+
+	BOOST_REQUIRE(gsl_vector.size()== 5);
+
+	T other(std::move(gsl_vector));
+
+	BOOST_REQUIRE(other.is_valid()); 
+	BOOST_REQUIRE(other.size()== 5);
+	BOOST_CHECK(!gsl_vector.is_valid());
+
+	BOOST_CHECK_EQUAL(other[0], 1.0);
+	BOOST_CHECK_EQUAL(other[4], 5.0);
+
+	T gsl_vector2(2, true);
+	gsl_vector2[0] = 10;
+	gsl_vector2[1] = 12;
+
+	other = std::move(gsl_vector2); 
+	BOOST_REQUIRE(other.is_valid()); 
+	BOOST_REQUIRE(other.size()== 2);
+	BOOST_CHECK(!gsl_vector2.is_valid());
+
+	BOOST_CHECK_EQUAL(other[0], 10.0);
+	BOOST_CHECK_EQUAL(other[1], 12.0);
+	
+	
+	
+}
+
+
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_copy_from, T ,test_types ) 
 {									
 	T gsl_vector(5,false);
