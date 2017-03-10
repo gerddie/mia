@@ -156,6 +156,42 @@ BOOST_AUTO_TEST_CASE( test_copy_ops )
 	BOOST_CHECK(im == m.begin()); 
 }
 
+BOOST_AUTO_TEST_CASE( test_move_ops ) 
+{
+	Matrix m(2,3, 2.0); 
+
+	BOOST_CHECK_EQUAL(m.rows(), 2u); 
+	BOOST_CHECK_EQUAL(m.cols(), 3u);
+	BOOST_CHECK_EQUAL(m(0,0), 2.0); 
+
+	Matrix m2(1,1, 1.0);
+
+	BOOST_CHECK_EQUAL(m2.rows(), 1u); 
+	BOOST_CHECK_EQUAL(m2.cols(), 1u);
+	BOOST_CHECK_EQUAL(m2(0,0), 1.0);
+
+	
+	Matrix mm(std::move(m));
+	BOOST_REQUIRE(mm.is_valid());
+	BOOST_CHECK(!m.is_valid());
+	
+	BOOST_CHECK_EQUAL(mm.rows(), 2u); 
+	BOOST_CHECK_EQUAL(mm.cols(), 3u);
+	BOOST_CHECK_EQUAL(mm(0,0), 2.0);
+
+	mm = std::move(m2); 
+	BOOST_REQUIRE(mm.is_valid());
+	BOOST_CHECK(!m2.is_valid());
+
+	BOOST_CHECK_EQUAL(mm.rows(), 1u); 
+	BOOST_CHECK_EQUAL(mm.cols(), 1u);
+	BOOST_CHECK_EQUAL(mm(0,0), 1.0);
+	
+
+	
+}
+
+
 BOOST_AUTO_TEST_CASE( test_print )
 {
 	Matrix m;

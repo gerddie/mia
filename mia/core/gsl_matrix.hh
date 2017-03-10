@@ -191,6 +191,13 @@ public:
 	   Copy constructor that executes a deep copy 
 	 */
 	Matrix(const Matrix& other); 
+
+
+	/**
+	   move constructor
+	 */
+	Matrix(Matrix&& other); 
+	
 	
 	/**
 	   Wrap an existing GSL matrix 
@@ -216,6 +223,12 @@ public:
 	 */
 	Matrix& operator =(const Matrix& other); 
 
+	/**
+	   Move operator that 
+	 */
+	Matrix& operator =(Matrix&& other); 
+
+	
 	/**
 	   Reset the matrix with the new dimensions. 
 	   \param rows 
@@ -410,6 +423,10 @@ public:
 		gsl_matrix_scale(*this, rhs); 
 		return *this; 
 	}
+
+	bool is_valid() const;
+
+	bool is_writable() const; 
 	
 private: 
 	gsl_matrix *m_matrix; 

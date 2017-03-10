@@ -41,6 +41,17 @@ Matrix::Matrix():m_matrix(nullptr), m_const_matrix(nullptr), m_owner(false)
 {
 }
 
+bool Matrix::is_valid() const
+{
+	return m_const_matrix != nullptr; 
+}
+		
+
+bool Matrix::is_writable() const
+{
+	return m_matrix != nullptr;
+}
+
 Matrix::Matrix(size_t rows, size_t columns, bool clean):
 	m_matrix(NULL), m_owner(true)
 {
@@ -76,6 +87,18 @@ Matrix::Matrix(const Matrix& other):
 	m_const_matrix = m_matrix; 
 }
 
+Matrix::Matrix(Matrix&& other):
+	m_matrix(other.m_matrix), 
+	m_const_matrix(other.m_const_matrix), 
+	m_owner(other.m_owner)
+{
+	other.m_const_matrix = nullptr;
+	other.m_matrix = nullptr;
+	other.m_owner = false; 
+}
+
+
+
 Matrix::Matrix(gsl_matrix* m):
 	m_matrix(m), 
 	m_const_matrix(m), 
@@ -88,6 +111,21 @@ Matrix::Matrix(const gsl_matrix* m):
 	m_const_matrix(m), 
 	m_owner(false)
 {
+}
+
+Matrix& Matrix::operator =(Matrix&& other)
+{
+	if (this == &other) 
+		return *this;
+
+	m_const_matrix = other.m_const_matrix;
+	m_matrix = other.m_matrix;
+	m_owner = other.m_owner; 
+
+	other.m_const_matrix = nullptr;
+	other.m_matrix = nullptr;
+	other.m_owner = false;
+	return *this; 
 }
 
 Matrix& Matrix::operator =(const Matrix& other)
