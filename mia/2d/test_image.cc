@@ -144,5 +144,35 @@ BOOST_AUTO_TEST_CASE( check_comparison )
 	BOOST_CHECK(ubimage != ubimage2);
 
 	
+}
+
+BOOST_AUTO_TEST_CASE (test_move_semantics)
+{
+	std::string attr("test_string"); 
+	C2DBounds size1(2,3); 
+	C2DUBImage image1(size1);
+	image1(0,0) = 1.0;
+	image1.set_attribute("test", attr);
 	
+	C2DBounds size2(1,1); 
+	C2DUBImage image2(size2);
+	
+	BOOST_CHECK_EQUAL(image2.get_size(), size2);
+
+
+	C2DUBImage image1_moved(std::move(image1));
+
+	BOOST_CHECK_EQUAL(image1_moved.get_size(), size1);
+	BOOST_CHECK_EQUAL(image1_moved(0,0), 1.0);
+	BOOST_CHECK_EQUAL(image1_moved.get_attribute_as_string("test"), attr);
+
+	
+	BOOST_CHECK_EQUAL(image1.get_size(), C2DBounds::_0);
+
+	image2 =(std::move(image1_moved));
+	BOOST_CHECK_EQUAL(image2.get_size(), size1);
+	BOOST_CHECK_EQUAL(image2(0,0), 1.0);
+	BOOST_CHECK_EQUAL(image2.get_attribute_as_string("test"), attr);
+
+	BOOST_CHECK_EQUAL(image1_moved.get_size(), C2DBounds::_0);
 }

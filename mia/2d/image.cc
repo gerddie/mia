@@ -42,7 +42,27 @@ C2DImage::C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPi
 {
 }
 
+C2DImage::C2DImage(C2DImage&& other):CAttributedData(other),
+	m_size(other.m_size),
+	m_pixel_type(other.m_pixel_type)
+{
+	other.m_size = C2DBounds::_0;
+	other.m_pixel_type = it_none; 
+}
+	
+C2DImage& C2DImage::operator = (C2DImage&& other)
+{
+	if (&other == this)
+		return *this;
 
+	CAttributedData::operator =(other); 
+	m_size = other.m_size; 
+	m_pixel_type = other.m_pixel_type; 
+	other.m_size = C2DBounds::_0;
+	other.m_pixel_type = it_none;
+	return *this; 
+}
+	
 C2DImage::~C2DImage()
 {
 }
@@ -159,6 +179,34 @@ T2DImage<T>::T2DImage(const T2DImage<T>& orig):
 	C2DImage(orig),
 	m_image(orig.m_image)
 {
+}
+
+template <typename T>
+T2DImage<T>::T2DImage(T2DImage<T>&& orig):
+	C2DImage(std::move(orig)),
+	m_image(std::move(orig.m_image))
+{
+}
+
+template <typename T>
+T2DImage<T>& T2DImage<T>::operator = (T2DImage<T>&& orig)
+{
+	if (this != &orig) {
+		C2DImage::operator =(std::move(orig)); 
+		m_image= std::move(orig.m_image);
+	}
+	return *this; 
+}
+
+
+template <typename T>
+T2DImage<T>& T2DImage<T>::operator = (const T2DImage<T>& orig)
+{
+	if (this != &orig) {
+		C2DImage::operator =(orig);
+		m_image= orig.m_image;
+	}
+	return *this; 
 }
 
 template <typename T>

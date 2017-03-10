@@ -208,7 +208,7 @@ public:
 	T3DImage& operator = (const T3DImage<T>& orig);
 
 	/**
-	   move constructor
+	   move operator
 	 */
 	T3DImage& operator = (T3DImage<T>&& orig);
 

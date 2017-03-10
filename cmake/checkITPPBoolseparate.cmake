@@ -18,7 +18,13 @@
 #
 #
 
-#
-# check whether itpp FastICA::separate has a bool return value 
-#
 
+CHECK_CXX_SOURCE_COMPILES(
+"#include <dcmtk/dcmdata/dcitem.h>
+int main(int argc, char *args[]) 
+{
+     DcmTagKey tag(DCM_StudyDate); 
+     DcmElement *test = DcmItem::newDicomElement(tag); 
+     return test == 0;
+}
+" CXX_HAS_CXX_0X_LAMBDA)

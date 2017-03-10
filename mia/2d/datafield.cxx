@@ -55,9 +55,9 @@ T2DDatafield<T>& T2DDatafield<T>::operator = (const T2DDatafield<T>& org)
 
 template <class T> 
 T2DDatafield<T>::T2DDatafield(T2DDatafield<T>&& org):
-	m_size(org.m_size)
+	m_size(org.m_size), 
+	m_data(std::move(org.m_data))
 {
-	m_data.swap(org.m_data); 
 }
 
 template <class T> 
@@ -65,7 +65,8 @@ T2DDatafield<T>& T2DDatafield<T>::operator = (T2DDatafield<T>&& org)
 {
 	if (this != &org) {
 		m_size = org.m_size;
-		m_data.swap(org.m_data);
+		m_data = std::move(org.m_data);
+		
 	}
 	return *this; 
 }

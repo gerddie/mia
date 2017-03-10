@@ -88,20 +88,29 @@ public:
 	virtual void make_single_ref() __attribute__((deprecated)) = 0; 
 	
  protected:
-         /** Constructor initializes the size and the pixel type
-         */
-         C2DImage(const C2DBounds& size, EPixelType type);
+	C2DImage(C2DImage&& other);
+	C2DImage& operator = (C2DImage&& other);
+	
+	C2DImage(const C2DImage& other) = default; 
 
-         /** Constructor initializes from the attributes, the size and the pixel type
-         */
-         C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPixelType type);
 
-         /** standard constructor initializes the size to (0,0), and the pixel type
-         to "unknown"
+	C2DImage& operator = (const C2DImage& other) = default; 
+	
+	
+	/** Constructor initializes the size and the pixel type
          */
-         C2DImage();
-
- private:
+	C2DImage(const C2DBounds& size, EPixelType type);
+	
+	/** Constructor initializes from the attributes, the size and the pixel type
+         */
+	C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPixelType type);
+	
+	/** standard constructor initializes the size to (0,0), and the pixel type
+	    to "unknown"
+	*/
+	C2DImage();
+	
+private:
 	C2DBounds m_size;
 	EPixelType m_pixel_type;
 };
@@ -181,6 +190,23 @@ public:
 	 */
 	T2DImage(const T2DImage& orig);
 
+	/**
+	   Move constructor 
+	 */
+	T2DImage(T2DImage&& orig);
+
+	/**
+	   Move operator 
+	*/
+        T2DImage<T>& operator = (T2DImage<T>&& orig); 
+
+	
+        /**
+	   Copy operator 
+	*/
+	T2DImage<T>& operator = (const T2DImage<T>& orig); 
+
+		
 	/**
 	   Constructor to create the image by using a 2D data field 
 	   \param orig the input data field 
