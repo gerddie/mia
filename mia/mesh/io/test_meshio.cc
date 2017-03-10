@@ -374,12 +374,14 @@ static void run_simple_octaedron_test(const char *in_file, const char *test_file
 	FILE *testfile = fopen(test_file, "r");
 	BOOST_REQUIRE(testfile); 
 	char buffer[2000];
-	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length(); //don't count terminating 0 
 	size_t read_bytes = fread(buffer, 1, 1999, testfile);
+	BOOST_CHECK_EQUAL(read_bytes, flen);
+	BOOST_REQUIRE(read_bytes < 2000); 
+	buffer[read_bytes] = 0;
 	fclose(testfile);
 
-	BOOST_CHECK_EQUAL(read_bytes, flen);
+
 	BOOST_CHECK(!strcmp(buffer, test_string.c_str()));
 
 	cvdebug() << "Read: '" << buffer << "'\n"; 
@@ -410,9 +412,10 @@ static void run_octaedron_vertex_normal_test(const char *in_file, const char *te
 	FILE *testfile = fopen(test_file, "r");
 	BOOST_REQUIRE(testfile); 
 	char buffer[2000];
-	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length();
 	size_t read_bytes = fread(buffer, 1, 1999, testfile);
+	BOOST_REQUIRE(read_bytes < 2000); 
+	buffer[read_bytes] = 0; 
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
@@ -446,9 +449,10 @@ void run_octaedron_vertex_normal_color_test(const char *in_file, const char *tes
 	FILE *testfile = fopen(test_file, "r");
 	BOOST_REQUIRE(testfile); 
 	char buffer[2000];
-	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length(); //don't count terminating 0 
 	size_t read_bytes = fread(buffer, 1, 1999, testfile);
+	BOOST_REQUIRE(read_bytes < 2000); 
+	buffer[read_bytes] = 0; 
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
@@ -481,9 +485,10 @@ void run_octaedron_vertex_normal_scale_test(const char *in_file, const char *tes
 	FILE *testfile = fopen(test_file, "r");
 	BOOST_REQUIRE(testfile); 
 	char buffer[2000];
-	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length(); //don't count terminating 0 
 	size_t read_bytes = fread(buffer, 1, 1999, testfile);
+	BOOST_REQUIRE(read_bytes < 2000); 
+	buffer[read_bytes] = 0; 
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
@@ -518,9 +523,10 @@ BOOST_AUTO_TEST_CASE( test_load_save_octaedron_stl )
 	FILE *testfile = fopen(test_file, "r");
 	BOOST_REQUIRE(testfile); 
 	char buffer[2000];
-	memset(buffer, 0, 2000); 
 	size_t flen = test_string.length(); //don't count terminating 0 
 	size_t read_bytes = fread(buffer, 1, 1999, testfile);
+	BOOST_REQUIRE(read_bytes < 2000); 
+	buffer[read_bytes] = 0; 
 	fclose(testfile);
 
 	BOOST_CHECK_EQUAL(read_bytes, flen);
