@@ -216,21 +216,6 @@ CSetGSLErrorHandler::~CSetGSLErrorHandler()
 }
 
 
-#ifdef NDEBUG 
-	class CTurnOffErrorHandler {
-	public: 
-		CTurnOffErrorHandler(); 
-	}; 
-
-
-	CTurnOffErrorHandler::CTurnOffErrorHandler() 
-	{
-		gsl_set_error_handler_off (); 
-	}
-		
-	const CTurnOffErrorHandler gsl_turn_off_error_handler;
-#else
 CSetGSLErrorHandler replace_error_handler; 
-#endif 
 
 }
