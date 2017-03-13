@@ -99,7 +99,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_move_to, T ,test_types )
 	gsl_vector2[1] = 12;
 
 	other = std::move(gsl_vector2); 
-	BOOST_REQUIRE(other.is_valid()); 
+	BOOST_REQUIRE(other.is_valid());
+
+	// coverity [CONSTANT_EXPRESSION_RESULT]
 	BOOST_REQUIRE(other.size()== 2);
 	BOOST_CHECK(!gsl_vector2.is_valid());
 
