@@ -66,6 +66,11 @@ public:
 
         TSingleReferencedObject& operator = (const TSingleReferencedObject<T>& other);
 
+        TSingleReferencedObject(TSingleReferencedObject<T>&& other);
+
+        TSingleReferencedObject& operator = (TSingleReferencedObject<T>&& other);
+
+	
         ~TSingleReferencedObject(); 
 
         operator T()const; 
@@ -126,6 +131,26 @@ TSingleReferencedObject<T>& TSingleReferencedObject<T>::operator = (const TSingl
                 m_object->add_ref(); 
 	return *this; 
 }
+
+template <typename T> 
+TSingleReferencedObject<T>::TSingleReferencedObject(TSingleReferencedObject<T>&& other):
+	m_object(other.m_object)
+{
+	other.m_object = nullptr; 
+}
+
+template <typename T> 
+TSingleReferencedObject<T>& TSingleReferencedObject<T>::operator = (TSingleReferencedObject<T>&& other)
+{
+	if (&other != this) {
+		if (m_object)
+			m_object->del_ref(); 
+		m_object = other.m_object;
+		other.m_object = nullptr; 
+	}
+	return *this; 
+}
+
 
 template <typename T> 
 TSingleReferencedObject<T>::~TSingleReferencedObject()
