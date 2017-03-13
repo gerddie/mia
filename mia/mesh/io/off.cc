@@ -253,6 +253,9 @@ bool COffMeshIO::load_triangles(CInputFile& inp, vector<CTriangleMesh::triangle_
 	bool success = read_line(line, 2048, inp);
 
 	while (nfaces-- && success){
+
+		// it is ensured in read_line that the string in "line"  is null-terminated 
+		// coverity [TAINTED_SCALAR]
 		istringstream in_line(line);
 
 		if (!read_polygon(in_line, tri, nvertices, triangulator))
