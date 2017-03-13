@@ -57,10 +57,13 @@ BOOST_AUTO_TEST_CASE ( test_singlular_refobj_empty_then_copy )
 
 	TSingleReferencedObject<int> myobj2(1); 
 	myobj = myobj2; 
-	BOOST_CHECK_EQUAL(myobj.get_refcount(), 2u); 
+	BOOST_CHECK_EQUAL(myobj.get_refcount(), 2u);
+	BOOST_CHECK_EQUAL(myobj2.get_refcount(), 2u); 
 
+	cvdebug() << "second coming\n"; 
+	
 	myobj2 = TSingleReferencedObject<int>(); 
 	BOOST_CHECK_EQUAL(myobj2.get_refcount(), 0u);
-	BOOST_CHECK_EQUAL(myobj.get_refcount(), 1u); 
+	BOOST_CHECK_EQUAL(myobj.get_refcount(), 1u);
 	
 }
