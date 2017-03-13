@@ -72,6 +72,14 @@ CWaveletSlopeClassifier::CWaveletSlopeClassifier(const CWaveletSlopeClassifier& 
 	impl(new CWaveletSlopeClassifierImpl(*other.impl)) 
 {
 }
+
+CWaveletSlopeClassifier::CWaveletSlopeClassifier(CWaveletSlopeClassifier&& other):
+	impl(other.impl)
+{
+	other.impl = new CWaveletSlopeClassifierImpl();
+}
+
+
 CWaveletSlopeClassifier::CWaveletSlopeClassifier():
 	impl(new CWaveletSlopeClassifierImpl())
 {
@@ -83,6 +91,17 @@ CWaveletSlopeClassifier& CWaveletSlopeClassifier::operator =(const CWaveletSlope
 		auto help = new CWaveletSlopeClassifierImpl(*other.impl); 
 		delete impl; 
 		impl = help; 
+	}
+	return *this;
+}
+
+CWaveletSlopeClassifier& CWaveletSlopeClassifier::operator =(CWaveletSlopeClassifier&& other)
+{
+	if (this != &other) {
+		auto help = other.impl; 
+		delete impl; 
+		impl = help;
+		other.impl = new CWaveletSlopeClassifierImpl(); 
 	}
 	return *this;
 }

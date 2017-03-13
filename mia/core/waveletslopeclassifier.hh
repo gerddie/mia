@@ -62,12 +62,19 @@ public:
 
 	/** copy constructor */
 	CWaveletSlopeClassifier(const CWaveletSlopeClassifier& other);
+
+	// Move constructor 
+	CWaveletSlopeClassifier(CWaveletSlopeClassifier&& other); 
 	
 	CWaveletSlopeClassifier(); 
 	
 	/// assignment operator 
 	CWaveletSlopeClassifier& operator =(const CWaveletSlopeClassifier& other);
 
+        /// move operator 
+	CWaveletSlopeClassifier& operator =(CWaveletSlopeClassifier&& other);
+
+	
 	~CWaveletSlopeClassifier();
 
 	/// @return the index of the periodic curve or -1 if none was found 
