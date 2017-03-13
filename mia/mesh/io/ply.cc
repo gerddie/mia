@@ -77,13 +77,13 @@ const string  TPlyMeshIO::do_get_descr()const
 static void get_line(char *buffer, int buflen, string const &  filename, FILE *file)
 {
 	do {
-		if (!fgets(buffer, buflen, file)) {
+		if (!fgets(buffer, buflen-1, file)) {
 			throw create_exception<runtime_error>("Ply: Bougus file '", filename, "'");		
 		}
 	} while (!strncmp(buffer, "comment ", 8));
 	
 	// ensure the buffer is null-terminated 
-	buffer[buflen] = 0; 
+	buffer[buflen-1] = 0; 
 	cvdebug() << "Read line '"  << buffer << "'\n";
 
 }
@@ -93,6 +93,9 @@ static vector<pair<string, vector<string>> > get_properties(char *buffer, int bu
 {
 	vector<pair<string, vector<string>>> result;
 	while (!strncmp(buffer, "property ", 9)) {
+
+		// in get_line buffer is ensured to be null terminated 
+		// coverity[TAINTED_SCALAR] 
 		istringstream is(buffer);
 		string key, name, type;  
 		is >> key >> type;
@@ -108,7 +111,6 @@ static vector<pair<string, vector<string>> > get_properties(char *buffer, int bu
 			result.push_back(make_pair(type, vector<string>{name}));
 		}
 		get_line(buffer, buflen, filename, file);
-		buffer[buflen] = 0; 
 	}
 	return result; 
 }
@@ -134,8 +136,8 @@ void read_vertex_data(CTriangleMesh::CVertexfield& v,
 	char buffer[buflen +1]; 
 	for (unsigned i = 0; i < v.size(); ++i) {
 		get_line(buffer, buflen, filename, file);
-		buffer[buflen] = 0; 
-		
+
+		// coverity[TAINTED_SCALAR] 
 		istringstream buf(buffer);
 
 		buf >> v[i].x >> v[i].y >> v[i].z;
@@ -155,7 +157,7 @@ void read_faces(CTriangleMesh::CTrianglefield& triangles, unsigned n_faces,
 		const CTriangleMesh::CVertexfield& vertices,
 		const string&  filename, FILE *file)
 {
-	char buffer[buflen+1]; 
+	char buffer[buflen]; 
 	unsigned count;
 	vector<unsigned> v(3);
 	typedef TPolyTriangulator<CTriangleMesh::CVertexfield, vector<unsigned int> >  CPolyTriangulator;
@@ -165,6 +167,7 @@ void read_faces(CTriangleMesh::CTrianglefield& triangles, unsigned n_faces,
 	for (unsigned i = 0; i < n_faces; ++i) {
 		get_line(buffer, buflen, filename, file);
 		
+		// coverity[TAINTED_SCALAR] 
 		istringstream buf(buffer);
 		buf >> count;
 		if (count > v.max_size()) {
@@ -229,7 +232,7 @@ pair<int, map<string, int>> get_data_flags(const vector<pair<string, vector<stri
 PTriangleMesh TPlyMeshIO::do_load(string const &  filename) const
 {
 	cvdebug() << "Load as PLY?\n";
-	char buffer[buflen +1];
+	char buffer[buflen];
 
 	// make sure buffer is null-terminated 
 	int n_vertices = 0;
