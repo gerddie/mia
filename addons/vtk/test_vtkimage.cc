@@ -236,10 +236,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_mhd_write_read, T, type_mhd )
 	
 }
 
-
-
-
-
+#if  VTK_MAJOR_VERSION >= 7
 BOOST_AUTO_TEST_CASE( test_simple_write_read_bool ) 
 {
         C3DBounds size(2,3,4);
@@ -285,3 +282,5 @@ BOOST_AUTO_TEST_CASE( test_simple_write_read_bool )
 	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel); 
 //        unlink(filename.str().c_str()); 
 }
+
+#endif
