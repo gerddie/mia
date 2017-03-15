@@ -108,13 +108,25 @@ bool fork_and_run_check(const char *me, const char *console_width, string& child
                 cvdebug() << "Parent: Start reading" << endl; 
                 child_output.clear(); 
                 char c;
-
-                while (0 == waitpid (pid, NULL, WNOHANG)) {
+		int wstatus = 0;
+                while (0 == waitpid (pid, &wstatus, WNOHANG)) {
                         while(read (master, &c, 1) == 1) {
                                 child_output.push_back(c);
                         }
                 }
-                return true;
+
+		// now get the exit code
+
+		if (WIFEXITED(wstatus)) {
+			WEXITSTATUS(wstatus);
+			if (wstatus != 0) {
+				cverr() << "Child process exited with status " << wstatus << "\n";
+				return false;
+			}
+			return true; 
+		}
+		
+                return false;
 	}
 }
 
