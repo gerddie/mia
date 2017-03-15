@@ -18,6 +18,11 @@
  *
  */
 
+#define _XOPEN_SOURCE 500
+#include <stdlib.h>
+#include <stdio.h>
+
+
 #include <stdexcept>
 #include <climits>
 
@@ -57,40 +62,42 @@ private:
 };
 
 
-bool wait_for_child = true;
-
-void sig_usr(int signo)
-{
-	if (signo == SIGINT)
-		wait_for_child = false; 
-}
-
-
 bool fork_and_run_check(const char *me, const char *console_width, string& child_output)
 {
-        int aStdoutPipe[2];
-        
-	struct sigaction sig;
-	sigemptyset(&sig.sa_mask);          
-	sig.sa_flags = 0;
-	sig.sa_handler = sig_usr;
-	
-	wait_for_child = true;
-	
-	if (pipe2(aStdoutPipe, O_NONBLOCK) < 0) {
-                perror ("Allocatin stdout pipe");
-                return false; 
-        }
-        
+	int master = posix_openpt (O_RDWR | O_NOCTTY | O_NONBLOCK);
+	if (master < 0)
+	  {
+	    cvfail() << "unable to get a ptty" << endl;
+	    return false;
+	  }
+
+	if (grantpt (master) < 0 || unlockpt (master) < 0)
+	  {
+	    cvfail() << "unable to grant access to terminal" << endl;
+	    return false;
+	  }
+	const char *name = ptsname (master);
+	int slave = open (name, O_RDWR);
+	if (slave < 0)
+	  {
+	    cvfail() << "unable to open slave tty" << endl;
+	    return false;
+	  }
+
         cvdebug() << "Parent: About to fork" << endl; 
 	pid_t pid = fork();
 	if (!pid) { // child process
 
-                if (dup2(aStdoutPipe[1], STDOUT_FILENO) == -1) {
+                if (dup2(slave, STDOUT_FILENO) == -1) {
                         perror("redirecting stdout");
                         return false;
                 }
 
+                if (dup2(slave, STDIN_FILENO) == -1) {
+                        perror("redirecting stdin");
+                        return false;
+                }
+		cvdebug() << "Slave: start self" << endl; 
 		execlp(me, me,
 		       "-w", console_width,
 		       "--internal",
@@ -98,13 +105,12 @@ bool fork_and_run_check(const char *me, const char *console_width, string& child
 		cvfail() << "unable to start myself" << endl;
 		return false;
 	}else {
-		sigaction(SIGINT,&sig,NULL); 
                 cvdebug() << "Parent: Start reading" << endl; 
                 child_output.clear(); 
                 char c;
 
-                while (wait_for_child) {
-                        while(read(aStdoutPipe[0], &c, 1) == 1) {
+                while (0 == waitpid (pid, NULL, WNOHANG)) {
+                        while(read (master, &c, 1) == 1) {
                                 child_output.push_back(c);
                         }
                 }
@@ -143,7 +149,7 @@ int main(int argc, const char **args)
 	}
 	
 	if (internal) {
-			
+		cvdebug() << "Start internal\n"; 
 		int retvalue = 0; 
                 struct winsize ws;
                 int old_width = 100; 
@@ -164,32 +170,30 @@ int main(int argc, const char **args)
 						ws.ws_col = old_width;
 						if (ioctl(0,TIOCSWINSZ,&ws) !=0) {
 							cverr() << "Resetting console width failed\n"; 
-							retvalue = -1;
+							retvalue = -2;
 						}
 					}else
-						retvalue = -1;
+						retvalue = 0;
 				}
 				catch (const std::logic_error& x) {
 					cvfail() << x.what() << "\n"; 
-					retvalue = -1;
+					retvalue = -4;
 				}
 			}else
-				retvalue = -1;
+				retvalue = -5;
                 }else
-			retvalue = -1;
+			retvalue = -6;
 
 		ws.ws_col = old_width;
 		ioctl(0,TIOCSWINSZ,&ws);
 
-		cverr() << "Send signal\n";
-		sleep(1); 
-		kill(getppid(), SIGINT);
-		sleep(1);
-
+		if (retvalue) 
+			cverr() << "Retval " << retvalue << endl;
 		
 		return retvalue;
 		
         } else {
+		cvdebug() << "Start Master\n"; 
 		
                 int retval = 0; 
                 // fork the tests
@@ -198,10 +202,11 @@ int main(int argc, const char **args)
 		// args[0] is well defined, i.e. it is the name of the current program
 		// coverity[TAINTED_STRING]
                 if (fork_and_run_check(args[0], "100", child_output_100)) {
-                        if (child_output_100.size() != 1796) {
-                                cvfail() << "Output 100: expected 1796 bytes, got "
+                        if (child_output_100.size() != 1843) {
+			  cvfail () << child_output_100 << endl;
+                                cvfail() << "Output 100: expected 1843 bytes, got "
                                          << child_output_100.size() <<"\n"; 
-                                retval = -3;
+                                retval = -7;
                         }
                 }else 
                         retval = -2;
@@ -212,15 +217,17 @@ int main(int argc, const char **args)
 		// args[0] is well defined, i.e. it is the name of the current program
 		// coverity[TAINTED_STRING]
                 if (fork_and_run_check(args[0], "50", child_output_50)) {
-                        if (child_output_50.size() != 2241) {
-                                cvfail() << "Output 50: expected 2241 bytes, got "
+                        if (child_output_50.size() != 2311) {
+			  cvfail () << child_output_50 << endl;
+                                cvfail() << "Output 50: expected 2311 bytes, got "
                                          << child_output_50.size() <<"\n"; 
-                                retval = -3;
+                                retval = -8;
                         }
                 }else 
-                        retval = -2;
+                        retval = -9;
 
-
+		if (retval) 
+			cverr() << "Retval " << retval << endl;
                 return retval; 
         }
 }; 
