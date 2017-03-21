@@ -16,10 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-
+from __future__ import print_function
 import string
 from lxml import etree
 import re
+
 
 xml_namespace = "http://docbook.org/ns/docbook"
 xmlns = "{{}}".format(xml_namespace)
@@ -54,8 +55,8 @@ def get_text_node_simple(tag,  text):
     return node
 
 
-def escape_dash(text): 
-    return re.sub(r'-', r'\-', text) 
+def escape_dash(text):
+    return re.sub(r'-', r'\-', text)
 
 def get_dict_table(dictionary, tabletype):
     entry = etree.Element(tabletype, frame="none")
@@ -173,7 +174,7 @@ class COption(CTextNode):
                     print( ".IP \"{} \-\-{}={}\"".format (short, self.long, escape_dash(self.default)))
             else:
                 print( ".IP \"{} \-\-{}\"".format (short, self.long))
-        print( escape_dash(self.text), )
+        print( "{}".format(escape_dash(self.text)), )
         self.do_print_man()
 
 
