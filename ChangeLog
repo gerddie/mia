@@ -1,3 +1,27 @@
+2.4.4
+   Issues fixed: 
+
+   #129: Move all optional parts to addon
+   #167: Add alternative FastICA implementation and 
+         move IT++ based version to addons
+   #191: Use C11 integer data types for consistent sizes 
+   #192_ Replace lazy copy by move semantics 
+   #193: Make documentation creation and nipype interfaces compatible 
+         with python3 
+   #194: Create a complete facate for XML handling 
+         - remove dependency from libxml++ (use libxml directly)
+   #195: Correct errors in Nifti s-form handlig 
+   
+   Additional changes:  
+
+   * New SO-version
+   * Add tools for localized c-means segmentation
+   * Add fluid-symetric registration 
+   * Fix lots of coverity reported problems 
+   * Make VTKIO compatible with VTK-7
+   * Add Sobel and Scharr filters
+   * Improve test coverage 
+
 2.4.3
 
    * m/c/utils.cc: Always define PATH_MAX when it is not defined by 
