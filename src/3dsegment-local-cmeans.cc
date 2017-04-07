@@ -184,10 +184,10 @@ int do_main(int argc, char *argv[])
 			  {0.0f, 1.0f},
 			  "label-threshold", 'L',
 			  "for values <= 0.5: create segmentation based on highest class probability, "
-			  "labels staat at 0. For values >0.5: create labels only for voxels with a "
-			  "class probability higher than theg given value, labels start at 1 and voxels "
+			  "labels start at 0. For values >0.5: create labels only for voxels with a "
+			  "class probability higher than the given value, labels start at 1 and voxels "
 			  "without an according class probability are set to 0; this output is suitable "
-			  "for the seeded watershed filter.")); 
+			  "for the seeded watershed filter."));
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
