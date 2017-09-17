@@ -47,14 +47,14 @@ addons:
       version: 2.2.7+
       description: Medical imaga analysis library
     notification_email: gw.fossdev@gmail.com
-    build_command: make -j4
+    build_command: make -j5
     branch_pattern: coverity_scan
 
 before_script:
 - mkdir build
 - cd build
 - echo COVERAGE=$COVERAGE EXTRA=$EXTRA
-- cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DALWAYS_CREATE_DOC=$EXTRA -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=$EXTRA -DMIA_CREATE_NIPYPE_INTERFACES=$EXTRA -DENABLE_COVERAGE=$COVERAGE -DDISABLE_PROGRAMS=$COVERAGE -DUSE_MATHJAX=YES  -DMIA_USE_BOOST_REGEX=YES
+- cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DALWAYS_CREATE_DOC=OFF -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=OFF -DMIA_CREATE_NIPYPE_INTERFACES=OFF -DENABLE_COVERAGE=OFF -DMIA_ENABLE_TESTING=OFF -DMIA_USE_BOOST_REGEX=YES
 script:
 - cat /proc/cpuinfo
 - free -h
