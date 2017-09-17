@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,7 @@
  *
  */
 
-#define VSTREAM_DOMAIN "3dmotioncompica"
-
 #include <fstream>
-#include <libxml++/libxml++.h>
-#include <itpp/signal/fastica.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/core/msgstream.hh>
@@ -31,15 +27,13 @@
 #include <mia/core/filetools.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/imageio.hh>
 #include <mia/3d/filter.hh>
 #include <mia/3d/ica.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
-
+#include <mia/core/parallel.hh>
 
 using namespace std;
 using namespace mia;
@@ -122,7 +116,7 @@ struct SeriesRegistration {
 		skip_images(_skip_images)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
@@ -144,7 +138,7 @@ void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& r
 	SeriesRegistration sreg(input_images,references, minimizer, 
 				mg_levels, create_transform_creator(c_rate, divcurlweight), 
 				imagecost, skip_images); 
-	parallel_for(blocked_range<int>( 0, references.size()), sreg);
+	pfor(C1DParallelRange( 0, references.size()), sreg);
 }
 
 void save_references(const string& save_ref, int current_pass, int skip_images, const C3DImageSeries& references)
@@ -184,7 +178,8 @@ int do_main( int argc, char *argv[] )
 	bool no_normalize = false; 
 	bool no_meanstrip = false; 
 	size_t skip_images = 0; 
-	size_t max_ica_iterations = 400; 
+	size_t max_ica_iterations = 400;
+	PIndepCompAnalysisFactory icatool;
 
 	size_t current_pass = 0; 
 	size_t pass = 3; 
@@ -222,7 +217,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
-	options.set_group("ICA"); 
+	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -258,11 +254,11 @@ int do_main( int argc, char *argv[] )
 	
 
 	// run ICA
-	C3DImageSeriesICA ica(series, false); 
+	C3DImageSeriesICA ica(*icatool, series, false);
 	if (max_ica_iterations) 
 		ica.set_max_iterations(max_ica_iterations); 
 	if (!ica.run(components, !no_meanstrip, !no_normalize)) {
-		ica.set_approach(FICA_APPROACH_SYMM); 
+        ica.set_approach(CIndepCompAnalysis::appr_symm);
 		if (!ica.run(components, !no_meanstrip, !no_normalize))
 			cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...\n";
 	}
@@ -320,11 +316,11 @@ int do_main( int argc, char *argv[] )
 
 		
 		
-		C3DImageSeriesICA ica2(series, false); 
+        C3DImageSeriesICA ica2(*icatool, series, false);
 		if (max_ica_iterations) 
 			ica2.set_max_iterations(max_ica_iterations); 
 		if (!ica2.run(components, !no_meanstrip, !no_normalize)) {
-			ica2.set_approach(FICA_APPROACH_SYMM); 
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
 			ica2.run(components, !no_meanstrip, !no_normalize); 
 		}
 		

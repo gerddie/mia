@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(test_sincos)
 	sincos(x, &s, &c); 
 	
 	BOOST_CHECK_CLOSE(c, 0.5, 0.01); 
-	BOOST_CHECK_CLOSE(c, sqrt(3.0)/2.0, 0.01); 
+	BOOST_CHECK_CLOSE(s, sqrt(3.0)/2.0, 0.01); 
 
 
 	double fx = M_PI/3.0; 
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_sincos)
 	sincos(fx, &fs, &fc); 
 	
 	BOOST_CHECK_CLOSE(fc, 0.5f, 0.01f); 
-	BOOST_CHECK_CLOSE(fc, sqrtf(3.0f)/2.0f, 0.01f); 
+	BOOST_CHECK_CLOSE(fs, sqrtf(3.0f)/2.0f, 0.01f); 
 
 #endif	
 }

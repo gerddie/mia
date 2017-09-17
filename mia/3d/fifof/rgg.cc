@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,12 +162,12 @@ C2DRGGStackFilterFactory::C2DRGGStackFilterFactory():
 {
 	add_parameter("map", new CStringParameter(m_seed_map, CCmdOptionFlags::required_input, "class probability map"));
 	add_parameter("st", new CFloatParameter(m_seed_thresh, 0.0, 1.0, 
-					      false, "seed probability threshhold"));
+					      false, "seed probability threshold"));
 	add_parameter("depth", new CIntParameter(m_depth, 1, 30, 
 					      false, "number of slices to keep during processing"));
 	add_parameter("gt", new CFloatParameter(m_gradient_thresh, 4.0, 
 						numeric_limits<float>::max(), 
-						false, "gradient threshhold"));
+						false, "gradient threshold"));
 }
  
 

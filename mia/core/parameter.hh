@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Pub
@@ -134,6 +134,11 @@ protected:
 
 	/// create an error message by using the given value that raises the error 
 	const std::string errmsg(const std::string& err_value) const;
+
+	CXMLElement& add_xmlhelp_childnode(CXMLElement& parent, const std::string& tag) const;
+	void add_xmlhelp_attribute(CXMLElement& node, const std::string& tag, const std::string& value)const;
+	void add_xmlhelp_text(CXMLElement& node, const std::string& value)const;
+	
 private:
 	/** the actual (abstract) function to set the parameter that needs to be overwritten
 	    \param str_value the parameter value as string
@@ -144,9 +149,10 @@ private:
 	virtual std::string do_get_default_value() const = 0;
 	virtual std::string do_get_value_as_string() const = 0;
 	virtual void do_get_help_xml(CXMLElement& self) const;
+	
 	bool m_required;
 	bool m_is_required; 
-	const char *m_type;
+	const std::string m_type;
 	const char *m_descr;
 };
 
@@ -206,6 +212,7 @@ private:
 */
 
 enum class EParameterBounds : int {
+	bf_none = 0, 
 	bf_min = 1,  
 	bf_min_open = 3, 
 	bf_min_closed = 5, 
@@ -227,7 +234,19 @@ template <typename T>
 class EXPORT_CORE TBoundedParameter : public CTParameter<T> {
 
 public:
+	template <typename S> 
+	struct boundary {
+		typedef S value_type; 
+	};
+	
+	template <typename S> 
+		struct boundary<std::vector<S>> {
+		typedef S value_type; 
+	};
 
+	typedef typename boundary<T>::value_type boundary_type; 
+
+	
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
 	   \param flags boundary flags 
@@ -238,17 +257,19 @@ public:
 	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
-	TBoundedParameter(T& value, EParameterBounds flags, const std::vector<T>& boundaries, bool required, const char *descr);
+	TBoundedParameter(T& value, EParameterBounds flags, const std::vector<boundary_type>& boundaries,
+			  bool required, const char *descr);
 protected:
 	/**
 	   the implementation of the description-function
 	 */
 	void do_descr(std::ostream& os) const;
 private:
+	
 	virtual void adjust(T& value);
 	virtual void do_get_help_xml(CXMLElement& self) const;
-	T m_min;
-	T m_max;
+	boundary_type m_min;
+	boundary_type m_max;
 	EParameterBounds m_flags; 
 };
 
@@ -533,23 +554,43 @@ typedef CTParameter<bool> CBoolParameter;
 
 
 /// an unsigned short parameter (with possible boundaries)
-typedef TBoundedParameter<unsigned short> CUSBoundedParameter;
+typedef TBoundedParameter<uint16_t> CUSBoundedParameter;
 /// an unsigned int parameter (with possible boundaries)
-typedef TBoundedParameter<unsigned int> CUIBoundedParameter;
+typedef TBoundedParameter<uint32_t> CUIBoundedParameter;
 /// an unsigned long parameter (with possible boundaries)
-typedef TBoundedParameter<unsigned long> CULBoundedParameter;
+typedef TBoundedParameter<uint64_t> CULBoundedParameter;
 
 /// an signed short parameter (with possible boundaries)
-typedef TBoundedParameter<short> CSSBoundedParameter;
+typedef TBoundedParameter<int16_t> CSSBoundedParameter;
 /// an signed int parameter (with possible boundaries)
-typedef TBoundedParameter<int>   CSIBoundedParameter;
+typedef TBoundedParameter<int32_t>   CSIBoundedParameter;
 /// an signed long parameter (with possible boundaries)
-typedef TBoundedParameter<long>  CSLBoundedParameter;
+typedef TBoundedParameter<int64_t>  CSLBoundedParameter;
 
 /// an float parameter, single accuracy (with possible boundaries)
 typedef TBoundedParameter<float> CFBoundedParameter;
 /// an float parameter, double accuracy (with possible boundaries)
 typedef TBoundedParameter<double> CDBoundedParameter; 
+
+/// an unsigned short parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<uint16_t>> CVUSBoundedParameter;
+/// an unsigned int parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<uint32_t>> CVUIBoundedParameter;
+/// an unsigned long parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<uint64_t>> CVULBoundedParameter;
+
+/// an signed short parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<int16_t>> CVSSBoundedParameter;
+/// an signed int parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<int32_t>> CVSIBoundedParameter;
+/// an signed long parameter (with possible boundaries)
+typedef TBoundedParameter<std::vector<int64_t>> CVSLBoundedParameter;
+
+/// an float parameter, single accuracy (with possible boundaries)
+typedef TBoundedParameter<std::vector<float>> CVFBoundedParameter;
+/// an float parameter, double accuracy (with possible boundaries)
+typedef TBoundedParameter<std::vector<double>> CVDBoundedParameter; 
+
 
 /**    
       \ingroup cmdline
@@ -650,11 +691,12 @@ template <typename T>
 void CDictParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
 	TRACE_FUNCTION; 
-	auto dict = self.add_child("dict"); 
+	auto& dict = this->add_xmlhelp_childnode(self, "dict"); 
 	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
-		auto v = dict->add_child("value"); 
-		v->set_attribute("name", i->second.first);
-		v->set_child_text(i->second.second); 
+		
+		auto& v = this->add_xmlhelp_childnode(dict, "value");
+		this->add_xmlhelp_attribute(v, "name", i->second.first);
+		this->add_xmlhelp_text(v, i->second.second); 
 	}
 }
 
@@ -718,8 +760,8 @@ void TFactoryParameter<T>::do_descr(std::ostream& os) const
 template <typename T>
 void TFactoryParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
-	auto dict = self.add_child("factory"); 
-	dict->set_attribute("name", T::instance().get_descriptor());
+	auto& node = this->add_xmlhelp_childnode(self, "factory"); 
+	this->add_xmlhelp_attribute(node, "name", T::instance().get_descriptor());
 }
 
 template <typename T>
@@ -816,10 +858,10 @@ void CSetParameter<T>::do_descr(std::ostream& os) const
 template <typename T>
 void CSetParameter<T>::do_get_help_xml(CXMLElement& self) const
 {
-	auto set = self.add_child("set"); 
+	auto& node = this->add_xmlhelp_childnode(self, "set"); 
 	for (auto i = m_valid_set.begin(); i != m_valid_set.end(); ++i) {
-		auto v = set->add_child("value"); 
-		v->set_attribute("name", __dispatch_param_translate<T>::apply(*i));   
+		auto& v = this->add_xmlhelp_childnode(node, "value"); 
+		this->add_xmlhelp_attribute(v, "name", __dispatch_param_translate<T>::apply(*i));
 	}
 }
 
@@ -896,7 +938,31 @@ std::string TParameter<T>::do_get_value_as_string() const
 	return __dispatch_param_translate<T>::apply(m_value);	
 }
 
+/// @cond never
+extern template class EXPORT_CORE TBoundedParameter<uint16_t>;
+extern template class EXPORT_CORE TBoundedParameter<uint32_t>;
+extern template class EXPORT_CORE TBoundedParameter<uint64_t>;
+extern template class EXPORT_CORE TBoundedParameter<int16_t>;
+extern template class EXPORT_CORE TBoundedParameter<int32_t>;
+extern template class EXPORT_CORE TBoundedParameter<int64_t>;
+extern template class EXPORT_CORE TBoundedParameter<float>;
+extern template class EXPORT_CORE TBoundedParameter<double>; 
 
+extern template class EXPORT_CORE TBoundedParameter<std::vector<uint16_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<uint32_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<uint64_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<int16_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<int32_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<int64_t> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<float> >;
+extern template class EXPORT_CORE TBoundedParameter<std::vector<double> >; 
+
+extern template class EXPORT_CORE CTParameter<std::vector<std::string> >;
+
+extern template class EXPORT_CORE CTParameter<std::string>;
+extern template class EXPORT_CORE CTParameter<bool>;
+
+/// @endcond never 
 NS_MIA_END
 
 #endif

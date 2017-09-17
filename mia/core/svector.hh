@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,11 +32,19 @@
 
 NS_MIA_BEGIN
 
+/**
+   \ingroup logging
+   \brief implements the direct streaming of std::vectors. 
+*/
 template <typename T> 
-std::ostream&  operator << (std::ostream& os, const std::vector<T>& v) 
-{
-	for(auto x: v)
-		os << x << ","; 
+std::ostream& operator << (std::ostream& os, const std::vector<T>& v) {
+	auto i = v.begin();
+	auto e = v.end(); 
+
+	if (i != e)
+		os << *i++;
+	while (i != e)
+		os << "," << *i++;
 	return os; 
 }
 
@@ -46,6 +54,8 @@ struct __dispatch_translate {
 		char c; 
 		std::istringstream s(str); 
 		s >> v;
+		if (s.fail())
+			return false; 
 		while (!s.eof() && s.peek() == ' ') 
 			s >> c; 
 		return s.eof(); 

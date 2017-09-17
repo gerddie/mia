@@ -29,7 +29,6 @@ SET(MIA2D_SRC_BASE
   image.cc
   imageio.cc
   interpolator.cc 
-  filterchain.cc
   fftkernel.cc
   fuzzyseg.cc
   fuzzyclustersolver_sor.cc
@@ -56,6 +55,8 @@ SET(MIA2D_SRC_BASE
   transformfactory.cc
   vectorfield.cc
   vfio.cc
+  vfregularizer.cc
+  vfregularizerkernel.cc
   )
 
 
@@ -76,46 +77,31 @@ SET(SEG_HEADER
   segsetwithimages.hh
   )
 
-IF(ITPP_FOUND)
-  SET(ITPP_SRC 
-    ica.cc 
-    perfusion.cc
-    )
-  SET(ITPP_HEADER 
-    ica.hh
-    perfusion.hh
-    )
-ENDIF(ITPP_FOUND)
-
 SET(MIA2D_SRC ${MIA2D_SRC_BASE} ${MIA2D_FFTW_CODE})
 
 SET(MIA2D_HEADERS_BASE
   angle.hh
-  datafield.hh datafield.cxx
-  filter.hh
-  image.hh
-  imageio.hh
-  imageiotest.hh
-  vector.hh
-  vectorfield.hh
-  vfio.hh
   boundingbox.hh
   cost.hh
   correlation_weight.hh 
   creator.hh
   cstkernel.hh 
+  datafield.hh datafield.cxx
   defines2d.hh
   deformer.hh
   distance.hh
-  fullcost.hh
-  filterchain.hh
   fftkernel.hh
+  filter.hh
+  fullcost.hh
   fuzzyseg.hh
   fuzzyclustersolver_sor.hh
   fuzzyclustersolver_cg.hh
   ground_truth_evaluator.hh
   groundtruthproblem.hh
-  interpolator.hh
+  image.hh
+  imageio.hh
+  imageiotest.hh
+  interpolator.hh interpolator.cxx
   iterator.hh
   iterator.cxx
   matrix.hh
@@ -141,7 +127,11 @@ SET(MIA2D_HEADERS_BASE
   transformmock.hh
   transformio.hh
   transformfactory.hh
-  interpolator.hh interpolator.cxx
+  vector.hh
+  vectorfield.hh
+  vfio.hh
+  vfregularizer.hh
+  vfregularizerkernel.hh
   )
 
 SET(MIA2D_HEADERS ${MIA2D_HEADERS_BASE} ${SEG_HEADER} ${ITPP_HEADER})
@@ -204,7 +194,7 @@ TEST_2DMIA(polygon mia2dtest)
 TEST_2DMIA(ppmatrix mia2dtest)
 TEST_2DMIA(rigidregister mia2dtest)
 TEST_2DMIA(transformfactory mia2dtest)
-TEST_2DMIA(vectorfield_interpolator mia2dtest)
+TEST_2DMIA(vectorfield mia2dtest)
 TEST_2DMIA(similarity_profile mia2dtest)
 TEST_2DMIA(transio mia2d)
 TEST_2DMIA(transform mia2dtest)
@@ -234,18 +224,19 @@ INSTALL(FILES ${MIA2D_HEADERS} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/2d)
 
 SET(MIA2D_MYOCARDPERF_SRC 
   ${SEG_SRC}
-  ${ITPP_SRC}
   ground_truth_evaluator.cc
   groundtruthproblem.cc
-
-)  
+  ica.cc 
+  perfusion.cc
+  )  
 
 SET(MIA2D_MYOCARDPERF_HEADER 
   ${SEG_HEADER}
-  ${ITPP_HEADER}
   ground_truth_evaluator.hh
   groundtruthproblem.hh
-)  
+  ica.hh
+  perfusion.hh
+  )  
 
 MIA_ADD_LIBRARY(mia2dmyocardperf "${MIA2D_MYOCARDPERF_SRC}" mia2d)
 
@@ -286,3 +277,5 @@ ADD_SUBDIRECTORY(timestep  )
 ADD_SUBDIRECTORY(transform )
 ADD_SUBDIRECTORY(transio )
 ADD_SUBDIRECTORY(splinepenalty )
+ADD_SUBDIRECTORY(vfregularizer )
+ADD_SUBDIRECTORY(vfregularizerkernel )

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,25 @@ NS_MIA_BEGIN
     \remark On WIN32 this class is currently a fake that always returns 0.0; 
  */
 class EXPORT_CORE CWatch {
-	static int overlaps;
 public:
-	/** construct a watch
-	    \todo Make this a singelton, since no second instance is needed
-	 */
-	CWatch();
-
+	static const CWatch& instance();
+	
+	
 	/// \returns  get the current time value
 	double get_seconds() const;
+protected:
+	CWatch();
 private:
-	static void overlap_handler(int p_sig);
+
+	virtual double do_get_seconds() const = 0;
+	
+	CWatch(const CWatch& w) = delete;
+	CWatch(CWatch&& w) = delete;
+	CWatch& operator = (const CWatch& w) = delete;
+	CWatch& operator = (CWatch&& w) = delete;
+
+	
+	
 };
 
 NS_MIA_END

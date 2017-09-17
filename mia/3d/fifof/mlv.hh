@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ private:
 
 	std::vector<float> m_buf1;
 	std::vector<float> m_buf2;
-	std::auto_ptr<mia::C3DImage> m_prototype;
+	std::unique_ptr<mia::C3DImage> m_prototype;
 
 	mia::C2DFImage m_n_template;
 

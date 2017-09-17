@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,11 @@ void CProbabilityVector::do_load(istream& is)
 	}
 
 
+	/* hsize is first used to allocate a vector. If it is too big
+	   a std.:bad_alloc exception will be thrown. This is not worse 
+	   than a check for size that would restrict hsize to an abitrary 
+	   value */
+	// coverity[tainted_scalar]
 	for (size_t i = 0; i < hsize; ++i) {
 		for (size_t k = 0; k < size(); ++k) {
 			is >> (*this)[k][i];
@@ -183,6 +188,11 @@ void CLabelMap::do_load(istream& is)
 
 	size_t src, trgt;
 
+	/* hsize is first used to allocate a vector. If it is too big
+	   a std.:bad_alloc exception will be thrown. This is not worse 
+	   than a check for size that would restrict hsize to an abitrary 
+	   value */
+	// coverity[tainted_scalar]
 	for (size_t i = 0; i < hsize; ++i) {
 		is >> src >> trgt;
 		(*this)[src] = trgt;

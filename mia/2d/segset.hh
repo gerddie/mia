@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,13 @@
 #define SegSet_h
 
 #include <mia/core/ioplugin.hh>
+#include <mia/core/xmlinterface.hh>
 #include <mia/2d/segframe.hh>
 #include <mia/2d/boundingbox.hh>
 
-namespace xmlpp {
-	class Document;
-};
-
 NS_MIA_BEGIN
+
+
 
 /**
    @ingroup perf 
@@ -55,7 +54,7 @@ public:
 	   Construct a segmentation set by reading from a XML document
 	   \param node the root node of the XML document 
 	 */
-	CSegSet(const xmlpp::Document& node);
+	CSegSet(const CXMLDocument& node);
 
 
 	CSegSet(int version);
@@ -69,7 +68,7 @@ public:
 	   Write the segmentation information to an XML tree 
 	   \returns root node of xml tree. 
 	 */
-	xmlpp::Document *write() const;
+	CXMLDocument write() const;
 
 
 	/// \returns read-only vector of the segmentation frames 
@@ -148,7 +147,7 @@ public:
 	void  set_preferred_reference(int value); 
 
 private:
-	void read(const xmlpp::Document& node);
+	void read(const CXMLDocument& node);
 	Frames m_frames;
 	int m_RV_peak; 
 	int m_LV_peak; 

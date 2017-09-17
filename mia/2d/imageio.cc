@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,6 +183,7 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 	return result; 
 }
 
+template class TPlugin<io_2dimage_type, io_plugin_type>; 
 template class TIOPlugin<io_2dimage_type>;
 template class THandlerSingleton<C2DImageIOPPH>;
 template class TIOPluginHandler<C2DImageIOPlugin>;

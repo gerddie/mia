@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
 #include <mia/core/property_flags.hh>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #include <numeric>
 #include <limits>

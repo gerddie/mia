@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,12 +29,38 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/file.hh>
+#include <mia/core/utils.hh>
 
+
+// WIN32 and HURD don't define this 
+#ifndef PATH_MAX
+#define PATH_MAX 1024
+#endif 
 
 NS_MIA_USE
 using namespace std;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
+
+BOOST_AUTO_TEST_CASE( test_cwdsaver )
+{
+
+	char old_cwd[PATH_MAX +1]; 
+	BOOST_CHECK_EQUAL(getcwd(old_cwd, PATH_MAX), old_cwd); 
+
+	{
+		CCWDSaver wd;
+		BOOST_CHECK(!chdir(".."));
+		char test_cwd[PATH_MAX +1];
+		BOOST_CHECK_EQUAL(getcwd(test_cwd, PATH_MAX), test_cwd);
+		// test that we are no longer in the same directory
+		BOOST_CHECK(strcmp(test_cwd, old_cwd));  
+	}
+	char test_cwd2[PATH_MAX +1];
+	BOOST_CHECK_EQUAL(getcwd(test_cwd2, PATH_MAX), test_cwd2);
+	BOOST_CHECK(!strcmp(test_cwd2, old_cwd));
+}
+
 
 
 BOOST_AUTO_TEST_CASE( test_file)
@@ -64,7 +90,7 @@ BOOST_AUTO_TEST_CASE( test_file)
 		BOOST_FAIL("'this-file-should-not-exist.11111' was opened for reading");
 	}
 	catch (runtime_error& x) {
-		BOOST_MESSAGE(string("caught an expected exception:") + x.what());
+		cvdebug() << "test_file: caught an expected exception:" <<  x.what() <<"\n";
 	}
 
 	try {
@@ -73,7 +99,7 @@ BOOST_AUTO_TEST_CASE( test_file)
 	}
 
 	catch (runtime_error& x) {
-		BOOST_MESSAGE(string("caught an expected exception:") + x.what());
+		cvdebug() << "test_file: caught an expected exception:" << x.what() << "\n";
 	}
 }
 

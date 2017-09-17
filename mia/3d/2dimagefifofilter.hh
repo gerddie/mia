@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,6 +139,21 @@ protected:
    \brief Pointer type for the FIFO filter 
 */
 typedef TFifoFilter<P2DImage>::Pointer P2DImageFifoFilter;
+
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
+extern template class EXPORT_3D TFifoFilter<P2DImage>; 
+extern template class EXPORT_3D TFifoFilterSink<P2DImage>;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 /**
    \ingroup filtering

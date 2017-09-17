@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,30 +118,19 @@ BOOST_AUTO_TEST_CASE( test_sucess2)
 BOOST_AUTO_TEST_CASE( test_fail1)
 {
 	params p_expect = { true, 5, 1.3, 7.1, "huhu" };
-	try {
-		char option_success[] = "plugin:kill=1,min=1.3,nana=name,max=7.1,no=5";
-		try_parsing_and_setting(option_success, p_expect);
-		BOOST_FAIL("did not catch the unknown parameter");
-	}
-	catch (invalid_argument& x) {
-		// it should throw ...
-		BOOST_MESSAGE(x.what());
-	}
-
+	
+	char option_success[] = "plugin:kill=1,min=1.3,nana=name,max=7.1,no=5";
+	
+	BOOST_CHECK_THROW(try_parsing_and_setting(option_success, p_expect), 
+			  invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE( test_fail2)
 {
 	params p_expect = { true, 5, 1.3, 7.1, "huhu" };
-	try {
-		char option_success[] = "plugin:min=1.3,nana=name,max=7.1";
-		try_parsing_and_setting(option_success, p_expect);
-		BOOST_FAIL("did not catch the missing parameter");
-	}
-	catch (invalid_argument& x) {
-		// it should throw ...
-		BOOST_MESSAGE(x.what());
-	}
+	
+	char option_success[] = "plugin:min=1.3,nana=name,max=7.1";
+	BOOST_CHECK_THROW(try_parsing_and_setting(option_success, p_expect), invalid_argument); 
 }
 
 

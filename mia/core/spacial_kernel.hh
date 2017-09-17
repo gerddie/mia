@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,6 +163,9 @@ private:
 typedef TFactory<C1DFoldingKernel> C1DSpacialKernelPlugin;
 
 typedef std::shared_ptr<C1DFoldingKernel> P1DSpacialKernel; 
+
+template<>  const char * const 
+TPluginHandler<TFactory<C1DFoldingKernel>>::m_help; 
 
 /// plugin handler for spaciel filter kernels 
 typedef THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> > C1DSpacialKernelPluginHandler;

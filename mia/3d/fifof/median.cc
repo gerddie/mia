@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,7 @@
 #include <iomanip>
 #include <limits>
 #include <mia/3d/fifof/median.hh>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-using namespace tbb;
+#include <mia/core/parallel.hh>
 
 NS_BEGIN(median_2dstack_filter)
 
@@ -57,7 +55,7 @@ struct __dispatch_median_3dfilter {
 		int idx = distance(target_vector.begin(), tend); 
 
 		if (idx & 1) {
-			typename vector<T>::iterator mid = target_vector.begin() + idx/2;
+			auto mid = target_vector.begin() + idx/2;
 			nth_element(target_vector.begin(), mid, tend);
 			return *mid;
 		} else {
@@ -107,7 +105,7 @@ struct MedianRowThread {
 		hwidth(hw)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		for( int y=range.begin(); y!=range.end(); ++y ) {
 		auto i = return_image->begin_at(0, y);
 		
@@ -131,7 +129,7 @@ C2DImage *C2DMedianFifoFilter::operator()(const T3DImage<T>& buffer) const {
 	T2DImage<T> *retval = new T2DImage<T>(m_slice_size);
 
 	MedianRowThread<T> row_thread(retval, buffer, m_slice_size.x, get_start(), get_end(), m_hw); 
-	parallel_for(blocked_range<int>( 0, m_slice_size.y), row_thread);
+	pfor(C1DParallelRange( 0, m_slice_size.y), row_thread);
 
 	return retval;
 }

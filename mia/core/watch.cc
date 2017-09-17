@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,9 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
-#include <signal.h>
 
 #ifndef WIN32
+#include <signal.h>
 #include <sys/time.h>
 #endif
 
@@ -35,7 +35,25 @@ NS_MIA_BEGIN
 const int TIMERSPAN=2000;
 
 #ifndef WIN32
+
+class CWatchUnix: public CWatch {
+public: 
+	CWatchUnix();
+	~CWatchUnix();
+
+private:
+	static void overlap_handler(int p_sig); 
+	double do_get_seconds() const; 
+	
+	static uint64_t m_overlaps;
+	struct sigaction m_old_action; 
+}; 
+
 CWatch::CWatch()
+{
+}
+
+CWatchUnix::CWatchUnix()
 {
 	itimerval value;
 	itimerval oldvalue;
@@ -46,14 +64,36 @@ CWatch::CWatch()
 	value.it_value.tv_sec  = TIMERSPAN;
 	value.it_value.tv_usec = 0;
 
-	if (signal(SIGVTALRM,CWatch::overlap_handler)==SIG_ERR)
+	struct sigaction act;
+	sigemptyset (&act.sa_mask);
+	act.sa_flags = 0;
+	act.sa_handler = CWatchUnix::overlap_handler; 
+	
+	if (sigaction(SIGVTALRM, &act, &m_old_action) < 0 )
 		cvwarn() << "Unable to catch  signal:" << strerror(errno) << "\n"; 
 	
 	if (setitimer(ITIMER_VIRTUAL,&value,&oldvalue))
 		cvwarn() << "setitimer failed:" << strerror(errno) << "\n"; 
 }
 
+CWatchUnix::~CWatchUnix()
+{
+	sigaction(SIGVTALRM, &m_old_action, NULL);
+}
+
+
+const CWatch& CWatch::instance()
+{
+	static CWatchUnix me;
+	return me; 
+}
+
 double CWatch::get_seconds() const
+{
+	return do_get_seconds(); 
+}
+
+double CWatchUnix::do_get_seconds() const
 {
 	itimerval value;
 
@@ -62,15 +102,15 @@ double CWatch::get_seconds() const
 
 	double result = TIMERSPAN - value.it_value.tv_sec;
 	double resultlow = value.it_value.tv_usec/1e+6;
-	return (result - resultlow) + TIMERSPAN*double(overlaps);
+	return (result - resultlow) + TIMERSPAN*double(m_overlaps);
 }
 
-void CWatch::overlap_handler(int p_sig)
+void CWatchUnix::overlap_handler(int p_sig)
 {
 	if (p_sig == SIGVTALRM) {
-		overlaps++;
+		m_overlaps++;
 	}
-	signal(SIGVTALRM,CWatch::overlap_handler);
+	signal(SIGVTALRM,CWatchUnix::overlap_handler);
 }
 
 #else
@@ -86,7 +126,7 @@ void CWatch::overlap_handler(int p_sig)
 {
 }
 #endif
-int CWatch::overlaps=0;
+uint64_t CWatchUnix::m_overlaps=0;
 
 
 NS_MIA_END

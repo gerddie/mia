@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,7 +240,7 @@ void C2DGridTransformation::iterator_impl::do_y_increment()
 
 C2DFVector C2DGridTransformation::operator ()(const  C2DFVector& x) const
 {
-	return x - apply(x);
+	return x - get_displacement_at(x);
 }
 
 C2DGridTransformation::const_iterator C2DGridTransformation::begin() const
@@ -340,7 +340,7 @@ EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, cons
 	for (size_t y = 0; y < a.get_size().y; ++y)  {
 		for (size_t x = 0; x < a.get_size().x; ++x, ++ri, ++bi)  {
 			const C2DFVector xi = C2DFVector(x,y) - *bi;
-			*ri = a.apply(xi) +  *bi;
+			*ri = a.get_displacement_at(xi) +  *bi;
 		}
 	}
 	return result;

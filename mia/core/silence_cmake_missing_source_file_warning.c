@@ -1,2 +1,0 @@
-int silence_cmake_warning_about_missing_source_file; 
-

@@ -74,7 +74,7 @@ IF (ZLIB_FOUND)
 	${DCMTK_DIR}/lib
 	)
       IF(NOT t_${n}) 
-	MESSAGE(ERROR "Required library ${n} not found")
+	MESSAGE(STATUS "library ${n} not found")
       ENDIF(NOT t_${n}) 
       SET(files "${files}" "${t_${n}}")
     ENDFOREACH(n)
@@ -90,7 +90,32 @@ IF (ZLIB_FOUND)
     SET(DCMTK_LIBS ${DCMTK_REQUIRED_LIBS} ${DCMTK_NEW_LIBS})    
   ENDIF(VERSION_BEFORE_360) 
   
-  SET(DCMTK_LIBRARIES ${DCMTK_LIBS} ${ZLIB_LIBRARIES})
+
+  SET(CMAKE_REQUIRED_INCLUDES ${DCMTK_config_INCLUDE_DIR})
+  SET(CMAKE_REQUIRED_LIBRARIES ofstd)
+  # test if ofstd requires iconv
+  CHECK_CXX_SOURCE_COMPILES(
+    "#include <dcmtk/ofstd/offname.h>
+
+    int main(int argc, char *args[]) 
+  {
+	OFFilenameCreator c; 
+        return 0; 
+  }
+" DCMTK_NO_ICONV)
+
+  IF(DCMTK_NO_ICONV)
+    MESSAGE(STATUS "DCMTK does not need -liconv")
+    SET(DCMTK_LIBRARIES ${DCMTK_LIBS} ${ZLIB_LIBRARIES})
+  ELSE()
+    FIND_LIBRARY(ICONV_LIBRARY NAMES iconv)
+    IF(NOT ICONV_LIBRARY) 
+      SET(DCMTK_LIBRARIES ${DCMTK_LIBS} ${ZLIB_LIBRARIES})
+    ELSE()
+      SET(DCMTK_LIBRARIES ${DCMTK_LIBS} ${ZLIB_LIBRARIES} ${ICONV_LIBRARY})
+      MESSAGE(ERROR "DCMTK required iconv, but it couldn't be found")
+    ENDIF()
+  ENDIF()
 
   IF( DCMTK_config_INCLUDE_DIR AND DCMTK_LIBS )
     

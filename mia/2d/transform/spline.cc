@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -236,7 +236,7 @@ C2DFVector C2DSplineTransformation::interpolate(const C2DFVector& x) const
 	return result; 
 }
 
-C2DFVector C2DSplineTransformation::apply(const C2DFVector& x) const
+C2DFVector C2DSplineTransformation::get_displacement_at(const C2DFVector& x) const
 {
 	TRACE_FUNCTION;
 	assert(m_interpolator_valid);
@@ -277,7 +277,7 @@ C2DTransformation *C2DSplineTransformation::invert() const
 
 C2DFVector C2DSplineTransformation::operator () (const C2DFVector& x) const
 {
-	return x - apply(x);
+	return x - get_displacement_at(x);
 }
 
 C2DFVector C2DSplineTransformation::scale( const C2DFVector& x) const
@@ -328,7 +328,7 @@ bool C2DSplineTransformation::refine()
 	// now interpolate the new coefficients 
 	// \todo this should be done faster by a filter 
 	reinit();
-	T2DConvoluteInterpolator<C2DFVector> interp(m_coefficients, m_kernel);
+	T2DInterpolator<C2DFVector> interp(m_coefficients, m_kernel);
 
 	C2DFVectorfield coeffs(csize);
 	C2DFVector dx((float)(m_coefficients.get_size().x - 1 - m_enlarge.x) / (float)(csize.x - 1 - m_enlarge.x),

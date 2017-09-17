@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,8 @@ struct TransformSplineFixtureFieldBase {
 		{
 		}
 	
-	void init(int dsize, double r, EInterpolation type) {
-		ipf.reset(create_3dinterpolation_factory(type, bc_mirror_on_bounds));
+	void init(int dsize, double r, const std::string& kernel) {
+		ipf.reset(new C3DInterpolatorFactory(kernel, "mirror"));
 		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
 		field = C3DFVectorfield(size);
 		range = r; 
@@ -102,10 +102,10 @@ struct TransformSplineFixtureMixed2: public TransformSplineFixtureFieldBase {
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_8_4_mix2,  TransformSplineFixtureMixed2 )
 {
-	init(8, 4, ip_bspline4);
+	init(8, 4, "bspline:d=4");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double h = 21.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 2.0);
@@ -125,10 +125,10 @@ BOOST_FIXTURE_TEST_CASE( test_bspline3_8_4_mix2,  TransformSplineFixtureMixed2 )
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_8_4, TransformSplineFixtureDivOnly )
 {
-	init(8, 4, ip_bspline4);
+	init(8, 4, "bspline:d=4");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testvalue = 105.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 8.0); 
@@ -146,10 +146,10 @@ BOOST_FIXTURE_TEST_CASE( test_bspline3_8_4, TransformSplineFixtureDivOnly )
 
 BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_7_4, TransformSplineFixtureDivOnly )
 {
-	init(9, 4, ip_bspline3);
+	init(9, 4, "bspline:d=3");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testvalue = 105.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 8.0); 
@@ -231,10 +231,10 @@ double TransformSplineFixtureMixed::graddiv2(double , double , double )const
 
 BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4, TransformSplineFixtureMixed )
 {
-	init(10, 4, ip_bspline4);
+	init(10, 4, "bspline:d=4");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
@@ -261,10 +261,10 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4, TransformSplineFixtureMixed )
 
 BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_20_4, TransformSplineFixtureMixed )
 {
-	init(20, 4, ip_bspline4);
+	init(20, 4, "bspline:d=4");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
@@ -290,10 +290,10 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_20_4, TransformSplineFixtureMixed )
 
 BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_20_7, TransformSplineFixtureMixed )
 {
-	init(20, 7, ip_bspline4);
+	init(20, 7, "bspline:d=4");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
@@ -319,10 +319,10 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_20_7, TransformSplineFixtureMixed )
 
 BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixtureMixed )
 {
-	init(4, 2, ip_bspline3);
+	init(4, 2, "bspline:d=3");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
@@ -386,8 +386,8 @@ struct TransformSplineFixtureFieldNonuniform {
 	{
 
 	}
-	void init(const C3DBounds& dsize, double r, EInterpolation type) {
-		ipf.reset(create_3dinterpolation_factory(type, bc_mirror_on_bounds));
+	void init(const C3DBounds& dsize, double r, const std::string& kernel) {
+		ipf.reset(new C3DInterpolatorFactory(kernel, "mirror"));
 		size = C3DBounds(2*dsize.x + 1, 2*dsize.y + 1, 2*dsize.z + 1); 
 		field = C3DFVectorfield(size);
 		range = r; 
@@ -497,10 +497,10 @@ double TransformSplineFixtureMixed2::graddiv2(double x, double y, double z)const
 BOOST_FIXTURE_TEST_CASE( test_bspline3_nonuniform, TransformSplineFixtureMixedNonuniform )
 {
 	C3DBounds size(8,9,7); 
-	init(size, 4, ip_bspline4);
+	init(size, 4, "bspline:d=4");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double h = 21.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 2.0);
@@ -527,10 +527,10 @@ BOOST_FIXTURE_TEST_CASE( test_bspline3_nonuniform, TransformSplineFixtureMixedNo
 BOOST_FIXTURE_TEST_CASE( test_bspline3_uniform, TransformSplineFixtureMixedNonuniform )
 {
 	C3DBounds size(8,8,8); 
-	init(size, 4, ip_bspline4);
+	init(size, 4, "bspline:d=4");
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+		static_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
 	const double h = 21.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 2.0);

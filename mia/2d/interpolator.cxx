@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,46 +64,37 @@ struct __dispatch_copy<C2DFVectorfield, C2DDVectorfield > {
 
 
 template <typename T>
-T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel  kernel):
+T2DInterpolator<T>::T2DInterpolator(const T2DDatafield<T>& image, PSplineKernel  kernel):
 	m_coeff(image.get_size()), 
 	m_kernel(kernel),
 	m_x_boundary(produce_spline_boundary_condition("mirror")), 
-	m_y_boundary(produce_spline_boundary_condition("mirror")), 
-	m_x_index(kernel->size()),
-	m_y_index(kernel->size()),
-	m_x_weight(kernel->size()),
-	m_y_weight(kernel->size()), 
-	m_x_cache(kernel->size(), *m_x_boundary, false), 
-	m_y_cache(kernel->size(), *m_y_boundary, true)
+	m_y_boundary(produce_spline_boundary_condition("mirror")),
+	m_cache(kernel->size(), *m_x_boundary, *m_y_boundary)
 {
 	m_x_boundary->set_width(image.get_size().x); 
 	m_y_boundary->set_width(image.get_size().y); 
 	prefilter(image); 
 }
 template <typename T>
-T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel, 
+T2DInterpolator<T>::T2DInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel, 
 						      const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc):
 	m_coeff(image.get_size()), 
 	m_kernel(kernel),
 	m_x_boundary(xbc.clone()), 
-	m_y_boundary(ybc.clone()), 
-	m_x_index(kernel->size()),
-	m_y_index(kernel->size()),
-	m_x_weight(kernel->size()),
-	m_y_weight(kernel->size()), 
-	m_x_cache(kernel->size(), *m_x_boundary, false), 
-	m_y_cache(kernel->size(), *m_y_boundary, true)
+	m_y_boundary(ybc.clone()),
+	m_cache(kernel->size(), *m_x_boundary, *m_y_boundary)
+	
 {
 	prefilter(image); 
 }
 
 template <typename T>
-void T2DConvoluteInterpolator<T>::prefilter(const T2DDatafield<T>& image)
+void T2DInterpolator<T>::prefilter(const T2DDatafield<T>& image)
 {
 	m_x_boundary->set_width(image.get_size().x); 
-	m_x_cache.reset();
+	m_cache.x.reset();
 	m_y_boundary->set_width(image.get_size().y); 
-	m_y_cache.reset();
+	m_cache.y.reset();
 	
 
 
@@ -141,12 +132,19 @@ void T2DConvoluteInterpolator<T>::prefilter(const T2DDatafield<T>& image)
 }
 
 template <typename T>
-T2DConvoluteInterpolator<T>::~T2DConvoluteInterpolator()
+C2DWeightCache T2DInterpolator<T>::create_cache() const
+{
+	return C2DWeightCache(m_kernel->size(), *m_x_boundary, *m_y_boundary); 
+}
+
+
+template <typename T>
+T2DInterpolator<T>::~T2DInterpolator()
 {
 }
 
 template <typename T>
-const typename T2DConvoluteInterpolator<T>::TCoeff2D& T2DConvoluteInterpolator<T>::get_coefficients() const
+const typename T2DInterpolator<T>::TCoeff2D& T2DInterpolator<T>::get_coefficients() const
 {
 	return m_coeff; 
 }
@@ -167,19 +165,16 @@ template <class C, int size>
 struct add_2d {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type apply(const C&  coeff, const CSplineKernel::VWeight& xweight, 
-					    const CSplineKernel::VWeight& yweight,
-					    const CSplineKernel::VIndex& xindex, 
-					    const CSplineKernel::VIndex& yindex) 
+	static typename C::value_type apply(const C&  coeff, const C2DWeightCache& m_cache) 
 	{
 		U result = U();
 		for (size_t y = 0; y < size; ++y) {
 			U rx = U();
-			const U *p = &coeff(0, yindex[y]);
+			const U *p = &coeff(0, m_cache.y.index[y]);
 			for (size_t x = 0; x < size; ++x) {
-				rx += xweight[x] * p[xindex[x]];
+				rx += m_cache.x.weights[x] * p[m_cache.x.index[x]];
 			}
-			result += yweight[y] * rx; 
+			result += m_cache.y.weights[y] * rx; 
 		}
 		return result; 
 	}
@@ -187,7 +182,7 @@ struct add_2d {
 
 
 template <typename T>
-typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpolator<T>::evaluate() const
+typename T2DInterpolator<T>::TCoeff2D::value_type T2DInterpolator<T>::evaluate() const
 {
 	typedef typename TCoeff2D::value_type U; 
 
@@ -196,26 +191,21 @@ typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpola
 	// give the compiler some chance to optimize and unroll the 
 	// interpolation loop by creating some fixed size calls  
 	switch (m_kernel->size()) {
-	case 2: result = add_2d<TCoeff2D,2>::apply(m_coeff, m_x_weight, m_y_weight, 
-					    m_x_index, m_y_index); break; 
-	case 3: result = add_2d<TCoeff2D,3>::apply(m_coeff, m_x_weight, m_y_weight, 
-					    m_x_index, m_y_index); break; 
-	case 4: result = add_2d<TCoeff2D,4>::apply(m_coeff, m_x_weight, m_y_weight, 
-					    m_x_index, m_y_index); break; 
-	case 5: result = add_2d<TCoeff2D,5>::apply(m_coeff, m_x_weight, m_y_weight, 
-					    m_x_index, m_y_index); break; 
-	case 6: result = add_2d<TCoeff2D,6>::apply(m_coeff, m_x_weight, m_y_weight, 
-					    m_x_index, m_y_index); break; 
+	case 2: result = add_2d<TCoeff2D,2>::apply(m_coeff, m_cache); break; 
+	case 3: result = add_2d<TCoeff2D,3>::apply(m_coeff, m_cache); break; 
+	case 4: result = add_2d<TCoeff2D,4>::apply(m_coeff, m_cache); break; 
+	case 5: result = add_2d<TCoeff2D,5>::apply(m_coeff, m_cache); break; 
+	case 6: result = add_2d<TCoeff2D,6>::apply(m_coeff, m_cache); break; 
 	default: {
 		/* perform interpolation */
 		for (size_t y = 0; y < m_kernel->size(); ++y) {
 			U rx = U();
-			const typename  TCoeff2D::value_type *p = &m_coeff(0, m_y_index[y]);
+			const typename  TCoeff2D::value_type *p = &m_coeff(0, m_cache.y.index[y]);
 			for (size_t x = 0; x < m_kernel->size(); ++x) {
-				rx += m_x_weight[x] * p[m_x_index[x]];
-				cvdebug() << m_x_weight[x] << "*" << p[m_x_index[x]] << "\n"; 
+				rx += m_cache.x.weights[x] * p[m_cache.x.index[x]];
+				cvdebug() << m_cache.x.weights[x] << "*" << p[m_cache.x.index[x]] << "\n"; 
 			}
-			result += m_y_weight[y] * rx; 
+			result += m_cache.y.weights[y] * rx; 
 		}
 	}
 	} // end switch 
@@ -227,27 +217,26 @@ template <class C, int size>
 struct add_2d_new {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type value(const C&  coeff, const CSplineKernel::SCache& xc, 
-					    const CSplineKernel::SCache& yc) 
+	static typename C::value_type value(const C&  coeff, const C2DWeightCache& cache) 
 	{
 		U result = U();
-		if (xc.is_flat) {
+		if (cache.x.is_flat) {
 			for (size_t y = 0; y < size; ++y) {
 				U rx = U();
-				const U *p = &coeff(0, yc.index[y]);
+				const U *p = &coeff(0, cache.y.index[y]);
 				for (size_t x = 0; x < size; ++x) {
-					rx += xc.weights[x] * p[xc.start_idx + x];
+					rx += cache.x.weights[x] * p[cache.x.start_idx + x];
 				}
-				result += yc.weights[y] * rx; 
+				result += cache.y.weights[y] * rx; 
 			}
 		}else{
 			for (size_t y = 0; y < size; ++y) {
 				U rx = U();
-				const U *p = &coeff(0, yc.index[y]);
+				const U *p = &coeff(0, cache.y.index[y]);
 				for (size_t x = 0; x < size; ++x) {
-					rx += xc.weights[x] * p[xc.index[x]];
+					rx += cache.x.weights[x] * p[cache.x.index[x]];
 				}
-				result += yc.weights[y] * rx; 
+				result += cache.y.weights[y] * rx; 
 			}
 		}
 		return result; 
@@ -259,55 +248,91 @@ struct add_2d_new<T2DDatafield< T >, 1> {
 	
 
 	static T value(const T2DDatafield< T >&  coeff, 
-		       const CSplineKernel::SCache& xc, 
-		       const CSplineKernel::SCache& yc) {
-		return coeff(xc.index[0], yc.index[0]); 
+		       const C2DWeightCache& cache) {
+		return coeff(cache.x.index[0], cache.y.index[0]); 
 	}
 }; 
 
 
-#ifdef __SSE__
+#ifdef __SSE2__
 template <>
 struct add_2d_new<T2DDatafield< double >, 4> {
 	static double value(const T2DDatafield< double >&  coeff, 
-			    const CSplineKernel::SCache& xc, 
-			    const CSplineKernel::SCache& yc); 
+			    const C2DWeightCache& cache); 
 }; 
 #endif
 
-#ifdef __SSE2__
+#ifdef __SSE__
 
 template <>
 struct add_2d_new<T2DDatafield< float >, 4> {
 	
 
 	static float value(const T2DDatafield< float >&  coeff, 
-			    const CSplineKernel::SCache& xc, 
-			    const CSplineKernel::SCache& yc); 
+			   const C2DWeightCache& cache); 
 }; 
 #endif
 
 
 template <typename T>
-T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
+T  T2DInterpolator<T>::operator () (const C2DFVector& x, C2DWeightCache& cache) const
 {
 	typedef typename TCoeff2D::value_type U; 
 	
-	m_kernel->get_uncached(x.x, m_x_cache);
+	// x will usually be the fastest changing index, therefore, it is of no use to use the cache 
+	// at the same time it's access may be handled "flat" 
+	m_kernel->get_uncached(x.x, cache.x);
+
+	// the other two coordinates are changing slowly and caching makes sense 
+	// however, the index set will always be fully evaluated 
+	if (x.y != cache.y.x) 
+		m_kernel->get_cached(x.y, cache.y);
 	
-	if (x.y != m_y_cache.x) 
-		m_kernel->get_cached(x.y, m_y_cache);
+	U result = U();
+	// now we give the compiler a chance to optimize based on kernel size and data type.  
+	// Some of these call also use template specialization to provide an optimized code path.  
+	// With SSE and SSE2 available kernel sizes 2 and 4 and the use of float and double 
+	// scalar fields are optimized.
+	switch (m_kernel->size()) {
+	case 1: result = add_2d_new<TCoeff2D,1>::value(m_coeff, cache); break; 
+	case 2: result = add_2d_new<TCoeff2D,2>::value(m_coeff, cache); break; 
+	case 3: result = add_2d_new<TCoeff2D,3>::value(m_coeff, cache); break; 
+	case 4: result = add_2d_new<TCoeff2D,4>::value(m_coeff, cache); break; 
+	case 5: result = add_2d_new<TCoeff2D,5>::value(m_coeff, cache); break; 
+	case 6: result = add_2d_new<TCoeff2D,6>::value(m_coeff, cache); break; 
+	default: {
+		assert(0 && "kernel sizes above 5 are not implemented"); 
+	}
+	} // end switch 
+	
+	bounded<U, T>::apply(result, m_min, m_max);
+	
+	return round_to<U, T>::value(result); 
+}
+
+
+template <typename T>
+T  T2DInterpolator<T>::operator () (const C2DFVector& x) const
+{
+	typedef typename TCoeff2D::value_type U;
+	
+	CScopedLock lock(m_cache_lock); 
+	
+	m_kernel->get_uncached(x.x, m_cache.x);
+	
+	if (x.y != m_cache.y.x) 
+		m_kernel->get_cached(x.y, m_cache.y);
 	
 	U result = U();
 	
 	// give the compiler some chance to optimize 
 	switch (m_kernel->size()) {
-	case 1: result = add_2d_new<TCoeff2D,1>::value(m_coeff, m_x_cache, m_y_cache); break; 
-	case 2: result = add_2d_new<TCoeff2D,2>::value(m_coeff, m_x_cache, m_y_cache); break; 
-	case 3: result = add_2d_new<TCoeff2D,3>::value(m_coeff, m_x_cache, m_y_cache); break; 
-	case 4: result = add_2d_new<TCoeff2D,4>::value(m_coeff, m_x_cache, m_y_cache); break; 
-	case 5: result = add_2d_new<TCoeff2D,5>::value(m_coeff, m_x_cache, m_y_cache); break; 
-	case 6: result = add_2d_new<TCoeff2D,6>::value(m_coeff, m_x_cache, m_y_cache); break; 
+	case 1: result = add_2d_new<TCoeff2D,1>::value(m_coeff, m_cache); break; 
+	case 2: result = add_2d_new<TCoeff2D,2>::value(m_coeff, m_cache); break; 
+	case 3: result = add_2d_new<TCoeff2D,3>::value(m_coeff, m_cache); break; 
+	case 4: result = add_2d_new<TCoeff2D,4>::value(m_coeff, m_cache); break; 
+	case 5: result = add_2d_new<TCoeff2D,5>::value(m_coeff, m_cache); break; 
+	case 6: result = add_2d_new<TCoeff2D,6>::value(m_coeff, m_cache); break; 
 	default: {
 		/* perform interpolation */
 		assert(0 && "spline degree > 5 not implemented");
@@ -320,31 +345,32 @@ T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 }
 
 template <typename T>
-T2DVector<T> T2DConvoluteInterpolator<T>::derivative_at(const C2DFVector& x) const
+T2DVector<T> T2DInterpolator<T>::derivative_at(const C2DFVector& x) const
 {
 	T2DVector<T> result;
+	CScopedLock lock(m_cache_lock); 
 	
 	// cut at boundary maybe we can do better
 	if (x.x < 0.0 || x.y < 0.0 || x.x >= m_coeff.get_size().x || x.y >= m_coeff.get_size().y)
 		return result;
 
-	const int xi = m_kernel->get_indices(x.x, m_x_index); 
+	const int xi = m_kernel->get_indices(x.x, m_cache.x.index); 
 	const double fx = x.x - xi; 
-	m_kernel->get_derivative_weights(fx, m_x_weight); 
-	m_x_boundary->apply(m_x_index, m_x_weight);
+	m_kernel->get_derivative_weights(fx, m_cache.x.weights); 
+	m_x_boundary->apply(m_cache.x.index, m_cache.x.weights);
 	
-	const int yi = m_kernel->get_indices(x.y, m_y_index); 
+	const int yi = m_kernel->get_indices(x.y, m_cache.y.index); 
 	const double fy = x.y - yi; 
-	m_kernel->get_weights(fy, m_y_weight);
-	m_y_boundary->apply(m_y_index, m_y_weight);
+	m_kernel->get_weights(fy, m_cache.y.weights);
+	m_y_boundary->apply(m_cache.y.index, m_cache.y.weights);
 	
 
 	typename TCoeff2D::value_type r = evaluate();	
 	result.x = round_to<typename TCoeff2D::value_type, T>::value(r);  
 
 	
-	m_kernel->get_weights(fx, m_x_weight); 
-	m_kernel->get_derivative_weights(fy, m_y_weight); 
+	m_kernel->get_weights(fx, m_cache.x.weights); 
+	m_kernel->get_derivative_weights(fy, m_cache.y.weights); 
 
 	r = evaluate();	
 	result.y = round_to<typename TCoeff2D::value_type, T>::value(r);  

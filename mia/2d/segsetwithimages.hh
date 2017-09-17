@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,10 @@
 #include <mia/2d/segset.hh>
 #include <mia/2d/image.hh>
 
-namespace xmlpp {
-	class Document;
-};
-
 NS_MIA_BEGIN
 
+class CXMLElement;
+class CXMLDocument; 
 /**
    @ingroup perf 
    \brief A set of images and its segmentations, related to heart perfusion analysis  
@@ -56,7 +54,7 @@ public:
 	   \param fileroot is the root location of the set file and it is used as 
 	   base path for the images. 
 	*/
-	CSegSetWithImages(const xmlpp::Document& node, const std::string& fileroot); 
+	CSegSetWithImages(const CXMLDocument& node, const std::string& fileroot); 
 	
 
 	/**
@@ -100,6 +98,9 @@ private:
 };
 
 typedef CSegSetWithImages::Pointer PSegSetWithImages; 
+
+extern template class EXPORT_2DMYOCARD TPlugin<CSegSetWithImages, io_plugin_type>;
+extern template class EXPORT_2DMYOCARD TIOPlugin<CSegSetWithImages>; 
 
 typedef TIOPlugin<CSegSetWithImages> CSegSetWithImagesIOPlugin;
 typedef THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin > > CSegSetWithImagesIOPluginHandler;

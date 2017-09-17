@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,6 +226,10 @@ public:
 	 */
 	const color_type&       color_at(unsigned int i)const;
 
+
+	const CVertexfield& get_vertices() const;
+	const CTrianglefield& get_triangles() const; 
+
 	/// \cond SELFEXPLAINING 
 	const_triangle_iterator triangles_begin() const;
 	triangle_iterator       triangles_begin();
@@ -338,6 +342,9 @@ CTriangleMesh colorize_mesh(const CTriangleMesh& mesh, const Deformation& deform
 
 /// IO plugin for triangular meshes
 typedef TIOPlugin<CTriangleMesh> CMeshIOPlugin;
+
+extern template class EXPORT_MESH TPlugin<CTriangleMesh, io_plugin_type>; 
+extern template class EXPORT_MESH TIOPlugin<CTriangleMesh>; 
 
 /// Plug-in handler for triangulat mesh IO 
 typedef THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;

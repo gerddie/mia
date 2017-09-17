@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,9 +51,6 @@ BOOST_AUTO_TEST_CASE(test_3ddatafield)
 	BOOST_CHECK(fabs(grad_22.x - 1.0) < 0.0001 &&
 	       fabs(grad_22.y - 2.0) < 0.0001 &&
 	       fabs(grad_22.z + 1.0) < 0.0001);
-
-	float ip = data.get_interpol_val_at(C3DFVector(2.25, 1.5, 1.5));
-	BOOST_CHECK(fabs(ip - 5.875) < 0.0001);
 
 	std::vector<float> xbuffer;
 	data.get_data_line_x(2, 1, xbuffer);
@@ -237,7 +234,9 @@ BOOST_AUTO_TEST_CASE( test_3ddatafield_get_put_yz )
 }
 
 
-#ifdef LONG_64BIT
+// this test should only be run on a machine with more than 4GB
+// of working memory, so for now it is disabled  
+#if 0 
 
 BOOST_AUTO_TEST_CASE( test_3ddatafield_larger_than_4GB )
 {

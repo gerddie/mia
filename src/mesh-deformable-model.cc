@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,7 @@
 
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/nccsum.hh>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -122,8 +121,7 @@ PTriangleMesh DeformableModel::run(const CTriangleMesh& mesh, const C3DFImage& r
 	C3DInterpolatorFactory ipf("bspline:d=1", "zero");
 	
         unique_ptr<T3DConvoluteInterpolator<float>> R(ipf.create(reference.data())); 
-        const auto gradient = get_gradient(reference);
-
+	C3DLinearVectorfieldInterpolator gradient(get_gradient(reference)); 
 
         PTriangleMesh result(new CTriangleMesh(mesh)); 
 	if (m_reorient_mesh) {
@@ -143,7 +141,7 @@ PTriangleMesh DeformableModel::run(const CTriangleMesh& mesh, const C3DFImage& r
 	typedef pair<float, float> result_t; 
 	
 	auto apply =[this, &out_vertex, &result, &model, &gradient, &R]
-		(const tbb::blocked_range<size_t>& range, result_t res) -> result_t {
+		(const C1DParallelRange& range, result_t res) -> result_t {
 		CThreadMsgStream msks; 
 		for (auto i = range.begin(); i != range.end(); ++i) {
 			auto& vertex = result->vertex_at(i); 
@@ -189,13 +187,13 @@ PTriangleMesh DeformableModel::run(const CTriangleMesh& mesh, const C3DFImage& r
 		result_t r{0.0f, 0.0f}; 
 
 		
-		r = parallel_reduce(tbb::blocked_range<size_t>(0, model.size(), model.size() / 1000 ), r, apply, 
-				[](const result_t& a, const result_t& b) -> result_t {
-					result_t r; 
-					r.first = a.first + b.first; 
-					r.second = a.second > b.second ? a.second : b.second; 
-					return r; 
-				});
+		r = preduce(C1DParallelRange(0, model.size(), model.size() / 1000 ), r, apply, 
+			    [](const result_t& a, const result_t& b) -> result_t {
+				    result_t r; 
+				    r.first = a.first + b.first; 
+				    r.second = a.second > b.second ? a.second : b.second; 
+				    return r; 
+			    });
                 
                 copy(out_vertex.begin(), out_vertex.end(), result->vertices_begin()); 
 		result->evaluate_normals();

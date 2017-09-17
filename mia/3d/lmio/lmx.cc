@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,62 @@
  */
 
 #include <mia/3d/landmarklistio.hh>
-#include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
 #include <mia/core/tools.hh>
+#include <mia/core/xmlinterface.hh>
 #include <boost/filesystem.hpp>
 
 
-namespace
- bfs=boost::filesystem; 
-using namespace xmlpp;
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+namespace  bfs=boost::filesystem;
+
+
+namespace mia {
+template <> 
+bool from_string(const char *s, C3DFVector& result)
+{
+	std::istringstream sx(s); 
+	sx >> result.x >> result.y >> result.z;
+	if (sx.fail()) 
+		return false; 
+	if (sx.eof())
+		return true; 
+	
+	std::string remaining; 
+	sx >> remaining; 
+	bool retval = true; 
+	for(auto i = remaining.begin(); i != remaining.end(); ++i) 
+		retval &= isspace(remaining[0]); 
+	return retval; 
+
+}
+
+template <> 
+bool from_string(const char *s, Quaternion& result) 
+{
+	std::istringstream sx(s);
+	double w,  x,  y, z; 
+	
+	sx >> x >> y >> z >> w;
+	result = Quaternion(w,x,y,z); 
+	if (sx.fail()) 
+		return false; 
+	if (sx.eof())
+		return true; 
+	
+	std::string remaining; 
+	sx >> remaining; 
+	bool retval = true; 
+	for(auto i = remaining.begin(); i != remaining.end(); ++i) 
+		retval &= isspace(remaining[0]); 
+	return retval; 
+
+}
+
+}
 
 NS_MIA_USE
 using namespace std; 
@@ -40,8 +87,8 @@ private:
 	virtual bool do_save(string const&  filename, const C3DLandmarklist& data) const;
 	virtual const string do_get_descr() const;
 
-	P3DLandmark get_landmark(const Node& node) const ; 
-	void add_landmark(Element* lmnode, const C3DLandmark& lm) const;  
+	P3DLandmark get_landmark(const CXMLElement& node) const ; 
+	void add_landmark(CXMLElement& lmnode, const C3DLandmark& lm) const;  
 };
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
@@ -55,53 +102,12 @@ C3DLandmarklistIOPlugin("lmx")
 	add_suffix(".lmx"); 
 }
 
-template <typename Expect> 
-bool translate_value(const Glib::ustring& content, Expect& result) 
-{
-	istringstream shelp(content.raw()); 
-	shelp >> result; 
-	bool good = !shelp.fail();
-	cvdebug() << "Get streamable type from from '" << content << ( good ? " success" : " fail") << "\n"; 
-	return good; 
-
-}
-
-template <> 
-bool translate_value(const Glib::ustring& content, string& result) 
-{
-	result= content.raw();
-	return true; 
-}
-
-template <> 
-bool translate_value(const Glib::ustring& content, C3DFVector& result) 
-{
-	istringstream shelp(content.raw());
-	shelp >> result.x >>  result.y >> result.z; 
-	bool good = !shelp.fail();
-	cvdebug() << "Get 3D vector from '" << content << ( good ? " success" : " fail") << "\n"; 
-	return good; 
-
-}
-
-template <> 
-bool translate_value(const Glib::ustring& content, Quaternion& result) 
-{
-	istringstream shelp(content.raw());
-	double x,y,z,w; 
-	shelp >> x >> y >> z >> w; 
-	result = Quaternion(w,x,y,z); 
-	bool good = !shelp.fail();
-	cvdebug() << "Get quaternion from '" << content << ( good ? " success" : " fail") << "\n"; 
-	return good; 
-}
-
 
 template <typename Expect> 
-bool get_single_xml_value(const Node& node, const string& tag, Expect& result) 
+bool get_single_xml_value(const CXMLElement& node, const string& tag, Expect& result) 
 {
-	cvdebug() << "search value for tag '" << tag << "'\n"; 
-	auto children = node.get_children(tag); 
+	cvdebug() << "search value for tag '" << tag << "' in node '" << node.get_name()<<  "'\n"; 
+	auto children = node.get_children(tag.c_str()); 
 	if (children.empty()) { 
 		cvdebug() << "  tag not found\n"; 
 		return false; 
@@ -111,26 +117,50 @@ bool get_single_xml_value(const Node& node, const string& tag, Expect& result)
 			 << "' specified more then once. Only reading first."; 
 	}
 
-	auto  content = dynamic_cast<Element*>(*children.begin());
-	if (!content) {
+	auto content = children[0]->get_content();
+	cvdebug() << " got content  '" << content <<  "'\n";
+	if (content.empty()) {
 		cvdebug() << "  got empty node\n"; 
 		return false; 
 	}
+	bool r = from_string(content, result);
+	if (!r)
+		cvdebug() << "ERROR:reading '" << tag << "' from '" << content << "'failed\n"; 
 	
-	auto text = content->get_child_text(); 
-	if (!text) {
-		cvdebug() << "  no text in node\n"; 
-		return false; 
-	}
-	
-	return translate_value(text->get_content(), result); 
+	return r;  
 }
 
 template <> 
-bool get_single_xml_value(const Node& node, const string& tag, C3DCamera& result)
+bool get_single_xml_value(const CXMLElement& node, const string& tag, string& result) 
 {
+	cvdebug() << "search value for tag '" << tag << "' in node '" << node.get_name()<<  "'\n"; 
+	auto children = node.get_children(tag.c_str()); 
+	if (children.empty()) { 
+		cvdebug() << "  tag not found\n"; 
+		return false; 
+	}
+	if (children.size() > 1) {
+		cvwarn() << "C3DLMXLandmarklistIOPlugin:Tag '" << tag 
+			 << "' specified more then once. Only reading first."; 
+	}
 
-	auto children = node.get_children(tag); 
+	auto content = children[0]->get_content();
+
+	cvdebug() << " got content  '" << content <<  "'\n";
+	
+	if (content.empty()) {
+		cvdebug() << "  got empty node\n"; 
+		return false; 
+	}
+	result = content; 
+	return true; 
+}
+
+template <> 
+bool get_single_xml_value(const CXMLElement& node, const string& tag, C3DCamera& result)
+{
+	cvdebug() << "search value for tag '" << tag << "' in node '" << node.get_name()<<  "'\n"; 
+	auto children = node.get_children(tag.c_str()); 
 	if (children.empty()) 
 		return false; 
 	if (children.size() > 1) {
@@ -142,15 +172,16 @@ bool get_single_xml_value(const Node& node, const string& tag, C3DCamera& result
 	float distance; 
 	Quaternion rotation;
 	float zoom; 
-
-	auto  content = *children.begin();
+	
+	auto camera = children[0];
+	
 	bool camera_complete = 
-		get_single_xml_value(*content, "location", location) && 
-		get_single_xml_value(*content, "zoom", zoom) && 
-		get_single_xml_value(*content, "rotation", rotation); 
-
+		get_single_xml_value(*camera, "location", location) && 
+		get_single_xml_value(*camera, "zoom", zoom) && 
+		get_single_xml_value(*camera, "rotation", rotation); 
+	
 	// work around old style saving that uses 
-	if (get_single_xml_value(*content, "distance", distance)) 
+	if (get_single_xml_value(*camera, "distance", distance)) 
 		location.z = distance; 
 	
 	if (camera_complete) {
@@ -163,7 +194,7 @@ bool get_single_xml_value(const Node& node, const string& tag, C3DCamera& result
 }
 
 
-P3DLandmark C3DLMXLandmarklistIOPlugin::get_landmark(const Node& node) const 
+P3DLandmark C3DLMXLandmarklistIOPlugin::get_landmark(const CXMLElement& node) const 
 {
 
 	string name; 
@@ -195,27 +226,28 @@ P3DLandmark C3DLMXLandmarklistIOPlugin::get_landmark(const Node& node) const
 
 P3DLandmarklist C3DLMXLandmarklistIOPlugin::do_load(string const&  filename)const
 {
-	DomParser parser;
-	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-	parser.parse_file(filename);
+	ifstream infile(filename);
+	string xml_init(std::istreambuf_iterator<char>{infile}, {});
 	
-	if (!parser) {
-		cvinfo() << "C3DLMXLandmarklistIOPlugin: unable to parse '" << filename << "'\n"; 
-		return P3DLandmarklist(); 
+	if (!infile.good()) {
+		throw create_exception<runtime_error>("C3DLMXLandmarklistIOPlugin: Unable to read input file: '", filename, "'");
 	}
-
-	auto root = parser.get_document()->get_root_node ();
-	if (root->get_name() != "list") {
-		cvinfo() << "C3DLMXLandmarklistIOPlugin: input file '" 
-			 << filename << "'is XML but lot an lmx file\n";
-		return P3DLandmarklist(); 
+	
+	CXMLDocument doc;
+	
+	if (!doc.read_from_string(xml_init.c_str())) {
+		cvdebug() << "C3DLMXLandmarklistIOPlugin:'" << filename
+			  << "' not an XML file\n";
+		return P3DLandmarklist();
 	}
-
+	
+	auto root = doc.get_root_node(); 
+	
 	P3DLandmarklist result(new C3DLandmarklist);
-
+	
 	bfs::path bfsfilename(filename); 
 	result->set_path(bfsfilename.root_path().string()); 
-
+	
 	// get name of the set 
 	string name;  
 	if ( get_single_xml_value(*root, "name", name))
@@ -224,7 +256,7 @@ P3DLandmarklist C3DLMXLandmarklistIOPlugin::do_load(string const&  filename)cons
 	auto lmdescr = root->get_children("landmark");
 	auto i = lmdescr.begin();
 	auto e = lmdescr.end();
-
+	
 	while (i != e) {
 		result->add(get_landmark(**i));
 		++i;
@@ -233,74 +265,74 @@ P3DLandmarklist C3DLMXLandmarklistIOPlugin::do_load(string const&  filename)cons
 }
 
 template <typename T>
-void add_node(Element& parent, const string& name, const T& value) 
+void add_node(CXMLElement& parent, const string& name, const T& value) 
 {
 	ostringstream s;
 	s << value; 
-	auto node = parent.add_child(name);
+	auto node = parent.add_child(name.c_str());
 	node->set_child_text(s.str());
 }
 
 template <>
-void add_node(Element& parent, const string& name, const string& value) 
+void add_node(CXMLElement& parent, const string& name, const string& value) 
 {
-	auto node = parent.add_child(name);
+	auto node = parent.add_child(name.c_str());
 	node->set_child_text(value);
 }
 
 template <typename T>
-void add_node(Element& parent, const string& name, const T3DVector<T>& value) 
+void add_node(CXMLElement& parent, const string& name, const T3DVector<T>& value) 
 {
 	ostringstream s;
 	s << value.x << " " << value.y << " " << value.z;
-
-	auto node = parent.add_child(name);
+	
+	auto node = parent.add_child(name.c_str());
 	node->set_child_text(s.str());
 }
 
 template <>
-void add_node(Element& parent, const string& name, const Quaternion& value) 
+void add_node(CXMLElement& parent, const string& name, const Quaternion& value) 
 {
 	ostringstream s;
 	s << value.x() << " " << value.y() << " " << value.z() << " " << value.w() ;
-	auto node = parent.add_child(name);
+	auto node = parent.add_child(name.c_str());
 	node->set_child_text(s.str());
 }
 
 template <>
-void add_node(Element& parent, const string& name, const C3DCamera& value) 
+void add_node(CXMLElement& parent, const string& name, const C3DCamera& value) 
 {
-	auto node = parent.add_child(name);
+	auto node = parent.add_child(name.c_str());
 	add_node(*node, "location", value.get_location()); 
 	add_node(*node, "rotation", value.get_rotation()); 
 	add_node(*node, "zoom", value.get_zoom()); 
 }
 
-void C3DLMXLandmarklistIOPlugin::add_landmark(Element* lmnode, const C3DLandmark& lm) const 
+void C3DLMXLandmarklistIOPlugin::add_landmark(CXMLElement& lmnode, const C3DLandmark& lm) const 
 {
-	add_node(*lmnode, "name", lm.get_name()); 
-	add_node(*lmnode, "picfile", lm.get_picture_file());
+	add_node(lmnode, "name", lm.get_name()); 
+	add_node(lmnode, "picfile", lm.get_picture_file());
 	if (lm.has_location()) 
-		add_node(*lmnode, "location", lm.get_location());
-	add_node(*lmnode, "isovalue", lm.get_isovalue());
-	add_node(*lmnode, "camera", lm.get_view());
+		add_node(lmnode, "location", lm.get_location());
+	add_node(lmnode, "isovalue", lm.get_isovalue());
+	add_node(lmnode, "camera", lm.get_view());
 }
 
 bool C3DLMXLandmarklistIOPlugin::do_save(string const&  filename, const C3DLandmarklist& data) const
 {
-	unique_ptr<Document> doc(new Document);
+	CXMLDocument doc;
 	
-	Element* list = doc->create_root_node("list");
+	auto list = doc.create_root_node("list");
 	add_node(*list, "name", data.get_name()); 
 	
 	for(auto i = data.begin(); i != data.end(); ++i) {
 		auto lmnode = list->add_child("landmark"); 
-		add_landmark(lmnode, *i->second);
+		add_landmark(*lmnode, *i->second);
 	}
 	
 	ofstream outfile(filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << doc->write_to_string_formatted();
+		outfile << doc.write_to_string();
 	else 
 		cvdebug() << "Unable to open file '" << filename << "'\n"; 
 	return outfile.good();

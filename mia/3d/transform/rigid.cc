@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,7 @@
 
 #include <fstream>
 
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/utils.hh>
@@ -32,7 +31,7 @@ NS_MIA_BEGIN
 using namespace std;
 
 
-C3DFVector C3DRigidTransformation::apply(const C3DFVector& x) const
+C3DFVector C3DRigidTransformation::get_displacement_at(const C3DFVector& x) const
 {
 	CScopedLock lock(m_mutex); 
 	if (!m_matrix_valid) 
@@ -274,9 +273,9 @@ float C3DRigidTransformation::get_max_transform() const
 		C3DFVector(get_size().x-1, get_size().y-1, get_size().z-1), 
 	};
 
-	float result = apply(C3DFVector()).norm2(); 
+	float result = get_displacement_at(C3DFVector()).norm2(); 
 	for(int i = 0; i < 8; ++i) {
-		float h = (apply(corners[i]) - corners[i]).norm2(); 
+		float h = (get_displacement_at(corners[i]) - corners[i]).norm2(); 
 		if (result < h) 
 			result = h; 
 	}
@@ -287,7 +286,7 @@ float C3DRigidTransformation::get_max_transform() const
 
 C3DFVector C3DRigidTransformation::operator () (const C3DFVector& x) const
 {
-	return apply(x); 
+	return get_displacement_at(x); 
 }
 
 float C3DRigidTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
@@ -301,12 +300,12 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	typedef vector<double> dvect; 
 	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
-
+	assert(params.size() == 6);  
 	auto sumslice = [&gradient, this] 
-		(const tbb::blocked_range<unsigned int>& range, dvect ls)->dvect{
-		
+		(const C1DParallelRange& range, dvect ls)->dvect{
+		assert(ls.size() == 6);  
 		double fz = range.begin() - m_rot_center.z; 
-		for (unsigned int z = range.begin(); z != range.end();++z, fz += 1.0) {
+		for (auto z = range.begin(); z != range.end();++z, fz += 1.0) {
 			auto g = gradient.begin_at(0,0,z);
 			double fy =  - m_rot_center.y; 
 			for (size_t y = 0; y < m_size.y; ++y, fy += 1.0) {
@@ -332,7 +331,7 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 	}; 
 	
 	dvect init(params.size(), 0.0); 
-	auto sparams = tbb::parallel_reduce( tbb::blocked_range<unsigned int>(0, m_size.z, 1), init, sumslice, sum_parts); 
+	auto sparams = preduce( C1DParallelRange(0, m_size.z, 1), init, sumslice, sum_parts); 
 	std::copy(sparams.begin(), sparams.end(), params.begin()); 
 }
 
@@ -340,9 +339,9 @@ C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const
 						      const C3DRigidTransformation& trans):
 	C3DTransformation::iterator_impl(pos, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.get_displacement_at(C3DFVector(pos)))
 {
-	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.get_displacement_at(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
@@ -350,9 +349,9 @@ C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const
 						     const C3DRigidTransformation& trans):
 	C3DTransformation::iterator_impl(pos, begin, end, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.get_displacement_at(C3DFVector(pos)))
 {
-	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.get_displacement_at(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 		
 C3DTransformation::iterator_impl * C3DRigidTransformation::iterator_impl::clone() const
@@ -372,14 +371,14 @@ void C3DRigidTransformation::iterator_impl::do_x_increment()
 
 void C3DRigidTransformation::iterator_impl::do_y_increment()
 {
-	m_value = m_trans.apply(C3DFVector(get_pos())); 
-	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.get_displacement_at(C3DFVector(get_pos())); 
+	m_dx = m_trans.get_displacement_at(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 void C3DRigidTransformation::iterator_impl::do_z_increment()
 {
-	m_value = m_trans.apply(C3DFVector(get_pos())); 
-	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.get_displacement_at(C3DFVector(get_pos())); 
+	m_dx = m_trans.get_displacement_at(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 C3DTransformation::const_iterator C3DRigidTransformation::begin() const

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ public:
 
 
 template <typename T>
-static void creat_and_check(EPixelType type)
+static void create_and_check(EPixelType type)
 {
 	const T init_data[4] = {0,  1,  0,  1	};
 
@@ -82,21 +82,22 @@ static void creat_and_check(EPixelType type)
 	BOOST_CHECK_EQUAL(img->get_pixel_size(), pixel_size2);
 }
 
-BOOST_AUTO_TEST_CASE( check_data_types )
+typedef boost::mpl::vector<bool,
+		     int8_t,
+		     uint8_t,
+		     int16_t,
+		     uint16_t,
+		     int32_t,
+		     uint32_t,
+		     int64_t,
+		     uint64_t,
+		     float,
+		     double
+		     > test_types;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( check_data_types, T, test_types)
 {
-	creat_and_check<bool>(it_bit);
-	creat_and_check<unsigned char>(it_ubyte);
-	creat_and_check<signed char>(it_sbyte);
-	creat_and_check<unsigned short>(it_ushort);
-	creat_and_check<signed short>(it_sshort);
-	creat_and_check<unsigned int>(it_uint);
-	creat_and_check<signed int>(it_sint);
-#ifdef LONG_64BIT
-	creat_and_check<unsigned long>(it_ulong);
-	creat_and_check<signed long>(it_slong);
-#endif
-	creat_and_check<float>(it_float);
-	creat_and_check<double>(it_double);
+	create_and_check<T>(pixel_type<T>::value);
 }
 
 BOOST_AUTO_TEST_CASE( check_gradient )
@@ -126,3 +127,52 @@ BOOST_AUTO_TEST_CASE( check_gradient )
 
 }
 
+BOOST_AUTO_TEST_CASE( check_comparison )
+{
+	C2DBounds size(1,2); 
+	C2DFImage fimage(size, {1.0f, 2.0f});
+	C2DUBImage ubimage(size);
+	C2DUBImage ubimage2(C2DBounds(2,2));
+	C2DFImage fimage2(fimage);
+
+	BOOST_CHECK(fimage == fimage2);
+	
+	fimage2(0,0) = 4.0;
+	BOOST_CHECK(fimage != fimage2);
+
+	BOOST_CHECK(fimage != ubimage);
+	BOOST_CHECK(ubimage != ubimage2);
+
+	
+}
+
+BOOST_AUTO_TEST_CASE (test_move_semantics)
+{
+	std::string attr("test_string"); 
+	C2DBounds size1(2,3); 
+	C2DUBImage image1(size1);
+	image1(0,0) = 1.0;
+	image1.set_attribute("test", attr);
+	
+	C2DBounds size2(1,1); 
+	C2DUBImage image2(size2);
+	
+	BOOST_CHECK_EQUAL(image2.get_size(), size2);
+
+
+	C2DUBImage image1_moved(std::move(image1));
+
+	BOOST_CHECK_EQUAL(image1_moved.get_size(), size1);
+	BOOST_CHECK_EQUAL(image1_moved(0,0), 1.0);
+	BOOST_CHECK_EQUAL(image1_moved.get_attribute_as_string("test"), attr);
+
+	
+	BOOST_CHECK_EQUAL(image1.get_size(), C2DBounds::_0);
+
+	image2 =(std::move(image1_moved));
+	BOOST_CHECK_EQUAL(image2.get_size(), size1);
+	BOOST_CHECK_EQUAL(image2(0,0), 1.0);
+	BOOST_CHECK_EQUAL(image2.get_attribute_as_string("test"), attr);
+
+	BOOST_CHECK_EQUAL(image1_moved.get_size(), C2DBounds::_0);
+}

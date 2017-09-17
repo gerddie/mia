@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,6 +124,7 @@ inline P2DImage  EXPORT_2D run_filter(P2DImage image, const char *filter)
 typedef TImageCombiner< C2DImage > C2DImageCombiner; 
 typedef std::shared_ptr<C2DImageCombiner> P2DImageCombiner; 
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
+
 
 /// Plugin handler for image combiner plugins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > 

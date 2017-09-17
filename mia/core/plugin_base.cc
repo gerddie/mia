@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ const char *g_plugin_root = nullptr;
 
 PrepareTestPluginPath::PrepareTestPluginPath()
 {
-	g_plugin_root = MIA_BUILD_ROOT "/plugintest/" PLUGIN_INSTALL_PATH; 
+	g_plugin_root = MIA_BUILD_ROOT "/plugintest/";
 }
 
 PrepareTestPluginPath::~PrepareTestPluginPath()

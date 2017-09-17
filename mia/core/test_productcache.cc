@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/core/productcache.hh>
-
-#include <tbb/task_scheduler_init.h>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-#include <tbb/atomic.h>
-
-using namespace tbb;
-
+#include <mia/core/parallel.hh>
 
 NS_MIA_USE
 using namespace std; 
@@ -119,17 +112,17 @@ BOOST_AUTO_TEST_CASE(test_basic_cache_enabled_global_clear)
 
 
 struct CacheAccessTest {
-	tbb::atomic<int> *n_errors; 
-	CacheAccessTest(tbb::atomic<int> *_nerr); 
-	void operator()( const blocked_range<int>& range ) const; 
+	ATOMIC<int> *n_errors; 
+	CacheAccessTest(ATOMIC<int> *_nerr); 
+	void operator()( const C1DParallelRange& range ) const; 
 }; 
 
-CacheAccessTest::CacheAccessTest(tbb::atomic<int> *_nerr):
+CacheAccessTest::CacheAccessTest(ATOMIC<int> *_nerr):
 	n_errors(_nerr)
 { 
 }
 
-void CacheAccessTest::operator() ( const blocked_range<int>& range ) const
+void CacheAccessTest::operator() ( const C1DParallelRange& range ) const
 {
 	try {	
 		for(auto i=range.begin(); i!=range.end(); ++i ) {
@@ -145,10 +138,10 @@ void CacheAccessTest::operator() ( const blocked_range<int>& range ) const
 }
 
 struct CacheWriteTest {
-	void operator()( const blocked_range<int>& range ) const; 
+	void operator()( const C1DParallelRange& range ) const; 
 }; 
 
-void CacheWriteTest::operator() ( const blocked_range<int>& range ) const
+void CacheWriteTest::operator() ( const C1DParallelRange& range ) const
 {
 	for(auto i=range.begin(); i!=range.end(); ++i ) {
 		stringstream s; 
@@ -159,17 +152,17 @@ void CacheWriteTest::operator() ( const blocked_range<int>& range ) const
 
 
 struct CacheReadTest {
-	tbb::atomic<int> *n_errors; 
-	CacheReadTest(tbb::atomic<int> *_nerr); 
-	void operator()( const blocked_range<int>& range ) const; 
+	ATOMIC<int> *n_errors; 
+	CacheReadTest(ATOMIC<int> *_nerr); 
+	void operator()( const C1DParallelRange& range ) const; 
 }; 
 
-CacheReadTest::CacheReadTest(tbb::atomic<int> *_nerr):
+CacheReadTest::CacheReadTest(ATOMIC<int> *_nerr):
 	n_errors(_nerr)
 { 
 }
 
-void CacheReadTest::operator() ( const blocked_range<int>& range ) const
+void CacheReadTest::operator() ( const C1DParallelRange& range ) const
 {
 	try {	
 		for(auto i=range.begin(); i!=range.end(); ++i ) {
@@ -195,25 +188,23 @@ BOOST_AUTO_TEST_CASE( test_cache_parallel_access )
 	the_cache.clear(); 
 	the_cache.enable_write(true); 
 
-
-	task_scheduler_init init;
-	tbb::atomic<int> n_errors; 
+	ATOMIC<int> n_errors; 
 	n_errors = 0; 
 
-	blocked_range<int> range( 0, 1000, 1 ); 
+	C1DParallelRange range( 0, 1000, 1 ); 
 	CacheAccessTest ptest(&n_errors); 
 	
 
 
-	parallel_for(range, ptest); 
+	pfor(range, ptest); 
 	BOOST_CHECK_EQUAL(n_errors, 0); 
 
 	CacheWriteTest wtest; 
-	parallel_for(range, wtest); 
+	pfor(range, wtest); 
 
 	n_errors = 0; 
 	CacheReadTest rtest(&n_errors);
-	parallel_for(range, rtest); 
+	pfor(range, rtest); 
 	BOOST_CHECK_EQUAL(n_errors, 0); 
 	
 	

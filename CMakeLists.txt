@@ -18,7 +18,8 @@
 
 PROJECT("mia")
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5 FATAL_ERROR)
+# now need OBJECT libraries 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.8 FATAL_ERROR)
 
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
@@ -51,10 +52,10 @@ include(CheckCXXSourceCompiles)
 SET(VENDOR "Gert Wollny")
 SET(PACKAGE_NAME "mia")
 SET(MAJOR_VERSION 2)
-SET(MINOR_VERSION 2)
-SET(MICRO_VERSION 7)
-SET(INTERFACE_AGE 3)
-SET(BINARY_AGE    3)
+SET(MINOR_VERSION 4)
+SET(MICRO_VERSION 4)
+SET(INTERFACE_AGE 0)
+SET(BINARY_AGE    0)
 
 #
 #SET(CMAKE_BUILD_WITH_INSTALL_RPATH 1)
@@ -78,6 +79,12 @@ OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are a
 OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" TRUE)
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
+OPTION(ENABLE_COVERAGE "Enable code coverage tests" FALSE)
+OPTION(DISABLE_PROGRAMS "Don't build the programs nor documentation (only for testing purposes)" FALSE)
+OPTION(MIA_CREATE_USERDOC "Enable creation of html user documentation" TRUE)
+
+
+
 
 INCLUDE(GNUInstallDirs)
 
@@ -86,10 +93,27 @@ INCLUDE (TestBigEndian)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/pluginmacro.cmake)
 INCLUDE (CheckTypeSize)
+INCLUDE (CheckIncludeFileCXX)
 
 include(CheckCXXCompilerFlag)
 
-IF(UNIX)
+
+MESSAGE(STATUS "Compiler is ${CMAKE_CXX_COMPILER_ID} version ${CMAKE_CXX_COMPILER_VERSION}")
+
+IF (((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
+      (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.3.0)) OR
+    ((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang") AND
+      (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.3.0)))
+  MESSAGE(STATUS "Compiler  has full c++11 support")
+
+  # g++ >= 6.0 sets std=c++14 by default
+  IF ((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
+      (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0.0))  
+    SET(CXX_11_FLAG "-std=c++11")
+  ENDIF()
+  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${CXX_11_FLAG} -fvisibility=hidden")
+ELSE()
   CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_GNU_CXX11_FLAG)
   IF(HAS_GNU_CXX11_FLAG)
     SET(CXX_11_FLAG "-std=c++11")
@@ -101,23 +125,38 @@ IF(UNIX)
       MESSAGE(WARNING "Don't know how to enable C++11, if you are lucky, they are enabled by default")
     ENDIF(HAS_GNU_CXX0X_FLAG)
   ENDIF(HAS_GNU_CXX11_FLAG)
-  
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${CXX_11_FLAG} -fvisibility=hidden")
-ENDIF(UNIX)
+  INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
+  INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
+  IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
+    MESSAGE(FATAL_ERROR 
+      "This source code requires the C++0x auto type and lambda features. "
+      "If your compiler is supposed to support this feature, "
+      "please enable the appropriate flags and delete the CMakeCache.txt file before "
+      "re-running cmake.\n"
+      "For g++ >= 4.8 this is '-std=c++0x' ")
+  ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
+ENDIF()
 
-INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
-INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
+# older versions of g++ libstdc++ don't implement regex sufficiently good
+# to be useful
+IF ((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
+    (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.3.0))
+  SET(MIA_USE_BOOST_REGEX_PRESET FALSE)
+ELSE()
+  SET(MIA_USE_BOOST_REGEX_PRESET TRUE)
+ENDIF()
+  
+OPTION(MIA_USE_BOOST_REGEX "Use the boost::regex library (instead of c++11 build in) " ${MIA_USE_BOOST_REGEX_PRESET})
+
+IF (ENABLE_COVERAGE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g -DMIA_COVERAGE")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
+ENDIF()
+
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkSSEAttributeVectorCanUseSubscript.cmake)
-
-
-IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
-  MESSAGE(FATAL_ERROR 
-    "This source code requires the C++0x auto type and lambda features. "
-    "If your compiler is supposed to support this feature, "
-    "please enable the appropriate flags and delete the CMakeCache.txt file before "
-    "re-running cmake.\n"
-    "For g++ >= 4.6 this is '-std=c++0x' ")
-ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkAltivecEnabled.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkSSEEnabled.cmake)
@@ -140,6 +179,11 @@ ENDIF(${LONG_TYPE_SIZE} EQUAL 8)
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 CHECK_INCLUDE_FILES (unistd.h HAVE_UNISTD_H)
 CHECK_INCLUDE_FILES (sys/ioctl.h HAVE_SYS_IOCTL_H)
+CHECK_INCLUDE_FILES (execinfo.h HAVE_EXEINFO_H)
+
+
+CHECK_INCLUDE_FILE_CXX (cxxabi.h HAVE_CXXABI_H)
+
 
 # find additional packages
 #
@@ -205,7 +249,12 @@ MACRO(GET_BOOST_LINKERFLAG VAR LIBNAMES)
   SET(${VAR} "${flags}")
 ENDMACRO(GET_BOOST_LINKERFLAG)
 
-SET(BOOST_COMPONENTS   filesystem  regex unit_test_framework serialization system)
+SET(BOOST_COMPONENTS filesystem  unit_test_framework serialization system)
+
+IF (MIA_USE_BOOST_REGEX)
+  SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} regex)
+ENDIF()
+
 IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
 ENDIF(WIN32)
@@ -220,7 +269,12 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
 ADD_DEFINITIONS(-DBOOST_FILESYSTEM_VERSION=3)
 
-SET(BOOST_DEPS  ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+IF (MIA_USE_BOOST_REGEX)
+  SET(BOOST_DEPS ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+ELSE()
+  SET(BOOST_DEPS ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+ENDIF()
+
 SET(BOOST_UNITTEST  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 IF (WIN32 AND NOT UNIX)
@@ -251,14 +305,19 @@ ENDIF (MSYS OR MINGW)
 ################################################################################
 #
 # Intel Threading Building Blocks 
-# 
-FIND_PACKAGE(TBB REQUIRED)
-IF(TBB_FOUND) 
-  include_directories(${TBB_INCLUDE_DIRS})
-  link_directories(${TBB_LIBRARY_DIRS})
-ELSE(TBB_FOUND) 
-  MESSAGE(FATAL " TBB not found")
-ENDIF(TBB_FOUND)
+#
+OPTION(WITH_TBB "Use intel threading building blocks for threading, otherwise use c++11 threads" OFF)
+
+IF(WITH_TBB) 
+  FIND_PACKAGE(TBB REQUIRED)
+  IF(TBB_FOUND) 
+    include_directories(${TBB_INCLUDE_DIRS})
+    link_directories(${TBB_LIBRARY_DIRS})
+    SET(HAVE_TBB 1)
+  ELSE(TBB_FOUND) 
+    MESSAGE(FATAL " TBB not found")
+  ENDIF(TBB_FOUND)
+ENDIF()
 #
 # End Intel Threading Building Blocks 
 #
@@ -267,7 +326,7 @@ ENDIF(TBB_FOUND)
 ################################################################################
 #
 # Intel Threading Building Blocks 
-# 
+# why is this here? 
 
 SET(CMAKE_THREAD_PREFER_PTHREAD ON) 
 FIND_PACKAGE(Threads)
@@ -291,27 +350,10 @@ INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIRS})
 LINK_DIRECTORIES(${EIGEN3_LIBRARY_DIRS})
 
 
-################################################################################
-# 
-# search for some blas
-# 
-
-FIND_PACKAGE(BLAS)
-IF (NOT BLAS_LIBRARIES) 
-  MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required") 
-ENDIF(NOT BLAS_LIBRARIES) 
-
 IF(UNIX)
   GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
-  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${BLAS_LIBRARIES} ${TBB_LIBRARIES} ${PTHREADLIB} -ldl")
+  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} ${TBB_LIBRARIES} ${PTHREADLIB} -ldl")
 ENDIF(UNIX)
-
-
-ADD_DEFINITIONS(-DHAVE_BLAS)
-#
-# End BLAS 
-# 
-##################################################################################
 
 ##################################################################################
 #
@@ -338,7 +380,7 @@ IF(NOT WIN32)
   IF(DL_NOTFOUND)
     MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
   ENDIF(DL_NOTFOUND)
-  SET(BASELIBS  ${BOOST_DEPS} ${PTHREADLIB} ${DL})
+  SET(BASELIBS  ${GSL_LIBRARIES} ${BOOST_DEPS} ${PTHREADLIB} ${DL})
 ENDIF(NOT WIN32)
 SET(PLUGSUFFIX ".mia")
 
@@ -377,54 +419,18 @@ ENDIF(WITH_FFTWD)
 ####################################################################################
 #
 # add xml library for loading/storing segmentations and document creation  
+# search it olny once
 #
-pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
-IF (XMLPP_FOUND)
-  INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
-  LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
-ENDIF (XMLPP_FOUND)
+pkg_check_modules(XML libxml-2.0 REQUIRED)
+INCLUDE_DIRECTORIES(${XML_INCLUDE_DIRS})
+LINK_DIRECTORIES(${XML_LIBRARY_DIRS})
+
 
 #
 # end XML 
 # 
 ###################################################################################
 
-###################################################################################
-#
-# Look for IT++ for FastICA
-#
-OPTION(WITH_ITPP "Use IT++ for some additional features" ${SEARCH_LIBS_DEFAULT})
-IF(WITH_ITPP)
-  
-  IF (STRICT_DEPENDECIES)
-    pkg_check_modules(ITPP itpp REQUIRED)
-  ELSE (STRICT_DEPENDECIES)
-    pkg_check_modules(ITPP itpp)
-  ENDIF(STRICT_DEPENDECIES)
-  
-  IF(ITPP_FOUND)
-    INCLUDE_DIRECTORIES(${ITPP_INCLUDE_DIRS})
-    LINK_DIRECTORIES(${ITPP_LIBRARY_DIRS})
-    SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} itpp")
-    SET(CMAKE_REQUIRED_LIBRARIES ${ITPP_LIBRARIES})
-    #if ITPP was found check if it supports the return value in separate 
-    INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkITPPBoolseparate.cmake)
-    IF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-      MESSAGE(WARNING "You are using  an unpatched version of IT++. "
-	"In this version using APPROACH_DEFL may run forever, and FastICA::separate " 
-	"doesn't return a value indicating success, "
-	"therefore, APPROACH_DEFL will not be used. See also: "
-	"https://sourceforge.net/tracker/?func=detail&aid=3028968&group_id=37044&atid=418758")
-      SET(ICA_ALWAYS_USE_SYMM 1)
-    ELSE(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-      SET(ICA_ALWAYS_USE_SYMM 0)
-    ENDIF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-  ENDIF(ITPP_FOUND)
-ENDIF(WITH_ITPP)
-#
-# End looking for IT++ 
-#
-##################################################################################
 
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
@@ -453,39 +459,45 @@ ENDIF(ALWAYS_CREATE_DOC)
 #
 SET(CREATE_USERDOC FALSE)
 
-FIND_PACKAGE(PythonInterp)
-IF(PYTHONINTERP_FOUND) 
-  EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
-  IF(LXML_ERR) 
-    MESSAGE(python found, but no lxml, no user documantation will be created) 
-  ELSE(LXML_ERR)
-    SET(CREATE_USERDOC TRUE)
-  ENDIF(LXML_ERR) 
-ENDIF(PYTHONINTERP_FOUND)
-
+#if no programs are build, no userdoc can be created 
+IF (NOT DISABLE_PROGRAMS) 
+  FIND_PACKAGE(PythonInterp)
+  IF(PYTHONINTERP_FOUND) 
+    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
+    IF(LXML_ERR)
+      MESSAGE(python found, but no lxml, no user documantation will be created) 
+      IF(STRICT_DEPENDECIES)
+        MESSAGE(ERROR ": requested user Html documentation creation, but python-lxml not found")
+      ELSE(STRICT_DEPENDECIES)
+        MESSAGE(python found, but no lxml, no user documantation will be created)
+        SET(MIA_CREATEUSERDOC FALSE)
+      ENDIF(STRICT_DEPENDECIES)
+    ENDIF(LXML_ERR) 
+  ENDIF(PYTHONINTERP_FOUND)
+ENDIF()
 
 #############################################
 #
 # define plug-in related values and directories and add the test directory link target 
 # 
 
+DEFINE_PLUGIN_NAMES( fastica  "deflation;symmetric;implementation" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 1d  "cmeans;spacialkernel;splinebc;splinekernel" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dmyocardsegset "io" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dsplinepenalty  "transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dstack  "filter" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 2dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
-DEFINE_PLUGIN_NAMES( 2dvf  "io" ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 2dvf  "io;regularizer;regularizerkernel" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dimage  "combiner;cost;creator;filter;fullcost;io;maskedcost;model;shape;timestep;transform" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dlandmarklist "io"  ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( 3dtransform  "io;splinepenalty" ${PLUGIN_INSTALL_PATH})
-DEFINE_PLUGIN_NAMES( 3dvf "io"  ${PLUGIN_INSTALL_PATH})
+DEFINE_PLUGIN_NAMES( 3dvf "io;regularizer;regularizerkernel"  ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( generator  "noise" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( mesh "filter;io" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( minimizer  "singlecost" ${PLUGIN_INSTALL_PATH})
 DEFINE_PLUGIN_NAMES( rgbimage "io" ${PLUGIN_INSTALL_PATH})
 
-ADD_SUBDIRECTORY(gsl++   )
 ADD_SUBDIRECTORY(mia     )
 ADD_SUBDIRECTORY(addons  )
 ADD_SUBDIRECTORY(testdata)
@@ -534,6 +546,13 @@ INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COP
  
 ADD_CUSTOM_TARGET(dist bash ${CMAKE_SOURCE_DIR}/create_package "${PACKAGE_NAME}" "${PACKAGE_VERSION}" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}")
 
-ADD_SUBDIRECTORY(src)
+IF (NOT DISABLE_PROGRAMS)
+  ADD_SUBDIRECTORY(src)
+  ADD_SUBDIRECTORY(doc)
+ELSE()
+  MESSAGE(STATUS "NOT building programs nor documentation as requested")
+ENDIF()
+
 ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(doc)
+
+

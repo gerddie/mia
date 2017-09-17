@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <mia/core.hh>
 #include <mia/3d/vector.hh>
 #include <vistaio/vistaio.h>
+#include <vistaio/vconfig.h>
 
 #ifdef WIN32
 #ifdef vista4mia_EXPORTS
@@ -87,6 +88,19 @@ struct vista_repnkind<unsigned int> {
 	typedef VistaIOLong type;
 };
 
+#if VISTAIO_MAJOR_VERSION > 1 || \
+	VISTAIO_MAJOR_VERSION == 1 && VISTAIO_MINOR_VERSION > 2 || \
+	VISTAIO_MAJOR_VERSION == 1 && VISTAIO_MINOR_VERSION ==  2 && VISTAIO_MICRO_VERSION > 19
+
+template <>
+struct vista_repnkind<int64_t> {
+	static const VistaIORepnKind value = VistaIOLong64Repn;
+	static const bool is_unsigned = false; 
+	typedef VistaIOLong64 type;
+};
+#endif 
+
+
 template <>
 struct vista_repnkind<float> {
 	static const VistaIORepnKind value = VistaIOFloatRepn;
@@ -119,11 +133,11 @@ struct vista_repnkind<std::string> {
 template <typename I, typename O>
 struct dispatch_creat_vimage {
 	static VistaIOImage apply(I begin, I end, size_t x, size_t y, size_t z) {
-		typedef typename std::iterator_traits<I>::value_type pixel_type; 
-		VistaIOImage result = VistaIOCreateImage(z, y, x, vista_repnkind<pixel_type>::value);
+		VistaIOImage result = VistaIOCreateImage(z, y, x, vista_repnkind<O>::value);
+		assert(result); 
 		
 		VistaIOSetAttr(VistaIOImageAttrList(result), "repn-unsigned", NULL, VistaIOBitRepn, 
-			       vista_repnkind<pixel_type>::is_unsigned);
+			       vista_repnkind<O>::is_unsigned);
 
 		std::copy(begin, end, (O *)VistaIOPixelPtr(result,0,0,0));
 		return result;
@@ -146,7 +160,7 @@ VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributedData& attributes, const Vis
 /**
    Helper class to indice atomatic destruction of vista attribute lists. 
  */
-class CVAttrList {
+class VISTA4MIA_EXPORT CVAttrList {
 public: 
 	CVAttrList(VistaIOAttrList list); 
 	~CVAttrList(); 

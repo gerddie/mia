@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 BOOST_AUTO_TEST_CASE( test_downscale_nonskew_x )
 {
 	for (unsigned int dx = 1; dx < 4; ++dx)  {
-		C3DSSImage *fimage  = new C3DSSImage(C3DBounds(10+dx, 20, 20));
+		unique_ptr<C3DSSImage> fimage(new C3DSSImage(C3DBounds(10+dx, 20, 20)));
 		auto i = fimage->begin(); 
 		for (size_t z= 0; z < 20; ++z)
 			for (size_t y = 0; y < 20; ++y)
@@ -101,7 +101,8 @@ BOOST_AUTO_TEST_CASE( test_downscale_nonskew_x )
 BOOST_AUTO_TEST_CASE( test_downscale_nonskew_y )
 {
 	for (unsigned int dx = 1; dx < 4; ++dx)  {
-		C3DSSImage *fimage  = new C3DSSImage(C3DBounds(20, 10+dx, 20));
+		unique_ptr<C3DSSImage> fimage(new C3DSSImage(C3DBounds(20, 10+dx, 20)));
+		
 		auto i = fimage->begin(); 
 		for (size_t z= 0; z < 20; ++z)
 			for (size_t y = 0; y < 10+dx; ++y)

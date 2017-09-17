@@ -24,9 +24,14 @@ import sys
 import time
 import calendar
 import string
-import htmlentitydefs
 import re
 from os import path
+
+python_version = sys.version_info.major
+if python_version >= 3:
+    from html.entities import name2codepoint
+else:
+    from htmlentitydefs  import name2codepoint
 
 from argparse import ArgumentParser
 from argparse import RawTextHelpFormatter
@@ -51,7 +56,7 @@ from miareadxml import parse_file
 
 def get_date_string():
     lt = time.localtime(time.time())
-    return "%d %s %d"% (lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
+    return "{} {} {}".format(lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
 
 #taken from http://effbot.org/zone/re-sub.htm#unescape-html
     
@@ -105,13 +110,21 @@ class  NipypeOutput:
             "vdouble"   :lambda i : self.create_vfloat_param(i), 
             "vfloat"    :lambda i : self.create_vfloat_param(i), 
 
-            "bool"  : lambda i : self.create_Bool_param(i), 
+            "bool"  : lambda i : self.create_Bool_param(i),
+            
             "short" : lambda i : self.create_Integral_param(i), 
             "int"   : lambda i : self.create_Integral_param(i), 
             "long"  : lambda i : self.create_Integral_param(i),
             "ushort": lambda i : self.create_Integral_param(i), 
             "uint"  : lambda i : self.create_Integral_param(i), 
-            "ulong" : lambda i : self.create_Integral_param(i), 
+            "ulong" : lambda i : self.create_Integral_param(i),
+            
+            "int16_t" : lambda i : self.create_Integral_param(i), 
+            "int32_t"   : lambda i : self.create_Integral_param(i), 
+            "int64_t"  : lambda i : self.create_Integral_param(i),
+            "uint16_t": lambda i : self.create_Integral_param(i), 
+            "uint32_t"  : lambda i : self.create_Integral_param(i), 
+            "uint64_t" : lambda i : self.create_Integral_param(i), 
             "float" : lambda i : self.create_Float_param(i), 
             "double": lambda i : self.create_Float_param(i), 
 

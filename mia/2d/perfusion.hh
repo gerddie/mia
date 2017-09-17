@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <vector>
 #include <mia/core/dictmap.hh>
 #include <mia/core/waveletslopeclassifier.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/image.hh>
 #include <mia/2d/filter.hh>
 
@@ -38,7 +39,7 @@ NS_MIA_BEGIN
    designed for the analysis of free breathingly aquired myocardial perfusion images. 
 */
 
-class  EXPORT_2D C2DPerfusionAnalysis  {
+class  EXPORT_2DMYOCARD C2DPerfusionAnalysis  {
 public: 
 	/// Possible bases for LV-RV heart segmentation
 	enum EBoxSegmentation {
@@ -68,9 +69,10 @@ public:
 	/**
 	   Run the ICA analysis - keeps a copy of the image series 
 	   \param series image series should contain more images thennumber of requested components 
+       \param icatool Generator for the used ICA analyis method
 	 */
 
-	bool run(const std::vector<C2DFImage>& series); 
+	bool run(const std::vector<C2DFImage>& series, const CIndepCompAnalysisFactory& icatool);
 
 
 	/**
@@ -107,7 +109,7 @@ public:
 	   \param approach FICA_APPROACH_SYMM or FICA_APPROACH_DEFL
 	   \todo the parameter should be an enum
 	 */
-	void set_approach(size_t approach); 
+	void set_approach(CIndepCompAnalysis::EApproach approach);
 
 	/**
 	   \returns the RV peak enhancement IC index of -1 if it could not be identified
@@ -144,6 +146,12 @@ public:
 	*/
 	int get_perfusion_idx() const; 
 
+        /**
+	   \returns the perfusion enhancement IC index of -1 if it could not be identified
+	*/
+	int get_movement_idx() const; 
+
+	
 	/**
 	   Dictionary for segmentation method flags 
 	 */
@@ -183,6 +191,13 @@ public:
 	 */
 	int get_RV_peak_time() const; 
 
+	/**
+	   Obtain the mixing curve of a vertain component
+	   @param idx index of the requested mixing series; 
+	   @returns the mixing curve
+	 */
+	std::vector<float> get_mixing_curve(unsigned  idx) const;
+	
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 
 

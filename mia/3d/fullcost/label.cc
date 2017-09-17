@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ void C3DLabelFullCost::prepare_distance_fields( const C3DUBImage &image )
                 if (exist) {
 			C3DFImage prep(bool_bin.get_size()); 
 			distance_transform_prepare(bool_bin.begin(), bool_bin.end(), 
-						   prep.begin());
+						   prep.begin(), true);
 			
                         m_ref_distances[i] = distance_transform(prep); 
 			transform(m_ref_distances[i].begin(), m_ref_distances[i].end(), 
@@ -257,7 +257,7 @@ void C3DLabelFullCost::do_reinit()
 		throw runtime_error("C3DLabelFullCost only works with images of equal size"); 
 	
 	if (m_src->get_voxel_size() != m_ref->get_voxel_size()) {
-		cvwarn() << "C3DLabelFullCost: src and reference image are of differnet voxel dimensions:"
+		cvwarn() << "C3DLabelFullCost: src and reference image are of different voxel dimensions:"
 			<< m_src->get_voxel_size() << " vs " << m_ref->get_voxel_size() 
 			<< " This code doesn't honour this.\n"; 
 	}

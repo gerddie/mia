@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,12 +62,19 @@ public:
 
 	/** copy constructor */
 	CWaveletSlopeClassifier(const CWaveletSlopeClassifier& other);
+
+	// Move constructor 
+	CWaveletSlopeClassifier(CWaveletSlopeClassifier&& other); 
 	
 	CWaveletSlopeClassifier(); 
 	
 	/// assignment operator 
 	CWaveletSlopeClassifier& operator =(const CWaveletSlopeClassifier& other);
 
+        /// move operator 
+	CWaveletSlopeClassifier& operator =(CWaveletSlopeClassifier&& other);
+
+	
 	~CWaveletSlopeClassifier();
 
 	/// @return the index of the periodic curve or -1 if none was found 

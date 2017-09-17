@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,29 +49,6 @@ TSimilarityProfile<dim>::TSimilarityProfile(PFullCost cost,
 }
 
 template <int dim>
-TSimilarityProfile<dim>::TSimilarityProfile(const TSimilarityProfile<dim>& other):
-	m_peak_freq(other.m_peak_freq), 
-	m_peak_freq_valid(other.m_peak_freq_valid), 
-	m_reference(other.m_reference), 
-	m_max_delta(other.m_max_delta), 
-	m_cost_values(other.m_cost_values)
-{
-}
-
-template <int dim>
-TSimilarityProfile<dim>& TSimilarityProfile<dim>::operator = (const TSimilarityProfile<dim>& other)
-{
-	if (this != &other) {
-		m_reference = other.m_reference; 
-		m_max_delta = other.m_max_delta;  
-		m_cost_values = other.m_cost_values; 
-		m_peak_freq = other.m_peak_freq;
-		m_peak_freq_valid = other.m_peak_freq_valid; 
-	}
-	return *this; 
-}
-
-template <int dim>
 float TSimilarityProfile<dim>::get_peak_frequency() const
 {
 	if (!m_peak_freq_valid) {
@@ -101,10 +78,10 @@ std::vector<size_t> TSimilarityProfile<dim>::get_periodic_subset() const
 
 	unsigned delta = 0; 
 	while (i > 2) {
-		if ((m_cost_values[i] < m_cost_values[i + 1] && 
-		     m_cost_values[i] < m_cost_values[i + 2] && 
-		     m_cost_values[i] < m_cost_values[i - 1] && 
-		     m_cost_values[i] < m_cost_values[i - 2]) || (delta > m_max_delta))  {
+		if ((m_cost_values[i] <= m_cost_values[i + 1] && 
+		     m_cost_values[i] <= m_cost_values[i + 2] && 
+		     m_cost_values[i] <= m_cost_values[i - 1] && 
+		     m_cost_values[i] <= m_cost_values[i - 2]) || (delta > m_max_delta))  {
 			result.push_back(i); 
 			i -= 3; 
 			delta = 0; 
@@ -118,10 +95,10 @@ std::vector<size_t> TSimilarityProfile<dim>::get_periodic_subset() const
 		
 	i = m_reference + 1; 
 	while (i < m_cost_values.size() - 2) {
-		if ((m_cost_values[i] < m_cost_values[i + 1] && 
-		     m_cost_values[i] < m_cost_values[i + 2] && 
-		     m_cost_values[i] < m_cost_values[i - 1] && 
-		     m_cost_values[i] < m_cost_values[i - 2]) || (delta > m_max_delta)) {
+		if ((m_cost_values[i] <= m_cost_values[i + 1] && 
+		     m_cost_values[i] <= m_cost_values[i + 2] && 
+		     m_cost_values[i] <= m_cost_values[i - 1] && 
+		     m_cost_values[i] <= m_cost_values[i - 2]) || (delta > m_max_delta)) {
 			result.push_back(i); 
 			i += 3; 
 			delta = 0; 

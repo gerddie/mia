@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ public:
 	void set_coefficients(const C3DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C3DFVectorfield& field);
 	void reinit()const;
-	C3DFVector apply( const C3DFVector& x) const;
+	C3DFVector get_displacement_at( const C3DFVector& x) const;
 	C3DFVector scale( const C3DFVector& x) const;
 
 	virtual const C3DBounds& get_size() const;

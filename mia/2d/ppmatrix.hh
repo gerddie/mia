@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,35 +55,35 @@ public:
 	~C2DPPDivcurlMatrix(); 
 
 	/**
-	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
+	   Given this matrix P and the coefficient field c evaluate the value for \f$c^T P c\f$
 	   \param coefficients B-Spline coefficient field c 
-	   \returns <c^T, P, c>
+	   \returns \f$<c^T, P, c>\f$
 	 */
 	double operator * (const C2DFVectorfield& coefficients) const; 
 
 	/**
-	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
+	   Given this matrix P and the coefficient field c evaluate the value for \f$c^T P c\f$ 
 	   \param coefficients B-Spline coefficient field c 
-	   \returns <c^T, P, c>
+	   \returns \f$<c^T, P, c>\f$
 	 */
 	double operator * (const T2DDatafield<C2DDVector>& coefficients) const; 
 
 
 	/**
-	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
+	   Given this matrix P and the coefficient field c evaluate the value for \f$c^T P c\f$ 
 	   \param coefficients B-Spline coefficient field c 
 	   \param[out] gradient gradient of the divcurl cost 
-	   \returns <c^T, P, c>
+	   \returns \f$<c^T, P, c>\f$
 	 */
 	
 	double evaluate(const C2DFVectorfield& coefficients, CDoubleVector& gradient) const; 
 
 	/**
-	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
+	   Given this matrix P and the coefficient field c evaluate the value for \f$c^T P c\f$ 
 	   Specialization for double valued vectors 
 	   \param coefficients B-Spline coefficient field c 
 	   \param[out] gradient gradient of the divcurl cost 
-	   \returns <c^T, P, c>
+	   \returns \f$<c^T, P, c>\f$
 	*/
 	double evaluate(const T2DDatafield<C2DDVector>& coefficients, CDoubleVector& gradient) const; 
 

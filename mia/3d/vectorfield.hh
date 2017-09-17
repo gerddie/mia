@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,9 +57,9 @@ public:
 	T3DVectorfield(const C3DBounds& size, const CAttributedData& data):
 		T3DDatafield<T>(size),
 		CAttributedData(data)
-	{
-	}
-
+		{
+		}
+	
 	C3DFVector get_voxel_size() const {
 		const PAttribute attr = get_attribute("voxel");
 		if (!attr) {
@@ -67,7 +67,7 @@ public:
 				"voxel size not defined, default to <1,1,1>\n";
 			return C3DFVector(1,1,1);
 		}
-
+		
 		const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
 		if (!vs){
 			cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size wrong type, "
@@ -76,14 +76,19 @@ public:
 		}
 		return *vs;
 	}
-
+	
 	void set_voxel_size(const C3DFVector& voxel){
 		set_attribute("voxel", PAttribute(new CVoxelAttribute(voxel)));
 	}
+
+	/** Interpolate the value of Field at p default uses tri-linear interpolation */
+        T get_interpol_val_at(const C3DFVector& p) const;
+
 	
+
 };
 
-extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
+extern template class EXPORT_3D T3DVectorfield<C3DFVector>;   
 /**
    @ingroup basic 
    @brief a 3D field of floating point single accuracy 3D vectors 
@@ -91,22 +96,34 @@ extern template class EXPORT_3D T3DVectorfield<C3DFVector>;
 class EXPORT_3D C3DFVectorfield : public T3DVectorfield<C3DFVector> {
 public: 
 	static const char *data_descr;
-
-	using T3DVectorfield<C3DFVector>::T3DVectorfield; 
 	
+	using T3DVectorfield<C3DFVector>::T3DVectorfield; 
+
+	/**
+	   \brief evaluate this vector field as the inverse of another 
+	   
+	   This functions corrects the vector field to describe the inverse transformation 
+	   of a given input vector field 
+
+	   \param other the vector field this one should be inverse of
+	   \param tol tolerance for inverse accuracy 
+	   \param maxiter maximum number of interations for one vector to be optimized 
+	 */
 	void update_as_inverse_of(const C3DFVectorfield& other, float tol, int maxiter);
 
+	/**
+	   Update this vector field by using a velocity field
+	   \param velocity_field the velocity field 
+	   \param time_step the time step to be used for the update 
+	 */
+	void update_by_velocity(const C3DFVectorfield& velocity_field, float time_step); 
+	
 };
 
 
 extern template class EXPORT_3D T3DVectorfield<C3DDVector>;
 
 
-
-/**
-   @ingroup basic 
-   @brief a 3D field of floating point single accuracy 3D vectors 
-*/
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 
 /**
@@ -122,8 +139,23 @@ typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
    \param[in,out] lhs left input vector field and output 
    \param[in] rhs right input vector field and output 
    \returns lhs after processing 
- */
+*/
 EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& lhs, const C3DFVectorfield& rhs);
+
+
+struct C3DLinearVectorfieldInterpolatorImpl;  
+class EXPORT_3D C3DLinearVectorfieldInterpolator {
+public: 
+	C3DLinearVectorfieldInterpolator(const C3DFVectorfield& field);
+	~C3DLinearVectorfieldInterpolator(); 
+	
+	C3DFVector operator () (const C3DFVector& x) const; 
+private: 
+	const C3DFVectorfield& m_field;
+	const size_t m_save_index_range;
+	const size_t m_field_size_m1;
+	C3DLinearVectorfieldInterpolatorImpl *impl; 
+}; 
 
 NS_MIA_END
 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,7 @@
 #include <mia/core/threadedmsg.hh>
 
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 
 NS_BEGIN(mean_3dimage_filter)
@@ -65,12 +64,6 @@ struct __dispatch_filter {
 	static T apply(const T3DImage<T>& data, int cx, int cy, int cz, int hw, int freedom) {
 		double result = 0.0; 
 		int n = freedom;
-		// 
-		// Coverty complains about this: 1128688, 1128687 
-		// 
-		// hw >= 1, cy >= 0 && cy < data.get_size().y
-		// therefore n>=8
-		// 
 		auto range = prepare_range(data.get_size(), cx, cy, cz, hw); 
 		auto rb = data.begin_range(range.first,range.second); 
 		auto re = data.end_range(range.first,range.second); 
@@ -80,6 +73,10 @@ struct __dispatch_filter {
 			++rb;
 			++n; 
 		}
+		
+		// hw >= 0, cy >= 0 && cy < data.get_size().y
+		// therefore n >=1, hence the override 
+		// coverity[divide_by_zero] 
 		return mia_round_clamped<T>(rint(result/n)); 
 	}
 }; 
@@ -101,6 +98,10 @@ struct __dispatch_filter<T, true> {
 			++rb; 
 			++n; 
 		}
+	 
+		// hw >= 0, cy >= 0 && cy < data.get_size().y
+		// therefore n >=1, hence the override 
+		// coverity[divide_by_zero] 
 		return static_cast<T>(result/n); 
 	}
 }; 
@@ -133,7 +134,7 @@ mia::T3DImage<T> *C3DMeanFilter::apply(const mia::T3DImage<T>& data) const
         T3DImage<T> * result = new T3DImage<T>(data.get_size(), data);
         const int hw = m_hwidth; 
 
-        auto run_slice  = [hw, data, result](const tbb::blocked_range<size_t>& range) {
+        auto run_slice  = [hw, data, result](const C1DParallelRange& range) {
                 for (auto z = range.begin(); z != range.end(); ++z) {
                         auto ir = result->begin_at(0,0,z);  
                         for (size_t y = 0; y < data.get_size().y; ++y)
@@ -142,7 +143,7 @@ mia::T3DImage<T> *C3DMeanFilter::apply(const mia::T3DImage<T>& data) const
                                 }
                 }
         }; 
-        parallel_for(tbb::blocked_range<size_t>(0, data.get_size().z, 1), run_slice);
+        pfor(C1DParallelRange(0, data.get_size().z, 1), run_slice);
         return result;
 }
 
@@ -198,7 +199,7 @@ P3DImage C3DVarianceFilter::operator () (const mia::T3DImage<T>& data) const
         T3DImage<T> * result = new T3DImage<T>(data.get_size(), data);
         const int hw = m_hwidth; 
 
-        auto run_slice  = [hw, &mean, result](const tbb::blocked_range<size_t>& range) {
+        auto run_slice  = [hw, &mean, result](const C1DParallelRange& range) {
                 for (auto z = range.begin(); z != range.end(); ++z) {
                         auto ir = result->begin_at(0,0,z);  
                         for (size_t y = 0; y < mean->get_size().y; ++y)
@@ -208,7 +209,7 @@ P3DImage C3DVarianceFilter::operator () (const mia::T3DImage<T>& data) const
                                 }
                 }
         }; 
-        parallel_for(tbb::blocked_range<size_t>(0, data.get_size().z, 1), run_slice);
+        pfor(C1DParallelRange(0, data.get_size().z, 1), run_slice);
         return P3DImage(result);
  }
 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,17 @@
 #include <map>
 #include <queue>
 #include <boost/filesystem.hpp>
+
+#if __cplusplus >= 201103
+#include <regex>
+using std::regex;
+using std::regex_match; 
+#else 
 #include <boost/regex.hpp>
+using boost::regex;
+using boost::regex_match; 
+#endif
+
 
 #include <mia/core/errormacro.hh>
 #include <mia/core/file.hh>
@@ -55,26 +65,30 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 	CSITranslator::register_for("AcquisitionNumber");
 	CSITranslator::register_for("InstanceNumber");
 	CPatientPositionTranslator::register_for(IDPatientPosition);
+	
+	CFloatTranslator::register_for(IDRescaleSlope);
+	CFloatTranslator::register_for(IDRescaleIntercept); 
+
 	add_suffix(".dcm");
 	add_suffix(".DCM");
 
 }
 
 struct attr_less {
-	bool operator()(const PAttribute& a, const PAttribute& b) {
+	bool operator()(const PAttribute& a, const PAttribute& b) const {
 		return a->is_less(*b);
 	}
 };
 
 struct image_instance_less {
-	bool operator()(const P2DImage& a, const P2DImage& b) {
+	bool operator()(const P2DImage& a, const P2DImage& b) const {
 		return !a->get_attribute(IDInstanceNumber)->is_less(*b->get_attribute(IDInstanceNumber));
 	}
 };
 
 typedef priority_queue<P2DImage, vector<P2DImage>, image_instance_less> CImageInstances;
 typedef map<PAttribute, CImageInstances, attr_less> CImageSeries;
-typedef map<PAttribute, CImageSeries, attr_less> CAquisitions;
+typedef map<PAttribute, CImageSeries, attr_less> CAcquisitions;
 
 struct C3DImageCreator: public TFilter<bool> {
 	C3DImageCreator(size_t nz): m_nz(nz),
@@ -180,7 +194,7 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::get_images(const vector<P2DImage>
 
 	PData result(new Data);
 
-	CAquisitions acc;
+	CAcquisitions acc;
 
 	// read all the images into a map
 	for(auto i =  candidates.begin();   i != candidates.end(); ++i) {
@@ -191,7 +205,7 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::get_images(const vector<P2DImage>
 				[(*i)->get_attribute(IDSeriesNumber)].push(*i);
 		}else{
 			cvwarn() << "Discard image because of no "
-				 << ((*i)->has_attribute(IDAcquisitionNumber) ? "" : "aquisition") 
+				 << ((*i)->has_attribute(IDAcquisitionNumber) ? "" : "acquisition") 
 				 << ((*i)->has_attribute(IDInstanceNumber) ? "" : "instance") 
 				 << ((*i)->has_attribute(IDSeriesNumber) ? "" : "series")
 				 << " number\n"; 
@@ -227,12 +241,12 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 
 	stringstream pattern;
 	pattern << ".*\\" << ext;
-	boost::regex pat_expr(pattern.str());
+	regex pat_expr(pattern.str());
 
 	bfs::directory_iterator di(dir);
 	bfs::directory_iterator dend;
 	while (di != dend) {
-		if (boost::regex_match(di->path().filename().string(), pat_expr) &&
+		if (regex_match(di->path().filename().string(), pat_expr) &&
 		    di->path().filename().string() != fname) {
 			bfs::path f =  di->path();
 			cvdebug() << "read file '" << f << "'\n";

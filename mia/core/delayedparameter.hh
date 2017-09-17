@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ const T TDelayedParameter<T>::get() const
 {
 	if (!(CDatapool::instance().has_key(m_key))) {
 		throw create_exception<std::invalid_argument>("TDelayedParameter::get(): Key '", m_key, 
-						    "' is not availabe in the data pool");  
+						    "' is not available in the data pool");  
 	}
 	return boost::any_cast<T>(CDatapool::instance().get(m_key)); 
 }

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,13 +90,15 @@ C2DImageIOPlugin::PData CJpeg2DImageIOPlugin::do_load(const string& fname) const
 	jpeg_start_decompress(&decompress.info);
 	// only one component? 
 	if (decompress.info.output_components != 1) {
-		throw create_exception<runtime_error>(":MIA only supports gray scale images, but got an image with ", 
-					    decompress.info.output_components, " color components.");
+		throw create_exception<invalid_argument>("The plugin '",get_descr(),
+							 "' only supports gray scale images, but got an image with ", 
+							 decompress.info.output_components, " color components.");
 	}
 
 	if (decompress.info.data_precision != 8) {
-		throw create_exception<runtime_error>(":MIA only supports 8-bit per pixel images, but got an image with ", 
-						      decompress.info.data_precision, " bits data precision.");
+		throw create_exception<invalid_argument>("The plugin '",get_descr(),"'only supports 8-bit per pixel images, "
+							 "but got an image with ", 
+							 decompress.info.data_precision, " bits data precision.");
 	}
 
 	int row_stride = decompress.info.output_width * decompress.info.output_components;
@@ -125,7 +127,6 @@ bool CJpeg2DImageIOPlugin::do_save_jpeg(FILE *f, const C2DUBImage& image) const
 
 	miajpeg::JpegCompress compress; 
 
-	jpeg_create_compress(&compress.info);
 	compress.err.error_exit = mia_jpeg_save_error_exit;
 
 	

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,7 @@
 
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/nccsum.hh> 
-#include <tbb/parallel_reduce.h>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 
 NS_BEGIN(NS)
 
@@ -39,7 +36,7 @@ CNCC3DImageCost::CNCC3DImageCost()
 template <typename T, typename S> 
 struct FEvaluateNCCSum {
 	FEvaluateNCCSum(const C3DBitImage& mask, const T& mov, const S& ref); 
-	NCCSums operator ()(const tbb::blocked_range<size_t>& range, const NCCSums& sumacc) const; 
+	NCCSums operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const; 
 private: 
 	C3DBitImage m_mask; 
 	T m_mov; 
@@ -55,7 +52,7 @@ FEvaluateNCCSum<T,S>::FEvaluateNCCSum(const C3DBitImage& mask, const T& mov, con
 }
 
 template <typename T, typename S> 
-NCCSums FEvaluateNCCSum<T,S>::operator ()(const tbb::blocked_range<size_t>& range, const NCCSums& sumacc) const
+NCCSums FEvaluateNCCSum<T,S>::operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const
 {
 	CThreadMsgStream msks; 
 	
@@ -89,10 +86,10 @@ public:
 
 		FEvaluateNCCSum<T,R> ev(m_mask, mov, ref); 
 		NCCSums sum; 
-		sum = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), sum, ev, 
-				      [](const NCCSums& x, const NCCSums& y){
-					      return x + y;
-				      });
+		sum = preduce(C1DParallelRange(0, mov.get_size().z, 1), sum, ev, 
+			      [](const NCCSums& x, const NCCSums& y){
+				      return x + y;
+			      });
 		return sum.value(); 
 	}
 }; 
@@ -120,15 +117,15 @@ public:
 		
 		NCCSums sum; 
 		FEvaluateNCCSum<T,R> ev(m_mask, mov, ref); 
-		sum = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), sum, ev, 
-					 [](const NCCSums& x, const NCCSums& y){
-					      return x + y;
-				      });
+		sum = preduce(C1DParallelRange(0, mov.get_size().z, 1), sum, ev, 
+			      [](const NCCSums& x, const NCCSums& y){
+				      return x + y;
+			      });
 		
 		auto geval = sum.get_grad_helper(); 
 
 		auto grad = get_gradient(mov); 
-		auto grad_eval = [this, &mov, &ref, &grad, &geval](const tbb::blocked_range<size_t>& range) {
+		auto grad_eval = [this, &mov, &ref, &grad, &geval](const C1DParallelRange& range) {
 			for (auto z = range.begin(); z != range.end(); ++z) {
 				auto ig = grad.begin_at(0,0,z); 
 				auto iforce = m_force.begin_at(0,0,z); 
@@ -148,7 +145,7 @@ public:
 			}; 
 		}; 
 		
-		parallel_for(tbb::blocked_range<size_t>(0, mov.get_size().z, 1), grad_eval); 
+		pfor(C1DParallelRange(0, mov.get_size().z, 1), grad_eval); 
 
 		return geval.first; 
 	}

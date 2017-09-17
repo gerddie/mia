@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,34 +42,6 @@ T3DDatafield<bool>::strip_avg()
 }
 
 
-template <>
-T3DDatafield<bool>::value_type
-T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
-{
-        // Calculate the coordinates and the distances
-        size_t  x = (size_t )p.x;
-        size_t  y = (size_t )p.y;
-        size_t  z = (size_t )p.z;
-        float  fx = p.x-x;
-        float  fy = p.y-y;
-        float  fz = p.z-z;
-
-        float  dx = 1-fx;
-        float  dy = 1-fy;
-        float  dz = 1-fz;
-
-        float a1,a3,a5,a7;
-
-	a1 = (dx * (*this)(x  , y  , z  ) + fx * (*this)(x+1, y  , z  ));
-	a3 = (dx * (*this)(x  , y+1, z  ) + fx * (*this)(x+1, y+1, z  ));
-	a5 = (dx * (*this)(x  , y  , z+1) + fx * (*this)(x+1, y  , z+1));
-	a7 = (dx * (*this)(x  , y+1, z+1) + fx * (*this)(x+1, y+1, z+1));
-
-        float b1 = dy * a1 + fy * a3;
-	float b2 = dy * a5 + fy * a7;
-
-	return  (dz * b1 + fz * b2) > 0.5;
-}
 
 #define INSTANCIATE(TYPE)						\
 	template class  T3DDatafield<TYPE>;				\
@@ -84,25 +56,24 @@ T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 
 INSTANCIATE(double);
 INSTANCIATE(float);
-INSTANCIATE(unsigned int);
-INSTANCIATE(int);
+INSTANCIATE(int8_t);
+INSTANCIATE(int16_t);
+INSTANCIATE(int32_t);
+INSTANCIATE(int64_t);
+INSTANCIATE(uint8_t);
+INSTANCIATE(uint16_t);
+INSTANCIATE(uint32_t);
+INSTANCIATE(uint64_t);
 
-#ifdef LONG_64BIT
-INSTANCIATE(signed long);
-INSTANCIATE(unsigned long);
-#endif
-INSTANCIATE(short);
-INSTANCIATE(unsigned short);
-INSTANCIATE(unsigned char );
-INSTANCIATE(signed char);
-INSTANCIATE(bool);
+template class  T3DDatafield<bool>;
 
 DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
 DEFINE_TYPE_DESCR2(C3DFVector, "3dfvector"); 
 
-template class EXPORT_3D  CTParameter<C3DBounds>;
-template class EXPORT_3D  CTParameter<C3DFVector>;
-template class EXPORT_3D  TTranslator<C3DFVector>; 
+template class CTParameter<C3DBounds>;
+template class CTParameter<C3DFVector>;
+template class TTranslator<C3DFVector>; 
+template class TAttribute<C3DFVector>; 
 
 NS_MIA_END
 

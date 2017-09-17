@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,24 +86,39 @@ C2DRGBImageIOPlugin::PData CJpegRGB2DImageIOPlugin::do_load(const string& fname)
 	jpeg_start_decompress(&decompress.info);
 	// only one component? 
 	if (decompress.info.output_components != 3) {
-		throw create_exception<runtime_error>(":MIA this plugin only supports RGB images, but got an image with ", 
+		throw create_exception<invalid_argument>(":MIA this plugin only supports RGB images, but got an image with ", 
 					    decompress.info.output_components, " color components.");
 	}
 
 
-	int row_stride = decompress.info.output_width * decompress.info.output_components * 3;
-	vector<JSAMPLE> buf(row_stride); 
+	int row_stride = decompress.info.output_width * decompress.info.output_components;
+	vector<JSAMPLE> buf(row_stride);
+
+	
+	
+	cvdebug() << "owidth=" << decompress.info.output_width
+		  << ", row_stride="  << row_stride << "\n"; 
 	
 	JSAMPROW buffer[1]; 
-	buffer[0] = &buf[0]; 
-
+	buffer[0] = &buf[0];
+	
+	cvdebug() << "Create image of size "
+		  << decompress.info.output_width <<"x"<< decompress.info.output_height << "\n"; 
+	
 	CRGB2DImage *result = new CRGB2DImage(C2DBounds(decompress.info.output_width, decompress.info.output_height)); 
 	PRGB2DImage presult(result); 
+
+	unsigned char *p = presult->pixel(); 
+	cvdebug() << "output pointer base = " << (long)p << "\n"; 
 	
 	while (decompress.info.output_scanline < decompress.info.output_height) {
-		(void) jpeg_read_scanlines(&decompress.info, buffer, 1);
-		copy(buf.begin(), buf.end(), 
-		     result->pixel() + ((decompress.info.output_scanline - 1) * row_stride));  
+		cvdebug() << "scanline=" << decompress.info.output_scanline
+			  << " - " << decompress.info.output_height
+			  << " outpos = " << decompress.info.output_scanline * row_stride <<"\n"; 
+		jpeg_read_scanlines(&decompress.info, buffer, 1);
+		cvdebug() << "output pointer = " << (long)&p[decompress.info.output_scanline * row_stride] << "\n"; 
+		
+		copy(buf.begin(), buf.end(), &p[(decompress.info.output_scanline-1) * row_stride]);
 	}
 	
 	return presult; 
@@ -114,7 +129,6 @@ bool CJpegRGB2DImageIOPlugin::do_save_jpeg(FILE *f, const CRGB2DImage& image) co
 
 	miajpeg::JpegCompress compress; 
 
-	jpeg_create_compress(&compress.info);
 	compress.err.error_exit = mia_jpeg_save_error_exit;
 	
 	compress.info.image_width = image.get_size().x; 

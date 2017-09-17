@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,17 @@
  *
  */
 
-#include <stdexcept>
-#include <climits>
 
 #include <mia/internal/autotest.hh>
 #include <mia/core/filetools.hh>
+
+#include <stdexcept>
+#include <climits>
+
+
+#ifndef MAX_PATH
+#define MAX_PATH 4096
+#endif
 
 
 NS_MIA_USE
@@ -80,6 +86,37 @@ BOOST_FIXTURE_TEST_CASE( test_split_filename_number_pattern, Fixture_filename_sp
 	run("ldata0", "ldata", "", "0");
 
 }
+
+BOOST_AUTO_TEST_CASE( test_get_consecutive_numbered_files )
+{
+	string filename(MIA_SOURCE_ROOT"/testdata/IM-0001-0000.dcm");
+	size_t minrange = 0;
+	size_t maxrange = 0;
+	size_t format_width = 0; 
+	
+	auto result = get_filename_pattern_and_range(filename, minrange, maxrange, format_width);
+
+	BOOST_CHECK_EQUAL(minrange, 1u); 
+	BOOST_CHECK_EQUAL(maxrange, 18u); 
+	BOOST_CHECK_EQUAL(format_width, 4u);
+	BOOST_CHECK_EQUAL(result, string(MIA_SOURCE_ROOT"/testdata/IM-0001-%04d.dcm")); 
+}
+
+BOOST_AUTO_TEST_CASE( test_get_filename_pattern_and_range )
+{
+	string filename(MIA_SOURCE_ROOT"/testdata/IM-0001-0000.dcm");
+
+	auto filenames = get_consecutive_numbered_files(filename);
+
+	BOOST_CHECK_EQUAL(filenames.size(), 17u);
+	for (unsigned i = 1; i < filenames.size(); ++i) {
+		char buffer[MAX_PATH +1]; 
+		snprintf(buffer, MAX_PATH, MIA_SOURCE_ROOT"/testdata/IM-0001-%04d.dcm", i);
+		BOOST_CHECK_EQUAL(filenames[i-1], string(buffer));
+	}
+}
+
+
 
 void Fixture_filename_split_pattern::run(const string& name, const string& expect_base,
 					  const string& expect_suffix, const string& expect_number) const

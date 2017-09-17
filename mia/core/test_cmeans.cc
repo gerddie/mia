@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <mia/internal/autotest.hh>
 
 #include <cmath>
+#include <cstdint>
 #include <mia/core/cmeans.hh>
 
 
@@ -51,7 +52,7 @@ CTestFixedInitializer::CTestFixedInitializer(const CMeans::DVector& init):
 {
 }
 
-CMeans::DVector CTestFixedInitializer::run(const CMeans::NormalizedHistogram& nh) const
+CMeans::DVector CTestFixedInitializer::run(const CMeans::NormalizedHistogram& MIA_PARAM_UNUSED(nh)) const
 {
 	return m_init; 
 }
@@ -98,7 +99,11 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 	vector<double> centers{30, 120, 220, 300, 390};
 	vector<double> weights{2.0, 0.9, 1.3, 1.1, 0.9};
 
-	vector<double> expect{34.34, 105.31, 214.627, 278.295, 383.15};
+	vector<double> expect{34.438498496123287,
+			118.45642796465776,
+			215.64776588197637,
+			290.79720889114071,
+			385.55101288097893}; 
 
 	double k = 20;
 	for (int i = 0; i < 250; ++i) {
@@ -111,7 +116,7 @@ BOOST_AUTO_TEST_CASE( test_even_initialized )
 	}
 
 	CMeans::PInitializer cci(new CTestFixedInitializer({0, 0.25, 0.5, 0.75, 1}));
-	CMeans cm(0.01, 0.0001, cci);
+	CMeans cm(0.0001, cci);
 
 
 	CMeans::DVector result_cci(5); 
@@ -210,5 +215,81 @@ BOOST_AUTO_TEST_CASE( test_get_fuzzy )
 	BOOST_CHECK_CLOSE(fuzzy0[0], 6, 0.01);
 	BOOST_CHECK_CLOSE(fuzzy0[1], 9, 0.01);
 	BOOST_CHECK_CLOSE(fuzzy0[2], 9, 0.01);	
+}
+
+// Helper class neede to get a container with only one template parameter
+// that is needed by the cmeans templates 
+// template alias doesn't cut it. 
+
+template <typename T>
+class Vec: public std::vector<T> {
+public:
+	using vector<T>::vector; 
+}; 
+
+
+BOOST_AUTO_TEST_CASE( test_cmeans_evaluate_probabilities_IF )
+{
+	Vec<uint16_t> image = {1,     2,   3,   4,   5};
+	Vec<float>    gain =  {1.0, 2.0, 1.0, 2.0, 0.5};
+	vector<double>   class_centers = {1.5, 3.5};
+
+	Vec<Vec<float>> pv(2, Vec<float>(5));
+
+	cmeans_evaluate_probabilities(image, gain, class_centers, pv);
+
+	BOOST_CHECK_EQUAL(pv[0][0], 1.0);
+	BOOST_CHECK_EQUAL(pv[1][0], 0.0); 
+
+	BOOST_CHECK_EQUAL(pv[0][1], 1.0);
+	BOOST_CHECK_EQUAL(pv[1][1], 0.0); 
+
+	BOOST_CHECK_EQUAL(pv[0][2], 0.25f / 2.5f); // 1.5 - 3 - 3.5    (2.25   0.25)  / 2.5 
+	BOOST_CHECK_EQUAL(pv[1][2], 2.25f / 2.5f); 
+
+	BOOST_CHECK_EQUAL(pv[0][3], .9f); 
+	BOOST_CHECK_EQUAL(pv[1][3], .1f); 
+
+	BOOST_CHECK_EQUAL(pv[0][4], 0.0);
+	BOOST_CHECK_EQUAL(pv[1][4], 1.0); 
 	
+	
+		
+}
+
+BOOST_AUTO_TEST_CASE( test_cmeans_update_class_centers )
+{
+	Vec<uint16_t> image = {1,    2,   3,   4,   5};
+	Vec<float>    gain =  {1.0, 2.0, 1.0, 2.0, 0.5};
+	vector<double>   class_centers = {1.0, 3.0};
+
+	Vec<Vec<float>> pv(2, Vec<float>(5));
+
+	pv[0][0]= 1.0;
+	pv[0][1]= 1.0;
+	pv[0][2]= 0.25f / 2.5f; // 1.5 - 3 - 3.5    (2.25   0.25)  / 2.5
+	pv[0][3]= .9f;
+	pv[0][4]= 0.0;
+	
+	pv[1][0]= 0.0; 
+	pv[1][1]= 0.0; 
+	pv[1][2]= 2.25f / 2.5f; 
+	pv[1][3]= .1f; 
+	pv[1][4]= 1.0; 
+	
+	//double test_class_center1_w = 1 + 4  + 0.25 * 0.25 / 2.5 / 2.5 * 3 + 0.9 * 0.9 * 8;
+	//double test_class_center1_n = 1 + 4  + 0.25 * 0.25 / 2.5 / 2.5 * 1 + 0.9 * 0.9 * 4;
+
+         //double test_class_center2_w = 2.25 * 2.25 / 2.5 / 2.5 * 3 + 0.1 * 0.1 * 8 + 2,5;
+	//double test_class_center2_n = 2.25 * 2.25 / 2.5 / 2.5 * 1 + 0.1 * 0.1 * 4 + 0.25;
+
+
+	
+	double r =  cmeans_update_class_centers(image, gain,pv, class_centers); 
+		
+	BOOST_CHECK_CLOSE(class_centers[0], 1.197575757, 0.001);
+	BOOST_CHECK_CLOSE(class_centers[1], 3.777272727, 0.001);
+
+	BOOST_CHECK_CLOSE(r, sqrt(.197575757  * .197575757 + .777272727 * .777272727), 0.001); 
+
 }

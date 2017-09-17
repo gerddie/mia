@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,11 @@ C3DGridTransformation::C3DGridTransformation(const C3DBounds& size, const C3DInt
 	m_field(size), 
 	m_upscale_interpolator_factory("bspline:d=1", "zero")
 {
+}
+
+C3DFVector C3DGridTransformation::get_displacement_at(const C3DFVector& x) const
+{
+	return m_field.get_interpol_val_at(x);
 }
 
 P3DTransformation C3DGridTransformation::do_upscale(const C3DBounds& size) const
@@ -296,7 +301,7 @@ void C3DGridTransformation::iterator_impl::do_z_increment()
 
 C3DFVector C3DGridTransformation::operator ()(const  C3DFVector& x) const
 {
-	return x - apply(x);
+	return x - get_displacement_at(x);
 }
 
 C3DGridTransformation::const_iterator C3DGridTransformation::begin() const
@@ -406,7 +411,7 @@ EXPORT_3D C3DGridTransformation operator + (const C3DGridTransformation& a, cons
 		for (size_t y = 0; y < a.get_size().y; ++y)  {
 			for (size_t x = 0; x < a.get_size().x; ++x, ++ri, ++bi)  {
 				const C3DFVector xi = C3DFVector(x,y,z) - *bi;
-				*ri = a.apply(xi) +  *bi;
+				*ri = a.get_displacement_at(xi) +  *bi;
 			}
 		}
 	}

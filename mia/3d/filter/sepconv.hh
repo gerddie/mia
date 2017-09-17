@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,28 @@ public:
 private:
 	int m_w;
 };
+
+enum EGradientDirection {gd_x, gd_y, gd_z, gd_undefined};
+
+class C3DSobelFilterPlugin: public mia::C3DFilterPlugin {
+public:
+	C3DSobelFilterPlugin();
+	virtual mia::C3DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+private:
+	EGradientDirection m_direction; 
+};
+
+class C3DScharrFilterPlugin: public mia::C3DFilterPlugin {
+public:
+	C3DScharrFilterPlugin();
+	virtual mia::C3DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+private:
+	EGradientDirection m_direction; 
+};
+
+
 
 NS_END
 

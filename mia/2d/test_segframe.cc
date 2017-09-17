@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,11 @@
 #include <mia/2d/boundingbox.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/transformfactory.hh>
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
 
 using namespace mia; 
 using namespace std;
 using namespace ::boost::unit_test;
-using namespace xmlpp;
 namespace bfs=boost::filesystem;
 
 extern const char *testframe_init;
@@ -61,14 +60,11 @@ struct FrameTestRead {
 
 void FrameTestRead::init(const char *init_str)
 {
-	xmlpp::DomParser parser;
-	parser.parse_memory(init_str);
-	const xmlpp::Document *document = parser.get_document();
-	const xmlpp::Element *root = document->get_root_node ();
-	const xmlpp::Node::NodeList nodes = root->get_children();
+	CXMLDocument document(init_str);
+	auto root = document.get_root_node();
+	auto nodes = root->get_all_children();
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
-
-	frame = CSegFrame (**nodes.begin(), 1);
+	frame = CSegFrame (*nodes[0], 1);
 }
 
 
@@ -139,20 +135,20 @@ BOOST_FIXTURE_TEST_CASE(segframe_shift, FrameTestRead)
 
 const char *testframe_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"image.png\">"
-	"<star y=\"118\" x=\"109\" r=\"21\">"
-	"<point y=\"1\" x=\"0\"/>"
-	"<point y=\"-0.5\" x=\"0.866025\"/>"
-	"<point y=\"-0.5\" x=\"-0.866025\"/>"
+	"<star r=\"21\" x=\"109\" y=\"118\">"
+	"<point x=\"0\" y=\"1\"/>"
+	"<point x=\"0.866025\" y=\"-0.5\"/>"
+	"<point x=\"-0.866025\" y=\"-0.5\"/>"
 	"</star>"
 	"<section color=\"white\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</section>"
 	"<section color=\"red\">"
-	"<point y=\"21\" x=\"11\"/>"
-	"<point y=\"11\" x=\"21\"/>"
-	"<point y=\"5\" x=\"1\"/>"
+	"<point x=\"11\" y=\"21\"/>"
+	"<point x=\"21\" y=\"11\"/>"
+	"<point x=\"1\" y=\"5\"/>"
 	"</section>"
 	"</frame>"
 	"</test>\n";
@@ -160,20 +156,20 @@ const char *testframe_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>
 
 const char *testframe_shifted = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"newname\">"
-	"<star y=\"116\" x=\"108\" r=\"21\">"
-	"<point y=\"1\" x=\"0\"/>"
-	"<point y=\"-0.5\" x=\"0.866025\"/>"
-	"<point y=\"-0.5\" x=\"-0.866025\"/>"
+	"<star r=\"21\" x=\"108\" y=\"116\">"
+	"<point x=\"0\" y=\"1\"/>"
+	"<point x=\"0.866025\" y=\"-0.5\"/>"
+	"<point x=\"-0.866025\" y=\"-0.5\"/>"
 	"</star>"
 	"<section color=\"white\">"
-	"<point y=\"18\" x=\"9\"/>"
-	"<point y=\"8\" x=\"19\"/>"
-	"<point y=\"2\" x=\"-1\"/>"
+	"<point x=\"9\" y=\"18\"/>"
+	"<point x=\"19\" y=\"8\"/>"
+	"<point x=\"-1\" y=\"2\"/>"
 	"</section>"
 	"<section color=\"red\">"
-	"<point y=\"19\" x=\"10\"/>"
-	"<point y=\"9\" x=\"20\"/>"
-	"<point y=\"3\" x=\"0\"/>"
+	"<point x=\"10\" y=\"19\"/>"
+	"<point x=\"20\" y=\"9\"/>"
+	"<point x=\"0\" y=\"3\"/>"
 	"</section>"
 	"</frame>"
 	"</test>\n";
@@ -194,11 +190,11 @@ BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 	frame.transform(*transform);
 	frame.set_imagename("newname"); 
 
-	xmlpp::Document document;
-	xmlpp::Element* nodeRoot = document.create_root_node("test");
+	CXMLDocument document;
+	auto nodeRoot = document.create_root_node("test");
 	frame.write(*nodeRoot, 1);
 
-	const string xmldoc = document.write_to_string("UTF-8");
+	const string xmldoc = document.write_to_string("UTF-8", false);
 	const string testdoc(testframe_shifted);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -213,18 +209,18 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask, FrameTestRead)
 		"<?xml version=\"1.0\"?>\n<test>"
 		"<frame image=\"framename\">"
                 "<section color=\"white\">"
-		"<point y=\"2\" x=\"1\"/>"
-		"<point y=\"4\" x=\"1\"/>"
-		"<point y=\"4\" x=\"3\"/>"
-		"<point y=\"2\" x=\"3\"/>"
+		"<point x=\"1\" y=\"2\"/>"
+		"<point x=\"1\" y=\"4\"/>"
+		"<point x=\"3\" y=\"4\"/>"
+		"<point x=\"3\" y=\"2\"/>"
 		"</section>"
                 "<section color=\"blue\">"
-		"<point y=\"0\" x=\"2\"/>"
-		"<point y=\"2\" x=\"2\"/>"
-		"<point y=\"2\" x=\"3\"/>"
-		"<point y=\"3\" x=\"3\"/>"
-		"<point y=\"3\" x=\"4\"/>"
-		"<point y=\"0\" x=\"4\"/>"
+		"<point x=\"2\" y=\"0\"/>"
+		"<point x=\"2\" y=\"2\"/>"
+		"<point x=\"3\" y=\"2\"/>"
+		"<point x=\"3\" y=\"3\"/>"
+		"<point x=\"4\" y=\"3\"/>"
+		"<point x=\"4\" y=\"0\"/>"
 		"</section>"
 		"</frame></test>\n";
 
@@ -347,18 +343,18 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_size, FrameTestRead)
 		"<?xml version=\"1.0\"?>\n<test>"
 		"<frame image=\"name.@\">"
                 "<section color=\"white\">"
-		"<point y=\"2\" x=\"1\"/>"
-		"<point y=\"4\" x=\"1\"/>"
-		"<point y=\"4\" x=\"3\"/>"
-		"<point y=\"2\" x=\"3\"/>"
+		"<point x=\"1\" y=\"2\"/>"
+		"<point x=\"1\" y=\"4\"/>"
+		"<point x=\"3\" y=\"4\"/>"
+		"<point x=\"3\" y=\"2\"/>"
 		"</section>"
                 "<section color=\"blue\">"
-		"<point y=\"0\" x=\"2\"/>"
-		"<point y=\"2\" x=\"2\"/>"
-		"<point y=\"2\" x=\"3\"/>"
-		"<point y=\"3\" x=\"3\"/>"
-		"<point y=\"3\" x=\"4\"/>"
-		"<point y=\"0\" x=\"4\"/>"
+		"<point x=\"2\" y=\"0\"/>"
+		"<point x=\"2\" y=\"2\"/>"
+		"<point x=\"3\" y=\"2\"/>"
+		"<point x=\"3\" y=\"3\"/>"
+		"<point x=\"4\" y=\"3\"/>"
+		"<point x=\"4\" y=\"0\"/>"
 		"</section>"
 		"</frame></test>\n";
 
@@ -390,18 +386,18 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_stats, FrameTestRead)
 		"<?xml version=\"1.0\"?>\n<test>"
 		"<frame image=\"name.@\">"
                 "<section color=\"white\">"
-		"<point y=\"2\" x=\"1\"/>"
-		"<point y=\"4\" x=\"1\"/>"
-		"<point y=\"4\" x=\"3\"/>"
-		"<point y=\"2\" x=\"3\"/>"
+		"<point x=\"1\" y=\"2\"/>"
+		"<point x=\"1\" y=\"4\"/>"
+		"<point x=\"3\" y=\"4\"/>"
+		"<point x=\"3\" y=\"2\"/>"
 		"</section>"
                 "<section color=\"blue\">"
-		"<point y=\"0\" x=\"2\"/>"
-		"<point y=\"2\" x=\"2\"/>"
-		"<point y=\"2\" x=\"3\"/>"
-		"<point y=\"3\" x=\"3\"/>"
-		"<point y=\"3\" x=\"4\"/>"
-		"<point y=\"0\" x=\"4\"/>"
+		"<point x=\"2\" y=\"0\"/>"
+		"<point x=\"2\" y=\"2\"/>"
+		"<point x=\"3\" y=\"2\"/>"
+		"<point x=\"3\" y=\"3\"/>"
+		"<point x=\"4\" y=\"3\"/>"
+		"<point x=\"4\" y=\"0\"/>"
 		"</section>"
 		"</frame></test>\n";
 
@@ -458,11 +454,11 @@ BOOST_AUTO_TEST_CASE(segframe_write)
 
 	CSegFrame frame("image.png", star, sections);
 
-	xmlpp::Document document;
-	xmlpp::Element* nodeRoot = document.create_root_node("test");
+	CXMLDocument document;
+	auto nodeRoot = document.create_root_node("test");
 	frame.write(*nodeRoot, 1);
 
-	const string xmldoc = document.write_to_string("UTF-8");
+	const string xmldoc = document.write_to_string("UTF-8", false);
 	const string testdoc(testframe_init);
 
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
@@ -472,26 +468,26 @@ BOOST_AUTO_TEST_CASE(segframe_write)
 
 const char *testframe_init2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>"
 	"<frame image=\"image.png\">"
-	"<star y=\"118\" x=\"109\" r=\"21\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<star r=\"21\" x=\"109\" y=\"118\">"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	" "
 	"</star>"
 	"<section color=\"white\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<point x=\"10\" y=\"20\"/>"
+	"<point x=\"20\" y=\"10\"/>"
+	"<point x=\"0\" y=\"4\"/>"
 	"</section>"
 	"<section color=\"red\">"
-	"<point y=\"21\" x=\"11\"/>"
-	"<point y=\"11\" x=\"21\"/>"
-	"<point y=\"5\" x=\"1\"/>"
+	"<point x=\"11\" y=\"21\"/>"
+	"<point x=\"21\" y=\"11\"/>"
+	"<point x=\"1\" y=\"5\"/>"
 	"</section>"
 	"<section color=\"blue\">"
-	"<point y=\"21\" x=\"11\"/>"
-	"<point y=\"11\" x=\"21\"/>"
-	"<point y=\"5\" x=\"1\"/>"
+	"<point x=\"11\" y=\"21\"/>"
+	"<point x=\"21\" y=\"11\"/>"
+	"<point x=\"1\" y=\"5\"/>"
 	"</section>"
 	"</frame>"
 	"</test>\n";

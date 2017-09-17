@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,8 +70,6 @@ mia::P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver
 				     bool use_multigrid, bool use_fullres,TMeasureList *measure_list,
 				     const mia::C3DInterpolatorFactory& ipf
 				);
-
-extern mia::CWatch Clock;
 
 
 class TFluidReg  {

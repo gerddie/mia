@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_distance_from_inf )
 
 	C2DFImage src_img(C2DBounds(4,4)); 
 	
-	distance_transform_prepare(&in_2d[0], &in_2d[16],src_img.begin()); 
+	distance_transform_prepare(&in_2d[0], &in_2d[16],src_img.begin(), true); 
 	
 	C2DFImage result =  distance_transform(src_img); 
 
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE( test_distance_from_func)
 
 	C2DFImage src_img(C2DBounds(4,4)); 
 
-	distance_transform_prepare(&in_2d[0], &in_2d[16],src_img.begin()); 
+	distance_transform_prepare(&in_2d[0], &in_2d[16],src_img.begin(), false); 
 	
 	C2DFImage result =  distance_transform(src_img); 
 

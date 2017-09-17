@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,6 +99,103 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost_src_mask)
 	BOOST_CHECK_CLOSE(gradient[75], -255.0 , 0.1);
 	cvdebug() << gradient << "\n"; 	
 }
+
+BOOST_AUTO_TEST_CASE( test_imagefullcost_src_ref_mask)
+{
+
+	// create two images 
+	const unsigned char src_data[64] = {
+		0, 0, 0, 0,   0, 0, 0, 0,  
+		0, 0, 0, 0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   0, 0, 0, 0, 
+		0, 0, 0, 0,   0, 0, 0, 0,
+		
+ 		0, 0, 0,  0,   0,255,255, 0,  
+		0,255,255,0,   0, 128, 0, 0, 
+		0, 255, 0, 0,  0, 128,  0, 0,  
+		0, 0,  0, 0,   0, 0, 0, 0
+
+	};
+	const unsigned char ref_data[64] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	};
+
+	const bool src_mask_data[64] = {
+		0, 0, 0, 0,   0,  0,  0, 0,  0, 0, 0, 0,   0, 0, 0, 0,
+		0, 0, 0, 0,   0,  1,  1, 0,  0, 1, 1, 0,   0, 0, 0, 0,
+		0, 0, 0, 0,   0,  1,  1, 0,  0, 1, 1, 0,   0, 0, 0, 0,
+		0, 0, 0, 0,   0,  0,  0, 0,  0, 0, 0, 0,   0, 0, 0, 0
+	};
+	
+	const bool ref_mask_data[64] = {
+		0, 0, 0, 0,   0,  0,  0, 0,  0, 0, 0, 0,   0, 0, 0, 0,
+		0, 0, 0, 0,   0,  0,  0, 0,  0, 0, 0, 0,   0, 0, 0, 0,
+		0, 0, 0, 0,   1,  1,  1, 1,  1, 1, 1, 1,   0, 0, 0, 0,
+		0, 0, 0, 0,   0,  0,  0, 0,  0, 0, 0, 0,   0, 0, 0, 0
+	};
+
+	
+	C2DBounds size(8,8); 
+
+	P2DImage src(new C2DUBImage(size, src_data ));
+	P2DImage ref(new C2DUBImage(size, ref_data ));
+
+	P2DImage src_mask(new C2DBitImage(size, src_mask_data ));
+	P2DImage ref_mask(new C2DBitImage(size, ref_mask_data ));
+	
+	BOOST_REQUIRE(save_image("src.@", src)); 
+	BOOST_REQUIRE(save_image("ref.@", ref)); 
+	BOOST_REQUIRE(save_image("src-mask.@", src_mask));
+	BOOST_REQUIRE(save_image("ref-mask.@", ref_mask)); 
+
+	C2DMaskedImageFullCost cost("src.@", "ref.@","src-mask.@", "ref-mask.@",
+                                    C2DMaskedImageCostPluginHandler::instance().produce("ssd"), 1.0); 
+
+	cvdebug() << "prepare cost\n"; 
+	cost.reinit(); 
+	cvdebug() << "set size cost\n"; 
+	cost.set_size(size);
+	
+	auto tfactory = produce_2dtransform_factory("vf"); 
+	auto t = tfactory->create(size); 
+	auto tp = t->get_parameters(); 
+	std::fill(tp.begin(), tp.end(),0.0); 
+	t->set_parameters(tp); 
+	
+	CDoubleVector gradient(t->degrees_of_freedom()); 
+	double cost_value = cost.evaluate(*t, gradient);
+	BOOST_CHECK_EQUAL(gradient.size(), 2u * 64u); 
+
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0/16.0 , 0.1);
+
+	double value = cost.cost_value(*t);
+
+	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0/16.0  , 0.1);
+
+	BOOST_CHECK_CLOSE(cost.cost_value(), 0.5 * 255 * 255.0/16.0  , 0.1);
+	
+	BOOST_CHECK_CLOSE(gradient[74], -255 *255/128.0 , 0.1);
+	BOOST_CHECK_CLOSE(gradient[75], -255.0 , 0.1);
+	cvdebug() << gradient << "\n";
+
+	BOOST_CHECK(cost.has(property_gradient));
+	BOOST_CHECK(!cost.has("nonexistent-property"));
+
+	C2DBounds read_size = C2DBounds::_0;
+	
+	BOOST_CHECK(cost.get_full_size(read_size));
+	BOOST_CHECK_EQUAL(read_size, size);
+
+	C2DBounds read_wrong_size(2,3); 
+	BOOST_CHECK(!cost.get_full_size(read_wrong_size));
+		
+	cost.set_size(C2DBounds(4,4));
+	
+}
+
 
 BOOST_AUTO_TEST_CASE( test_imagefullcost_ref_mask)
 {

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,6 +173,44 @@ T3DImage<T>::T3DImage(const T3DImage<T>& orig):
 }
 
 template <typename T>
+T3DImage<T>::T3DImage(T3DImage<T>&& orig):
+	C3DImage(orig),
+	m_image(orig.m_image)
+{
+}	
+
+template <typename T>
+T3DImage<T>& T3DImage<T>::operator = (const T3DImage<T>& orig)
+{
+	if (this != &orig) {
+		C3DImage::operator =(orig);
+		m_image = orig.m_image;
+	}
+	return *this; 
+}
+
+
+template <typename T>
+T3DImage<T>& T3DImage<T>::operator = (T3DImage<T>&& orig)
+{
+	if (this != &orig) {
+		C3DImage::operator =(std::move(orig));
+		m_image = std::move(orig.m_image);
+	}
+	return *this;
+}
+
+
+template <typename T>
+T3DImage<T>::T3DImage(const T3DDatafield<T>& orig):
+	C3DImage((EPixelType)pixel_type<T>::value),
+	m_image(orig)
+
+{
+}
+
+
+template <typename T>
 C3DImage::Pointer T3DImage<T>::clone() const
 {
 	return P3DImage(new T3DImage<T>(*this));
@@ -284,6 +322,13 @@ template <typename T>
 const C3DBounds& T3DImage<T>::get_size() const
 {
 	return m_image.get_size();
+}
+
+template <class T>
+std::pair<double, double> T3DImage<T>::get_minmax_intensity() const
+{
+	auto mm = std::minmax_element( m_image.begin(), m_image.end());
+	return std::pair<double, double>(*mm.first, *mm.second);
 }
 
 
@@ -407,21 +452,19 @@ C3DFVectorfield get_gradient(const C3DImage& image)
 	return filter(gg, image);
 }
 
+
 template class T3DImage<bool>;
-template class T3DImage<signed char>;
-template class T3DImage<unsigned char>;
-template class T3DImage<signed short>;
-template class T3DImage<unsigned short>;
-template class T3DImage<signed int>;
-template class T3DImage<unsigned int>;
-
-#ifdef LONG_64BIT
-template class T3DImage<signed long>;
-template class T3DImage<unsigned long>;
-#endif
-
+template class T3DImage<int8_t>;
+template class T3DImage<uint8_t>;
+template class T3DImage<int16_t>;
+template class T3DImage<uint16_t>;
+template class T3DImage<int32_t>;
+template class T3DImage<uint32_t>;
+template class T3DImage<int64_t>;
+template class T3DImage<uint64_t>;
 template class T3DImage<float>;
 template class T3DImage<double>;
+
 
 template <typename T>
 C3DValueAttribute<T>::C3DValueAttribute(const T3DVector<T>& value):

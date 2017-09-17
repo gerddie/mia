@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ CVistaMeshIO::CVistaMeshIO():
 	CMeshIOPlugin(format)
 {
 	//add_property(io_plugin_property_history);
+	add_suffix(".-");
 	add_suffix(".v");
 	add_suffix(".V");
 	add_suffix(".vmesh");
@@ -149,7 +150,7 @@ static  CTriangleMesh::PTrianglefield  read_triangles(VistaIOGraph graph, size_t
 			// set triangle values
 			*t++ = node->t;
 		}else{
-			cverr() <<"adressing vertexes " << node->t << "but have only"<<v_size<< "vertices\n";
+			cverr() <<"addressing vertexes " << node->t << " but have only "<<v_size<< "vertices\n";
 			cverr() <<"Bougus mesh: Triangle vertex out of bounds - bailing out\n";
 			return CTriangleMesh::PTrianglefield();
 		}
@@ -219,9 +220,11 @@ static CTriangleMesh *read_vcgraph(VistaIOGraph vgraph, VistaIOGraph tgraph)
 	CTriangleMesh::vertex_iterator e = vertices->end();
 	CTriangleMesh::color_iterator c = color->begin();
 
+	cvdebug() << "First color = " << *c << "\n"; 
 	while (node && v != e) {
 		*v++ = node->vertex;
 		*c++ = node->color;
+		cvdebug() << "load: n=" << node->vertex << " c=" << node->color << "\n"; 
 		node = (TVCNodeType<float> *)VistaIOGraphNextNode(vgraph);
 	}
 
@@ -416,7 +419,7 @@ static VistaIOGraph create_vngraph(const CTriangleMesh& mesh)
 	TVNNodeType<float> node;
 	node.type = 2;
 	int pos = 1;
-
+	
 	while (vi != ve) {
 		node.vertex = *vi++;
 		node.normal = *ni++;
@@ -427,7 +430,7 @@ static VistaIOGraph create_vngraph(const CTriangleMesh& mesh)
 
 static VistaIOGraph create_vsgraph(const CTriangleMesh& mesh)
 {
-	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 11, VistaIOFloatRepn, 0);
+	VistaIOGraph result = VistaIOCreateGraph(mesh.vertices_size(), 5, VistaIOFloatRepn, 0);
 	CTriangleMesh::const_vertex_iterator vi = mesh.vertices_begin();
 	CTriangleMesh::const_vertex_iterator ve = mesh.vertices_end();
 	CTriangleMesh::const_scale_iterator si = mesh.scale_begin();
@@ -476,12 +479,13 @@ static VistaIOGraph create_vcgraph(const CTriangleMesh& mesh)
 	CTriangleMesh::const_color_iterator  ci  = mesh.color_begin();
 
 	int pos = 1;
-	TVNCNodeType<float> node;
+	TVCNodeType<float> node;
 	node.type = 7;
-
+	
 	while (vi != ve) {
 		node.vertex = *vi++;
 		node.color  = *ci++;
+		cvdebug() << "write: n=" << node.vertex << " c=" << node.color << "\n"; 
 		VistaIOGraphAddNodeAt(result,(VistaIONodestruct*)&node,pos++);
 	}
 	return result;
@@ -782,13 +786,13 @@ bool CVistaMeshIO::do_save(string const &  filename, const CTriangleMesh& mesh)c
 	while (lookup->data_avail && lookup->data_avail != type)
 		++lookup;
 
-	cvdebug() << "will save " << lookup->type_name << "\n";
-
 	if (!lookup->data_avail) {
 		cverr() << "Fatal: unknown data in mesh\n";
 		return false;
 	}
 
+	cvdebug() << "will save " << lookup->type_name << "\n";
+	
 	vertex_graph = lookup->create(mesh);
 
 	if (!vertex_graph) {

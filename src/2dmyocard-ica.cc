@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
 #include <ostream>
 #include <fstream>
@@ -31,6 +30,7 @@
 
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/ica.hh>
 #include <mia/core/slopeclassifier.hh>
 
@@ -58,10 +58,12 @@ const SProgramDescription g_description = {
 }; 
 
 unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean,
-				      size_t& components, bool ica_normalize, int max_iterations)
+				      size_t& components, bool ica_normalize, int max_iterations,
+				      const CIndepCompAnalysisFactory& icatool)
 {
 	srand(time(NULL));
-	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
+
+        unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(icatool, series, false));
 	if (components > 0) {
 		ica->set_max_iterations(max_iterations);
 		ica->run(components, strip_mean, ica_normalize);
@@ -70,7 +72,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 		// highly correlated curves.
 		float min_cor = 0.0;
 		for (int i = 7; i > 3; --i) {
-			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
+            unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(icatool, series, false));
 			l_ica->set_max_iterations(max_iterations);
 			l_ica->run(i, strip_mean, ica_normalize);
 
@@ -85,14 +87,6 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 			}
 		}
 	}
-	return ica;
-}
-
-
-unique_ptr<C2DImageSeriesICA> get_ica_auto(vector<C2DFImage>& series, size_t& max_components )
-{
-	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
-	max_components = ica->run_auto(max_components, 3, 0.7);
 	return ica;
 }
 
@@ -156,12 +150,12 @@ void save_coefs(const string&  coefs_name, const C2DImageSeriesICA& ica)
 		throw create_exception<runtime_error>( "unable to save coefficients to '", coefs_name, "'");
 }
 
-CICAAnalysis::IndexSet get_all_without_periodic(const CSlopeClassifier::Columns& curves, bool strip_mean)
+CIndepCompAnalysis::IndexSet get_all_without_periodic(const CSlopeClassifier::Columns& curves, bool strip_mean)
 {
 	CSlopeClassifier cls(curves, strip_mean);
 	int periodic_index = cls.get_periodic_idx();
 
-	CICAAnalysis::IndexSet result;
+	CIndepCompAnalysis::IndexSet result;
 	for (int i = 0; i < (int)curves.size(); ++i) {
 		if (i != periodic_index)
 			result.insert(i);
@@ -298,7 +292,7 @@ P2DFilter create_LV_cropper(P2DImage rvlv_feature,
 }
 
 
-CICAAnalysis::IndexSet get_LV_RV_Perfusion(const CSlopeClassifier::Columns& curves)
+CIndepCompAnalysis::IndexSet get_LV_RV_Perfusion(const CSlopeClassifier::Columns& curves)
 {
 
 	priority_queue<element> sorted;
@@ -311,7 +305,7 @@ CICAAnalysis::IndexSet get_LV_RV_Perfusion(const CSlopeClassifier::Columns& curv
 		sorted.push(e);
 	}
 
-	CICAAnalysis::IndexSet result;
+	CIndepCompAnalysis::IndexSet result;
 
 	result.insert(sorted.top().second);
 	cvinfo() << "add " << sorted.top().first << " as " << sorted.top().second << "\n";
@@ -357,9 +351,9 @@ int do_main( int argc, char *argv[] )
 	string feature_image_base;
 	string numbered_feature_image;
 	float LV_mask = 0.0; // no mask
-	bool auto_comp = false;
 	int max_iterations = 0;
-
+	PIndepCompAnalysisFactory icatool;
+	
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 	
 	CCmdOptionList options(g_description); 
@@ -380,6 +374,7 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt(skip_only_periodic,"strip-periodic",'p', "strip only periodic component"));
 
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt(max_iterations,"max-ica-iterations",'x', "max ICA solver iterations"));
 
 	options.add(make_opt( ica_normalize, "ica-normalize", 'n', "ica_normalize feature images"));
@@ -387,10 +382,6 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop"));
 
-
-	options.add(make_opt( auto_comp, "auto-components", 'a',
-				    "automatic esitmation of number of components based on correlation."
-				    " Implies -m and -n (Experimental)"));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
@@ -427,13 +418,12 @@ int do_main( int argc, char *argv[] )
 
 	cvmsg()<< "Got series of " << series.size() << " images\n";
 	// always strip mean
-	unique_ptr<C2DImageSeriesICA> ica = auto_comp ?
-		get_ica_auto(series, components ):
-		get_ica(series, strip_mean, components, ica_normalize, max_iterations);
+	unique_ptr<C2DImageSeriesICA> ica = 
+		get_ica(series, strip_mean, components, ica_normalize, max_iterations, *icatool);
 	CSlopeClassifier::Columns curves = ica->get_mixing_curves();
 
-	CICAAnalysis::IndexSet component_set = skip_only_periodic ?
-		get_all_without_periodic(curves, strip_mean || auto_comp):
+	CIndepCompAnalysis::IndexSet component_set = skip_only_periodic ?
+		get_all_without_periodic(curves, strip_mean):
 		get_LV_RV_Perfusion(curves);
 
 
@@ -547,7 +537,7 @@ int do_main( int argc, char *argv[] )
 		if ( cls.get_baseline_idx() >= 0) {
 			save_feature_image(feature_image_base, "baseline", cls.get_baseline_idx(), components, *ica);
 		}
-		if (strip_mean||auto_comp)
+		if (strip_mean)
 			save_feature_image(feature_image_base, "mean", -1, components, *ica);
 	}
 	if (!coefs_name.empty())

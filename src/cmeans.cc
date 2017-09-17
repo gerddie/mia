@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,13 +28,7 @@
 #include <numeric>
 #include <fstream>
 
-#ifdef HAVE_BLAS
-extern "C" {
-#include <cblas.h>
-}
-#endif
-
-
+#include <gsl/gsl_blas.h>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/probmap.hh>
@@ -143,26 +137,10 @@ double CCMeans::update_class_centers(double_vector& class_center, double_vector 
 	for (size_t i = 0; i < class_center.size(); ++i) {
 		float cc = class_center[i]; 
 		
-#ifdef HAVE_BLAS
+
 		double sum_prob   = cblas_ddot(histo.size(), &histo[0], 1, &pv[i][0], 1);
 		double sum_weight = cblas_ddot(histo.size(), &shisto[0], 1, &pv[i][0], 1); 
-#else		
-		double_vector::const_iterator ihelp = histo.begin(); 
-		double_vector::const_iterator shelp = shisto.begin(); 
-		double_vector::const_iterator iprob = pv[i].begin(); 
-		double_vector::const_iterator eprob = pv[i].end();
-		
-		double sum_prob = 0.0; 
-		double sum_weight = 0.0; 
-	
-		for (size_t  ix = 0; ix < histo.size(); ++ix, ++iprob, ++ihelp, ++shelp) {
-			if (*iprob > 0.0f) {
-				sum_prob += *iprob * *ihelp; 
-				sum_weight += *iprob * *shelp; 
-			}
-		}
-		
-#endif		
+
 		if (sum_prob  != 0.0) // move slowly in the direction of new center
 			cc += 0.5 * (sum_weight / sum_prob - cc); 
 		else {

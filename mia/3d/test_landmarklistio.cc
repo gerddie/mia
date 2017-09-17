@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,10 @@
 NS_MIA_USE
 using namespace std;
 
-BOOST_AUTO_TEST_CASE( test_available_plugins ) 
+BOOST_AUTO_TEST_CASE( test_available_plugins_landmarklistio ) 
 {
 	set<string> expected_plugins = {"lmx", "datapool"};
-	test_availabe_plugins(C3DLandmarklistIOPluginHandler::instance(), expected_plugins); 
+	test_available_plugins(C3DLandmarklistIOPluginHandler::instance(), expected_plugins); 
 }
 
 BOOST_AUTO_TEST_CASE( test_load_landmarklist_lmx ) 

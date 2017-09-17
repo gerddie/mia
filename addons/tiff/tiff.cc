@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ private:
 void MyErrorHandler(const char *module, const char *fmt,  va_list ap)
 {
 	char buf[16384];
-	snprintf(buf,16384, fmt, ap);
+	vsnprintf(buf,16384, fmt, ap);
 	throw create_exception<runtime_error>(module, ":", buf);
 }
 
@@ -242,11 +242,11 @@ P2DImage read_strip_pixels(CTiffFile& tif, unsigned int width,
 
 CTiff2DImageIO::PData CTiff2DImageIO::do_load(string const& filename)const
 {
-	CErrorHandlerReplacer error_handing;
 	CTiffFile tif(filename.c_str(), "r");
 	if (!tif)
 		return PData();
 
+	CErrorHandlerReplacer error_handing;
 	// load that stuff
 	uint32 height;
 	uint32 width;

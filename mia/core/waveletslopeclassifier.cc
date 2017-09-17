@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 #include <map>
 #include <algorithm>
+#include <numeric>
 #include <stdexcept>
 #include <cmath>
 
@@ -71,6 +72,14 @@ CWaveletSlopeClassifier::CWaveletSlopeClassifier(const CWaveletSlopeClassifier& 
 	impl(new CWaveletSlopeClassifierImpl(*other.impl)) 
 {
 }
+
+CWaveletSlopeClassifier::CWaveletSlopeClassifier(CWaveletSlopeClassifier&& other):
+	impl(other.impl)
+{
+	other.impl = new CWaveletSlopeClassifierImpl();
+}
+
+
 CWaveletSlopeClassifier::CWaveletSlopeClassifier():
 	impl(new CWaveletSlopeClassifierImpl())
 {
@@ -82,6 +91,17 @@ CWaveletSlopeClassifier& CWaveletSlopeClassifier::operator =(const CWaveletSlope
 		auto help = new CWaveletSlopeClassifierImpl(*other.impl); 
 		delete impl; 
 		impl = help; 
+	}
+	return *this;
+}
+
+CWaveletSlopeClassifier& CWaveletSlopeClassifier::operator =(CWaveletSlopeClassifier&& other)
+{
+	if (this != &other) {
+		auto help = other.impl; 
+		delete impl; 
+		impl = help;
+		other.impl = new CWaveletSlopeClassifierImpl(); 
 	}
 	return *this;
 }

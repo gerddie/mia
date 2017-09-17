@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ void CParameter::reset()
 
 const char *CParameter::type() const
 {
-	return m_type;
+	return m_type.c_str();
 }
 
 void CParameter::get_help_xml(CXMLElement& param) const
@@ -56,7 +56,6 @@ void CParameter::get_help_xml(CXMLElement& param) const
 	TRACE_FUNCTION; 
 	param.set_attribute("type", m_type); 
 	param.set_attribute("default", get_default_value());
-	ostringstream d; 
 	param.set_child_text(m_descr);
 	do_get_help_xml(param); 
 	if (m_is_required) {
@@ -130,14 +129,37 @@ std::string CParameter::get_default_value() const
 	return do_get_default_value(); 
 }
 
+CXMLElement& CParameter::add_xmlhelp_childnode(CXMLElement& parent, const std::string& tag)const
+{
+	auto child =  parent.add_child(tag.c_str()); 
+	return *child; 
+}
+
+void CParameter::add_xmlhelp_attribute(CXMLElement& node, const std::string& tag, const std::string& value)const
+{
+	node.set_attribute(tag.c_str(), value); 
+}
+
+void CParameter::add_xmlhelp_text(CXMLElement& node, const std::string& value)const
+{
+	node.set_child_text(value);
+}
+
 CStringParameter::CStringParameter(std::string& value,CCmdOptionFlags flags , const char *descr, 
 				   const CPluginHandlerBase *plugin_hint):
-	CParameter(__type_descr<std::string>::value, has_flag(flags, CCmdOptionFlags::required), descr),
+	CParameter(plugin_hint ?
+		   plugin_hint->get_handler_type_string().c_str(): 
+		   __type_descr<std::string>::value,
+		   has_flag(flags, CCmdOptionFlags::required), descr),
 	m_value(value), 
 	m_default_value(value), 
 	m_flags(flags), 
 	m_plugin_hint(plugin_hint)
 {
+	if (plugin_hint)  {
+		cvdebug() << "plugin_hint->get_handler_type_string()=" << plugin_hint->get_handler_type_string() << "\n";
+		cvdebug() << "Reported type = " << type() << "\n"; 
+	}
 }
 
 void CStringParameter::do_reset()
@@ -199,19 +221,19 @@ void CStringParameter::do_add_dependend_handler(HandlerHelpMap& handler_map)cons
 
 template <typename T> 
 TBoundedParameter<T>::TBoundedParameter(T& value, EParameterBounds flags, 
-					const vector<T>& boundaries, 
+					const vector<boundary_type>& boundaries, 
 					bool required, const char *descr): 
 	CTParameter<T>(value, required, descr),
 	// this silences coverty warnings but it should actually not be necessary 
-	m_min(T()),
-	m_max(T()),
+	m_min(boundary_type()),
+	m_max(boundary_type()),
 	m_flags(flags)
 {
 	assert(!boundaries.empty());
 	unsigned idx = 0; 
-
+	
 	if (has_flag(flags, EParameterBounds::bf_min)) {
-		m_min = boundaries[0]; 
+		m_min = boundaries[idx]; 
 		++idx; 
 	}
 	if (has_flag(flags, EParameterBounds::bf_max)) {
@@ -220,30 +242,49 @@ TBoundedParameter<T>::TBoundedParameter(T& value, EParameterBounds flags,
 	}
 }
 
+template <typename T>
+struct __adjust_param {
+	static void test_boundaries(EParameterBounds flags, T value, T minval, T maxval,
+			       const std::string& descr, int idx) {
+		if (has_flag(flags, EParameterBounds::bf_min_closed)&& value < minval) {
+			throw create_exception<invalid_argument>("Parameters value[", idx, "]=", value, " given, but ", 
+								 "expected a value >= ", minval, ". Parameter is ", 
+								 descr, " flags=", flags); 
+		}
+		if (has_flag(flags, EParameterBounds::bf_min_open) && value <= minval) {
+			throw create_exception<invalid_argument>("Parameters value[", idx, "]=", value, " given, but ",
+								 "expected a value > ", minval, ". Parameter is ", 
+								 descr, " flags=", flags); 
+		}
+		
+		if (has_flag(flags, EParameterBounds::bf_max_closed)&& value > maxval) {
+			throw create_exception<invalid_argument>("Parameters value[", idx, "]=", value, " given, but ",
+								 "expected a value <= ", maxval, ". Parameter is ", 
+								 descr, " flags=", flags); 
+		}
+		if (has_flag(flags, EParameterBounds::bf_max_open) && value >= maxval) {
+			throw create_exception<invalid_argument>("Parameters value[", idx, "]=", value, " given, but "
+								 "expected a value < ", maxval, ". Parameter is ", 
+								 descr, " flags=", flags ); 
+		}
+	}
+}; 
+
+template <typename T>
+struct __adjust_param< std::vector<T> > {
+	static void test_boundaries(EParameterBounds flags, const std::vector<T>& value, T minval, T maxval,
+			       const std::string& descr, int MIA_PARAM_UNUSED(idx)) {
+		for(unsigned i = 0; i < value.size(); ++i) {
+			__adjust_param<T>::test_boundaries(flags, value[i], minval, maxval, descr, i); 
+		}
+	}
+}; 
+
+
 template <typename T> 
 void TBoundedParameter<T>::adjust(T& value)
 {
-	if (has_flag(m_flags, EParameterBounds::bf_min_closed)&& value < m_min) {
-		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ", 
-							 "expected a value >= ", m_min, ". Parameter is ", 
-							 this->get_descr(), " flags=", m_flags); 
-	}
-	if (has_flag(m_flags, EParameterBounds::bf_min_open) && value <= m_min) {
-		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ",
-							 "expected a value > ", m_min, ". Parameter is ", 
-							 this->get_descr(), " flags=", m_flags); 
-	}
-
-	if (has_flag(m_flags, EParameterBounds::bf_max_closed)&& value > m_max) {
-		throw create_exception<invalid_argument>("Parameters value ", value, " given, but ",
-							 "expected a value <= ", m_max, ". Parameter is ", 
-							 this->get_descr(), " flags=", m_flags); 
-	}
-	if (has_flag(m_flags, EParameterBounds::bf_max_open) && value >= m_max) {
-		throw create_exception<invalid_argument>("Parameters value ", value, " given, but "
-							 "expected a value < ", m_max, ". Parameter is ", 
-							 this->get_descr(), " flags=", m_flags ); 
-	}
+	__adjust_param<T>::test_boundaries(m_flags, value, m_min, m_max, this->get_descr(), 0); 
 }
 
 template <typename T> 
@@ -320,27 +361,45 @@ EXPORT_CORE std::ostream& operator << (std::ostream& os, EParameterBounds flags)
 
 
 
-template class TBoundedParameter<unsigned short>;
-template class TBoundedParameter<unsigned int>;
-template class TBoundedParameter<unsigned long>;
-template class TBoundedParameter<short>;
-template class TBoundedParameter<int>;
-template class TBoundedParameter<long>;
+template class TBoundedParameter<uint16_t>;
+template class TBoundedParameter<uint32_t>;
+template class TBoundedParameter<uint64_t>;
+template class TBoundedParameter<int16_t>;
+template class TBoundedParameter<int32_t>;
+template class TBoundedParameter<int64_t>;
 template class TBoundedParameter<float>;
 template class TBoundedParameter<double>; 
 
+template class TBoundedParameter<vector<uint16_t>>;
+template class TBoundedParameter<vector<uint32_t>>;
+template class TBoundedParameter<vector<uint64_t>>;
+template class TBoundedParameter<vector<int16_t>>;
+template class TBoundedParameter<vector<int32_t>>;
+template class TBoundedParameter<vector<int64_t>>;
+template class TBoundedParameter<vector<float>>;
+template class TBoundedParameter<vector<double>>; 
 
-template class CTParameter<unsigned short>;
-template class CTParameter<unsigned int>;
-template class CTParameter<unsigned long>;
-template class CTParameter<short>;
-template class CTParameter<int>;
-template class CTParameter<long>;
+
+template class CTParameter<uint16_t>;
+template class CTParameter<uint32_t>;
+template class CTParameter<uint64_t>;
+template class CTParameter<int16_t>;
+template class CTParameter<int32_t>;
+template class CTParameter<int64_t>;
 template class CTParameter<float>;
 template class CTParameter<double>; 
-
 template class CTParameter<string>;
 template class CTParameter<bool>;
+
+template class CTParameter<vector<uint16_t>>;
+template class CTParameter<vector<uint32_t>>;
+template class CTParameter<vector<uint64_t>>;
+template class CTParameter<vector<int16_t>>;
+template class CTParameter<vector<int32_t>>;
+template class CTParameter<vector<int64_t>>;
+template class CTParameter<vector<float>>;
+template class CTParameter<vector<double>>; 
+template class CTParameter<vector<string>>;
 
 
 NS_MIA_END

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,11 @@
 #include <stdexcept>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/segsection.hh>
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 NS_MIA_BEGIN
 using namespace std;
@@ -40,22 +43,20 @@ CSegSection::CSegSection(const string& id, const Points& points, bool is_open):
 {
 }
 
-CSegSection::CSegSection(xmlpp::Node& node, int version):
+CSegSection::CSegSection(const CXMLElement& elm, int version):
 	m_is_open(false)
 {
 	TRACE("CSegSection::CSegSection");
 
-	xmlpp::Element& elm = dynamic_cast<xmlpp::Element&>(node);
-	xmlpp::Attribute *id = elm.get_attribute ("color");
+	m_id = elm.get_attribute ("color");
 
-	if (!id)
+	if (m_id.empty())
 		throw invalid_argument("CSegSection::CSegSection: node without id");
-	m_id = id->get_value();
 
-	xmlpp::Node::NodeList points = node.get_children("point");
+	auto points = elm.get_children("point");
 
-	for (auto i = points.begin(); i != points.end(); ++i)
-		m_points.push_back(CSegPoint2D(**i));
+	for (auto i: points)
+		m_points.push_back(CSegPoint2D(*i));
 
 	if (version > 1) {
 		read_attribute_from_node(elm, "open", m_is_open, false);  
@@ -74,44 +75,35 @@ const CSegSection::Points& CSegSection::get_points()const
 
 void CSegSection::shift(const C2DFVector& delta)
 {
-	Points::iterator ip = m_points.begin();
-	Points::iterator ep = m_points.end();
-
-	while (ip != ep) {
-		*ip -= delta;
-		++ip;
-	}
+	for(auto& i: m_points)
+		i -= delta;
 }
 
 void CSegSection::transform(const C2DTransformation& t)
 {
-	for(auto i = m_points.begin(); i != m_points.end(); ++i) 
-		i->transform(t);
+	for(auto& i: m_points) 
+		i.transform(t);
 }
 
 
 void CSegSection::inv_transform(const C2DTransformation& t)
 {
-	for(auto i = m_points.begin(); i != m_points.end(); ++i) 
-		i->inv_transform(t);
+	for(auto& i : m_points) 
+		i.inv_transform(t);
 }
 
 
-void CSegSection::write(xmlpp::Node& node, int version) const
+void CSegSection::write(CXMLElement& node, int version) const
 {
-	xmlpp::Element* nodeChild = node.add_child("section");
+	auto nodeChild = node.add_child("section");
 	nodeChild->set_attribute("color", m_id);
 
 	if (version > 1) {
 		nodeChild->set_attribute("open", m_is_open ? "true" : "false");
 	}
 
-	Points::const_iterator ip = m_points.begin();
-	Points::const_iterator ep = m_points.end();
-
-	while (ip != ep) {
-		ip->write(*nodeChild);
-		++ip;
+	for (auto ip: m_points) {
+		ip.write(*nodeChild);
 	}
 }
 
@@ -119,22 +111,15 @@ const C2DBoundingBox CSegSection::get_boundingbox() const
 {
 
 	C2DBoundingBox result;
-
-	Points::const_iterator ip = m_points.begin();
-	Points::const_iterator ep = m_points.end();
-
-	while (ip != ep) {
-		result.add(*ip++);
-	}
+	for(auto ip: m_points)
+		result.add(ip);
 	return result;
 }
 
 void CSegSection::append_to(C2DPolygon& polygon)const
 {
-	typedef std::vector<CSegPoint2D>::const_iterator point_iterator;
-	for(point_iterator i = m_points.begin(); i != m_points.end(); ++i)
-		polygon.append(*i);
-
+	for(auto i: m_points)
+		polygon.append(i);
 }
 
 float CSegSection::get_hausdorff_distance(const CSegSection& other) const

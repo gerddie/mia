@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,23 @@ BOOST_FIXTURE_TEST_CASE (test_C2DSimilarityProfile_ref10, SimityProfileFixture)
 	
 }
 
+BOOST_FIXTURE_TEST_CASE (test_C2DSimilarityProfile_ref10_profile, SimityProfileFixture) 
+{
+	
+	C2DSimilarityProfile sp(cost, series, 10, 0); 
+
+	auto subset = sp.get_periodic_subset();
+
+	size_t test_subset[] = {0, 3, 10, 13, 20, 23, 30, 33, 39}; 
+	BOOST_CHECK_EQUAL(subset.size(), 9);
+	cvdebug()<< "got subset: " << subset<< "\n";
+	
+	for (int i = 0; i< 9; ++i) {
+		BOOST_CHECK_EQUAL(subset[i], test_subset[i]); 
+	}
+}
+
+
 
 
 SimityProfileFixture::SimityProfileFixture()
@@ -55,10 +72,10 @@ SimityProfileFixture::SimityProfileFixture()
 
 	C2DBounds size(1,1); 
 	float values[40] = {
-		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2, 
-		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2, 
-		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2, 
-		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2 }; 
+		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2.1, 
+		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2.1, 
+		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2.1, 
+		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2.1 }; 
  
 	for(size_t i = 0; i < 40; ++i) {
 		C2DFImage *img = new C2DFImage(size); 

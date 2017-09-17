@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,7 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dall2one"
-
 #include <fstream>
-#include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/core.hh>
@@ -34,10 +31,8 @@
 #include <mia/2d/segsetwithimages.hh>
 
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
-using namespace tbb;
 using namespace std;
 using namespace mia;
 
@@ -99,7 +94,7 @@ struct SeriesRegistration {
 		reference(_reference)
 		{
 		}
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
@@ -183,7 +178,7 @@ int do_main( int argc, char *argv[] )
 	SeriesRegistration sreg(input_set, input_images, minimizer, cost_functions, 
 				mg_levels, transform_creator, reference); 
 	
-	parallel_for(blocked_range<int>( skip, input_images.size()), sreg);
+	pfor(C1DParallelRange( skip, input_images.size()), sreg);
 	
 	
 	input_set.set_images(input_images); 									  
@@ -192,10 +187,9 @@ int do_main( int argc, char *argv[] )
 
 	input_set.set_preferred_reference(reference); 
 	
-	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << input_set.write().write_to_string();
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

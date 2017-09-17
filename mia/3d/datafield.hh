@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,24 +47,32 @@ NS_MIA_BEGIN
 	extern template class  EXPORT_3D range2d_iterator<std::vector<TYPE>::const_iterator>;
 
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
 DECLARE_EXTERN_ITERATORS(double);
 DECLARE_EXTERN_ITERATORS(float);
-DECLARE_EXTERN_ITERATORS(unsigned int);
-DECLARE_EXTERN_ITERATORS(int);
-DECLARE_EXTERN_ITERATORS(short);
-DECLARE_EXTERN_ITERATORS(unsigned short);
-DECLARE_EXTERN_ITERATORS(unsigned char );
-DECLARE_EXTERN_ITERATORS(signed char);
+DECLARE_EXTERN_ITERATORS(uint32_t);
+DECLARE_EXTERN_ITERATORS(int32_t);
+DECLARE_EXTERN_ITERATORS(int16_t);
+DECLARE_EXTERN_ITERATORS(uint16_t);
+DECLARE_EXTERN_ITERATORS(int8_t);
+DECLARE_EXTERN_ITERATORS(uint8_t);
 DECLARE_EXTERN_ITERATORS(bool);
+DECLARE_EXTERN_ITERATORS(int64_t);
+DECLARE_EXTERN_ITERATORS(uint64_t);
 
-#ifdef LONG_64BIT
-DECLARE_EXTERN_ITERATORS(signed long);
-DECLARE_EXTERN_ITERATORS(unsigned long);
-#endif
 
 DECLARE_EXTERN_ITERATORS(C3DFVector)
 DECLARE_EXTERN_ITERATORS(C3DDVector)
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
 
 /**
    @ingroup basic 
@@ -73,53 +81,37 @@ DECLARE_EXTERN_ITERATORS(C3DDVector)
 template <class T>
 class  EXPORT_3D T3DDatafield {
 
-	typedef  ::std::vector<T> data_array;
-
-        typedef std::shared_ptr<data_array>  ref_data_type;
-
-        /** Size of the field */
-        C3DBounds  m_size;
-
-        /** helper: product of Size.x * Size.y */
-        size_t  m_xy;
-
-        /** Pointer to the Field of Data hold by this class */
-        ref_data_type m_data;
-
-        /** helper: represents the zero-value */
-        static const T Zero;
-	
-	static const size_t m_elements; 
+	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
 public:
 	
 
         /** makes a single reference of the data, after calling this, it is save to write to the data field
          */
-        void make_single_ref();
+        void make_single_ref() __attribute__((deprecated));
 
 	/**
 	   Checks whether the data hold by the data field is unique. 
 	   \returns true if it is 
 	 */
-	bool holds_unique_data()const { 
-		return m_data.unique(); 
+	bool holds_unique_data()const __attribute__((deprecated)){ 
+		return true; 
 	}
 			
 
 	/// a shortcut data type
 
 	/// \cond SELFEXPLAINING 
-        typedef typename std::vector<T>::iterator iterator;
-        typedef typename std::vector<T>::const_iterator const_iterator;
-        typedef typename std::vector<T>::const_reference const_reference;
-        typedef typename std::vector<T>::reference reference;
-        typedef typename std::vector<T>::const_pointer const_pointer;
-        typedef typename std::vector<T>::pointer pointer;
-        typedef typename std::vector<T>::value_type value_type;
-        typedef typename std::vector<T>::size_type size_type;
-        typedef typename std::vector<T>::difference_type difference_type;
-	typedef typename atomic_data<T>::type atomic_type; 
+        typedef typename data_array::iterator iterator;
+        typedef typename data_array::const_iterator const_iterator;
+        typedef typename data_array::const_reference const_reference;
+        typedef typename data_array::reference reference;
+        typedef typename data_array::const_pointer const_pointer;
+        typedef typename data_array::pointer pointer;
+        typedef typename data_array::value_type value_type;
+        typedef typename data_array::size_type size_type;
+        typedef typename data_array::difference_type difference_type;
+	typedef typename atomic_data<value_type>::type atomic_type; 
 	typedef range3d_iterator<iterator> range_iterator; 
 	typedef range3d_iterator<const_iterator> const_range_iterator; 
 
@@ -179,7 +171,7 @@ public:
 	T3DDatafield();
 
         /** Constructor to create empty Datafield if given size */
-        T3DDatafield(const C3DBounds& _Size);
+        explicit T3DDatafield(const C3DBounds& _Size);
 
         /** Constructor to create Datafield if given size and with initialization data
             \param size the size of the 3D-field
@@ -197,6 +189,9 @@ public:
 
         /** copy - Constructor */
         T3DDatafield(const T3DDatafield<T>& org);
+
+	/** move constructor */
+	T3DDatafield(T3DDatafield<T>&& org);
 
         /// make sure the destructor is virtual
         virtual ~T3DDatafield();
@@ -217,16 +212,7 @@ public:
 	T3DVector<Out> get_gradient(int index) const;
 
         /** Interpolate the value of Field at p default uses tri-linear interpolation */
-        value_type get_interpol_val_at(const T3DVector<float >& p) const;
-
-        /* some rough interpolation using barycentric coordinates, needs less addition and
-            multiplications then tri-linear interp. but is usally of low quality
-            \remark this function may vanish
-        value_type get_barycent_interpol_val_at(const T3DVector<float >& p) const;
-	*/
-
-        /** just as the name says */
-        value_type get_trilin_interpol_val_at(const T3DVector<float >& p) const;
+        value_type get_interpol_val_at(const T3DVector<float >& p) const __attribute__((deprecated));
 
         /** Get the average over a given Block
          Attn: Type T must be able to hold the Sum of all Elements in Block */
@@ -237,6 +223,9 @@ public:
             before writing it is necesary to call \a make_single_ref
         */
         T3DDatafield& operator = (const T3DDatafield& org);
+
+	/// Moave asignment 
+	T3DDatafield& operator = (T3DDatafield&& org);
 
         /** \returns the 3D-size of the data field */
         const C3DBounds&  get_size() const
@@ -250,7 +239,7 @@ public:
         /** \returns the number of elements in the datafield */
         size_type size()const
         {
-                return m_data->size();
+                return m_data.size();
         }
 
 	/// swap the data ofthis 3DDatafield with another one 
@@ -263,17 +252,12 @@ public:
          \returns the stripped average */
         value_type strip_avg();
 
-
-        /** interpolating access operator */
-        value_type operator()(const T3DVector<float >& pos)const;
-
         /** read-only indx operator */
         const_reference operator()(size_t  x, size_t  y, size_t  z) const
 	{
         	// Look if we are inside, and give reference, else give the zero
 	        if (x < m_size.x && y < m_size.y && z < m_size.z) {
-	                const std::vector<T>& data = *m_data;
-	                return data[x+ m_size.x * (y  + m_size.y * z)];
+	                return m_data[x+ m_size.x * (y  + m_size.y * z)];
 	        }
 		return Zero;
 	}
@@ -291,7 +275,7 @@ public:
         	// Look if we are inside, and give reference, else throw exception
 	        // since write access is wanted
 	        assert(x < m_size.x && y < m_size.y && z < m_size.z);
-		return (*m_data)[x + m_size.x *(y + m_size.y * z)];
+		return m_data[x + m_size.x *(y + m_size.y * z)];
 	}
 
 
@@ -431,7 +415,7 @@ public:
         /** \returns an read only forward iterator over the whole data field */
         const_iterator begin()const
         {
-                return m_data->begin();
+                return m_data.begin();
         }
 	
 	/**
@@ -439,7 +423,7 @@ public:
 	 */
 	const_iterator begin_at(size_t x, size_t y, size_t z)const
         {
-                return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
+                return m_data.begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 
@@ -448,7 +432,7 @@ public:
 	 */
         const_iterator end()const
         {
-                return m_data->end();
+                return m_data.end();
         }
 
         /** \returns an read/write random access iterator over the whole data
@@ -456,8 +440,7 @@ public:
             The functions ensures, that the field uses a single referenced datafield */
         iterator begin()
         {
-                make_single_ref();
-                return m_data->begin();
+                return m_data.begin();
         }
 	
 	Range get_range(const C3DBounds& start, const C3DBounds& end);
@@ -504,8 +487,7 @@ public:
 	 */
 	iterator begin_at(size_t x, size_t y, size_t z)
         {
-		make_single_ref();
-		return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
+		return m_data.begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 	/** \returns an read/write random access iterator over the whole data
@@ -513,14 +495,13 @@ public:
             The functions ensures, that the field uses a single referenced datafield */
         iterator end()
         {
-                make_single_ref();
-                return m_data->end();
+                return m_data.end();
         }
 
         /** a linear read only access operator */
         const_reference operator[](int i)const
         {
-                return (*m_data)[i];
+                return m_data[i];
         }
 
         /** A linear read/write access operator. The refcount of Data must be 1,
@@ -528,8 +509,7 @@ public:
         */
         reference operator[](int i)
         {
-		assert(m_data.unique());
-                return (*m_data)[i];
+                return m_data[i];
         }
 
 
@@ -540,26 +520,49 @@ public:
         };
 
 private:
+	/** Size of the field */
+        C3DBounds  m_size;
+
+        /** helper: product of Size.x * Size.y */
+        size_t  m_xy;
+
+        /** Pointer to the Field of Data hold by this class */
+        data_array m_data;
+
+        /** helper: represents the zero-value */
+        static const value_type Zero;
+	
+	static const size_t m_elements; 
+
 };
 
 /// a data field of float values
 typedef T3DDatafield<float>  C3DFDatafield;
 
 /// a data field of 32 bit unsigned int values
-typedef T3DDatafield<unsigned int> C3DUIDatafield;
+typedef T3DDatafield<uint32_t> C3DUIDatafield;
 
 /// a data field of 32 bit signed int values
-typedef T3DDatafield<int>  C3DIDatafield;
-
+typedef T3DDatafield<int32_t>  C3DSIDatafield;
 
 /// a data field of 32 bit unsigned int values
-typedef T3DDatafield<unsigned long> C3DULDatafield;
+typedef T3DDatafield<uint16_t> C3DUSDatafield;
 
 /// a data field of 32 bit signed int values
-typedef T3DDatafield<long>  C3DLDatafield;
+typedef T3DDatafield<int16_t>  C3DSSDatafield;
 
-	/// a data field of float values
-typedef T3DDatafield<unsigned char>  C3DUBDatafield;
+/// a data field of 32 bit unsigned int values
+typedef T3DDatafield<uint64_t> C3DULDatafield;
+
+/// a data field of 32 bit signed int values
+typedef T3DDatafield<int64_t>  C3DLDatafield;
+
+/// a data field of 8 bit int values
+typedef T3DDatafield<uint8_t>  C3DUBDatafield;
+
+/// a data field of 8 bit int values
+typedef T3DDatafield<int8_t>  C3DSBDatafield;
+
 
 	/// a data field of float values
 typedef T3DDatafield<bool>  C3DBitDatafield;
@@ -574,7 +577,9 @@ typedef  TTranslator<C3DFVector> C3DFVectorTranslator;
 
 /// @cond NEVER 
 DECLARE_TYPE_DESCR(C3DBounds); 
-DECLARE_TYPE_DESCR(C3DFVector); 
+DECLARE_TYPE_DESCR(C3DFVector);
+
+extern template class EXPORT_3D TAttribute<C3DFVector>; 
 /// @endcond 
 
 // some implementations
@@ -583,13 +588,12 @@ template <class T>
 template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(size_t  x, size_t  y, size_t  z) const
 {
-	const std::vector<T>& data = *m_data;
 	const int sizex = m_size.x;
 	// Look if we are inside the used space
 	if (x - 1 < m_size.x - 2 &&  y - 1 < m_size.y - 2 &&  z - 1 < m_size.z - 2) {
 
                 // Lookup all neccessary Values
-		const T *H  = &data[x + m_size.x * (y + m_size.y * z)];
+		const T *H  = &m_data[x + m_size.x * (y + m_size.y * z)];
 
 		return T3DVector<Out> (Out((H[1] - H[-1]) * 0.5),
 				       Out((H[sizex] - H[-sizex]) * 0.5),
@@ -606,7 +610,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(int hardcode) const
 {
 	const int sizex = m_size.x;
 	// Lookup all neccessary Values
-	const T *H  = &(*m_data)[hardcode];
+	const T *H  = &m_data[hardcode];
 
 	return T3DVector<Out> (Out((H[1] - H[-1]) * 0.5),
 			       Out((H[sizex] - H[-sizex]) * 0.5),
@@ -623,9 +627,9 @@ T3DVector<Out> T3DDatafield<bool>::get_gradient(int hardcode) const
 {
 
 	// Lookup all neccessary Values
-	return T3DVector<Out> (Out(((*m_data)[hardcode + 1] - (*m_data)[hardcode -1]) * 0.5),
-			       Out(((*m_data)[hardcode + m_size.x] - (*m_data)[hardcode -m_size.x]) * 0.5),
-			       Out(((*m_data)[hardcode + m_xy] - (*m_data)[hardcode -m_xy]) * 0.5));
+	return T3DVector<Out> (Out((m_data[hardcode + 1] - m_data[hardcode -1]) * 0.5),
+			       Out((m_data[hardcode + m_size.x] - m_data[hardcode -m_size.x]) * 0.5),
+			       Out((m_data[hardcode + m_xy] - m_data[hardcode -m_xy]) * 0.5));
 }
 
 template <class T>
@@ -634,7 +638,6 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 {
         // This will become really funny
 	const int sizex = m_size.x;
-        const std::vector<T>& data = *m_data;
         // Calculate the int coordinates near the POI
         // and the distances
         size_t  x = size_t (p.x);
@@ -650,7 +653,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 	// Look if we are inside the used space
         if (x-1 < m_size.x-3 &&  y -1 < m_size.y-3 && z - 1 < m_size.z-3 ) {
                 // Lookup all neccessary Values
-                const T *H000  = &data[x + sizex * y + m_xy * z];
+                const T *H000  = &m_data[x + sizex * y + m_xy * z];
 
                 const T* H_100 = &H000[-m_xy];
                 const T* H_101 = &H_100[1];
@@ -728,20 +731,23 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 
 DECLARE_EXTERN(double);
 DECLARE_EXTERN(float);
-DECLARE_EXTERN(unsigned int);
-DECLARE_EXTERN(int);
-DECLARE_EXTERN(short);
-DECLARE_EXTERN(unsigned short);
-DECLARE_EXTERN(unsigned char );
-DECLARE_EXTERN(signed char);
-
-#ifdef LONG_64BIT
-DECLARE_EXTERN(signed long);
-DECLARE_EXTERN(unsigned long);
-#endif
+DECLARE_EXTERN(uint8_t);
+DECLARE_EXTERN(uint16_t);
+DECLARE_EXTERN(uint32_t);
+DECLARE_EXTERN(uint64_t);
+DECLARE_EXTERN(int8_t);
+DECLARE_EXTERN(int16_t);
+DECLARE_EXTERN(int32_t);
+DECLARE_EXTERN(int64_t);
 
 DECLARE_EXTERN(C3DFVector);
 DECLARE_EXTERN(C3DDVector);
+
+extern template class EXPORT_3D CTParameter<C3DBounds>;
+extern template class EXPORT_3D CTParameter<C3DFVector>;
+extern template class EXPORT_3D TTranslator<C3DFVector>; 
+extern template class EXPORT_3D TAttribute<C3DFVector>; 
+
 
 #undef DECLARE_EXTERN
 

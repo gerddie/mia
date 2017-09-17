@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
 #include <mia/core/product_base.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/import_handler.hh>
+
+#include <cinttypes> 
 
 NS_MIA_BEGIN
 
@@ -110,9 +112,18 @@ public:
 	 */ 
 	result_type filter(std::shared_ptr<D> pimage) const;
 
+
+	/**
+	   proved a pixel type conversion prediction based on the given input pixel type set. 
+	   \param in_types the pixel types that are fed into the pipeline 
+	   \returns the possible pixel types after running the pipeline
+	 */
+	std::set<EPixelType> test_pixeltype_conversion(const std::set<EPixelType>& in_types) const; 
 private:
 	virtual result_type do_filter(const Image& image) const = 0;
 	virtual result_type do_filter(std::shared_ptr<D> image) const;
+	
+	virtual std::set<EPixelType> do_test_pixeltype_conversion(const std::set<EPixelType>& in_type) const; 
 
 };
 
@@ -125,6 +136,7 @@ public:
 	void push_back(Pointer f) {
 		m_chain.push_back(f); 
 	}
+
 private: 
 	virtual result_type do_filter(const D& image) const {
 		assert(m_chain.size() > 0); 
@@ -137,6 +149,16 @@ private:
 		}
 		return result; 
 	}
+
+	std::set<EPixelType> do_test_pixeltype_conversion(const std::set<EPixelType>& in_type) const
+	{
+		std::set<EPixelType> result = in_type;
+		for(auto f: m_chain) {
+			result = f->test_pixeltype_conversion(result); 
+		}
+		return result; 
+	}
+	
 	std::vector<Pointer> m_chain; 
 }; 
 
@@ -177,16 +199,14 @@ struct plugin_can_chain<TDataFilterPlugin<D>> {
 template <template <class> class  D>
 struct __bind_all {
 	typedef D<bool> Dbool;
-	typedef D<signed char> Dsc;
-	typedef D<unsigned char> Duc;
-	typedef D<signed short> Dss;
-	typedef D<unsigned short> Dus;
-	typedef D<signed int> Dsi;
-	typedef D<unsigned int> Dui;
-#ifdef LONG_64BIT
-	typedef D<signed long> Dsl;
-	typedef D<unsigned long> Dul;
-#endif
+	typedef D<int8_t> Dsc;
+	typedef D<uint8_t> Duc;
+	typedef D<int16_t> Dss;
+	typedef D<uint16_t> Dus;
+	typedef D<int32_t> Dsi;
+	typedef D<uint32_t> Dui;
+	typedef D<int64_t> Dsl;
+	typedef D<uint64_t> Dul;
 	typedef D<float> Dfloat;
 	typedef D<double> Ddouble;
 };
@@ -238,10 +258,8 @@ static typename F::result_type filter(const F& f, const B& b)
 	case it_ushort:return f(DC(typename D::Dus,b));
 	case it_sint:  return f(DC(typename D::Dsi,b));
 	case it_uint:	 return f(DC(typename D::Dui,b));
-#ifdef LONG_64BIT
 	case it_slong: return f(DC(typename D::Dsl,b));
 	case it_ulong: return f(DC(typename D::Dul,b));
-#endif
 	case it_float: return f(DC(typename D::Dfloat,b));
 	case it_double:return f(DC(typename D::Ddouble,b));
 	default:
@@ -274,10 +292,8 @@ static typename F::result_type filter_inplace(const F& f, B& b)
 	case it_ushort:return f(DV(typename D::Dus,b));
 	case it_sint:  return f(DV(typename D::Dsi,b));
 	case it_uint:	 return f(DV(typename D::Dui,b));
-#ifdef LONG_64BIT
 	case it_slong: return f(DV(typename D::Dsl,b));
 	case it_ulong: return f(DV(typename D::Dul,b));
-#endif
 	case it_float: return f(DV(typename D::Dfloat,b));
 	case it_double:return f(DV(typename D::Ddouble,b));
 	default:
@@ -309,10 +325,8 @@ static typename F::result_type accumulate(F& f, const B& data)
 	case it_ushort:return f(DC(typename D::Dus,data));
 	case it_sint:  return f(DC(typename D::Dsi,data));
 	case it_uint:	 return f(DC(typename D::Dui,data));
-#ifdef LONG_64BIT
 	case it_slong: return f(DC(typename D::Dsl,data));
 	case it_ulong: return f(DC(typename D::Dul,data));
-#endif
 	case it_float: return f(DC(typename D::Dfloat,data));
 	case it_double:return f(DC(typename D::Ddouble,data));
 	default:
@@ -333,10 +347,8 @@ static typename F::result_type _combine_inplace(const F& f, INOUT& inout, const 
 	case it_ushort:return f(inout, DC(typename D::Dus, in));
 	case it_sint:  return f(inout, DC(typename D::Dsi, in));
 	case it_uint:	 return f(inout, DC(typename D::Dui, in));
-#ifdef LONG_64BIT
 	case it_slong: return f(inout, DC(typename D::Dsl, in));
 	case it_ulong: return f(inout, DC(typename D::Dul, in));
-#endif
 	case it_float: return f(inout, DC(typename D::Dfloat, in));
 	case it_double:return f(inout, DC(typename D::Ddouble, in));
 	default:
@@ -358,10 +370,8 @@ static typename F::result_type combine_inplace(const F& f, INOUT& inout, const I
 	case it_ushort:return _combine_inplace(f, DV(typename D::Dus, inout), in);
 	case it_sint:  return _combine_inplace(f, DV(typename D::Dsi, inout), in);
 	case it_uint:  return _combine_inplace(f, DV(typename D::Dui, inout), in);
-#ifdef LONG_64BIT
 	case it_slong: return _combine_inplace(f, DV(typename D::Dsl, inout), in);
 	case it_ulong: return _combine_inplace(f, DV(typename D::Dul, inout), in);
-#endif
 	case it_float: return _combine_inplace(f, DV(typename D::Dfloat, inout), in);
 	case it_double:return _combine_inplace(f, DV(typename D::Ddouble, inout), in);
 	default:
@@ -398,10 +408,8 @@ static typename F::result_type filter_equal(const F& f, const B& a, const B& b)
 	case it_ushort:return f( DC(typename D::Dus, a), DC(typename D::Dus,b));
 	case it_sint:  return f( DC(typename D::Dsi, a), DC(typename D::Dsi,b));
 	case it_uint:	 return f( DC(typename D::Dui, a), DC(typename D::Dui,b));
-#ifdef LONG_64BIT
 	case it_slong: return f( DC(typename D::Dsl, a), DC(typename D::Dsl,b));
 	case it_ulong: return f( DC(typename D::Dul, a), DC(typename D::Dul,b));
-#endif
 	case it_float: return f( DC(typename D::Dfloat, a), DC(typename D::Dfloat,b));
 	case it_double:return f( DC(typename D::Ddouble, a), DC(typename D::Ddouble,b));
 	default:
@@ -435,10 +443,8 @@ static void filter_equal_inplace(const F& f, const B& a, B& b)
 	case it_ushort: f( DC(typename D::Dus, a), DV(typename D::Dus,b));break;
 	case it_sint:   f( DC(typename D::Dsi, a), DV(typename D::Dsi,b));break;
 	case it_uint:	 f( DC(typename D::Dui, a), DV(typename D::Dui,b));break;
-#ifdef LONG_64BIT
 	case it_slong:  f( DC(typename D::Dsl, a), DV(typename D::Dsl,b));break;
 	case it_ulong:  f( DC(typename D::Dul, a), DV(typename D::Dul,b));break;
-#endif
 	case it_float:  f( DC(typename D::Dfloat, a), DV(typename D::Dfloat,b));break;
 	case it_double: f( DC(typename D::Ddouble, a), DV(typename D::Ddouble,b));break;
 	default:
@@ -471,10 +477,8 @@ static typename F::result_type filter_and_output(const F& f, const B& a, O& b)
 	case it_ushort: return f(DC(typename D::Dus, a), b);break;
 	case it_sint:   return f(DC(typename D::Dsi, a), b);break;
 	case it_uint:	return f(DC(typename D::Dui, a), b);break;
-#ifdef HAVE_INT64
 	case it_slong:  return f(DC(typename D::Dsl, a), b);break;
 	case it_ulong:  return f(DC(typename D::Dul, a), b);break;
-#endif
 	case it_float:  return f(DC(typename D::Dfloat, a), b);break;
 	case it_double: return f(DC(typename D::Ddouble, a), b);break;
 	default:
@@ -497,10 +501,8 @@ static typename F::result_type _filter(const F& f, const A& a, const B& b)
 	case it_ushort:return f(DC(typename D::Dus,   a), b);
 	case it_sint:  return f(DC(typename D::Dsi,   a), b);
 	case it_uint:	 return f(DC(typename D::Dui,   a), b);
-#ifdef LONG_64BIT
 	case it_slong: return f(DC(typename D::Dsl,   a), b);
 	case it_ulong: return f(DC(typename D::Dul,   a), b);
-#endif
 	case it_float: return f(DC(typename D::Dfloat,a), b);
 	case it_double:return f(DC(typename D::Ddouble,a), b);
 	default:
@@ -534,11 +536,9 @@ static typename F::result_type filter(const F& f, const A& a, const B& b)
 	case it_sshort:return _filter(f, a, DC(typename D::Dss,    b));
 	case it_ushort:return _filter(f, a, DC(typename D::Dus,    b));
 	case it_sint:  return _filter(f, a, DC(typename D::Dsi,    b));
-	case it_uint:	 return _filter(f, a, DC(typename D::Dui,    b));
-#ifdef LONG_64BIT
+	case it_uint:  return _filter(f, a, DC(typename D::Dui,    b));
 	case it_slong: return _filter(f, a, DC(typename D::Dsl,    b));
 	case it_ulong: return _filter(f, a, DC(typename D::Dul,    b));
-#endif
 	case it_float: return _filter(f, a, DC(typename D::Dfloat, b));
 	case it_double:return _filter(f, a, DC(typename D::Ddouble,b));
 	default:
@@ -561,10 +561,8 @@ static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 	case it_ushort:return f(DC(typename D::Dus,   a), b);
 	case it_sint:  return f(DC(typename D::Dsi,   a), b);
 	case it_uint:  return f(DC(typename D::Dui,   a), b);
-#ifdef LONG_64BIT
 	case it_slong: return f(DC(typename D::Dsl,   a), b);
 	case it_ulong: return f(DC(typename D::Dul,   a), b);
-#endif
 	case it_float: return f(DC(typename D::Dfloat,a), b);
 	case it_double:return f(DC(typename D::Ddouble,a), b);
 	default:
@@ -598,10 +596,8 @@ static typename F::result_type accumulate(F& f, const A& a, const B& b)
 	case it_ushort:return _accumulate(f, a, DC(typename D::Dus,    b));
 	case it_sint:  return _accumulate(f, a, DC(typename D::Dsi,    b));
 	case it_uint:  return _accumulate(f, a, DC(typename D::Dui,    b));
-#ifdef LONG_64BIT
 	case it_slong: return _accumulate(f, a, DC(typename D::Dsl,    b));
 	case it_ulong: return _accumulate(f, a, DC(typename D::Dul,    b));
-#endif
 	case it_float: return _accumulate(f, a, DC(typename D::Dfloat, b));
 	case it_double:return _accumulate(f, a, DC(typename D::Ddouble,b));
 	default:
@@ -640,6 +636,22 @@ TDataFilter<D>::do_filter(std::shared_ptr<D> pimage) const
 {
 	return do_filter(*pimage); 
 }
+
+
+template <class D>
+std::set<EPixelType>
+TDataFilter<D>::test_pixeltype_conversion(const std::set<EPixelType>& in_types) const
+{
+	return do_test_pixeltype_conversion(in_types); 
+}
+
+template <class D>
+std::set<EPixelType>
+TDataFilter<D>::do_test_pixeltype_conversion(const std::set<EPixelType>& in_types) const
+{
+	return in_types; 
+}
+
 
 NS_MIA_END
 

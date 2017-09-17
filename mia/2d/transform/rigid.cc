@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,9 +74,9 @@ void C2DRigidTransformation::initialize()
 
 }
 
-C2DFVector C2DRigidTransformation::apply(const C2DFVector& x) const
+C2DFVector C2DRigidTransformation::get_displacement_at(const C2DFVector& x) const
 {
-	return transform(x);
+	return x - transform(x);
 }
 
 
@@ -221,10 +221,10 @@ void C2DRigidTransformation::evaluate_matrix() const
 float C2DRigidTransformation::get_max_transform() const
 {
 	// check the corners
-	float m =      (C2DFVector(get_size() - C2DBounds::_1) -  apply(C2DFVector(get_size()  - C2DBounds::_1))).norm2();
-	float test0Y = (C2DFVector(0, get_size().y - 1) - apply(C2DFVector(0, get_size().y - 1))).norm2();
-	float testX0 = (C2DFVector(get_size().x - 1, 0) - apply(C2DFVector(get_size().x - 1, 0))).norm2();
-	float test00 = apply(C2DFVector(0, 0)).norm2();
+	float m =      (C2DFVector(get_size() - C2DBounds::_1) -  transform(C2DFVector(get_size()  - C2DBounds::_1))).norm2();
+	float test0Y = (C2DFVector(0, get_size().y - 1) - transform(C2DFVector(0, get_size().y - 1))).norm2();
+	float testX0 = (C2DFVector(get_size().x - 1, 0) - transform(C2DFVector(get_size().x - 1, 0))).norm2();
+	float test00 = transform(C2DFVector(0, 0)).norm2();
 
 	if (m < test0Y)
 		m = test0Y;
@@ -240,7 +240,7 @@ float C2DRigidTransformation::get_max_transform() const
 
 C2DFVector C2DRigidTransformation::operator () (const C2DFVector& x) const
 {
-	return apply(x); 
+	return transform(x); 
 }
 
 float C2DRigidTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /*delta*/) const

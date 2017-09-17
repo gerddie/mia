@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,19 +24,12 @@
 
 
 #include <limits>
-#include <mia/3d/shape.hh>
-#include "sphere.hh"
-
+#include <mia/3d/shapes/sphere.hh>
+#include <mia/3d/shapes/basic_shapes.hh>
 
 NS_BEGIN(basic_3dshape_creator)
 NS_MIA_USE;
 using namespace std;
-
-
-class C6n3DShape: public C3DShape {
-public:
-	C6n3DShape();
-};
 
 C6n3DShape::C6n3DShape()
 {
@@ -48,15 +41,6 @@ C6n3DShape::C6n3DShape()
 	insert(C3DShape::Flat::value_type( 0, 0, 1));
 	insert(C3DShape::Flat::value_type( 0, 0,-1));
 }
-
-class C6n3DShapeFactory: public C3DShapePlugin {
-public:
-	C6n3DShapeFactory();
-private:
-	virtual const string do_get_descr() const;
-	virtual C3DShape *do_create()const;
-	virtual bool do_test() const;
-};
 
 C6n3DShapeFactory::C6n3DShapeFactory():
 	C3DShapePlugin("6n")
@@ -74,36 +58,6 @@ const string C6n3DShapeFactory::do_get_descr()const
 	return string("6n neighborhood 3D shape creator");
 }
 
-bool C6n3DShapeFactory::do_test()const
-{
-	C6n3DShape shape;
-	C6n3DShape::Mask mask = shape.get_mask();
-
-	if (mask.get_size() != C3DBounds(3,3,3)) {
-		cvfail() << get_name() << ": wrong mask size\n";
-		assert("size failture");
-	}
-
-	if (! ( mask(1,1,1) && mask(1,1,0) && mask(0,1,1) && mask(1,0,1) &&
-		mask(1,2,1) && mask(2,1,1) && mask(1,1,2) ) ||
-	    mask(0,0,0) || mask(1,0,0) || mask(2,0,0) ||
-	    mask(0,1,0) ||                mask(2,1,0) ||
-	    mask(0,2,0) || mask(1,2,0) || mask(2,2,0) ||
-	    mask(0,0,1) ||                mask(2,0,1) ||
-	    mask(0,2,1) ||                mask(2,2,1) ||
-	    mask(0,0,2) || mask(1,0,2) || mask(2,0,2) ||
-	    mask(0,1,2) ||                mask(2,1,2) ||
-	    mask(0,2,2) || mask(1,2,2) || mask(2,2,2)) {
-		return false;
-	}
-	return true;
-}
-
-
-class C18n3DShape: public C6n3DShape {
-public:
-	C18n3DShape();
-};
 
 C18n3DShape::C18n3DShape()
 {
@@ -123,15 +77,6 @@ C18n3DShape::C18n3DShape()
 	insert(C3DShape::Flat::value_type( 1, 0, 1));
 }
 
-class C18n3DShapeFactory: public C3DShapePlugin {
-public:
-	C18n3DShapeFactory();
-private:
-	virtual const string do_get_descr() const;
-	virtual C3DShape *do_create()const;
-	virtual bool  do_test() const;
-};
-
 C18n3DShapeFactory::C18n3DShapeFactory():
 	C3DShapePlugin("18n")
 {
@@ -148,35 +93,6 @@ const string C18n3DShapeFactory::do_get_descr()const
 	return string("18n neighborhood 3D shape creator");
 }
 
-bool C18n3DShapeFactory::do_test()const
-{
-	C18n3DShape shape;
-	C18n3DShape::Mask mask = shape.get_mask();
-
-	if (mask.get_size() != C3DBounds(3,3,3)) {
-		cvfail() << get_name() << ": wrong mask size\n";
-		assert(0);
-	}
-
-	if (mask(0,0,0) || !mask(1,0,0) || mask(2,0,0) ||
-	   !mask(0,1,0) || !mask(1,1,0) ||!mask(2,1,0) ||
-	    mask(0,2,0) || !mask(1,2,0) || mask(2,2,0) ||
-	   !mask(0,0,1) || !mask(1,0,1) ||!mask(2,0,1) ||
-	   !mask(0,1,1) || !mask(1,1,1) ||!mask(2,1,1) ||
-	   !mask(0,2,1) || !mask(1,2,1) ||!mask(2,2,1) ||
-	    mask(0,0,2) || !mask(1,0,2) || mask(2,0,2) ||
-	   !mask(0,1,2) || !mask(1,1,2) ||!mask(2,1,2) ||
-	    mask(0,2,2) || !mask(1,2,2) || mask(2,2,2)) {
-		return false;
-	}
-	return true;
-}
-
-
-class C26n3DShape: public C18n3DShape {
-public:
-	C26n3DShape();
-};
 
 C26n3DShape::C26n3DShape()
 {
@@ -189,15 +105,6 @@ C26n3DShape::C26n3DShape()
 	insert(C3DShape::Flat::value_type( 1, 1,-1));
 	insert(C3DShape::Flat::value_type( 1, 1, 1));
 }
-
-class C26n3DShapeFactory: public C3DShapePlugin {
-public:
-	C26n3DShapeFactory();
-private:
-	virtual const string do_get_descr() const;
-	virtual C3DShape *do_create()const;
-	virtual bool do_test() const;
-};
 
 C26n3DShapeFactory::C26n3DShapeFactory():
 	C3DShapePlugin("26n")
@@ -214,22 +121,6 @@ const string C26n3DShapeFactory::do_get_descr()const
 {
 	return string("26n neighborhood 3D shape creator");
 }
-
-bool C26n3DShapeFactory::do_test()const
-{
-	C26n3DShape shape;
-	C26n3DShape::Mask mask = shape.get_mask();
-
-	assert(mask.get_size() == C3DBounds(3,3,3));
-
-	for (C26n3DShape::Mask::const_iterator i = mask.begin(), e = mask.end();
-	     i != e; ++i)
-		if (!*i) {
-			return false;
-		}
-	return true;
-}
-
 
 extern "C" {
 	EXPORT CPluginBase *get_plugin_interface()

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,10 @@
 #include <unistd.h>
 #endif
 
-#ifndef WIN32
-#include <regex.h>
-#include <dirent.h>
-#else
+#ifdef WIN32
 #include <direct.h>
 #define getcwd _getcwd
 #define chdir _chdir
-#define PATH_MAX 1024
 #endif
 
 #include <limits.h>
@@ -44,6 +40,11 @@
 // MIA specific
 #include <mia/core/utils.hh>
 #include <mia/core/msgstream.hh>
+
+// WIN32 and HURD don't define this 
+#ifndef PATH_MAX
+#define PATH_MAX 1024
+#endif 
 
 NS_MIA_BEGIN
 
@@ -64,78 +65,16 @@ CCWDSaver::~CCWDSaver()
 	delete[] cwd;
 }
 
-#if 0
-static bool scan_dir(const std::string& path, const std::string& pattern, std::list<std::string>& list)
-{
-	class TFindRegExp {
-		regex_t preg;
-	public:
-		TFindRegExp(const std::string& pattern) {
-			char buf[1024];
-			int status = regcomp (&preg, pattern.c_str(), REG_EXTENDED |REG_NOSUB);
-			if (status) {
-				regerror(status, &preg, buf, 1024);
-				std::cerr << buf << std::endl;
-			}
-		}
-
-		~TFindRegExp() {
-			regfree(&preg);
-		}
-		bool check(const char *s) {
-			return !regexec(&preg, s,0, NULL, 0);
-		}
-	};
-
-
-	CCWDSaver __saver;
-
-	if (chdir(path.c_str())) {
-		//std::cerr << path << ":" << strerror(errno) << std::endl;
-		return false;
-	}
-
-	struct dirent **namelist;
-	int nfiles = scandir(".", &namelist, NULL , NULL);
-
-	TFindRegExp searcher(pattern);
-	for (int i = 0; i < nfiles; i++) {
-		if (searcher.check(namelist[i]->d_name))
-			list.push_back(path + std::string("/") + std::string(namelist[i]->d_name));
-		free(namelist[i]);
-
-	}
-	free(namelist);
-
-	return true;
-}
-
-
-FSearchFiles::FSearchFiles(std::list<std::string>& __result, const std::string& __pattern):
-	result(__result),
-	pattern(__pattern)
-{
-}
-
-void FSearchFiles::operator()(const std::string& path) {
-	try {
-		scan_dir(path, pattern, result);
-	}
-	catch (std::exception& e) {
-		std::cerr << e.what();
-	}
-}
-#endif
 
 #ifndef _GNU_SOURCE
 // there should be an intrinsic (at least on intel) 
-void sincosf(float x, float *s, float *c)
+void EXPORT_CORE sincosf(float x, float *s, float *c)
 {
 	*s = sinf(x); 
 	*c = cosf(x); 
 }
 
-void sincos(double x, double *s, double *c)
+void EXPORT_CORE sincos(double x, double *s, double *c)
 {
 	*s = sin(x); 
 	*c = cos(x); 

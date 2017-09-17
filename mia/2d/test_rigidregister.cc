@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ void RigidRegisterFixture::run(C2DTransformation& t, const string& minimizer_des
 
 	auto minimizer = CMinimizerPluginHandler::instance().produce(minimizer_descr); 
 	P2DImageCost cost = C2DImageCostPluginHandler::instance().produce("ssd");
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
+	C2DInterpolatorFactory  ipfactory(C2DInterpolatorFactory("bspline:d=3", "mirror"));
 	auto tr_creator = C2DTransformCreatorHandler::instance().produce(t.get_creator_string());
 
 	C2DRigidRegister rr(cost, minimizer, tr_creator, 1);
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE( test_rigidreg_affine_cost_gradient ) //, RigidRegisterFixt
 	auto transformation = tr_creator->create(size); 
 
 	P2DImageCost cost = C2DImageCostPluginHandler::instance().produce("ssd");
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
+	C2DInterpolatorFactory   ipfactory("bspline:d=3", "mirror"));
 
 	float src_image_init[10 * 10] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -197,12 +197,12 @@ BOOST_AUTO_TEST_CASE( test_rigidreg_affine_cost_gradient ) //, RigidRegisterFixt
 	for (size_t i = 0; i < transformation->degrees_of_freedom(); ++i) {
 		params[i] -= 0.01;  
 		transformation->set_parameters(params); 
-		P2DImage tmp = (*transformation)(*src, *ipfactory); 
+		P2DImage tmp = (*transformation)(*src, ipfactory); 
 		double cm = cost->value(*tmp, *ref); 
 		
 		params[i] += 0.02; 
 		transformation->set_parameters(params); 
-		tmp = (*transformation)(*src, *ipfactory); 
+		tmp = (*transformation)(*src, ipfactory); 
 		double cp = cost->value(*tmp, *ref); 
 		
 		params[i] -= 0.01;

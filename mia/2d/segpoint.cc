@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,30 +23,34 @@
 #include <cassert>
 #include <mia/2d/segpoint.hh>
 #include <mia/core/tools.hh>
-#include <libxml++/libxml++.h>
+#include <mia/core/xmlinterface.hh>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 
 NS_MIA_BEGIN
 
-using namespace xmlpp;
 using namespace std;
 
-void read_attribute_from_node(const Element& elm, const std::string& key, bool& out_value, bool required)
+void read_attribute_from_node(const CXMLElement& elm, const std::string& key, bool& out_value, bool required)
 {
 	auto attr = elm.get_attribute(key);
-	if (!attr) {
+	if (attr.empty()) {
 		if (required) 
 			throw create_exception<runtime_error>( elm.get_name(), ":required attribute '", key, "' not found"); 
 		else
 			return; 
 	}
 	
-	if (attr->get_value() == string("false")) 
+	if (attr == string("false")) 
 		out_value = false; 
-	else if (attr->get_value() == string("true")) 
+	else if (attr == string("true")) 
 		out_value = true; 
 	else 
 		throw create_exception<runtime_error>( elm.get_name(), ":attribute '", key, "' has bogus value '", 
-						       attr->get_value(), "'");
+						       attr, "'");
 }
 
 CSegPoint2D::CSegPoint2D()
@@ -70,26 +74,26 @@ CSegPoint2D::CSegPoint2D(float x, float y):
 {
 }
 
-CSegPoint2D::CSegPoint2D(const Node& node)
+CSegPoint2D::CSegPoint2D(const CXMLElement& elm)
 {
-	const Element& elm = dynamic_cast<const Element&>(node);
-	Attribute *ax = elm.get_attribute ("x");
-	Attribute *ay = elm.get_attribute ("y");
-	if (!ax || !ay)
+
+	auto ax = elm.get_attribute ("x");
+	auto ay = elm.get_attribute ("y");
+	if (ax.empty() || ay.empty())
 		throw runtime_error("SegSection:Point attribute x or y not found");
 	
-	if (!from_string(ax->get_value(), x)) 
+	if (!from_string(ax, x)) 
 		throw create_exception<runtime_error>( "CSegPoint2D: x attribute '", 
-					     ax->get_value(), "' is not a floating point value"); 
+					     ax, "' is not a floating point value"); 
 
-	if (!from_string(ay->get_value(), y)) 
+	if (!from_string(ay, y)) 
 		throw create_exception<runtime_error>( "CSegPoint2D: y attribute '", 
-					     ay->get_value(), "' is not a floating point value");
+					     ay, "' is not a floating point value");
 }
 
-void CSegPoint2D::write(Node& node) const
+void CSegPoint2D::write(CXMLElement& node) const
 {
-	Element* point = node.add_child("point");
+	auto point = node.add_child("point");
 	point->set_attribute("y", to_string<float>(y));
 	point->set_attribute("x", to_string<float>(x));
 }

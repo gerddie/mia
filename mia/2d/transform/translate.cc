@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,9 @@ void C2DTranslateTransformation::translate(float x, float y)
 	m_transform.y += y;
 }
 
-C2DFVector C2DTranslateTransformation::apply(const C2DFVector& x) const
+C2DFVector C2DTranslateTransformation::get_displacement_at(const C2DFVector& x) const
 {
-	return transform(x);
+	return x - transform(x);
 }
 
 

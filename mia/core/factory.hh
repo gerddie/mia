@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -282,11 +282,13 @@ struct create_plugin {
 			return nullptr; 
 		}
 		
-		cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
+		cvdebug() << "TFactoryPluginHandler<"<< h.get_descriptor() << ">::produce: "
+			"Create plugin from '" << factory_name << "'\n"; 
 		
 		auto factory = h.plugin(factory_name.c_str());
 		if (!factory) 
-			throw create_exception<std::invalid_argument>("Unable to find plugin for '", factory_name.c_str(), "'");
+			throw create_exception<std::invalid_argument>("Factory " , h.get_descriptor(),
+								      ":Unable to find plugin for '", factory_name, "'");
 		return factory->create(param_list.begin()->second,params.c_str());
 	}
 }; 
@@ -318,7 +320,8 @@ struct create_plugin<Handler, ProductChained, true> {
 				auto factory = h.plugin(factory_name.c_str());
 				if (!factory) {
 					delete result; 
-					throw create_exception<std::invalid_argument>("Unable to find plugin for '", factory_name.c_str(), "'");
+					throw create_exception<std::invalid_argument>("Factory " , h.get_descriptor(),
+										      "Unable to find plugin for '", factory_name, "'");
 				}
 				
 				auto r = factory->create(ipl->second,params.c_str());

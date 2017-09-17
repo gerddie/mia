@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,7 @@
 
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/nccsum.hh>
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 
 NS_BEGIN(NS)
 
@@ -36,6 +34,7 @@ using std::make_pair;
 CLNCC2DImageCost::CLNCC2DImageCost(int hw):
 m_hwidth(hw)
 {
+	m_copy_to_double = produce_2dimage_filter("convert:repn=double,map=copy"); 
 }
 
 inline pair<C2DBounds, C2DBounds> prepare_range(const C2DBounds& size, int cx, int cy, int hw) 
@@ -62,9 +61,8 @@ public:
 		m_hw(hw)
 		{}
 	
-	template <typename T, typename R> 
-	float operator () ( const T& mov, const R& ref) const {
-		auto evaluate_local_cost = [this, &mov, &ref](const tbb::blocked_range<size_t>& range, const pair<float, int>& result) -> pair<float, int> {
+	float operator () ( const C2DDImage& mov, const C2DDImage& ref) const {
+		auto evaluate_local_cost = [this, &mov, &ref](const C1DParallelRange& range, const pair<float, int>& result) -> pair<float, int> {
 			CThreadMsgStream msks; 
 			float lresult = 0.0; 
 			int count = 0; 
@@ -97,10 +95,10 @@ public:
 		};
 		
 		pair<float,int> init{0, 0}; 
-		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), init, evaluate_local_cost, 
-					 [](const pair<float,int>& x, const pair<float,int>& y){
-						 return make_pair(x.first + y.first, x.second + y.second);
-					 });	
+		auto r = preduce(C1DParallelRange(0, mov.get_size().y, 1), init, evaluate_local_cost, 
+				 [](const pair<float,int>& x, const pair<float,int>& y){
+					 return make_pair(x.first + y.first, x.second + y.second);
+				 });	
 		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
 }; 
@@ -108,8 +106,12 @@ public:
 
 double CLNCC2DImageCost::do_value(const Data& a, const Data& b) const
 {
-	FEvalCost ecost(m_hwidth); 
-	return mia::filter(ecost, a, b); 
+	FEvalCost ecost(m_hwidth);
+	auto a_double_ptr = m_copy_to_double->filter(a);
+	auto b_double_ptr = m_copy_to_double->filter(b);
+	const C2DDImage& mov = static_cast<const C2DDImage&>(*a_double_ptr);
+	const C2DDImage& ref = static_cast<const C2DDImage&>(*b_double_ptr);
+	return ecost(mov, ref); 
 }
 
 
@@ -122,10 +124,9 @@ public:
 		m_force(force)
 		{}
 	
-	template <typename T, typename R> 
-	float operator () ( const T& mov, const R& ref) const {
+	float operator () (const C2DDImage& mov, const C2DDImage& ref) const {
 		auto ag = get_gradient(mov); 
-		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const tbb::blocked_range<size_t>& range, 
+		auto evaluate_local_cost_force = [this, &mov, &ref, &ag](const C1DParallelRange& range, 
 									 const pair<float, int>& result) -> pair<float, int> {
 			
 			CThreadMsgStream msks; 		
@@ -165,10 +166,10 @@ public:
 			return make_pair(result.first + lresult, result.second + count); 
 		};
 		pair<float,int> init{0, 0}; 		
-		auto r = parallel_reduce(tbb::blocked_range<size_t>(0, mov.get_size().y, 1), init, evaluate_local_cost_force, 
-					 [](const pair<float,int>& x, const pair<float,int>& y){
-						 return make_pair(x.first + y.first, x.second + y.second);
-					 });
+		auto r = preduce(C1DParallelRange(0, mov.get_size().y, 1), init, evaluate_local_cost_force, 
+				 [](const pair<float,int>& x, const pair<float,int>& y){
+					 return make_pair(x.first + y.first, x.second + y.second);
+				 });
 		
 		return r.second > 0 ? r.first / r.second : 0.0; 
 	}
@@ -177,8 +178,13 @@ public:
 
 double CLNCC2DImageCost::do_evaluate_force(const Data& a, const Data& b, Force& force) const
 {
-	FEvalCostForce ecostforce(m_hwidth, force); 
-	return mia::filter(ecostforce, a, b); 
+	FEvalCostForce ecostforce(m_hwidth, force);
+	auto a_double_ptr = m_copy_to_double->filter(a);
+	auto b_double_ptr = m_copy_to_double->filter(b);
+	const C2DDImage& mov = static_cast<const C2DDImage&>(*a_double_ptr);
+	const C2DDImage& ref = static_cast<const C2DDImage&>(*b_double_ptr);
+
+	return ecostforce(mov, ref); 
 }
 
 

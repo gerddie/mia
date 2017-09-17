@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
 
+#include <type_traits>
+
 using namespace mia; 
 using namespace std; 
 using namespace vtkimage; 
@@ -62,7 +64,7 @@ using namespace vtkimage;
 template <typename T> 
 struct __vtk_data_array {
 	typedef void type;
-        typedef __false_type supported;			\
+        typedef false_type supported;			\
 };  
 
 
@@ -70,22 +72,25 @@ struct __vtk_data_array {
 	template <>			    \
 	struct __vtk_data_array<TYPE> {	    \
 		typedef VTK_TYPE type;	    \
-		typedef __true_type supported; \
+		typedef true_type supported; \
 		static const int value = ID; \
 	};
 
 
-VTK_ARRAY_TRANSLATE(bool, vtkBitArray, VTK_BIT); 
- VTK_ARRAY_TRANSLATE(signed char, vtkSignedCharArray, VTK_SIGNED_CHAR); 
-VTK_ARRAY_TRANSLATE(unsigned char, vtkUnsignedCharArray, VTK_UNSIGNED_CHAR); 
-VTK_ARRAY_TRANSLATE(signed short, vtkShortArray, VTK_SHORT); 
-VTK_ARRAY_TRANSLATE(unsigned short, vtkUnsignedShortArray, VTK_UNSIGNED_SHORT); 
-VTK_ARRAY_TRANSLATE(signed int, vtkIntArray, VTK_INT); 
-VTK_ARRAY_TRANSLATE(unsigned int, vtkUnsignedIntArray, VTK_UNSIGNED_INT); 
+#if  VTK_MAJOR_VERSION < 7
+VTK_ARRAY_TRANSLATE(bool, vtkBitArray, VTK_BIT);
+#endif
+
+VTK_ARRAY_TRANSLATE(int8_t, vtkSignedCharArray, VTK_SIGNED_CHAR); 
+VTK_ARRAY_TRANSLATE(uint8_t, vtkUnsignedCharArray, VTK_UNSIGNED_CHAR); 
+VTK_ARRAY_TRANSLATE(int16_t, vtkShortArray, VTK_SHORT); 
+VTK_ARRAY_TRANSLATE(uint16_t, vtkUnsignedShortArray, VTK_UNSIGNED_SHORT); 
+VTK_ARRAY_TRANSLATE(int32_t, vtkIntArray, VTK_INT); 
+VTK_ARRAY_TRANSLATE(uint32_t, vtkUnsignedIntArray, VTK_UNSIGNED_INT); 
 
 #ifdef LONG_64BIT
-VTK_ARRAY_TRANSLATE(signed long, vtkLongArray, VTK_LONG); 
-VTK_ARRAY_TRANSLATE(unsigned long, vtkUnsignedLongArray, VTK_UNSIGNED_LONG); 
+VTK_ARRAY_TRANSLATE(int64_t, vtkLongArray, VTK_LONG); 
+VTK_ARRAY_TRANSLATE(uint64_t, vtkUnsignedLongArray, VTK_UNSIGNED_LONG); 
 #endif
 
 VTK_ARRAY_TRANSLATE(float, vtkFloatArray, VTK_FLOAT); 
@@ -110,6 +115,7 @@ struct read_image {
 	}
 }; 
 
+#if  VTK_MAJOR_VERSION < 7
 template <> 
 struct read_image<bool> {
 	static C3DImage *apply(const C3DBounds& size, void *scalars)  {
@@ -137,6 +143,7 @@ struct read_image<bool> {
 		return result; 
 	}
 }; 
+#endif 
 
 static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname) 
 {
@@ -158,16 +165,18 @@ static C3DImage *image_vtk_to_mia(vtkImageData *vtk_image, const string& fname)
 
 	C3DImage *result_image = nullptr; 
 	switch 	 (vtk_image->GetScalarType()) {
-	case VTK_BIT:            result_image=read_image<bool>::apply(size, array); break; 
-	case VTK_SIGNED_CHAR:    result_image=read_image<signed char>::apply(size, array); break; 
-	case VTK_UNSIGNED_CHAR:  result_image=read_image<unsigned char>::apply(size, array); break; 
-	case VTK_SHORT:          result_image=read_image<signed short>::apply(size, array); break; 
-	case VTK_UNSIGNED_SHORT: result_image=read_image<unsigned short>::apply(size, array); break; 
-	case VTK_INT:            result_image=read_image<signed int>::apply(size, array); break;  
-	case VTK_UNSIGNED_INT:   result_image=read_image<unsigned int>::apply(size, array); break; 
+#if  VTK_MAJOR_VERSION < 7		
+	case VTK_BIT:            result_image=read_image<bool>::apply(size, array); break;
+#endif 
+	case VTK_SIGNED_CHAR:    result_image=read_image<int8_t>::apply(size, array); break; 
+	case VTK_UNSIGNED_CHAR:  result_image=read_image<uint8_t>::apply(size, array); break; 
+	case VTK_SHORT:          result_image=read_image<int16_t>::apply(size, array); break; 
+	case VTK_UNSIGNED_SHORT: result_image=read_image<uint16_t>::apply(size, array); break; 
+	case VTK_INT:            result_image=read_image<int32_t>::apply(size, array); break;  
+	case VTK_UNSIGNED_INT:   result_image=read_image<uint32_t>::apply(size, array); break; 
 #ifdef LONG_64BIT
-	case VTK_LONG:           result_image=read_image<signed long>::apply(size, array); break; 
-	case VTK_UNSIGNED_LONG:  result_image=read_image<unsigned long>::apply(size, array); break; 
+	case VTK_LONG:           result_image=read_image<int64_t>::apply(size, array); break; 
+	case VTK_UNSIGNED_LONG:  result_image=read_image<uint64_t>::apply(size, array); break; 
 #endif 
 	case VTK_FLOAT:          result_image=read_image<float>::apply(size, array); break; 
 	case VTK_DOUBLE:         result_image=read_image<double>::apply(size, array); break;  
@@ -196,7 +205,7 @@ struct __dispatch_convert {
 }; 
 
 template <typename T> 
-struct __dispatch_convert<T, __true_type> {
+struct __dispatch_convert<T, true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<T>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type " << __type_descr<T>::value << "\n"; 
@@ -212,8 +221,9 @@ struct __dispatch_convert<T, __true_type> {
 	}
 }; 
 
+#if  VTK_MAJOR_VERSION < 7		
 template <> 
-struct __dispatch_convert<bool, __true_type> {
+struct __dispatch_convert<bool, true_type> {
 	static void  apply (vtkImageData *output, const T3DImage<bool>& input)  {
 		
 		cvdebug() << "Input is an image of pixel type bool\n"; 
@@ -222,9 +232,9 @@ struct __dispatch_convert<bool, __true_type> {
 		output->SetNumberOfScalarComponents(1);
 		output->AllocateScalars(); 
 #else 
-		output->AllocateScalars(__vtk_data_array<bool>::value, 1); 
+		output->AllocateScalars(__vtk_data_array<bool>::value, 1);
 #endif 
-		unsigned char *out_ptr =  reinterpret_cast<unsigned char *>(output->GetScalarPointer()); 
+		unsigned char *out_ptr =  reinterpret_cast<unsigned char *>(output->GetScalarPointer());
 		
 		auto i = input.begin();
 		auto e = input.end();
@@ -249,7 +259,7 @@ struct __dispatch_convert<bool, __true_type> {
 		}
 	}
 }; 
-
+#endif 
 
 class FSetArray: public TFilter<void>  {
 public: 
@@ -272,7 +282,7 @@ static vtkSmartPointer<vtkImageData> image_mia_to_vtk(const C3DImage& mia_image)
 
 	outimage->SetOrigin(origin.x,origin.y,origin.z); 
 	auto dx = mia_image.get_voxel_size(); 
-	outimage->SetSpacing(dx.x, dx.y, dx.z); 
+	outimage->SetSpacing(dx.x, dx.y, dx.z);
 	outimage->SetDimensions(mia_image.get_size().x, mia_image.get_size().y, mia_image.get_size().z); 
 
         FSetArray set_array(outimage); 
@@ -286,7 +296,9 @@ CVtk3DImageIOPlugin::CVtk3DImageIOPlugin():
 	C3DImageIOPlugin("vtk")
 {
 	// indicate support for all pixel types available (only scalar types are possible)
+#if  VTK_MAJOR_VERSION < 7			
 	add_supported_type(it_bit);
+#endif 	
 	add_supported_type(it_sbyte);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_sshort);

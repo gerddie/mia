@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,12 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyosegstats"
-
-#include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/2d/segsetwithimages.hh>
 #include <mia/internal/main.hh>
 #include <ostream>
 #include <fstream>
-
-using xmlpp::DomParser;
 
 using namespace mia; 
 using namespace std; 
@@ -118,7 +113,7 @@ int do_main( int argc, char *argv[] )
 			      "   -3: Middle of the series\n"
 			      "   -2: prefererred reference\n"
 			      "   -1: LV peak\n" 
-			      "if any of the above is not available or the value is < -3, use the last frame of the series.")); 
+			      "   if any of the above is not available or the value is < -3, use the last frame of the series.")); 
 	options.add(make_opt( curves_filename, "curves", 'c', "region average value curves, "
 			      "The output files each comprises a table in plain-text format that contains three columns "
 			      "for each section of the LV myocardium: The first column contains the values obtained by "
@@ -173,7 +168,6 @@ int do_main( int argc, char *argv[] )
 	vector<vector<SResult> > curves; 
 	vector<vector<SResult> > varcurves; 
 
-	
 	C2DUBImage org_mask = original_frames[reference].get_section_masks(n_sections); 
 	C2DUBImage reg_mask = registered_frames[reference].get_section_masks(n_sections); 
 	for (size_t i = skip; i < original_frames.size(); ++i)  {

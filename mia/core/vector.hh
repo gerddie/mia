@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ struct array_void_destructor {
 */
 
 template <typename T> 
-class Vector {
+class TCArrayWrapper {
 public: 
 	
 	/// \cond STLCOMPAT 
@@ -90,7 +90,7 @@ public:
 	   \param n 
 	   \param clean initialize vector to 0
 	 */
-	Vector(size_t n, bool clean = true):
+	TCArrayWrapper(size_t n, bool clean = true):
 		m_size(n),
 		m_data(new T[n], array_destructor<T>()),
 		m_cdata(m_data.get())
@@ -103,7 +103,7 @@ public:
 	    between the original and the copied vector 
 	    \param other
 	*/
-	Vector(const Vector<T>& other):
+	TCArrayWrapper(const TCArrayWrapper<T>& other):
 		m_size(other.m_size),
 		m_data(other.m_data),
 		m_cdata(other.m_cdata)
@@ -111,7 +111,7 @@ public:
 	}
 
 	/// assignment operator 
-	Vector<T>& operator = (const Vector<T>& other)
+	TCArrayWrapper<T>& operator = (const TCArrayWrapper<T>& other)
 	{
 		m_size = other.m_size; 
 		m_data = other.m_data; 
@@ -125,7 +125,7 @@ public:
 	   \param n size of input array
 	   \param init allocated input data
 	 */
-	Vector(size_t n, T *init):
+	TCArrayWrapper(size_t n, T *init):
 		m_size(n),
 		m_data(init, array_void_destructor<T>()),
 		m_cdata(init)
@@ -138,7 +138,7 @@ public:
 	   \param n size of input array
 	   \param init allocated input data
 	 */
-	Vector(size_t n, const T *init):
+	TCArrayWrapper(size_t n, const T *init):
 		m_size(n),
 		m_cdata(init)
 	{
@@ -151,9 +151,9 @@ public:
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
 		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
-					   "Vector::operator[]: No writeable data availabe or not unique,"
-					   " call Vector::make_unique() first or enforce the use of  "
-					   "'Vector::operator[](...) const'");
+					   "TCArrayWrapper::operator[]: No writeable data available or not unique,"
+					   " call TCArrayWrapper::make_unique() first or enforce the use of  "
+					   "'TCArrayWrapper::operator[](...) const'");
 		return m_data.get()[i]; 
 	}
 
@@ -170,9 +170,9 @@ public:
 	 */
 	iterator begin() {
 		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
-					   "Vector::begin(): No writeable data availabe or not unique, "
-					   "call Vector::make_unique() first or enforce the use of "
-					   "'Vector::begin() const'");
+					   "TCArrayWrapper::begin(): No writeable data available or not unique, "
+					   "call TCArrayWrapper::make_unique() first or enforce the use of "
+					   "'TCArrayWrapper::begin() const'");
 		return m_data.get(); 
 	}
 
@@ -181,9 +181,9 @@ public:
 	 */
 	iterator end() {
 		DEBUG_ASSERT_RELEASE_THROW(m_data && m_data.unique(), 
-					   "Vector::begin(): No writeable data availabe or not unique, "
-					   "call Vector::make_unique() first or enforce the use of "
-					   "'Vector::end() const'");
+					   "TCArrayWrapper::begin(): No writeable data available or not unique, "
+					   "call TCArrayWrapper::make_unique() first or enforce the use of "
+					   "'TCArrayWrapper::end() const'");
 		return m_data.get() + m_size; 
 	}
 	
@@ -237,7 +237,7 @@ private:
 
 
 template <typename T> 
-std::ostream&  operator << (std::ostream& os, const Vector<T>& v) 
+std::ostream&  operator << (std::ostream& os, const TCArrayWrapper<T>& v) 
 {
         os << "["; 
         for(auto i: v) 
@@ -252,7 +252,7 @@ std::ostream&  operator << (std::ostream& os, const Vector<T>& v)
     
     STL vector like c-array wrapper for double floating point arrays
 */
-typedef Vector<double> CDoubleVector; 
+typedef TCArrayWrapper<double> CDoubleVector; 
 
 NS_MIA_END
 

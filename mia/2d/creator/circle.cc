@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,22 +24,11 @@
 
 #include <limits>
 #include <cmath>
-#include <mia/2d/creator.hh>
+#include <mia/2d/creator/circle.hh>
 
 NS_BEGIN(creator_circle_2d);
 using namespace mia;
 using namespace std;
-
-class C2DCircleCreator	: public C2DImageCreator {
-public:
-	C2DCircleCreator(float f, float p);
-	virtual P2DImage operator () (const C2DBounds& size, EPixelType type) const;
-private:
-	template <typename T>
- 	P2DImage do_create(const C2DBounds& size) const;
-	float m_f;
-	double m_p;
-};
 
 C2DCircleCreator::C2DCircleCreator(float f, float p):
 	m_f(f),
@@ -115,15 +104,6 @@ P2DImage C2DCircleCreator::do_create(const C2DBounds& size) const
 }
 
 
-class C2DCircleCreatorPlugin : public  C2DImageCreatorPlugin {
-public:
-	C2DCircleCreatorPlugin();
-private:
-	virtual C2DImageCreator *do_create()const;
-	virtual const string do_get_descr()const;
-	float m_f;
-	float m_p;
-};
 
 C2DCircleCreatorPlugin::C2DCircleCreatorPlugin():
 	C2DImageCreatorPlugin("circle"),

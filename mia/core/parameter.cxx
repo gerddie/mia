@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ void CTParameter<T>::do_descr(std::ostream& /*os*/) const
 template <typename T>
 struct __dispatch_parameter_do_set {
 	static bool apply (const std::string& str_value, T& value) {
+		assert(!str_value.empty()); 
 		if (std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed) {
 			std::string::size_type startpos = str_value.find_first_not_of(" \t");
 			if (startpos  == std::string::npos) {
@@ -83,7 +84,7 @@ struct __dispatch_parameter_do_set {
 template <typename T>
 struct __dispatch_parameter_do_set<std::vector<T> >  {
 	static bool apply (const std::string& str_value, std::vector<T>& value) {
-
+		assert(!str_value.empty()); 
 		std::string h(str_value);
 		unsigned int n = 1; 
 		
@@ -107,7 +108,7 @@ struct __dispatch_parameter_do_set<std::vector<T> >  {
 				
                 std::istringstream sval(h);
 		auto i =  value.begin(); 
-		while (!sval.eof()) {
+		while (sval.good()) {
 			sval >> *i;
 			++i; 
 		}
@@ -118,11 +119,11 @@ struct __dispatch_parameter_do_set<std::vector<T> >  {
 template <>
 struct __dispatch_parameter_do_set<std::string> {
 	static bool apply (const std::string& str_value, std::string& value) {
+		assert(!str_value.empty()); 
 		value = str_value;
 		return true; 
 	}
 }; 
-
 
 template <typename T> 
 bool CTParameter<T>::do_set(const std::string& str_value)

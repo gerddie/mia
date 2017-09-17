@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,9 @@ struct EXPORT_3D io_3dimage_data {
    @brief The 3D image io plugin base class 
 */
 typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
+
+extern template class EXPORT_3D TPlugin<io_3dimage_data, io_plugin_type>;
+extern template class EXPORT_3D TIOPlugin<io_3dimage_data>; 
 
 /**
    @ingroup io

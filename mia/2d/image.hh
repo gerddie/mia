@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,21 +83,34 @@ public:
         */
 	virtual C2DImage* clone() const __attribute__((warn_unused_result))  = 0;
 
+	virtual std::pair<double, double> get_minmax_intensity() const = 0; 
+
+	virtual void make_single_ref() __attribute__((deprecated)) = 0; 
+	
  protected:
-         /** Constructor initializes the size and the pixel type
-         */
-         C2DImage(const C2DBounds& size, EPixelType type);
+	C2DImage(C2DImage&& other);
+	C2DImage& operator = (C2DImage&& other);
+	
+	C2DImage(const C2DImage& other) = default; 
 
-         /** Constructor initializes from the attributes, the size and the pixel type
-         */
-         C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPixelType type);
 
-         /** standard constructor initializes the size to (0,0), and the pixel type
-         to "unknown"
+	C2DImage& operator = (const C2DImage& other) = default; 
+	
+	
+	/** Constructor initializes the size and the pixel type
          */
-         C2DImage();
-
- private:
+	C2DImage(const C2DBounds& size, EPixelType type);
+	
+	/** Constructor initializes from the attributes, the size and the pixel type
+         */
+	C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPixelType type);
+	
+	/** standard constructor initializes the size to (0,0), and the pixel type
+	    to "unknown"
+	*/
+	C2DImage();
+	
+private:
 	C2DBounds m_size;
 	EPixelType m_pixel_type;
 };
@@ -158,7 +171,7 @@ public:
 	   \param size 
 	   \param init_data must at least be of size (size.x*size.y)
 	*/
-	T2DImage(const C2DBounds& size, const data_array& init_data);
+	T2DImage(const C2DBounds& size, const std::vector<T>& init_data);
 	/**
 	   Create a 2D image with thegiven size and attach the given meta-data list. 
 	   \param size image size 
@@ -177,6 +190,23 @@ public:
 	 */
 	T2DImage(const T2DImage& orig);
 
+	/**
+	   Move constructor 
+	 */
+	T2DImage(T2DImage&& orig);
+
+	/**
+	   Move operator 
+	*/
+        T2DImage<T>& operator = (T2DImage<T>&& orig); 
+
+	
+        /**
+	   Copy operator 
+	*/
+	T2DImage<T>& operator = (const T2DImage<T>& orig); 
+
+		
 	/**
 	   Constructor to create the image by using a 2D data field 
 	   \param orig the input data field 
@@ -308,6 +338,11 @@ public:
 	   \returns gradient at position p 
 	 */
 	C2DFVector get_gradient(const C2DFVector& p) const;
+
+	/// \returns a pair (minimum, maximum) pixel intensity 
+	std::pair<double, double> get_minmax_intensity() const;
+
+	void make_single_ref() __attribute__((deprecated)); 
 private:
 	T2DDatafield<T> m_image;
 };
@@ -384,30 +419,28 @@ public:
 typedef T2DImage<bool> C2DBitImage;
 
 /// \brief 2D image with signed 8 bit integer values 
-typedef T2DImage<signed char> C2DSBImage;
+typedef T2DImage<int8_t> C2DSBImage;
 
 /// \brief 2D image with unsigned 8 bit integer values 
-typedef T2DImage<unsigned char> C2DUBImage;
+typedef T2DImage<uint8_t> C2DUBImage;
 
 /// \brief 2D image with signed 16 bit integer values 
-typedef T2DImage<signed short> C2DSSImage;
+typedef T2DImage<int16_t> C2DSSImage;
 
 /// \brief 2D image with unsigned 16 bit integer values 
-typedef T2DImage<unsigned short> C2DUSImage;
+typedef T2DImage<uint16_t> C2DUSImage;
 
 /// \brief 2D image with signed 32 bit integer values 
-typedef T2DImage<signed int> C2DSIImage;
+typedef T2DImage<int32_t> C2DSIImage;
 
 /// \brief 2D image with unsigned 32 bit integer values 
-typedef T2DImage<unsigned int> C2DUIImage;
+typedef T2DImage<uint32_t> C2DUIImage;
 
-#ifdef LONG_64BIT
 /// \brief 2D image with signed 64 bit integer values 
-typedef T2DImage<signed long> C2DSLImage;
+typedef T2DImage<int64_t> C2DSLImage;
 
 /// \brief 2D image with unsigned 64 bit integer values 
-typedef T2DImage<unsigned long> C2DULImage;
-#endif
+typedef T2DImage<uint64_t> C2DULImage;
 
 /// \brief 2D image with single precsion floating point values 
 typedef T2DImage<float> C2DFImage;

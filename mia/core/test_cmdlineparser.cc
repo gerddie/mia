@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,18 @@
 #include <stdexcept>
 #include <climits>
 
+#include <config.h>
+#include <miaconfig.h>
+
 #include <mia/core/cmdlineparser.hh>
+#include <mia/core/paramarray.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/internal/autotest.hh>
+
+
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#endif
 
 NS_MIA_USE
 using namespace std;
@@ -77,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE( test_set_option, CmdlineParserFixture )
 		BOOST_FAIL("error value not detected");
 	}
 	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
+		BOOST_TEST_MESSAGE(string("Caught:") + string(x.what()));
 	}
 }
 
@@ -161,7 +170,7 @@ BOOST_FIXTURE_TEST_CASE( test_float_option, CmdlineParserFixture )
 		BOOST_FAIL("error value not detected");
 	}
 	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
+		BOOST_TEST_MESSAGE(string("Caught:") + string(x.what()));
 	}
 }
 
@@ -187,7 +196,7 @@ BOOST_FIXTURE_TEST_CASE( test_int_option, CmdlineParserFixture )
 		BOOST_FAIL("error value not detected");
 	}
 	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
+		BOOST_TEST_MESSAGE(string("Caught:") + string(x.what()));
 	}
 }
 
@@ -295,7 +304,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 	BOOST_CHECK_EQUAL(olist.parse(options.size(), (const char**)&options[0], "remaining"),  CCmdOptionList::hr_no);
 
 	for(auto i = olist.get_remaining().begin(); i != olist.get_remaining().end(); ++i)
-		BOOST_MESSAGE(*i);
+		BOOST_TEST_MESSAGE(*i);
 
 	BOOST_CHECK_EQUAL(int_value1,12);
 	BOOST_CHECK_EQUAL(int_value2,13);
@@ -422,7 +431,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "  -? --usage            print a short help\n"
 			  "     --version          print the version number and exit\n\n"
 			  "Processing               \n"
-#if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
+#if defined(HAVE_TBB ) && defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
 			  "     --threads=1 (int)  Maxiumum number of threads to use for \n"
 #else
 			  "     --threads=-1 (int) \n"
@@ -436,7 +445,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "Example usage:\n  Example text\n"
 			  "    \n    test-program Example command\n\n"
 			  "Copyright:\n"
-			  "  This software is Copyright (c) Gert Wollny 1999-2015 Leipzig, \n"
+			  "  This software is Copyright (c) Gert Wollny 1999-2017 Leipzig, \n"
 			  "  Germany and Madrid, Spain. It comes with ABSOLUTELY NO WARRANTY and\n"
 			  "  you may redistribute it under the terms of the GNU GENERAL PUBLIC \n"
 			  "  LICENSE Version 3 (or later). For more information run the program \n"
@@ -462,4 +471,120 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 		}
 	}
 }
+
+#ifdef HAVE_SYS_IOCTL_H
+
+class CmdLineWidthFixture: public CmdlineParserFixture
+{
+public: 
+	CmdLineWidthFixture();
+	~CmdLineWidthFixture();
+private:
+	struct winsize m_old_ws;
+}; 
+
+CmdLineWidthFixture::CmdLineWidthFixture()
+{
+	ioctl(0,TIOCGWINSZ,&m_old_ws); 
+}
+
+CmdLineWidthFixture::~CmdLineWidthFixture()
+{
+	ioctl(0,TIOCSWINSZ,&m_old_ws); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_small, CmdLineWidthFixture )
+{
+	int test; 
+	struct winsize ws;
+	ws.ws_col = 50;
+	ws.ws_row = 50;
+	
+	if (ioctl(0,TIOCSWINSZ,&ws)==0) {
+		CCmdOptionList olist(general_help_test);
+
+		vector<const char *> options;
+		options.push_back("self");
+		options.push_back("-h");
+
+		olist.add(make_opt(test, "lala", 'i', "a int option"));
+		BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_help);
+
+		
+	}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_parser_help_output_termfixedsize_wide, CmdLineWidthFixture )
+{
+	int test; 
+	struct winsize ws;
+	ws.ws_col = 150;
+	ws.ws_row = 50;
+	
+	if (ioctl(0,TIOCSWINSZ,&ws)==0) {
+		CCmdOptionList olist(general_help_test);
+
+		vector<const char *> options;
+		options.push_back("self");
+		options.push_back("-h");
+
+		olist.add(make_opt(test, "lala", 'i', "a string option"));
+		BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_help);
+	}
+}
+
+#endif 
+
+BOOST_FIXTURE_TEST_CASE( test_repeat_option, CmdlineParserFixture )
+{
+
+	CCmdOptionList olist(general_help);
+
+	vector<int> value; 
+
+	olist.add(make_repeatable_opt(value, "int", 'i', "an intager repeatable option"));
+	vector<const char *> options;
+
+	options.push_back("self");
+	options.push_back("-i");
+	options.push_back("1");
+	options.push_back("-i");
+	options.push_back("2");
+	
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
+
+	BOOST_CHECK_EQUAL( olist.get_remaining().size(), 0);
+	
+	BOOST_CHECK_EQUAL(value.size(), 2u);
+	BOOST_REQUIRE(value.size() == 2u);
+	
+	BOOST_CHECK_EQUAL(value[0], 1);
+	BOOST_CHECK_EQUAL(value[1], 2);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_array_param_option_parsing, CmdlineParserFixture )
+{
+
+	CCmdOptionList olist(general_help);
+
+	TPerLevelScalarParam<uint32_t> conv_count(10);
+	
+		
+	olist.add(conv_count.
+		    create_level_params_option("conv-test-intervall",'T', EParameterBounds::bf_min_closed, {4}, 
+					       "Convergence test interations intervall: In order to measure "));
+	vector<const char *> options;
+	
+	options.push_back("self");
+	
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
+	
+	
+	BOOST_CHECK_EQUAL(conv_count[0], 10);
+	BOOST_CHECK_EQUAL(conv_count[1], 10);
+}
+
+
 

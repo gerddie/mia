@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,42 @@
 
 NS_MIA_BEGIN
 
+#define DECLARE_EXTERN_ITERATORS(TYPE)						\
+	extern template class  EXPORT_2D range2d_iterator<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_2D range2d_iterator<std::vector<TYPE>::const_iterator>; \
+	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<std::vector<TYPE>::iterator>; \
+	extern template class  EXPORT_2D range2d_iterator_with_boundary_flag<std::vector<TYPE>::const_iterator>;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
+DECLARE_EXTERN_ITERATORS(double);
+DECLARE_EXTERN_ITERATORS(float);
+DECLARE_EXTERN_ITERATORS(uint32_t);
+DECLARE_EXTERN_ITERATORS(int32_t);
+DECLARE_EXTERN_ITERATORS(int16_t);
+DECLARE_EXTERN_ITERATORS(uint16_t);
+DECLARE_EXTERN_ITERATORS(int8_t);
+DECLARE_EXTERN_ITERATORS(uint8_t);
+DECLARE_EXTERN_ITERATORS(bool);
+DECLARE_EXTERN_ITERATORS(int64_t);
+DECLARE_EXTERN_ITERATORS(uint64_t);
+
+DECLARE_EXTERN_ITERATORS(C2DBounds)
+DECLARE_EXTERN_ITERATORS(C2DFVector)
+DECLARE_EXTERN_ITERATORS(C2DDVector)
+
+#undef DECLARE_EXTERN_ITERATORS
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
+
+
 /**
    \ingroup basic
    \brief A class to hold data on a regular 2D grid 
@@ -55,10 +91,9 @@ class EXPORT_2DDATAFIELD T2DDatafield  {
 public:
 
 	/// type for the flat reprentation of the 2D data field 
-	typedef  ::std::vector<T> data_array;
+	typedef  ::std::vector<typename __holder_type_dispatch<T>::type> data_array;
 
-	/// pointer type 
-	typedef  std::shared_ptr<data_array > data_pointer;
+	
 
 	/// \cond SELFEXPLAINING 
 	typedef typename data_array::iterator iterator;
@@ -81,19 +116,61 @@ public:
 	typedef C2DFVector coord_type;
 	/// \endcond 
 
+	class EXPORT_2DDATAFIELD Range {
+		friend class T2DDatafield<T>;
+		friend class ConstRange;
+	public:
+		
+		typedef T2DDatafield<T>::range_iterator iterator;
+		
+		iterator begin();
+		
+		iterator end();
+		
+	private:
+		Range(const C2DBounds& start, const C2DBounds& end, T2DDatafield<T>& field);
+
+		iterator m_begin;
+		iterator m_end;
+	}; 
+	
+	class EXPORT_2D ConstRange {
+	public:
+		friend class T2DDatafield<T>;
+
+		typedef T2DDatafield<T>::const_range_iterator iterator;
+		
+		iterator begin() const;
+		
+		iterator end() const;
+
+	private:
+		ConstRange(const C2DBounds& start, const C2DBounds& end, const T2DDatafield<T>& field);
+
+		ConstRange(const Range& range); 
+		
+		iterator m_begin;
+		iterator m_end;
+	}; 
+
+	
 	T2DDatafield();
 
 	/**
 	   Create a 2D data field with the given size 
 	   \param size 
 	*/
-	T2DDatafield(const C2DBounds& size);
+	explicit T2DDatafield(const C2DBounds& size);
 
 	/**
 	   Create a 2D data field with the given size and initialize it with the given data 
 	   \param size 
 	   \param _data must at least be of size (size.x*size.y)
 	*/
+
+
+
+
 	T2DDatafield(const C2DBounds& size, const T *_data);
 
 	/**
@@ -101,39 +178,39 @@ public:
 	   \param size 
 	   \param data must at least be of size (size.x*size.y)
 	*/
-	T2DDatafield(const C2DBounds& size, const data_array& data);
+	T2DDatafield(const C2DBounds& size, const std::vector<T>& data);
 
-	/** copy constructor, it does a shallow copy of the original, i.e. 
-	    the data is not copied, only the shared pointer increases its reference count.
-	    If you want a truely unique copy, call make_single_ref() afterwards. 
+	/** copy constructor, it does a deep copy.
+
 	 */ 
 	T2DDatafield(const T2DDatafield<T>& org);
 
 	/**
-	   Assignment operator, Just like the copy constructor this call does only increment 
-	   the reference count to the data. 
-	   If you want a truely unique copy, call make_single_ref() afterwards. 
+	   Assignment operator, does a deep copy. 
 	*/
-	T2DDatafield& operator = (const T2DDatafield& org);
+	T2DDatafield<T>& operator = (const T2DDatafield<T>& org);
+
+	/** move constructor */ 
+	T2DDatafield(T2DDatafield<T>&& org);
+
+	/**   Assignment move operator */
+	T2DDatafield<T>& operator = (T2DDatafield<T>&& org);
+	
 	
 	virtual ~T2DDatafield();
 
-	
-	/// This function should really go away 
-	T get_interpol_val_at(const C2DFVector& p) const; // __attribute__((deprecated));
 
 	/**
 	   Since the data is internally stored by a shared pointer, this 
 	   function ensures that the data is not shared with any other object 
 	 */
-	void make_single_ref();
+	void make_single_ref() __attribute__((deprecated));
 
 	/// \returns the size of the data field 
 	const C2DBounds&  get_size() const;
 
 	/**
-	   This function first ensures that the copy of the data is unique by calling make_single_ref()
-	   and then sets the elements of data to T(). 
+	   This function sets the elements of data to T(). 
 	 */
 	void clear();
 
@@ -162,7 +239,7 @@ public:
 	   \returns read-only reference to the data	   
 	 */
 	const_reference operator[](size_t  idx) const{
-			return (*m_data)[idx];
+			return m_data[idx];
 	}
 
 	/**
@@ -174,7 +251,7 @@ public:
 	   \returns read-write reference to the data	   
 	 */
 	reference operator[](size_t  idx){
-			return (*m_data)[idx];
+			return m_data[idx];
 	}
 
 	/// \overload const_reference  operator()(size_t  x, size_t  y) const;
@@ -219,14 +296,12 @@ public:
 
 	/// \returns a read-only iterator to the begin of the data field with x being the fastest changing index   
 	const_iterator begin()const {
-		const data_array& data = *m_data;
-		return data.begin();
+		return m_data.begin();
 	}
 	
 	/// \returns a read-only iterator to the end of the data field with x being the fastest changing index   
 	const_iterator end()const {
-		const data_array& data = *m_data;
-		return data.end();
+		return m_data.end();
 	}
 
 	/** Get a read-write iterator to iterate over the whole field. 
@@ -234,8 +309,7 @@ public:
 	    \returns a read-write iterator to the begin of the data field
 	 */
 	iterator begin() {
-		make_single_ref();
-		return m_data->begin();
+		return m_data.begin();
 	}
 
 	/** Get a read-write iterator to iterate over the whole field. 
@@ -244,8 +318,7 @@ public:
 	 */
 
 	iterator end() {
-		make_single_ref();
-		return m_data->end();
+		return m_data.end();
 	}
 
 	/** Get a read-write iterator to iterate over the field staring from the given position. 
@@ -273,6 +346,11 @@ public:
 		return b;
 	}
 
+	Range get_range(const C2DBounds& start, const C2DBounds& end);
+
+	ConstRange get_range(const C2DBounds& start, const C2DBounds& end) const; 
+
+	
         /** \returns an read/write forward iterator over a subset of the data. 
             The functions ensures, that the field uses a single referenced datafield */
         range_iterator begin_range(const C2DBounds& begin, const C2DBounds& end); 
@@ -291,8 +369,8 @@ public:
 
 private:
 	C2DBounds  m_size;
-	data_pointer m_data;
-	const static T Zero;
+	data_array m_data;
+	const static value_type Zero;
 };
 
 /// 2D scalar field that holds double values 
@@ -302,29 +380,27 @@ typedef T2DDatafield<double> C2DDDatafield;
 typedef T2DDatafield<float>  C2DFDatafield;
 
 /// 2D scalar field that holds unsigned int values 
-typedef T2DDatafield<unsigned int> C2DUIDatafield;
+typedef T2DDatafield<uint32_t> C2DUIDatafield;
 
 /// 2D scalar field that holds signed int values 
-typedef T2DDatafield<signed int>  C2DSIDatafield;
+typedef T2DDatafield<int32_t>  C2DSIDatafield;
 
-#ifdef LONG_64BIT
-typedef T2DDatafield<unsigned long> C2DULDatafield;
+typedef T2DDatafield<uint64_t> C2DULDatafield;
 
 /// long  instanziation of a 2D data field
-typedef T2DDatafield<signed long>  C2DSLDatafield;
-#endif
+typedef T2DDatafield<int64_t>  C2DSLDatafield;
 
 /// 2D scalar field that holds unsigned short values 
-typedef T2DDatafield<unsigned short> C2DUSDatafield;
+typedef T2DDatafield<uint16_t> C2DUSDatafield;
 
 /// 2D scalar field that holds signed short values 
-typedef T2DDatafield<signed short>  C2DSSDatafield;
+typedef T2DDatafield<int16_t>  C2DSSDatafield;
 
 /// 2D scalar field that holds unsigned char (=byte) values 
-typedef T2DDatafield<unsigned char> C2DUBDatafield;
+typedef T2DDatafield<uint8_t> C2DUBDatafield;
 
 /// 2D scalar field that holds signed char values 
-typedef T2DDatafield<signed char>  C2DSBDatafield;
+typedef T2DDatafield<int8_t>  C2DSBDatafield;
 
 /// 2D scalar field that holds bool values
 typedef T2DDatafield<bool>  C2DBitDatafield;
@@ -340,9 +416,51 @@ typedef TTranslator<C2DFVector> C2DFVectorTranslator;
 
 /// @cond NEVER 
 
+#define DEFINE_2DFIELD_TEMPLATE(TYPE) \
+	extern template class EXPORT_2D T2DDatafield<TYPE>;			\
+	extern template class EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
+	extern template class EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>; \
+	extern template class EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::iterator>; \
+	extern template class EXPORT_2D range2d_iterator_with_boundary_flag<T2DDatafield<TYPE>::const_iterator>;
+
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wattributes"
+#endif
+#endif
+
+
+DEFINE_2DFIELD_TEMPLATE(double);
+DEFINE_2DFIELD_TEMPLATE(float); 
+DEFINE_2DFIELD_TEMPLATE(int64_t);
+DEFINE_2DFIELD_TEMPLATE(uint64_t);
+DEFINE_2DFIELD_TEMPLATE(uint32_t);
+DEFINE_2DFIELD_TEMPLATE(int32_t);
+DEFINE_2DFIELD_TEMPLATE(uint16_t);
+DEFINE_2DFIELD_TEMPLATE(int16_t);
+DEFINE_2DFIELD_TEMPLATE(uint8_t);
+DEFINE_2DFIELD_TEMPLATE(int8_t);
+
+DEFINE_2DFIELD_TEMPLATE(C2DBounds);
+DEFINE_2DFIELD_TEMPLATE(C2DFVector)
+DEFINE_2DFIELD_TEMPLATE(C2DDVector)
 
 DECLARE_TYPE_DESCR(C2DBounds);
-DECLARE_TYPE_DESCR(C2DFVector); 
+DECLARE_TYPE_DESCR(C2DFVector);
+DECLARE_TYPE_DESCR(C2DDVector);
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif 
+
+
+extern template class EXPORT_2D CTParameter<C2DFVector>;
+extern template class EXPORT_2D CTParameter<C2DBounds>;
+extern template class EXPORT_2D TTranslator<C2DFVector>; 
+extern template class EXPORT_2D TAttribute<C2DFVector>; 
+
 /// @endcond
 
 NS_MIA_END

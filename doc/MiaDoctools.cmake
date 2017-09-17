@@ -32,51 +32,53 @@ MACRO(MIA_PREPARE_AUTODOC prefix)
   OPTION(MIA_CREATE_MANPAGES "Create the man pages for the executables (Required Python and python-lxml), Recommended" ON)
   OPTION(MIA_CREATE_NIPYPE_INTERFACES "Create the nipype interfaces for the executables (Required Python,python-lxml, and nipype), Recommended" ON)
   
-  IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE)
+
+  # these targets require python 
+  IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE_INTERFACES OR MIA_CREATE_USERDOC)
     
     FIND_PACKAGE(PythonInterp REQUIRED)
     EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
     IF(LXML_ERR) 
-      MESSAGE(FATAL "Python found, but no pythonl-xml")
+      MESSAGE(STATUS  "Python found, but no pythonl-xml, will not build user documentation")
+      SET(MIA_CREATE_MANPAGES FALSE)
+      SET(MIA_CREATE_NIPYPE_INTERFACES FALSE)
+      SET(MIA_CREATE_USERDOC FALSE)
     ENDIF(LXML_ERR)
     
-    IF(MIA_CREATE_MANPAGES) 
-      ADD_CUSTOM_TARGET(manpages ALL)
+  ENDIF()
+  
+  IF(MIA_CREATE_MANPAGES) 
+    ADD_CUSTOM_TARGET(manpages ALL)
+  ENDIF()
+    
+  IF(MIA_CREATE_NIPYPE_INTERFACES)
+    file(WRITE ${NIPYPE_INTERFACE_INIT_FILE} "# Automatically generated file, do not edit\n")
+
+    STRING(COMPARE EQUAL "${CMAKE_INSTALL_PREFIX}" "/usr" INSTALLROOT_IS_USR)
+    
+    IF(INSTALLROOT_IS_USR)
+      EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib\nimport sys\nsys.stdout.write(get_python_lib())"
+	RESULT_VARIABLE SITEPACKGE_ERR
+	OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
+    ELSE()
+      EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import site\nimport sys\nsys.stdout.write(site.getusersitepackages())"
+	RESULT_VARIABLE SITEPACKGE_ERR
+	OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
     ENDIF()
     
-    IF(MIA_CREATE_NIPYPE_INTERFACES)
-      file(WRITE ${NIPYPE_INTERFACE_INIT_FILE} "# Automatically generated file, do not edit\n")
-
-      STRING(COMPARE EQUAL "${CMAKE_INSTALL_PREFIX}" "/usr" INSTALLROOT_IS_USER)
-      
-      IF(INSTALLROOT_IS_USER)
-	EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib\nimport sys\nsys.stdout.write(get_python_lib())"
-	  RESULT_VARIABLE SITEPACKGE_ERR
-	  OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
-      ELSE()
-	EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import site\nimport sys\nsys.stdout.write(site.getusersitepackages())"
-	  RESULT_VARIABLE SITEPACKGE_ERR
-	  OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
-      ENDIF()
-
-      IF(SITEPACKGE_ERR) 
-        MESSAGE(FATAL "Something went wrong identifying the nipype installation loaction") 
-      ENDIF()
-
-      SET(NIPYPE_INTERFACE_DIR "${SITEPACKGE_BASE_PATH}/${prefix}/nipype/interfaces/")
-      
-      
-      
-      MESSAGE(STATUS "Will create nipype interfaces and install to " ${NIPYPE_INTERFACE_DIR}) 
-      
-      ADD_CUSTOM_TARGET(nipypeinterfaces ALL)
-      INSTALL(FILES ${NIPYPE_INTERFACE_INIT_FILE} DESTINATION ${NIPYPE_INTERFACE_DIR})
+    IF(SITEPACKGE_ERR) 
+      MESSAGE(FATAL "Something went wrong identifying the nipype installation loaction") 
     ENDIF()
+    
+    SET(NIPYPE_INTERFACE_DIR "${SITEPACKGE_BASE_PATH}/${prefix}/nipype/interfaces/")
+    MESSAGE(STATUS "Will create nipype interfaces and install to " ${NIPYPE_INTERFACE_DIR}) 
+    
+    ADD_CUSTOM_TARGET(nipypeinterfaces ALL)
+    INSTALL(FILES ${NIPYPE_INTERFACE_INIT_FILE} DESTINATION ${NIPYPE_INTERFACE_DIR})
+    # install empty init files 
+    INSTALL(FILES ${MIA_DOCTOOLS_ROOT}/__init__.py DESTINATION ${SITEPACKGE_BASE_PATH}/${prefix})
+    INSTALL(FILES ${MIA_DOCTOOLS_ROOT}/__init__.py DESTINATION ${SITEPACKGE_BASE_PATH}/${prefix}/nipype)
   ENDIF()
-
-  # install empty init files 
-  INSTALL(FILES ${MIA_DOCTOOLS_ROOT}/__init__.py DESTINATION ${SITEPACKGE_BASE_PATH}/${prefix})
-  INSTALL(FILES ${MIA_DOCTOOLS_ROOT}/__init__.py DESTINATION ${SITEPACKGE_BASE_PATH}/${prefix}/nipype)
   
 ENDMACRO(MIA_PREPARE_AUTODOC) 
 
@@ -89,7 +91,7 @@ ENDMACRO(MIA_PREPARE_AUTODOC)
 #
 MACRO(MIA_CREATE_EXE_XML_HELP prefix name)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
-    COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH} ./${prefix}-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
+    COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT} ./${prefix}-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
     DEPENDS ${prefix}-${name})
     
   ADD_CUSTOM_TARGET(${prefix}-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml)
@@ -111,9 +113,11 @@ MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
     COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2nipype.py -i ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml -o ${${prefix}-${name}-nipype-interface}
     MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml)
 
+
   FILE(APPEND ${NIPYPE_INTERFACE_INIT_FILE} "from .${prefix}_${PythonName} import ${prefix}_${PythonName}\n")
   
   ADD_CUSTOM_TARGET(${prefix}-${name}-nipype DEPENDS ${${prefix}-${name}-nipype-interface})
+  ADD_DEPENDENCIES(${prefix}-${name}-nipype ${prefix}-${name}-xml)
   ADD_DEPENDENCIES(nipypeinterfaces ${prefix}-${name}-nipype)
   
   INSTALL(FILES ${${prefix}-${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR})
@@ -128,11 +132,13 @@ MACRO(MIA_CREATE_MANPAGE_FROM_XML prefix name)
   SET(${prefix}-${name}-manfile ${CMAKE_CURRENT_BINARY_DIR}/${prefix}-${name}.1)
   ADD_CUSTOM_COMMAND(OUTPUT   ${${prefix}-${name}-manfile}
     COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2man.py ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml >${${prefix}-${name}-manfile}
-      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
-      )
-    ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})
-    add_dependencies(manpages ${prefix}-${name}-man)
-    INSTALL(FILES ${${prefix}-${name}-manfile} DESTINATION "share/man/man1")
+    MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
+    DEPENDS ${prefix}-${name}-xml
+    )
+  ADD_CUSTOM_TARGET(${prefix}-${name}-man DEPENDS ${${prefix}-${name}-manfile})
+  ADD_DEPENDENCIES(${prefix}-${name}-man ${prefix}-${name}-xml)
+  add_dependencies(manpages ${prefix}-${name}-man)
+  INSTALL(FILES ${${prefix}-${name}-manfile} DESTINATION "share/man/man1")
 ENDMACRO(MIA_CREATE_MANPAGE_FROM_XML)
 
 

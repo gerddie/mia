@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,6 @@
 #include <mia/core/handler.hh>
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/testplugin.hh>
-
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
-
 #include <boost/filesystem/path.hpp>
 
 NS_MIA_USE
@@ -49,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 	CPluginSearchpath sp(true);
 	sp.add("testplug"); 
 	CTestPluginHandler::set_search_path(sp);
-	auto callback = [](const tbb::blocked_range<int>& range, int init){
+	auto callback = [](const C1DParallelRange& range, int init){
 		
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
@@ -81,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler_parallel )
 		return fails; 
 	}; 
 		
-	int fails = tbb::parallel_reduce( tbb::blocked_range<int>(0, 4, 1), 0, callback, [](int x, int y){return x+y;}); 
+	int fails = preduce( C1DParallelRange(0, 4, 1), 0, callback, [](int x, int y){return x+y;}); 
 
 	BOOST_CHECK_EQUAL(fails, 0); 
 

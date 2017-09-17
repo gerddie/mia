@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -177,21 +177,21 @@ C3DDoGrowmask::result_type C3DDoGrowmask::operator () (const T3DImage<T>& data) 
 	queue <seed_t<T> > pool;
 
 	if (data.get_size() != m_start_mask.get_size())
-		throw invalid_argument("C3DGrowmask::filter: seed mask and reference must be ofthe same size");
+		throw invalid_argument("C3DGrowmask::filter: seed mask and reference must be of the same size");
 	C3DBitImage *r = new C3DBitImage(m_start_mask);
 	r->set_attributes(data.begin_attributes(), data.end_attributes()); 
 	P3DImage result(r);
 
 	// first initialize the seed queue
-	C3DBitImage::iterator ir = r->begin();
-	typename T3DImage<T>::const_iterator d = data.begin();
+	auto ir = r->begin();
+	auto d = data.begin();
 
 	C3DBounds pos;
 	for (pos.z = 0; pos.z < data.get_size().z; ++pos.z)
 		for (pos.y = 0; pos.y < data.get_size().y; ++pos.y)
 			for (pos.x = 0; pos.x < data.get_size().x; ++pos.x, ++ir, ++d) {
 				if (*ir)
-					add_neigborhood(pos, data, *r, *d, pool);
+					add_neigborhood(pos, data, *r, static_cast<T>(*d), pool);
 			}
 
 	// then grow

@@ -29,6 +29,8 @@ IF (WITH_DCMTK)
   IF(DCMTK_FOUND)
     DEFINE_PROPERTY(GLOBAL PROPERTY HAVE_DCMTK_PROP BRIEF_DOCS "yeah" FULL_DOCS "yeah")
     SET(dicom4mia_deps mia3d ${DCMTK_LIBRARIES})
+
+   
     MIA_ADD_LIBRARY(dicom4mia "${dicom4mia_SOURCES}" "${dicom4mia_deps}")
     INSTALL_BASE(dicom4mia)
 
@@ -44,7 +46,6 @@ IF (WITH_DCMTK)
     MESSAGE(FATAL_ERROR "DCMTK not found and strict dependencies enabled")
   ENDIF(DCMTK_FOUND)
 ENDIF(WITH_DCMTK)
-
 
 
 

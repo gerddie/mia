@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,24 @@ private:
 	long double m_a, m_mx, m_my; 
 }; 
 
+template <typename  S, typename  T, bool>
+struct can_fast_copy {
+	static bool apply() {
+		return false; 
+	}
+}; 
+
+template <typename  S, typename  T>
+struct can_fast_copy<S, T, true> {
+	static bool apply() {
+		auto trgt_minmax = get_minmax<T>::apply();
+		auto src_minmax = get_minmax<S>::apply();
+		return (src_minmax.first >= trgt_minmax.first) &&
+			(src_minmax.second <= trgt_minmax.second); 
+	}
+}; 
+
+
 
 template <class Image>
 template <template  <typename> class Data, typename  S, typename  T>
@@ -100,19 +118,27 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 	TRACE("TConvert::convert"); 
 
 	long double a = 1.0, mx, my; 
-	Data<T> *result = new Data<T>(src.get_size(), src); 
+	Data<T> *result = new Data<T>(src.get_size(), src);
+	typename TConvert<Image>::result_type presult(result);
+	
+	auto trgt_minmax = get_minmax<T>::apply();
 
-	
-	
 	switch (m_ct) {
-	case pc_copy:
-		a = 1.0; 
-		mx = 0.0; 
-		my = 0.0; 
-		break; 
+	case pc_copy: {
+		// fast copy if output type fully contains value range of input type;
+		const bool equal_signedness = std::is_signed<S>::value == std::is_signed<T>::value;
+		if (can_fast_copy<S, T, equal_signedness>::apply()) {
+			std::copy(src.begin(), src.end(), result->begin()); 
+			return presult;
+		}else{
+			a = 1.0; 
+			mx = 0.0; 
+			my = 0.0; 
+			break;
+		}
+	}
 	case pc_range: {
 		auto src_minmax = get_minmax<S>::apply(); 
-		auto trgt_minmax = get_minmax<T>::apply(); 
 
 		cvdebug() << "src_minmax = (" << src_minmax.first << ", " << src_minmax.second << ")\n"; 
 		cvdebug() << "trgt_minmax = (" << trgt_minmax.first << ", " << trgt_minmax.second << ")\n"; 
@@ -125,7 +151,6 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		break; 
 	}
 	case pc_opt: {
-		auto trgt_minmax = get_minmax<T>::apply(); 
 		auto src_minmax = ::boost::minmax_element(src.begin(), src.end()); 
 		
 		cvdebug() << "src_minmax = (" << *src_minmax.first << ", " << *src_minmax.second << ")\n"; 
@@ -143,7 +168,6 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		break; 
 	}
 	case pc_opt_stat: {
-		const auto trgt_minmax = get_minmax<T>::apply(); 
 		const double q_trgt_range = 0.25 * (trgt_minmax.second - trgt_minmax.first); 
 		const auto meanvar = mean_var(src.begin(), src.end()); 
 		if (meanvar.second > 0) 
@@ -162,7 +186,7 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 	
 	std::transform(src.begin(), src.end(), result->begin(), cv); 
 	
-	return typename TConvert<Image>::result_type(result); 
+	return presult; 
 }
 
 template <class Image>

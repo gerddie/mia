@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,9 +163,11 @@ bool CStringAttrTranslatorMap::add(const string& key, CAttrTranslator* t)
 {
 	CMap::const_iterator k = m_translators.find(key);
 	if ( k != m_translators.end()) {
-		if ( typeid(*t) != typeid(*k->second))
-			throw invalid_argument(string("translator with key '") + key + ("' already defined otherwise"));
-		else
+		if ( typeid(*t) != typeid(*k->second)) {
+			delete t; 
+			throw create_exception<invalid_argument>(string("translator with key '") +
+								 key + ("' already defined otherwise"));
+		} else
 			return false;
 	}
 	cvdebug() << "add translator type '" << typeid(*t).name() << "' for '" << key << "'\n";
@@ -234,6 +236,11 @@ bool EXPORT_CORE operator == (const CAttributedData& a, const CAttributedData& b
 	return  *a.m_attr == *b.m_attr;
 }
 
+template class TAttribute<uint8_t>;
+template class TAttribute<int8_t>; 
+
+template class TAttribute<std::vector<uint8_t>>;
+template class TAttribute<std::vector<int8_t>>; 
 
 template class EXPORT_CORE  TTranslator<double>;
 template class EXPORT_CORE  TTranslator<std::vector<double> >;
@@ -241,31 +248,29 @@ template class EXPORT_CORE  TTranslator<std::vector<double> >;
 template class EXPORT_CORE  TTranslator<float>;
 template class EXPORT_CORE  TTranslator<std::vector<float> >;
 
-#ifdef LONG_64BIT
-template class EXPORT_CORE  TTranslator<unsigned long>;
-template class EXPORT_CORE  TTranslator<std::vector<unsigned long> >;
+template class EXPORT_CORE  TTranslator<uint64_t>;
+template class EXPORT_CORE  TTranslator<std::vector<uint64_t> >;
 
-template class EXPORT_CORE  TTranslator<signed long>;
-template class EXPORT_CORE  TTranslator<std::vector<signed long> >;
-#endif
+template class EXPORT_CORE  TTranslator<int64_t>;
+template class EXPORT_CORE  TTranslator<std::vector<int64_t> >;
 
-template class EXPORT_CORE  TTranslator<unsigned int>;
-template class EXPORT_CORE  TTranslator<std::vector<unsigned int> >;
+template class EXPORT_CORE  TTranslator<uint32_t>;
+template class EXPORT_CORE  TTranslator<std::vector<uint32_t> >;
 
-template class EXPORT_CORE  TTranslator<signed int>;
-template class EXPORT_CORE  TTranslator<std::vector<signed int> >;
+template class EXPORT_CORE  TTranslator<int32_t>;
+template class EXPORT_CORE  TTranslator<std::vector<int32_t> >;
 
-template class EXPORT_CORE  TTranslator<unsigned short>;
-template class EXPORT_CORE  TTranslator<std::vector<unsigned short> >;
+template class EXPORT_CORE  TTranslator<uint16_t>;
+template class EXPORT_CORE  TTranslator<std::vector<uint16_t> >;
 
-template class EXPORT_CORE  TTranslator<signed short>;
-template class EXPORT_CORE  TTranslator<std::vector<signed short> >;
+template class EXPORT_CORE  TTranslator<int16_t>;
+template class EXPORT_CORE  TTranslator<std::vector<int16_t> >;
 
-template class EXPORT_CORE  TTranslator<unsigned char>;
-template class EXPORT_CORE  TTranslator<std::vector<unsigned char> >;
+template class EXPORT_CORE  TTranslator<uint8_t>;
+template class EXPORT_CORE  TTranslator<std::vector<uint8_t> >;
 
-template class EXPORT_CORE  TTranslator<signed char>;
-template class EXPORT_CORE  TTranslator<std::vector<signed char> >;
+template class EXPORT_CORE  TTranslator<int8_t>;
+template class EXPORT_CORE  TTranslator<std::vector<int8_t> >;
 
 template class EXPORT_CORE  TTranslator<bool>;
 template class EXPORT_CORE  TTranslator<std::vector<bool> >;

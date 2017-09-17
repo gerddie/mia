@@ -1,29 +1,67 @@
-sudo: required
+sudo: false
 dist: trusty
 language: generic
 
-install:
-- sudo add-apt-repository ppa:gert-die/trusty-mia -y 
-- sudo apt-get update -qq
-- sudo apt-get install -y libmaxflow-dev libdcmtk2-dev libeigen3-dev libfftw3-dev libgsl0-dev libgts-dev libhdf5-dev libitpp-dev libnifti-dev libnlopt-dev libopenexr-dev libpng-dev libtbb-dev libtiff-dev libvtk6-dev libvistaio-dev libxml++2.6-dev python-lxml xsltproc docbook-xsl doxygen doxygen-latex graphviz libblas-dev libboost-filesystem-dev libboost-regex-dev libboost-serialization-dev libboost-system-dev libboost-test-dev
-
-before_script:
-- mkdir build
-- cd build
-- CXXFLAGS="-g -O0" cmake .. -DALWAYS_CREATE_DOC=ON -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=ON -DMIA_CREATE_NIPYPE_INTERFACES=ON
-script:
-- make -j2
-after_success:
-- make test
 env:
+  matrix: 
+  - COVERAGE=ON EXTRA=OFF BUILD_TYPE=Debug
+  - COVERAGE=OFF EXTRA=ON BUILD_TYPE=Debug 
+  - COVERAGE=OFF EXTRA=ON BUILD_TYPE=Release
   global:
   - secure: GJh7knKOeyjofQFswCHI4H1VeRBYDmGrZjBiW/yNoGqLvvAZi32HF2d5gHj2vrsGBqto/5mQrydo1rH6Q85VuZ7ZNZmcmiMVA5htv61WKfxzc50mSrkSfvDTb0MOmR8QcpWpK4YAfCYd4r8drPfpbRdHUvTfEk9tS8I/1LGLuos3cLRU+OojEuvndUC8rGHtCRtDswFmngbc96gkAuHfAd7LiaJ5EY+pqOmHY4xMgi5Ev4FnGdkUczUcpisxee/48QIite9lw5E0pemPepKuhrwUJRvnzb9Tgsp94R42mzymvnKyLsttdUQtUItTQshTqEtWSFf/6GO9GPyUXAgR+BDsQ9ODlxOC6+Cip0HqxCvgDfIZarVaj5/2/ZwiyjocEinhSzFiIJF9SShpqSpP9MUgS/ZL/9y6GMiDXx19zkxBJ9kXP+7vH/G/7qFZ6f1aVuDemgKit5styDQDnLyd/FlBrz3oWftj4WDpF3LQIwAAstq1nBKsccYT5cfcbrvMY+lNTAL0HrjAt06C1b9DoG0ftEy5YWYrJlgdfmkXhK9O6Dz73Pj8FMDjJyKlFIpssLWEmQUE3LytnDY3tw7uE+JIXIb8Ii3Q8CLX/IMWjEkHAaXd4+jXJOAoFWelZtCqbHXRH367Rel7ETBmI/PELm3WaGKxcTACC8zpLk9IDJQ=
+
 addons:
+  apt:
+    sources:
+    - sourceline: 'ppa:gert-die/trusty-mia'
+    packages:
+    - libmaxflow-dev
+    - libdcmtk2-dev
+    - libeigen3-dev
+    - libfftw3-dev
+    - libgsl0-dev
+    - libgts-dev
+    - libhdf5-dev
+    - libitpp-dev
+    - libnifti-dev
+    - libnlopt-dev
+    - libopenexr-dev
+    - libpng-dev
+    - libtbb-dev
+    - libtiff-dev
+    - libvtk6-dev
+    - libvistaio-dev
+    - libxml2-dev
+    - xsltproc
+    - docbook-xsl
+    - doxygen
+    - graphviz
+    - libblas-dev
+    - libboost-filesystem-dev
+    - libboost-regex-dev
+    - libboost-serialization-dev
+    - libboost-system-dev
+    - libboost-test-dev
+    - python-lxml
   coverity_scan:
     project:
       name: gerddie/mia
       version: 2.2.7+
       description: Medical imaga analysis library
     notification_email: gw.fossdev@gmail.com
-    build_command: make -j2
+    build_command: make -j32
     branch_pattern: coverity_scan
+
+before_script:
+- mkdir build
+- cd build
+- echo COVERAGE=$COVERAGE EXTRA=$EXTRA
+- cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DALWAYS_CREATE_DOC=$EXTRA -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=$EXTRA -DMIA_CREATE_NIPYPE_INTERFACES=$EXTRA -DENABLE_COVERAGE=$COVERAGE -DDISABLE_PROGRAMS=$COVERAGE -DUSE_MATHJAX=YES  -DMIA_USE_BOOST_REGEX=YES
+script:
+- cat /proc/cpuinfo
+- free -h
+- make -j4
+after_success:
+- make test
+- cd .. 
+- if test "x$COVERAGE" = "xON"; then pip install --user cpp-coveralls; coveralls --exclude CMakeFiles --exclude src --gcov-options '\-lp' -b $(pwd)/build 2>&1 >/dev/null ; fi 

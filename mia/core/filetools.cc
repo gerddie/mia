@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp> // includes boost/filesystem/path.hpp
 #include <boost/filesystem/fstream.hpp>    // ditto
-#include <boost/regex.hpp>
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/filetools.hh>
@@ -47,70 +46,9 @@ namespace bfs = ::boost::filesystem;
 #define MAX_PATH 4096
 #endif
 
-
-CPathNameArray find_files(const CPathNameArray& searchpath, const std::string& pattern)
-{
-	boost::regex pat_expr(pattern);
-	CPathNameArray result; 
-
-	// search through all the path to find the plugins
-	for (auto dir = searchpath.begin(); dir != searchpath.end(); ++dir){
-
-		cvdebug() << "Looking for " << dir->string() << "\n"; 
-
-		if (bfs::exists(*dir) && bfs::is_directory(*dir)) {
-			// if we cant save the old directory something is terribly wrong
-			bfs::directory_iterator di(*dir); 
-			bfs::directory_iterator dend;
-			
-			cvdebug() << "TPluginHandler<I>::initialise: scan '"<<dir->string() <<"'\n"; 
-
-			while (di != dend) {
-				cvdebug() << "    candidate:'" << di->path().string() << "'"; 
-				if (boost::regex_match(di->path().string(), pat_expr)) {
-					result.push_back(*di); 
-					cverb << " add\n";
-				}else
-					cverb << " discard\n";
-				++di; 
-			}
-		}
-	}
-	return result; 
-}
-
-EXPORT_CORE vector<string> get_consecutive_numbered_files_from_pattern(string const& in_filename, int start, int end)
-{
-	char buffer[MAX_PATH];
-	int num = start;
-	vector<string> result;
-
-	snprintf(buffer, MAX_PATH, in_filename.c_str(), num);
-	string first_filename(buffer);
-
-	while (!bfs::exists(buffer) && num < end) {
-		++num;
-		snprintf(buffer, MAX_PATH, in_filename.c_str(), num);
-		// no file found
-		if (first_filename == string(buffer))
-			return result;
-	}
-
-
-
-	while (bfs::exists(buffer) && num < end) {
-		result.push_back(string(buffer));
-		++num;
-		snprintf(buffer, MAX_PATH, in_filename.c_str(), num);
-
-		// run through all possible file names
-		if (first_filename == string(buffer))
-			break;
-	}
-	return result;
-}
-
-EXPORT_CORE const std::string get_filename_pattern_and_range(std::string const& in_filename, size_t& start_filenum, size_t& end_filenum, size_t& format_width)
+EXPORT_CORE const std::string get_filename_pattern_and_range(std::string const& in_filename,
+							     size_t& start_filenum,
+							     size_t& end_filenum, size_t& format_width)
 {
 	string base_name;
 	size_t nwidth = format_width = fname_to_cformat(in_filename.c_str(), base_name, false);
@@ -232,22 +170,6 @@ EXPORT_CORE size_t fname_to_cformat(const char *fname, string& base, bool wildca
 	return nwidth;
 }
 
-EXPORT_CORE void split_dir_fname(const char *in_name, std::string& dir, std::string& fname)
-{
-	char *help = strdup(in_name);
-	char *filename = strrchr(help, '/');
-
-	if (filename) {
-		*filename = 0;
-		++filename;
-		dir.assign(help);
-		fname.assign(filename);
-	}else {
-		dir.assign("./");
-		fname.assign(help);
-	}
-	free(help);
-}
 
 // ugly
 EXPORT_CORE string create_filename(const char *cformat, size_t num)

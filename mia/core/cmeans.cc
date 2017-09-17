@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,28 +35,23 @@ using namespace std;
 
 struct CMeansImpl {
 
-	CMeansImpl(double k, double epsilon);
+	typedef vector<pair<double, CMeans::DVector>> Probmap; 
+	
+	CMeansImpl(double epsilon);
 
-	CMeans::SparseProbmap run(const CMeans::NormalizedHistogram& nh, CMeans::DVector& class_centers) const; 
+	Probmap run(const CMeans::NormalizedHistogram& nh, CMeans::DVector& class_centers) const; 
 
 private: 
-	void evaluate_probabilities(const CMeans::DVector& classes, CMeans::SparseProbmap& pv, double k) const; 
+	void evaluate_probabilities(const CMeans::DVector& classes, Probmap& pv) const; 
 	double update_class_centers(CMeans::DVector& class_center,
 				    const CMeans::NormalizedHistogram& nh, 
-				    const CMeans::SparseProbmap& pv) const; 
+				    const Probmap& pv) const; 
 	
-	double adjust_k(const CMeans::DVector& class_center,
-			const CMeans::NormalizedHistogram& nh, 
-			const CMeans::SparseProbmap& pv) const; 
-		
-	
-	double m_k;
 	double m_epsilon;
 }; 
 
 
-CMeansImpl::CMeansImpl(double k, double epsilon):
-	m_k(k), 
+CMeansImpl::CMeansImpl(double epsilon):
 	m_epsilon(epsilon)
 {
 }
@@ -65,10 +60,10 @@ const char *CMeans::Initializer::data_descr = "1d";
 const char *CMeans::Initializer::type_descr = "cmeans"; 
 
 
-CMeans::CMeans(double k, double epsilon, PInitializer class_center_initializer):
+CMeans::CMeans(double epsilon, PInitializer class_center_initializer):
 	m_cci(class_center_initializer)
 {
-	impl = new CMeansImpl(k, epsilon);
+	impl = new CMeansImpl(epsilon);
 }
 
 CMeans::~CMeans()
@@ -79,13 +74,20 @@ CMeans::~CMeans()
 
 CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& class_centers) const
 {
+	return run(histogram, class_centers, true);
+}
+
+CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& class_centers, bool de_normalize_results) const
+{
 	// prepare input data 
 	NormalizedHistogram nhist(histogram.size());
-	
-	const double bin_shift = histogram[0].first;
+
+	const double bin_shift = histogram[0].first < 0 ? histogram[0].first : 0;
 	const double bin_scale = 1.0 / double(histogram[histogram.size() - 1].first - bin_shift);
 	const double inv_bin_scale = double(histogram[histogram.size() - 1].first - bin_shift);
 
+	cvinfo() << "Histogram conversion: shift = " <<  bin_shift << ", scale = " << bin_scale << "\n"; 
+	
 	size_t n = 0;
 	for(auto h: histogram)
 		n += h.second;
@@ -100,25 +102,36 @@ CMeans::SparseProbmap CMeans::run(const SparseHistogram& histogram,  DVector& cl
 		  [bin_shift, bin_scale, normalizer](const SparseHistogram::value_type& x) -> NormalizedHistogram::value_type {
 			  return make_pair((x.first - bin_shift) * bin_scale, x.second * normalizer);  
 		  });
-	
+
+	cvinfo() << "CMeans: normalized histogram range:[" <<  nhist[0].first
+		 << ", " << nhist[nhist.size()-1].first << "]\n"; 
 
 	class_centers = m_cci->run(nhist);
-	cvmsg() << "Initial class centers =" << class_centers << "\n"; 
-	SparseProbmap result = impl->run(nhist, class_centers);
-	cvmsg() << "Finale class centers =" << class_centers << "\n"; 
+	cvinfo() << "Initial class centers =" << class_centers << "\n"; 
+	auto internal_result = impl->run(nhist, class_centers);
+	cvinfo() << "Finale class centers =" << class_centers << "\n"; 
+
+	SparseProbmap result(internal_result.size()); 
 	
-	transform(result.begin(), result.end(), histogram.begin(), result.begin(),
-		  [](const SparseProbmap::value_type& p, const SparseHistogram::value_type& h) -> SparseProbmap::value_type {
+	transform(internal_result.begin(), internal_result.end(), histogram.begin(), result.begin(),
+		  [](const pair<double, CMeans::DVector>& p, const SparseHistogram::value_type& h) ->
+		  SparseProbmap::value_type {
 			  return make_pair(h.first, p.second); 
 		  }); 
-	
-	transform(class_centers.begin(), class_centers.end(), class_centers.begin(),
-		  [inv_bin_scale, bin_shift](double x) {
-			  return inv_bin_scale * x +  bin_shift; 
-		  });
+
+	// scale class centers to actual intensity range (if requested)
+	if (de_normalize_results) {
+		transform(class_centers.begin(), class_centers.end(), class_centers.begin(),
+			  [inv_bin_scale, bin_shift](double x) {
+				  return inv_bin_scale * x +  bin_shift; 
+			  });
+		cvinfo() << "Finale class rescaled =" << class_centers << "\n"; 
+	}
 	
 	return result; 
 }
+
+
 
 template<>  const char * const 
 TPluginHandler<TFactory<CMeans::Initializer>>::m_help = 
@@ -128,33 +141,46 @@ TPluginHandler<TFactory<CMeans::Initializer>>::m_help =
 template class TPlugin<CMeans::Initializer, CMeans::Initializer>;
 template class TFactory<CMeans::Initializer>;
 template class TFactoryPluginHandler<CMeansInitializerPlugin>;
-template class EXPORT_CORE TPluginHandler<TFactory<CMeans::Initializer>>;
+template class TPluginHandler<TFactory<CMeans::Initializer>>;
 template class THandlerSingleton<TFactoryPluginHandler<CMeansInitializerPlugin>>;
 
-void CMeansImpl::evaluate_probabilities(const CMeans::DVector& classes, CMeans::SparseProbmap& pv, double k) const
+void CMeansImpl::evaluate_probabilities(const CMeans::DVector& classes,
+					Probmap& pv) const
 {
         for (auto p = pv.begin(); p != pv.end(); ++p) {
-                double x = p->first;
-                double sum = 0.0;
+                double x = p->first; 
+		fill(p->second.begin(), p->second.end(), 0.0); 
+		
+		if ( x < classes[0]) {
+			p->second[0] = 1.0;
+		} else {
+			unsigned j = 1;
+			bool value_set = false; 
+			while (!value_set && (j < classes.size()) ) {
+				// between two centers
+				if (x < classes[j]) {
+					double p0 = x - classes[j-1];
+					double p1 = x - classes[j];
+					double p02 = p0 * p0;
+					double p12 = p1 * p1;
+					double normalizer = 1.0/(p02 + p12); 
+					
+					p->second[j] = p02  * normalizer;
+					p->second[j - 1] = p12  * normalizer;
+					value_set = true;
+				}
+				++j; 
+			}
+			if (!value_set)
+				p->second[classes.size() - 1] = 1.0; 
+		}
 
-                for (size_t j = 0; j < classes.size(); ++j) {
-                        double  val =  x - classes[j]; 
-                        val = exp(- (val * val) / k);
-                        p->second[j] = val; 
-			sum += val;
-                }
-                
-                assert(sum != 0.0);
-                for (size_t j = 0; j < classes.size(); ++j)
-			p->second[j] /= sum;
-
-		cvdebug() << "Probs " << x << ":" << p->second << "\n"; 
-        }
+	}
 }
 
 double CMeansImpl::update_class_centers(CMeans::DVector& class_center,
 				     const CMeans::NormalizedHistogram& nh, 
-				     const CMeans::SparseProbmap& pv)const
+				     const Probmap& pv)const
 {
 	double residuum = 0.0; 
 
@@ -180,50 +206,36 @@ double CMeansImpl::update_class_centers(CMeans::DVector& class_center,
 				sum_prob << ":" <<sum_weight <<"\n"; 
 			
 		}
-		double delta = cc - class_center[i]; 
+		double delta = (cc - class_center[i]) * 0.5; 
 		residuum += delta * delta; 
-		class_center[i] =  cc; 
+		class_center[i] +=  delta; 
 		
 	}// end update class centers
 	return sqrt(residuum); 
 }
 
-double CMeansImpl::adjust_k(const CMeans::DVector& class_center,
-			     const CMeans::NormalizedHistogram& nh, 
-			     const CMeans::SparseProbmap& pv)const
-{
-	cvwarn() << "CMeans: auto 'k' not implemented\n"; 
-	return m_k; 
-}
 
-
-CMeans::SparseProbmap CMeansImpl::run(const CMeans::NormalizedHistogram& nh, CMeans::DVector& class_centers) const
+CMeansImpl::Probmap
+CMeansImpl::run(const CMeans::NormalizedHistogram& nh, CMeans::DVector& class_centers) const
 {
 	int csize = class_centers.size(); 
-	CMeans::SparseProbmap pv(nh.size()); 
+	Probmap pv(nh.size()); 
 
 	transform(nh.begin(), nh.end(), pv.begin(), [csize](const CMeans::NormalizedHistogram::value_type& x) {
 			return make_pair(x.first, CMeans::DVector(csize));
 		}); 
         
-	double k = m_k; 
 	bool cont = true;
 
-	// for now no k adjustment
-	const bool auto_k = false; 
-	
 	while (cont) {
-		evaluate_probabilities(class_centers, pv, k);
+		evaluate_probabilities(class_centers, pv);
 		double residuum = update_class_centers(class_centers, nh, pv);
-		if (auto_k) {
-			k = adjust_k(class_centers, nh, pv); 
-		}
-		cvmsg() << "Class centers: " << class_centers
+		cvdebug() << "Class centers: " << class_centers
 			<<  ", res=" << residuum
-			<<  ", k=" << k 
 			<< "\n";
 		cont = residuum > m_epsilon; 
 	};
+	
 	return pv; 
 }
 
@@ -232,7 +244,7 @@ CMeans::SparseProbmap CMeansImpl::run(const CMeans::NormalizedHistogram& nh, CMe
 CMeansInitializerSizedPlugin::CMeansInitializerSizedPlugin(const char *name):
         CMeansInitializerPlugin(name)
 {
-        add_parameter("nc", make_lo_param(m_size, 2, true, "Number of classes to use for the fuzzy-cmeans classification")); 
+        add_parameter("nc", make_lc_param(m_size, 2, true, "Number of classes to use for the fuzzy-cmeans classification")); 
 }
 
 size_t CMeansInitializerSizedPlugin::get_size_param() const
@@ -305,6 +317,8 @@ CMeans::SparseProbmap::SparseProbmap(const std::string& filename)
 	*is >> buf;
 	size_t hsize, nclasses;
 
+	
+	// coverity[TAINTED_SCALAR]
 	if (buf != map_signature) {
 		throw create_exception<runtime_error>("CMeans::SparseProbmap::load: Input file '",
 						      filename, "'is not a sparse probability map: signature:'",
@@ -377,7 +391,6 @@ CMeans::DVector CMeans::SparseProbmap::get_fuzzy(double x) const
 		  });
 	
 	return result; 
-		
 }
 
 		

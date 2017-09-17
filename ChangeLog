@@ -1,3 +1,89 @@
+2.4.4
+   Issues fixed: 
+
+   #129: Move all optional parts to addon
+   #167: Add alternative FastICA implementation and 
+         move IT++ based version to addons
+   #191: Use C11 integer data types for consistent sizes 
+   #192_ Replace lazy copy by move semantics 
+   #193: Make documentation creation and nipype interfaces compatible 
+         with python3 
+   #194: Create a complete facate for XML handling 
+         - remove dependency from libxml++ (use libxml directly)
+   #195: Correct errors in Nifti s-form handlig 
+   
+   Additional changes:  
+
+   * New SO-version
+   * Add tools for localized c-means segmentation
+   * Add fluid-symetric registration 
+   * Fix lots of coverity reported problems 
+   * Make VTKIO compatible with VTK-7
+   * Add Sobel and Scharr filters
+   * Improve test coverage 
+
+2.4.3
+
+   * m/c/utils.cc: Always define PATH_MAX when it is not defined by 
+     system headers
+   * Correct spellings
+   * Replace use of boost::regex by std::regex
+
+2.4.2
+
+    * correct installed headers
+
+2.4.1
+
+    * Add additional search path for MathJax
+    * Correct type in VistaIO 
+    * Change file load handling to throw when file is not available 
+
+2.4.0
+
+    * Add support for a repeatable command line option; Closes: #183
+    * Add interface for pixel type filter conversion test; Closes:  #5
+    * Work on enabling compiling against DCMTK that requires ICONV
+    * Make it compile on FreeBSD
+    * Add new filters
+    * Add tests and improve code coverage
+    * Improve fuzzy-segmentation algorithms by using tested code
+      (kmeans, probability estimation)
+    * Add support for piping through the vista plugin interface
+    * correct type of sparse histogram bin value
+    * Add new program that applies a 2D local cmeans segmentaion
+    * Correct Coverity issues
+    * Clean up code of similarity_profiles and add test
+    * Add test for 2D image comparison
+    * Add a sparse histogram implementation
+    * Remove the code for the so-called auto-ICA estimation
+    * install lxml in travis via pip to work around travis-ci/travis-ci#4948
+    * Remove need to use a dummy file for plug-in and test creation
+    * disable unused registration code in build
+    * Prepare mia for compilation with boost-1.60
+    * Correct compilation with g++-6
+    * Correct copyright
+    * remove obsolete create_2dinterpolation_factory function
+    * remove the create_XXinterpolation_factory functions
+    * Correct reading of 24-bit RGB BMP images
+    * Update bmp image io to support compressed 4bit pixel reading
+    * Correct critical point and matrix eigenvalue/vector handlinG
+    * Remove all optimization from coverage build
+    * Remove the src/ directory from coveralls check, can't be tested in time
+    * Add possibility to use installed mathjax files
+    * Add generic get_minmax function to images
+    * Correct code to prepare for auto-threshholding
+    * Enable compilation with libxml++3.0 and libxml-2.6
+    * Start implementing switchable ICA implementations.
+    * Use c++11 threads as default, instead of TBB
+    * Change reading nifti oriention
+    * Update CXDBitImage to not use vector<bool>
+    * Read nifti files without applying the slope transformation
+    * Add SpacingBetweenSlices Attribute to DCMTK IO
+    * More code parallelization
+    * Add const-correctnes to the gsl::matrix class and its iterators. Closes [tickets:#169]
+
+
 2.2.7
 
     * Correct tests that fail on arm64, armhf and ppc64el
@@ -28,7 +114,7 @@
 
   New features:
 
-  * Add programs for 
+  * Add programs for
       - cmeans on sparse input data
       - combining an abitrary number of images with an comutative operation
       - estimating a bounding box around the data in an image
@@ -39,9 +125,9 @@
       - select largest connected mesh part
       - add a scale value taken from a 3D image to each vertex
 
-  * enable use of parallel gzip/xz in IO if available 
+  * enable use of parallel gzip/xz in IO if available
   * Add image filters
-      - 3D labelmap filter 
+      - 3D labelmap filter
       - 3D re-orientation filter re-enabled
       - 2D maxflow/mincut segmentation filter 
       - 2D sobel filter  

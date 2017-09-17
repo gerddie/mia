@@ -1,0 +1,29 @@
+ply
+format ascii 1.0
+comment Octaeder
+comment with normal
+comment without color information
+element vertex 6
+property float32 x
+property float32 y
+property float32 z
+property float32 nx
+property float32 ny
+property float32 nz
+element face 8
+property list uint8 uint32 vertex_index
+end_header
+2 0 0 1 0 0
+-2 0 0 -1 0 0
+0  2  0 0 1 0
+0 -2  0 0 -1 0
+0  0  1 0 0 1
+0  0 -1 0 0 -1
+3 4 0 2
+3 4 2 1 
+3 4 1 3
+3 4 3 0 
+3 5 2 0
+3 5 1 2 
+3 5 3 1
+3 5 0 3

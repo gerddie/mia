@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,15 @@
 #ifndef mia_3d_quaternion_hh
 #define mia_3d_quaternion_hh
 
-#include <ostream>
 #include <mia/3d/defines3d.hh>
 #include <mia/3d/matrix.hh>
 #include <mia/3d/vector.hh>
 
+#include <ostream>
+#include <cmath>
+
 NS_MIA_BEGIN 
+
 
 /**
    \ingroup misc 
@@ -151,8 +154,6 @@ private:
 
 bool EXPORT_3D operator == (const Quaternion& a, const Quaternion& b); 
 bool EXPORT_3D operator != (const Quaternion& a, const Quaternion& b); 
-
-
 
 
 inline double Quaternion::w() const

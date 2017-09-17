@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@
 #include <mia/core/datapool.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/core/parallel.hh>
 
 NS_MIA_BEGIN
 
-typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock; 
 using namespace std;
 CDatapool::CDatapool()
 {
@@ -51,6 +51,19 @@ boost::any CDatapool::get_and_remove(const std::string& key)
 	return retval;
 }
 
+void CDatapool::remove(const std::string& key)
+{
+	CRecursiveScopedLock lock(m_mutex);
+	try{
+		Anymap::const_iterator i = get_iterator(key);
+		m_map.erase(key);
+		m_usage.erase(key);
+	}
+	catch (std::invalid_argument& x) {
+		cvwarn() << "CDatapool::remove: key '" << key << "' not in pool\n";
+	}
+}
+
 void CDatapool::add(const std::string& key, boost::any value)
 {
 	CRecursiveScopedLock lock(m_mutex);
@@ -58,7 +71,7 @@ void CDatapool::add(const std::string& key, boost::any value)
 	m_map[key] = value;
 }
 
-tbb::recursive_mutex CDatapool::m_mutex; 
+CRecursiveMutex CDatapool::m_mutex; 
 
 CDatapool& CDatapool::instance()
 {

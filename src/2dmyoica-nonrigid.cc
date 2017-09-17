@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,7 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyoica"
-
 #include <fstream>
-#include <libxml++/libxml++.h>
-#include <itpp/signal/fastica.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/internal/main.hh>
@@ -30,6 +26,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/core/attribute_names.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
@@ -164,7 +161,7 @@ float get_relative_min_breathing_frequency(const C2DImageSeries& images, int ski
 		double aq_time = image_end->get_attribute_as<double>(IDAcquisitionTime) - 
 			image_begin->get_attribute_as<double>(IDAcquisitionTime);
 		if (aq_time < 0) 
-			throw create_exception<runtime_error>("Got non-postive aquisition time range ", aq_time, 
+			throw create_exception<runtime_error>("Got non-postive acquisition time range ", aq_time, 
 							      ", can't handle this");  
 							      
 		double heart_rate = 60 * n_heartbeats / aq_time; 
@@ -211,7 +208,7 @@ int do_main( int argc, char *argv[] )
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation 
 		segmethod=C2DPerfusionAnalysis::bs_features; 
-
+	PIndepCompAnalysisFactory icatool;
 	float min_breathing_frequency = -1.0f; 
 
 	size_t current_pass = 0; 
@@ -258,7 +255,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 	
-	options.set_group("ICA"); 
+	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -298,11 +296,11 @@ int do_main( int argc, char *argv[] )
 	if (rel_min_bf > 0) 
 		ica->set_min_movement_frequency(rel_min_bf); 
 
-	ica->set_approach(FICA_APPROACH_DEFL); 
-	if (!ica->run(series)) {
+    ica->set_approach(CIndepCompAnalysis::appr_defl);
+    if (!ica->run(series, *icatool)) {
 		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
-		ica->set_approach(FICA_APPROACH_SYMM); 
-		if (!ica->run(series)) 
+        ica->set_approach(CIndepCompAnalysis::appr_symm);
+        if (!ica->run(series, *icatool))
 			box_scale = false; 
 	}
 	
@@ -329,10 +327,9 @@ int do_main( int argc, char *argv[] )
 		input_set.rename_base(cf.filename().string()); 
 		input_set.save_images(cropped_filename);
 
-		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
 		ofstream outfile(cropped_filename, ios_base::out );
 		if (outfile.good())
-			outfile << test_cropset->write_to_string_formatted();
+			outfile << input_set.write().write_to_string();
 		else 
 			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 
@@ -361,9 +358,9 @@ int do_main( int argc, char *argv[] )
 		transform(input_set.get_images().begin() + skip_images, 
 			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
-		if (!ica2.run(series)) {
-			ica2.set_approach(FICA_APPROACH_SYMM); 
-			ica2.run(series); 
+        if (!ica2.run(series, *icatool)) {
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
+            ica2.run(series, *icatool);
 		}
 		if (lastpass) 
 			break; 
@@ -390,9 +387,9 @@ int do_main( int argc, char *argv[] )
 	transform(input_set.get_images().begin() + skip_images, 
 		  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 	
-	if (!ica_final.run(series)) {
-			ica_final.set_approach(FICA_APPROACH_SYMM); 
-			ica_final.run(series); 
+    if (!ica_final.run(series, *icatool)) {
+            ica_final.set_approach(CIndepCompAnalysis::appr_symm);
+            ica_final.run(series, *icatool);
 	}
 	if( input_set.get_RV_peak() < 0) 
 		input_set.set_RV_peak(ica_final.get_RV_peak_time() + skip_images); 
@@ -413,10 +410,9 @@ int do_main( int argc, char *argv[] )
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	
-	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << input_set.write().write_to_string();
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 

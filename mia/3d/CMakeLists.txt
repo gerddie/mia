@@ -1,6 +1,6 @@
 #
 # This file is part of MIA - a toolbox for medical image analysis 
-# Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
 #
 # MIA is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,17 +16,6 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-
-IF(ITPP_FOUND)
-  SET(ITPP_SRC 
-    ica.cc 
-    )
-  SET(ITPP_HEADER 
-    ica.hh
-    )
-ENDIF(ITPP_FOUND)
-
-
 SET(MIA3D_SRC 
   affine_matrix.cc
   camera.cc
@@ -40,6 +29,7 @@ SET(MIA3D_SRC
   fullcost.cc
   fuzzyseg.cc
   fuzzyclustersolver_cg.cc
+  ica.cc 
   image.cc
   imagedraw.cc
   imageio.cc
@@ -70,8 +60,9 @@ SET(MIA3D_SRC
   transformfactory.cc
   transformio.cc
   vectorfield.cc
+  vfregularizer.cc
+  vfregularizerkernel.cc
   vfio.cc
-  ${ITPP_SRC}
   )
 
 SET(MIA3D_HEADERS
@@ -80,13 +71,11 @@ SET(MIA3D_HEADERS
   datafield.hh datafield.cxx
   image.hh
   filter.hh
+  ica.hh
   imagedraw.cc
   imageio.hh
   imagetest.hh
   imageiotest.hh
-  vector.hh
-  vfio.hh
-  vfiotest.hh
   camera.hh
   cost.hh
   creator.hh
@@ -118,7 +107,7 @@ SET(MIA3D_HEADERS
   register.hh
   rigidregister.hh
   rot.hh
-  shape.hh 
+  shape.hh
   similarity_profile.hh
   stackdisttrans.hh
   splinetransformpenalty.hh
@@ -129,9 +118,13 @@ SET(MIA3D_HEADERS
   transformfactory.hh
   transformio.hh
   transformmock.hh
-  ${ITPP_HEADER}
   valueattributetranslator.hh
+  vector.hh
   vectorfield.hh
+  vfregularizer.hh
+  vfregularizerkernel.hh
+  vfio.hh
+  vfiotest.hh
   )
 
 SET(MIA3DTEST_SRC
@@ -196,14 +189,13 @@ ELSE (WIN32)
 ENDIF(WIN32)
 
 TEST_3D(affine_matrix affine_matrix)
+TEST_3D(critical_points)
 TEST_3D(2dimagefifofilter imagefifofilter)
 TEST_3D(nfg nfg)
 TEST_3D(vectorfield vectorfield)
 TEST_3D(orientation orientation)
 TEST_3D(deform deform)
-IF(ITPP_FOUND)
-  TEST_3D(ica ica)
-ENDIF(ITPP_FOUND)
+TEST_3D(ica ica)
 TEST_3D(transformfactory transformfactory)
 TEST_3D(rigidregister rigidregister)
 TEST_3D(nonrigidregister nonrigidregister)
@@ -224,6 +216,8 @@ TEST_3D(imagecollect imagecollect)
 TEST_3D(imagedraw imagedraw)
 TEST_3D(rot rot)
 TEST_3D(splinetransformpenalty splinetransformpenalty)
+
+TEST_3D(imageio imageio)
 #
 # installation 
 #
@@ -241,10 +235,13 @@ ADD_SUBDIRECTORY(filter   )
 ADD_SUBDIRECTORY(fifof    )
 ADD_SUBDIRECTORY(fullcost )
 ADD_SUBDIRECTORY(io       )
+ADD_SUBDIRECTORY(lmio)
 ADD_SUBDIRECTORY(maskedcost )
 ADD_SUBDIRECTORY(reg3d    )
 ADD_SUBDIRECTORY(shapes   )
 ADD_SUBDIRECTORY(splinepenalty  )
 ADD_SUBDIRECTORY(transform)
 ADD_SUBDIRECTORY(transio)
-ADD_SUBDIRECTORY(lmio)
+ADD_SUBDIRECTORY(vfregularizerkernel)
+ADD_SUBDIRECTORY(vfregularizer)
+

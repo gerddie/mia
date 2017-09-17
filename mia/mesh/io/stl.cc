@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,7 @@ bool CSTLMeshIO::read_vertex(CVertexMap& vmap, unsigned int& index, istream& f)c
 	C3DFVector vertex;
 
 	f >> tag >> vertex.x >> vertex.y >> vertex.z;
+	// coverity[TAINTED_SCALAR]
 	if (tag != vertex_tag) {
 		cverr() << "not a valid ascii STL file\n";
 		return false;
@@ -126,25 +127,33 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 
 	f >> attribute;
 
+        // coverity is complaining when a tainted string is used in
+	// std::string::operator !=
+	// 
+        // coverity[TAINTED_SCALAR]
 	if (attribute != start_solid)
 		return PTriangleMesh();
 
 	f >> tag;
+	// coverity[TAINTED_SCALAR]
 	if (tag != start_face) {
-		cvdebug() << "Loading solid " <<solid_name << "\n";
+		cvdebug() << "Loading solid " <<tag  << "\n";
 		f >> tag;
 	}
 
+	// coverity[TAINTED_SCALAR]
 	while (tag != end_solid) {
 		CTriangleMesh::triangle_type face;
 		C3DFVector face_normal;
 
+		// coverity[TAINTED_SCALAR]
 		if (tag != start_face)
 			goto fail;
 
 		cverb << "start face ";
 
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != normal_tag)
 			goto fail;
 
@@ -153,10 +162,12 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 
 		cverb << " normal " << face_normal;
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != start_loop)
 			goto fail;
 
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != tag_loop)
 			goto fail;
 
@@ -168,10 +179,12 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 			goto fail;
 
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != end_loop)
 			goto fail;
 
 		f >> tag;
+		// coverity[TAINTED_SCALAR]
 		if (tag != end_face)
 			goto fail;
 
@@ -195,7 +208,7 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 		     i != vmap.end(); ++i)
 			(*vertices)[i->second] = i->first;
 
-		cvwarn() << "For nor we throw away the normals of the file\n";
+		cvinfo() << "STL: For now the face normals given in the file are thrown away\n";
 
 		CTriangleMesh::PTrianglefield tri(new CTriangleMesh::CTrianglefield(faces.size()));
 		copy(faces.begin(), faces.end(), tri->begin());
@@ -204,8 +217,8 @@ PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 	}
 
 fail:
-	cverr() << "not a valid ascii STL mesh file\n";
-	return PTriangleMesh();
+	throw create_exception<runtime_error>("STL: not a valid ascii STL mesh file\n");
+
 }
 
 PTriangleMesh CSTLMeshIO::do_load(string const &  filename)const
@@ -221,14 +234,7 @@ PTriangleMesh CSTLMeshIO::do_load(string const &  filename)const
 		result = load_ascii(cin);
 
 	if (!result) { // probably a binary file
-
-		cvdebug() << "Try STL binary file\n";
-		CInputFile f(filename);
-
-		if (!f)
-			return PTriangleMesh();
-
-		cvdebug() << "If this is a binary STL mesh then it can not yet be loaded\n";
+		cvinfo() << "If this is a binary STL mesh then it is not (yet) supported\n";
 		return PTriangleMesh();
 	}
 	return PTriangleMesh(result);

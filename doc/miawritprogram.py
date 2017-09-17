@@ -112,9 +112,9 @@ def get_program(program):
                     screen = etree.SubElement(section, "screen")
                     screen.text = program.name + " " + c.text
         else:
-            print "Warning: %s doesn't provide example text" % (program.name) 
+            print( "Warning: {} doesn't provide example text".format (program.name)  )
     else:
-        print "Warning: %s doesn't provide an example" % (program.name) 
+        print( "Warning: {} doesn't provide an example".format (program.name)  )
 
     section.append(get_bridgehead("Author(s):"))
     section.append(get_text_node_simple("para", program.author))
@@ -136,7 +136,7 @@ def get_section(name, sect):
     if sect.description is not None:
         descr = translate_descr(section, sect.description)
     else:
-        print "Warning: Section ", name, " doesn't have a description"
+        print( "Warning: Section ", name, " doesn't have a description" )
 
     para = etree.SubElement(section, "para", role="sectiontoc")
         
@@ -156,7 +156,7 @@ def get_plugin(plugin):
    return result
 
 def get_plugins(name, handler):
-#   print name
+#   print( name )
    section = make_section_root_node("section", "Plugin type: " + name)
    para = etree.SubElement(section, "para", role="plugdescr")
    para.text = handler.description 
@@ -174,7 +174,7 @@ def get_plugins(name, handler):
    handler_users = []
    for u in handler.users:
        handler_users.append(u)
-   handler_users.sort()
+   handler_users = sorted(handler_users)
    for u in handler_users:
       etree.SubElement(para, "xref", linkend=u)
 

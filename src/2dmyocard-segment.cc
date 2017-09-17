@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyocard-segment"
 #include <iomanip>
 #include <ostream>
 #include <fstream>
@@ -28,12 +27,11 @@
 
 //#include <mia/core/fft1d_r2c.hh>
 #include <queue>
-#include <libxml++/libxml++.h>
-
 
 #include <mia/core.hh>
 #include <mia/core/meanvar.hh>
 #include <mia/core/tools.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
@@ -42,6 +40,8 @@
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/datafield.cxx>
+
+#include <numeric> 
 
 NS_MIA_USE;
 using namespace std; 
@@ -419,7 +419,8 @@ int do_main( int argc, char *argv[] )
 	bool normalize = false; 
 	bool no_meanstrip = false; 
 	size_t skip_images = 2; 
-	size_t max_ica_iterations = 400; 
+	size_t max_ica_iterations = 400;
+	PIndepCompAnalysisFactory icatool;
 
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 
@@ -433,6 +434,7 @@ int do_main( int argc, char *argv[] )
 			      CCmdOptionFlags::output)); 
 
 	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation testing 4 and 5"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -465,10 +467,9 @@ int do_main( int argc, char *argv[] )
 		if (max_ica_iterations) 
 			ica->set_max_ica_iterations(max_ica_iterations); 
 		
-		
-		if (!ica->run(series)) {
-			ica->set_approach(FICA_APPROACH_SYMM); 
-			ica->run(series); 
+        if (!ica->run(series, *icatool)) {
+            ica->set_approach(CIndepCompAnalysis::appr_symm);
+            ica->run(series, *icatool);
 		}
 		
 		rv_idx = ica->get_RV_idx(); 

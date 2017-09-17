@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,25 +51,21 @@ struct __fill_image<bool> {
 	}
 }; 
 
-
-typedef boost::mpl::vector<
-	bool, 
-	signed char,  
-	unsigned char,
-	signed short,
-	unsigned short,
-	signed int,
-	unsigned int,
-#ifdef LONG_64BIT
-	signed long, 
-	unsigned long, 
-#endif
-	float,
-	double
-	> test_pixeltypes;
+typedef boost::mpl::vector<bool,
+		     int8_t,
+		     uint8_t,
+		     int16_t,
+		     uint16_t,
+		     int32_t,
+		     uint32_t,
+		     int64_t,
+		     uint64_t,
+		     float,
+		     double
+		     > test_types;
 
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes ) 
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_types ) 
 {
 	C3DBounds size (2,3,4); 
 	T3DImage<T> *image = new T3DImage<T>(size); 
@@ -114,5 +110,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_pixeltypes )
         unlink(filename.str().c_str()); 
 
 }
+
 
 

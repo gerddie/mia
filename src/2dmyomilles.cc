@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,18 +18,15 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmilles"
-
 #include <fstream>
-#include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
-#include <itpp/signal/fastica.h>
 
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/imageio.hh>
@@ -139,7 +136,7 @@ int do_main( int argc, char *argv[] )
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
-	
+	PIndepCompAnalysisFactory icatool;
 	size_t current_pass = 0; 
 	size_t pass = 2; 
 
@@ -169,7 +166,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
 
-	options.set_group("ICA"); 
+	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -214,12 +212,13 @@ int do_main( int argc, char *argv[] )
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	if (use_guess_model) 
 		ica.set_use_guess_model(); 
-	if (!ica.run(series)) {
-		ica.set_approach(FICA_APPROACH_SYMM); 
-		if (!ica.run(series) )
+
+	if (!ica.run(series, *icatool)) {
+		ica.set_approach(CIndepCompAnalysis::appr_symm);
+		if (!ica.run(series, *icatool) )
 			cvwarn() << "ICA analysis didn't converge, results might by bougus\n";
 	}
-
+	
 	int RV_peak_idx = ica.get_RV_idx(); 
 	int LV_peak_idx = ica.get_LV_idx(); 
 
@@ -276,10 +275,9 @@ int do_main( int argc, char *argv[] )
 		input_set.rename_base(cf.filename().string()); 
 		input_set.save_images(cropped_filename);
 
-		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
 		ofstream outfile(cropped_filename, ios_base::out );
 		if (outfile.good())
-			outfile << test_cropset->write_to_string_formatted();
+			outfile << input_set.write().write_to_string();
 		else 
 			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 
@@ -300,9 +298,9 @@ int do_main( int argc, char *argv[] )
 	
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), FCopy2DImageToFloatRepn()); 
-		if (!ica2.run(series))
-			ica2.set_approach(FICA_APPROACH_SYMM); 
-		if (ica2.run(series) ) {
+        if (!ica2.run(series, *icatool))
+            ica2.set_approach(CIndepCompAnalysis::appr_symm);
+        if (ica2.run(series, *icatool) ) {
 			references_float = ica2.get_references(); 
 
 			transform(references_float.begin(), references_float.end(), 
@@ -348,10 +346,9 @@ int do_main( int argc, char *argv[] )
 	
 	input_set.save_images(out_filename); 
 	
-	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << input_set.write().write_to_string();
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 

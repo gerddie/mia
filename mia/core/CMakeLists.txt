@@ -16,13 +16,34 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-SET(MIACORE_SRC_BASE 
+SET(GSLPP_SOURCE 
+  gsl_matrix.cc
+  gsl_matrix_vector_ops.cc
+  gsl_multimin.cc
+  gsl_pca.cc 
+  gsl_vector.cc
+  gsl_wavelet.cc
+  )
+
+SET(GSLPP_HEADERS 
+  gsl_matrix.hh
+  gsl_matrix_vector_ops.hh
+  gsl_multimin.hh
+  gsl_pca.hh
+  gsl_vector.hh
+  gsl_wavelet.hh
+  gsl_defines.hh
+  )
+
+SET(MIACORE_SRC_BASE
+  ${GSLPP_SOURCE} 
   attributes.cc 
   attribute_names.cc 
   boundary_conditions.cc
   callback.cc 
   cost.cc 
   combiner.cc
+  convergence_measure.cc
   cmdlineparser.cc
   cmdoption.cc
   cmdstringoption.cc
@@ -33,6 +54,8 @@ SET(MIACORE_SRC_BASE
   distance.cc
   dlloader.cc
   dummyhandler.cc
+  errormacro.cc
+  fastica_nonlinearity.cc
   file.cc 
   filetools.cc 
   filter.cc
@@ -43,12 +66,13 @@ SET(MIACORE_SRC_BASE
   fullstats.cc
   handlerbase.cc
   history.cc
+  ica.cc
   index.cc
   info.cc
-  splinekernel.cc
   interpolator1d.cc
   iodata.cc
   ioplugin.cc
+  kmeans.cc
   labelmap.cc
   mitestimages.cc
   module.cc
@@ -57,7 +81,7 @@ SET(MIACORE_SRC_BASE
   nccsum.cc 
   noisegen.cc 
   optionparser.cc 
-  optparam.cc 
+  optparam.cc
   paramoption.cc  
   parameter.cc  
   paramtranslator.cc  
@@ -76,7 +100,9 @@ SET(MIACORE_SRC_BASE
   shape.cc 
   slopestatistics.cc
   slopeclassifier.cc
-  spacial_kernel.cc 
+  spacial_kernel.cc
+  sparse_histogram.cc
+  splinekernel.cc
   splineparzenmi.cc
   sqmin.cc
   streamredir.cc
@@ -90,6 +116,7 @@ SET(MIACORE_SRC_BASE
   )
 
 SET(MIACORE_HEADER_BASE
+  ${GSLPP_HEADERS}
   attributes.hh
   attribute_names.hh 
   attributetype.hh
@@ -98,10 +125,12 @@ SET(MIACORE_HEADER_BASE
   cmdbooloption.hh
   cmdlineparser.hh
   cmdoption.hh
+  cmdparamoption.hh
   cmdoptionflags.hh
   cmdstringoption.hh
   cmeans.hh
   combiner.hh
+  convergence_measure.hh
   cost.hh
   cost.cxx
   combiner.hh
@@ -118,6 +147,7 @@ SET(MIACORE_HEADER_BASE
   export_handler.hh
   factory.hh
   factory_trait.hh
+  fastica_nonlinearity.hh
   fft1d_r2c.hh
   fftslopeclassifier.hh
   fifofilter.hh
@@ -132,6 +162,9 @@ SET(MIACORE_HEADER_BASE
   handler.cxx handler.hh
   history.hh
   histogram.hh
+  ica.hh
+  ica_template.hh
+  ica_template.cxx
   index.hh
   import_handler.hh
   iodata.hh
@@ -148,6 +181,8 @@ SET(MIACORE_HEADER_BASE
   nccsum.hh
   optionparser.hh
   optparam.hh
+  parallel.hh
+  parallelcxx11.hh
   parameter.cxx parameter.hh
   paramoption.hh
   paramtranslator.hh
@@ -171,6 +206,7 @@ SET(MIACORE_HEADER_BASE
   splinekernel.hh
   splineparzenmi.hh
   spacial_kernel.hh
+  sparse_histogram.hh
   sparse_solver.hh
   sqmin.hh
   statistics.hh
@@ -191,32 +227,16 @@ SET(MIACORE_HEADER_BASE
   )
 
 SET(MIACORETEST_SRC 
-  test_core.cc
-  test_cost.cc
-  test_filter.cc
-  test_kernels.cc
-  test_optparam.cc
-  test_optionparser.cc
-  test_parameter.cc
-  test_pixeltype.cc
-  test_register.cc
-  test_sqmin.cc
-  test_streamredir.cc
-  test_dictmap.cc
-  test_fifofilter.cc
-  test_probmap.cc
+  test_core_combined.cc
 )
 
-IF(ITPP_FOUND)
-  SET(ITPP_SRC 
-    ica.cc 
+IF(NOT TBB_FOUND)
+  SET(MIACORE_SRC_PARALLELCXX11 
+    parallelcxx11.cc
     )
-  SET(ITPP_HEADER 
-    ica.hh
-    ica_template.hh ica_template.cxx
-    )
-ENDIF(ITPP_FOUND)
-
+  NEW_TEST(parallelcxx11 miacore)
+ENDIF(NOT TBB_FOUND)
+  
 IF(PWPDF_FOUND) 
   SET(PWPDF_SRC 
     pwh.cc
@@ -244,10 +264,10 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/revision.hh.cmake ${CMAKE_CURRENT_BIN
 #
 # the library target 
 #
-SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC})
+SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC} ${MIACORE_SRC_PARALLELCXX11})
 SET(MIACORE_HEADER ${MIACORE_HEADER_BASE} ${ITPP_HEADER} ${FFTWF_HEADER} ${PWPDF_HEADER})
 
-SET(miacore_deps miagsl ${BASELIBS} ${TBB_LIBRARIES} ${FFTWF_LIBRARIES} ${XMLPP_LIBRARIES})
+SET(miacore_deps ${BASELIBS} ${TBB_LIBRARIES} ${FFTWF_LIBRARIES} ${XML_LIBRARIES})
 MIA_ADD_LIBRARY(miacore "${MIACORE_SRC}" "${miacore_deps}")
 
 IF(PWPDF_FOUND AND FFTWD_FOUND)
@@ -284,20 +304,29 @@ ENDIF(WIN32)
 #ENDIF (NOT WIN32)
 #CORE_TEST(noisegen)
 
+ADD_SUBDIRECTORY(fastica       )
 ADD_SUBDIRECTORY(cmeansinit    )
+ADD_SUBDIRECTORY(minimizer     )
+ADD_SUBDIRECTORY(noise         )
 ADD_SUBDIRECTORY(spacialkernel )
-ADD_SUBDIRECTORY(noise         ) 
-ADD_SUBDIRECTORY(minimizer     ) 
 ADD_SUBDIRECTORY(splinekernel  ) 
 ADD_SUBDIRECTORY(splinebc  ) 
 ADD_SUBDIRECTORY(testplug      )
 
+#tests that fork themselfs 
+SET(cmdxmlhelp_params  -r 1 --other o)
+NEW_TEST_WITH_PARAM(cmdxmlhelp miacore "${cmdxmlhelp_params}")
+
+
 NEW_TEST(Vector miacore)
 NEW_TEST(attributes miacore)
-NEW_TEST(boundary_conditions  miacore)
+NEW_TEST(boundary_conditions miacore)
 NEW_TEST(callback miacore)
+NEW_TEST(convergence_measure miacore)
 NEW_TEST(cmdoptionflags miacore)
+NEW_TEST(cmdparamoption miacore)
 NEW_TEST(cmdlineparser miacore)
+NEW_TEST(cmdlineparseroutput miacore)
 NEW_TEST(cmeans miacore)
 NEW_TEST(datapool miacore)
 NEW_TEST(delayedparameter miacore)
@@ -327,6 +356,7 @@ NEW_TEST(simpson miacore)
 NEW_TEST(slopeclassifier miacore)
 NEW_TEST(slopestatistics miacore)
 NEW_TEST(sparse_solver miacore)
+NEW_TEST(sparse_histogram miacore)
 NEW_TEST(splinekernel miacore)
 NEW_TEST(splineparzenmi miacore)
 NEW_TEST(streamvector miacore)
@@ -338,9 +368,11 @@ NEW_TEST(utils miacore)
 NEW_TEST(waveletslopeclassifier miacore)
 NEW_TEST(xmlinterface miacore)
 
-IF(ITPP_FOUND)
-  NEW_TEST(ica miacore)
-ENDIF(ITPP_FOUND)
+NEW_TEST(gsl_matrix miacore)
+NEW_TEST(gsl_matrix_vector_ops miacore)
+NEW_TEST(gsl_multimin miacore)
+NEW_TEST(gsl_pca miacore)
+NEW_TEST(gsl_vector miacore)
 
 IF(FFTWF_FOUND AND WITH_FFTWF)
   NEW_TEST(fft1d miacore)

@@ -120,72 +120,10 @@ MACRO(ASSERT_SIZE  NAME EXPECTED)
   ENDIF(NOT ${${NAME}_TYPE_SIZE} EQUAL ${EXPECTED})
 ENDMACRO(ASSERT_SIZE)
 
-
-
-#
-# This macro runs the program to create the XMLprogram descrition 
-# that is used to create documentation and interfaced 
-#
-MACRO(CREATE_EXE_XML_HELP name)
-  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-    COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH} 
-    ./mia-${name} --help-xml ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-    COMMAND rm -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
-    DEPENDS mia-${name} )
-    
-  ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
-  ADD_DEPENDENCIES(XMLDOC mia-${name}-xml)
-ENDMACRO(CREATE_EXE_XML_HELP)
-
-
-MACRO(CREATE_NIPYPE_FROM_XML name)
-  IF(CREATE_NIPYPE_INTERFACES)
-    STRING(REPLACE "-" "_" PythonName ${name})
-
-    SET(${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/mia_${PythonName}.py)
-    
-    ADD_CUSTOM_COMMAND(OUTPUT ${${name}-nipype-interface} 
-      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2nipype.py 
-      -i ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml -o ${${name}-nipype-interface}
-      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
-    
-    ADD_CUSTOM_TARGET(mia-${name}-nipype DEPENDS ${${name}-nipype-interface})
-    ADD_DEPENDENCIES(nipypeinterfaces mia-${name}-nipype)
-    
-    INSTALL(FILES ${${name}-nipype-interface} DESTINATION ${NIPYPE_INTERFACE_DIR}/mia)
-
-  ENDIF(CREATE_NIPYPE_INTERFACES)
-ENDMACRO(CREATE_NIPYPE_FROM_XML)
-#
-#
-# man pages can only be created if the python + lxml packages are available 
-#
-MACRO(CREATE_MANPAGE_FROM_XML name)
-  IF(CREATE_USERDOC) 
-    
-    SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
-    
-    ADD_CUSTOM_COMMAND(OUTPUT   ${${name}-manfile}
-      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-      ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${${name}-manfile}
-      MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      DEPENDS mandir mia-${name}-xml
-      )
-    ADD_CUSTOM_TARGET(mia-${name}-man DEPENDS ${${name}-manfile})
-    add_dependencies(manpages mia-${name}-man)    
-  ENDIF(CREATE_USERDOC)
-
-ENDMACRO(CREATE_MANPAGE_FROM_XML)
-
-
-#MACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE name)
-#  CREATE_EXE_XML_HELP(${name})
-#  CREATE_MANPAGE_FROM_XML(${name})
-#  CREATE_NIPYPE_FROM_XML(${name})
-# ENDMACRO(MIA_EXE_CREATE_DOCU_AND_INTERFACE)
-
 MACRO(DEFEXE name libraries) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
+  SET_TARGET_PROPERTIES(mia-${name} PROPERTIES COMPILE_FLAGS -DVSTREAM_DOMAIN='"${name}"')
+  
   FOREACH(lib ${libraries}) 
     TARGET_LINK_LIBRARIES(mia-${name} ${lib})
   ENDFOREACH(lib)
@@ -197,28 +135,29 @@ MACRO(DEFEXE name libraries)
 ENDMACRO(DEFEXE)
 
 
+
 MACRO(DEFCHKEXE name deps) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
   
   FOREACH(lib ${deps}) 
     TARGET_LINK_LIBRARIES(mia-${name} ${lib})
   ENDFOREACH(lib)
-  SET_TARGET_PROPERTIES(mia-${name} PROPERTIES COMPILE_FLAGS -DVSTREAM='\\\"TEST-2D\\\"' COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+  SET_TARGET_PROPERTIES(mia-${name} PROPERTIES COMPILE_FLAGS -DVSTREAM_DOMAIN='"${name}"')
+  SET_TARGET_PROPERTIES(mia-${name} PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
   TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
   TARGET_LINK_LIBRARIES(mia-${name} ${BOOST_UNITTEST})
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
 
   MIA_EXE_CREATE_DOCU_AND_INTERFACE(mia ${name})
   ADD_DEPENDENCIES(mia-${name} plugin_test_links)
-  ADD_TEST(${name} mia-${name} --selftest)
+  ADD_TEST(${name} mia-${name} -- --selftest)
 
   SET_TESTS_PROPERTIES(${name}
-    PROPERTIES ENVIRONMENT "MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}")
+    PROPERTIES ENVIRONMENT "MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}")
 
 ENDMACRO(DEFCHKEXE)
 
-
-MACRO(NEW_TEST name libs)
+MACRO(NEW_TEST_BASE name libs)
   SET(EXENAME test-${name})
   
   ADD_EXECUTABLE(${EXENAME} test_${name}.cc)
@@ -227,5 +166,15 @@ MACRO(NEW_TEST name libs)
     TARGET_LINK_LIBRARIES(${EXENAME} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
   ENDIF (NOT WIN32)
   ADD_DEPENDENCIES(${EXENAME} plugin_test_links)
+
+ENDMACRO(NEW_TEST_BASE)
+
+MACRO(NEW_TEST name libs)
+  NEW_TEST_BASE(${name} "${libs}")
   ADD_TEST(${name} ${EXENAME})
 ENDMACRO(NEW_TEST)
+
+MACRO(NEW_TEST_WITH_PARAM name libs param)
+  NEW_TEST_BASE(${name} "${libs}")
+  ADD_TEST(${name} ${EXENAME} ${param})
+ENDMACRO(NEW_TEST_WITH_PARAM)

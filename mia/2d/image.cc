@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,27 @@ C2DImage::C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPi
 {
 }
 
+C2DImage::C2DImage(C2DImage&& other):CAttributedData(other),
+	m_size(other.m_size),
+	m_pixel_type(other.m_pixel_type)
+{
+	other.m_size = C2DBounds::_0;
+	other.m_pixel_type = it_none; 
+}
+	
+C2DImage& C2DImage::operator = (C2DImage&& other)
+{
+	if (&other == this)
+		return *this;
+
+	CAttributedData::operator =(other); 
+	m_size = other.m_size; 
+	m_pixel_type = other.m_pixel_type; 
+	other.m_size = C2DBounds::_0;
+	other.m_pixel_type = it_none;
+	return *this; 
+}
+	
 C2DImage::~C2DImage()
 {
 }
@@ -117,7 +138,7 @@ T2DImage<T>::T2DImage(const C2DBounds& size, const T* init_data):
 }
 
 template <typename T>
-T2DImage<T>::T2DImage(const C2DBounds& size, const typename T2DDatafield<T>::data_array& init_data):
+T2DImage<T>::T2DImage(const C2DBounds& size, const vector<T>& init_data):
 	C2DImage(size, (EPixelType)pixel_type<T>::value),
 	m_image(size, init_data)
 {
@@ -161,6 +182,34 @@ T2DImage<T>::T2DImage(const T2DImage<T>& orig):
 }
 
 template <typename T>
+T2DImage<T>::T2DImage(T2DImage<T>&& orig):
+	C2DImage(std::move(orig)),
+	m_image(std::move(orig.m_image))
+{
+}
+
+template <typename T>
+T2DImage<T>& T2DImage<T>::operator = (T2DImage<T>&& orig)
+{
+	if (this != &orig) {
+		C2DImage::operator =(std::move(orig)); 
+		m_image= std::move(orig.m_image);
+	}
+	return *this; 
+}
+
+
+template <typename T>
+T2DImage<T>& T2DImage<T>::operator = (const T2DImage<T>& orig)
+{
+	if (this != &orig) {
+		C2DImage::operator =(orig);
+		m_image= orig.m_image;
+	}
+	return *this; 
+}
+
+template <typename T>
 T2DImage<T>::T2DImage():
 	C2DImage(C2DBounds(0,0), (EPixelType)pixel_type<T>::value),
 	m_image(C2DBounds(0,0))
@@ -179,6 +228,10 @@ const T2DDatafield<T>& T2DImage<T>::data() const
 	return m_image;
 }
 
+template <typename T>
+void T2DImage<T>::make_single_ref()
+{
+}
 
 template <typename T>
 void T2DImage<T>::get_data_line_x(size_t y, std::vector<T>& buffer) const
@@ -291,6 +344,13 @@ C2DFVector T2DImage<bool>::get_gradient(const C2DFVector& p) const
 }
 
 
+template <class T>
+std::pair<double, double> T2DImage<T>::get_minmax_intensity() const
+{
+	auto mm = std::minmax_element( m_image.begin(), m_image.end());
+	return std::pair<double, double>(*mm.first, *mm.second);
+}
+
 struct FGradientEvaluator: public TFilter<C2DFVectorfield> {
 	template <typename T>
 	C2DFVectorfield operator ()( const T2DImage<T>& image) const {
@@ -360,16 +420,14 @@ EXPORT_2D bool operator == (const C2DImage& a, const C2DImage& b)
 }
 
 template class T2DImage<bool>;
-template class T2DImage<signed char>;
-template class T2DImage<unsigned char>;
-template class T2DImage<signed short>;
-template class T2DImage<unsigned short>;
-template class T2DImage<signed int>;
-template class T2DImage<unsigned int>;
-#ifdef LONG_64BIT
-template class T2DImage<signed long>;
-template class T2DImage<unsigned long>;
-#endif
+template class T2DImage<int8_t>;
+template class T2DImage<uint8_t>;
+template class T2DImage<int16_t>;
+template class T2DImage<uint16_t>;
+template class T2DImage<int32_t>;
+template class T2DImage<uint32_t>;
+template class T2DImage<int64_t>;
+template class T2DImage<uint64_t>;
 template class T2DImage<float>;
 template class T2DImage<double>;
 

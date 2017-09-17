@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,11 +30,8 @@
 #include <mia/core/msgstream.hh>
 
 #include <mia/core/datapool.hh>
+#include <mia/core/parallel.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-#include <tbb/atomic.h>
-using namespace tbb;
 
 
 NS_MIA_USE
@@ -71,6 +68,8 @@ BOOST_AUTO_TEST_CASE( test_pool_get_and_remove )
 	CDatapool::instance().add("param1", 10);
 	any p1 = CDatapool::instance().get_and_remove("param1");
 	BOOST_CHECK(!CDatapool::instance().has_key("param1"));
+
+	BOOST_CHECK_THROW(CDatapool::instance().get_and_remove("param1"), std::invalid_argument); 
 }
 
 BOOST_AUTO_TEST_CASE( test_pool_has_unused )
@@ -86,6 +85,12 @@ BOOST_AUTO_TEST_CASE( test_pool_has_key )
 	BOOST_CHECK(!CDatapool::instance().has_key("unknown"));
 }
 
+BOOST_AUTO_TEST_CASE( test_pool_remove_unknown_key_no_throw )
+{
+	BOOST_CHECK_NO_THROW(CDatapool::instance().remove("unknown"));
+}
+
+
 BOOST_AUTO_TEST_CASE( test_pool_clear )
 {
 	CDatapool::instance().add("param1", 10);
@@ -97,17 +102,17 @@ BOOST_AUTO_TEST_CASE( test_pool_clear )
 }
 
 struct PoolAccessTest {
-	tbb::atomic<int> *n_errors; 
-	PoolAccessTest(tbb::atomic<int> *_nerr); 
-	void operator()( const blocked_range<int>& range ) const; 
+	ATOMIC<int> *n_errors; 
+	PoolAccessTest(ATOMIC<int> *_nerr); 
+	void operator()( const C1DParallelRange& range ) const; 
 }; 
 
-PoolAccessTest::PoolAccessTest(tbb::atomic<int> *_nerr):
+PoolAccessTest::PoolAccessTest(ATOMIC<int> *_nerr):
 	n_errors(_nerr)
 { 
 }
 
-void PoolAccessTest::operator() ( const blocked_range<int>& range ) const
+void PoolAccessTest::operator() ( const C1DParallelRange& range ) const
 {
 	try {	
 		for(auto i=range.begin(); i!=range.end(); ++i ) {
@@ -127,27 +132,27 @@ void PoolAccessTest::operator() ( const blocked_range<int>& range ) const
 
 BOOST_AUTO_TEST_CASE( test_pool_parallel_access )
 {
-	tbb::atomic<int> n_errors;
+	ATOMIC<int> n_errors;
 	n_errors = 0; 
 	PoolAccessTest ptest(&n_errors); 
 	
-	blocked_range<int> range( 0, 1000, 1 ); 
-	parallel_for(range, ptest); 
+	C1DParallelRange range( 0, 1000, 1 ); 
+	pfor(range, ptest); 
 	BOOST_CHECK_EQUAL(n_errors, 0); 
 }
 
 struct PoolWriteLaterReadTest {
-	tbb::atomic<int> *n_errors; 
-	PoolWriteLaterReadTest(tbb::atomic<int> *_nerr); 
-	void operator()( const blocked_range<int>& range ) const; 
+	ATOMIC<int> *n_errors; 
+	PoolWriteLaterReadTest(ATOMIC<int> *_nerr); 
+	void operator()( const C1DParallelRange& range ) const; 
 }; 
 
-PoolWriteLaterReadTest::PoolWriteLaterReadTest(tbb::atomic<int> *_nerr):
+PoolWriteLaterReadTest::PoolWriteLaterReadTest(ATOMIC<int> *_nerr):
 	n_errors(_nerr)
 { 
 }
 
-void PoolWriteLaterReadTest::operator() ( const blocked_range<int>& range ) const
+void PoolWriteLaterReadTest::operator() ( const C1DParallelRange& range ) const
 {
 	try {	
 		for( int i=range.begin(); i!=range.end(); ++i ) {
@@ -171,11 +176,11 @@ void PoolWriteLaterReadTest::operator() ( const blocked_range<int>& range ) cons
 
 BOOST_AUTO_TEST_CASE( test_pool_parallel_access_2 )
 {
-	tbb::atomic<int> n_errors; 
+	ATOMIC<int> n_errors; 
 	n_errors = 0; 
 	PoolWriteLaterReadTest ptest(&n_errors); 
 	
-	blocked_range<int> range( 0, 1000, 5 ); 
-	parallel_for(range, ptest); 
+	C1DParallelRange range( 0, 1000, 5 ); 
+	pfor(range, ptest); 
 	BOOST_CHECK_EQUAL(n_errors, 0); 
 }

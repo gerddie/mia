@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
 #include <ostream>
 #include <fstream>
@@ -27,7 +26,6 @@
 #include <cstdlib>
 #include <mia/core.hh>
 
-#include <libxml++/libxml++.h>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
@@ -46,7 +44,7 @@ const SProgramDescription g_description = {
 	{pdi_short, "Registration of a series of 2D images"}, 
 	{pdi_description, "This program implements the non-linear registration based on Pseudo "
 	 "Ground Thruth for motion compensation of series of myocardial perfusion images as "
-	 "decribed in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
+	 "described in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
 	 "MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing and Computer-Assisted "
 	 "Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear motion correction "
 	 "a preceding linear registration step is usually required."}, 
@@ -238,10 +236,9 @@ int do_main( int argc, char *argv[] )
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	
-	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
-		outfile << outset->write_to_string_formatted();
+		outfile << input_set.write().write_to_string();
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,7 @@
  *
  */
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
 
 #define VSTREAM_DOMAIN "3dtransform"
 #include <mia/3d/transform.hh>
@@ -246,6 +245,11 @@ const C3DBounds& C3DTransformation::const_iterator::get_size()const
 	return m_holder->get_size(); 
 }
 
+C3DFVector C3DTransformation::apply(const C3DFVector& x) const
+{
+	return get_displacement_at(x); 
+}
+
 bool C3DTransformation::refine()
 {
 	return false; 
@@ -262,7 +266,7 @@ struct F3DTransformer {
 		       const T3DConvoluteInterpolator<T>& _interp, 
 		       T3DImage<T>& _result); 
 
-	void operator() ( const tbb::blocked_range<int>& range ) const; 
+	void operator() ( const C1DParallelRange& range ) const; 
 
 	const C3DTransformation& trans; 
 	T3DImage<T>& result; 
@@ -297,7 +301,7 @@ struct F3DTransform : public TFilter<P3DImage> {
 		std::unique_ptr<T3DConvoluteInterpolator<T> > interp(m_ipf.create(image.data()));
 
 		F3DTransformer<T> worker(m_trans, *interp, *timage); 
-		tbb::parallel_for(tbb::blocked_range<int>( 0, timage->get_size().z), worker);
+		pfor(C1DParallelRange( 0, timage->get_size().z), worker);
 
 		// if the transformation provides a forced output pixel spacing, 
 		// set it here 
@@ -329,7 +333,7 @@ F3DTransformer<T>::F3DTransformer(const C3DTransformation& _trans,
 }
 
 template <typename T> 
-void F3DTransformer<T>::operator() ( const tbb::blocked_range<int>& range ) const
+void F3DTransformer<T>::operator() ( const C1DParallelRange& range ) const
 {
 	CThreadMsgStream thread_stream;
 	auto cache = interp.create_cache(); 

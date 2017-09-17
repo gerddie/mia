@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,4 +39,5 @@ TFluidHomogenSolver::TFluidHomogenSolver(int _max_steps, float _rel_res, float _
 	c = 1/(6*a+2*b);
 	a_b = a + b;
 	b_4 = b * 0.25;
+
 }

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@
 #include <mia/mesh/triangularMesh.hh>
 #include <mia/mesh/triangulate.hh>
 
+// documentation of the format:
+// http://www.geomview.org/docs/html/OFF.html
 
 NS_BEGIN(off_mesh_io)
 
@@ -56,35 +58,18 @@ private:
 	virtual bool do_save(string const &  filename, const CTriangleMesh& data)const;
 	virtual const string  do_get_descr()const;
 
-#ifndef USE_FILEIO
-	PTriangleMesh do_load_it(istream& inp)const;
-	bool do_save(ostream& os, const CTriangleMesh& data) const;
-	bool load_vertices(istream &inp,
-			   CTriangleMesh::PVertexfield vertices,
-			   CTriangleMesh::PNormalfield normals,
-			   CTriangleMesh::PSolorfield colors,
-			   CTriangleMesh::PScalefield scale,
-			   bool has_texturcoord,
-			   unsigned int nvertices)const;
-
-	bool load_triangles(istream& inp, vector<CTriangleMesh::triangle_type>& tri,
-			    unsigned int nfaces, unsigned int nvertice,
-			    const CPolyTriangulator& triangulator)const;
-#else
 	PTriangleMesh do_load_it(CInputFile& inp)const;
 
 	bool load_vertices(CInputFile &inp,
 			   CTriangleMesh::PVertexfield vertices,
 			   CTriangleMesh::PNormalfield normals,
 			   CTriangleMesh::PColorfield colors,
-			   CTriangleMesh::PScalefield scale,
-			   bool has_texturcoord,
+			   bool has_texture_coordinates, 
 			   unsigned int nvertices)const;
 
 	bool load_triangles(CInputFile& inp, vector<CTriangleMesh::triangle_type>& tri,
 			    unsigned int nfaces, unsigned int nvertice,
 			    const CPolyTriangulator& triangulator)const;
-#endif
 	bool read_polygon(istream& inp, vector<CTriangleMesh::triangle_type>& tri,
 			  unsigned int nvertices,const CPolyTriangulator& triangulator)const;
 
@@ -107,25 +92,19 @@ COffMeshIO::COffMeshIO():CMeshIOPlugin(format)
 
 const string  COffMeshIO::do_get_descr()const
 {
-	return string("plugin to load/store some Geomview OFF Files");
+	return string("plugin to load/store some Geomview OFF files. "
+		      "Supported is only the ASCII format 3D meshes with normales and per-vertex RGB colors. "
+		      "Alpha values and texture coordinates, as well as per face properties are ignored. "
+		      "Polygons are read and triangulated. "
+		);
 }
 
 PTriangleMesh COffMeshIO::do_load(string const &  filename)const
 {
-#ifdef  USE_FILEIO
 	CInputFile f(filename);
 	if (!f)
 		return PTriangleMesh();
 	return do_load_it(f);
-#else
-	if ( filename == "-" ) {
-		return do_load_it(cin);
-	}else{
-		ifstream inp(filename);
-		return inp.good() ? do_load_it(inp) : PTriangleMesh();
-	}
-#endif
-
 }
 
 void COffMeshIO::skip_to_newline(istream& inp)const
@@ -136,140 +115,97 @@ void COffMeshIO::skip_to_newline(istream& inp)const
 	}while (c != '\n' && inp.good());
 }
 
-#ifndef USE_FILEIO
-
-bool COffMeshIO::load_vertices(istream &inp,
-				  CTriangleMesh::PVertexfield vertices,
-				  CTriangleMesh::PNormalfield normals,
-				  CTriangleMesh::PColorfield colors,
-				  CTriangleMesh::PScalefield scale,
-				  bool has_texturcoord,
-				  unsigned int nvertices)const
-{
-	unsigned int i = 0;
-
-	float sink;
-
-	CTriangleMesh::vertex_iterator v = vertices->begin();
-
-
-	if (normals && colors &&  scale) {
-		CTriangleMesh::normal_iterator n = normals->begin();
-		CTriangleMesh::color_iterator  c = colors->begin();
-		CTriangleMesh::scale_iterator  s = scale->begin();
-
-		if (has_texturcoord) {
-			while (i < nvertices  && inp.good()) {
-
-				inp >> v->x >> v->y >> v->z;
-				inp >> n->x >> n->y >> n->z;
-				inp >> c->x >> c->y >> c->z;
-				inp >> *s;
-				inp >> sink >> sink;
-				++v; ++n; ++s; ++c; ++i;
-			}
-		}else
-			while (i < nvertices  && inp.good()) {
-				inp >> v->x >> v->y >> v->z;
-				inp >> n->x >> n->y >> n->z;
-				inp >> c->x >> c->y >> c->z;
-				inp >> *s;
-				++v; ++n; ++s; ++c; ++i;
-			}
-
-	}else if (normals) {
-		CTriangleMesh::normal_iterator n = normals->begin();
-		while (i < nvertices  && inp.good()) {
-			inp >> v->x >> v->y >> v->z;
-			inp >> n->x >> n->y >> n->z;
-			++v; ++n; ++i;
-		}
-	}else
-		while (i < nvertices  && inp.good()) {
-			inp >> v->x >> v->y >> v->z;
-			++v; ++i;
-		}
-	return i == nvertices;
-}
-#else
-
 static bool read_line(char *buf, size_t size, FILE *f)
 {
 	char *success;
 	do {
-		success = fgets( buf, size, f);
+		success = fgets( buf, size-1, f);
 		while (success && (*success == ' ' || *success == '\t'))  ++success;
 	} while (success && (*success == '#' || *success == '\n' || *success == '\r'));
+	buf[size-1] = 0; 
 	return success != NULL;
 }
 
 bool COffMeshIO::load_vertices(CInputFile& inf,
-				  CTriangleMesh::PVertexfield vertices,
-				  CTriangleMesh::PNormalfield normals,
-				  CTriangleMesh::PColorfield colors,
-				  CTriangleMesh::PScalefield scale,
-				  bool has_texturcoord,
-				  unsigned int nvertices)const
+			       CTriangleMesh::PVertexfield vertices,
+			       CTriangleMesh::PNormalfield normals,
+			       CTriangleMesh::PColorfield colors,
+			       bool has_texture_coordinates, 
+			       unsigned int nvertices)const
 {
 	unsigned int i = 0;
 
 	CTriangleMesh::vertex_iterator v = vertices->begin();
 
-	char buf[2048];
+	CTriangleMesh::normal_iterator n;
+	CTriangleMesh::color_iterator  c; 
 
+	int expect_count = has_texture_coordinates ? 5 : 2; 
+	int c_offest = 0;
+	if (normals) {
+		n = normals->begin();
+		c_offest += 3;
+		expect_count += 3; 
+	}
+	
+	if (colors) {
+		c = colors->begin();
+		expect_count += 3; 
+	}
+
+	char buf[2048];
 	bool success = read_line(buf, 2048, inf);
 	if (!success)
 		return false;
 
+	int first_count = 0; 
 
-	if (normals && colors &&  scale) {
-		CTriangleMesh::normal_iterator n = normals->begin();
-		CTriangleMesh::color_iterator  c = colors->begin();
-		CTriangleMesh::scale_iterator  s = scale->begin();
+	do {
+		float x[9];
+		float *xc = &x[c_offest];
+		
+		int count = sscanf(buf, "%f %f %f %f %f %f %f %f %f %f %f %f",
+				   &v->x, &v->y, &v->z,
+				   &x[0], &x[1], &x[2],
+				   &x[3], &x[4], &x[5], &x[6],
+				   &x[7], &x[8]);
 
-		if (has_texturcoord) {
-			do {
-				float sink; // texture coordinates are currently rejected
-				sscanf(buf, "%f %f %f %f %f %f %f %f %f %f %f %f",
-				       &v->x, &v->y, &v->z,
-				       &n->x, &n->y, &n->z,
-				       &c->x, &c->y, &c->z,
-				       &*s,
-				       &sink,
-				       &sink);
-				++v; ++n; ++s; ++c; ++i;
-			}while (i < nvertices && read_line(buf, 2048, inf));
+		if (count < expect_count) {
+			throw create_exception<runtime_error>("OFF: unsupported file type. "
+							      "Most likely the file type uses color map indices."); 
+		}
 
-		}else
-			do  {
-				sscanf(buf, "%f %f %f %f %f %f %f %f %f %f",
-				       &v->x, &v->y, &v->z,
-				       &n->x, &n->y, &n->z,
-				       &c->x, &c->y, &c->z,
-				       &*s);
-				++v; ++n; ++s; ++c; ++i;
-			}  while (i < nvertices && read_line(buf, 2048, inf));
-	}else if (normals) {
-		CTriangleMesh::normal_iterator n = normals->begin();
-		do  {
-			sscanf(buf, "%f %f %f %f %f %f",
-			       &v->x, &v->y, &v->z,
-			       &n->x, &n->y, &n->z);
-			++v; ++n; ++i;
-		}while (i < nvertices && read_line(buf, 2048, inf));
-	}else
-		do  {
-			istringstream line(buf); line >> v->x >> v->y >>v->z;
+		if (first_count > 0) {
+			if (first_count != count) {
+				throw create_exception<runtime_error>("OFF: inconsistent vertex definitions"); 
+			}
+		}else{
+			first_count = count; 
+		}
+		
+		if (normals) {
+			n->x = x[0];
+			n->y = x[1];
+			n->z = x[2];
+			++n;
+			count -= 6; 
+		}
+		
+		if (colors) {
+			if (count < 3)
+				throw create_exception<invalid_argument>("OFF: color indices not supported"); 
+			c->x = xc[0] < 1.0 ? xc[0] : xc[0]/ 255.0f;
+			c->y = xc[1] < 1.0 ? xc[1] : xc[1]/ 255.0f;
+			c->z = xc[2] < 1.0 ? xc[2] : xc[2]/ 255.0f;
+			++c; 
+		}
+		
+		++v;
+		++i; 
+	} while (i < nvertices && read_line(buf, 2048, inf));
 
-			++v; ++i;
-
-		}while (i < nvertices && read_line(buf, 2048, inf));
 	return i == nvertices;
 }
-#endif
-
-
-
 
 bool COffMeshIO::read_polygon(istream& inp, vector<CTriangleMesh::triangle_type>& tri,
 			      unsigned int nvertices,
@@ -290,8 +226,8 @@ bool COffMeshIO::read_polygon(istream& inp, vector<CTriangleMesh::triangle_type>
 
 	}else {
 		vector<unsigned int> poly(nvert);
-
-		for (int k = 0; k < nvert; ++k) {
+		
+		for (unsigned  k = 0; k < poly.size(); ++k) {
 			inp >> ws >> poly[k];
 			if (poly[k] >= nvertices) {
 				cverr() << "COffMeshIO::load_triangles: index out of range\n";
@@ -304,8 +240,6 @@ bool COffMeshIO::read_polygon(istream& inp, vector<CTriangleMesh::triangle_type>
 	return true;
 }
 
-
-#ifdef USE_FILEIO
 bool COffMeshIO::load_triangles(CInputFile& inp, vector<CTriangleMesh::triangle_type>& tri,
 				unsigned int nfaces, unsigned int nvertices,
 				const CPolyTriangulator& triangulator)const
@@ -319,6 +253,9 @@ bool COffMeshIO::load_triangles(CInputFile& inp, vector<CTriangleMesh::triangle_
 	bool success = read_line(line, 2048, inp);
 
 	while (nfaces-- && success){
+
+		// it is ensured in read_line that the string in "line"  is null-terminated 
+		// coverity [TAINTED_SCALAR]
 		istringstream in_line(line);
 
 		if (!read_polygon(in_line, tri, nvertices, triangulator))
@@ -334,39 +271,6 @@ bool COffMeshIO::load_triangles(CInputFile& inp, vector<CTriangleMesh::triangle_
 	return true;
 }
 
-#else
-
-bool COffMeshIO::load_triangles(istream& inp, vector<CTriangleMesh::triangle_type>& tri,
-				unsigned int nfaces, unsigned int nvertices,
-				const CPolyTriangulator& triangulator)const
-{
-	inp >> noskipws;
-
-	int show_thresh_start = nfaces / 50;
-	int show_thresh = show_thresh_start;
-	int nfaces_start = nfaces;
-
-	while (nfaces-- && inp.good()){
-
-		if (!read_polygon(inp, tri, nvertices, triangulator))
-			return false;
-
-		show_thresh--;
-		if (!show_thresh) {
-			show_thresh = show_thresh_start;
-
-			if (m_cb)
-				m_cb->show_progress(nfaces_start - nfaces, nfaces_start);
-		}
-
-		skip_to_newline(inp);
-	}
-	++nfaces;
-	inp >> skipws;
-	return nfaces == 0;
-}
-
-#endif
 
 class CTriangleChecker {
 public:
@@ -440,8 +344,6 @@ void CTriangleChecker::evaluate()
 }
 
 
-#ifdef USE_FILEIO
-
 enum EVertexFlags {vt_texture = 1,
 		   vt_color   = 2,
 		   vt_normal  = 4,
@@ -513,17 +415,20 @@ PTriangleMesh COffMeshIO::do_load_it(CInputFile& inp)const
 	}
 
 	if (vertex_size != 3) {
-		cverr() << "currently only 3D vertexes are supported\n";
-		return PTriangleMesh();
+		throw create_exception<invalid_argument>("OFF: currently only 3D vertexes are supported, ",
+							 "file contains ", vertex_size, "D vertices");
 	}
 
 	int n_vertices = 0;
 	int n_faces = 0;
 	int n_edges = 0;
 
-	if (fscanf(inp, "%d %d %d", &n_vertices, &n_faces, &n_edges)!= 3) {
-		cverr() << "OFF: parse error\n";
-		return PTriangleMesh();
+	char buffer[2048];
+	if (!read_line(buffer, 2048, inp))
+		throw create_exception<runtime_error>("OFF: Unable to read from input file.");
+	
+	if (sscanf(buffer, "%d %d %d", &n_vertices, &n_faces, &n_edges)!= 3) {
+		throw create_exception<runtime_error>("OFF: parse error reading from '", buffer, "'");
 	}
 
 	cvdebug() << "found file with " <<n_vertices << " vertices, and " <<  n_faces << " faces\n";
@@ -531,35 +436,27 @@ PTriangleMesh COffMeshIO::do_load_it(CInputFile& inp)const
 	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(n_vertices));
 	CTriangleMesh::PNormalfield normals;
 	CTriangleMesh::PColorfield  colors;
-	CTriangleMesh::PScalefield  scale;
-
-
 
 	if (flags & vt_color) {
 		colors.reset(new CTriangleMesh::CColorfield(n_vertices));
-		scale.reset(new CTriangleMesh::CScalefield(n_vertices));
 	}
 
 	if (flags & vt_normal) {
 		normals.reset(new CTriangleMesh::CNormalfield(n_vertices));
 	}
 
-	if ( !load_vertices(inp, vertices, normals, colors, scale, flags & vt_texture, n_vertices)) {
-		return PTriangleMesh();
+	if ( !load_vertices(inp, vertices, normals, colors, flags & vt_texture, n_vertices)) {
+		throw create_exception<runtime_error>("OFF: Error reading vertices");
 	}
 
-
-	// now read the triangles
 	vector<CTriangleMesh::triangle_type> tri;
 
 	CPolyTriangulator triangulator(*vertices);
 
 	if (!load_triangles(inp, tri, n_faces, n_vertices, triangulator)) {
-		cverr() << "error reading faces\n";
-		return PTriangleMesh();
+		throw create_exception<runtime_error>("OFF: Error reading triangles");
 	}
 
-	//#ifndef ENABLE_DEBUG
 	CTriangleChecker tricheck;
 	for(vector<CTriangleMesh::triangle_type>::const_iterator i = tri.begin();
 	    i != tri.end(); ++i)
@@ -568,160 +465,12 @@ PTriangleMesh COffMeshIO::do_load_it(CInputFile& inp)const
 
 	cvdebug() << "tricheck.print();\n";
 	tricheck.print();
-//#endif
-
 
 	CTriangleMesh::PTrianglefield triangles(new CTriangleMesh::CTrianglefield(tri.size()));
 	copy(tri.begin(), tri.end(), triangles->begin());
-	return PTriangleMesh(new CTriangleMesh(triangles, vertices, normals, colors, scale));
+	return PTriangleMesh(new CTriangleMesh(triangles, vertices, normals, colors, nullptr));
 
 }
-
-#else
-
-//#ifndef ENABLE_DEBUG
-
-
-PTriangleMesh COffMeshIO::do_load_it(istream& inp)const
-{
-	string head;
-	inp >> head;
-	const char *chead = head.c_str();
-
-	bool has_texturcoord = !strncmp(chead, "ST", 2);
-	if (has_texturcoord) chead += 2;
-
-	bool has_color = *chead == 'C';
-	if (has_color) {
-		++chead;
-		cvdebug() << "OFF: found color" << endl;
-	}
-	bool has_normal = *chead == 'N';
-	if (has_normal) {
-		++chead;
-		cvdebug() << "OFF: found normal" << endl;
-	}
-
-
-	if (*chead == '4') {
-		cverr() << "COffMeshIO::load: only 3-component vertices supported" << endl;
-		return PTriangleMesh();
-	}else if (*chead == 'n') {
-		cverr() << "COffMeshIO::load: only 3-component vertices supported" << endl;
-		return PTriangleMesh();
-	}
-
-	if (strncmp(chead, "OFF", 3)) {
-		cverr() << "COffMeshIO::load: OFF Header malformed" << endl;
-		// technically the missing header is allowed, but I won't support it now
-		return PTriangleMesh();
-	}
-
-	cvdebug() << "OFF: found complete header" << endl;
-
-	unsigned int nvertices;
-	unsigned int nfaces;
-	unsigned int nedges;
-
-	inp >> nvertices >> nfaces >> nedges;
-
-	cvdebug() << "read " << nvertices << " vertices and " << nfaces << " faces " << endl;
-
-	CTriangleMesh::PVertexfield vertices(new CTriangleMesh::vertexfield_type(nvertices));
-	CTriangleMesh::PNormalfield normals;
-	CTriangleMesh::PColorfield colors;
-	CTriangleMesh::PScalefield scale;
-
-	if (has_normal) normals.reset(new CTriangleMesh::normalfield_type(nvertices));
-	if (has_color)  {
-		colors.reset(new CTriangleMesh::colorfield_type(nvertices));
-		scale.reset(new CTriangleMesh::scalefield_type(nvertices));
-	}
-
-	if ( !load_vertices(inp, vertices, normals, colors, scale, has_texturcoord, nvertices)) {
-		return PTriangleMesh();
-	}
-
-	vector<C3DBounds> tri;
-	if (!load_triangles(inp, tri, nfaces, nvertices)) {
-		cverr() << "reading faces failed" << endl;
-		return PTriangleMesh();
-	}
-
-//#ifndef ENABLE_DEBUG
-	CTriangleChecker tricheck;
-	tricheck(tri);
-	cvdebug() << "tricheck.print();" << endl;
-	tricheck.print();
-//#endif
-
-	CTriangleMesh::CTrianglefield triangles(new CTriangleMesh::trianglefield_type(tri.size()));
-	copy(tri.begin(), tri.end(), triangles->begin());
-	return PTriangleMesh(new CTriangleMesh(triangles, vertices, normals, colors, scale));
-}
-#endif
-
-
-#ifndef USE_FILEIO
-bool COffMeshIO::do_save(ostream& os, const CTriangleMesh& data) const
-{
-
-	int flags = data.get_available_data();
-
-	// write header
-	if ( (flags & CTriangleMesh::ed_scale)  || (flags & CTriangleMesh::ed_color)) os << 'C';
-	if (  flags & CTriangleMesh::ed_normal )                       os << 'N';
-	os << "OFF" << endl;
-
-	// write number of whatever
-	os << data.vertices_size() << " " << data.triangle_size() << " 0" << endl;
-
-	for (size_t i = 0; i < data.vertices_size() || os.bad(); ++i) {
-		const CTriangleMesh::vertex_type& v = data.vertex_at(i);
-		os << v.x << " " << v.y << " " << v.z;
-
-		if (flags & CTriangleMesh::ed_normal) {
-			const CTriangleMesh::normal_type& n = data.normal_at(i);
-			os << " " << n.x << " " << n.y << " " << n.z;
-		}
-		if (flags & CTriangleMesh::ed_color && flags & CTriangleMesh::ed_scale) {
-			const CTriangleMesh::color_type& c = data.color_at(i);
-			os << " " << c.x << " " << c.y << " " << c.z;
-			os << " " << data.scale_at(i);
-		}else if (flags & CTriangleMesh::ed_color && !(flags & CTriangleMesh::ed_scale)) {
-			const CTriangleMesh::color_type& c = data.color_at(i);
-			os << " " << c.x << " " << c.y << " " << c.z;
-			os << " 1.0";
-		}else if ( !(flags & CTriangleMesh::ed_color) && flags & CTriangleMesh::ed_scale) {
-			os << " 1.0 1.0 1.0 " << data.scale_at(i);
-		}
-		os << endl;
-	}
-
-	CTriangleMesh::const_triangle_iterator tb = data.triangles_begin();
-	CTriangleMesh::const_triangle_iterator te = data.triangles_end();
-
-	while (tb != te && os.good()) {
-		os << "3 " << tb->x << " " << tb->y << " " << tb->z << endl;
-		++tb;
-	}
-	return os.good();
-}
-
-bool COffMeshIO::do_save(const CTriangleMesh& data, string const &  filename)const
-{
-	m_cb = cb;
-
-	if (filename == "-")
-		return do_save(cout, data);
-	else {
-		ofstream os(filename);
-		if (os.bad())
-			return false;
-		return do_save(os, data);
-	}
-}
-#else
 
 bool COffMeshIO::do_save(string const &  filename, const CTriangleMesh& data)const
 {
@@ -745,6 +494,11 @@ bool COffMeshIO::do_save(string const &  filename, const CTriangleMesh& data)con
 
 	int written = 1;
 
+	if (flags & CTriangleMesh::ed_scale) {
+		cvwarn() << "OFF-save: Mesh has scale values, but they are "
+			 << "not supported by the OFF file format and will be lost\n"; 
+	}
+
 	for (size_t i = 0; i < data.vertices_size() && written > 0; ++i) {
 		const CTriangleMesh::vertex_type& v = data.vertex_at(i);
 		fprintf(f, "%f %f %f",v.x,v.y, v.z);
@@ -753,14 +507,9 @@ bool COffMeshIO::do_save(string const &  filename, const CTriangleMesh& data)con
 			const CTriangleMesh::normal_type& n = data.normal_at(i);
 			written += fprintf(f, " %f %f %f",n.x,n.y, n.z);
 		}
-		if (flags & CTriangleMesh::ed_color && flags & CTriangleMesh::ed_scale) {
+		if (flags & CTriangleMesh::ed_color) {
 			const CTriangleMesh::color_type& c = data.color_at(i);
-			written += fprintf(f, " %f %f %f %f",c.x,c.y, c.z, data.scale_at(i));
-		}else if (flags & CTriangleMesh::ed_color && !(flags & CTriangleMesh::ed_scale)) {
-			const CTriangleMesh::color_type& c = data.color_at(i);
-			written += fprintf(f, " %f %f %f 1.0",c.x,c.y, c.z);
-		}else if ( !(flags & CTriangleMesh::ed_color) && flags & CTriangleMesh::ed_scale) {
-			written += fprintf(f, "1.0 1.0 1.0");
+			written += fprintf(f, " %f %f %f",c.x,c.y, c.z);
 		}
 		written += fprintf(f,"\n");
 	}
@@ -774,7 +523,6 @@ bool COffMeshIO::do_save(string const &  filename, const CTriangleMesh& data)con
 	}
 	return written > 0;
 }
-#endif
 
 }
 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ void TTrackPoint<Transformation>::print(std::ostream& os) const
 template <typename Transformation>
 void TTrackPoint<Transformation>::move(float timestep, const Transformation& t)
 {
-	m_pos -= timestep * t.apply(m_pos);
+	m_pos -= timestep * t.get_displacement_at(m_pos);
 	m_time += timestep; 
 }
 

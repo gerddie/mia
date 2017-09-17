@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,16 +131,14 @@ static P2DImage create_image_of_type(EPixelType type)
 {
 	switch (type) {
 	case it_bit:    return create_image<bool>();
-	case it_sbyte:  return create_image<signed char>();
-	case it_ubyte:  return create_image<unsigned char>();
-	case it_sshort: return create_image<signed short>();
-	case it_ushort: return create_image<unsigned short>();
-	case it_sint:   return create_image<signed int>();
-	case it_uint:   return create_image<unsigned int>();
-#ifdef LONG_64BIT
-	case it_slong:  return create_image<signed long>();
-	case it_ulong:  return create_image<unsigned long>();
-#endif
+	case it_sbyte:  return create_image<int8_t>();
+	case it_ubyte:  return create_image<uint8_t>();
+	case it_sshort: return create_image<int16_t>();
+	case it_ushort: return create_image<uint16_t>();
+	case it_sint:   return create_image<int32_t>();
+	case it_uint:   return create_image<uint32_t>();
+	case it_slong:  return create_image<int64_t>();
+	case it_ulong:  return create_image<uint64_t>();
 	case it_float:  return create_image<float>();
 	case it_double: return create_image<double>();
 	default:

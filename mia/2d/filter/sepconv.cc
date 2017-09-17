@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +54,7 @@ void CSeparableConvolute::fold(vector<T>& data, const C1DFilterKernel& kernel) c
 template <class T>
 CSeparableConvolute::result_type CSeparableConvolute::operator () (const T2DImage<T>& image) const
 {
-	typedef typename T2DImage<T>::value_type value_type;
-	typedef std::vector<value_type> invec_t;
+	typedef std::vector<T> invec_t;
 
 	T2DImage<T> *data = new T2DImage<T>(image);
 	CSeparableConvolute::result_type result(data);
@@ -131,14 +130,13 @@ const string C2DGaussFilterPlugin::do_get_descr()const
 	return "isotropic 2D gauss filter";
 }
 
-const TDictMap<C2DSobelFilterPlugin::EGradientDirection>::Table C2DSobelFilterPlugin::dir_dict[] = {
-	{"x", C2DSobelFilterPlugin::gd_x, "gradient in x-direction "},
-	{"y", C2DSobelFilterPlugin::gd_y, "gradient in y-direction "},
-	{NULL, C2DSobelFilterPlugin::gd_undefined, ""}
+const TDictMap<EGradientDirection>::Table dir_dict[] = {
+	{"x", gd_x, "gradient in x-direction "},
+	{"y", gd_y, "gradient in y-direction "},
+	{NULL, gd_undefined, ""}
 };
 
-const TDictMap<C2DSobelFilterPlugin::EGradientDirection>
-C2DSobelFilterPlugin::Ddirection(C2DSobelFilterPlugin::dir_dict);
+const TDictMap<EGradientDirection> Ddirection(dir_dict);
 
 C2DSobelFilterPlugin::C2DSobelFilterPlugin():
 	C2DFilterPlugin("sobel"),
@@ -164,6 +162,35 @@ mia::C2DFilter *C2DSobelFilterPlugin::do_create()const
 const std::string C2DSobelFilterPlugin::do_get_descr()const
 {
 	return "The 2D Sobel filter for gradient evaluation. Note that the output pixel type "
+		"of the filtered image is the same as the input pixel type, so converting the input "
+		"beforehand to a floating point valued image is recommendable."; 
+}
+
+
+C2DScharrFilterPlugin::C2DScharrFilterPlugin():
+	C2DFilterPlugin("scharr"),
+	m_direction(gd_x)
+{
+	add_parameter("dir", new CDictParameter<EGradientDirection>(m_direction, Ddirection, "Gradient direction"));
+}
+
+mia::C2DFilter *C2DScharrFilterPlugin::do_create()const
+{
+	const auto&  skp = C1DSpacialKernelPluginHandler::instance();
+	auto scharr = skp.produce("scharr");
+	auto cdiff = skp.produce("cdiff");
+	
+	switch (m_direction) {
+	case gd_x: return new CSeparableConvolute(cdiff, scharr);
+	case gd_y: return new CSeparableConvolute(scharr, cdiff);
+	default:
+		throw invalid_argument("C2DScharrFilterPlugin: unknown gradient direction specified");
+	}
+}
+
+const std::string C2DScharrFilterPlugin::do_get_descr()const
+{
+	return "The 2D Scharr filter for gradient evaluation. Note that the output pixel type "
 		"of the filtered image is the same as the input pixel type, so converting the input "
 		"beforehand to a floating point valued image is recommendable."; 
 }

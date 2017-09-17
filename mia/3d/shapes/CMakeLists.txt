@@ -17,18 +17,9 @@
 #
 
 SET(shape3d 
-	    3d-shapes
-)
+  3d-shapes
+  )
 
+SET(SHAPES_SRC basic_shapes.cc sphere.cc)
 
-ADD_LIBRARY(3d-shapes MODULE basic_shapes.cc sphere.cc)
-TARGET_LINK_LIBRARIES(3d-shapes ${MIA3DLIBS})
-SET_TARGET_PROPERTIES(3d-shapes PROPERTIES PREFIX "" SUFFIX ${PLUGSUFFIX})
-INSTALL(TARGETS 3d-shapes LIBRARY DESTINATION "${PLUGIN_INSTALL_PATH}/3dimage/shape")
-
-ADD_CUSTOM_TARGET(3d-shapes_test_link 
-  ln -sf "${CMAKE_CURRENT_BINARY_DIR}/3d-shapes.mia" ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}/3dimage/shape/ 
-  DEPENDS 3dimage_shape_testdir 3d-shapes)
-
-ADD_DEPENDENCIES(plugin_test_links 3d-shapes_test_link)
-
+PLUGIN_WITH_TEST_MULTISOURCE(shapes 3dimage shape  "${SHAPES_SRC}" ${MIA3DLIBS})

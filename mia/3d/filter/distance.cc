@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,38 +23,37 @@
 #include <mia/core/distance.hh>
 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 
 namespace distance_3d_filter {
 
 using namespace mia; 
 
 using std::vector; 
-using std::string; 
+using std::string;
 
 template <typename T> 
 P3DImage C3DDistanceFilter::operator () ( const T3DImage<T>& image) const
 {
 	C3DFImage *result = new C3DFImage(image.get_size(), image);
 
-	auto transform_x = [result, &image](const tbb::blocked_range<size_t>& range) {
+	auto transform_x = [result, &image](const C1DParallelRange& range) {
 		vector<float> buffer(image.get_size().x); 
 		vector<T> in_buffer(image.get_size().x); 
-		for (size_t z = range.begin(); z != range.end(); ++z) {
+		for (auto z = range.begin(); z != range.end(); ++z) {
 			for (size_t y = 0; y < image.get_size().y; ++y) {
 				image.get_data_line_x(y, z, in_buffer);
-				distance_transform_prepare(in_buffer.begin(), in_buffer.end(), buffer.begin()); 
+				distance_transform_prepare(in_buffer.begin(), in_buffer.end(), buffer.begin(),
+							   __is_mask_pixel<T>::value); 
 				distance_transform_inplace(buffer); 
 				result->put_data_line_x(y, z, buffer);
 			}
 		}
 	}; 
 	
-	auto transform_y = [result](const tbb::blocked_range<size_t>& range) {
+	auto transform_y = [result](const C1DParallelRange& range) {
 		vector<float> buffer(result->get_size().y); 
-		for (size_t z = range.begin(); z != range.end(); ++z) {
+		for (auto z = range.begin(); z != range.end(); ++z) {
 			for (size_t x = 0; x < result->get_size().x; ++x) {
 				result->get_data_line_y(x, z, buffer);
 				distance_transform_inplace(buffer); 
@@ -63,9 +62,9 @@ P3DImage C3DDistanceFilter::operator () ( const T3DImage<T>& image) const
 		}
 	}; 
 
-	auto transform_z = [result](const tbb::blocked_range<size_t>& range) {
+	auto transform_z = [result](const C1DParallelRange& range) {
 		vector<float> buffer(result->get_size().z);
-		for (size_t y = range.begin(); y != range.end(); ++y) {
+		for (auto y = range.begin(); y != range.end(); ++y) {
 			for (size_t x = 0; x < result->get_size().x; ++x) {
 				result->get_data_line_z(x, y, buffer);
 				distance_transform_inplace(buffer); 
@@ -76,9 +75,9 @@ P3DImage C3DDistanceFilter::operator () ( const T3DImage<T>& image) const
 		}
 	}; 
 	
-	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), transform_x); 
-	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), transform_y); 
-	parallel_for(tbb::blocked_range<size_t>(0, image.get_size().y, 1), transform_z); 
+	pfor(C1DParallelRange(0, image.get_size().z, 1), transform_x); 
+	pfor(C1DParallelRange(0, image.get_size().z, 1), transform_y); 
+	pfor(C1DParallelRange(0, image.get_size().y, 1), transform_z); 
 	
 	return P3DImage(result); 
 }

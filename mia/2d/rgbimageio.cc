@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include <mia/core/ioplugin.cxx>
 #include <mia/core/iohandler.cxx>
 
+#include <mia/core/msgstream.hh>
+
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -35,6 +37,7 @@ CRGB2DImage::CRGB2DImage(const C2DBounds& size):
         m_size(size), 
 	m_pixels(size.x * size.y * 3)
 {
+	cvdebug() << "Allocated buffer of " << size.x * size.y * 3 << " bytes\n"; 
 }
 
 const C2DBounds& CRGB2DImage::get_size() const
@@ -62,6 +65,7 @@ template <> const char *  const
 	TPluginHandler<C2DRGBImageIOPlugin>::m_help =  
        "These plug-ins implement the support for (loading?) and storing 2D RGB images to various file types.";
 
+template class TPlugin<CRGB2DImage, io_plugin_type>; 
 template class TIOPlugin<CRGB2DImage>;
 template class THandlerSingleton<TIOPluginHandler<C2DRGBImageIOPlugin> >;
 template class TIOPluginHandler<C2DRGBImageIOPlugin>;

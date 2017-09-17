@@ -26,7 +26,7 @@ IF(WITH_GTS)
   IF(STRICT_DEPENDECIES) 
     pkg_check_modules(GTS gts REQUIRED)
   ELSE(STRICT_DEPENDECIES) 
-    pkg_check_modules(GTS gts REQUIRED)
+    pkg_check_modules(GTS gts)
   ENDIF(STRICT_DEPENDECIES) 
 ENDIF(WITH_GTS) 
 

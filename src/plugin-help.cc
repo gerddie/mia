@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ NS_MIA_USE;
 const SProgramDescription description = {
 	{pdi_group, "Help"}, 
 	{pdi_short, "Print help about plug-in groups"},
-	{pdi_description, "This program is used to print out help about the availabel plug-ins\n"}, 
+	{pdi_description, "This program is used to print out help about the available plug-ins\n"}, 
 	{pdi_example_descr, "Print out the help about the 2D filter plugins .\n"},  
 	{pdi_example_code, "filter/2d"}
 }; 

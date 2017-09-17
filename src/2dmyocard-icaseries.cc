@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
 #include <ostream>
 #include <fstream>
@@ -29,10 +28,9 @@
 
 //#include <mia/core/fft1d_r2c.hh>
 #include <queue>
-#include <libxml++/libxml++.h>
-
 
 #include <mia/core.hh>
+#include <mia/core/ica.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
@@ -82,7 +80,8 @@ int do_main( int argc, char *argv[] )
 	float box_scale = 1.4;
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
-	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
+	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features;
+	PIndepCompAnalysisFactory icatool;
 
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
@@ -96,6 +95,7 @@ int do_main( int argc, char *argv[] )
 			      "Also save the coefficients of the initial best and the final IC mixing matrix.", CCmdOptionFlags::output)); 
 	
 	options.set_group("ICA");
+	options.add(make_opt( icatool, "internal", "fastica", 0, "FastICA implementationto be used"));
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -125,8 +125,7 @@ int do_main( int argc, char *argv[] )
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	
-
-	if (!ica.run(series)) {
+    if (!ica.run(series, *icatool)) {
 		// ICA + classifictaion failed, 
 		// save the mixing matrix if requested 
 		if (!save_crop_feature.empty()) 
@@ -176,10 +175,9 @@ int do_main( int argc, char *argv[] )
 		input_set.rename_base(cf.string()); 
 		input_set.save_images(cropped_filename);
 		
-		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
 		ofstream outfile(cropped_filename, ios_base::out );
 		if (outfile.good())
-			outfile << test_cropset->write_to_string_formatted();
+			outfile << input_set.write().write_to_string();
 		else 
 			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 	}
@@ -192,11 +190,9 @@ int do_main( int argc, char *argv[] )
 		input_set.rename_base(reff.filename().string()); 
 		input_set.save_images(reference_filename);
 		
-		
-		unique_ptr<xmlpp::Document> test_regset(input_set.write());
 		ofstream outfile2(reference_filename, ios_base::out );
 		if (outfile2.good())
-			outfile2 << test_regset->write_to_string_formatted();
+			outfile2 << input_set.write().write_to_string();
 		else 
 			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 	}

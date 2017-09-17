@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace bfs=boost::filesystem;
 
 BOOST_AUTO_TEST_CASE ( test_nothing ) 
 {
-	BOOST_MESSAGE("This is a placeholder"); 
+	BOOST_TEST_MESSAGE("This is a placeholder"); 
 }
 
 #if 0

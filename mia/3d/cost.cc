@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,10 +35,9 @@ TPluginHandler<TFactory<C3DImageCost>>::m_help =
   "care of transforming and scaling the images during the image registration process.";
 
 template class TCost<C3DImage, C3DFVectorfield>;
-template class TPlugin<C3DImage, cost_type>;
-template class TFactory<C3DImageCost>;
-template class THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >;
-template class TFactoryPluginHandler<C3DImageCostPlugin>;
-template class TPluginHandler<C3DImageCostPlugin>;
+
+EXPLICIT_INSTANCE_HANDLER(C3DImageCost);
+
+
 
 NS_MIA_END

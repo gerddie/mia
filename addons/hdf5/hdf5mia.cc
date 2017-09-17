@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,6 +155,10 @@ H5Base::operator hid_t() const
 template <typename I> 
 static void check_id(hid_t id, const char *domain, const char *action, I info) 
 {
+	cvdebug() << "Checking id=" << id
+		  << ", domain=" << domain
+		  << ", action=" << action
+		  << ", info=" << info << "\n"; 
 	if (id < 0) {
 		throw create_exception<invalid_argument>(domain, ": error in ", action, ":", info);  
 	}
@@ -340,12 +344,12 @@ int H5Type::get_mia_type_id() const
 	size_t size = H5Tget_size(*this); 
 
 	switch (cls) {
-	case H5T_INTEGER: 
+	case H5T_INTEGER:
 		switch (size) {
 		case 1: return 2 | H5Tget_sign(*this ); 
 		case 2: return 4 | H5Tget_sign(*this ); 
 		case 4: return 6 | H5Tget_sign(*this ); 
-		case 8: return 8 | H5Tget_sign(*this ); 			
+		case 8: return 8 | H5Tget_sign(*this );
 		default: 
 			return EAttributeType::attr_unknown;
 		}
@@ -440,7 +444,7 @@ H5Dataset H5Dataset::open(const H5Base& parent, const char *name)
 	auto id =  H5Dopen(p, relative_name.c_str(), H5P_DEFAULT);
 	check_id(id, "H5Dataset", "open", relative_name);
 
-	int space_id = H5Dget_space(id); 
+	auto space_id = H5Dget_space(id); 
 	check_id(space_id, "H5Dataset", "get space", name);
 	H5Space space(space_id); 
 	

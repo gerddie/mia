@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,24 @@ BOOST_AUTO_TEST_CASE(test_read_dicom_attributes)
 	auto pimage = reader.get_image(); 
 	BOOST_CHECK_EQUAL(pimage->get_attribute_as<double>(IDAcquisitionTime), 32742.072496); 
 }
+
+BOOST_AUTO_TEST_CASE(test_read_dicom_3d)
+{
+        string filename(MIA_SOURCE_ROOT"/testdata/EnIm1.dcm");
+        cvdebug() << "open: " << filename << "\n";
+        CDicomReader reader(filename.c_str());
+	BOOST_CHECK(reader.good());
+	BOOST_REQUIRE(reader.has_3dimage());
+
+	P3DImage pimage = reader.get_3dimage();
+
+	const C3DSSImage& image = dynamic_cast<const C3DSSImage&>(*pimage);
+	
+	BOOST_CHECK_EQUAL(image.get_size(), C3DBounds(256, 128, 4));
+	BOOST_CHECK_EQUAL(image.get_voxel_size(), C3DFVector(0.1f, 0.2f, 1.0f)); 
+
+}
+
 
 struct DicomFixture {
 

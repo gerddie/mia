@@ -16,10 +16,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 
-OPTION(USE_HDF5 "use hdf5 for data UI" TRUE)
+OPTION(WITH_HDF5 "use hdf5 for data UI" TRUE)
 
 
-IF (USE_HDF5)
+IF (WITH_HDF5)
   if (STRICT_DEPENDECIES)
     find_package(HDF5 REQUIRED)
   else (STRICT_DEPENDECIES)
@@ -31,17 +31,16 @@ IF (USE_HDF5)
     INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIRS})
     LINK_DIRECTORIES(${HDF5_LIBRARY_DIRS})
     SET(HDF5IO_SRC hdf5mia.cc hdf5a_mia.cc)
-    SET(HDF5MIALIBS miacore ${HDF5_LIBRARIES})
+    SET(HDF5MIALIBS mia3d ${HDF5_LIBRARIES})
     MIA_ADD_LIBRARY(miahdf5 "${HDF5IO_SRC}" "${HDF5MIALIBS}")
     SET(INSTALL_TARGETS miahdf5)	
     INSTALL_BASE("${INSTALL_TARGETS}")
 
 
     NEW_TEST(hdf5mia miahdf5)
-    SET(DEPS3D miahdf5 mia3d)
 
-    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" hdf5_3dimage  "${DEPS3D}")
+    PLUGIN_WITH_TEST_AND_PREFIX2("3dimage" "io" hdf5_3dimage  miahdf5)
 
   ENDIF(HDF5_FOUND)
   
-ENDIF(USE_HDF5)
+ENDIF(WITH_HDF5)

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ using namespace std;
 
 
 
-C3DFVector C3DAxisrotTransformation::apply(const C3DFVector& x) const
+C3DFVector C3DAxisrotTransformation::get_displacement_at(const C3DFVector& x) const
 {
 	return transform(x);
 }
@@ -179,9 +179,9 @@ float C3DAxisrotTransformation::get_max_transform() const
 		C3DFVector(get_size())
 	};
 
-	float result = apply(C3DFVector()).norm2(); 
+	float result = get_displacement_at(C3DFVector()).norm2(); 
 	for(int i = 0; i < 7; ++i) {
-		float h = (apply(corners[i]) - corners[i]).norm2(); 
+		float h = (get_displacement_at(corners[i]) - corners[i]).norm2(); 
 		if (result < h) 
 			result = h; 
 	}
@@ -192,7 +192,7 @@ float C3DAxisrotTransformation::get_max_transform() const
 
 C3DFVector C3DAxisrotTransformation::operator () (const C3DFVector& x) const
 {
-	return apply(x); 
+	return get_displacement_at(x); 
 }
 
 float C3DAxisrotTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
@@ -227,9 +227,9 @@ C3DAxisrotTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, con
 						      const C3DAxisrotTransformation& trans):
 	C3DTransformation::iterator_impl(pos, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.get_displacement_at(C3DFVector(pos)))
 {
-	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.get_displacement_at(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DAxisrotTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
@@ -237,9 +237,9 @@ C3DAxisrotTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, con
 						      const C3DAxisrotTransformation& trans):
 	C3DTransformation::iterator_impl(pos, begin, end, size),
 	m_trans(trans), 
-	m_value(trans.apply(C3DFVector(pos)))
+	m_value(trans.get_displacement_at(C3DFVector(pos)))
 {
-	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+	m_dx = m_trans.get_displacement_at(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DTransformation::iterator_impl * C3DAxisrotTransformation::iterator_impl::clone() const
@@ -259,14 +259,14 @@ void C3DAxisrotTransformation::iterator_impl::do_x_increment()
 
 void C3DAxisrotTransformation::iterator_impl::do_y_increment()
 {
-	m_value = m_trans.apply(C3DFVector(get_pos())); 
-	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.get_displacement_at(C3DFVector(get_pos())); 
+	m_dx = m_trans.get_displacement_at(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 void C3DAxisrotTransformation::iterator_impl::do_z_increment()
 {
-	m_value = m_trans.apply(C3DFVector(get_pos())); 
-	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
+	m_value = m_trans.get_displacement_at(C3DFVector(get_pos())); 
+	m_dx = m_trans.get_displacement_at(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 

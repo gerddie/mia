@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,10 +43,8 @@ CHDF53DImageIOPlugin::CHDF53DImageIOPlugin():
 	add_supported_type(it_ushort);
 	add_supported_type(it_sint);
 	add_supported_type(it_uint);
-#ifdef LONG_64BIT
 	add_supported_type(it_slong);
 	add_supported_type(it_ulong);
-#endif 
 	add_supported_type(it_float);
 	add_supported_type(it_double);
 
@@ -109,7 +107,7 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *MIA_PARAM_UN
 		P3DImage new_image; 
 		switch (type_id) {
 		case EAttributeType::attr_bool: 
-			new_image = read_image<C3DBitImage>(bsize, dataset); 
+			new_image = read_image<C3DBitImage, bool>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_uchar: 
 			new_image = read_image<C3DUBImage>(bsize, dataset); 
@@ -129,14 +127,12 @@ herr_t hdf5_walk (hid_t loc_id, const char *name, const H5L_info_t *MIA_PARAM_UN
 		case EAttributeType::attr_sint:
 			new_image = read_image<C3DSIImage>(bsize, dataset); 
 			break; 
-#ifdef LONG_64BIT
 		case EAttributeType::attr_ulong:
 			new_image = read_image<C3DULImage>(bsize, dataset); 
 			break; 
 		case EAttributeType::attr_slong:
 			new_image = read_image<C3DSLImage>(bsize, dataset); 
 			break; 
-#endif
 		case EAttributeType::attr_float:
 			new_image = read_image<C3DFImage>(bsize, dataset); 
 			break; 
@@ -213,7 +209,7 @@ void FHDF5Saver::operator ()( const T3DImage<T>& image)
         }
 	cvdebug() << "Add image to '" << path << "'\n"; 
         auto dataset = H5Dataset::create(m_file, path.c_str(), file_type, space);
-        dataset.write(image.begin(), image.end()); 
+        dataset.write_data(image, T()); 
         translate_to_hdf5_attributes(dataset, image); 
 }
 

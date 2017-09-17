@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 #include <list>
 #include <cassert>
 #include <boost/filesystem.hpp>
-#include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
 #include <mia/2d/segset.hh>
@@ -36,7 +35,6 @@
 
 using namespace std;
 using namespace mia;
-using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
@@ -64,23 +62,8 @@ int do_main(int argc, char *argv[])
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-
-	DomParser parser;
-	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-	parser.parse_file(src_filename);
-
-	DomParser parser2;
-	parser2.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
-	parser2.parse_file(ref_filename);
-
-	if (!parser)
-		throw runtime_error(string("Unable to parse input file:") + src_filename);
-
-	if (!parser2)
-		throw runtime_error(string("Unable to parse input file:") + ref_filename);
-
-	CSegSet srcset(*parser.get_document());
-	CSegSet refset(*parser2.get_document());
+	CSegSet srcset(src_filename);
+	CSegSet refset(ref_filename);
 
 	const auto& src_frames = srcset.get_frames();
 	const auto& ref_frames = refset.get_frames();

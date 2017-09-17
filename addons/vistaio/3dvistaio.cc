@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,8 @@ CVista3DImageIOPlugin::CVista3DImageIOPlugin():
 	add_supported_type(it_double);
 	
 	add_standard_vistaio_properties(*this); 
-	
+
+	add_suffix(".-");
 	add_suffix(".v");
 	add_suffix(".V");
 	add_suffix(".vista");
@@ -149,8 +150,7 @@ struct CVImageCreator: public TFilter <VistaIOImage> {
 template <typename T>
 VistaIOImage CVImageCreator::operator ()( const T3DImage<T>& image) const
 {
-	typedef dispatch_creat_vimage<typename T3DImage<T>::const_iterator,
-		typename vista_repnkind<T>::type> dispatcher;
+	typedef dispatch_creat_vimage<typename T3DImage<T>::const_iterator, T> dispatcher;
 	VistaIOImage result =  dispatcher::apply(image.begin(), image.end(),
 					   image.get_size().x, image.get_size().y, image.get_size().z);
 	copy_attr_list(VistaIOImageAttrList(result), image);

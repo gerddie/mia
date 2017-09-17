@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,9 +108,7 @@ int do_main(int argc, char **argv)
 	C3DImageIOPluginHandler::Instance::Data vout;
 	vout.push_back(result);
 
-	imageio.save(out_filename, vout);
-
-	return EXIT_SUCCESS;
+	return imageio.save(out_filename, vout) ? EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
 

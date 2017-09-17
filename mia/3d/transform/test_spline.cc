@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,7 +235,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(scaled.y, testscale.y, 0.1);
 	BOOST_CHECK_CLOSE(scaled.z, testscale.z, 0.1);
 	
-	C3DFVector result_apply = stransf.apply(testx);
+	C3DFVector result_apply = stransf.get_displacement_at(testx);
 	BOOST_CHECK_CLOSE(result_apply.x, fx(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_apply.y, fy(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_apply.z, fz(testx), 0.1);
@@ -356,7 +356,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	
 	C3DFImage test_image(range);
 	
-	auto_ptr<T3DInterpolator<float> > src(ipf.create(image.data()));
+	unique_ptr<T3DInterpolator<float> > src(ipf.create(image.data()));
 
 	C3DFImage::iterator t = test_image.begin();
 
@@ -465,7 +465,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	stransf.reinit();
 
 	C3DFVector testx(33.4, 20.4, 21.9);
-	C3DFVector result = stransf.apply(testx);
+	C3DFVector result = stransf.get_displacement_at(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx) + 2.0f, 0.1);
 	BOOST_CHECK_CLOSE(result.y, fy(testx) + 4.0f, 0.1);
@@ -556,7 +556,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_pertuberate, TransformSplineFixture )
 
 	fill(v.begin(), v.end(), vv);
 
-	// this location is hand-picked and is not really the position ofthe maximun
+	// this location is hand-picked and is not really the position of the maximun
 	// but only an approximation
 	float gamma = stransf.pertuberate(v);
 	C3DFVector lmg(12* scalex, 27 * scaley);

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,14 @@
 #include <cassert>
 #include <mia/core/msgstream.hh>
 #include <mia/core/tools.hh>
+#include <mia/core/xmlinterface.hh>
 
 #include <mia/2d/segstar.hh>
-#include <libxml++/libxml++.h>
+
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 
 NS_MIA_BEGIN
@@ -47,37 +52,33 @@ CSegStar::CSegStar(const CSegPoint2D& center, float r, const CSegPoint2D& d1,
 }
 
 
-CSegStar::CSegStar(const xmlpp::Node& n)
+CSegStar::CSegStar(const CXMLElement& node)
 {
 	TRACE("CSegStar::CSegStar");
-
-	if (n.get_name() != "star")
-		throw create_exception<runtime_error>("CSegStar: expect node of type 'star', but got '", n.get_name(), "'");
-
-	const xmlpp::Element& node = dynamic_cast<const xmlpp::Element&>(n);
-
-
+	
+	if (node.get_name() != "star")
+		throw create_exception<runtime_error>("CSegStar: expect node of type 'star', but got '", node.get_name(), "'");
+	
 	m_center = CSegPoint2D(node);
-	xmlpp::Attribute *rx = node.get_attribute ("r");
-	if (!rx)
+	auto rx = node.get_attribute ("r");
+	if (rx.empty())
 		throw runtime_error("CSegStar: attribute r not found");
 
-	if (!from_string(rx->get_value(), m_radius)) 
-		throw create_exception<runtime_error>("CSegStar: radius attribute '", rx->get_value(), "' is not a floating point value"); 
+	if (!from_string(rx, m_radius)) 
+		throw create_exception<runtime_error>("CSegStar: radius attribute '", rx, "' is not a floating point value"); 
 
 	cvdebug() << "Got star center (" << m_center.x << ", " << m_center.y << " @ " << m_radius << ")\n";
 
-	xmlpp::Node::NodeList points = node.get_children("point");
+	auto points = node.get_children("point");
 	size_t npoints  = points.size();
 
 	if (npoints != 3)
 		throw invalid_argument("Bogus: Star should have 3 direction points");
 
 	size_t k = 0;
-	for (xmlpp::Node::NodeList::const_iterator i = points.begin();
-	     i != points.end(); ++i, ++k) {
-		xmlpp::Element& node = dynamic_cast<xmlpp::Element&>(**i);
-		m_directions[k] = CSegPoint2D(node);
+	for (auto& i: points) {
+		m_directions[k] = CSegPoint2D(*i);
+		++k; 
 	}
 }
 
@@ -94,7 +95,8 @@ void CSegStar::transform(const C2DTransformation& t)
 		m_directions[i] = t(m_center + m_radius * m_directions[i]);
 		cvdebug() << "CSegStar::transform:" << i << ":" << m_directions[i] << "\n"; 
 	}
-	recenter_rays(); 
+	recenter_rays();
+	cvdebug() << "CSegStar::transformed: " << m_center << "@" << m_radius << "\n"; 
 }
 
 inline double  __calc_bc(double a, double b, double c)
@@ -164,10 +166,12 @@ void CSegStar::inv_transform(const C2DTransformation& t)
 	recenter_rays();
 }
 
-void CSegStar::write(xmlpp::Node& node) const
+void CSegStar::write(CXMLElement& node) const
 {
-	xmlpp::Element* nodeChild = node.add_child("star");
+	auto nodeChild = node.add_child("star");
 
+	cvdebug() << "Write star " << m_center << "@" << m_radius << "\n"; 
+	
 	nodeChild->set_attribute("y", to_string<float>(m_center.y));
 	nodeChild->set_attribute("x", to_string<float>(m_center.x));
 	nodeChild->set_attribute("r", to_string<float>(m_radius));

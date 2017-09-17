@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 #include <mia/core/ica.hh>
 #include <vector>
+
 
 #ifndef EXPORT_TDataSeriesICA
 #ifdef WIN32
@@ -61,7 +62,7 @@ class  EXPORT_TDataSeriesICA TDataSeriesICA {
 public:
 	/** a set of indices used for addressing a subset of the independend componsts 
 	 */
-	typedef CICAAnalysis::IndexSet IndexSet;
+        typedef CIndepCompAnalysis::IndexSet IndexSet;
 
 	/** a (shared) pointer to itself */
 	typedef typename Data::Pointer PData; 
@@ -70,10 +71,13 @@ public:
 	   \brief ICA initialization 
 	   
 	   The contructor for an ICA
+           \param icatool tool used for the ICA analysis
 	   \param initializer data set containing all the time steps of input data 
 	   \param strip_mean strip the mean from the series before processing 
 	 */
-	TDataSeriesICA(const std::vector<Data>& initializer, bool strip_mean);
+
+
+        TDataSeriesICA(const CIndepCompAnalysisFactory&  icatool, const std::vector<Data>& initializer, bool strip_mean);
 	
 	/**  Runs the ICA 
 	     \param ncomponents retained components 
@@ -85,15 +89,6 @@ public:
 		 std::vector<std::vector<float> >  guess = std::vector<std::vector<float> >());
 
 
-        /**
-	   Run the independed component analysis with an estimation of the optimal number
-	   of components based on mixing curve correlation (experimental) 
-	   \param max_ica maximum number of independend components
-	   \param min_ica minimum number of independend components
-	   \param corr_thresh minimum absolute correation of the mixing signals to joins two components
-	   \returns number of obtained independend components
-	*/
-	size_t run_auto(int max_ica, int min_ica, float corr_thresh); 
 	
 	/** Normalizes the ICs to the range of [-1,1] and correct the mixing matrix accordingly. 
 	    This operation does not change the output of a mix. 
@@ -131,6 +126,14 @@ public:
 	/// \returns the mixing curves as vector of vectors
 	CSlopeColumns get_mixing_curves() const;
 
+	/**
+	   Obtain a specific mixing curve
+	   \param idx: index of requested curve, throws invalid_argument if index is out of bounds 
+	   \returns a mixing curve
+	   
+	*/
+	std::vector<float> get_mixing_curve(unsigned idx) const;
+
 	/// \returns the feature data relating to component \a idx
 	PData get_feature_image(size_t idx) const; 
 
@@ -160,12 +163,12 @@ public:
 	   Set the ICA approach to either FICA_APPROACH_DEFL(default) or FICA_APPROACH_SYMM. 
 	   \param approach
 	 */
-	void set_approach(int approach); 
+        void set_approach(CIndepCompAnalysis::EApproach approach);
 	
 
 	~TDataSeriesICA();
 private:
-	CICAAnalysis m_analysis;
+        PIndepCompAnalysis m_analysis;
 	typedef typename Data::dimsize_type dimsize_type; 
 	dimsize_type m_size;
 	Data m_mean;

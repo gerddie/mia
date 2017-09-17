@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,25 @@
  *
  */
 
-template <typename InputIterator, typename OutputIterator> 
-void kmeans(InputIterator ibegin, InputIterator iend, OutputIterator obegin, 
-	    std::vector<float> classes)
+
+#include <cmath>
+#include <limits>
+#include <mia/core/kmeans.hh>
+
+NS_MIA_BEGIN
+
+int EXPORT_CORE kmeans_get_closest_clustercenter(const std::vector<double>& classes, size_t l, double val)
 {
-	
+	double dmin = std::numeric_limits<double>::max();
+	int c = 0;
+	for (size_t i = 0; i <= l; i++) {
+		double d = std::fabs (val - classes[i]);
+		if (d < dmin) {
+			dmin = d;
+			c = i;
+		};
+	};
+	return c; 
 }
+
+NS_MIA_END

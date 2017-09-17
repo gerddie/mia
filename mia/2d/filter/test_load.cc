@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ LoadFixture::LoadFixture()
 
 LoadFixture::~LoadFixture()
 {
-	boost::any dummy = CDatapool::instance().get_and_remove("test.@");
+	CDatapool::instance().remove("test.@");
 }
 	
 

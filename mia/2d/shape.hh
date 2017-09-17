@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@ typedef std::shared_ptr<C2DShape > P2DShape;
 
 /// Base class for Shape generating plug-ins 
 typedef TFactory<C2DShape> C2DShapePlugin;
+
+template <> const char *  const TPluginHandler<TFactory<C2DShape>>::m_help; 
 
 /// Plug-in handler for the shape plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;

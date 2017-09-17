@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ void test_direct_interpolator(const T2DDatafield<T>& data)
 template <class T>
 void test_conv_interpolator(const T2DDatafield<T>& data, PSplineKernel kernel)
 {
-	T2DConvoluteInterpolator<T>  src(data, kernel);
+	T2DInterpolator<T>  src(data, kernel);
 	test_interpolator(data, src);
 }
 
@@ -137,7 +137,7 @@ void test_deformadd()
 	C2DUSImage *fimage = new C2DUSImage(size);
 	P2DImage image(fimage);
 
-	std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(ip_linear, bc_mirror_on_bounds));
+	C2DInterpolatorFactory ipf("bspline:d=1", "mirror");
 
 	C2DFVectorfield A(size);
 	C2DFVectorfield B(size);
@@ -158,12 +158,12 @@ void test_deformadd()
 		}
 	}
 
-	P2DImage im = filter(FDeformer2D(A, *ipf), *image);
-	P2DImage result_add = filter(FDeformer2D(B, *ipf), *im);
+	P2DImage im = filter(FDeformer2D(A, ipf), *image);
+	P2DImage result_add = filter(FDeformer2D(B, ipf), *im);
 
 	A += B;
 
-	P2DImage result_direct = filter(FDeformer2D(A, *ipf), *image);
+	P2DImage result_direct = filter(FDeformer2D(A, ipf), *image);
 
 	if (!filter_equal(FCompareImages(), *result_direct, *result_add)) {
 		if (!save(image, "original.png") ||
@@ -177,18 +177,16 @@ void test_deformadd()
 
 
 
-typedef bmpl::list<signed char,
-		   unsigned char,
-		   signed short,
-		   unsigned short,
-		   signed int,
-		   unsigned int,
+typedef bmpl::list<int8_t,
+		   uint8_t,
+		   int16_t,
+		   uint16_t,
+		   int32_t,
+		   uint32_t,
+		   int64_t, 
+		   uint64_t, 
 		   float,
 		   double
-#ifdef LONG_64BIT
-		   ,signed long
-		   ,unsigned long
-#endif
 		   > test_types;
 
 

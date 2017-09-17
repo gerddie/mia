@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -345,8 +345,10 @@ CSplineParzenMI::get_reduced_range_masked(DataIterator dbegin,
 	auto ib = dbegin; 
 	auto im = mbegin; 
 	
-	while (! *im++ && ib != dend) 
-		++ib; 
+	while (! *im && ib != dend) {
+		++im; 
+		++ib;
+	}
 	
 	if (ib == dend) 
 		throw std::runtime_error("CSplineParzenMI: empty mask"); 

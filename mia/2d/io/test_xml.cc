@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,18 +35,18 @@ using namespace std;
 const char *testset_init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workset>"
 	"<description><RVpeak value=\"2\"/>"
 	"<LVpeak value=\"1\"/><PreferedRef value=\"0\"/></description>"
-	" <frame image=\"image.png\">"
-	"  <star y=\"118\" x=\"109\" r=\"21\">"
-	"   <point y=\"20\" x=\"10\"/>"
-	"   <point y=\"10\" x=\"20\"/>"
-	"   <point y=\"4\" x=\"0\"/>"
+	" <frame image=\"image.bmp\">"
+	"  <star r=\"21\" x=\"109\" y=\"118\">"
+	"   <point x=\"10\" y=\"20\"/>"
+	"   <point x=\"20\" y=\"10\"/>"
+	"   <point x=\"0\" y=\"4\"/>"
 	"  </star>"
 	" </frame>"
-	" <frame image=\"image2.png\">"
-	"  <star y=\"117\" x=\"119\" r=\"22\">"
-	"  <point y=\"21\" x=\"11\"/>"
-	"  <point y=\"11\" x=\"21\"/>"
-	"  <point y=\"5\" x=\"1\"/>"
+	" <frame image=\"image2.bmp\">"
+	"  <star r=\"22\" x=\"119\" y=\"117\">"
+	"  <point x=\"11\" y=\"21\"/>"
+	"  <point x=\"21\" y=\"11\"/>"
+	"  <point x=\"1\" y=\"5\"/>"
 	"  </star>"
 	" </frame>"
 	"</workset>\n";
@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE( test_read_simple )
 	fill(img1.begin(), img1.end(), 0); 
 	fill(img2.begin(), img2.end(), 1);
 
-	save_image("image.png", img1); 
-	save_image("image2.png", img2);
+	save_image("image.bmp", img1); 
+	save_image("image2.bmp", img2);
 
 	ofstream testfile("segset.set"); 
 	testfile << testset_init; 
@@ -82,9 +82,9 @@ BOOST_AUTO_TEST_CASE( test_read_simple )
 	BOOST_CHECK_EQUAL(frames.size(), 2u);
 
 
-	unlink("segset.set"); 
-	unlink("image.png"); 
-	unlink("image2.png");
+//	unlink("segset.set"); 
+	unlink("image.bmp"); 
+	unlink("image2.bmp");
 	
 }
 
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE( test_write_simple )
 	in_sections0.push_back(s11); 
 	in_sections0.push_back(s12); 
 	
-	CSegFrame in_frame0("image1.png", in_star0, in_sections0);
+	CSegFrame in_frame0("image1.bmp", in_star0, in_sections0);
 	in_frame0.set_quality(3.3); 
 	in_frame0.set_brightness(1.0); 
 	in_frame0.set_contrast(-1.0);
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE( test_write_simple )
 	}
 
 	unlink("testsaveset.set"); 
-	unlink("image1.png"); 
+	unlink("image1.bmp"); 
 			
 }
 

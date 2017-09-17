@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,13 +56,13 @@ public:
 	   Constructor to create a CSegStar from a XML sub tree
 	   @param node root of the sub tree 
 	 */
-	CSegStar(const xmlpp::Node& node);
+	CSegStar(const CXMLElement& node);
 
 	/**
 	   write the CSegStar info to a XML node 
 	   @param node root node to add the info to 
 	 */
-	void write(xmlpp::Node& node) const;
+	void write(CXMLElement& node) const;
 
 	/**
 	   Shift the segmentation data 

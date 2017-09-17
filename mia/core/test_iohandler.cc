@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,8 +79,30 @@ BOOST_FIXTURE_TEST_CASE(  test_preferred_suffix, DummyPluginFixture )
 	const CTestIOPluginHandler::Instance&  handler = CTestIOPluginHandler::instance();
 	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("datapool"), "@");
 	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("la"), "hey");
+	
+	auto suffixset = handler.get_supported_suffix_set();
+	BOOST_CHECK_EQUAL(suffixset.size(), 4u); 
+	BOOST_CHECK(suffixset.find("la") != suffixset.end());
+	BOOST_CHECK(suffixset.find("lo") != suffixset.end());
+	BOOST_CHECK(suffixset.find("@") != suffixset.end());
+	BOOST_CHECK(suffixset.find("hey") != suffixset.end());
 
-	BOOST_CHECK_THROW(handler.get_preferred_suffix("nonsense"), runtime_error);
+	BOOST_CHECK(&handler.preferred_plugin("test.la.gz") == &handler.preferred_plugin("test.la.xz"));
+	BOOST_CHECK(&handler.preferred_plugin("test.la.gz") == &handler.preferred_plugin("test.la"));
+	BOOST_CHECK(&handler.preferred_plugin("test.la.gz") == &handler.preferred_plugin("test.la.bz2"));
+	BOOST_CHECK(&handler.preferred_plugin("test.la.gz") == &handler.preferred_plugin("test.la.Z"));
+
+	BOOST_CHECK_EQUAL(handler.preferred_plugin_ptr("test.la.gz"), handler.preferred_plugin_ptr("test.la.xz"));
+	BOOST_CHECK_EQUAL(handler.preferred_plugin_ptr("test.la.gz"), handler.preferred_plugin_ptr("test.la"));
+	BOOST_CHECK_EQUAL(handler.preferred_plugin_ptr("test.la.gz"), handler.preferred_plugin_ptr("test.la.bz2"));
+	BOOST_CHECK_EQUAL(handler.preferred_plugin_ptr("test.la.gz"), handler.preferred_plugin_ptr("test.la.Z"));
+	BOOST_CHECK(handler.preferred_plugin_ptr("unknown.le") == nullptr);
+	BOOST_CHECK(handler.preferred_plugin_ptr("some.datapool") != nullptr);
+	
+	BOOST_CHECK_THROW(handler.get_preferred_suffix("nonsense.les"), runtime_error);
+	BOOST_CHECK_THROW(handler.preferred_plugin("nonsense.nonsense"), invalid_argument);
+
+
 }
 
 BOOST_FIXTURE_TEST_CASE(  test_datapool_io, DummyPluginFixture )

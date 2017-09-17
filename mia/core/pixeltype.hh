@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,10 +36,8 @@ enum EPixelType {it_bit,  /**< bit/bool pixels */
 		 it_ushort, /**< unsigned short pixels (16-bit) */
 		 it_sint,   /**< signed int pixels (32-bit)*/
 		 it_uint,   /**< unsigned int pixels (32-bit)*/
-#ifdef LONG_64BIT
 		 it_slong,  /**< signed long pixels (64 bit)*/
 		 it_ulong,  /**< unsigned long pixels (64 bit) */
-#endif
 		 it_float,  /**< float pixels (32 bit)*/
 		 it_double, /**< double pixels (63 bit)*/
 		 it_none,   /**< type not set */
@@ -89,46 +87,44 @@ struct pixel_type<bool> {
 };
 
 template <>
-struct pixel_type<signed char> {
+struct pixel_type<int8_t> {
 	static const EPixelType value = it_sbyte;
 };
 
 template <>
-struct pixel_type<unsigned char> {
+struct pixel_type<uint8_t> {
 	static const EPixelType value = it_ubyte;
 };
 
 template <>
-struct pixel_type<signed short> {
+struct pixel_type<int16_t> {
 	static const EPixelType value = it_sshort;
 };
 
 template <>
-struct pixel_type<unsigned short> {
+struct pixel_type<uint16_t> {
 	static const EPixelType value = it_ushort;
 };
 
 template <>
-struct pixel_type<signed int> {
+struct pixel_type<int32_t> {
 	static const EPixelType value = it_sint;
 };
 
 template <>
-struct pixel_type<unsigned int> {
+struct pixel_type<uint32_t> {
 	static const EPixelType value = it_uint;
 };
 
-#ifdef LONG_64BIT
 template <>
-struct pixel_type<signed long> {
+struct pixel_type<int64_t> {
 	static const EPixelType value = it_slong;
 };
 
 template <>
-struct pixel_type<unsigned long> {
+struct pixel_type<uint64_t> {
 	static const EPixelType value = it_ulong;
 };
-#endif
 
 template <>
 struct pixel_type<float> {

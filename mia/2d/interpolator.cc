@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,14 @@
 NS_MIA_BEGIN
 
 using namespace std; 
+
+C2DWeightCache::C2DWeightCache(int kernel_size, 
+			       const CSplineBoundaryCondition& xbc, 
+			       const CSplineBoundaryCondition& ybc):
+	x(kernel_size, xbc, kernel_size < 3), 
+	y(kernel_size, ybc, true)
+{
+}
 
 C2DInterpolatorFactory::C2DInterpolatorFactory(const std::string& kernel, const std::string& bc):
 	m_kernel(produce_spline_kernel(kernel)), 
@@ -91,75 +99,37 @@ const CSplineKernel* C2DInterpolatorFactory::get_kernel() const
 	return m_kernel.get();
 }
 
-C2DInterpolatorFactory *create_2dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
-{
-	string boundary; 
-	switch (bc) {
-	case bc_mirror_on_bounds: 
-		boundary = "mirror"; 
-		break; 
-		
-	case bc_repeat: 
-		boundary = "repeat"; 
-		break; 
-	case bc_zero: 
-		boundary = "zero"; 
-		break; 
-	default: 
-		throw invalid_argument("Unknown boundary consitions requested"); 
-	}
-	
-	string kernel; 
-	switch (type) {
-	case ip_nn: 
-	case ip_bspline0: kernel = "bspline:d=0"; break; 
-	case ip_linear:
-	case ip_bspline1: kernel = "bspline:d=1"; break; 
-	case ip_bspline2: kernel = "bspline:d=2"; break; 
-	case ip_bspline3: kernel = "bspline:d=3"; break; 
-	case ip_bspline4: kernel = "bspline:d=4"; break; 
-	case ip_bspline5: kernel = "bspline:d=5"; break; 
-	case ip_omoms3:   kernel = "omoms:d=3"; break;
-	default: 
-		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
-	}; 
-
-	return new C2DInterpolatorFactory(kernel, boundary); 
-}
-
-
 #ifdef __SSE__
 float add_2d_new<T2DDatafield< float >, 4>::value(const T2DDatafield< float >&  coeff, 
-							   const CSplineKernel::SCache& xc, 
-							   const CSplineKernel::SCache& yc) 
+						  const C2DWeightCache& spline_cache) 
 {
 	typedef float v4df __attribute__ ((vector_size (16)));
 	float __attribute__((aligned(16))) cache[16]; 
 	float __attribute__((aligned(16))) xweight[4]; 
-	copy(xc.weights.begin(), xc.weights.end(), xweight); 
+	copy(spline_cache.x.weights.begin(), spline_cache.x.weights.end(), xweight); 
 	
 	const int dx = coeff.get_size().x; 
 	int idx = 0; 
-	if (xc.is_flat) {
+	if (spline_cache.x.is_flat) {
 		for (size_t y = 0; y < 4; ++y, idx+=4) {
-			const float *p = &coeff[yc.index[y] * dx];
-			memcpy(&cache[idx], &p[xc.start_idx], 4*sizeof(float));
+			const float *p = &coeff[spline_cache.y.index[y] * dx];
+			memcpy(&cache[idx], &p[spline_cache.x.start_idx], 4*sizeof(float));
 		}
 	}else{
 		for (size_t y = 0; y < 4; ++y, idx+=4) {
-			const float *p = &coeff[yc.index[y] * dx];
-			cache[idx  ] = p[xc.index[0]]; 
-			cache[idx+1] = p[xc.index[1]]; 
-			cache[idx+2] = p[xc.index[2]]; 
-			cache[idx+3] = p[xc.index[3]]; 
+			const float *p = &coeff[spline_cache.y.index[y] * dx];
+			cache[idx  ] = p[spline_cache.x.index[0]]; 
+			cache[idx+1] = p[spline_cache.x.index[1]]; 
+			cache[idx+2] = p[spline_cache.x.index[2]]; 
+			cache[idx+3] = p[spline_cache.x.index[3]]; 
 		}
 	}
 
 	v4df wx  = _mm_loadu_ps(xweight);
-	v4df w0  = _mm_set1_ps(yc.weights[0]);
-	v4df w1  = _mm_set1_ps(yc.weights[1]);
-	v4df w2  = _mm_set1_ps(yc.weights[2]);
-	v4df w3  = _mm_set1_ps(yc.weights[3]);
+	v4df w0  = _mm_set1_ps(spline_cache.y.weights[0]);
+	v4df w1  = _mm_set1_ps(spline_cache.y.weights[1]);
+	v4df w2  = _mm_set1_ps(spline_cache.y.weights[2]);
+	v4df w3  = _mm_set1_ps(spline_cache.y.weights[3]);
 
 	v4df x0 = _mm_load_ps(&cache[0]); 
 	v4df x1 = _mm_load_ps(&cache[4]); 
@@ -186,34 +156,34 @@ float add_2d_new<T2DDatafield< float >, 4>::value(const T2DDatafield< float >&  
 
 #ifdef __SSE2__
 double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >&  coeff, 
-							   const CSplineKernel::SCache& xc, 
-							   const CSplineKernel::SCache& yc) 
+						    const C2DWeightCache& spline_cache) 
 {
 	typedef double v2df __attribute__ ((vector_size (16)));
 	double __attribute__((aligned(16))) cache[16]; 
 	
 	const int dx = coeff.get_size().x; 
-	int idx = 0; 
-	if (xc.is_flat) {
+	int idx = 0;
+      
+	if (spline_cache.x.is_flat) {
 		for (size_t y = 0; y < 4; ++y, idx+=4) {
-			const double *p = &coeff[yc.index[y] * dx];
-			v2df y1 = _mm_loadu_pd(&p[xc.start_idx]);
-			v2df y2 = _mm_loadu_pd(&p[xc.start_idx+2]);
+			const double *p = &coeff[spline_cache.y.index[y] * dx];
+			v2df y1 = _mm_loadu_pd(&p[spline_cache.x.start_idx]);
+			v2df y2 = _mm_loadu_pd(&p[spline_cache.x.start_idx+2]);
 			_mm_store_pd(&cache[idx  ], y1); 
 			_mm_store_pd(&cache[idx+2], y2); 
 		}
 	}else{
 		for (size_t y = 0; y < 4; ++y, idx+=4) {
-			const double *p = &coeff[yc.index[y] * dx];
-			cache[idx  ] = p[xc.index[0]]; 
-			cache[idx+1] = p[xc.index[1]]; 
-			cache[idx+2] = p[xc.index[2]]; 
-			cache[idx+3] = p[xc.index[3]]; 
+			const double *p = &coeff[spline_cache.y.index[y] * dx];
+			cache[idx  ] = p[spline_cache.x.index[0]]; 
+			cache[idx+1] = p[spline_cache.x.index[1]]; 
+			cache[idx+2] = p[spline_cache.x.index[2]]; 
+			cache[idx+3] = p[spline_cache.x.index[3]]; 
 		}
 	}
 	
-	v2df w0  = _mm_set1_pd(yc.weights[0]);
-	v2df w1  = _mm_set1_pd(yc.weights[1]);
+	v2df w0  = _mm_set1_pd(spline_cache.y.weights[0]);
+	v2df w1  = _mm_set1_pd(spline_cache.y.weights[1]);
 	
 	v2df x00 = _mm_load_pd(&cache[0]); 
 	v2df x01 = _mm_load_pd(&cache[2]);
@@ -223,8 +193,8 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 	v2df y1 = x00 * w0 + x10 * w1; 
 	v2df y2 = x01 * w0 + x11 * w1; 
 
-	v2df w2  = _mm_set1_pd(yc.weights[2]);
-	v2df w3  = _mm_set1_pd(yc.weights[3]);
+	v2df w2  = _mm_set1_pd(spline_cache.y.weights[2]);
+	v2df w3  = _mm_set1_pd(spline_cache.y.weights[3]);
 	v2df x20 = _mm_load_pd(&cache[8]); 
 	v2df x21 = _mm_load_pd(&cache[10]);
 	v2df x30 = _mm_load_pd(&cache[12]); 
@@ -234,8 +204,8 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 	y2 += x21 * w2 + x31 * w3; 
 
 	
-	w0 = _mm_loadu_pd(&xc.weights[0]); 
-	w1 = _mm_loadu_pd(&xc.weights[2]); 
+	w0 = _mm_loadu_pd(&spline_cache.x.weights[0]); 
+	w1 = _mm_loadu_pd(&spline_cache.x.weights[2]); 
 	
 	y1 *= w0; 
 	y2 *= w1; 
@@ -250,22 +220,19 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 #endif
 
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
-	template class EXPORT_2D T2DInterpolator<TYPE>;		\
-	template class EXPORT_2D T2DConvoluteInterpolator<TYPE>
+	template class EXPORT_2D T2DInterpolator<TYPE>
 
 INSTANCIATE_INTERPOLATORS(bool);
-INSTANCIATE_INTERPOLATORS(unsigned char);
-INSTANCIATE_INTERPOLATORS(signed char);
-INSTANCIATE_INTERPOLATORS(unsigned short);
-INSTANCIATE_INTERPOLATORS(signed short);
-INSTANCIATE_INTERPOLATORS(unsigned int);
-INSTANCIATE_INTERPOLATORS(signed int);
+INSTANCIATE_INTERPOLATORS(int8_t);
+INSTANCIATE_INTERPOLATORS(int16_t);
+INSTANCIATE_INTERPOLATORS(int32_t);
+INSTANCIATE_INTERPOLATORS(int64_t);
+INSTANCIATE_INTERPOLATORS(uint8_t);
+INSTANCIATE_INTERPOLATORS(uint16_t);
+INSTANCIATE_INTERPOLATORS(uint32_t);
+INSTANCIATE_INTERPOLATORS(uint64_t);
 INSTANCIATE_INTERPOLATORS(float);
 INSTANCIATE_INTERPOLATORS(double);
-#ifdef LONG_64BIT
-INSTANCIATE_INTERPOLATORS(signed long);
-INSTANCIATE_INTERPOLATORS(unsigned long);
-#endif
 
 
 INSTANCIATE_INTERPOLATORS(C2DFVector);

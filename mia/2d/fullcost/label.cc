@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,7 +186,7 @@ void C2DLabelFullCost::prepare_distance_fields( const C2DUBImage &image )
                 if (exist) {
 			C2DFImage prep(bool_bin.get_size()); 
 			distance_transform_prepare(bool_bin.begin(), bool_bin.end(), 
-						   prep.begin());
+						   prep.begin(), true);
 			
                         m_ref_distances[i] = distance_transform(prep); 
 			transform(m_ref_distances[i].begin(), m_ref_distances[i].end(), 
@@ -272,7 +272,7 @@ void C2DLabelFullCost::do_reinit()
 		throw runtime_error("C2DLabelFullCost only works with images of equal size"); 
 	
 	if (m_src->get_pixel_size() != m_ref->get_pixel_size()) {
-		cvwarn() << "C2DLabelFullCost: src and reference image are of differnet pixel dimensions:"
+		cvwarn() << "C2DLabelFullCost: src and reference image are of different pixel dimensions:"
 			<< m_src->get_pixel_size() << " vs " << m_ref->get_pixel_size() 
 			<< " This code doesn't honour this.\n"; 
 	}

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,34 +31,107 @@ using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
-struct PathInitFixture {
-	PathInitFixture(); 
-}; 
-
-PathInitFixture::PathInitFixture()
-{
-	CPluginSearchpath searchpath(true);
-	searchpath.add(".");
-
-	C2DImageIOPluginHandler::set_search_path(searchpath);
-	C2DVFIOPluginHandler::set_search_path(searchpath);
-}
-
-BOOST_FIXTURE_TEST_CASE(test_2dimage_plugin_handler, PathInitFixture)
+BOOST_AUTO_TEST_CASE(test_2dimage_plugin_handler)
 {
 	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance();
-	BOOST_REQUIRE(handler.size() == 2u);
-	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
+	BOOST_REQUIRE(handler.size() >= 2u);
+	auto plugins = handler.get_set();
+	BOOST_REQUIRE(plugins.find("exr") != plugins.end()); 
 }
 
-BOOST_FIXTURE_TEST_CASE(test_2dvf_plugin_handler, PathInitFixture)
+BOOST_AUTO_TEST_CASE(test_2dvf_plugin_handler)
 {
 	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance();
-	BOOST_REQUIRE(handler.size() == 2u);
-	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
+	BOOST_REQUIRE(handler.size() >= 2u);
+	auto plugins = handler.get_set();
+	BOOST_REQUIRE(plugins.find("exr") != plugins.end()); 
 }
 
-BOOST_FIXTURE_TEST_CASE(test_2dimage_plugin, PathInitFixture)
+BOOST_AUTO_TEST_CASE ( test_2dvfio )
 {
-	test_2dimageio_plugins(); 
+        C2DBounds size(2,3); 
+        C2DFVectorfield vf(size);
+
+        vector<C2DFVector> test_data = {
+                C2DFVector(2, 3), C2DFVector(3, 4), C2DFVector(4, 5),
+                C2DFVector(5, 6), C2DFVector(6, 7), C2DFVector(8, 9)
+        };
+
+        copy(test_data.begin(), test_data.end(), vf.begin()); 
+
+        C2DIOVectorfield iovf(vf); 
+        BOOST_REQUIRE(C2DVFIOPluginHandler::instance().save("2dvf.exr", iovf));
+
+        auto loaded = C2DVFIOPluginHandler::instance().load("2dvf.exr");
+        BOOST_REQUIRE(loaded);
+        
+        BOOST_CHECK_EQUAL(loaded->get_size(), size);
+        auto i = loaded->begin();
+        auto e = loaded->end();
+        auto t = vf.begin();
+
+        while (i != e) {
+                BOOST_CHECK_EQUAL(*i, *t);
+                ++i; ++t; 
+        }
 }
+
+
+BOOST_AUTO_TEST_CASE ( test_2dimageio_float )
+{
+        C2DBounds size(2,3); 
+        C2DFImage image(size);
+
+        vector<float> test_data = {2.1, 3.3, 3.5, 4.5, 4.6, 5.2};
+
+        copy(test_data.begin(), test_data.end(), image.begin()); 
+
+        
+        BOOST_REQUIRE(save_image("2dimage-f.exr", image));
+
+        auto loaded = load_image2d("2dimage-f.exr");
+        BOOST_REQUIRE(loaded);
+	
+        BOOST_CHECK_EQUAL(loaded->get_size(), size);
+
+	const C2DFImage& float_loaded = dynamic_cast<const C2DFImage&>(*loaded); 
+	
+        auto i = float_loaded.begin();
+        auto e = float_loaded.end();
+        auto t = image.begin();
+
+        while (i != e) {
+                BOOST_CHECK_EQUAL(*i, *t);
+                ++i; ++t; 
+        }
+}
+
+BOOST_AUTO_TEST_CASE ( test_2dimageio_uint )
+{
+        C2DBounds size(2,3); 
+        C2DUIImage image(size);
+
+        vector<float> test_data = {2, 3, 3, 4, 4, 5};
+
+        copy(test_data.begin(), test_data.end(), image.begin()); 
+
+        
+        BOOST_REQUIRE(save_image("2dimage-ui.exr", image));
+
+        auto loaded = load_image2d("2dimage-ui.exr");
+        BOOST_REQUIRE(loaded);
+	
+        BOOST_CHECK_EQUAL(loaded->get_size(), size);
+
+	const C2DUIImage& float_loaded = dynamic_cast<const C2DUIImage&>(*loaded); 
+	
+        auto i = float_loaded.begin();
+        auto e = float_loaded.end();
+        auto t = image.begin();
+
+        while (i != e) {
+                BOOST_CHECK_EQUAL(*i, *t);
+                ++i; ++t; 
+        }
+}
+

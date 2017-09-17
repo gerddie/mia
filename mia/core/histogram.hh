@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -210,6 +210,12 @@ public:
 	/// \returns deviation of the histogram 
 	double deviation() const; 
 
+	/// \returns the excess kurtosis value of the histogram 
+	double excess_kurtosis() const; 
+
+	/// \returns the skewness value of the histogram 
+	double skewness() const; 
+
 	/**
 	   return the histogram range that cuts off the \a remove percent of pixels 
 	   from the lower ane upper end of the histogram 
@@ -401,6 +407,50 @@ double THistogram<Feeder>::average() const
 		sum += value.first * value.second;
 	}
 	return sum / m_n; 
+}
+
+template <typename Feeder> 
+double THistogram<Feeder>::excess_kurtosis() const
+{
+	double mu = average(); 
+	double sum1 = 0.0; 
+	double sum2 = 0.0; 
+	double sum3 = 0.0; 
+	
+	for (size_t i = 0; i < size(); ++i) {
+		const auto value = at(i); 
+		sum1 += value.first * value.second;
+		sum2 += value.first * value.first * value.second;
+		double h = (value.first - mu); 
+		h *= h; 
+		h *= h; 
+		sum3 +=  h * value.second;
+	}
+	
+	double sigma2 = (sum2 - sum1 * sum1 / m_n) / m_n; 
+	double mu4 = sum3 / m_n; 
+	return mu4 / (sigma2 * sigma2) - 3;
+}
+
+template <typename Feeder> 
+double THistogram<Feeder>::skewness() const
+{
+	double mu = average(); 
+	double sum1 = 0.0; 
+	double sum2 = 0.0; 
+	double sum3 = 0.0; 
+	
+	for (size_t i = 0; i < size(); ++i) {
+		const auto value = at(i); 
+		sum1 += value.first * value.second;
+		sum2 += value.first * value.first * value.second;
+		double h = (value.first - mu); 
+		sum3 +=  h * h * h * value.second;
+	}
+	
+	double sigma2 = (sum2 - sum1 * sum1 / m_n) / m_n; 
+	double mu4 = sum3 / m_n; 
+	return mu4 / (sigma2 * sqrt(sigma2)); 
 }
 
 template <typename Feeder> 

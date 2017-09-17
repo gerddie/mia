@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@
 #include <mia/3d/datafield.cxx>
 #include <mia/core/threadedmsg.hh>
 
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
+#include <mia/core/parallel.hh>
+#include <numeric> 
+
 
 #ifdef __SSE2__
 #include <emmintrin.h>
 #endif
 
-using namespace tbb;
 using namespace std; 
 
 NS_MIA_BEGIN
@@ -247,7 +247,6 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 				const double r101101 = r11x * r00y * r11z; 
 				const double r011011 = r00x * r11y * r11z; 
 				
-				bool zero = true; 
 				cell.vxx = global_scale * (
 					r002002 * wrot + 
 					r011011 * 2.0 * wrot + 
@@ -256,8 +255,6 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 					r110110 * wsum + 
 					r200200 * wdiv); 
 				
-				zero &= cell.vxx == 0.0; 
-				
 				cell.vyy = global_scale * (
 					r002002 * wrot + 
 					r011011 * wsum + 
@@ -265,7 +262,6 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 					r101101 * 2* wrot + 
 					r110110 * wsum + 
 					r200200 * wrot); 
-				zero &= cell.vyy == 0.0; 
 				
 				cell.vzz = global_scale * (
 					r002002 * wdiv + 
@@ -275,26 +271,22 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 					r110110 * wrot * 2 + 
 					r200200 * wrot); 
 				
-				zero &= cell.vzz == 0.0; 
-				
+			
 				if (wdelta != 0.0) {
 					cell.vxy = global_scale * wdelta * 
 						(r21x * r01y * r00z + 
 						 r10x * r12y * r00z + 
 						 r01x * r10y * r11z); 
-					zero &= cell.vxy == 0.0; 
 					
 					cell.vxz = global_scale * wdelta * 
 						(r21x * r00y * r01z + 
 						 r10x * r11y * r01z + 
 						 r10x * r00y * r12z); 
-					zero &= cell.vxz == 0.0;
 					
 					cell.vyz = global_scale * wdelta * (
 						r11x * r10y * r01z + 
 						r00x * r21y * r01z + 
 						r00x * r10y * r12z);
-					zero &= cell.vyz == 0.0;
 					
 				}
 				*p = cell; 
@@ -405,7 +397,7 @@ struct EvaluateGradientAndValue {
 		{
 		}
 	
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		int nx = size.x; 
@@ -549,7 +541,7 @@ struct EvaluateGradientAndValue {
 		{
 		}
 	
-	void operator()( const blocked_range<int>& range ) const {
+	void operator()( const C1DParallelRange& range ) const {
 		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		int nx = size.x; 
@@ -624,7 +616,7 @@ double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DFVector>& coeffici
 	vector<double> values(m_size.z); 
 	EvaluateGradientAndValue<C3DFVector> eval(coefficients, gradient, values,m_P, m_size, m_ksize); 
 	
-	parallel_for(blocked_range<int>( 0, m_size.z), eval);
+	pfor(C1DParallelRange( 0, m_size.z), eval);
 	return accumulate(values.begin(), values.end(), 0.0); 
 
 }
@@ -639,7 +631,7 @@ double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coeffici
 	vector<double> values(m_size.z); 
 	EvaluateGradientAndValue<C3DDVector> eval(coefficients, gradient, values,m_P, m_size, m_ksize); 
 	
-	parallel_for(blocked_range<int>( 0, m_size.z), eval);
+	pfor(C1DParallelRange( 0, m_size.z), eval);
 	return accumulate(values.begin(), values.end(), 0.0); 
 }
 

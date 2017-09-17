@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,14 @@
  *
  */
 
-#include <sstream>
-#include <stdexcept>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdoption.hh>
 #include <mia/core/tools.hh>
+#include <mia/core/xmlinterface.hh>
+
+#include <sstream>
+#include <stdexcept>
+#include <cassert>
 
 using std::ostream; 
 using std::string; 
@@ -166,6 +169,11 @@ void CCmdOption::do_get_opt_help(std::ostream& os) const
 	os << "--" << get_long_option();
 	write_value(os);
 	os << " ";
+}
+
+void CCmdOption::xmlhelp_set_attribute(CXMLElement& node, const char *name, const std::string& value) const
+{
+	node.set_attribute(name, value); 
 }
 
 void CCmdOption::set_value(const char *str_value)

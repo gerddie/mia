@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,14 @@
 #include <set>
 #include <vector>
 #include <ostream>
+#include <atomic>
 #include <boost/any.hpp>
 
 #include <mia/core/utils.hh>
 #include <mia/core/filetools.hh>
 
 #include <mia/core/defines.hh>
+#include <mia/core/parallel.hh>
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
 #include <mia/core/handlerbase.hh>
@@ -58,7 +60,7 @@ public:
 
 	typedef std::shared_ptr<I> PInterface; 
 
-	/// a map containing the names and theavailabe plug-ins 
+	/// a map containing the names and the available plug-ins 
 	typedef std::map<std::string, PInterface> CPluginMap; 
 
 	/// the iterator to walk over the available plug-ins 
@@ -199,7 +201,7 @@ private:
 	static CPluginSearchpath m_searchpath; 
 	static bool m_is_created; 
 	static CMutex m_initialization_mutex;
-	static bool m_is_initialized; 
+	static std::atomic<bool> m_is_initialized; 
 	
 }; 
 

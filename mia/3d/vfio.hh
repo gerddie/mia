@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,10 @@ NS_MIA_BEGIN
 
 class EXPORT_3D C3DIOVectorfield: public C3DFVectorfield, public CIOData {
 public:
+
+	typedef C3DIOVectorfield type; 
+        typedef C3DFVectorfield plugin_data;
+	
 	C3DIOVectorfield();
 
         /** Constructor to create empty Datafield if given size */
@@ -52,23 +56,16 @@ public:
 
 };
 
-///@cond INTERNAL  
-struct io_3dvf_data {
-	typedef  C3DIOVectorfield type;
-	static const char *data_descr;
-};
-///@endcond 
-
 /**
    @ingroup io 
    @brief Base class for vector field IO plug-ins 
 */
-typedef TIOPlugin<io_3dvf_data> C3DVFIOPlugin;
+typedef TIOPlugin<C3DIOVectorfield> C3DVFIOPlugin;
 
 template <> const char *  const TPluginHandler<C3DVFIOPlugin>::m_help; 
 
-extern template class EXPORT_3D TPlugin<io_3dvf_data, io_plugin_type>;
-extern template class EXPORT_3D TIOPlugin<io_3dvf_data>;
+extern template class EXPORT_3D TPlugin<C3DIOVectorfield, io_plugin_type>;
+extern template class EXPORT_3D TIOPlugin<C3DIOVectorfield>;
 extern template class EXPORT_3D TIOPluginHandler<C3DVFIOPlugin>; 
 extern template class EXPORT_3D THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> >; 
 /**

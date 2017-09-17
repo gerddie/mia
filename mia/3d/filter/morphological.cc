@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,7 @@
 #include <mia/3d/filter/morphological.hh>
 
 #include <mia/core/threadedmsg.hh>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-
+#include <mia/core/parallel.hh>
 
 NS_BEGIN(morph_3dimage_filter)
 
@@ -51,7 +49,7 @@ struct __dispatch_dilate {
 		T3DImage<T> *result = new T3DImage<T>(size, image);
 		copy(image.begin(), image.end(), result->begin()); 
 		
-		auto run_slice = [&size, &image, &shape, &result](const tbb::blocked_range<size_t>& range) {
+		auto run_slice = [&size, &image, &shape, &result](const C1DParallelRange& range) {
 			for (auto z = range.begin(); z != range.end(); ++z){
 				auto src_i = image.begin_at(0,0,z);
 				auto res_i = result->begin_at(0,0,z);
@@ -73,7 +71,7 @@ struct __dispatch_dilate {
 					}
 			}
 		};
-		tbb::parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), run_slice); 
+		pfor(C1DParallelRange(0, image.get_size().z, 1), run_slice); 
 		return result;
 	}
 };
@@ -199,7 +197,7 @@ struct __dispatch_erode {
 		T3DImage<T> *result = new T3DImage<T>(size, image);
 		copy(image.begin(), image.end(), result->begin()); 
 		
-		auto run_slice = [&size, &image, &shape, &result](const tbb::blocked_range<size_t>& range) {
+		auto run_slice = [&size, &image, &shape, &result](const C1DParallelRange& range) {
 			for (auto z = range.begin(); z != range.end(); ++z){
 				auto src_i = image.begin_at(0,0,z);
 				auto res_i = result->begin_at(0,0,z);
@@ -220,7 +218,7 @@ struct __dispatch_erode {
 					}
 			}
 		}; 
-		tbb::parallel_for(tbb::blocked_range<size_t>(0, image.get_size().z, 1), run_slice); 
+		pfor(C1DParallelRange(0, image.get_size().z, 1), run_slice); 
 		return result;
 	}
 };

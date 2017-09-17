@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,16 @@ public:
 };
 
 
+extern template class EXPORT_CORE TIOPluginHandler<CTestIOPlugin>;
+
+class EXPORT_CORE CDummyIOPluginHandler: public TIOPluginHandler<CTestIOPlugin> {
+	void check_file_exists(const std::string& fname) const; 
+}; 
+
+extern template class EXPORT_CORE THandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
+
 /// Test IO plugin handler, don't use this in real code  
-typedef THandlerSingleton<TIOPluginHandler<CTestIOPlugin> > CTestIOPluginHandler;
+typedef THandlerSingleton<CDummyIOPluginHandler> CTestIOPluginHandler;
 
 
 NS_MIA_END

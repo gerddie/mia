@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
 #include <mia/internal/autotest.hh>
 #include <mia/2d/register.hh>
 
-struct AffineRegistrationFixture {
-
+struct SimpleRegistrationFixture {
+	
 	AffineRegistrationFixture(); 
 
 	
@@ -34,15 +34,34 @@ struct AffineRegistrationFixture {
 	size_t max_iter; 
 }; 
 
+const float *src_init = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0	
+}; 
 
 // How to test registration creation 
-BOOST_AUTO_TEST_CASE( test_affine_registration )  
+BOOST_AUTO_TEST_CASE( test_simple_registration )  
 {
 	C2DMultiImageRegister registration(start_size, max_iter,
 					   C2DRegModel& model, 
 					   C2DRegTimeStep& time_step, 
 					   P2DTransformationFactory& trans_factory, 
 					   float outer_epsilon); 
+	
+	C2DBounds size(32, 32);
+
+	
+
+	C2DFImage src(size);
+	C2DFImage ref(size);
+	
+	
 	
 
 }

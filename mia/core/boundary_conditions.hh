@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,9 +72,11 @@ public:
 
 
 	/**
-	   Default copy constructor 
+	   Delete copy operations 
 	 */
-	CSplineBoundaryCondition(const CSplineBoundaryCondition& /*other*/) = default; 
+	CSplineBoundaryCondition(const CSplineBoundaryCondition& /*other*/) = delete;
+
+	CSplineBoundaryCondition& operator = (const CSplineBoundaryCondition& /*other*/) = delete; 
 
 	/**
 	   Constructor for the boundary conditions. 
@@ -189,6 +191,9 @@ private:
    Plugin handler for the creation of spline boundary conditions
 */
 typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> > CSplineBoundaryConditionPluginHandler;
+
+template<> 
+const char * const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help;
 
 extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> >; 
 

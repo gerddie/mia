@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -168,7 +168,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_EQUAL(stransf.degrees_of_freedom(), field.size() * 2);
 
 	C2DFVector testx(15, 20);
-	C2DFVector result = stransf.apply(testx);
+	C2DFVector result = stransf.get_displacement_at(testx);
 
 	BOOST_CHECK_EQUAL(stransf.get_size(), range);
 
@@ -201,7 +201,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 
 	C2DFVector test2(15.4, 20.3);
 
-	C2DFVector result2 = stransf_upscaled->apply(fscale * test2);
+	C2DFVector result2 = stransf_upscaled->get_displacement_at(fscale * test2);
 
 	BOOST_CHECK_CLOSE(result2.x, fscale.x * fx(test2.x, test2.y), 0.1);
 	BOOST_CHECK_CLOSE(result2.y, fscale.y * fy(test2.x, test2.y), 0.1);
@@ -353,7 +353,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	stransf.update(2.0, update);
 
 	C2DFVector testx(20.4, 42.4);
-	C2DFVector result = stransf.apply(testx);
+	C2DFVector result = stransf.get_displacement_at(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx.x, testx.y) + 2.0f, 0.1);
 	BOOST_CHECK_CLOSE(result.y, fy(testx.x, testx.y) + 4.0f, 0.1);
@@ -414,7 +414,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_pertuberate, TransformSplineFixture )
 
 	fill(v.begin(), v.end(), vv);
 
-	// this location is hand-picked and is not really the position ofthe maximun
+	// this location is hand-picked and is not really the position of the maximun
 	// but only an approximation
 	float gamma = stransf.pertuberate(v);
 	C2DFVector lmg(12* scalex, 27 * scaley);
@@ -731,9 +731,9 @@ public:
 BOOST_AUTO_TEST_CASE (test_spline_set_parameter) 
 {
 	C2DBounds size(20,30); 
-	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds)); 
+	C2DInterpolatorFactory ipf("bspline:d=3", "mirror"); 
 	PSplineKernel kernel(CSplineKernelPluginHandler::instance().produce("bspline:d=3")); 
-	C2DSplineTransformation t(size, kernel, C2DFVector(5.0,5.0), *ipf, P2DSplineTransformPenalty());
+	C2DSplineTransformation t(size, kernel, C2DFVector(5.0,5.0), ipf, P2DSplineTransformPenalty());
 	auto params = t.get_parameters();
 	
 	params[0] = 1.0; 
@@ -752,8 +752,8 @@ BOOST_AUTO_TEST_CASE (test_spline_set_parameter)
 
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
-	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds)); 
-	C2DSplineTransformation t(size, kernel, C2DFVector(5.0,5.0), *ipf, P2DSplineTransformPenalty());
+	C2DInterpolatorFactory ipf("bspline:d=3", "mirror"); 
+	C2DSplineTransformation t(size, kernel, C2DFVector(5.0,5.0), ipf, P2DSplineTransformPenalty());
 	
 
 	auto params = t.get_parameters();

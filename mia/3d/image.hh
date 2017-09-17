@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,11 +52,13 @@ protected:
 	   @param type pixel type of this image  
 	 */
 	C3DImage(const CAttributedData& data, EPixelType type);
+
 	/**
 	   Constructor to create the base sceleton of the image 
 	   @param type pixel type of this image  
 	*/
-	C3DImage(EPixelType type);
+	explicit C3DImage(EPixelType type);
+	
 	
 	/// standard constructor 
 	C3DImage();
@@ -121,6 +123,9 @@ public:
 	    @remark orientation is currently not really used
 	*/
 	void set_orientation(E3DImageOrientation orient);
+
+	/// \returns a pair (minimum, maximum) pixel intensity 
+	virtual std::pair<double, double> get_minmax_intensity() const = 0; 
 private:
 	EPixelType m_pixel_type;
 };
@@ -183,14 +188,35 @@ public:
 	   Construct a new image of a given size
 	   \param size
 	 */
-	T3DImage(const C3DBounds& size);
+	explicit T3DImage(const C3DBounds& size);
 
 	//T3DImage(const T3DDatafield<T>& size);
 
 	/**
 	   copy constructor
 	 */
-	T3DImage(const T3DImage& orig);
+	T3DImage(const T3DImage<T>& orig);
+
+	/**
+	   move constructor
+	 */
+	T3DImage(T3DImage<T>&& orig);
+
+	/**
+	   copy operator 
+	 */
+	T3DImage& operator = (const T3DImage<T>& orig);
+
+	/**
+	   move operator
+	 */
+	T3DImage& operator = (T3DImage<T>&& orig);
+
+	/**
+	   Constructor to create the image by using a 3D data field 
+	   \param orig the input data field 
+	*/
+	explicit T3DImage(const T3DDatafield<T>& orig);
 
 	/**
 	   standart costructor creates an image of size (0,0,0)
@@ -366,6 +392,8 @@ public:
 	/// \returns the 3D size of the image
 	virtual const C3DBounds& get_size() const;
 
+	/// \returns minimum and mximum pixel intensity of the image
+	std::pair<double, double> get_minmax_intensity() const; 
 private:
 	T3DDatafield<T> m_image;
 };
@@ -443,31 +471,28 @@ EXPORT_3D C3DFVectorfield get_gradient(const C3DImage& image);
 typedef T3DImage<bool> C3DBitImage;
 
 /// \brief 3D image with signed 8 bit integer values 
-typedef T3DImage<signed char> C3DSBImage;
+typedef T3DImage<int8_t> C3DSBImage;
 
 /// \brief 3D image with unsigned 8 bit integer values 
-typedef T3DImage<unsigned char> C3DUBImage;
+typedef T3DImage<uint8_t> C3DUBImage;
 
 /// \brief 3D image with signed 16 bit integer values 
-typedef T3DImage<signed short> C3DSSImage;
+typedef T3DImage<int16_t> C3DSSImage;
 
 /// \brief 3D image with unsigned 16 bit integer values 
-typedef T3DImage<unsigned short> C3DUSImage;
+typedef T3DImage<uint16_t> C3DUSImage;
 
 /// \brief 3D image with signed 32 bit integer values 
-typedef T3DImage<signed int> C3DSIImage;
+typedef T3DImage<int32_t> C3DSIImage;
 
 /// \brief 3D image with unsigned 32 bit integer values 
-typedef T3DImage<unsigned int> C3DUIImage;
-
-#ifdef LONG_64BIT
+typedef T3DImage<uint32_t> C3DUIImage;
 
 /// \brief 3D image with signed 64 bit integer values 
-typedef T3DImage<signed long> C3DSLImage;
+typedef T3DImage<int64_t> C3DSLImage;
 
 /// \brief 3D image with unsigned 64 bit integer values 
-typedef T3DImage<unsigned long> C3DULImage;
-#endif
+typedef T3DImage<uint64_t> C3DULImage;
 
 /// \brief 3D image with signed 32 bit floating point values 
 typedef T3DImage<float> C3DFImage;

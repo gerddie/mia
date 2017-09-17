@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ public:
 	virtual void set_parameters(const CDoubleVector& params);
 	virtual const C2DBounds& get_size() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
-	virtual C2DFVector apply(const C2DFVector& x) const;
+	virtual C2DFVector get_displacement_at(const C2DFVector& x) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual float divergence() const;

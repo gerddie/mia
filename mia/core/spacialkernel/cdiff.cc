@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,8 +57,48 @@ const string C1DSpacialCDiffKernelPlugin::do_get_descr()const
 	return "Central difference filter kernel, mirror boundary conditions are used.";
 }
 
+
+C1DScharrFilterKernel::C1DScharrFilterKernel():
+	C1DFoldingKernel(1)
+{
+	(*this)[0] = 3.0 / 16.0;
+	(*this)[1] = 10.0/ 16.0;
+	(*this)[2] = 3.0 / 16.0; 
+	
+}
+
+std::vector<double> C1DScharrFilterKernel::do_apply(const std::vector<double>& data) const
+{
+	std::vector<double> result(data.size());
+
+	result[0] = 2 * data[1] * 0.1875 + data[0] * 0.625;
+	result[result.size()-1] = 2 * data[result.size()-2] * 0.1875  + data[result.size()-1] * 0.625;
+
+	for (unsigned i = 1; i < result.size() -1; ++i)
+		result[i] += (data[i-1] + data[i+1]) * 0.1875 + 0.625 * data[i]; 
+	return result; 
+}
+
+
+C1DScharrKernelPlugin::C1DScharrKernelPlugin():
+	C1DSpacialKernelPlugin("scharr")
+{
+}
+
+mia::C1DFoldingKernel *C1DScharrKernelPlugin::do_create() const
+{
+	return new C1DScharrFilterKernel(); 
+}
+
+const std::string C1DScharrKernelPlugin::do_get_descr()const
+{
+	return "This plugin provides the 1D folding kernel for the Scharr gradient filter"; 
+}
+
 extern "C" EXPORT CPluginBase  *get_plugin_interface()
 {
-	return new C1DSpacialCDiffKernelPlugin();
+	CPluginBase *plugin = new C1DScharrKernelPlugin();
+	plugin->append_interface(new C1DSpacialCDiffKernelPlugin());
+	return plugin; 
 }
 

@@ -1,7 +1,7 @@
 /* -*- mia-c++  -*-
  *
  * This file is part of MIA - a toolbox for medical image analysis 
- * Copyright (c) Leipzig, Madrid 1999-2015 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ struct TransformInitFixture {
 }; 
 
 
-BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture ) 
+BOOST_FIXTURE_TEST_CASE ( test_init_gradient, TransformInitFixture )
 {
         // create two images and do the thing 
         
@@ -52,14 +52,7 @@ BOOST_FIXTURE_TEST_CASE ( test_labeldistance, TransformInitFixture )
                 5, 5, 5, 5, 2, 
 	}; 
 
-        const float distances [25] = {
-                0, 0, 1, 0,         0, 
-                0, 0, 1, 0,         0, 
-                0, 0, 1, 0,         0, 
-                1, 1, 0, 0,         0, 
-                0, 0, 1, sqrtf(2.0f), 0,
-        }; 
-        
+
 	const float gradx [25] = {
 		0, 0, 1, 0, 0, 
                 0, 0, 1, 0, 0, 
