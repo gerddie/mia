@@ -250,11 +250,13 @@ ENDIF(ITPP_FOUND)
 
 set(testperflibs mia2dmyocardperf mia2dtest)
 
+IF(MIA_ENABLE_TESTING)
 TEST_2DMIA(groundtruthproblem mia2dmyocardperf)
 TEST_2DMIA(correlation_weight mia2dmyocardperf)
 TEST_2DMIA(segmentation mia2dmyocardperf)
 TEST_2DMIA(segframe "${testperflibs}")
 TEST_2DMIA(segpoint mia2dmyocardperf)
+ENDIF()
 
 
 #

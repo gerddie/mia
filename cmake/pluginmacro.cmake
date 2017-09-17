@@ -79,18 +79,20 @@ ENDMACRO(CREATE_PLUGIN_MODULE plugname)
 
 
 MACRO(CREATE_PLUGIN_TEST plugname file libs)
-  PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
-  add_executable(test-${plugname} ${file} $<TARGET_OBJECTS:${plugname}-common>)
-  IF(NOT WIN32)
-    set_target_properties(test-${plugname} PROPERTIES 
-      COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"' 
-      COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
-  ELSE(NOT WIN32)
-    set_target_properties(test-${plugname} PROPERTIES
-      COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
-  ENDIF(NOT WIN32)
-  target_link_libraries(test-${plugname} ${libs} ${BOOST_UNITTEST} "${PLUGIN_TESTLIBS}")
-  add_test(${plugname} test-${plugname})
+  IF(MIA_ENABLE_TESTING)
+    PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
+    add_executable(test-${plugname} ${file} $<TARGET_OBJECTS:${plugname}-common>)
+    IF(NOT WIN32)
+      set_target_properties(test-${plugname} PROPERTIES
+        COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"'
+        COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+    ELSE(NOT WIN32)
+      set_target_properties(test-${plugname} PROPERTIES
+        COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+    ENDIF(NOT WIN32)
+    target_link_libraries(test-${plugname} ${libs} ${BOOST_UNITTEST} "${PLUGIN_TESTLIBS}")
+    add_test(${plugname} test-${plugname})
+  ENDIF()
 ENDMACRO(CREATE_PLUGIN_TEST plugname file)
 
 MACRO(PLUGIN_WITH_TEST plugname file libs plugindir)
@@ -121,7 +123,7 @@ MACRO(TEST_PREFIX type data)
   string(COMPARE EQUAL  "x${${type}_${data}_prefix}" "x" UNDEFINED_PREFIX)
   IF(UNDEFINED_PREFIX)
     MESSAGE(FATAL_ERROR "PLUGIN_WITH_TEST_AND_PREFIX2: the prefix for ${type}-${data} is not defined")
-  ENDIF(UNDEFINED_PREFIX)
+ENDIF(UNDEFINED_PREFIX)
 ENDMACRO(TEST_PREFIX type data)
 
 MACRO(PLUGIN_WITH_PREFIX2 type data plugname libs)
@@ -169,6 +171,7 @@ ENDMACRO(PLUGINGROUP_WITH_TEST_AND_PREFIX2)
 
 
 MACRO(PLUGIN_WITH_TEST_MULTISOURCE name type data src libs) 
+
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
   TEST_PREFIX(${type} ${data})
   SET(install_path ${${type}_${data}_dir})
@@ -196,21 +199,22 @@ MACRO(PLUGIN_WITH_TEST_MULTISOURCE name type data src libs)
   ADD_DEPENDENCIES(plugin_test_links ${plugname})
   
   # create tests
-  PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
+  IF(MIA_ENABLE_TESTING)
+    PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
 
-  add_executable(test-${plugname} $<TARGET_OBJECTS:${plugname}-common> test_${name}.cc)
-  IF(NOT WIN32)
-    set_target_properties(test-${plugname} PROPERTIES 
-      COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"' 
-      COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
-  ELSE(NOT WIN32)
-    set_target_properties(test-${plugname} PROPERTIES
-      COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
-  ENDIF(NOT WIN32)
-  target_link_libraries(test-${plugname} ${libs})
-  target_link_libraries(test-${plugname} ${BOOST_UNITTEST} "${PLUGIN_TESTLIBS}")
-  add_test(${plugname} test-${plugname})
-  
+    add_executable(test-${plugname} $<TARGET_OBJECTS:${plugname}-common> test_${name}.cc)
+    IF(NOT WIN32)
+      set_target_properties(test-${plugname} PROPERTIES
+        COMPILE_FLAGS -DVSTREAM_DOMAIN='"${plugname}"'
+        COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+    ELSE(NOT WIN32)
+      set_target_properties(test-${plugname} PROPERTIES
+        COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+    ENDIF(NOT WIN32)
+    target_link_libraries(test-${plugname} ${libs})
+    target_link_libraries(test-${plugname} ${BOOST_UNITTEST} "${PLUGIN_TESTLIBS}")
+    add_test(${plugname} test-${plugname})
+  endif()
   INSTALL(TARGETS ${plugname} LIBRARY DESTINATION ${install_path})
 ENDMACRO(PLUGIN_WITH_TEST_MULTISOURCE) 
 

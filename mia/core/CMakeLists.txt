@@ -246,15 +246,6 @@ IF(PWPDF_FOUND)
     )
 ENDIF(PWPDF_FOUND) 
 
-MACRO(CORE_TEST name)
-  ADD_EXECUTABLE(test-${name} test_${name}.cc)  
-  TARGET_LINK_LIBRARIES(test-${name} ${MIACORE} ${BOOST_UNITTEST})
-  ADD_TEST(core-${name} test-${name})
-  IF(WIN32)
-    SET_TARGET_PROPERTIES(test-${name} PROPERTIES LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
-  ENDIF(WIN32)
-ENDMACRO(CORE_TEST name)
-
 #
 # create the revision retrival code
 #
@@ -290,14 +281,16 @@ SET_TARGET_PROPERTIES(miacore PROPERTIES
 # the test targets 
 #
 
-ADD_EXECUTABLE(test-core ${MIACORETEST_SRC})
-ADD_TEST(core test-core)
+IF(MIA_ENABLE_TESTING)
+  ADD_EXECUTABLE(test-core ${MIACORETEST_SRC})
+  ADD_TEST(core test-core)
 
 TARGET_LINK_LIBRARIES(test-core ${MIACORE} ${BOOST_UNITTEST})
 
 IF(WIN32)
   SET_TARGET_PROPERTIES(test-core PROPERTIES LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
 ENDIF(WIN32)
+ENDIF()
 
 #IF (NOT WIN32)
 #  CORE_TEST(history)
@@ -313,10 +306,11 @@ ADD_SUBDIRECTORY(splinekernel  )
 ADD_SUBDIRECTORY(splinebc  ) 
 ADD_SUBDIRECTORY(testplug      )
 
+IF(MIA_ENABLE_TESTING)
+
 #tests that fork themselfs 
 SET(cmdxmlhelp_params  -r 1 --other o)
 NEW_TEST_WITH_PARAM(cmdxmlhelp miacore "${cmdxmlhelp_params}")
-
 
 NEW_TEST(Vector miacore)
 NEW_TEST(attributes miacore)
@@ -381,6 +375,8 @@ ENDIF(FFTWF_FOUND AND WITH_FFTWF)
 IF(PWPDF_FOUND) 
   NEW_TEST(pwh miacore)
 ENDIF(PWPDF_FOUND) 
+
+ENDIF()
 #
 #installation 
 #

@@ -176,6 +176,7 @@ ENDIF(APPLE)
 #
 # Testing 
 #
+IF(MIA_ENABLE_TESTING)
 ADD_EXECUTABLE(test-3d ${MIA3DTEST_SRC})
 SET_TARGET_PROPERTIES(test-3d PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 TARGET_LINK_LIBRARIES(test-3d mia3dtest ${MIA3DLIBS} ${BOOST_UNITTEST})
@@ -218,6 +219,7 @@ TEST_3D(rot rot)
 TEST_3D(splinetransformpenalty splinetransformpenalty)
 
 TEST_3D(imageio imageio)
+ENDIF()
 #
 # installation 
 #
