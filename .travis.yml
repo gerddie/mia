@@ -1,4 +1,4 @@
-sudo: required
+sudo: false
 dist: trusty
 language: generic
 
@@ -64,4 +64,4 @@ script:
 after_success:
 - make test
 - cd .. 
-- if test "x$COVERAGE" = "xON"; then coveralls --exclude CMakeFiles --exclude src --gcov-options '\-lp' -b $(pwd)/build 2>&1 >/dev/null ; fi 
+- if test "x$COVERAGE" = "xON"; then pip install --user cpp-coveralls; coveralls --exclude CMakeFiles --exclude src --gcov-options '\-lp' -b $(pwd)/build 2>&1 >/dev/null ; fi 
