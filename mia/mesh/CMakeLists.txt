@@ -50,6 +50,7 @@ SET(MIAMESHLIBS miamesh)
 ADD_SUBDIRECTORY(io)
 ADD_SUBDIRECTORY(filter)
 
-TEST_MESH(triangulate)
-TEST_MESH(triangle_neighbourhood)
-
+IF(MIA_ENABLE_TESTING)
+  TEST_MESH(triangulate)
+  TEST_MESH(triangle_neighbourhood)
+ENDIF()
