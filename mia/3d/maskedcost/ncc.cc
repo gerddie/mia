@@ -31,28 +31,26 @@ using namespace mia;
 
 CNCC3DImageCost::CNCC3DImageCost()
 {
+        m_copy_to_double = produce_3dimage_filter("convert:repn=double,map=copy"); 
 }
 
-template <typename T, typename S> 
 struct FEvaluateNCCSum {
-	FEvaluateNCCSum(const C3DBitImage& mask, const T& mov, const S& ref); 
+	FEvaluateNCCSum(const C3DBitImage& mask, const C3DDImage& mov, const C3DDImage& ref); 
 	NCCSums operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const; 
 private: 
 	C3DBitImage m_mask; 
-	T m_mov; 
-	S m_ref; 
+	const C3DDImage& m_mov; 
+	const C3DDImage& m_ref; 
 };
 
 
-template <typename T, typename S> 
-FEvaluateNCCSum<T,S>::FEvaluateNCCSum(const C3DBitImage& mask, const T& mov, const S& ref):
+FEvaluateNCCSum::FEvaluateNCCSum(const C3DBitImage& mask, const C3DDImage& mov, const C3DDImage& ref):
 	m_mask(mask),  m_mov(mov), m_ref(ref) 
 {
 	
 }
 
-template <typename T, typename S> 
-NCCSums FEvaluateNCCSum<T,S>::operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const
+NCCSums FEvaluateNCCSum::operator ()(const C1DParallelRange& range, const NCCSums& sumacc) const
 {
 	CThreadMsgStream msks; 
 	
@@ -81,10 +79,9 @@ public:
 		m_mask(mask)
 		{}
 	
-	template <typename T, typename R> 
-	float operator () ( const T& mov, const R& ref) const {
+                float operator () ( const C3DDImage& mov, const C3DDImage& ref) const {
 
-		FEvaluateNCCSum<T,R> ev(m_mask, mov, ref); 
+		FEvaluateNCCSum ev(m_mask, mov, ref); 
 		NCCSums sum; 
 		sum = preduce(C1DParallelRange(0, mov.get_size().z, 1), sum, ev, 
 			      [](const NCCSums& x, const NCCSums& y){
@@ -97,8 +94,13 @@ public:
 
 double CNCC3DImageCost::do_value(const Data& a, const Data& b, const Mask& m) const
 {
+	auto a_double_ptr = m_copy_to_double->filter(a);
+	auto b_double_ptr = m_copy_to_double->filter(b);
+	const C3DDImage& mov = static_cast<const C3DDImage&>(*a_double_ptr);
+	const C3DDImage& ref = static_cast<const C3DDImage&>(*b_double_ptr);
+
 	FEvalCost ecost(m); 
-	return mia::filter(ecost, a, b); 
+	return ecost(mov, ref); 
 }
 
 
@@ -111,12 +113,11 @@ public:
 		m_force(force)
 		{}
 	
-	template <typename T, typename R> 
-	float operator () ( const T& mov, const R& ref) const {
+	float operator () (const C3DDImage& mov, const C3DDImage& ref) const {
 		CThreadMsgStream msks;
 		
 		NCCSums sum; 
-		FEvaluateNCCSum<T,R> ev(m_mask, mov, ref); 
+		FEvaluateNCCSum ev(m_mask, mov, ref); 
 		sum = preduce(C1DParallelRange(0, mov.get_size().z, 1), sum, ev, 
 			      [](const NCCSums& x, const NCCSums& y){
 				      return x + y;
@@ -154,8 +155,13 @@ public:
 
 double CNCC3DImageCost::do_evaluate_force(const Data& a, const Data& b, const Mask& m, Force& force) const
 {
+	auto a_double_ptr = m_copy_to_double->filter(a);
+	auto b_double_ptr = m_copy_to_double->filter(b);
+	const C3DDImage& mov = static_cast<const C3DDImage&>(*a_double_ptr);
+	const C3DDImage& ref = static_cast<const C3DDImage&>(*b_double_ptr);
+
 	FEvalCostForce ecostforce(m, force); 
-	return mia::filter(ecostforce, a, b); 
+	return ecostforce(mov, ref); 
 }
 
 

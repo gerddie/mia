@@ -22,6 +22,7 @@
 #define mia_2d_maskedcost_lncc_hh
 
 #include <mia/2d/maskedcost.hh>
+#include <mia/2d/filter.hh>
 
 #define NS mia_2d_maskedlncc
 
@@ -37,7 +38,7 @@ public:
 private: 
 	virtual double do_value(const Data& a, const Data& b, const Mask& m) const; 
 	virtual double do_evaluate_force(const Data& a, const Data& b, const Mask& m, Force& force) const; 
-
+  	mia::P2DFilter m_copy_to_double; 
         int m_hwidth; 
 };
 
