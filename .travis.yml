@@ -58,7 +58,7 @@ before_script:
 script:
 - cat /proc/cpuinfo
 - free -h
-- make -j4
+- make -j3
 after_success:
 - make test
 - cd .. 

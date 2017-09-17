@@ -22,6 +22,7 @@
 #define mia_3d_maskedcost_lncc_hh
 
 #include <mia/3d/maskedcost.hh>
+#include <mia/3d/filter.hh>
 
 #define NS mia_3d_maskedlncc
 
@@ -37,7 +38,8 @@ public:
 private: 
 	virtual double do_value(const Data& a, const Data& b, const Mask& m) const; 
 	virtual double do_evaluate_force(const Data& a, const Data& b, const Mask& m, Force& force) const; 
-        int m_hwidth; 
+        int m_hwidth;
+  	mia::P3DFilter m_copy_to_double; 
 };
 
 class CLNCC3DImageCostPlugin: public mia::C3DMaskedImageCostPlugin {
