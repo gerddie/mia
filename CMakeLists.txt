@@ -82,7 +82,7 @@ OPTION(ENABLE_DEBUG_MESSAGES "Enable debug and trace outputs" TRUE)
 OPTION(ENABLE_COVERAGE "Enable code coverage tests" FALSE)
 OPTION(DISABLE_PROGRAMS "Don't build the programs nor documentation (only for testing purposes)" FALSE)
 OPTION(MIA_CREATE_USERDOC "Enable creation of html user documentation" TRUE)
-
+OPTION(MIA_ENABLE_TESTING "Enable compiling and running the test suite" TRUE)
 
 
 
@@ -438,8 +438,9 @@ ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
-
-ENABLE_TESTING()
+IF(MIA_ENABLE_TESTING)
+  ENABLE_TESTING()
+ENDIF()
 
 SET(PLUGIN_TEST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/plugintest)
 
