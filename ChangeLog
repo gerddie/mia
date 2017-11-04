@@ -1,3 +1,11 @@
+2.4.5
+
+   * Fix that mia-3dsegment-local-cmeans would fail when the number of
+     slices N was relatwed to the grid size G according to k*G+1
+     (k integer)
+   * Reduce the amount of template instanciations created by the *ncc cost
+     functions. This should reduce the memory requirements during build time.
+
 2.4.4
    Issues fixed: 
 

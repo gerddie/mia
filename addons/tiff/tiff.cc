@@ -44,7 +44,6 @@
 NS_BEGIN(IMAGEIO_2D_TIFF)
 NS_MIA_USE
 using namespace std;
-using namespace boost;
 
 enum EDataType {dt_8bit, dt_16bit, dt_32bit};
 
@@ -183,15 +182,11 @@ P2DImage  read_bit_pixels(CTiffFile& tif, unsigned int width,
 	}
 
 	// deal with image photometric interpretion
-	if (invert) {
-		C2DBitImage::iterator ir = image->begin();
-		C2DBitImage::iterator ie = image->end();
-		while (ir != ie) {
-			*ir = !*ir;
-			++ir;
-		}
-	}
-
+	if (invert)
+		transform(image->begin(), image->end(),
+			  image->begin(), [](C2DBitImage::value_type x){
+				  return !x; 
+			  }); 
 	return result;
 }
 
@@ -227,13 +222,9 @@ P2DImage read_strip_pixels(CTiffFile& tif, unsigned int width,
 
 	// deal with image photometric interpretion
 	if (invert) {
-		typename T2DImage<T>::iterator ii = result->begin();
-		typename T2DImage<T>::iterator ie = result->end();
-
-		while (ii != ie) {
-			*ii = numeric_limits<T>::max( ) - *ii;
-			++ii;
-		}
+		const T maxT =  numeric_limits<T>::max();
+		transform(result->begin(), result->end(), result->begin(),
+			  [maxT](T x) {return maxT - x;}); 
 	}
 
 	return presult;
@@ -271,7 +262,7 @@ CTiff2DImageIO::PData CTiff2DImageIO::do_load(string const& filename)const
 		}
 		cvdebug() << "TIFFTAG_IMAGEWIDTH:" << width << "\n";
 
-		    if (!TIFFGetField(tif,TIFFTAG_BITSPERSAMPLE, &bbs)){
+		if (!TIFFGetField(tif,TIFFTAG_BITSPERSAMPLE, &bbs)){
 			throw create_exception<runtime_error>("TIFF: Bits per samples not given in '", filename, "'"); 
 		}
 		cvdebug() << "TIFFTAG_BITSPERSAMPLE:" << bbs << "\n";
@@ -354,8 +345,8 @@ struct __dispatch_saver {
 
 		vector<typename Data2D::value_type> buf(rows_per_strip * image.get_size().x);
 
-		typename Data2D::const_iterator cbuf_begin = image.begin();
-		typename Data2D::const_iterator cbuf_end = cbuf_begin;
+		auto cbuf_begin = image.begin();
+		auto cbuf_end = cbuf_begin;
 
 		int nstrips = (image.get_size().y + rows_per_strip - 1) / rows_per_strip;
 
@@ -422,7 +413,8 @@ struct __dispatch_saver<C2DBitImage> {
 				size_t x = 0;
 				while ( x < image.get_size().x) {
 					int mask = 0x80;
-					for (size_t bit = 0; bit < 8 && x < image.get_size().x; ++bit, mask>>=1, ++cbuf_begin, ++x) {
+					for (size_t bit = 0; bit < 8 && x < image.get_size().x;
+					     ++bit, mask>>=1, ++cbuf_begin, ++x) {
 						if (*cbuf_begin)
 							*ibuf |= mask;
 					}
@@ -505,8 +497,8 @@ bool CTiff2DImageIO::do_save(string const& filename, const C2DImageVector& data)
 
 	CTiffImageSaver saver(tif, data.size());
 
-	for (C2DImageVector::const_iterator iimg = data.begin(); iimg != data.end(); ++iimg)
-		filter(saver, **iimg);
+	for (const auto& pimg: data)
+		filter(saver, *pimg);
 
 	cvdebug() << "CTiff2DImageIO::save end\n";
 	return true;
