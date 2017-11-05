@@ -1,3 +1,7 @@
+2.4.6
+
+   * Fix building with boost-1.65
+
 2.4.5
 
    * Fix that mia-3dsegment-local-cmeans would fail when the number of
