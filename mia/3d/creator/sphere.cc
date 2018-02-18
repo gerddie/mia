@@ -62,8 +62,10 @@ P3DImage C3DSphereCreator::operator () (const C3DBounds& size, EPixelType type) 
 template <typename T, bool is_float>
 struct move_range {
 	static T apply(double x) {
-		const double range = numeric_limits<T>::max() - numeric_limits<T>::min();
-		return T( (0.5 * x + 0.5) * range + numeric_limits<T>::min());
+	        const double max_val = static_cast<double>(numeric_limits<T>::max());
+	        const double min_val = static_cast<double>(numeric_limits<T>::min());
+		const double range = max_val - min_val;
+		return T( (0.5 * x + 0.5) * range + min_val);
 	}
 };
 
