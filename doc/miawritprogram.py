@@ -83,14 +83,33 @@ def get_option_descr(option):
     option.write_xml(entry)
     
     return entry
-                
+
+def get_text_node_with_doi_links(link, text):
+    doi_split = re.split(r'(DOI:[\S]*:)', text)
+    reg = re.compile(r'DOI:([\S]*):')
+    output = []
+    for d in doi_split: 
+        output.append(reg.sub(r'https://doi.org/\1', d))
+    node = etree.Element(link)
+    subnode = None
+    for d in output: 
+        if d[:5] == "https":
+            subnode = etree.SubElement(node, 'ulink')
+            subnode.set('url',d)
+            subnode.text = d
+        else:
+            if subnode is None:
+                node.text = d
+            else:
+                subnode.tail = d
+    return node
 
 def get_program(program):
     section = make_section_root_node("section", program.name)
     section.append(get_bridgehead("Sysnopis:"))
     section.append(get_synopsis(program))
     section.append(get_bridgehead("Description:"))
-    section.append(get_text_node_simple("para", program.description))
+    section.append(get_text_node_with_doi_links("para", program.description))
     section.append(get_bridgehead("Options:"))
     
     for g in program.option_groups:
