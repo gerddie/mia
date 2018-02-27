@@ -78,7 +78,9 @@ def clean (text):
 def print_description(text):
     doi_split = re.split(r'(\[[^\]]*\]\([\w\s/:.)]*\))', text)
     reg = re.compile(r'\[([^\]]*)\]\(([\w/:.)]*)\)')
-    for d in doi_split: 
+    for d in doi_split:
+        if len(d) == 0:
+            continue
         if d[0] == "[":
             link = reg.split(d)
             print("")

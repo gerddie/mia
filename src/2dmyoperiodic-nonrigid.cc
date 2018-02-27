@@ -48,9 +48,9 @@ const SProgramDescription g_general_help = {
 	{pdi_description, "This program runs the non-rigid registration of an perfusion image series "
 	 "preferable acquired letting the patient breath freely. " 
 	 "The registration algorithm implementes "
-	 "G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
+	 "[G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
 	 "Quasiperiodicity in Motion Correction of Free-Breathing,\" "
-	 "IEEE Transactions on Medical Imaging, 29(8), 2010\n"}, 
+	 "IEEE Transactions on Medical Imaging, 29(8), 2010](http://dx.doi.org/10.1109/TMI.2010.2049270)"},
 
 	{pdi_example_descr, "Register the perfusion series given in 'segment.set'. " 
 	 "Skip two images at the beginning, usa spline transformation of a knot rate 16 pixels, "

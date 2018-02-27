@@ -89,7 +89,9 @@ def get_text_node_with_doi_links(link, text):
     reg = re.compile(r'\[([^\]]*)\]\(([\w/:.)]*)\)')
     node = etree.Element('para')
     subnode = None
-    for d in doi_split: 
+    for d in doi_split:
+        if len(d) == 0:
+            continue
         if d[0] == "[":
             link = reg.split(d)
             subnode = etree.SubElement(node, 'ulink')
