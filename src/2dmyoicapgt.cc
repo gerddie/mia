@@ -46,15 +46,16 @@ const SProgramDescription g_description = {
 	{pdi_group, "Registration of series of 2D images"}, 
 	{pdi_short, "Run a registration of a series of 2D images."}, 
 	{pdi_description, "This program implements a two passs motion compensation algorithm. "
-	 "First a linear registration is run based on a variation of Gupta et~al. \"Fully automatic "
+	 "First a linear registration is run based on a variation of [Gupta et~al. \"Fully automatic "
 	 "registration and segmentation of first-pass myocardial perfusion MR image sequences\", "
-	 "Academic Radiology 17, 1375-1385 as described in in Wollny G, Kellman P, Santos A, "
-	 "Ledesma-Carbayo M-J, \"Automatic Motion "
+	 "Academic Radiology 17, 1375-1385](https://doi.org/10.1016/j.acra.2010.06.015)"
+	 " as described in [Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion "
 	 "Compensation of Free Breathing acquired Myocardial Perfusion Data by using Independent "
-	 "Component Analysis\", Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004, "
-	 "followed by a non-linear registration based Chao Li and Ying Sun, 'Nonrigid Registration "
-	 "of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing "
-	 "and Computer-Assisted Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear "
+	 "Component Analysis\", Medical Image Analysis, 2012,](https://doi.org/DOI:10.1016/j.media.2012.02.004)"
+	 "followed by a non-linear registration based [Chao Li and Ying Sun, \"Nonrigid Registration "
+	 "of Myocardial Perfusion MRI Using Pseudo Ground Truth\", In Proc. Medical Image Computing "
+	 "and Computer-Assisted Intervention MICCAI 2009, 165-172, 2009.]"
+	 "(https://doi.org/10.1007/978-3-642-04268-3_21) Note that for this nonlinear "
 	 "motion correction a preceding linear registration step is usually required. "
 	 "This version of the program may run all registrations in parallel."}, 
 

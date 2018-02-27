@@ -84,18 +84,37 @@ def get_option_descr(option):
     
     return entry
 
-def get_text_node_with_doi_links(link, text):
-    doi_split = re.split(r'(\[[^\]]*\]\([\w\s/:.)]*\))', text)
-    reg = re.compile(r'\[([^\]]*)\]\(([\w/:.)]*)\)')
-    node = etree.Element('para')
+def get_text_node_with_doi_links(node, text):
+    doi_split = re.split(r'(\[[^\]]*\]\([^)]*\))', text)
+    reg = re.compile(r'\[([^\]]*)\]\(([^)]*)\)')
     subnode = None
     for d in doi_split:
         if len(d) == 0:
             continue
         if d[0] == "[":
             link = reg.split(d)
-            subnode = etree.SubElement(node, 'ulink')
-            subnode.set('url',link[2])
+            subnode = etree.SubElement(node, 'para', role='citation')
+            cite = etree.SubElement(subnode, 'ulink')
+            cite.set('url',link[2])
+            cite.text = link[1]
+        else:
+            if subnode is None:
+                node.text = d
+            else:
+                subnode.tail = d
+    return node
+
+def get_text_node_without_doi_links(node, text):
+    doi_split = re.split(r'(\[[^\]]*\]\([^)]*\))', text)
+    reg = re.compile(r'\[([^\]]*)\]\(([^)]*)\)')
+    subnode = None
+    for d in doi_split:
+        if len(d) == 0:
+            continue
+        if d[0] == "[":
+            link = reg.split(d)
+            subnode = etree.SubElement(node, 'quote')
+            subnode.set('role', 'citation')
             subnode.text = link[1]
         else:
             if subnode is None:
@@ -104,12 +123,15 @@ def get_text_node_with_doi_links(link, text):
                 subnode.tail = d
     return node
 
+
 def get_program(program):
     section = make_section_root_node("section", program.name)
     section.append(get_bridgehead("Sysnopis:"))
     section.append(get_synopsis(program))
     section.append(get_bridgehead("Description:"))
-    section.append(get_text_node_with_doi_links("para", program.description))
+    node = etree.Element('para', role='description')
+    get_text_node_with_doi_links(node, program.description)
+    section.append(node)
     section.append(get_bridgehead("Options:"))
     
     for g in program.option_groups:
@@ -164,7 +186,7 @@ def get_section(name, sect):
         subpara = etree.SubElement(para, "para", role="sectiontoc")
         etree.SubElement(subpara, "xref", linkend=program.anchor)
         descr = etree.SubElement(subpara, "para", role="progdescr")
-        descr.text = program.description
+        get_text_node_without_doi_links(descr, program.description)
         section.append(get_program(program))
     return section
 

@@ -76,8 +76,8 @@ def clean (text):
     return escape_dash(text)
 
 def print_description(text):
-    doi_split = re.split(r'(\[[^\]]*\]\([\w\s/:.)]*\))', text)
-    reg = re.compile(r'\[([^\]]*)\]\(([\w/:.)]*)\)')
+    doi_split = re.split(r'(\[[^\]]*\]\([^)]*\))', text)
+    reg = re.compile(r'\[([^\]]*)\]\(([^)]*)\)')
     for d in doi_split:
         if len(d) == 0:
             continue
@@ -85,9 +85,11 @@ def print_description(text):
             link = reg.split(d)
             print("")
             print(".RS")
+            print(".UR {}".format(link[2]))
             print(link[1])
-            print(".I {}".format(link[2]))
+            print(".UE") 
             print(".RE")
+            print("")
         else:
             print(d)
 

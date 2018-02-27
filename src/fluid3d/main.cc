@@ -44,8 +44,8 @@ const SProgramDescription g_description = {
 	{pdi_short, "Fluid dynamic 3D registration"}, 
 	{pdi_description, "This program is used for non-rigid registration based on fluid dynamics as described in: "
 	 "[Wollny, G. and Kruggel, F., 'Computational cost of non-rigid registration algorithms "
-	 " based on fluid dynamics', IEEE Transactions on Medical Imaging, 11(8), pp. 946-952, 2002]"
-	 "(https://doi.org/10.1109/TMI.2002.803113). It uses SSD as the sole registration criterion."}, 
+	 " based on fluid dynamics', IEEE Transactions on Medical Imaging, 11(8), pp. 946-952, 2002.]"
+	 "(https://doi.org/10.1109/TMI.2002.803113) It uses SSD as the sole registration criterion."}, 
 	{pdi_example_descr, "Register image test.v to image ref.v and write the deformation vector "
 	 "field regfield.v. Start registration at the smallest size above 16 pixel."}, 
 	{pdi_example_code, "-i test.v -r ref.v -o regfield.v -s 16"}

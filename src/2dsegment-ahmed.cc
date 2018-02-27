@@ -52,9 +52,9 @@ const SProgramDescription g_description = {
         {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
 	{pdi_short, "Run a fuzzy c-means segmentation of a 2D image."}, 
 	{pdi_description, "This program implements a variation of the paper:"
-	 "Mohamed N. Ahmed et. al, \"A Modified Fuzzy C-Means Algorithm for Bias Field "
+	 "[Mohamed N. Ahmed et. al, \"A Modified Fuzzy C-Means Algorithm for Bias Field "
 	 "estimation and Segmentation of MRI Data\", IEEE Trans. on Medical Imaging, "
-	 "Vol. 21, No. 3, March 2002, changes are: p=2, and exp"}, 
+	 "Vol. 21, No. 3, March 2002,](https://doi.org/10.1109/42.996338) changes are: p=2, and exp"}, 
 	{pdi_example_descr, "Run a 5-class segmentation over input image input.v and store the class "
 	 "probability images in cls.v." }, 
 	{pdi_example_code, "-i input.v -a 5 -o cls.v"}

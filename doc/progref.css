@@ -19,17 +19,32 @@
       margin-bottom:3px;
       margin-left: 2%;
   }
+  p.description {
+      margin-top:3px;
+      margin-bottom:3px;
+      margin-left: 2%;
+  }
+
   p.progdescr{
       margin-top:3px;
       margin-bottom:3px;
-      margin-left: 5%;
+      margin-left: 4%;
   }
   p.plugdescr{
       margin-top:3px;
       margin-bottom:3px;
-      margin-left: 5%;
+      margin-left: 2%;
   }
 
+  p.citation {
+      margin-top:2px;
+      margin-bottom:2px;
+      margin-left: 4%;
+      width: 50%;
+  }
+
+  
+  
   div.cmdsynopsis {
   margin-left: 2%;
   }

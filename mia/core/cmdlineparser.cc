@@ -421,8 +421,8 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 
 string CCmdOptionListData::strip_markup(const string& text) const
 {
-	regex reg("\\[(.*)\\]\\(([\\S)]*)\\)");
-	return regex_replace(text, reg, "\n\n$1 $2");
+	regex reg("\\[([^\\]]*)\\]\\(([^)]*)\\)");
+	return regex_replace(text, reg, "\n\n$1 $2\n\n");
 }
 
 /**

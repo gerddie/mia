@@ -55,7 +55,7 @@ const SProgramDescription g_description = {
          "relatively contain more pixels than a given threshold. This program implements "
 	 "algorithm described in: "
 	 "[Dunmore CJ, Wollny G, Skinner MM. (2018) MIA-Clustering: a novel method "
-	 "for segmentation of paleontological material. PeerJ 6:e4374](https://doi.org/10.7717/peerj.4374)."},
+	 "for segmentation of paleontological material. PeerJ 6:e4374.](https://doi.org/10.7717/peerj.4374)"},
         {pdi_example_descr, "Run the segmentation on image test.png using three classes, "
          "local regions of 40 pixels (grid width 20 pixels), and a class ignore threshold of 0.01." },
         {pdi_example_code, "-i test.png -o label.png -n 3 -g 20 -t 0.01"}

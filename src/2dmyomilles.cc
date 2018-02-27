@@ -42,8 +42,9 @@ const SProgramDescription g_description = {
         {pdi_group, "Registration of series of 2D images"}, 
 	{pdi_short, "Run a registration of a series of 2D images."}, 
 	{pdi_description, "This program is use to run a modified version of the ICA based registration approach "
-	 "described in Milles et al. 'Fully Automated Motion Correction in First-Pass Myocardial Perfusion "
-	 "MR Image Sequences', Trans. Med. Imaging., 27(11), 1611-1621, 2008. Changes include the extraction " 
+	 "described in [Milles et al. 'Fully Automated Motion Correction in First-Pass Myocardial Perfusion "
+	 "MR Image Sequences', Trans. Med. Imaging., 27(11), 1611-1621, 2008.](https://doi.org/10.1109/TMI.2008.928918) "
+	 "Changes include the extraction " 
 	 "of the quasi-periodic movement in free breathingly acquired data sets and the option to run "
 	 "affine or rigid registration instead of the optimization of translations only.\n"}, 
 	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by using "

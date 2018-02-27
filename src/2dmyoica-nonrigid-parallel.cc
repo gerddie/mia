@@ -48,10 +48,11 @@ const SProgramDescription g_description = {
 	{pdi_group, "Registration of series of 2D images"}, 
 	{pdi_short, "Run a registration of a series of 2D images."}, 
 	{pdi_description, "This program implements the 2D version of the motion compensation algorithm "
-	 "described in Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion "
-	 "Compensation of Free Breathing acquired Myocardial Perfusion Data by using Independent "
-	 "Component Analysis\", Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004." 
-	 "This version of the program may run all registrations in parallel."}, 
+	 "described in "
+	 "[Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
+	 "Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\" "
+	 "Medical Image Analysis, 2012.](https://doi.org/10.1016/j.media.2012.02.004)"
+	 "This version of the program runs all registrations in parallel."}, 
 
 	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by using automatic "
 	 "ICA estimation. Skip two images at the beginning and otherwiese use the default parameters. "

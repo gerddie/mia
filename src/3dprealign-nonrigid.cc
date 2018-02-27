@@ -46,9 +46,10 @@ const SProgramDescription g_description = {
 	{pdi_description, "This program runs the non-rigid registration of an image series "
 	 "by first registering an already aligned subset of the images to one reference, "
 	 "and then by registering the remaining images by using synthetic references. "
-	 "The is a 3D version of G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, "
+	 "This is a 3D version of [G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, "
 	 "\"Exploiting Quasiperiodicity in Motion Correction of Free-Breathing,\" "
-	 "IEEE Transactions on Medical Imaging, 29(8), 2010."}, 
+	 "IEEE Transactions on Medical Imaging, 29(8), 2010.]"
+	 "(http://dx.doi.org/10.1109/TMI.2010.2049270)"}, 
 	{pdi_example_descr, "Register the image series given by images imageXXXX.v by "
 	 "optimizing a spline based transformation with a coefficient rate of 16 pixel, "
 	 "skipping two ""images at the beginning and using normalized gradient fields "
