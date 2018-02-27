@@ -85,18 +85,16 @@ def get_option_descr(option):
     return entry
 
 def get_text_node_with_doi_links(link, text):
-    doi_split = re.split(r'(DOI:[\S]*:)', text)
-    reg = re.compile(r'DOI:([\S]*):')
-    output = []
-    for d in doi_split: 
-        output.append(reg.sub(r'https://doi.org/\1', d))
-    node = etree.Element(link)
+    doi_split = re.split(r'(\[[^\]]*\]\([\w\s/:.)]*\))', text)
+    reg = re.compile(r'\[([^\]]*)\]\(([\w/:.)]*)\)')
+    node = etree.Element('para')
     subnode = None
-    for d in output: 
-        if d[:5] == "https":
+    for d in doi_split: 
+        if d[0] == "[":
+            link = reg.split(d)
             subnode = etree.SubElement(node, 'ulink')
-            subnode.set('url',d)
-            subnode.text = d
+            subnode.set('url',link[2])
+            subnode.text = link[1]
         else:
             if subnode is None:
                 node.text = d
