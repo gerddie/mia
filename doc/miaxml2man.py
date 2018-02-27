@@ -73,7 +73,21 @@ def escape_dash(text):
 
 def clean (text):
     text = unescape(text)
-    return escape_dash(text) 
+    return escape_dash(text)
+
+def print_description(text):
+    doi_split = re.split(r'(\[[^\]]*\]\([\w\s/:.)]*\))', text)
+    reg = re.compile(r'\[([^\]]*)\]\(([\w/:.)]*)\)')
+    for d in doi_split: 
+        if d[0] == "[":
+            link = reg.split(d)
+            print("")
+            print(".RS")
+            print(link[1])
+            print(".I {}".format(link[2]))
+            print(".RE")
+        else:
+            print(d)
 
 def write_man_file(descr):
     name = escape_dash(descr.name)
@@ -85,7 +99,7 @@ def write_man_file(descr):
     print(".B {}".format (clean(descr.basic_usage)))
     print(".SH DESCRIPTION")
     print(".B {}".format (name))
-    print(descr.description)
+    print_description(descr.description)
     print(".SH OPTIONS")
     for g in descr.option_groups:
         if len(g.name) > 0:

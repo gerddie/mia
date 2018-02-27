@@ -33,6 +33,21 @@
 #include <sys/ioctl.h>
 #endif
 
+#ifdef MIA_USE_BOOST_REGEX
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::regex_replace; 
+#else 
+# if __cplusplus >= 201103
+# include <regex>
+using std::regex;
+using std::regex_replace; 
+# else 
+# error must either use boost::regex or c++11 based regex
+# endif 
+#endif
+
+
 #ifdef HAVE_TBB 
 #include <tbb/task_scheduler_init.h>
 #if defined(__PPC__) && ( TBB_INTERFACE_VERSION  < 6101 )
@@ -118,7 +133,8 @@ struct CCmdOptionListData {
 	string set_description_value(EProgramDescriptionEntry entry, 
 				     const SProgramDescription& description, const char *default_value = ""); 
 
-	const char *get_author() const; 
+	const char *get_author() const;
+	string strip_markup(const string& text) const; 
 	
 	string m_program_group; 
 	string m_short_descr; 
@@ -403,6 +419,12 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	}
 }
 
+string CCmdOptionListData::strip_markup(const string& text) const
+{
+	regex reg("\\[(.*)\\]\\(([\\S)]*)\\)");
+	return regex_replace(text, reg, "\n\n$1 $2");
+}
+
 /**
    This help printing is a mess ...
  */
@@ -436,7 +458,7 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 
 	console.push_offset(4); 
 	console.write("\n\n"); 
-	console.write(m_general_help);
+	console.write(strip_markup(m_general_help));
 	console.pop_offset();
 	console.newline(); 
 	
