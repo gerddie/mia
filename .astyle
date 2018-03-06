@@ -1,0 +1,11 @@
+--style=kr
+--indent=spaces=7
+--min-conditional-indent=0
+--pad-oper
+--pad-comma 
+--pad-header
+--align-pointer=name
+--align-reference=type
+--close-templates
+--break-blocks
+--delete-empty-lines
