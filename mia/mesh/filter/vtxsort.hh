@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,32 +21,34 @@
 #include <mia/mesh/filter.hh>
 
 
-NS_BEGIN(mia_meshfilter_vtxsort) 
+NS_BEGIN(mia_meshfilter_vtxsort)
 
-using mia::C3DFVector; 
-using mia::PTriangleMesh; 
-using mia::CTriangleMesh; 
-
-
-class CVtxSortMeshFilter: public mia::CMeshFilter {
-public: 
-	CVtxSortMeshFilter(const C3DFVector& sort_direction ); 
-private: 
-	PTriangleMesh do_filter(const CTriangleMesh& image) const; 
-	
-	C3DFVector m_sort_direction; 
-}; 
+using mia::C3DFVector;
+using mia::PTriangleMesh;
+using mia::CTriangleMesh;
 
 
-class CVtxSortMeshFilterPlugin: public mia::CMeshFilterPlugin {
-public: 
-	CVtxSortMeshFilterPlugin(); 
+class CVtxSortMeshFilter: public mia::CMeshFilter
+{
+public:
+       CVtxSortMeshFilter(const C3DFVector& sort_direction );
+private:
+       PTriangleMesh do_filter(const CTriangleMesh& image) const;
 
-	virtual mia::CMeshFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C3DFVector m_sort_direction;
+};
 
-private: 
-	C3DFVector m_sort_direction; 
-}; 
+
+class CVtxSortMeshFilterPlugin: public mia::CMeshFilterPlugin
+{
+public:
+       CVtxSortMeshFilterPlugin();
+
+       virtual mia::CMeshFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+
+private:
+       C3DFVector m_sort_direction;
+};
 
 NS_END

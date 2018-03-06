@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,39 +30,41 @@ using namespace boost;
 
 
 const SProgramDescription g_description = {
-	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
-	{pdi_short, "Evaluate similarity of two 3D images."}, 
-	{pdi_description,
-	 "This program evauates the cost function as given by the free parameters on the command line."}, 
-	
-}; 
+       {pdi_group, "Registration, Comparison, and Transformation of 3D images"},
+       {pdi_short, "Evaluate similarity of two 3D images."},
+       {
+              pdi_description,
+              "This program evauates the cost function as given by the free parameters on the command line."
+       },
+
+};
 
 // set op the command line parameters and run the registration
 int do_main(int argc, char **argv)
 {
+       CCmdOptionList options(g_description);
+       options.set_stdout_is_result();
 
-	CCmdOptionList options(g_description);
-	options.set_stdout_is_result();
-	if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
-	
+       if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
-	auto cost_chain = options.get_remaining();
+       auto cost_chain = options.get_remaining();
 
-	if (cost_chain.empty())
-		throw invalid_argument("You have to give at least one cost functions given as extra parameter");
+       if (cost_chain.empty())
+              throw invalid_argument("You have to give at least one cost functions given as extra parameter");
 
-	C3DFullCostList cost_list;
-	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
-		auto c = C3DFullCostPluginHandler::instance().produce(*i);
-		assert(c); 
-		cost_list.push(c);
-	}
-	cost_list.reinit(); 
+       C3DFullCostList cost_list;
 
-	cout << cost_list.cost_value() << "\n";
-	return EXIT_SUCCESS;
+       for (auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
+              auto c = C3DFullCostPluginHandler::instance().produce(*i);
+              assert(c);
+              cost_list.push(c);
+       }
+
+       cost_list.reinit();
+       cout << cost_list.cost_value() << "\n";
+       return EXIT_SUCCESS;
 }
 
 #include <mia/internal/main.hh>
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);

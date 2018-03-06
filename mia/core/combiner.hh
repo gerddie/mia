@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,14 +29,15 @@
 
 NS_MIA_BEGIN
 
-class EXPORT_CORE CCombinerResult {
+class EXPORT_CORE CCombinerResult
+{
 public:
-	virtual ~CCombinerResult();
-	void save(const std::string& fname)const;
-	boost::any get() const; 
+       virtual ~CCombinerResult();
+       void save(const std::string& fname)const;
+       boost::any get() const;
 private:
-	virtual void do_save(const std::string& fname) const = 0;
-        virtual boost::any do_get() const = 0;  
+       virtual void do_save(const std::string& fname) const = 0;
+       virtual boost::any do_get() const = 0;
 };
 
 typedef std::shared_ptr<CCombinerResult > PCombinerResult;

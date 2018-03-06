@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,93 +24,89 @@ NS_BEGIN ( admean_2dimage_filter )
 NS_MIA_USE;
 using namespace std;
 
-static char const * plugin_name = "admean";
+static char const *plugin_name = "admean";
 
 template <class Data2D>
 typename C2DAdmean::result_type C2DAdmean::operator () ( const Data2D& data ) const
 {
-	typedef typename Data2D::value_type out_type; 
-	Data2D *result = new Data2D ( data.get_size(), data );
+       typedef typename Data2D::value_type out_type;
+       Data2D *result = new Data2D ( data.get_size(), data );
+       auto i = result->begin();
+       auto t = data.begin();
+       cvdebug() << "filter with width = " << m_width << endl;
+       double sum = 0.0;
+       double sum2 = 0.0;
+       double n = data.size();
 
+       if ( n == 1 ) {
+              *i = *t;
+              return P2DImage ( result );
+       }
 
-	auto i = result->begin();
-	auto t = data.begin();
+       for ( auto i = data.begin(); i != data.end(); ++i ) {
+              sum += *i;
+              sum2 += *i * *i;
+       }
 
-	cvdebug() << "filter with width = " << m_width << endl;
+       double mean = sum / n;
+       double var2 = ( sum2 - mean * sum ) / ( n - 1 );
 
-	double sum = 0.0;
-	double sum2 = 0.0;
-	double n = data.size();
+       for ( int y = 0; y < ( int ) data.get_size().y; ++y )
+              for ( int x = 0; x < ( int ) data.get_size().x; ++x, ++i, ++t )	{
+                     double lsum = 0.0;
+                     double lsum2 = 0.0;
+                     int num = 0;
 
-	if ( n == 1 ){
-		*i = *t;
-		return P2DImage ( result );
-	}
+                     for ( int iy = max ( 0, y - m_width );
+                           iy < min ( y + m_width + 1, ( int ) data.get_size().y );  ++iy )
+                            for ( int ix = max ( 0, x - m_width );
+                                  ix < min ( x + m_width + 1, ( int ) data.get_size().x );  ++ix )	{
+                                   double v = data ( ix, iy );
+                                   lsum += v;
+                                   lsum2 += v * v;
+                                   ++num;
+                            }
 
-	for ( auto i = data.begin(); i != data.end(); ++i ) {
-		sum += *i;
-		sum2 += *i * *i;
-	}
+                     if ( num > 1 )	{
+                            float lmean = lsum / num;
+                            float lvar2 = ( lsum2 - lsum * lmean ) / ( num - 1 );
+                            *i = static_cast<out_type>( lvar2 > var2 ?
+                                                        ( *t -  var2 / lvar2 * ( *t - lmean ) ) : lmean );
+                     } else
+                            *i = static_cast<out_type>( lsum );
+              }
 
-	double mean = sum / n;
-	double var2 = ( sum2 - mean * sum ) / ( n -1 );
-
-	for ( int y = 0; y < ( int ) data.get_size().y; ++y )
-		for ( int x = 0; x < ( int ) data.get_size().x; ++x, ++i, ++t )	{
-			
-			double lsum = 0.0;
-			double lsum2 = 0.0;
-			int num = 0;
-
-			for ( int iy = max ( 0, y - m_width );
-			      iy < min ( y + m_width + 1, ( int ) data.get_size().y );  ++iy )
-				for ( int ix = max ( 0, x - m_width );
-				      ix < min ( x + m_width + 1, ( int ) data.get_size().x );  ++ix )	{
-					double v = data ( ix,iy );
-					lsum += v;
-					lsum2 += v*v;
-					++num;
-				}
-			if ( num > 1 )	{
-				float lmean = lsum/num;
-				float lvar2 = ( lsum2 - lsum * lmean ) / ( num - 1 );
-				*i = static_cast<out_type>( lvar2 > var2 ? 
-							    ( *t -  var2 / lvar2 * ( *t - lmean ) ) : lmean );
-			}
-			else
-				*i = static_cast<out_type>( lsum );
-		}
-	return P2DImage ( result );
+       return P2DImage ( result );
 }
 
 P2DImage C2DAdmean::do_filter ( const C2DImage& image ) const
 {
-	return mia::filter ( *this,image );
+       return mia::filter ( *this, image );
 }
 
 CAdmean2DImageFilterFactory::CAdmean2DImageFilterFactory() :
-		C2DFilterPlugin ( plugin_name ),
-		m_hwidth ( 1 )
+       C2DFilterPlugin ( plugin_name ),
+       m_hwidth ( 1 )
 {
-	add_parameter("w", make_lc_param(m_hwidth, 1, false, "half filter width"));
+       add_parameter("w", make_lc_param(m_hwidth, 1, false, "half filter width"));
 }
 
 C2DFilter *CAdmean2DImageFilterFactory::do_create()const
 {
-	return new C2DAdmean ( m_hwidth );
+       return new C2DAdmean ( m_hwidth );
 }
 
 const string CAdmean2DImageFilterFactory::do_get_descr() const
 {
-	return "An adaptive mean filter that works like a normal mean filter, if the intensity "
-		"variation within the filter mask is lower then the intensity variation in the "
-		"whole image, that the uses a special formula if the local variation is higher "
-		"then the image intensity variation.";
+       return "An adaptive mean filter that works like a normal mean filter, if the intensity "
+              "variation within the filter mask is lower then the intensity variation in the "
+              "whole image, that the uses a special formula if the local variation is higher "
+              "then the image intensity variation.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new CAdmean2DImageFilterFactory();
+       return new CAdmean2DImageFilterFactory();
 }
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,13 +23,13 @@
 
 NS_MIA_BEGIN
 
-template class  TImageCombinerFilter<C3DImage>; 
-template class  TImageCombinerFilterPlugin<C3DImage>; 
+template class  TImageCombinerFilter<C3DImage>;
+template class  TImageCombinerFilterPlugin<C3DImage>;
 
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-        return new C3DImageCombinerFilterPlugin; 
+       return new C3DImageCombinerFilterPlugin;
 }
 
 NS_MIA_END

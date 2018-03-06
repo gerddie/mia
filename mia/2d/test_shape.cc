@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,42 +25,38 @@
 #include <mia/2d/imagetest.hh>
 
 NS_MIA_USE
-using namespace std; 
+using namespace std;
 
 
-BOOST_AUTO_TEST_CASE( test_2dshape_handler ) 
+BOOST_AUTO_TEST_CASE( test_2dshape_handler )
 {
-	set<string> test_data = { 
-		"1n", "4n", "8n", "sphere","rectangle", "square"
-	}; 
-	test_plugin_names_and_count<C2DShapePluginHandler>(test_data); 
+       set<string> test_data = {
+              "1n", "4n", "8n", "sphere", "rectangle", "square"
+       };
+       test_plugin_names_and_count<C2DShapePluginHandler>(test_data);
 }
 
 
 
-BOOST_AUTO_TEST_CASE( test_shape_rotate_rotation_symetrics ) 
+BOOST_AUTO_TEST_CASE( test_shape_rotate_rotation_symetrics )
 {
-	set<string> test_data = { 
-		"1n", "4n", "8n", "sphere:r=3","square"
-	};
+       set<string> test_data = {
+              "1n", "4n", "8n", "sphere:r=3", "square"
+       };
 
-	for (auto s = test_data.begin(); s != test_data.end(); ++s) {
-		auto shape = produce_2d_shape(*s);
-		P2DShape rshape = rotate_90_degree(*shape);
-		test_image_equal(rshape->get_mask(), shape->get_mask());
-	}
-	
+       for (auto s = test_data.begin(); s != test_data.end(); ++s) {
+              auto shape = produce_2d_shape(*s);
+              P2DShape rshape = rotate_90_degree(*shape);
+              test_image_equal(rshape->get_mask(), shape->get_mask());
+       }
 }
 
-BOOST_AUTO_TEST_CASE( test_shape_rotate_nonsymetric ) 
+BOOST_AUTO_TEST_CASE( test_shape_rotate_nonsymetric )
 {
-	auto initial_shape = produce_2d_shape("rectangle:height=2,width=4"); 
-	auto test_shape = produce_2d_shape("rectangle:height=4,width=2");
-
-	P2DShape rshape = rotate_90_degree(*initial_shape);
-	
-	test_image_equal(rshape->get_mask(), test_shape->get_mask());
-	
+       auto initial_shape = produce_2d_shape("rectangle:height=2,width=4");
+       auto test_shape = produce_2d_shape("rectangle:height=4,width=2");
+       P2DShape rshape = rotate_90_degree(*initial_shape);
+       test_image_equal(rshape->get_mask(), test_shape->get_mask());
 }
 
 

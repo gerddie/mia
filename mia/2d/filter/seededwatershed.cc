@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -18,19 +18,19 @@
  *
  */
 
-#include <type_traits> 
-#include <queue> 
+#include <type_traits>
+#include <queue>
 #include <mia/2d/filter/seededwatershed.hh>
 
-NS_MIA_BEGIN 
+NS_MIA_BEGIN
 
-template class  TSeededWS<2>; 
+template class  TSeededWS<2>;
 template class  TSeededWSFilterPlugin<2>;
 
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DSeededWSFilterPlugin();
+       return new C2DSeededWSFilterPlugin();
 }
 
 

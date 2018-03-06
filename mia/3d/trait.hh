@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,27 +31,27 @@
 NS_MIA_BEGIN
 
 /**
-   @cond INTERNAL 
-   Trait used for the non-linear registration 
+   @cond INTERNAL
+   Trait used for the non-linear registration
 */
 template <>
 struct dimension_traits<3> {
-	typedef C3DTransformation Transformation; 
-	typedef C3DTransformation::Pointer PTransformation; 
-	typedef C3DBounds Size; 
-	typedef C3DImage Image; 
-	typedef C3DImage::Pointer PImage; 
-	typedef std::vector<PImage> ImageSeries; 
-	typedef P3DTransformationFactory PTransformationFactory; 
-	typedef C3DFullCostList FullCostList; 
-	typedef C3DFullCost::Pointer PFullCost; 
-	typedef C3DFilter Filter; 
-	typedef P3DFilter PFilter; 
-	typedef C3DFilterPluginHandler FilterPluginHandler;
-	typedef C3DInterpolatorFactory InterpolatorFactory; 
-	
-}; 
-/// @endcond 
+       typedef C3DTransformation Transformation;
+       typedef C3DTransformation::Pointer PTransformation;
+       typedef C3DBounds Size;
+       typedef C3DImage Image;
+       typedef C3DImage::Pointer PImage;
+       typedef std::vector<PImage> ImageSeries;
+       typedef P3DTransformationFactory PTransformationFactory;
+       typedef C3DFullCostList FullCostList;
+       typedef C3DFullCost::Pointer PFullCost;
+       typedef C3DFilter Filter;
+       typedef P3DFilter PFilter;
+       typedef C3DFilterPluginHandler FilterPluginHandler;
+       typedef C3DInterpolatorFactory InterpolatorFactory;
+
+};
+/// @endcond
 
 NS_MIA_END
 #endif

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -36,45 +36,46 @@
 
 using namespace std;
 using namespace mia;
-namespace bfs=boost::filesystem;
+namespace bfs = boost::filesystem;
 
 
 const SProgramDescription g_description = {
-	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
-	{pdi_short,"Evaluate masks from a segmentation."}, 
-	{pdi_description, "Evaluate the masks for the sections of a segmented frame."}, 
-	{pdi_example_descr, "Evaluate the mask image from the segmentation of image 20 in segment.set "
-	 "and store it to mask20.png:"},
-	{pdi_example_code, "-i segment.set -f 20 -o mask20.png"}
-}; 
+       {pdi_group, "Tools for Myocardial Perfusion Analysis"},
+       {pdi_short, "Evaluate masks from a segmentation."},
+       {pdi_description, "Evaluate the masks for the sections of a segmented frame."},
+       {
+              pdi_example_descr, "Evaluate the mask image from the segmentation of image 20 in segment.set "
+              "and store it to mask20.png:"
+       },
+       {pdi_example_code, "-i segment.set -f 20 -o mask20.png"}
+};
 
 int do_main(int argc, char *argv[])
 {
-	string src_filename;
-	string out_filename;
-	size_t frame = 0; 
+       string src_filename;
+       string out_filename;
+       size_t frame = 0;
+       CCmdOptionList options(g_description);
+       options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
+       options.add(make_opt( out_filename, "out-file", 'o', "output image containing the mask",
+                             CCmdOptionFlags::required_output, &C2DImageIOPluginHandler::instance()));
+       options.add(make_opt( frame, "frame", 'f', "Frame number for which to extract the mask"));
 
-	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
-	options.add(make_opt( out_filename, "out-file", 'o', "output image containing the mask", 
-			      CCmdOptionFlags::required_output, &C2DImageIOPluginHandler::instance()));
-	options.add(make_opt( frame, "frame", 'f', "Frame number for which to extract the mask"));
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
+       if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
+       CSegSet src_segset(src_filename);
+       const CSegSet::Frames& src_frames = src_segset.get_frames();
 
-	CSegSet src_segset(src_filename);
+       if (frame >= src_frames.size())
+              throw create_exception<invalid_argument>("Requested frame ", frame, " out of range (", src_frames.size(), ")");
 
-	const CSegSet::Frames& src_frames = src_segset.get_frames();
-	if (frame >= src_frames.size())
-		throw create_exception<invalid_argument>("Requested frame ", frame, " out of range (", src_frames.size(), ")");
+       auto mask = src_frames[frame].get_section_masks();
 
-	auto mask = src_frames[frame].get_section_masks(); 
-	if (!save_image(out_filename, mask)) 
-		throw create_exception<runtime_error>( "Unable to save mask image to '", out_filename, "'"); 
-	
-	return EXIT_SUCCESS;
+       if (!save_image(out_filename, mask))
+              throw create_exception<runtime_error>( "Unable to save mask image to '", out_filename, "'");
 
+       return EXIT_SUCCESS;
 }
 
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);

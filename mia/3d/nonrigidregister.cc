@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,6 +29,6 @@
 
 NS_MIA_BEGIN
 
-template class TNonrigidRegister<3>; 
+template class TNonrigidRegister<3>;
 
 NS_MIA_END

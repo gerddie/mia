@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,93 +31,94 @@ NS_MIA_BEGIN
 
 
 /**
-   @ingroup io 
+   @ingroup io
    @brief A class to interface  images with image IO plugins.
 */
-class EXPORT_3D C3DImageVector: public std::vector< std::shared_ptr<C3DImage >> ,
-		      public CIOData {
+class EXPORT_3D C3DImageVector: public std::vector< std::shared_ptr<C3DImage >>,
+                     public CIOData
+{
 public:
-	/// returns a dynamically created copy of the image vector 
-	C3DImageVector *clone() const __attribute__((warn_unused_result));
+       /// returns a dynamically created copy of the image vector
+       C3DImageVector *clone() const __attribute__((warn_unused_result));
 
 };
 
 struct EXPORT_3D io_3dimage_data {
-	typedef  C3DImageVector type;
-	static const char *data_descr;
+       typedef  C3DImageVector type;
+       static const char *data_descr;
 };
 /**
-   @ingroup io 
-   @brief The 3D image io plugin base class 
+   @ingroup io
+   @brief The 3D image io plugin base class
 */
 typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
 
 extern template class EXPORT_3D TPlugin<io_3dimage_data, io_plugin_type>;
-extern template class EXPORT_3D TIOPlugin<io_3dimage_data>; 
+extern template class EXPORT_3D TIOPlugin<io_3dimage_data>;
 
 /**
    @ingroup io
-   @brief Handler for the plug-ins that store and load 3D images. 
+   @brief Handler for the plug-ins that store and load 3D images.
 */
-typedef THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPluginHandler;
+typedef THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin>> C3DImageIOPluginHandler;
 
-template <> 
+template <>
 struct IOHandler_of<C3DImage> {
-	typedef C3DImageIOPluginHandler type;
-}; 
+       typedef C3DImageIOPluginHandler type;
+};
 
 
 /**
    @ingroup io
-   @brief Data key type used to load and store to the CDatapool 
+   @brief Data key type used to load and store to the CDatapool
 */
 typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
 
 /**
    @ingroup io
-   @brief pointer type to the images 
+   @brief pointer type to the images
 */
 typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
-/** 
-    @ingroup convenience 
-    convenience function to create an image vector from a single image 
-    \param image 
-    \returns the vector containing the image 
-*/ 
+/**
+    @ingroup convenience
+    convenience function to create an image vector from a single image
+    \param image
+    \returns the vector containing the image
+*/
 P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image);
 
 /**
    \ingroup io
-   convenience function to load a single image from a file.  
-   \throws std::invalid_argument if the image could not be loaded 
-   \param filename input file 
-   \returns the loaded image 
+   convenience function to load a single image from a file.
+   \throws std::invalid_argument if the image could not be loaded
+   \param filename input file
+   \returns the loaded image
  */
 
-P3DImage  EXPORT_3D load_image3d(const std::string& filename); 
+P3DImage  EXPORT_3D load_image3d(const std::string& filename);
 
 
 /**
    \ingroup io
-   convenience function to load a single image from a file.  
-   \throws std::invalid_argument if the image could not be loaded 
-   \param filename input file 
-   \returns the loaded image 
+   convenience function to load a single image from a file.
+   \throws std::invalid_argument if the image could not be loaded
+   \param filename input file
+   \returns the loaded image
 */
-template <> 
+template <>
 inline P3DImage  EXPORT_3D load_image<P3DImage>(const std::string& filename)
 {
-	cvdebug() << "Load image " << filename << "\n"; 
-	return load_image3d(filename); 
+       cvdebug() << "Load image " << filename << "\n";
+       return load_image3d(filename);
 }
 
 /**
    \ingroup io
-   convenience function to save a single image to a file.  
-   \param filename input file 
-   \param image image to be saved 
-   \returns true if successful and false otherwise 
+   convenience function to save a single image to a file.
+   \param filename input file
+   \param image image to be saved
+   \returns true if successful and false otherwise
  */
 
 bool  EXPORT_3D save_image(const std::string& filename, P3DImage image);
@@ -125,9 +126,9 @@ bool  EXPORT_3D save_image(const std::string& filename, P3DImage image);
 
 /**
    \ingroup io
-   Convenience function to save one 3D image to a file 
-   @param filename 
-   @param image 
+   Convenience function to save one 3D image to a file
+   @param filename
+   @param image
    @returns true if saving was  successfull
  */
 bool  EXPORT_3D save_image(const std::string& filename, C3DImage& image);

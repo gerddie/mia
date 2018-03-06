@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,45 +31,47 @@
 
 NS_BEGIN(regiongrow_fifof);
 
-class C2DRegiongrowFifoFilter: public mia::C2DImageFifoFilter {
+class C2DRegiongrowFifoFilter: public mia::C2DImageFifoFilter
+{
 
 public:
-	C2DRegiongrowFifoFilter(const mia::CProbabilityVector probmap,
-				float low, float seed, int cls, int depth);
+       C2DRegiongrowFifoFilter(const mia::CProbabilityVector probmap,
+                               float low, float seed, int cls, int depth);
 
-	typedef int result_type;
+       typedef int result_type;
 
-	template <typename T>
-	int operator ()( const mia::T2DImage<T>& image);
+       template <typename T>
+       int operator ()( const mia::T2DImage<T>& image);
 private:
-	struct FSeed {
-		FSeed(double thresh):m_thresh(thresh){}
-		bool operator () (double x) const {
-			return x >= m_thresh;
-		}
-	private:
-		double m_thresh;
-	};
+       struct FSeed {
+              FSeed(double thresh): m_thresh(thresh) {}
+              bool operator () (double x) const
+              {
+                     return x >= m_thresh;
+              }
+       private:
+              double m_thresh;
+       };
 
-	void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
-	void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x);
-	mia::P2DImage do_filter();
-	void shift_buffer();
-	void seed_env(const mia::C3DBounds& center, std::queue<mia::C3DBounds>& seeds) const;
-	void  grow();
+       void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
+       void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x);
+       mia::P2DImage do_filter();
+       void shift_buffer();
+       void seed_env(const mia::C3DBounds& center, std::queue<mia::C3DBounds>& seeds) const;
+       void  grow();
 
-	mia::CProbabilityVector m_probmap;
-	float m_low;
-	FSeed m_seed;
-	int   m_class;
-	int   m_depth;
+       mia::CProbabilityVector m_probmap;
+       float m_low;
+       FSeed m_seed;
+       int   m_class;
+       int   m_depth;
 
-	mia::C2DBounds   m_slice_size;
-	mia::C3DDImage   m_in_buffer;
-	mia::C3DBitImage m_out_buffer;
-	mia::C2DImageFifoFilter::CShiftSlices m_ss;
-	mia::P3DShape m_shape;
-	size_t m_slice_emls;
+       mia::C2DBounds   m_slice_size;
+       mia::C3DDImage   m_in_buffer;
+       mia::C3DBitImage m_out_buffer;
+       mia::C2DImageFifoFilter::CShiftSlices m_ss;
+       mia::P3DShape m_shape;
+       size_t m_slice_emls;
 };
 
 NS_END

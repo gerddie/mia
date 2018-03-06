@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,50 +29,52 @@ NS_MIA_BEGIN
 struct test_plugin_type;
 struct test_plugin_data;
 
-/// constant defining a test property 
+/// constant defining a test property
 EXPORT_CORE extern const char *const test_property;
 
-extern template class EXPORT_CORE TPlugin<test_plugin_data, test_plugin_type>; 
+extern template class EXPORT_CORE TPlugin<test_plugin_data, test_plugin_type>;
 
 /**
-   \ingroup test 
-   \brief Class to test plugin handling. 
+   \ingroup test
+   \brief Class to test plugin handling.
 */
 
 
-class EXPORT_CORE CTestPlugin: public TPlugin<test_plugin_data, test_plugin_type>  {
+class EXPORT_CORE CTestPlugin: public TPlugin<test_plugin_data, test_plugin_type>
+{
 public:
-	/// Construct the test plugin with the given name 
-	CTestPlugin(const char *name);
+       /// Construct the test plugin with the given name
+       CTestPlugin(const char *name);
 
-	/// \returns the plugin search path for testing 
-	static ::boost::filesystem::path search_path();
+       /// \returns the plugin search path for testing
+       static ::boost::filesystem::path search_path();
 };
 
 
-template <> const char * const TPluginHandler<CTestPlugin>::m_help; 
+template <> const char *const TPluginHandler<CTestPlugin>::m_help;
 
 extern template class TPluginHandler<CTestPlugin>;
 
 /**
-   \ingroup test 
-   \brief Class to test plugin handling. 
+   \ingroup test
+   \brief Class to test plugin handling.
 */
-class EXPORT_CORE CTestPluginHandlerImpl : public  TPluginHandler<CTestPlugin> {
+class EXPORT_CORE CTestPluginHandlerImpl : public  TPluginHandler<CTestPlugin>
+{
 protected:
 
-	/**
-	   Constructor to use a specialized search path 
-	 */
-	CTestPluginHandlerImpl();
+       /**
+          Constructor to use a specialized search path
+        */
+       CTestPluginHandlerImpl();
 public:
 
-	/**
-	   Public version  of the TPluginHandler::plugin function to be used for testing
-	   \param name name of the requested plug-in 
-	   \returns the plugin if found, or NULL 
-	 */
-	CTestPlugin *get_plugin(const char *name) const;
+       /**
+          Public version  of the TPluginHandler::plugin function to be used for testing
+          \param name name of the requested plug-in
+          \returns the plugin if found, or NULL
+        */
+       CTestPlugin *get_plugin(const char *name) const;
 };
 
 
@@ -81,8 +83,8 @@ public:
 extern template class EXPORT_CORE THandlerSingleton<CTestPluginHandlerImpl>;
 
 
-/** \ingroup test  
-    Test plugin handler, only used internally for thesing the plugin handler 
+/** \ingroup test
+    Test plugin handler, only used internally for thesing the plugin handler
 */
 typedef THandlerSingleton<CTestPluginHandlerImpl> CTestPluginHandler;
 NS_MIA_END

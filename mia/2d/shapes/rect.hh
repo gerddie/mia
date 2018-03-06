@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,37 +25,40 @@
 
 NS_MIA_BEGIN
 
-class CRectangle2DShape: public C2DShape {
+class CRectangle2DShape: public C2DShape
+{
 public:
-	CRectangle2DShape(int width, int height, bool filled);
+       CRectangle2DShape(int width, int height, bool filled);
 };
 
 
-class CSquare2DShapePlugin: public C2DShapePlugin {
+class CSquare2DShapePlugin: public C2DShapePlugin
+{
 public:
-	CSquare2DShapePlugin();
-protected: 
-	int get_width() const;
-	bool get_filled() const; 
+       CSquare2DShapePlugin();
+protected:
+       int get_width() const;
+       bool get_filled() const;
 private:
-	
-	virtual const std::string do_get_descr() const;
-	virtual C2DShape *do_create()const;
 
-	int m_width; 
-	bool m_filled; 
+       virtual const std::string do_get_descr() const;
+       virtual C2DShape *do_create()const;
+
+       int m_width;
+       bool m_filled;
 };
 
-class CRectangle2DShapePlugin: public C2DShapePlugin {
+class CRectangle2DShapePlugin: public C2DShapePlugin
+{
 public:
-	CRectangle2DShapePlugin();
+       CRectangle2DShapePlugin();
 private:
-	
-	virtual const std::string do_get_descr() const;
-	virtual C2DShape *do_create()const;
-	int m_width; 
-	int m_height; 
-	bool m_filled; 
+
+       virtual const std::string do_get_descr() const;
+       virtual C2DShape *do_create()const;
+       int m_width;
+       int m_height;
+       bool m_filled;
 };
 
 

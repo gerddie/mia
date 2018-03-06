@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,49 +29,50 @@ NS_MIA_BEGIN
 
 /**
    @ingroup filtering
-   \brief a convenience class to create a chain of 2D image filters 
+   \brief a convenience class to create a chain of 2D image filters
 
-   This class is used to construct a filter chain from a vector of 
-   parameter strings. 
-   
+   This class is used to construct a filter chain from a vector of
+   parameter strings.
+
 */
 
-typedef TFilterChain<
+typedef TFilterChain <
 
-class EXPORT_2D C2DFilterChain {
+class EXPORT_2D C2DFilterChain
+{
 public:
-	C2DFilterChain();
+       C2DFilterChain();
 
-	/**
-	   Construct the filter chain by using a list of strings 
-	   that describe the filters to be chained up. 
-	   @param descr 
-	*/
-	C2DFilterChain(const std::vector<const char *>& descr) __attribute__((deprecated));
-	
-	/**
-	   Adds a filter at the begin of the chain. 
-	   @param filter 
-	 */
-	void push_front(P2DFilter filter);
+       /**
+          Construct the filter chain by using a list of strings
+          that describe the filters to be chained up.
+          @param descr
+       */
+       C2DFilterChain(const std::vector<const char *>& descr) __attribute__((deprecated));
 
-	/**
-	   Adds a filter at the end of the chain. 
-	   @param filter 
-	 */
-	void push_back(P2DFilter filter);
+       /**
+          Adds a filter at the begin of the chain.
+          @param filter
+        */
+       void push_front(P2DFilter filter);
 
-	/**
-	   run the filter chain on an image
-	   @param image input image 
-	   @returns filtered image 
-	 */
-	P2DImage filter(const C2DImage& image) const;
+       /**
+          Adds a filter at the end of the chain.
+          @param filter
+        */
+       void push_back(P2DFilter filter);
 
-	/// @returns true if the filter chain is empty, false otherwise 
-	bool empty() const;
+       /**
+          run the filter chain on an image
+          @param image input image
+          @returns filtered image
+        */
+       P2DImage filter(const C2DImage& image) const;
+
+       /// @returns true if the filter chain is empty, false otherwise
+       bool empty() const;
 private:
-	std::list<P2DFilter> m_chain;
+       std::list<P2DFilter> m_chain;
 };
 
 NS_MIA_END

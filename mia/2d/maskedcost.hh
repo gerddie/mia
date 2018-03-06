@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,34 +29,34 @@ NS_MIA_BEGIN
 
 extern template class EXPORT_2D TMaskedCost<C2DImage, C2DBitImage, C2DFVectorfield>;
 /**
-   @ingroup registration 
-   @brief the image-to-image cost function base class 
+   @ingroup registration
+   @brief the image-to-image cost function base class
 */
 typedef TMaskedCost<C2DImage, C2DBitImage, C2DFVectorfield> C2DMaskedImageCost;
 
 /**
-   @ingroup registration 
-   @brief pointer type of the image-to-image cost function base class 
+   @ingroup registration
+   @brief pointer type of the image-to-image cost function base class
 */
 typedef std::shared_ptr<C2DMaskedImageCost > P2DMaskedImageCost;
 
 /**
-   @ingroup registration 
-   @brief plug-in for the image-to-image cost function base class 
+   @ingroup registration
+   @brief plug-in for the image-to-image cost function base class
 */
 typedef TFactory<C2DMaskedImageCost> C2DMaskedImageCostPlugin;
 
 /**
-   @ingroup registration 
-   @brief plug-in handler for the image-to-image cost function base class 
+   @ingroup registration
+   @brief plug-in handler for the image-to-image cost function base class
 */
-typedef THandlerSingleton<TFactoryPluginHandler<C2DMaskedImageCostPlugin> > C2DMaskedImageCostPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<C2DMaskedImageCostPlugin>> C2DMaskedImageCostPluginHandler;
 
-/// @cond NEVER 
+/// @cond NEVER
 FACTORY_TRAIT(C2DMaskedImageCostPluginHandler);
-/// @endcond 
+/// @endcond
 
 NS_MIA_END
 
 
-#endif 
+#endif

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -40,155 +40,142 @@ using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
 struct Scaler1DFixture  {
-	Scaler1DFixture(); 
+       Scaler1DFixture();
 
-	double f(double x) const;
-	void test_size(const string& interpolator_kernel, size_t target_size);
-	void test_scale_by_factor(const string& kernel_descr, double scale, size_t expected_size);
+       double f(double x) const;
+       void test_size(const string& interpolator_kernel, size_t target_size);
+       void test_scale_by_factor(const string& kernel_descr, double scale, size_t expected_size);
 
 
-	C1DScalar::std_double_vector data; 
+       C1DScalar::std_double_vector data;
 };
 
 
 BOOST_FIXTURE_TEST_CASE( test_bspline2_upscale, Scaler1DFixture)
 {
-	test_size("bspline:d=2", 500);
+       test_size("bspline:d=2", 500);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline2_upscale_scale, Scaler1DFixture)
 {
-	test_scale_by_factor("bspline:d=2", 2.5, 639);
+       test_scale_by_factor("bspline:d=2", 2.5, 639);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline2_downscale_scale, Scaler1DFixture)
 {
-	test_scale_by_factor("bspline:d=2", 0.5, 129);
+       test_scale_by_factor("bspline:d=2", 0.5, 129);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_upscale_scale, Scaler1DFixture)
 {
-	test_scale_by_factor("bspline:d=3", 1.452, 372);
+       test_scale_by_factor("bspline:d=3", 1.452, 372);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_downscale_scale, Scaler1DFixture)
 {
-	test_scale_by_factor("bspline:d=3", 0.4671, 121);
+       test_scale_by_factor("bspline:d=3", 0.4671, 121);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_upscale, Scaler1DFixture)
 {
-	test_size("bspline:d=3", 500);
+       test_size("bspline:d=3", 500);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline3_downscale, Scaler1DFixture)
 {
-	test_size("bspline:d=3", 130);
+       test_size("bspline:d=3", 130);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_bspline4_upscale, Scaler1DFixture)
 {
-	test_size("bspline:d=4", 500);
+       test_size("bspline:d=4", 500);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline4_downscale, Scaler1DFixture)
 {
-	test_size("bspline:d=4", 130);
+       test_size("bspline:d=4", 130);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_bspline5_upscale, Scaler1DFixture)
 {
-	test_size("bspline:d=5", 500);
+       test_size("bspline:d=5", 500);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_bspline5_downscale, Scaler1DFixture)
 {
-	test_size("bspline:d=5", 130);
+       test_size("bspline:d=5", 130);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_omoms3_upscale, Scaler1DFixture)
 {
-	test_size("omoms:d=3", 500);
+       test_size("omoms:d=3", 500);
 }
 BOOST_FIXTURE_TEST_CASE( test_omoms3_downscale, Scaler1DFixture)
 {
-	test_size("omoms:d=3", 130);
+       test_size("omoms:d=3", 130);
 }
 
 
 double Scaler1DFixture::f(double x) const
 {
-	return cos(x);
+       return cos(x);
 }
 
 Scaler1DFixture::Scaler1DFixture():
-	data(256, false)
+       data(256, false)
 {
+       const double intervall = 2 * M_PI / 255.0;
 
-	const double intervall = 2 * M_PI / 255.0; 
-
-	for(size_t x = 0; x < 256; ++x)
-		data[x] = 200*f(intervall * x);
+       for (size_t x = 0; x < 256; ++x)
+              data[x] = 200 * f(intervall * x);
 }
 
 void Scaler1DFixture::test_size(const string& interpolator_kernel, size_t target_size)
 {
-	C1DScalar::std_double_vector result(target_size); 
-	
-	C1DInterpolatorFactory  ipf(interpolator_kernel, "mirror");	
-	C1DScalar scaler(*ipf.get_kernel(), data.size(), target_size); 
+       C1DScalar::std_double_vector result(target_size);
+       C1DInterpolatorFactory  ipf(interpolator_kernel, "mirror");
+       C1DScalar scaler(*ipf.get_kernel(), data.size(), target_size);
+       copy(data.begin(), data.end(), scaler.input_begin());
+       scaler.run();
+       copy(scaler.output_begin(), scaler.output_end(), result.begin());
+       const double intervall = 2 * M_PI / (target_size - 1);
 
-	copy(data.begin(), data.end(), scaler.input_begin()); 
-	
-	scaler.run(); 
-	
-	copy(scaler.output_begin(), scaler.output_end(), result.begin()); 
-	
-	const double intervall = 2 * M_PI / (target_size - 1); 
+       for (size_t i = 0; i < target_size; ++i) {
+              double x = intervall * i;
+              double fx = 200 * f(x);
+              cvdebug()  << " sin(" << x << ") = " << fx
+                         << ", interp= " << result[i]
+                         << ", Q= " << fx / result[i]
+                         << "\n";
 
-	for(size_t i = 0; i < target_size; ++i) {
-		double x = intervall * i; 
-		double fx = 200*f(x); 
-		cvdebug()  << " sin("<< x << ") = " << fx 
-			   << ", interp= " << result[i] 
-			   << ", Q= " << fx/ result[i] 
-			   << "\n"; 
-
-		
-		if (abs(fx) > 0.0001 || abs(result[i]) > 0.0001) 
-			BOOST_CHECK_CLOSE( fx, result[i], 0.1);
-	}
+              if (abs(fx) > 0.0001 || abs(result[i]) > 0.0001)
+                     BOOST_CHECK_CLOSE( fx, result[i], 0.1);
+       }
 }
 
 void Scaler1DFixture::test_scale_by_factor(const string& kernel_descr, double scale, size_t expected_size)
 {
-	auto kernel = produce_spline_kernel(kernel_descr); 
-	
-	C1DScalar scaler(*kernel, data.size(), scale); 
+       auto kernel = produce_spline_kernel(kernel_descr);
+       C1DScalar scaler(*kernel, data.size(), scale);
+       BOOST_CHECK_EQUAL(scaler.get_output_size(), expected_size);
+       C1DScalar::std_double_vector result(expected_size);
+       copy(data.begin(), data.end(), scaler.input_begin());
+       scaler.run();
+       copy(scaler.output_begin(), scaler.output_end(), result.begin());
+       double test_scale = 2 * M_PI * 1.0 / scale / 255.0;
 
-	BOOST_CHECK_EQUAL(scaler.get_output_size(), expected_size); 
-	C1DScalar::std_double_vector result(expected_size); 
-	
-	copy(data.begin(), data.end(), scaler.input_begin()); 
-	scaler.run(); 
-	copy(scaler.output_begin(), scaler.output_end(), result.begin()); 
+       for (size_t i = 0; i < expected_size; ++i) {
+              double x = test_scale * i;
+              double fx = 200 * f(x);
+              cvdebug()  << " sin(" << x << ") = " << fx
+                         << ", interp= " << result[i]
+                         << ", Q= " << fx / result[i]
+                         << "\n";
 
-        double test_scale = 2 * M_PI * 1.0 / scale / 255.0; 
-
-	for(size_t i = 0; i < expected_size; ++i) {
-		double x = test_scale * i;
-		double fx = 200*f(x); 
-		cvdebug()  << " sin("<< x << ") = " << fx 
-			   << ", interp= " << result[i] 
-			   << ", Q= " << fx/ result[i] 
-			   << "\n"; 
-
-		
-		if (abs(fx) > 0.0001 || abs(result[i]) > 0.0001) 
-			BOOST_CHECK_CLOSE( fx, result[i], 0.1);
-	}
-
+              if (abs(fx) > 0.0001 || abs(result[i]) > 0.0001)
+                     BOOST_CHECK_CLOSE( fx, result[i], 0.1);
+       }
 }

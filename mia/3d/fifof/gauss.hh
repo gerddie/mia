@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -38,29 +38,30 @@
 NS_BEGIN(gauss_2dstack_filter)
 
 
-class C2DGaussFifoFilter: public mia::C2DImageFifoFilter {
+class C2DGaussFifoFilter: public mia::C2DImageFifoFilter
+{
 public:
-	typedef mia::C2DImage *result_type;
+       typedef mia::C2DImage *result_type;
 
-	C2DGaussFifoFilter(size_t hw);
+       C2DGaussFifoFilter(size_t hw);
 
-	template <typename T>
-	mia::C2DImage *operator()(const mia::T3DImage<T>& buffer) const ;
+       template <typename T>
+       mia::C2DImage *operator()(const mia::T3DImage<T>& buffer) const ;
 
-	template <typename T>
-	mia::C2DImage *operator()(const mia::T2DImage<T>& input);
+       template <typename T>
+       mia::C2DImage *operator()(const mia::T2DImage<T>& input);
 private:
-	virtual void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x);
-	virtual void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
-	virtual mia::P2DImage do_filter();
-	virtual void post_finalize();
-	void shift_buffer();
-	size_t m_hw;
-	mia::P2DFilter m_gauss2d;
-	mia::C2DBounds m_slice_size;
-	mia::P1DSpacialKernel m_1dfilter;
-	std::unique_ptr<mia::C3DFImage> m_buffer;
-	std::unique_ptr<mia::C3DImage> m_dummy;
+       virtual void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x);
+       virtual void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
+       virtual mia::P2DImage do_filter();
+       virtual void post_finalize();
+       void shift_buffer();
+       size_t m_hw;
+       mia::P2DFilter m_gauss2d;
+       mia::C2DBounds m_slice_size;
+       mia::P1DSpacialKernel m_1dfilter;
+       std::unique_ptr<mia::C3DFImage> m_buffer;
+       std::unique_ptr<mia::C3DImage> m_dummy;
 };
 
 NS_END

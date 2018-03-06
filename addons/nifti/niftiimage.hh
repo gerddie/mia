@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,19 +23,21 @@
 
 #include <mia/3d/imageio.hh>
 
-namespace niftiimage {
+namespace niftiimage
+{
 
-class CNifti3DImageIOPlugin : public mia::C3DImageIOPlugin {
+class CNifti3DImageIOPlugin : public mia::C3DImageIOPlugin
+{
 public:
-	CNifti3DImageIOPlugin();
+       CNifti3DImageIOPlugin();
 private:
 
-        virtual PData do_load(const std::string&  filename) const;
-	virtual bool do_save(const std::string& fname, const Data& data) const;
-	virtual const std::string do_get_descr() const;
-	const std::string do_get_preferred_suffix() const; 
+       virtual PData do_load(const std::string&  filename) const;
+       virtual bool do_save(const std::string& fname, const Data& data) const;
+       virtual const std::string do_get_descr() const;
+       const std::string do_get_preferred_suffix() const;
 };
 
 }
 
-#endif 
+#endif

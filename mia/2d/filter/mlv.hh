@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,42 +26,44 @@
 
 NS_BEGIN(mlv_2dimage_filter);
 
-class C2DMLV: public mia::C2DFilter {
+class C2DMLV: public mia::C2DFilter
+{
 public:
-	C2DMLV(int hw);
+       C2DMLV(int hw);
 
-	template <typename T>
-	C2DMLV::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <typename T>
+       C2DMLV::result_type operator () (const mia::T2DImage<T>& data) const;
 private:
 
-	template <typename T>
-	T get(int x, int y, float ref)const;
+       template <typename T>
+       T get(int x, int y, float ref)const;
 
-	template <typename T>
-	void run_sub(const mia::T2DImage<T>& image, int cx, int cy, float& mu, float& sigma, float& n) const;
+       template <typename T>
+       void run_sub(const mia::T2DImage<T>& image, int cx, int cy, float& mu, float& sigma, float& n) const;
 
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	int m_l;
-	unsigned int m_kh;
+       int m_l;
+       unsigned int m_kh;
 
-	mutable mia::C2DFImage m_mu;
-	mutable mia::C2DFImage m_sigma;
-	mutable mia::C2DFImage m_n;
-	mutable std::vector<float> m_sqbuf;
-	mutable std::vector<float> m_buf;
-	mutable std::vector<float> m_mu_l1;
-	mutable std::vector<float> m_sigma_l1;
+       mutable mia::C2DFImage m_mu;
+       mutable mia::C2DFImage m_sigma;
+       mutable mia::C2DFImage m_n;
+       mutable std::vector<float> m_sqbuf;
+       mutable std::vector<float> m_buf;
+       mutable std::vector<float> m_mu_l1;
+       mutable std::vector<float> m_sigma_l1;
 };
 
 
-class C2DMLVImageFilterFactory: public mia::C2DFilterPlugin {
+class C2DMLVImageFilterFactory: public mia::C2DFilterPlugin
+{
 public:
-	C2DMLVImageFilterFactory();
+       C2DMLVImageFilterFactory();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr() const;
-	int m_hw;
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr() const;
+       int m_hw;
 };
 
 NS_END

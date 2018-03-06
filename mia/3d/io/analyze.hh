@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,25 +28,26 @@ NS_BEGIN(IMAGEIO_3D_ANALYZE)
 struct analyze_image_dimension;
 struct analyze_dsr;
 
-class CAnalyze3DImageIOPlugin : public mia::C3DImageIOPlugin {
+class CAnalyze3DImageIOPlugin : public mia::C3DImageIOPlugin
+{
 public:
-	CAnalyze3DImageIOPlugin();
+       CAnalyze3DImageIOPlugin();
 private:
-	typedef mia::C3DImageIOPlugin::PData PData;
-	typedef mia::C3DImageIOPlugin::Data Data;
+       typedef mia::C3DImageIOPlugin::PData PData;
+       typedef mia::C3DImageIOPlugin::Data Data;
 
-	virtual PData do_load(const std::string&  filename) const;
-	virtual bool do_save(const std::string& fname, const Data& data) const;
-	virtual const std::string do_get_descr() const;
-	const std::string do_get_preferred_suffix() const; 
+       virtual PData do_load(const std::string&  filename) const;
+       virtual bool do_save(const std::string& fname, const Data& data) const;
+       virtual const std::string do_get_descr() const;
+       const std::string do_get_preferred_suffix() const;
 
-	void swap_hdr(analyze_dsr& hdr) const;
+       void swap_hdr(analyze_dsr& hdr) const;
 
-	mia::C3DImage *read_image(const mia::C3DBounds& size, short datatype, mia::CInputFile& data_file)const;
+       mia::C3DImage *read_image(const mia::C3DBounds& size, short datatype, mia::CInputFile& data_file)const;
 
-	bool save_data(const std::string& fname, const Data& data, analyze_image_dimension& dime) const;
-	const mia::TDictMap<mia::EPixelType> m_type_table;
-	mutable bool m_swap_endian;
+       bool save_data(const std::string& fname, const Data& data, analyze_image_dimension& dime) const;
+       const mia::TDictMap<mia::EPixelType> m_type_table;
+       mutable bool m_swap_endian;
 };
 
 NS_END

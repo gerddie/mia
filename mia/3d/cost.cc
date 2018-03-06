@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,12 +27,12 @@
 
 NS_MIA_BEGIN
 
-template <> const char *  const 
-TPluginHandler<TFactory<C3DImageCost>>::m_help =  
-   "3D image similarity kernels evaluate the according similarity measure between "
-  "two images. These kernels may be used standalone, like e.g. in linear registration, "
-  "or will be called from generalized image similarity cost plug-ins that also take "
-  "care of transforming and scaling the images during the image registration process.";
+template <> const char   *const
+TPluginHandler<TFactory<C3DImageCost>>::m_help =
+              "3D image similarity kernels evaluate the according similarity measure between "
+              "two images. These kernels may be used standalone, like e.g. in linear registration, "
+              "or will be called from generalized image similarity cost plug-ins that also take "
+              "care of transforming and scaling the images during the image registration process.";
 
 template class TCost<C3DImage, C3DFVectorfield>;
 

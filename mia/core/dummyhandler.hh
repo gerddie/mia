@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,39 +27,42 @@
 
 NS_MIA_BEGIN
 
-class EXPORT_CORE CDummyType : public std::string, public CIOData {
+class EXPORT_CORE CDummyType : public std::string, public CIOData
+{
 public:
-	CDummyType(const char *s);
+       CDummyType(const char *s);
 
-	CDummyType* clone() const;
+       CDummyType *clone() const;
 };
 
 struct test_io_data {
-	typedef CDummyType type;
-	static const char *data_descr;
+       typedef CDummyType type;
+       static const char *data_descr;
 };
 
-extern template class EXPORT_CORE TPlugin<test_io_data,io_plugin_type>; 
-extern template class EXPORT_CORE TIOPlugin<test_io_data>; 
+extern template class EXPORT_CORE TPlugin<test_io_data, io_plugin_type>;
+extern template class EXPORT_CORE TIOPlugin<test_io_data>;
 
 
-class EXPORT_CORE CTestIOPlugin : public TIOPlugin<test_io_data> {
+class EXPORT_CORE CTestIOPlugin : public TIOPlugin<test_io_data>
+{
 public:
-	typedef  test_io_data::type Data;
+       typedef  test_io_data::type Data;
 //	typedef  TIOPlugin<test_io_type>::PData PData;
-	CTestIOPlugin(const char *name);
+       CTestIOPlugin(const char *name);
 };
 
 
 extern template class EXPORT_CORE TIOPluginHandler<CTestIOPlugin>;
 
-class EXPORT_CORE CDummyIOPluginHandler: public TIOPluginHandler<CTestIOPlugin> {
-	void check_file_exists(const std::string& fname) const; 
-}; 
+class EXPORT_CORE CDummyIOPluginHandler: public TIOPluginHandler<CTestIOPlugin>
+{
+       void check_file_exists(const std::string& fname) const;
+};
 
-extern template class EXPORT_CORE THandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
+extern template class EXPORT_CORE THandlerSingleton<TIOPluginHandler<CTestIOPlugin>>;
 
-/// Test IO plugin handler, don't use this in real code  
+/// Test IO plugin handler, don't use this in real code
 typedef THandlerSingleton<CDummyIOPluginHandler> CTestIOPluginHandler;
 
 

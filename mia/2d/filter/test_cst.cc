@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,22 +28,25 @@ using namespace ::boost::unit_test;
 using namespace filter_2dimage_cst;
 
 
-class CCST2DDummyKernel: public CCST2DImageKernel {
+class CCST2DDummyKernel: public CCST2DImageKernel
+{
 public:
-	CCST2DDummyKernel(): CCST2DImageKernel(FFTW_RODFT00)
-		{
-		}
+       CCST2DDummyKernel(): CCST2DImageKernel(FFTW_RODFT00)
+       {
+       }
 private:
-	class PrivatePlan: public CCST2DImageKernel::CPlan {
-	public:
-		PrivatePlan(fftwf_r2r_kind forward, std::vector<int> size):
-			CCST2DImageKernel::CPlan( forward, size) {
-		}
-	private:
-		virtual void do_execute(float *buffer) const;
+       class PrivatePlan: public CCST2DImageKernel::CPlan
+       {
+       public:
+              PrivatePlan(fftwf_r2r_kind forward, std::vector<int> size):
+                     CCST2DImageKernel::CPlan( forward, size)
+              {
+              }
+       private:
+              virtual void do_execute(float *buffer) const;
 
-	};
-	virtual CCST2DImageKernel::CPlan *do_prepare(fftwf_r2r_kind fw_kind, const std::vector<int>& size);
+       };
+       virtual CCST2DImageKernel::CPlan *do_prepare(fftwf_r2r_kind fw_kind, const std::vector<int>& size);
 };
 
 void CCST2DDummyKernel::PrivatePlan::do_execute(float */*buffer*/) const
@@ -52,28 +55,25 @@ void CCST2DDummyKernel::PrivatePlan::do_execute(float */*buffer*/) const
 
 CCST2DImageKernel::CPlan *CCST2DDummyKernel::do_prepare(fftwf_r2r_kind fw_kind, const std::vector<int>& size)
 {
-	return new PrivatePlan(fw_kind, size);
+       return new PrivatePlan(fw_kind, size);
 }
 
 BOOST_AUTO_TEST_CASE( test_cst )
 {
-	C2DBounds size(16, 32);
-	C2DFImage test_image(size);
-	C2DFImage::iterator ti = test_image.begin();
-	for (size_t i = 0; i < test_image.size(); ++i, ++ti)
-		*ti = i + 1;
+       C2DBounds size(16, 32);
+       C2DFImage test_image(size);
+       C2DFImage::iterator ti = test_image.begin();
 
-	PCST2DImageKernel k(new CCST2DDummyKernel());
+       for (size_t i = 0; i < test_image.size(); ++i, ++ti)
+              *ti = i + 1;
 
-	C2DCst filter(k);
+       PCST2DImageKernel k(new CCST2DDummyKernel());
+       C2DCst filter(k);
+       P2DImage dummy_result = filter.filter(test_image);
+       BOOST_CHECK_EQUAL(dummy_result->get_pixel_type(), it_float);
+       const C2DFImage *fresult = dynamic_cast<const C2DFImage *>(dummy_result.get());
 
-	P2DImage dummy_result = filter.filter(test_image);
-
-	BOOST_CHECK_EQUAL(dummy_result->get_pixel_type(), it_float);
-
-	const C2DFImage *fresult = dynamic_cast<const C2DFImage *>(dummy_result.get());
-
-	for(C2DFImage::const_iterator cti = test_image.begin(), cfr = fresult->begin();
-	    cti != test_image.end(); ++cti, ++cfr)
-		BOOST_CHECK_CLOSE(*cti, *cfr, 0.1);
+       for (C2DFImage::const_iterator cti = test_image.begin(), cfr = fresult->begin();
+            cti != test_image.end(); ++cti, ++cfr)
+              BOOST_CHECK_CLOSE(*cti, *cfr, 0.1);
 }

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,202 +31,207 @@
 NSBEGIN
 
 NS_MIA_USE;
-using namespace std; 
+using namespace std;
 
 
-static const char *plugin_name = "frequency"; 
+static const char *plugin_name = "frequency";
 
-class C2DFFT: public C2DFilter {
-public: 
-	C2DFFT(); 
-	~C2DFFT();
-	
-	void init(const C2DBounds& size); 
-	
-	template <typename T>
-	C2DFFT::result_type operator()(const T2DImage<T>& image)const; 
-		
-	
-private: 
-	C2DBounds m_size; 
-	fftw_complex *m_cbuffer; 
-	fftw_plan m_forward_plan; 
-};
-
-class C2DImageFFTFilter: public C2DImageFilterBase {
-	mutable C2DFFT m_filter; 
+class C2DFFT: public C2DFilter
+{
 public:
-	C2DImageFFTFilter();
+       C2DFFT();
+       ~C2DFFT();
 
-	virtual P2DImage do_filter(const C2DImage& image) const;
+       void init(const C2DBounds& size);
+
+       template <typename T>
+       C2DFFT::result_type operator()(const T2DImage<T>& image)const;
+
+
+private:
+       C2DBounds m_size;
+       fftw_complex *m_cbuffer;
+       fftw_plan m_forward_plan;
 };
 
-class C2DImageFFTFilterFactory: public C2DFilterPlugin {
-public: 
-	C2DImageFFTFilterFactory();
-	virtual C2DFilter *create(const CParsedOptions& options) const;
-	virtual const string do_get_descr()const; 
+class C2DImageFFTFilter: public C2DImageFilterBase
+{
+       mutable C2DFFT m_filter;
+public:
+       C2DImageFFTFilter();
+
+       virtual P2DImage do_filter(const C2DImage& image) const;
+};
+
+class C2DImageFFTFilterFactory: public C2DFilterPlugin
+{
+public:
+       C2DImageFFTFilterFactory();
+       virtual C2DFilter *create(const CParsedOptions& options) const;
+       virtual const string do_get_descr()const;
 };
 
 
 C2DFFT::C2DFFT():
-	m_size(0,0), 
-	m_cbuffer(NULL)
+       m_size(0, 0),
+       m_cbuffer(NULL)
 {
 }
 
 C2DFFT::~C2DFFT()
 {
-	if (m_cbuffer) {
-		fftw_free(m_cbuffer); 
-		fftw_destroy_plan( m_forward_plan); 
-	}
+       if (m_cbuffer) {
+              fftw_free(m_cbuffer);
+              fftw_destroy_plan( m_forward_plan);
+       }
 }
 
 void C2DFFT::init(const C2DBounds& size)
 {
-	if (m_size == size)
-		return; 
-	cvdebug() << "C2DFFT::init ...\n"; 
-	
-	m_size = size; 
+       if (m_size == size)
+              return;
 
-	cvdebug() << "size = " << m_size.x << ", " << m_size.y << "\n"; 
-	if (m_cbuffer) {
-		delete[] m_cbuffer; 
-		fftw_destroy_plan( m_forward_plan); 
-	}
-	
-	m_cbuffer = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * m_size.y * m_size.x);
-	// create the fftw plans
-	
-	cvdebug() << "buffer at " << m_cbuffer << "\n"; 
-	
-	if (!m_cbuffer) {
-		throw runtime_error("unable to allocate fftw buffers"); 
-	}
-	
-	 m_forward_plan = fftw_plan_dft_2d(m_size.y, m_size.x,
-					    m_cbuffer, m_cbuffer, FFTW_FORWARD, FFTW_ESTIMATE);
+       cvdebug() << "C2DFFT::init ...\n";
+       m_size = size;
+       cvdebug() << "size = " << m_size.x << ", " << m_size.y << "\n";
 
-	 cvdebug() << "forward plan at " <<  m_forward_plan << "\n"; 
-	 if (!m_forward_plan) {
-		 //fftw_free(m_cbuffer); 
-		 throw runtime_error("unable to create forward plans ..."); 
-	 }
-	 
-	 cverb << "done\n"; 
+       if (m_cbuffer) {
+              delete[] m_cbuffer;
+              fftw_destroy_plan( m_forward_plan);
+       }
+
+       m_cbuffer = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * m_size.y * m_size.x);
+       // create the fftw plans
+       cvdebug() << "buffer at " << m_cbuffer << "\n";
+
+       if (!m_cbuffer) {
+              throw runtime_error("unable to allocate fftw buffers");
+       }
+
+       m_forward_plan = fftw_plan_dft_2d(m_size.y, m_size.x,
+                                         m_cbuffer, m_cbuffer, FFTW_FORWARD, FFTW_ESTIMATE);
+       cvdebug() << "forward plan at " <<  m_forward_plan << "\n";
+
+       if (!m_forward_plan) {
+              //fftw_free(m_cbuffer);
+              throw runtime_error("unable to create forward plans ...");
+       }
+
+       cverb << "done\n";
 }
 
 template <typename T, bool is_integral>
 struct FBackConvert {
-	FBackConvert(double scale):
-		m_scale(scale) 
-		{
-			cvdebug() << "scale = " << m_scale <<"\n"; 
-		}
-	
-	T operator ()(double x) {
-		return T(x *m_scale); 
-	}
-private: 
-	double m_scale; 
+       FBackConvert(double scale):
+              m_scale(scale)
+       {
+              cvdebug() << "scale = " << m_scale << "\n";
+       }
+
+       T operator ()(double x)
+       {
+              return T(x * m_scale);
+       }
+private:
+       double m_scale;
 };
 
 template <typename T>
 struct FBackConvert<T, true> {
-	FBackConvert(double scale):
-		m_scale(scale) 
-		{
-			cvdebug() << "scale = " << m_scale <<"\n"; 
-		}
-	
-	T operator ()(double x) {
-		double xc = x *m_scale; 
-		return xc < numeric_limits<T>::min() ? numeric_limits<T>::min() : 
-			( xc < numeric_limits<T>::max() ?  T(xc) : numeric_limits<T>::max()); 
-	}
-private: 
-	double m_scale; 
+       FBackConvert(double scale):
+              m_scale(scale)
+       {
+              cvdebug() << "scale = " << m_scale << "\n";
+       }
+
+       T operator ()(double x)
+       {
+              double xc = x * m_scale;
+              return xc < numeric_limits<T>::min() ? numeric_limits<T>::min() :
+                     ( xc < numeric_limits<T>::max() ?  T(xc) : numeric_limits<T>::max());
+       }
+private:
+       double m_scale;
 };
 
 template <typename T>
 C2DFFT::result_type C2DFFT::operator()(const T2DImage<T>& image)const
 {
-	cvdebug() << "C2DFFT::operator() begin\n";
-	typename T2DImage<T>::const_iterator i = image.begin(); 
-	fftw_complex *t = m_cbuffer; 
-	for (size_t y = 0; y < image.get_size().y; ++y) {
-		float sign = y & 1 ? -1 : 1; 
-		for (size_t x = 0; x < image.get_size().x; ++x, sign *=-1, ++i, ++t) {
-			(*t)[0] = sign * *i; 
-			(*t)[1] = 0.0; 
-		}
-	}
-	
-	cvdebug() << "C2DFFT::operator() forward transform\n";
-	fftw_execute( m_forward_plan); 
-	
-	fftw_complex *cbuffer = m_cbuffer;
-	
-	for (size_t i = 0; i < image.size(); ++i, ++cbuffer) {
-		(*cbuffer)[0] = sqrt((*cbuffer)[0] * (*cbuffer)[0] + (*cbuffer)[1] * (*cbuffer)[1]); 
-	}
+       cvdebug() << "C2DFFT::operator() begin\n";
+       typename T2DImage<T>::const_iterator i = image.begin();
+       fftw_complex *t = m_cbuffer;
 
-	double factor =1.0/sqrt(image.size()); 
-	cvdebug() << "factor = " << factor << "\n"; 
-	
-	T2DImage<T> *result = new T2DImage<T>(image.get_size(), image);
-	typename T2DImage<T>::iterator r = result->begin(); 
-	cbuffer = m_cbuffer;
-	
-	for (size_t y = 0; y < image.get_size().y; ++y)
-		for (size_t x = 0; x < image.get_size().x; ++x, ++cbuffer, ++r) {
-			double val = factor * (*cbuffer)[0]; 
-			*r = val > numeric_limits<T>::max() ? numeric_limits<T>::max(): 
-				val < numeric_limits<T>::min() ? val > numeric_limits<T>::min() : T(val); 
-		}
+       for (size_t y = 0; y < image.get_size().y; ++y) {
+              float sign = y & 1 ? -1 : 1;
 
-	return P2DImage(result); 
+              for (size_t x = 0; x < image.get_size().x; ++x, sign *= -1, ++i, ++t) {
+                     (*t)[0] = sign * *i;
+                     (*t)[1] = 0.0;
+              }
+       }
+
+       cvdebug() << "C2DFFT::operator() forward transform\n";
+       fftw_execute( m_forward_plan);
+       fftw_complex *cbuffer = m_cbuffer;
+
+       for (size_t i = 0; i < image.size(); ++i, ++cbuffer) {
+              (*cbuffer)[0] = sqrt((*cbuffer)[0] * (*cbuffer)[0] + (*cbuffer)[1] * (*cbuffer)[1]);
+       }
+
+       double factor = 1.0 / sqrt(image.size());
+       cvdebug() << "factor = " << factor << "\n";
+       T2DImage<T> *result = new T2DImage<T>(image.get_size(), image);
+       typename T2DImage<T>::iterator r = result->begin();
+       cbuffer = m_cbuffer;
+
+       for (size_t y = 0; y < image.get_size().y; ++y)
+              for (size_t x = 0; x < image.get_size().x; ++x, ++cbuffer, ++r) {
+                     double val = factor * (*cbuffer)[0];
+                     *r = val > numeric_limits<T>::max() ? numeric_limits<T>::max() :
+                          val < numeric_limits<T>::min() ? val > numeric_limits<T>::min() : T(val);
+              }
+
+       return P2DImage(result);
 }
 
 C2DImageFFTFilter::C2DImageFFTFilter()
 {
 }
-	
+
 
 P2DImage C2DImageFFTFilter::do_filter(const C2DImage& image) const
 {
-	m_filter.init(image.get_size()); 
-	return wrap_filter(m_filter, image); 
+       m_filter.init(image.get_size());
+       return wrap_filter(m_filter, image);
 }
 
 
 C2DImageFFTFilterFactory::C2DImageFFTFilterFactory():
-	C2DFilterPlugin(plugin_name)
+       C2DFilterPlugin(plugin_name)
 {
 }
 
 C2DFilter *C2DImageFFTFilterFactory::create(const CParsedOptions& options) const
 {
-	return ProductPtr(new C2DImageFFTFilter()); 
+       return ProductPtr(new C2DImageFFTFilter());
 }
 
 const string C2DImageFFTFilterFactory::do_get_descr()const
 {
-	return "2D image convert-to-frequency domain filters based on FFT";
+       return "2D image convert-to-frequency domain filters based on FFT";
 }
 
 
 struct FCompare {
-	bool operator () (float a, float b){
-		return ::fabs(a-b) < 0.0001; 
-	}
+       bool operator () (float a, float b)
+       {
+              return ::fabs(a - b) < 0.0001;
+       }
 };
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DImageFFTFilterFactory(); 
+       return new C2DImageFFTFilterFactory();
 }
 
 

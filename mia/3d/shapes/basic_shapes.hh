@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,45 +27,51 @@ using namespace std;
 
 
 
-class C6n3DShape: public C3DShape {
+class C6n3DShape: public C3DShape
+{
 public:
-	C6n3DShape();
+       C6n3DShape();
 };
 
-class C6n3DShapeFactory: public C3DShapePlugin {
+class C6n3DShapeFactory: public C3DShapePlugin
+{
 public:
-	C6n3DShapeFactory();
+       C6n3DShapeFactory();
 private:
-	virtual const string do_get_descr() const;
-	virtual C3DShape *do_create()const;
+       virtual const string do_get_descr() const;
+       virtual C3DShape *do_create()const;
 };
 
 
-class C18n3DShape: public C6n3DShape {
+class C18n3DShape: public C6n3DShape
+{
 public:
-	C18n3DShape();
+       C18n3DShape();
 };
 
-class C18n3DShapeFactory: public C3DShapePlugin {
+class C18n3DShapeFactory: public C3DShapePlugin
+{
 public:
-	C18n3DShapeFactory();
+       C18n3DShapeFactory();
 private:
-	virtual const string do_get_descr() const;
-	virtual C3DShape *do_create()const;
+       virtual const string do_get_descr() const;
+       virtual C3DShape *do_create()const;
 };
 
-class C26n3DShape: public C18n3DShape {
+class C26n3DShape: public C18n3DShape
+{
 public:
-	C26n3DShape();
+       C26n3DShape();
 };
 
 
-class C26n3DShapeFactory: public C3DShapePlugin {
+class C26n3DShapeFactory: public C3DShapePlugin
+{
 public:
-	C26n3DShapeFactory();
+       C26n3DShapeFactory();
 private:
-	virtual const string do_get_descr() const;
-	virtual C3DShape *do_create()const;
+       virtual const string do_get_descr() const;
+       virtual C3DShape *do_create()const;
 };
 
 

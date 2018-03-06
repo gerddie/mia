@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 #include <mia/core/defines.hh>
 #include <istream>
-#include <ostream> 
+#include <ostream>
 
 NS_MIA_BEGIN
 
@@ -31,16 +31,18 @@ NS_MIA_BEGIN
    \ingroup traits
    \brief Structure to read and write ND vectors to and from cvd files
  */
-template <typename T> 
+template <typename T>
 struct NDVectorIOcvd {
-	static bool read(std::istream& MIA_PARAM_UNUSED(is), T& MIA_PARAM_UNUSED(value)) {
-		static_assert(sizeof(T) == 0, "NDVectorIOcvd::read needs specialization"); 
-		return false; 
-	}
-	static void write(std::ostream& MIA_PARAM_UNUSED(os), const T& MIA_PARAM_UNUSED(value)){
-		static_assert(sizeof(T) == 0, "NDVectorIOcvd::read needs specialization"); 
-	}
-}; 
+       static bool read(std::istream& MIA_PARAM_UNUSED(is), T& MIA_PARAM_UNUSED(value))
+       {
+              static_assert(sizeof(T) == 0, "NDVectorIOcvd::read needs specialization");
+              return false;
+       }
+       static void write(std::ostream& MIA_PARAM_UNUSED(os), const T& MIA_PARAM_UNUSED(value))
+       {
+              static_assert(sizeof(T) == 0, "NDVectorIOcvd::read needs specialization");
+       }
+};
 NS_MIA_END
 
-#endif 
+#endif

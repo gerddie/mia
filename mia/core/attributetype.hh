@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,39 +29,41 @@
 NS_MIA_BEGIN
 
 struct EAttributeType {
-        static const int attr_unknown =    0; 
-        static const int attr_bool    =    1; 
-        static const int attr_uchar   =    2; 
-        static const int attr_schar   =    3; 
-        static const int attr_ushort  =    4; 
-        static const int attr_sshort  =    5; 
-        static const int attr_uint    =    6; 
-        static const int attr_sint    =    7; 
-        static const int attr_ulong   =    8; 
-        static const int attr_slong   =    9; 
-        static const int attr_float   =   10; 
-        static const int attr_double  =   11; 
-        static const int attr_string  =   12; 
+       static const int attr_unknown =    0;
+       static const int attr_bool    =    1;
+       static const int attr_uchar   =    2;
+       static const int attr_schar   =    3;
+       static const int attr_ushort  =    4;
+       static const int attr_sshort  =    5;
+       static const int attr_uint    =    6;
+       static const int attr_sint    =    7;
+       static const int attr_ulong   =    8;
+       static const int attr_slong   =    9;
+       static const int attr_float   =   10;
+       static const int attr_double  =   11;
+       static const int attr_string  =   12;
 
-        static const int vector_bit = 0x80000000; 
+       static const int vector_bit = 0x80000000;
 
-        static int scalar_type(int type) {
-                return type & scalar_mask; 
-        }; 
+       static int scalar_type(int type)
+       {
+              return type & scalar_mask;
+       };
 
-        static bool is_vector(int type) {
-                return type & vector_bit; 
-        }
+       static bool is_vector(int type)
+       {
+              return type & vector_bit;
+       }
 
-private: 
-        static const int scalar_mask  =0x7FFFFFFF; 
+private:
+       static const int scalar_mask  = 0x7FFFFFFF;
 
-}; 
+};
 
-template <typename T> 
-struct attribute_type : public EAttributeType { 
-        static const int value = EAttributeType::attr_unknown;
-}; 
+template <typename T>
+struct attribute_type : public EAttributeType {
+       static const int value = EAttributeType::attr_unknown;
+};
 
 #define ATTR_TYPEID(T, ID)                                      \
         template <>                                             \
@@ -69,31 +71,31 @@ struct attribute_type : public EAttributeType {
                 static const int value = ID;  \
         };
 
-ATTR_TYPEID(bool, attr_bool); 
-ATTR_TYPEID(uint8_t, attr_uchar); 
-ATTR_TYPEID(int8_t, attr_schar); 
+ATTR_TYPEID(bool, attr_bool);
+ATTR_TYPEID(uint8_t, attr_uchar);
+ATTR_TYPEID(int8_t, attr_schar);
 
-ATTR_TYPEID(uint16_t, attr_ushort); 
-ATTR_TYPEID(int16_t, attr_sshort); 
+ATTR_TYPEID(uint16_t, attr_ushort);
+ATTR_TYPEID(int16_t, attr_sshort);
 
-ATTR_TYPEID(uint32_t, attr_uint); 
-ATTR_TYPEID(int32_t, attr_sint); 
+ATTR_TYPEID(uint32_t, attr_uint);
+ATTR_TYPEID(int32_t, attr_sint);
 
-ATTR_TYPEID(uint64_t, attr_ulong); 
-ATTR_TYPEID(int64_t, attr_slong); 
+ATTR_TYPEID(uint64_t, attr_ulong);
+ATTR_TYPEID(int64_t, attr_slong);
 
-ATTR_TYPEID(float, attr_float); 
-ATTR_TYPEID(double, attr_double); 
+ATTR_TYPEID(float, attr_float);
+ATTR_TYPEID(double, attr_double);
 
-ATTR_TYPEID(std::string, attr_string); 
+ATTR_TYPEID(std::string, attr_string);
 
 #undef ATTR_TYPEID
 
-template <typename T> 
-struct attribute_type<std::vector<T>> : public EAttributeType{
-        static const int value = attribute_type<T>::value | EAttributeType::vector_bit;
-}; 
+template <typename T>
+struct attribute_type<std::vector<T>> : public EAttributeType {
+       static const int value = attribute_type<T>::value | EAttributeType::vector_bit;
+};
 
 NS_MIA_END
-        
-#endif 
+
+#endif

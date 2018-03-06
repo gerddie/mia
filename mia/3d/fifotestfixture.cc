@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -33,26 +33,24 @@ NS_MIA_USE;
 
 void fifof_Fixture::call_test(C2DImageFifoFilter& filter)const
 {
-	typedef TFifoFilterSink<P2DImage> C2DImageFifoFilterSink;
+       typedef TFifoFilterSink<P2DImage> C2DImageFifoFilterSink;
+       C2DImageFifoFilterSink::Pointer sink(new C2DImageFifoFilterSink());
+       filter.append_filter(sink);
 
-	C2DImageFifoFilterSink::Pointer sink(new C2DImageFifoFilterSink());
-	filter.append_filter(sink);
+       for (auto i = m_in_data.begin();  i != m_in_data.end(); ++i) {
+              cvdebug() << "push test image of size " << (*i)->get_size() << "\n";
+              filter.push(*i);
+       }
 
-	for (auto i = m_in_data.begin();  i != m_in_data.end(); ++i) {
-		cvdebug() << "push test image of size " << (*i)->get_size() << "\n"; 
-		filter.push(*i);
-	}
+       filter.finalize();
+       C2DImageFifoFilterSink::result_type r = sink->result();
+       BOOST_CHECK_EQUAL(r.size(), m_test_data.size());
+       BOOST_REQUIRE(r.size() == m_test_data.size());
 
-	filter.finalize();
-	C2DImageFifoFilterSink::result_type r = sink->result();
-
-	BOOST_CHECK_EQUAL(r.size(), m_test_data.size());
-	BOOST_REQUIRE(r.size() == m_test_data.size());
-
-	for (size_t i = 0; i < r.size(); ++i) {
-		cvdebug() << "fifof_Fixture: test slice " << i << "\n"; 
-		test_image_equal(*r[i], *m_test_data[i]);
-	}
+       for (size_t i = 0; i < r.size(); ++i) {
+              cvdebug() << "fifof_Fixture: test slice " << i << "\n";
+              test_image_equal(*r[i], *m_test_data[i]);
+       }
 }
 
 

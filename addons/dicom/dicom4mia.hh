@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,62 +29,64 @@
 
 #ifdef __GNUC__
 #  define EXPORT_DICOM __attribute__((visibility("default")))
-#else 
+#else
 #  define EXPORT_DICOM
 #endif
 
 NS_MIA_BEGIN
 
-class EXPORT_DICOM CDicomReader {
+class EXPORT_DICOM CDicomReader
+{
 public:
-	CDicomReader(const char *filename);
+       CDicomReader(const char *filename);
 
-	// this is here only for testing
-	CDicomReader(struct CDicomReaderData *yeah);
+       // this is here only for testing
+       CDicomReader(struct CDicomReaderData *yeah);
 
-	~CDicomReader();
+       ~CDicomReader();
 
-	bool good() const;
-	int rows() const;
-	int cols() const;
+       bool good() const;
+       int rows() const;
+       int cols() const;
 
-	C2DBounds image_size()const;
+       C2DBounds image_size()const;
 
-	int samples_per_pixel() const;
-	int bits_allocated() const;
-	int bits_used() const;
+       int samples_per_pixel() const;
+       int bits_allocated() const;
+       int bits_used() const;
 
-	std::string get_attribute(const std::string& name, bool required)const;
-	C2DFVector get_pixel_size() const;
-	C3DFVector get_voxel_size(bool warn_no_z) const;
+       std::string get_attribute(const std::string& name, bool required)const;
+       C2DFVector get_pixel_size() const;
+       C3DFVector get_voxel_size(bool warn_no_z) const;
 
-	P2DImage get_image() const;
+       P2DImage get_image() const;
 
-	bool has_3dimage() const; 
+       bool has_3dimage() const;
 
-	P3DImage get_3dimage() const; 
+       P3DImage get_3dimage() const;
 
-	int get_number_of_frames() const; 
+       int get_number_of_frames() const;
 private:
-	template <typename T> P3DImage load_image3d()const;
-	template <typename T> P2DImage load_image()const;
+       template <typename T> P3DImage load_image3d()const;
+       template <typename T> P2DImage load_image()const;
 
 
-	struct CDicomReaderData *impl;
-	std::string m_filename;
+       struct CDicomReaderData *impl;
+       std::string m_filename;
 
 };
 
-class EXPORT_DICOM CDicomWriter {
+class EXPORT_DICOM CDicomWriter
+{
 public:
-	CDicomWriter(const C2DImage& image);
-	~CDicomWriter();
+       CDicomWriter(const C2DImage& image);
+       ~CDicomWriter();
 
-	bool write(const char *filename) const;
+       bool write(const char *filename) const;
 
-	friend CDicomReader ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer);
+       friend CDicomReader ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer);
 private:
-	struct CDicomWriterData *impl;
+       struct CDicomWriterData *impl;
 };
 
 #ifdef ENABLE_TEST_HACKS

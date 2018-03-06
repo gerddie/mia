@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,13 +24,13 @@
 
 NS_MIA_BEGIN
 
-template class TTransformCreator<C2DTransformation>; 
-template class TTransformCreatorPlugin<C2DTransformation>; 
+template class TTransformCreator<C2DTransformation>;
+template class TTransformCreatorPlugin<C2DTransformation>;
 
-template <> const char *  const 
-TPluginHandler<C2DTransformCreatorPlugin>::m_help =  
-   "These plug-ins define creators for 2D transformations.";
+template <> const char   *const
+TPluginHandler<C2DTransformCreatorPlugin>::m_help =
+       "These plug-ins define creators for 2D transformations.";
 
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin);
 
 NS_MIA_END

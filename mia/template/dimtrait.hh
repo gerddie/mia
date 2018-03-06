@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,48 +23,48 @@
 
 NS_MIA_BEGIN
 
-///   @cond INTERNAL 
+///   @cond INTERNAL
 struct dimension_traits_placeholder {
-	typedef std::shared_ptr<dimension_traits_placeholder> Pointer;
-}; 
+       typedef std::shared_ptr<dimension_traits_placeholder> Pointer;
+};
 
 /**
-   \brief Trait used for the non-linear registration 
+   \brief Trait used for the non-linear registration
 */
-template <int Dimensions> 
+template <int Dimensions>
 struct dimension_traits {
-	typedef dimension_traits_placeholder Transformation; 
-	typedef dimension_traits_placeholder PTransformation; 
-	typedef dimension_traits_placeholder Size; 
-	typedef dimension_traits_placeholder Image; 
-	typedef dimension_traits_placeholder PImage; 
-	typedef dimension_traits_placeholder ImageSeries; 
-	typedef dimension_traits_placeholder PTransformationFactory; 
-	typedef dimension_traits_placeholder FullCostList; 
-	typedef dimension_traits_placeholder PFullCost; 
-	typedef dimension_traits_placeholder Filter; 
-	typedef dimension_traits_placeholder FilterPluginHandler;
-	typedef dimension_traits_placeholder InterpolatorFactory; 
-}; 
+       typedef dimension_traits_placeholder Transformation;
+       typedef dimension_traits_placeholder PTransformation;
+       typedef dimension_traits_placeholder Size;
+       typedef dimension_traits_placeholder Image;
+       typedef dimension_traits_placeholder PImage;
+       typedef dimension_traits_placeholder ImageSeries;
+       typedef dimension_traits_placeholder PTransformationFactory;
+       typedef dimension_traits_placeholder FullCostList;
+       typedef dimension_traits_placeholder PFullCost;
+       typedef dimension_traits_placeholder Filter;
+       typedef dimension_traits_placeholder FilterPluginHandler;
+       typedef dimension_traits_placeholder InterpolatorFactory;
+};
 
-template <int Dimensions> 
+template <int Dimensions>
 struct scale_factor_helpers {
-	typedef int DIntVector;  
+       typedef int DIntVector;
 
-	static DIntVector log2(const DIntVector& x); 
-	static DIntVector shift(const DIntVector& x); 
-}; 
+       static DIntVector log2(const DIntVector& x);
+       static DIntVector shift(const DIntVector& x);
+};
 
 /**
-   \brief Trait used for the watershed algorithms 
+   \brief Trait used for the watershed algorithms
 */
-template <int Dimensions> 
-struct watershed_traits { 
-	typedef dimension_traits_placeholder PNeighbourhood; 
-	typedef dimension_traits_placeholder Handler; 
-	typedef dimension_traits_placeholder FileHandler; 
-}; 
-/// @endcond 
+template <int Dimensions>
+struct watershed_traits {
+       typedef dimension_traits_placeholder PNeighbourhood;
+       typedef dimension_traits_placeholder Handler;
+       typedef dimension_traits_placeholder FileHandler;
+};
+/// @endcond
 
 NS_MIA_END
 

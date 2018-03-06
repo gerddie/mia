@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,50 +26,52 @@
 
 NS_MIA_BEGIN
 /**
-   \ingroup traits 
-   \brief Type trait to enable the use of a factory product as command 
-      line option 
+   \ingroup traits
+   \brief Type trait to enable the use of a factory product as command
+      line option
 
-   Type trait that enables the use of the factory creation in commen line parsing. 
-   This trait needs to be specialized for all factories that are to be used 
-   utilizing the TCmdFactoryOption interface. 
-   \tparam T a class that can be created by a TFactory through the call to 
-    the method TFactoryPluginHandler::produce(const char *plugindescr) of the 
-    corresponding factory plugin handler. 
+   Type trait that enables the use of the factory creation in commen line parsing.
+   This trait needs to be specialized for all factories that are to be used
+   utilizing the TCmdFactoryOption interface.
+   \tparam T a class that can be created by a TFactory through the call to
+    the method TFactoryPluginHandler::produce(const char *plugindescr) of the
+    corresponding factory plugin handler.
     \sa TCmdFactoryOption
  */
-template <class T> 
-class FactoryTrait {
-	/// the typetrait type if not defined properly 
-	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
-}; 
+template <class T>
+class FactoryTrait
+{
+       /// the typetrait type if not defined properly
+       typedef typename T::must_create_trait_using_FACTORY_TRAIT type;
+};
 
 /**
-   \ingroup traits 
+   \ingroup traits
 
-   \brief Type trait to enable the use of a factory product as command 
-      line option 
-      
-   This trait specializes FactoryTrait for shared pointers.  
+   \brief Type trait to enable the use of a factory product as command
+      line option
+
+   This trait specializes FactoryTrait for shared pointers.
  */
-template <class T> 
-class FactoryTrait<std::shared_ptr<T> >  {
-public: 
-	/// the typetrait type 
-	typedef typename FactoryTrait<T>::type type; 
-}; 
+template <class T>
+class FactoryTrait<std::shared_ptr<T>>
+{
+public:
+       /// the typetrait type
+       typedef typename FactoryTrait<T>::type type;
+};
 
 /**
-   \ingroup traits 
+   \ingroup traits
 
-   Specialize the FactoryTrait template for the given TFactoryPluginHandler 
+   Specialize the FactoryTrait template for the given TFactoryPluginHandler
 */
 #define FACTORY_TRAIT(F)			\
 	template <>				\
 	class FactoryTrait< F::Instance::ProductPtr::element_type >  {	\
 	public:					\
 	typedef F type;		\
-	}; 
+	};
 
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,36 +27,35 @@
 
 
 NS_MIA_USE
-using namespace std; 
-namespace bfs=::boost::filesystem; 
+using namespace std;
+namespace bfs =::boost::filesystem;
 
 static void prepare_plugin_path()
 {
-	list< bfs::path> searchpath; 
-	
-	if (bfs::path::default_name_check_writable())
-		bfs::path::default_name_check(::boost::filesystem::portable_posix_name); 
+       list< bfs::path> searchpath;
 
-	searchpath.push_back(bfs::path("3d") / bfs::path("cost")); 
-	searchpath.push_back(bfs::path("cost")); 
+       if (bfs::path::default_name_check_writable())
+              bfs::path::default_name_check(::boost::filesystem::portable_posix_name);
 
-	C3DImageCostPluginHandler::set_search_path(searchpath); 
+       searchpath.push_back(bfs::path("3d") / bfs::path("cost"));
+       searchpath.push_back(bfs::path("cost"));
+       C3DImageCostPluginHandler::set_search_path(searchpath);
 }
 
-static void test_3dimage_cost_avail() 
+static void test_3dimage_cost_avail()
 {
-	const C3DImageCostPluginHandler::Instance& fh = C3DImageCostPluginHandler::instance();
-	BOOST_CHECK(fh.size() == 4); 
-	BOOST_CHECK(fh.get_plugin_names() == "mi ncc ngf ssd ");
+       const C3DImageCostPluginHandler::Instance& fh = C3DImageCostPluginHandler::instance();
+       BOOST_CHECK(fh.size() == 4);
+       BOOST_CHECK(fh.get_plugin_names() == "mi ncc ngf ssd ");
 }
 
 static void test_3dimage_cost(const C3DImageCostPluginHandler::value_type& i)
 {
-	BOOST_CHECK_MESSAGE(i.second->test(true), i.second->get_long_name()); 
+       BOOST_CHECK_MESSAGE(i.second->test(true), i.second->get_long_name());
 }
 
-void add_3dimagecost_tests(test_suite* suite)
+void add_3dimagecost_tests(test_suite *suite)
 {
-	prepare_plugin_path(); 
-	suite->add( BOOST_TEST_CASE( &test_3dimage_cost_avail)); 
+       prepare_plugin_path();
+       suite->add( BOOST_TEST_CASE( &test_3dimage_cost_avail));
 }

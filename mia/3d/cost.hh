@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,35 +29,35 @@ NS_MIA_BEGIN
 
 extern template class EXPORT_3D TCost<C3DImage, C3DFVectorfield>;
 /**
-   @ingroup registration 
-   @brief the image-to-image cost function base class 
+   @ingroup registration
+   @brief the image-to-image cost function base class
 */
 typedef TCost<C3DImage, C3DFVectorfield> C3DImageCost;
 
 /**
-   @ingroup registration 
-   @brief pointer type of the image-to-image cost function base class 
+   @ingroup registration
+   @brief pointer type of the image-to-image cost function base class
 */
 typedef std::shared_ptr<C3DImageCost > P3DImageCost;
 
 /**
-   @ingroup registration 
-   @brief plug-in for the image-to-image cost function base class 
+   @ingroup registration
+   @brief plug-in for the image-to-image cost function base class
 */
 typedef TFactory<C3DImageCost> C3DImageCostPlugin;
 
 /**
-   @ingroup registration 
-   @brief plug-in handler for the image-to-image cost function base class 
+   @ingroup registration
+   @brief plug-in handler for the image-to-image cost function base class
 */
-typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> > C3DImageCostPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin>> C3DImageCostPluginHandler;
 
-template <> const char *  const TPluginHandler<C3DImageCostPlugin>::m_help; 
-extern template class EXPORT_3D THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >; 
+template <> const char   *const TPluginHandler<C3DImageCostPlugin>::m_help;
+extern template class EXPORT_3D THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin>>;
 
-/// @cond NEVER 
+/// @cond NEVER
 FACTORY_TRAIT(C3DImageCostPluginHandler);
-/// @endcond 
+/// @endcond
 
 NS_MIA_END
 

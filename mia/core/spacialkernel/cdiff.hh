@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,38 +25,42 @@
 NS_BEGIN(cdiff_1d_folding_kernel)
 
 /**  Class for a one-dimensional central difference filter kernel. */
-class C1DCDiffFilterKernel: public mia::C1DFoldingKernel {
+class C1DCDiffFilterKernel: public mia::C1DFoldingKernel
+{
 
 public:
-	/** contructor creates the kernel, is always -1, 0, 1 */
-	C1DCDiffFilterKernel();
+       /** contructor creates the kernel, is always -1, 0, 1 */
+       C1DCDiffFilterKernel();
 private:
-	virtual std::vector<double> do_apply(const std::vector<double>& data) const;
+       virtual std::vector<double> do_apply(const std::vector<double>& data) const;
 };
 
-class C1DSpacialCDiffKernelPlugin: public mia::C1DSpacialKernelPlugin {
+class C1DSpacialCDiffKernelPlugin: public mia::C1DSpacialKernelPlugin
+{
 public:
-	C1DSpacialCDiffKernelPlugin();
-	virtual mia::C1DFoldingKernel *do_create() const;
-	virtual const std::string do_get_descr()const;
+       C1DSpacialCDiffKernelPlugin();
+       virtual mia::C1DFoldingKernel *do_create() const;
+       virtual const std::string do_get_descr()const;
 };
 
 /**  Class for a one-dimensional Scharr filter part. */
-class C1DScharrFilterKernel: public mia::C1DFoldingKernel {
+class C1DScharrFilterKernel: public mia::C1DFoldingKernel
+{
 
 public:
-	/** contructor creates the kernel, is always -1, 0, 1 */
-	C1DScharrFilterKernel();
+       /** contructor creates the kernel, is always -1, 0, 1 */
+       C1DScharrFilterKernel();
 private:
-	virtual std::vector<double> do_apply(const std::vector<double>& data) const;
+       virtual std::vector<double> do_apply(const std::vector<double>& data) const;
 };
 
-class C1DScharrKernelPlugin: public mia::C1DSpacialKernelPlugin {
+class C1DScharrKernelPlugin: public mia::C1DSpacialKernelPlugin
+{
 public:
-	C1DScharrKernelPlugin();
-	virtual mia::C1DFoldingKernel *do_create() const;
-	virtual const std::string do_get_descr()const;
+       C1DScharrKernelPlugin();
+       virtual mia::C1DFoldingKernel *do_create() const;
+       virtual const std::string do_get_descr()const;
 };
 
 
-NS_END 
+NS_END

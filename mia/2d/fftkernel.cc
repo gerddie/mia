@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,97 +25,95 @@
 
 NS_MIA_BEGIN
 
-using std::runtime_error; 
+using std::runtime_error;
 
-const char* fft2d_kernel_data::data_descr = "fft2d";
+const char *fft2d_kernel_data::data_descr = "fft2d";
 
 CFFT2DKernel::CFFT2DKernel():
-	m_size(0,0),
-	m_cbuffer(nullptr),
-	m_fbuffer(nullptr),
-	m_scale(1.0), 
-	m_forward_plan(nullptr), 
-	m_backward_plan(nullptr), 
-	m_realsize_x(0)
+       m_size(0, 0),
+       m_cbuffer(nullptr),
+       m_fbuffer(nullptr),
+       m_scale(1.0),
+       m_forward_plan(nullptr),
+       m_backward_plan(nullptr),
+       m_realsize_x(0)
 {
 }
 
 CFFT2DKernel::~CFFT2DKernel()
 {
-	tear_down();
+       tear_down();
 }
 
 void CFFT2DKernel::apply() const
 {
-	fftwf_execute( m_forward_plan);
-	do_apply(m_size, m_realsize_x, m_cbuffer);
-	fftwf_execute( m_backward_plan);
+       fftwf_execute( m_forward_plan);
+       do_apply(m_size, m_realsize_x, m_cbuffer);
+       fftwf_execute( m_backward_plan);
 }
 
 void CFFT2DKernel::tear_down()
 {
-	if (m_cbuffer) {
-		fftwf_free(m_cbuffer);
-		fftwf_free(m_fbuffer);
-		fftwf_destroy_plan( m_forward_plan);
-		fftwf_destroy_plan( m_backward_plan);
-	}
+       if (m_cbuffer) {
+              fftwf_free(m_cbuffer);
+              fftwf_free(m_fbuffer);
+              fftwf_destroy_plan( m_forward_plan);
+              fftwf_destroy_plan( m_backward_plan);
+       }
 }
 
 float *CFFT2DKernel::prepare(const C2DBounds& size)
 {
-	if (m_size  == size)
-		return m_fbuffer;
+       if (m_size  == size)
+              return m_fbuffer;
 
-	tear_down();
-	m_size = size;
-	m_realsize_x = 2 * (m_size.x /2 + 1);
+       tear_down();
+       m_size = size;
+       m_realsize_x = 2 * (m_size.x / 2 + 1);
+       m_scale = 1.0f / (m_size.x * m_size.y);
+       cvdebug() << "size = " << m_size.x << ", " << m_size.y << "\n";
+       m_cbuffer = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) *
+                     m_size.y * m_realsize_x);
 
-	m_scale = 1.0f / (m_size.x * m_size.y); 
+       if (!m_cbuffer) {
+              throw runtime_error("unable to allocate fftw buffers");
+       }
 
-	cvdebug() << "size = " << m_size.x << ", " << m_size.y << "\n";
+       // create the fftw plans
+       m_fbuffer = (float *)fftwf_malloc(sizeof(fftwf_complex) * m_size.y * m_size.x);
 
-	m_cbuffer = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * 
-						 m_size.y * m_realsize_x);
+       if (!m_fbuffer) {
+              fftwf_free(m_cbuffer);
+              throw runtime_error("unable to allocate fftw buffers");
+       }
 
-	if (!m_cbuffer) {
-		throw runtime_error("unable to allocate fftw buffers");
-	}
+       cvdebug() << "buffer at " << m_cbuffer << ":" << m_fbuffer << "\n";
+       m_forward_plan = fftwf_plan_dft_r2c_2d(m_size.y, m_size.x,
+                                              m_fbuffer, m_cbuffer, FFTW_ESTIMATE);
+       cvdebug() << "forward plan at " <<  m_forward_plan << "\n";
 
-	// create the fftw plans
-	m_fbuffer = (float *)fftwf_malloc(sizeof(fftwf_complex) * m_size.y * m_size.x);
-	if (!m_fbuffer) {
-		fftwf_free(m_cbuffer);
-		throw runtime_error("unable to allocate fftw buffers");
-	}
+       if (!m_forward_plan) {
+              fftwf_free(m_cbuffer);
+              fftwf_free(m_fbuffer);
+              throw runtime_error("unable to create forward plans ...");
+       }
 
-	cvdebug() << "buffer at " << m_cbuffer << ":" << m_fbuffer << "\n";
+       m_backward_plan = fftwf_plan_dft_c2r_2d(m_size.y, m_size.x,
+                                               m_cbuffer, m_fbuffer, FFTW_ESTIMATE);
 
-	m_forward_plan = fftwf_plan_dft_r2c_2d(m_size.y, m_size.x,
-					       m_fbuffer, m_cbuffer, FFTW_ESTIMATE);
-	
-	cvdebug() << "forward plan at " <<  m_forward_plan << "\n";
-	if (!m_forward_plan) {
-		fftwf_free(m_cbuffer);
-		fftwf_free(m_fbuffer);
-		throw runtime_error("unable to create forward plans ...");
-	}
-	
-	m_backward_plan = fftwf_plan_dft_c2r_2d(m_size.y, m_size.x,
-						m_cbuffer, m_fbuffer, FFTW_ESTIMATE);
-	
-	if (!m_backward_plan) {
-		fftwf_free(m_cbuffer);
-		fftwf_free(m_fbuffer);
-		fftwf_destroy_plan( m_forward_plan);
-		throw runtime_error("unable to create backward plans ...");
-	}
-	return m_fbuffer;
+       if (!m_backward_plan) {
+              fftwf_free(m_cbuffer);
+              fftwf_free(m_fbuffer);
+              fftwf_destroy_plan( m_forward_plan);
+              throw runtime_error("unable to create backward plans ...");
+       }
+
+       return m_fbuffer;
 }
 
-template <> const char *  const 
+template <> const char   *const
 TPluginHandler<TFactory<CFFT2DKernel>>::m_help =  "These plug-ins define kernels for 2D processing "
-				"in the Fourier transformed space.";
+                                    "in the Fourier transformed space.";
 
 EXPLICIT_INSTANCE_HANDLER(CFFT2DKernel);
 

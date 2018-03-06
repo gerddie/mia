@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 #  ifdef __GNUC__
 #     define EXPORT_SHAPE __attribute__((visibility("default")))
 #  else
-#     define EXPORT_SHAPE 
-#  endif 
+#     define EXPORT_SHAPE
+#  endif
 #endif
 
 
@@ -39,44 +39,43 @@ NS_MIA_BEGIN
 
 
 template <>
-struct __adjust<T2DVector<int> > {
-	static void apply(T2DVector<int>& size, const T2DVector<int>& p)  {
-		int x = (p.x < 0 ? -2 * p.x : 2 *  p.x) + 1;
-		int y = (p.y < 0 ? -2 * p.y : 2 *  p.y) + 1;
+struct __adjust<T2DVector<int>> {
+       static void apply(T2DVector<int>& size, const T2DVector<int>& p)
+       {
+              int x = (p.x < 0 ? -2 * p.x : 2 *  p.x) + 1;
+              int y = (p.y < 0 ? -2 * p.y : 2 *  p.y) + 1;
 
-		if (size.x < x)
-			size.x = x;
+              if (size.x < x)
+                     size.x = x;
 
-		if (size.y < y)
-			size.y = y;
-
-	}
+              if (size.y < y)
+                     size.y = y;
+       }
 };
 
 
 
 template class TShape<T2DVector, C2DBitImage>;
 
-template <> const char *  const 
+template <> const char   *const
 TPluginHandler<TFactory<C2DShape>>::m_help =  "These plug-ins define 2D structuring elements "
-				"to describe neighborhoods for morphological and other filters."; 
+                                "to describe neighborhoods for morphological and other filters.";
 
 
 P2DShape rotate_90_degree(const C2DShape& shape)
 {
-	P2DShape result(new C2DShape); 
-	
-	for (auto p = shape.begin(); p != shape.end(); ++p) {
-		C2DShape::value_type r; 
+       P2DShape result(new C2DShape);
 
-		r.x = p->y; 
-		r.y = -p->x; 
+       for (auto p = shape.begin(); p != shape.end(); ++p) {
+              C2DShape::value_type r;
+              r.x = p->y;
+              r.y = -p->x;
+              result->insert(r);
+       }
 
-		result->insert(r); 
-	}
-	return result; 
+       return result;
 }
 
-EXPLICIT_INSTANCE_HANDLER(C2DShape); 
+EXPLICIT_INSTANCE_HANDLER(C2DShape);
 
 NS_MIA_END

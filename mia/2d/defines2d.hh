@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,52 +23,52 @@
 
 #ifdef WIN32
 #  ifdef mia2d_EXPORTS
-#    define EXPORT_2D __declspec(dllexport) 
+#    define EXPORT_2D __declspec(dllexport)
 #  else
-#    define EXPORT_2D __declspec(dllimport) 
+#    define EXPORT_2D __declspec(dllimport)
 #  endif
 #  ifdef mia2dtest_EXPORTS
-#    define EXPORT_2DTEST __declspec(dllexport) 
+#    define EXPORT_2DTEST __declspec(dllexport)
 #  else
-#    define EXPORT_2DTEST __declspec(dllimport) 
+#    define EXPORT_2DTEST __declspec(dllimport)
 #  endif
 #else
 #  ifdef __GNUC__
 #    define EXPORT_2D __attribute__((visibility("default")))
 #    define EXPORT_2DTEST __attribute__((visibility("default")))
 #  else
-#    define EXPORT_2D 
-#    define EXPORT_2DTEST 
+#    define EXPORT_2D
+#    define EXPORT_2DTEST
 #  endif
 #endif
 
 #ifdef WIN32
 #  ifdef mia2dmyocardperf_EXPORTS
-#    define EXPORT_2D __declspec(dllexport) 
+#    define EXPORT_2D __declspec(dllexport)
 #  else
-#    define EXPORT_2D __declspec(dllimport) 
+#    define EXPORT_2D __declspec(dllimport)
 #  endif
 #else
 #  ifdef __GNUC__
 #    define EXPORT_2DMYOCARD __attribute__((visibility("default")))
 #  else
-#    define EXPORT_2D 
+#    define EXPORT_2D
 #  endif
 #endif
 
 
 
 #ifdef mia2d_EXPORTS
-#  ifdef VSTREAM 
-#    undef VSTREAM  
-#  endif 
+#  ifdef VSTREAM
+#    undef VSTREAM
+#  endif
 #  define VSTREAM "MIA2D"
 #endif
 
 #ifdef mia2dtest_EXPORTS
-#  ifdef VSTREAM 
-#    undef VSTREAM  
-#  endif 
+#  ifdef VSTREAM
+#    undef VSTREAM
+#  endif
 #  define VSTREAM "MIA2DTEST"
 #endif
 

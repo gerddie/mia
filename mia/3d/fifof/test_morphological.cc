@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,70 +27,63 @@ using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace morphological_fifof;
-namespace bfs=boost::filesystem;
+namespace bfs = boost::filesystem;
 
 struct MorpologicalFilter_Fixture: public fifof_Fixture  {
 
-	MorpologicalFilter_Fixture();
-	P3DShape m_shape;
+       MorpologicalFilter_Fixture();
+       P3DShape m_shape;
 };
 
 MorpologicalFilter_Fixture::MorpologicalFilter_Fixture()
 {
-	m_shape = C3DShapePluginHandler::instance().produce("6n");
+       m_shape = C3DShapePluginHandler::instance().produce("6n");
 }
 
 BOOST_FIXTURE_TEST_CASE ( morphological_dilate, MorpologicalFilter_Fixture )
 {
-	const size_t n_slices = 5;
-	const C2DBounds size(3,3);
-	const size_t npixels = 9;
-
-	const float input_data[n_slices * npixels] = {
-		  0, 0, 0, 0, 0, 0, 0, 0, 0,
-		  0, 0, 0, 0, 0, 0, 0, 0, 0,
-		  0, 0, 0, 1, 0, 0, 0, 0, 0,
-		  0, 0, 0, 0, 0, 0, 1, 0, 0,
-		  0, 1, 0, 0, 0, 0, 0, 0, 0
-	};
-
-	const float test_data[n_slices * npixels] = {
-		  0, 0, 0, 0, 0, 0, 0, 0, 0,
-		  0, 0, 0, 1, 0, 0, 0, 0, 0,
-		  1, 0, 0, 1, 1, 0, 1, 0, 0,
-		  0, 1, 0, 1, 0, 0, 1, 1, 0,
-		  1, 1, 1, 0, 1, 0, 1, 0, 0
-	};
-
-	prepare(input_data, test_data, size, n_slices);
-	C2DMorphFifoFilter<DilateCompare> dilate(m_shape);
-	call_test(dilate);
+       const size_t n_slices = 5;
+       const C2DBounds size(3, 3);
+       const size_t npixels = 9;
+       const float input_data[n_slices * npixels] = {
+              0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 1, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 1, 0, 0,
+              0, 1, 0, 0, 0, 0, 0, 0, 0
+       };
+       const float test_data[n_slices * npixels] = {
+              0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 1, 0, 0, 0, 0, 0,
+              1, 0, 0, 1, 1, 0, 1, 0, 0,
+              0, 1, 0, 1, 0, 0, 1, 1, 0,
+              1, 1, 1, 0, 1, 0, 1, 0, 0
+       };
+       prepare(input_data, test_data, size, n_slices);
+       C2DMorphFifoFilter<DilateCompare> dilate(m_shape);
+       call_test(dilate);
 }
 
 BOOST_FIXTURE_TEST_CASE ( morphological_erode, MorpologicalFilter_Fixture )
 {
-	const size_t n_slices = 5;
-	const C2DBounds size(3,3);
-
-	float input_data[n_slices*9] = {
-		  2, 2, 2, 2, 2, 2, 2, 2, 2,
-		  2, 2, 2, 2, 2, 2, 2, 2, 2,
-		  2, 2, 2, 1, 2, 2, 2, 2, 2,
-		  2, 2, 2, 2, 2, 2, 1, 2, 2,
-		  2, 1, 2, 2, 2, 2, 2, 2, 2
-	};
-
-	float test_data[n_slices*9] = {
-		  2, 2, 2, 2, 2, 2, 2, 2, 2,
-		  2, 2, 2, 1, 2, 2, 2, 2, 2,
-		  1, 2, 2, 1, 1, 2, 1, 2, 2,
-		  2, 1, 2, 1, 2, 2, 1, 1, 2,
-		  1, 1, 1, 2, 1, 2, 1, 2, 2
-	};
-
-	prepare(input_data, test_data, size, n_slices);
-
-	C2DMorphFifoFilter<ErodeCompare> erode(m_shape);
-	call_test(erode);
+       const size_t n_slices = 5;
+       const C2DBounds size(3, 3);
+       float input_data[n_slices * 9] = {
+              2, 2, 2, 2, 2, 2, 2, 2, 2,
+              2, 2, 2, 2, 2, 2, 2, 2, 2,
+              2, 2, 2, 1, 2, 2, 2, 2, 2,
+              2, 2, 2, 2, 2, 2, 1, 2, 2,
+              2, 1, 2, 2, 2, 2, 2, 2, 2
+       };
+       float test_data[n_slices * 9] = {
+              2, 2, 2, 2, 2, 2, 2, 2, 2,
+              2, 2, 2, 1, 2, 2, 2, 2, 2,
+              1, 2, 2, 1, 1, 2, 1, 2, 2,
+              2, 1, 2, 1, 2, 2, 1, 1, 2,
+              1, 1, 1, 2, 1, 2, 1, 2, 2
+       };
+       prepare(input_data, test_data, size, n_slices);
+       C2DMorphFifoFilter<ErodeCompare> erode(m_shape);
+       call_test(erode);
 }
 

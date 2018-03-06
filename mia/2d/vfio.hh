@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,52 +30,53 @@
 NS_MIA_BEGIN
 
 /**
-   @ingroup io 
-   \brief a class for the IO of 2D vector fields 
+   @ingroup io
+   \brief a class for the IO of 2D vector fields
 
-   \remark this class is obsolete, new code should use the 2D transformation IO 
+   \remark this class is obsolete, new code should use the 2D transformation IO
  */
 
 
-class EXPORT_2D C2DIOVectorfield: public C2DFVectorfield, public CIOData {
+class EXPORT_2D C2DIOVectorfield: public C2DFVectorfield, public CIOData
+{
 public:
-	C2DIOVectorfield();
+       C2DIOVectorfield();
 
-        /** Constructor to create empty Datafield if given size */
-        C2DIOVectorfield(const C2DBounds& _Size);
+       /** Constructor to create empty Datafield if given size */
+       C2DIOVectorfield(const C2DBounds& _Size);
 
-        /** copy - Constructor */
-        C2DIOVectorfield(const C2DIOVectorfield& org);
+       /** copy - Constructor */
+       C2DIOVectorfield(const C2DIOVectorfield& org);
 
-	/** copy from normal vectorfield constructor */
-	C2DIOVectorfield(const C2DFVectorfield& org);
+       /** copy from normal vectorfield constructor */
+       C2DIOVectorfield(const C2DFVectorfield& org);
 
-	/**
-	   Create a copy of this object (needed for CDatapool) 
-	   \returns a dynamically allocated copy 
-	 */
-	C2DIOVectorfield *clone() const __attribute__((warn_unused_result));
+       /**
+          Create a copy of this object (needed for CDatapool)
+          \returns a dynamically allocated copy
+        */
+       C2DIOVectorfield *clone() const __attribute__((warn_unused_result));
 };
 
 struct EXPORT_2D io_2dvf_type {
-	typedef  C2DIOVectorfield type;
-	static const char *data_descr;
+       typedef  C2DIOVectorfield type;
+       static const char *data_descr;
 };
 
 
 
-/// Base class for 2D vector field IO plugins 
+/// Base class for 2D vector field IO plugins
 typedef TIOPlugin<io_2dvf_type> C2DVFIOPlugin;
 
-template <> const char *  const TPluginHandler<C2DVFIOPlugin>::m_help; 
+template <> const char   *const TPluginHandler<C2DVFIOPlugin>::m_help;
 
-extern template class EXPORT_2D TPlugin<io_2dvf_type, io_plugin_type>; 
-extern template class EXPORT_2D TIOPlugin<io_2dvf_type>; 
+extern template class EXPORT_2D TPlugin<io_2dvf_type, io_plugin_type>;
+extern template class EXPORT_2D TIOPlugin<io_2dvf_type>;
 extern template class EXPORT_2D TIOPluginHandler<C2DVFIOPlugin>;
-extern template class EXPORT_2D THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> >;
+extern template class EXPORT_2D THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin>>;
 
-/// Handler for 2D vector field IO 
-typedef  THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> > C2DVFIOPluginHandler;
+/// Handler for 2D vector field IO
+typedef  THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin>> C2DVFIOPluginHandler;
 
 
 NS_MIA_END

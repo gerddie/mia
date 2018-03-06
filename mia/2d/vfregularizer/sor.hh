@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,42 +26,44 @@
 
 NS_MIA_BEGIN
 
-class C2DSORVectorfieldRegularizer : public C2DFVectorfieldRegularizer {
-      
-public: 
-        C2DSORVectorfieldRegularizer(float abs_epsilon, float rel_epsilon, 
-                                     unsigned maxiter, 
-                                     P2DVectorfieldRegularizerKernel kernel);
-        
-private: 
-        double do_run(C2DFVectorfield& velocity, C2DFVectorfield& force, const C2DFVectorfield& deform) const override; 
-        
-        float m_abs_epsilon;
-        float m_rel_epsilon; 
-        unsigned m_maxiter; 
-        P2DVectorfieldRegularizerKernel m_kernel; 
-                
-};  
+class C2DSORVectorfieldRegularizer : public C2DFVectorfieldRegularizer
+{
 
-class C2DSORVectorfieldRegularizerPlugin : public C2DFVectorfieldRegularizerPlugin {
+public:
+       C2DSORVectorfieldRegularizer(float abs_epsilon, float rel_epsilon,
+                                    unsigned maxiter,
+                                    P2DVectorfieldRegularizerKernel kernel);
 
-public: 
-        C2DSORVectorfieldRegularizerPlugin(); 
-        
 private:
-        
-        C2DFVectorfieldRegularizer *do_create() const;
-        
-        const std::string do_get_descr() const;
+       double do_run(C2DFVectorfield& velocity, C2DFVectorfield& force, const C2DFVectorfield& deform) const override;
+
+       float m_abs_epsilon;
+       float m_rel_epsilon;
+       unsigned m_maxiter;
+       P2DVectorfieldRegularizerKernel m_kernel;
+
+};
+
+class C2DSORVectorfieldRegularizerPlugin : public C2DFVectorfieldRegularizerPlugin
+{
+
+public:
+       C2DSORVectorfieldRegularizerPlugin();
+
+private:
+
+       C2DFVectorfieldRegularizer *do_create() const;
+
+       const std::string do_get_descr() const;
 
 
-        float m_abs_epsilon;
-        float m_rel_epsilon; 
-        unsigned m_maxiter; 
-        P2DVectorfieldRegularizerKernel m_kernel; 
-        
-}; 
+       float m_abs_epsilon;
+       float m_rel_epsilon;
+       unsigned m_maxiter;
+       P2DVectorfieldRegularizerKernel m_kernel;
+
+};
 
 NS_MIA_END
 
-#endif 
+#endif

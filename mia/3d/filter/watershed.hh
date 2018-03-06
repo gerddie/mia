@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,19 +27,19 @@
 
 NS_MIA_BEGIN
 
-template <> 
-struct watershed_traits<3> { 
-	typedef P3DShape PNeighbourhood; 
-	typedef C3DFilterPluginHandler Handler; 
-}; 
+template <>
+struct watershed_traits<3> {
+       typedef P3DShape PNeighbourhood;
+       typedef C3DFilterPluginHandler Handler;
+};
 NS_MIA_END
 
 #include <mia/template/watershed.hh>
 
 NS_MIA_BEGIN
 
-typedef TWatershedFilterPlugin<3> C3DWatershedFilterPlugin; 
-typedef TWatershed<3> C3DWatershed; 
+typedef TWatershedFilterPlugin<3> C3DWatershedFilterPlugin;
+typedef TWatershed<3> C3DWatershed;
 
 
 NS_MIA_END

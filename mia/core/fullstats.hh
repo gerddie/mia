@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,84 +30,85 @@ NS_MIA_BEGIN
 /**
    \ingroup misc
 
-   \brief This class is used to evaluate the statistics of a series of input data. 
-   
-   This class is used to evaluate the mean, variation, median, minimum and the maximum 
-   of some input data. 
- */ 
+   \brief This class is used to evaluate the statistics of a series of input data.
 
-class  EXPORT_CORE CFullStats {
+   This class is used to evaluate the mean, variation, median, minimum and the maximum
+   of some input data.
+ */
+
+class  EXPORT_CORE CFullStats
+{
 public:
 
-	/**
-	   Evaluate the statictics of a range of input data. 
-	   \tparam a forward iterator, The value it hold must be convertable to double 
-	   \param begin 
-	   \param end 
-	 */
-	template <typename InputIterator>
-	CFullStats(InputIterator begin, InputIterator end);
+       /**
+          Evaluate the statictics of a range of input data.
+          \tparam a forward iterator, The value it hold must be convertable to double
+          \param begin
+          \param end
+        */
+       template <typename InputIterator>
+       CFullStats(InputIterator begin, InputIterator end);
 
-	/// Print the statistics to some output file 
-	void print(std::ostream& os) const;
+       /// Print the statistics to some output file
+       void print(std::ostream& os) const;
 
-	/// @returns the mean of the values 
-	double mean()const;
-	/// @returns the variation \f$\sigma\f$ of the values 
-	double sigma()const;
-	/// @returns the median of the values 
-	double median()const;
-	/// @returns the minimum of the values 
-	double max()const;
-	/// @returns the maximum  of the values 
-	double min()const;
+       /// @returns the mean of the values
+       double mean()const;
+       /// @returns the variation \f$\sigma\f$ of the values
+       double sigma()const;
+       /// @returns the median of the values
+       double median()const;
+       /// @returns the minimum of the values
+       double max()const;
+       /// @returns the maximum  of the values
+       double min()const;
 
 private:
-	typedef std::vector<double> Vector;
-	void evaluate(Vector& tmp);
-	double m_mean;
-	double m_sigma;
-	double m_median;
-	double m_max;
-	double m_min;
+       typedef std::vector<double> Vector;
+       void evaluate(Vector& tmp);
+       double m_mean;
+       double m_sigma;
+       double m_median;
+       double m_max;
+       double m_min;
 };
 
 template <typename InputIterator>
 CFullStats::CFullStats(InputIterator begin, InputIterator end):
-	m_mean(0.0),
-	m_sigma(0.0),
-	m_median(0.0),
-	m_max(*begin),
-	m_min(*begin)
+       m_mean(0.0),
+       m_sigma(0.0),
+       m_median(0.0),
+       m_max(*begin),
+       m_min(*begin)
 {
+       Vector tmp;
 
-	Vector tmp;
-	while (begin != end) {
-		if (m_min > *begin)
-			m_min = *begin;
+       while (begin != end) {
+              if (m_min > *begin)
+                     m_min = *begin;
 
-		if (m_max < *begin)
-			m_max = *begin;
+              if (m_max < *begin)
+                     m_max = *begin;
 
-		m_mean += *begin;
-		m_sigma += *begin * *begin;
+              m_mean += *begin;
+              m_sigma += *begin * *begin;
+              tmp.push_back(*begin);
+              ++begin;
+       }
 
-		tmp.push_back(*begin);
-		++begin;
-	}
-	evaluate(tmp);
+       evaluate(tmp);
 }
 
 /**
-   Operator to write the statistics to a stream 
-   \param os output stream 
-   \param stats the statistics to be written 
-   \returns the stream 
+   Operator to write the statistics to a stream
+   \param os output stream
+   \param stats the statistics to be written
+   \returns the stream
 */
 std::ostream& operator << (std::ostream& os, const CFullStats& stats)
 {
-	stats.print(os);
-	return os;
+       stats.print(os);
+       return os;
 }
 
 NS_MIA_END

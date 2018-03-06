@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,9 +28,10 @@ NS_BEGIN(NS);
 
 typedef TSSDAutomaskCost<mia::C3DImageCost> C3DSSDAutomaskCost;
 
-class C3DSSDAutomaskCostPlugin: public TSSDAutomaskCostPlugin<mia::C3DImageCostPlugin, C3DSSDAutomaskCost> {
+class C3DSSDAutomaskCostPlugin: public TSSDAutomaskCostPlugin<mia::C3DImageCostPlugin, C3DSSDAutomaskCost>
+{
 private:
-	virtual const std::string do_get_descr()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

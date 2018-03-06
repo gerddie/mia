@@ -21,8 +21,8 @@
 #include <mia/core/hwcap.hh>
 
 #ifndef __linux__
-#error this code is only valid on linux 
-#endif 
+#error this code is only valid on linux
+#endif
 
 #include <sys/auxv.h>
 
@@ -31,12 +31,12 @@ NS_MIA_BEGIN
 
 bool cpu_has_sse()
 {
-        return true; 
+       return true;
 }
 
 bool cpu_has_sse2()
 {
-        return true; 
+       return true;
 }
 
 bool cpu_has_sse3()
@@ -49,11 +49,11 @@ bool cpu_has_fma4()
 
 bool cpu_has_neon()
 
-#else 
+#else
 
 
 NS_MIA_END
 
 
-#endif 
+#endif
 

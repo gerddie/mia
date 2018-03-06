@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,59 +23,50 @@
 #include <mia/2d/register.hh>
 
 struct SimpleRegistrationFixture {
-	
-	AffineRegistrationFixture(); 
 
-	
-	void Initialize(const std::string& type);
+       AffineRegistrationFixture();
 
-	P2DTransformationFactory trans_factory;
-	size_t start_size; 
-	size_t max_iter; 
-}; 
+
+       void Initialize(const std::string& type);
+
+       P2DTransformationFactory trans_factory;
+       size_t start_size;
+       size_t max_iter;
+};
 
 const float *src_init = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0	
-}; 
+       0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0
+};
 
-// How to test registration creation 
-BOOST_AUTO_TEST_CASE( test_simple_registration )  
+// How to test registration creation
+BOOST_AUTO_TEST_CASE( test_simple_registration )
 {
-	C2DMultiImageRegister registration(start_size, max_iter,
-					   C2DRegModel& model, 
-					   C2DRegTimeStep& time_step, 
-					   P2DTransformationFactory& trans_factory, 
-					   float outer_epsilon); 
-	
-	C2DBounds size(32, 32);
-
-	
-
-	C2DFImage src(size);
-	C2DFImage ref(size);
-	
-	
-	
-
+       C2DMultiImageRegister registration(start_size, max_iter,
+                                          C2DRegModel & model,
+                                          C2DRegTimeStep & time_step,
+                                          P2DTransformationFactory & trans_factory,
+                                          float outer_epsilon);
+       C2DBounds size(32, 32);
+       C2DFImage src(size);
+       C2DFImage ref(size);
 }
 
 
 
 AffineRegistrationFixture::AffineRegistrationFixture():
-	start_size(16), 
-	max_iter(10)
+       start_size(16),
+       max_iter(10)
 {
 }
 
 void AffineRegistrationFixture::Initialize(const std::string& type)
 {
-	trans_factory = C2DTransformCreatorHandler::instance().produce(type); 
-
+       trans_factory = C2DTransformCreatorHandler::instance().produce(type);
 }

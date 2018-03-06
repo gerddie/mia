@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,23 +23,25 @@
 
 NS_BEGIN(ngfnorm_2dimage_filter)
 
-class CNgfnorm: public mia::C2DFilter {
+class CNgfnorm: public mia::C2DFilter
+{
 public:
-	CNgfnorm();
+       CNgfnorm();
 
-	template <typename  T>
-	mia::C2DFilter::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <typename  T>
+       mia::C2DFilter::result_type operator () (const mia::T2DImage<T>& data) const;
 
 private:
-	mia::C2DFilter::result_type do_filter(const mia::C2DImage& image) const;
+       mia::C2DFilter::result_type do_filter(const mia::C2DImage& image) const;
 };
 
 
-class C2DNgfnormFilterPlugin: public mia::C2DFilterPlugin {
+class C2DNgfnormFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DNgfnormFilterPlugin();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DNgfnormFilterPlugin();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

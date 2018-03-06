@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,14 +25,14 @@
 NS_MIA_BEGIN
 
 CSelftestCallback::CSelftestCallback(int argc, char **argv):
-        m_argc(argc), m_argv(argv)
+       m_argc(argc), m_argv(argv)
 {
 }
-        
+
 int CSelftestCallback::run () const
 {
-        PrepareTestPluginPath prepare_plugin_path; 
-        return do_run(m_argc, m_argv); 
+       PrepareTestPluginPath prepare_plugin_path;
+       return do_run(m_argc, m_argv);
 }
 
 

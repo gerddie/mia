@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,77 +27,77 @@
 
 NS_MIA_BEGIN
 
-/**   
+/**
       \ingroup mesh
-      mesh image filter 
+      mesh image filter
 */
 typedef TDataFilter<CTriangleMesh> CMeshFilter;
 
 /**
-   \ingroup filtering 
-   2D image filter plugin 
+   \ingroup filtering
+   2D image filter plugin
 */
 typedef TDataFilterPlugin<CTriangleMesh> CMeshFilterPlugin;
 
-/**   
-      \ingroup filtering 
-      shared pointer type for the C2DFilter class 
+/**
+      \ingroup filtering
+      shared pointer type for the C2DFilter class
 */
 typedef std::shared_ptr<CMeshFilter > PMeshFilter;
 
 /**
-   \ingroup filtering 
+   \ingroup filtering
    2D filter plugin handler
 */
-typedef THandlerSingleton<TFactoryPluginHandler<CMeshFilterPlugin> > CMeshFilterPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<CMeshFilterPlugin>> CMeshFilterPluginHandler;
 
-/// @cond NEVER 
-FACTORY_TRAIT(CMeshFilterPluginHandler); 
-/// @endcond 
+/// @cond NEVER
+FACTORY_TRAIT(CMeshFilterPluginHandler);
+/// @endcond
 
 /**
    Convenience function to create a filter from its string description
  */
-inline PMeshFilter produce_mesh_filter(const char* descr) 
+inline PMeshFilter produce_mesh_filter(const char *descr)
 {
-	return CMeshFilterPluginHandler::instance().produce(descr); 
+       return CMeshFilterPluginHandler::instance().produce(descr);
 }
 
 
 /**
-   \ingroup filtering 
-   2D filter chain to apply various filters in one run 
+   \ingroup filtering
+   2D filter chain to apply various filters in one run
 */
-typedef TFilterChain<CMeshFilterPluginHandler> CMeshFilterChain; 
+typedef TFilterChain<CMeshFilterPluginHandler> CMeshFilterChain;
 /**
-   \ingroup filtering 
-   
-   convenience function: run a filter chain on an mesh 
-   @param mesh input mesh 
-   @param filters vector of strings defining the filter to be applied 
-   @returns the filtered mesh 
+   \ingroup filtering
+
+   convenience function: run a filter chain on an mesh
+   @param mesh input mesh
+   @param filters vector of strings defining the filter to be applied
+   @returns the filtered mesh
 */
 PTriangleMesh  EXPORT_MESH run_filter_chain(PTriangleMesh mesh, const std::vector<const char *>& filters);
 
 /**
-   \ingroup filtering 
-   convenience function: create and run a filter on an mesh 
-   @param mesh input mesh 
-   @param filter string defining the filter to be applied 
-   @returns the filtered mesh 
+   \ingroup filtering
+   convenience function: create and run a filter on an mesh
+   @param mesh input mesh
+   @param filter string defining the filter to be applied
+   @returns the filtered mesh
 */
 PTriangleMesh  EXPORT_MESH run_filter(const CTriangleMesh& mesh, const char *filter);
 
 /**
-   \ingroup filtering 
-   convenience function: create and run a filter on an mesh 
-   @param mesh input mesh 
-   @param filter string defining the filter to be applied 
-   @returns the filtered mesh 
+   \ingroup filtering
+   convenience function: create and run a filter on an mesh
+   @param mesh input mesh
+   @param filter string defining the filter to be applied
+   @returns the filtered mesh
 */
 inline PTriangleMesh run_filter(PTriangleMesh mesh, const char *filter)
 {
-	return run_filter(*mesh, filter); 
+       return run_filter(*mesh, filter);
 }
 
 

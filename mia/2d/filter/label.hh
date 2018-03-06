@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,25 +26,27 @@
 
 NS_BEGIN(label_2dimage_filter)
 
-class CLabel: public mia::C2DFilter {
+class CLabel: public mia::C2DFilter
+{
 public:
-	CLabel(mia::P2DShape m_mask);
+       CLabel(mia::P2DShape m_mask);
 
 private:
-	void grow_region(const mia::C2DBounds& loc,
-			 const mia::C2DBitImage& input, mia::C2DUSImage& result, unsigned short label)const;
-	CLabel::result_type do_filter(const mia::C2DImage& image) const;
-	mia::P2DShape m_mask;
+       void grow_region(const mia::C2DBounds& loc,
+                        const mia::C2DBitImage& input, mia::C2DUSImage& result, unsigned short label)const;
+       CLabel::result_type do_filter(const mia::C2DImage& image) const;
+       mia::P2DShape m_mask;
 };
 
-class C2DLabelFilterPlugin: public mia::C2DFilterPlugin {
+class C2DLabelFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DLabelFilterPlugin();
+       C2DLabelFilterPlugin();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 
-	mia::P2DShape m_mask;
+       mia::P2DShape m_mask;
 
 };
 

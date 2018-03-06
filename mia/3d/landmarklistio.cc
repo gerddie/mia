@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,11 +27,11 @@
 NS_MIA_BEGIN
 
 
-template <> const char *  const 
-TPluginHandler<C3DLandmarklistIOPlugin>::m_help =  
-	"Loading and storing of 3D landmark list.";
+template <> const char   *const
+TPluginHandler<C3DLandmarklistIOPlugin>::m_help =
+       "Loading and storing of 3D landmark list.";
 
 template class TPlugin<C3DLandmarklist, io_plugin_type>;
-EXPLICITE_INSTANCEIATE_IO_HANDLER(C3DLandmarklist); 
+EXPLICITE_INSTANCEIATE_IO_HANDLER(C3DLandmarklist);
 
 NS_MIA_END

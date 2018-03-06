@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,24 +27,26 @@
 
 
 NS_BEGIN(uniform_noise_generator)
-class CUniformNoiseGenerator: public mia::CNoiseGenerator {
+class CUniformNoiseGenerator: public mia::CNoiseGenerator
+{
 public:
-	CUniformNoiseGenerator(unsigned int seed, double a, double b); 
-private: 
-	virtual double get() const; 
-		double m_a; 
-	double m_step; 
+       CUniformNoiseGenerator(unsigned int seed, double a, double b);
+private:
+       virtual double get() const;
+       double m_a;
+       double m_step;
 };
 
-class CUniformNoiseGeneratorFactory: public mia::CNoiseGeneratorPlugin {
-public: 
-	CUniformNoiseGeneratorFactory(); 
-private: 
-	mia::CNoiseGenerator *do_create() const; 
-	virtual const std::string do_get_descr()const; 
-	unsigned int m_param_seed; 
-	float m_param_a; 
-	float m_param_b; 
-}; 
+class CUniformNoiseGeneratorFactory: public mia::CNoiseGeneratorPlugin
+{
+public:
+       CUniformNoiseGeneratorFactory();
+private:
+       mia::CNoiseGenerator *do_create() const;
+       virtual const std::string do_get_descr()const;
+       unsigned int m_param_seed;
+       float m_param_a;
+       float m_param_b;
+};
 
 NS_END

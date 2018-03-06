@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,16 +29,17 @@ NS_BEGIN(Combiner2d)
 
 
 template <typename CombineOP>
-class T2DImageCombiner: public mia::C2DImageCombiner {
-	
-	template <typename F, typename A, typename B>
-	friend typename F::result_type mia::_filter(const F& f, const A& a, const B& b); 
-	
-	template <typename T, typename S>
-	mia::P2DImage operator () ( const mia::T2DImage<T>& a, const mia::T2DImage<S>& b) const;
+class T2DImageCombiner: public mia::C2DImageCombiner
+{
 
-	mia::P2DImage do_combine( const mia::C2DImage& a, const mia::C2DImage& b) const;
-}; 
+       template <typename F, typename A, typename B>
+       friend typename F::result_type mia::_filter(const F& f, const A& a, const B& b);
+
+       template <typename T, typename S>
+       mia::P2DImage operator () ( const mia::T2DImage<T>& a, const mia::T2DImage<S>& b) const;
+
+       mia::P2DImage do_combine( const mia::C2DImage& a, const mia::C2DImage& b) const;
+};
 
 
 #define COMBINE_OP(NAME, op) \
@@ -62,24 +63,28 @@ class T2DImageCombiner: public mia::C2DImageCombiner {
 COMBINE_OP(Add,   +)
 COMBINE_OP(Sub,   -)
 COMBINE_OP(Times, *)
-COMBINE_OP(Div,   /)
+COMBINE_OP(Div,   / )
 
 
 template <typename A, typename B>
 struct __CombineAbsDiff {
-	typedef decltype(*(A*)0 - *(B*)0) return_type; 
-		static return_type apply(A a, B b) {	       
-			return static_cast<double>(a) > static_cast<double>(b) ? (a - b) : (b - a); 
-		}
-};						
+       typedef decltype(*(A *)0 - * (B *)0) return_type;
+       static return_type apply(A a, B b)
+       {
+              return static_cast<double>(a) > static_cast<double>(b) ? (a - b) : (b - a);
+       }
+};
 
-class CombineAbsDiff {							
-public:									
-	template <typename A, typename B>
-	typename __CombineAbsDiff<A,B>::return_type operator ()(A a, B b)const {
-		return __CombineAbsDiff<A,B>::apply(a,b);
-	}
-};									\
+class CombineAbsDiff
+{
+public:
+       template <typename A, typename B>
+       typename __CombineAbsDiff<A, B>::return_type operator ()(A a, B b)const
+       {
+              return __CombineAbsDiff<A, B>::apply(a, b);
+       }
+};
+\
 
 typedef T2DImageCombiner<CombineAbsDiff> C2DAbsDiffImageCombiner;
 

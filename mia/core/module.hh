@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,51 +31,52 @@ NS_MIA_BEGIN
 /// definition of the Plugin interface loading function
 class CPluginBase;
 
-/**   
+/**
       \ingroup plugin
-      C function type that is provided by the plug-ins as entry point 
+      C function type that is provided by the plug-ins as entry point
 */
-typedef  CPluginBase* (*FPluginInterface)(void);
+typedef  CPluginBase *(*FPluginInterface)(void);
 
-/** 
+/**
    \ingroup plugin
-   
-   \brief  The plugin module loading class. 
-   
-   This class handles the loading of shared object modules and hides all the 
-   ugliness of platform dependency. 
+
+   \brief  The plugin module loading class.
+
+   This class handles the loading of shared object modules and hides all the
+   ugliness of platform dependency.
  */
-class EXPORT_CORE CPluginModule {
+class EXPORT_CORE CPluginModule
+{
 public:
-        /**
-	   Constructor that takes the path to the module, tries to open it, and will throw
-	   an \a invalid_argument exception, if the module can not be loaded
-	*/
-	CPluginModule(const char *path);
-	~CPluginModule();
+       /**
+         Constructor that takes the path to the module, tries to open it, and will throw
+         an \a invalid_argument exception, if the module can not be loaded
+       */
+       CPluginModule(const char *path);
+       ~CPluginModule();
 
-	/**
-	   \returns the plug-in object implemented in the module or NULL, if the module does not
-	   proide such plug-in
-	*/
-	CPluginBase *get_interface() const;
+       /**
+          \returns the plug-in object implemented in the module or NULL, if the module does not
+          proide such plug-in
+       */
+       CPluginBase *get_interface() const;
 
-	///\returns the file name of the module
-	const std::string& get_name() const; 
+       ///\returns the file name of the module
+       const std::string& get_name() const;
 
-	/** tell the DLL loader that it should unload this library
-	    when the modules is destroyed */ 
-	void set_unload_library(); 
+       /** tell the DLL loader that it should unload this library
+           when the modules is destroyed */
+       void set_unload_library();
 
-	void set_keep_library(); 
+       void set_keep_library();
 private:
-	CDLLoader m_loader;
-	std::string m_name;
+       CDLLoader m_loader;
+       std::string m_name;
 };
 
-/** 
+/**
     \ingroup plugin
-    Shared pointer type of the CPluginModule 
+    Shared pointer type of the CPluginModule
 */
 typedef std::shared_ptr<CPluginModule > PPluginModule;
 

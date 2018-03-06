@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,26 +22,25 @@
 
 #include <mia/2d/model/identity.hh>
 
-using namespace mia; 
+using namespace mia;
 using namespace identity_regmodel;
 
 BOOST_AUTO_TEST_CASE( test_modelsolver )
 {
-	C2DIdentityRegModel model;
+       C2DIdentityRegModel model;
+       C2DBounds size(2, 3);
+       C2DFVectorfield B(size);
+       C2DFVectorfield X(size);
 
-	C2DBounds size(2,3);
-	C2DFVectorfield B(size);
-	C2DFVectorfield X(size);
+       for (size_t y = 0; y < size.y; ++y)
+              for (size_t x = 0; x < size.x; ++x) {
+                     B(x, y ) = C2DFVector(x + 1, y + 1);
+              }
 
-	for (size_t y = 0; y < size.y; ++y)
-		for (size_t x = 0; x < size.x; ++x) {
-			B(x,y ) = C2DFVector(x+1, y+1);
-		}
+       model.solve(B, X);
 
-	model.solve(B,X);
-
-	for (size_t y = 0; y < size.y; ++y)
-		for (size_t x = 0; x < size.x; ++x) {
-			BOOST_CHECK_EQUAL(B(x,y), X(x,y));
-		}
+       for (size_t y = 0; y < size.y; ++y)
+              for (size_t x = 0; x < size.x; ++x) {
+                     BOOST_CHECK_EQUAL(B(x, y), X(x, y));
+              }
 }

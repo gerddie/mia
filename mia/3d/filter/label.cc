@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -32,89 +32,88 @@ using namespace boost;
 NS_BEGIN(label_3dimage_filter)
 
 CLabel::CLabel(P3DShape mask):
-	m_mask(mask)
+       m_mask(mask)
 {
 }
 
 void CLabel::grow_region(const C3DBounds& loc, const C3DBitImage& input, C3DUSImage& result, unsigned short label)const
 {
-	queue<C3DBounds> neighbors;
-	neighbors.push(loc);
-	result(loc) = label;
-	C3DBounds size = result.get_size();
+       queue<C3DBounds> neighbors;
+       neighbors.push(loc);
+       result(loc) = label;
+       C3DBounds size = result.get_size();
 
-	while (!neighbors.empty()) {
-		C3DBounds  l = neighbors.front();
+       while (!neighbors.empty()) {
+              C3DBounds  l = neighbors.front();
+              neighbors.pop();
 
-		neighbors.pop();
-		for (C3DShape::const_iterator s = m_mask->begin(); s != m_mask->end(); ++s) {
-			C3DBounds  pos(l.x + s->x, l.y + s->y, l.z + s->z);
-			if (pos.x < size.x && pos.y < size.y && pos.z < size.z && input(pos) && result(pos) == 0) {
-				result(pos) = label;
-				neighbors.push(pos);
-			}
-		}
-	}
+              for (C3DShape::const_iterator s = m_mask->begin(); s != m_mask->end(); ++s) {
+                     C3DBounds  pos(l.x + s->x, l.y + s->y, l.z + s->z);
+
+                     if (pos.x < size.x && pos.y < size.y && pos.z < size.z && input(pos) && result(pos) == 0) {
+                            result(pos) = label;
+                            neighbors.push(pos);
+                     }
+              }
+       }
 }
 
 CLabel::result_type CLabel::do_filter(const C3DImage& image) const
 {
-	if (image.get_pixel_type() != it_bit){
-		throw invalid_argument("Label: Only bit input images are allowed");
-	}
+       if (image.get_pixel_type() != it_bit) {
+              throw invalid_argument("Label: Only bit input images are allowed");
+       }
 
-	const C3DBitImage& input = dynamic_cast<const C3DBitImage&>(image);
+       const C3DBitImage& input = dynamic_cast<const C3DBitImage&>(image);
+       unsigned short current_label = 1;
+       C3DUSImage *result = new C3DUSImage(image.get_size(), image);
+       P3DImage presult(result);
+       fill(result->begin(), result->end(), 0);
+       C3DBitImage::const_iterator  i = input.begin();
+       C3DUSImage::const_iterator   r = result->begin();
+       C3DBounds size(image.get_size());
+       C3DBounds loc;
 
-	unsigned short current_label = 1;
-	C3DUSImage *result = new C3DUSImage(image.get_size(), image);
-	P3DImage presult(result);
-	fill(result->begin(), result->end(), 0);
+       for (loc.z = 0; loc.z < size.z; ++loc.z)
+              for (loc.y = 0; loc.y < size.y; ++loc.y)
+                     for (loc.x = 0; loc.x < size.x; ++loc.x, ++i, ++r) {
+                            if (*i && !*r) {
+                                   cvdebug() << "label:" << current_label << " seed at " << loc << "\n";
+                                   grow_region(loc, input, *result, current_label);
+                                   ++current_label;
+                            }
+                     }
 
-	C3DBitImage::const_iterator  i = input.begin();
-	C3DUSImage::const_iterator   r = result->begin();
+       cvmsg() << "\n";
 
-	C3DBounds size(image.get_size());
-	C3DBounds loc;
+       if (current_label < 256) {
+              C3DUBImage *real_result = new C3DUBImage(image.get_size(), image);
+              copy(result->begin(), result->end(), real_result->begin());
+              presult.reset(real_result);
+       }
 
-	for (loc.z = 0; loc.z < size.z; ++loc.z)
-		for (loc.y = 0; loc.y < size.y; ++loc.y)
-			for (loc.x = 0; loc.x < size.x; ++loc.x, ++i, ++r) {
-				if (*i && !*r) {
-					cvdebug() << "label:" << current_label << " seed at " << loc << "\n";
-					grow_region(loc, input, *result, current_label);
-					++current_label;
-
-				}
-			}
-
-	cvmsg() << "\n";
-	if (current_label < 256) {
-		C3DUBImage *real_result = new C3DUBImage(image.get_size(), image);
-		copy(result->begin(), result->end(), real_result->begin());
-		presult.reset(real_result);
-	}
-	return presult;
+       return presult;
 }
 
 C3DLabelFilterPlugin::C3DLabelFilterPlugin():
-	C3DFilterPlugin("label")
+       C3DFilterPlugin("label")
 {
-	add_parameter("n", make_param(m_mask, "6n", false, "neighborhood mask")) ;
+       add_parameter("n", make_param(m_mask, "6n", false, "neighborhood mask")) ;
 }
 
 C3DFilter *C3DLabelFilterPlugin::do_create()const
 {
-	return new CLabel(m_mask);
+       return new CLabel(m_mask);
 }
 
 const string C3DLabelFilterPlugin::do_get_descr()const
 {
-	return "A filter to label the  connected components of a binary image.";
+       return "A filter to label the  connected components of a binary image.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C3DLabelFilterPlugin();
+       return new C3DLabelFilterPlugin();
 }
 
 

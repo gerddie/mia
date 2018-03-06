@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -33,125 +33,129 @@ CAttribute::~CAttribute()
 
 std::string CAttribute::as_string() const
 {
-	return do_as_string();
+       return do_as_string();
 }
 
 bool CAttribute::is_equal(const CAttribute& other) const
 {
-	return do_is_equal(other);
+       return do_is_equal(other);
 }
 
 bool CAttribute::is_less(const CAttribute& other) const
 {
-	return do_is_less(other);
+       return do_is_less(other);
 }
 
 
 CAttributedData::CAttributedData():
-	m_attr(new CAttributeMap())
+       m_attr(new CAttributeMap())
 {
 }
 
 CAttributedData::CAttributedData(PAttributeMap attr):
-	m_attr(attr)
+       m_attr(attr)
 {
 }
 
 CAttributedData::CAttributedData(const CAttributedData& org):
-	m_attr(org.m_attr)
+       m_attr(org.m_attr)
 {
 }
 
 CAttributedData& CAttributedData::operator =(const CAttributedData& org)
 {
-	if (this != &org)
-		m_attr = org.m_attr;
-	return *this;
+       if (this != &org)
+              m_attr = org.m_attr;
+
+       return *this;
 }
 
 
 const PAttribute CAttributedData::get_attribute(const std::string& name) const
 {
-	CAttributeMap::const_iterator i = m_attr->find(name);
+       CAttributeMap::const_iterator i = m_attr->find(name);
 
-	if ( i != m_attr->end() )
-	     return i->second;
-	return PAttribute();
+       if ( i != m_attr->end() )
+              return i->second;
+
+       return PAttribute();
 }
 
 bool CAttributedData::has_attribute(const std::string& name)const
 {
-	CAttributeMap::const_iterator i = m_attr->find(name);
-	return (i != m_attr->end());
+       CAttributeMap::const_iterator i = m_attr->find(name);
+       return (i != m_attr->end());
 }
 
 void CAttributedData::set_attribute(const std::string& name, PAttribute attr)
 {
-	if ( !m_attr.unique() )
-		m_attr = PAttributeMap(new CAttributeMap(*m_attr));
-	(*m_attr)[name] = attr;
+       if ( !m_attr.unique() )
+              m_attr = PAttributeMap(new CAttributeMap(*m_attr));
+
+       (*m_attr)[name] = attr;
 }
 
 void CAttributedData::set_attributes(CAttributeMap::const_iterator begin, CAttributeMap::const_iterator end)
 {
-	while (begin != end){
-		set_attribute(begin->first, begin->second); 
-		++begin; 
-	}
+       while (begin != end) {
+              set_attribute(begin->first, begin->second);
+              ++begin;
+       }
 }
 
 EXPORT_CORE std::ostream&  operator << (std::ostream& os, const CAttributeMap& data)
 {
-	os << "attribute map: [ \n";
-	for (CAttributeMap::const_iterator i = data.begin();
-	     i != data.end(); ++i) {
-		os << "  ('" << i->first << "', '" << i->second->as_string() << "')\n";
-	}
-	os << "]\n";
+       os << "attribute map: [ \n";
 
-	return os;
+       for (CAttributeMap::const_iterator i = data.begin();
+            i != data.end(); ++i) {
+              os << "  ('" << i->first << "', '" << i->second->as_string() << "')\n";
+       }
+
+       os << "]\n";
+       return os;
 }
 
 void CAttributedData::delete_attribute(const std::string& key)
 {
+       if ( !m_attr.unique() )
+              m_attr = PAttributeMap(new CAttributeMap(*m_attr));
 
-	if ( !m_attr.unique() )
-		m_attr = PAttributeMap(new CAttributeMap(*m_attr));
-	m_attr->erase(key);
+       m_attr->erase(key);
 }
 
 void CAttributedData::set_attribute(const std::string& name, const std::string& value)
 {
-	PAttribute attr =  CStringAttrTranslatorMap::instance().to_attr(name, value);
-	cvdebug() << "CAttributedData::set_attribute: set '"  << name
-		  << "' to '" << value << "' of type '"
-		  << attr->typedescr() << "'\n";
-
-	set_attribute(name, attr);
+       PAttribute attr =  CStringAttrTranslatorMap::instance().to_attr(name, value);
+       cvdebug() << "CAttributedData::set_attribute: set '"  << name
+                 << "' to '" << value << "' of type '"
+                 << attr->typedescr() << "'\n";
+       set_attribute(name, attr);
 }
 
-void CAttributedData::set_attribute(const std::string& key, const char* value)
+void CAttributedData::set_attribute(const std::string& key, const char *value)
 {
-	set_attribute(key, string(value)); 
+       set_attribute(key, string(value));
 }
 
 const string CAttributedData::get_attribute_as_string(const std::string& name)const
 {
-	CAttributeMap::const_iterator i = m_attr->find(name);
-	if ( i != m_attr->end() )
-		return i->second->as_string();
-	else
-		return "";
+       CAttributeMap::const_iterator i = m_attr->find(name);
+
+       if ( i != m_attr->end() )
+              return i->second->as_string();
+       else
+              return "";
 }
 
 CAttributeMap::const_iterator CAttributedData::begin_attributes() const
 {
-	return m_attr->begin(); 
+       return m_attr->begin();
 }
 
 CAttributeMap::const_iterator CAttributedData::end_attributes() const
 {
-	return m_attr->end(); 
+       return m_attr->end();
 }
 
 CStringAttrTranslatorMap::CStringAttrTranslatorMap()
@@ -159,40 +163,43 @@ CStringAttrTranslatorMap::CStringAttrTranslatorMap()
 }
 
 
-bool CStringAttrTranslatorMap::add(const string& key, CAttrTranslator* t)
+bool CStringAttrTranslatorMap::add(const string& key, CAttrTranslator *t)
 {
-	CMap::const_iterator k = m_translators.find(key);
-	if ( k != m_translators.end()) {
-		if ( typeid(*t) != typeid(*k->second)) {
-			delete t; 
-			throw create_exception<invalid_argument>(string("translator with key '") +
-								 key + ("' already defined otherwise"));
-		} else
-			return false;
-	}
-	cvdebug() << "add translator type '" << typeid(*t).name() << "' for '" << key << "'\n";
-	m_translators.insert(make_pair(key,shared_ptr<CAttrTranslator>(t))); 
-	return true;
+       CMap::const_iterator k = m_translators.find(key);
+
+       if ( k != m_translators.end()) {
+              if ( typeid(*t) != typeid(*k->second)) {
+                     delete t;
+                     throw create_exception<invalid_argument>(string("translator with key '") +
+                                   key + ("' already defined otherwise"));
+              } else
+                     return false;
+       }
+
+       cvdebug() << "add translator type '" << typeid(*t).name() << "' for '" << key << "'\n";
+       m_translators.insert(make_pair(key, shared_ptr<CAttrTranslator>(t)));
+       return true;
 }
 
 PAttribute CStringAttrTranslatorMap::to_attr(const string& key, const string& value) const
 {
-	auto i = m_translators.find(key);
-	if ( i != m_translators.end())
-		return i->second->from_string(value);
-	else
-		return PAttribute(new TAttribute<string>(value));
+       auto i = m_translators.find(key);
+
+       if ( i != m_translators.end())
+              return i->second->from_string(value);
+       else
+              return PAttribute(new TAttribute<string>(value));
 }
 
 CStringAttrTranslatorMap& CStringAttrTranslatorMap::instance()
 {
-	static CStringAttrTranslatorMap map;
-	return map;
+       static CStringAttrTranslatorMap map;
+       return map;
 }
 
 PAttribute CAttrTranslator::from_string(const std::string& value) const
 {
-	return do_from_string(value);
+       return do_from_string(value);
 }
 
 CAttrTranslator::CAttrTranslator()
@@ -201,79 +208,79 @@ CAttrTranslator::CAttrTranslator()
 
 bool CAttrTranslator::do_register(const std::string& key)
 {
-	return CStringAttrTranslatorMap::instance().add(key, this);
+       return CStringAttrTranslatorMap::instance().add(key, this);
 }
 
 bool operator == (const CAttributeMap& am, const CAttributeMap& bm)
 {
-	if (am.size() != bm.size()) {
-		cvdebug() << "CAttributeMap ==: Lists have different size:"
-			  << am.size() << " vs. " << bm.size() << "\n";
-		return false;
-	}
+       if (am.size() != bm.size()) {
+              cvdebug() << "CAttributeMap ==: Lists have different size:"
+                        << am.size() << " vs. " << bm.size() << "\n";
+              return false;
+       }
 
-	for (CAttributeMap::const_iterator ai = am.begin(); ai != am.end(); ++ai) {
-		CAttributeMap::const_iterator bi = bm.find(ai->first);
+       for (CAttributeMap::const_iterator ai = am.begin(); ai != am.end(); ++ai) {
+              CAttributeMap::const_iterator bi = bm.find(ai->first);
 
-		if (bi == bm.end()) {
-			cvdebug() << "Attribute '" << ai->first << "' not in second list\n";
-			return false;
-		}
+              if (bi == bm.end()) {
+                     cvdebug() << "Attribute '" << ai->first << "' not in second list\n";
+                     return false;
+              }
 
-		if (!ai->second->is_equal(*bi->second)) {
-			cvdebug() << "Attribute '"<< ai->first << "' has a different value: '"
-				  << ai->second->as_string() << "', expect '" <<  bi->second->as_string()
-				  << "'\n";
-			return false;
-		}
+              if (!ai->second->is_equal(*bi->second)) {
+                     cvdebug() << "Attribute '" << ai->first << "' has a different value: '"
+                               << ai->second->as_string() << "', expect '" <<  bi->second->as_string()
+                               << "'\n";
+                     return false;
+              }
+       }
 
-	}
-	return true;
+       return true;
 }
 
 bool EXPORT_CORE operator == (const CAttributedData& a, const CAttributedData& b)
 {
-	return  *a.m_attr == *b.m_attr;
+       return  *a.m_attr == *b.m_attr;
 }
 
 template class TAttribute<uint8_t>;
-template class TAttribute<int8_t>; 
+template class TAttribute<int8_t>;
 
 template class TAttribute<std::vector<uint8_t>>;
-template class TAttribute<std::vector<int8_t>>; 
+template class TAttribute<std::vector<int8_t>>;
 
 template class EXPORT_CORE  TTranslator<double>;
-template class EXPORT_CORE  TTranslator<std::vector<double> >;
+template class EXPORT_CORE  TTranslator<std::vector<double>>;
 
 template class EXPORT_CORE  TTranslator<float>;
-template class EXPORT_CORE  TTranslator<std::vector<float> >;
+template class EXPORT_CORE  TTranslator<std::vector<float>>;
 
 template class EXPORT_CORE  TTranslator<uint64_t>;
-template class EXPORT_CORE  TTranslator<std::vector<uint64_t> >;
+template class EXPORT_CORE  TTranslator<std::vector<uint64_t>>;
 
 template class EXPORT_CORE  TTranslator<int64_t>;
-template class EXPORT_CORE  TTranslator<std::vector<int64_t> >;
+template class EXPORT_CORE  TTranslator<std::vector<int64_t>>;
 
 template class EXPORT_CORE  TTranslator<uint32_t>;
-template class EXPORT_CORE  TTranslator<std::vector<uint32_t> >;
+template class EXPORT_CORE  TTranslator<std::vector<uint32_t>>;
 
 template class EXPORT_CORE  TTranslator<int32_t>;
-template class EXPORT_CORE  TTranslator<std::vector<int32_t> >;
+template class EXPORT_CORE  TTranslator<std::vector<int32_t>>;
 
 template class EXPORT_CORE  TTranslator<uint16_t>;
-template class EXPORT_CORE  TTranslator<std::vector<uint16_t> >;
+template class EXPORT_CORE  TTranslator<std::vector<uint16_t>>;
 
 template class EXPORT_CORE  TTranslator<int16_t>;
-template class EXPORT_CORE  TTranslator<std::vector<int16_t> >;
+template class EXPORT_CORE  TTranslator<std::vector<int16_t>>;
 
 template class EXPORT_CORE  TTranslator<uint8_t>;
-template class EXPORT_CORE  TTranslator<std::vector<uint8_t> >;
+template class EXPORT_CORE  TTranslator<std::vector<uint8_t>>;
 
 template class EXPORT_CORE  TTranslator<int8_t>;
-template class EXPORT_CORE  TTranslator<std::vector<int8_t> >;
+template class EXPORT_CORE  TTranslator<std::vector<int8_t>>;
 
 template class EXPORT_CORE  TTranslator<bool>;
-template class EXPORT_CORE  TTranslator<std::vector<bool> >;
+template class EXPORT_CORE  TTranslator<std::vector<bool>>;
 
 
 

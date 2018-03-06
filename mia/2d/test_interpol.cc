@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -37,212 +37,213 @@
 NS_MIA_USE
 using namespace std;
 
-namespace bmpl=boost::mpl;
+namespace bmpl = boost::mpl;
 
 template <class Data2D, class Interpolator>
 void test_interpolator(const Data2D& data, const Interpolator& src)
 {
+       typename Data2D::const_iterator i = data.begin();
 
-	typename Data2D::const_iterator i = data.begin();
-
-	for (size_t y = 0; y < data.get_size().y; ++y)
-		for (size_t x = 0; x < data.get_size().x; ++x, ++i) {
-			float fx = float(x), fy = float(y);
-			C2DFVector loc(fx,fy);
-			typename Data2D::value_type v = src(loc);
-			BOOST_CHECK_CLOSE(1.0 + v, 1.0 + *i, 0.1);
-		}
+       for (size_t y = 0; y < data.get_size().y; ++y)
+              for (size_t x = 0; x < data.get_size().x; ++x, ++i) {
+                     float fx = float(x), fy = float(y);
+                     C2DFVector loc(fx, fy);
+                     typename Data2D::value_type v = src(loc);
+                     BOOST_CHECK_CLOSE(1.0 + v, 1.0 + *i, 0.1);
+              }
 }
 
 
 template <class T, template <class> class Interpolator>
 void test_direct_interpolator(const T2DDatafield<T>& data)
 {
-	Interpolator<T> src(data);
-	test_interpolator(data, src);
+       Interpolator<T> src(data);
+       test_interpolator(data, src);
 }
 
 
 template <class T>
 void test_conv_interpolator(const T2DDatafield<T>& data, PSplineKernel kernel)
 {
-	T2DInterpolator<T>  src(data, kernel);
-	test_interpolator(data, src);
+       T2DInterpolator<T>  src(data, kernel);
+       test_interpolator(data, src);
 }
 
 double omoms3(double x)
 {
-	if (x < 0)
-		x = -x;
+       if (x < 0)
+              x = -x;
 
-	if (x >= 2)
-		return 0;
-	if (x >= 1)
-		return ((1 - 1.0 / 6.0 * x) * x - 85.0/42.0 ) * x + 29.0 / 21.0;
+       if (x >= 2)
+              return 0;
 
-	return ((0.5 * x - 1) * x + 1/14.0) * x + 13.0 / 21.0;
+       if (x >= 1)
+              return ((1 - 1.0 / 6.0 * x) * x - 85.0 / 42.0 ) * x + 29.0 / 21.0;
+
+       return ((0.5 * x - 1) * x + 1 / 14.0) * x + 13.0 / 21.0;
 }
 
 BOOST_AUTO_TEST_CASE( test_omoms3 )
 {
-	const double x = 0.2;
-	auto  kernel = CSplineKernelPluginHandler::instance().produce("omoms:d=3");
-	std::vector<double> weights(kernel->size());
-	kernel->get_weights(x, weights);
+       const double x = 0.2;
+       auto  kernel = CSplineKernelPluginHandler::instance().produce("omoms:d=3");
+       std::vector<double> weights(kernel->size());
+       kernel->get_weights(x, weights);
 
-	for (size_t i = 0; i < weights.size(); ++i) {
-		BOOST_CHECK_CLOSE(weights[3 - i], omoms3( x - 2.0 + i), 1e-4);
-	}
+       for (size_t i = 0; i < weights.size(); ++i) {
+              BOOST_CHECK_CLOSE(weights[3 - i], omoms3( x - 2.0 + i), 1e-4);
+       }
 }
 
 template <typename T, bool is_float>
 struct __dispatch_compare {
-	static void apply(T a, T b) {
-		BOOST_CHECK( a == b);
-	}
+       static void apply(T a, T b)
+       {
+              BOOST_CHECK( a == b);
+       }
 };
 
 template <typename T>
 struct __dispatch_compare<T, true> {
-	static void apply(T a, T b) {
-		BOOST_CHECK_CLOSE(a, b, 0.01);
-	}
+       static void apply(T a, T b)
+       {
+              BOOST_CHECK_CLOSE(a, b, 0.01);
+       }
 };
 
 
 
 
 struct FCompareImages: public TFilter<bool> {
-	template <typename T>
-	bool operator ()( const T2DImage<T>& a, const T2DImage<T>& b) const {
-		typedef typename T2DImage<T>::const_iterator II;
-		for (II ai = a.begin(), bi = b.begin(); ai != a.end(); ++ai, ++bi) {
-			__dispatch_compare<T, ::boost::is_floating_point<T>::value>::apply(*ai,*bi);
-		}
-		return true;
-	}
+       template <typename T>
+       bool operator ()( const T2DImage<T>& a, const T2DImage<T>& b) const
+       {
+              typedef typename T2DImage<T>::const_iterator II;
+
+              for (II ai = a.begin(), bi = b.begin(); ai != a.end(); ++ai, ++bi) {
+                     __dispatch_compare<T, ::boost::is_floating_point<T>::value>::apply(*ai, *bi);
+              }
+
+              return true;
+       }
 };
 
 bool save(P2DImage image, const string& name)
 {
-	C2DImageIOPluginHandler::Instance::Data vlist;
-	vlist.push_back(image);
-	return C2DImageIOPluginHandler::instance().save(name, vlist); 
+       C2DImageIOPluginHandler::Instance::Data vlist;
+       vlist.push_back(image);
+       return C2DImageIOPluginHandler::instance().save(name, vlist);
 }
 
 void test_deformadd()
 {
-	C2DBounds size(256, 256);
+       C2DBounds size(256, 256);
+       C2DUSImage *fimage = new C2DUSImage(size);
+       P2DImage image(fimage);
+       C2DInterpolatorFactory ipf("bspline:d=1", "mirror");
+       C2DFVectorfield A(size);
+       C2DFVectorfield B(size);
+       C2DFVectorfield::iterator a = A.begin();
+       C2DFVectorfield::iterator b = B.begin();
+       C2DUSImage::iterator i = fimage->begin();
 
-	C2DUSImage *fimage = new C2DUSImage(size);
-	P2DImage image(fimage);
+       for (size_t y = 0; y < size.y; ++y) {
+              float my = (128.0f - y);
+              my *= my;
 
-	C2DInterpolatorFactory ipf("bspline:d=1", "mirror");
+              for (size_t x = 0; x < size.x; ++x, ++i, ++a, ++b) {
+                     float mx = (128.0f - x);
+                     mx *= mx;
+                     *i = x % 16 &&  y % 16  ? 0 : 48000;
+                     *a = C2DFVector( mx / (16 * y + 1), 0.0);
+                     *b = C2DFVector( 0.0, my / ( 16 *  x + 1));
+              }
+       }
 
-	C2DFVectorfield A(size);
-	C2DFVectorfield B(size);
+       P2DImage im = filter(FDeformer2D(A, ipf), *image);
+       P2DImage result_add = filter(FDeformer2D(B, ipf), *im);
+       A += B;
+       P2DImage result_direct = filter(FDeformer2D(A, ipf), *image);
 
-	C2DFVectorfield::iterator a = A.begin();
-	C2DFVectorfield::iterator b = B.begin();
-	C2DUSImage::iterator i = fimage->begin();
-
-	for (size_t y = 0; y < size.y; ++y) {
-		float my = (128.0f - y);
-		my *= my;
-		for (size_t x = 0; x < size.x; ++x, ++i, ++a, ++b) {
-			float mx = (128.0f - x);
-			mx *= mx;
-			*i = x % 16 &&  y % 16  ? 0: 48000;
-			*a = C2DFVector( mx / (16 * y + 1), 0.0);
-			*b = C2DFVector( 0.0, my / ( 16 *  x + 1));
-		}
-	}
-
-	P2DImage im = filter(FDeformer2D(A, ipf), *image);
-	P2DImage result_add = filter(FDeformer2D(B, ipf), *im);
-
-	A += B;
-
-	P2DImage result_direct = filter(FDeformer2D(A, ipf), *image);
-
-	if (!filter_equal(FCompareImages(), *result_direct, *result_add)) {
-		if (!save(image, "original.png") ||
-		    !save(im, "inter.png") || 
-		    !save(result_direct, "result_direct.png")||
-		    !save(result_add, "result_add.png"))
-			cverr() << "Couldn't write debug images\n"; 
-	}
-
+       if (!filter_equal(FCompareImages(), *result_direct, *result_add)) {
+              if (!save(image, "original.png") ||
+                  !save(im, "inter.png") ||
+                  !save(result_direct, "result_direct.png") ||
+                  !save(result_add, "result_add.png"))
+                     cverr() << "Couldn't write debug images\n";
+       }
 }
 
 
 
 typedef bmpl::list<int8_t,
-		   uint8_t,
-		   int16_t,
-		   uint16_t,
-		   int32_t,
-		   uint32_t,
-		   int64_t, 
-		   uint64_t, 
-		   float,
-		   double
-		   > test_types;
+        uint8_t,
+        int16_t,
+        uint16_t,
+        int32_t,
+        uint32_t,
+        int64_t,
+        uint64_t,
+        float,
+        double
+        > test_types;
 
 
 
 template <typename T>
 T2DDatafield<T> create_data()
 {
-	T2DDatafield<T> data(C2DBounds(10, 12));
-	typename T2DDatafield<T>::iterator i = data.begin();
-	for (size_t y = 0; y < data.get_size().y; ++y)
-		for (size_t x = 0; x < data.get_size().x; ++x, ++i)
-			*i = T(y + x);
-	return data;
+       T2DDatafield<T> data(C2DBounds(10, 12));
+       typename T2DDatafield<T>::iterator i = data.begin();
+
+       for (size_t y = 0; y < data.get_size().y; ++y)
+              for (size_t x = 0; x < data.get_size().x; ++x, ++i)
+                     *i = T(y + x);
+
+       return data;
 }
 
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateNN_type, T, test_types )
 {
-	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=0"));
+       T2DDatafield<T> data = create_data<T>();
+       test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=0"));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBiLin_type, T, test_types )
 {
-	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=1"));
+       T2DDatafield<T> data = create_data<T>();
+       test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=1"));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline2_type, T, test_types )
 {
-	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=2"));
+       T2DDatafield<T> data = create_data<T>();
+       test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=2"));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline3_type, T, test_types )
 {
-	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=3"));
+       T2DDatafield<T> data = create_data<T>();
+       test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=3"));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline4_type, T, test_types )
 {
-	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=4"));
+       T2DDatafield<T> data = create_data<T>();
+       test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=4"));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline5_type, T, test_types )
 {
-	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=5"));
+       T2DDatafield<T> data = create_data<T>();
+       test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("bspline:d=5"));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateOMoms3_type, T, test_types )
 {
-	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("omoms:d=3"));
+       T2DDatafield<T> data = create_data<T>();
+       test_conv_interpolator<T>(data, CSplineKernelPluginHandler::instance().produce("omoms:d=3"));
 }
 
 

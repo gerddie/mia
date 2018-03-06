@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,26 +25,27 @@ NS_MIA_USE;
 using namespace std;
 
 struct LinearFunction {
-	double operator()(double x) const {
-		return x;
-	}
+       double operator()(double x) const
+       {
+              return x;
+       }
 };
 
 BOOST_AUTO_TEST_CASE( test_integrate_linear2 )
 {
-	double result = simpson(2, 7, 2, LinearFunction());
-	BOOST_CHECK_CLOSE(result, 22.5, 0.01);
+       double result = simpson(2, 7, 2, LinearFunction());
+       BOOST_CHECK_CLOSE(result, 22.5, 0.01);
 }
 
 
 BOOST_AUTO_TEST_CASE( test_integrate_linear1 )
 {
-	double result = simpson(2, 7, 1, LinearFunction());
-	BOOST_CHECK_CLOSE(result, 22.5, 0.01);
+       double result = simpson(2, 7, 1, LinearFunction());
+       BOOST_CHECK_CLOSE(result, 22.5, 0.01);
 }
 
 BOOST_AUTO_TEST_CASE( test_integrate_linea3 )
 {
-	double result = simpson(2, 7, 3, LinearFunction());
-	BOOST_CHECK_CLOSE(result, 22.5, 0.01);
+       double result = simpson(2, 7, 3, LinearFunction());
+       BOOST_CHECK_CLOSE(result, 22.5, 0.01);
 }

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,38 +31,44 @@ using namespace std;
 
 PTriangleMesh  EXPORT_MESH run_filter_chain(PTriangleMesh mesh, const std::vector<const char *>& filters)
 {
-	const auto& fh = CMeshFilterPluginHandler::instance();
-	for (auto fd = filters.begin(); fd != filters.end(); ++fd) {
-		auto f = fh.produce(*fd);
-		if (!f)
-			throw create_exception<invalid_argument>("unable to create mesh filter from '", *fd, "'");
-		mesh = f->filter(*mesh);
-	}
-	return mesh; 
+       const auto& fh = CMeshFilterPluginHandler::instance();
+
+       for (auto fd = filters.begin(); fd != filters.end(); ++fd) {
+              auto f = fh.produce(*fd);
+
+              if (!f)
+                     throw create_exception<invalid_argument>("unable to create mesh filter from '", *fd, "'");
+
+              mesh = f->filter(*mesh);
+       }
+
+       return mesh;
 }
 
 PTriangleMesh  EXPORT_MESH run_filter(const CTriangleMesh& mesh, const char *filter)
 {
-	auto f = CMeshFilterPluginHandler::instance().produce(filter);
-	if (!f)
-		throw create_exception<invalid_argument>("unable to create filter from '", filter, "'");
-	return f->filter(mesh);
+       auto f = CMeshFilterPluginHandler::instance().produce(filter);
+
+       if (!f)
+              throw create_exception<invalid_argument>("unable to create filter from '", filter, "'");
+
+       return f->filter(mesh);
 }
 
-template<> const  char * const 
-TPluginHandler<CMeshFilterPlugin>::m_help = 
-   "These plug-ins provide mesh filters. Unless otherwise noted, "
-   "they take a triangular mesh as input, "
-   "process it and hand it to the next filter in the pipeline." 
-; 
+template<> const  char *const
+TPluginHandler<CMeshFilterPlugin>::m_help =
+       "These plug-ins provide mesh filters. Unless otherwise noted, "
+       "they take a triangular mesh as input, "
+       "process it and hand it to the next filter in the pipeline."
+       ;
 
 template class TDataFilter<CTriangleMesh>;
 template class TDataFilterPlugin<CTriangleMesh>;
 template class TPlugin<CTriangleMesh, filter_type>;
-template class THandlerSingleton<TFactoryPluginHandler<CMeshFilterPlugin> >;
+template class THandlerSingleton<TFactoryPluginHandler<CMeshFilterPlugin>>;
 template class TFactoryPluginHandler<CMeshFilterPlugin>;
 template class TPluginHandler<CMeshFilterPlugin>;
-template class TFilterChain<CMeshFilterPluginHandler>; 
+template class TFilterChain<CMeshFilterPluginHandler>;
 
 
 

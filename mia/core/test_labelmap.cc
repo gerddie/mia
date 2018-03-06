@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -18,53 +18,47 @@
  *
  */
 
-#include <sstream> 
+#include <sstream>
 #include <mia/internal/autotest.hh>
 #include <mia/core/labelmap.hh>
 
 NS_MIA_USE
 
-using std::istringstream; 
-using std::ostringstream; 
+using std::istringstream;
+using std::ostringstream;
 
 
-BOOST_AUTO_TEST_CASE ( test_labelmap ) 
+BOOST_AUTO_TEST_CASE ( test_labelmap )
 {
-	CLabelMap map; 
-
-	map[2] = 3; 
-	map[4] = 2; 
-	map[9] = 7; 
-
-	ostringstream os; 
-	map.save(os); 
-
-	istringstream is(os.str()); 
-
-	CLabelMap new_map(is); 
-	
-	BOOST_CHECK_EQUAL(new_map.size(), map.size()); 
-
-	BOOST_CHECK_EQUAL(map[2], 3); 
-	BOOST_CHECK_EQUAL(map[4], 2); 
-	BOOST_CHECK_EQUAL(map[9], 7); 
+       CLabelMap map;
+       map[2] = 3;
+       map[4] = 2;
+       map[9] = 7;
+       ostringstream os;
+       map.save(os);
+       istringstream is(os.str());
+       CLabelMap new_map(is);
+       BOOST_CHECK_EQUAL(new_map.size(), map.size());
+       BOOST_CHECK_EQUAL(map[2], 3);
+       BOOST_CHECK_EQUAL(map[4], 2);
+       BOOST_CHECK_EQUAL(map[9], 7);
 }
 
 
-BOOST_AUTO_TEST_CASE ( test_labelmap_fail_1 ) 
+BOOST_AUTO_TEST_CASE ( test_labelmap_fail_1 )
 {
-	istringstream test_false("nothing real"); 
-	BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument); 
+       istringstream test_false("nothing real");
+       BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument);
 }
 
-BOOST_AUTO_TEST_CASE ( test_labelmap_fail_2 ) 
+BOOST_AUTO_TEST_CASE ( test_labelmap_fail_2 )
 {
-	istringstream test_false("MiaLabelmap\n 2\n 3 1"); 
-	BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument); 
+       istringstream test_false("MiaLabelmap\n 2\n 3 1");
+       BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument);
 }
 
-BOOST_AUTO_TEST_CASE ( test_labelmap_fail_3 ) 
+BOOST_AUTO_TEST_CASE ( test_labelmap_fail_3 )
 {
-	istringstream test_false("MiaLabelmap\n 2\n 3 1\n 4"); 
-	BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument); 
+       istringstream test_false("MiaLabelmap\n 2\n 3 1\n 4");
+       BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument);
 }

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,32 +28,32 @@
 
 NS_MIA_BEGIN
 
-/// @cond INTERNAL 
+/// @cond INTERNAL
 
 /**
    \ingroup misc
-   Template type parameter for time-step plugins 
+   Template type parameter for time-step plugins
  */
 struct EXPORT_CORE timestep_type {
-	/// value for plug-in search path component 
-	static const char *type_descr;
+       /// value for plug-in search path component
+       static const char *type_descr;
 };
 
 /**
-   \ingroup traits 
+   \ingroup traits
    \brief Type description template
-   This template is used to create a type description for command line and 
-   plug-in parameters. It needs to be specialized for each type that is used 
-   in the command line parser or spline parameter parser 
-   \tparam T the type to be described 
+   This template is used to create a type description for command line and
+   plug-in parameters. It needs to be specialized for each type that is used
+   in the command line parser or spline parameter parser
+   \tparam T the type to be described
 */
-template <typename T> 
+template <typename T>
 struct __type_descr {
-	static const char * const value; 
-}; 
+       static const char *const value;
+};
 
 /**
-   A macro to make the declaration of the __type_descr specialization 
+   A macro to make the declaration of the __type_descr specialization
  */
 #define DECLARE_TYPE_DESCR(type)			\
 	template <>				\
@@ -61,51 +61,51 @@ struct __type_descr {
 		static const char * const value; \
 	}
 /**
-   A macro to define the value of the  of the __type_descr specialization directly 
-   based on the type name 
-   \param type the type to be specialized 
+   A macro to define the value of the  of the __type_descr specialization directly
+   based on the type name
+   \param type the type to be specialized
 */
 #define DEFINE_TYPE_DESCR(type) const char * const __type_descr<type>::value = #type;
 
 /**
-   A macro to define the value of the  of the __type_descr specialization that takes 
+   A macro to define the value of the  of the __type_descr specialization that takes
    a special name
-   \param type the type to be specialized 
-   \param name string to represent the type 
+   \param type the type to be specialized
+   \param name string to represent the type
  */
 #define DEFINE_TYPE_DESCR2(type, name) const char * const __type_descr<type>::value = name;
 
 
-/// @endcond 	
+/// @endcond
 
-/// @cond NEVER 
+/// @cond NEVER
 
-DECLARE_TYPE_DESCR(int8_t); 
-DECLARE_TYPE_DESCR(uint8_t); 
-DECLARE_TYPE_DESCR(int16_t); 
-DECLARE_TYPE_DESCR(int32_t); 
-DECLARE_TYPE_DESCR(int64_t); 
+DECLARE_TYPE_DESCR(int8_t);
+DECLARE_TYPE_DESCR(uint8_t);
+DECLARE_TYPE_DESCR(int16_t);
+DECLARE_TYPE_DESCR(int32_t);
+DECLARE_TYPE_DESCR(int64_t);
 DECLARE_TYPE_DESCR(uint16_t);
 DECLARE_TYPE_DESCR(uint32_t);
 DECLARE_TYPE_DESCR(uint64_t);
-DECLARE_TYPE_DESCR(float); 
-DECLARE_TYPE_DESCR(double); 
-DECLARE_TYPE_DESCR(bool); 
-DECLARE_TYPE_DESCR(std::string); 
+DECLARE_TYPE_DESCR(float);
+DECLARE_TYPE_DESCR(double);
+DECLARE_TYPE_DESCR(bool);
+DECLARE_TYPE_DESCR(std::string);
 
 
-DECLARE_TYPE_DESCR(std::vector<int16_t>); 
-DECLARE_TYPE_DESCR(std::vector<int32_t>); 
-DECLARE_TYPE_DESCR(std::vector<int64_t>); 
+DECLARE_TYPE_DESCR(std::vector<int16_t>);
+DECLARE_TYPE_DESCR(std::vector<int32_t>);
+DECLARE_TYPE_DESCR(std::vector<int64_t>);
 DECLARE_TYPE_DESCR(std::vector<uint32_t>);
 DECLARE_TYPE_DESCR(std::vector<uint16_t>);
 DECLARE_TYPE_DESCR(std::vector<uint64_t>);
-DECLARE_TYPE_DESCR(std::vector<float>); 
-DECLARE_TYPE_DESCR(std::vector<double>); 
-DECLARE_TYPE_DESCR(std::vector<bool>); 
-DECLARE_TYPE_DESCR(std::vector<std::string>); 
+DECLARE_TYPE_DESCR(std::vector<float>);
+DECLARE_TYPE_DESCR(std::vector<double>);
+DECLARE_TYPE_DESCR(std::vector<bool>);
+DECLARE_TYPE_DESCR(std::vector<std::string>);
 
-/// @endcond 
+/// @endcond
 
 NS_MIA_END
 

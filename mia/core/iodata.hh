@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,25 +27,26 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup io 
+   \ingroup io
 
-   \brief helper class to derive from for data that can be loaded and stored to a disk. 
+   \brief helper class to derive from for data that can be loaded and stored to a disk.
 
-   Interface halper class for all IO data classes - defines the get/set format functions.  
+   Interface halper class for all IO data classes - defines the get/set format functions.
 */
-class EXPORT_CORE CIOData {
+class EXPORT_CORE CIOData
+{
 public:
-	/**
-	   Set the file format, the data was loaded from
-	   \param format
-	 */
-	void set_source_format(const std::string& format);
+       /**
+          Set the file format, the data was loaded from
+          \param format
+        */
+       void set_source_format(const std::string& format);
 
-	/// \returns the file format the data was loaded from
-	const std::string& get_source_format() const;
+       /// \returns the file format the data was loaded from
+       const std::string& get_source_format() const;
 
 private:
-	std::string m_source_format;
+       std::string m_source_format;
 };
 
 NS_MIA_END

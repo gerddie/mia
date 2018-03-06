@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -33,86 +33,88 @@ NS_MIA_BEGIN
 
 
 /**
-   \ingroup cmdline 
-   \brief A parameter proxy object with a key to identify it.  
+   \ingroup cmdline
+   \brief A parameter proxy object with a key to identify it.
 
-   This template is used to hold reference to data that may not yet be available and 
-   will be/or is stored in the internal data pool. 
-   One axample for its usage is to pass parameters to the filters in a filter 
+   This template is used to hold reference to data that may not yet be available and
+   will be/or is stored in the internal data pool.
+   One axample for its usage is to pass parameters to the filters in a filter
    pipeline that are only created after the filters itself is created.
    \sa CDatapool.
 */
 template <typename T>
-class TDelayedParameter {
-public: 
+class TDelayedParameter
+{
+public:
 
-	TDelayedParameter() = default; 
+       TDelayedParameter() = default;
 
-	/**
-	   Assosiate the parameter with its key in the data pool. 
-	   At creation time, the data doesn't have to be available in the 
-	   data pool. 
-	 */
-	TDelayedParameter(const std::string& key); 
-	
-	/**
-	   Get the data assosiated with this parameter. Throws \a std::invalid_argument if the 
-	   key is not available in the data pool 
-	 */
-	const T get() const; 
+       /**
+          Assosiate the parameter with its key in the data pool.
+          At creation time, the data doesn't have to be available in the
+          data pool.
+        */
+       TDelayedParameter(const std::string& key);
 
-	/**
-	   Check if the key is available in the data bool. 
-	   \returns true if the key is available
-	*/
-	bool pool_has_key() const; 
+       /**
+          Get the data assosiated with this parameter. Throws \a std::invalid_argument if the
+          key is not available in the data pool
+        */
+       const T get() const;
 
-	/**
-	   Check if this key is actually valid (i.e. not  empty)
-	   \returns true if the key is valid 
-	*/
-	bool key_is_valid() const; 
+       /**
+          Check if the key is available in the data bool.
+          \returns true if the key is available
+       */
+       bool pool_has_key() const;
 
-	const std::string& get_key() const;
+       /**
+          Check if this key is actually valid (i.e. not  empty)
+          \returns true if the key is valid
+       */
+       bool key_is_valid() const;
+
+       const std::string& get_key() const;
 private:
-	std::string m_key;
-}; 
+       std::string m_key;
+};
 
 
 template <typename T>
 TDelayedParameter<T>::TDelayedParameter(const std::string& key):
-	m_key(key)
+       m_key(key)
 {
 }
-	
+
 
 template <typename T>
 const T TDelayedParameter<T>::get() const
 {
-	if (!(CDatapool::instance().has_key(m_key))) {
-		throw create_exception<std::invalid_argument>("TDelayedParameter::get(): Key '", m_key, 
-						    "' is not available in the data pool");  
-	}
-	return boost::any_cast<T>(CDatapool::instance().get(m_key)); 
+       if (!(CDatapool::instance().has_key(m_key))) {
+              throw create_exception<std::invalid_argument>("TDelayedParameter::get(): Key '", m_key,
+                            "' is not available in the data pool");
+       }
+
+       return boost::any_cast<T>(CDatapool::instance().get(m_key));
 }
 
 template <typename T>
 bool TDelayedParameter<T>::pool_has_key() const
 {
-	return CDatapool::instance().has_key(m_key); 
+       return CDatapool::instance().has_key(m_key);
 }
 
 
 template <typename T>
 bool TDelayedParameter<T>::key_is_valid() const
 {
-	return !m_key.empty(); 
+       return !m_key.empty();
 }
 
 template <typename T>
 const std::string& TDelayedParameter<T>::get_key() const
 {
-	return m_key; 
+       return m_key;
 }
 
 NS_MIA_END

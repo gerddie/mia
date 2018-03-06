@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -42,39 +42,42 @@
 #include <mia/internal/main.hh>
 
 const mia::SProgramDescription description = {
-	{mia::pdi_group, "Test"}, 
-	{mia::pdi_short, "Unit test."}, 
-	{mia::pdi_description,"This program runs a set of tests."}, 
-	{mia::pdi_example_descr, "Example text"}, 
-	{mia::pdi_example_code, ""}
+       {mia::pdi_group, "Test"},
+       {mia::pdi_short, "Unit test."},
+       {mia::pdi_description, "This program runs a set of tests."},
+       {mia::pdi_example_descr, "Example text"},
+       {mia::pdi_example_code, ""}
 };
 
-void test_pluginsets(const std::set< std::string >& plugins, const std::set<std::string>& test_data) 
+void test_pluginsets(const std::set< std::string >& plugins, const std::set<std::string>& test_data)
 {
-	BOOST_CHECK_EQUAL(plugins.size(), test_data.size()); 
-	for (auto p = plugins.begin(); p != plugins.end(); ++p) {
-		BOOST_CHECK_MESSAGE(test_data.find(*p) != test_data.end(), "unexpected plugin '" << *p << "' found"); 
-	}
-	
-	for (auto p = test_data.begin(); p != test_data.end(); ++p)
-		BOOST_CHECK_MESSAGE(plugins.find(*p) != plugins.end(), "expected plugin '" << *p << "' not found"); 
+       BOOST_CHECK_EQUAL(plugins.size(), test_data.size());
+
+       for (auto p = plugins.begin(); p != plugins.end(); ++p) {
+              BOOST_CHECK_MESSAGE(test_data.find(*p) != test_data.end(), "unexpected plugin '" << *p << "' found");
+       }
+
+       for (auto p = test_data.begin(); p != test_data.end(); ++p)
+              BOOST_CHECK_MESSAGE(plugins.find(*p) != plugins.end(), "expected plugin '" << *p << "' not found");
 }
 
 
 int BOOST_TEST_CALL_DECL
-do_main( int argc, char* argv[] )
+do_main( int argc, char *argv[] )
 {
-	mia::PrepareTestPluginPath prepare_plugin_path; 
+       mia::PrepareTestPluginPath prepare_plugin_path;
 #ifdef WIN32
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+       _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+       _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 #endif
-	if (mia::CCmdOptionList(description).parse(argc, argv, "boost-test-option") != mia::CCmdOptionList::hr_no) 
-		return 0; 
-	mia::cvdebug() << "Initialize test ...\n"; 
-	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
+
+       if (mia::CCmdOptionList(description).parse(argc, argv, "boost-test-option") != mia::CCmdOptionList::hr_no)
+              return 0;
+
+       mia::cvdebug() << "Initialize test ...\n";
+       return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
 
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);
 
-#endif 
+#endif

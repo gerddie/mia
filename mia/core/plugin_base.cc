@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -49,79 +49,79 @@ using namespace std;
 const std::string plugin_help("help");
 
 CPluginBase::CPluginBase(const char *name):
-	CParamTranslator(name),
-	m_next_interface(NULL),
-	m_priority(0)
+       CParamTranslator(name),
+       m_next_interface(NULL),
+       m_priority(0)
 {
 }
 
 void CPluginBase::set_priority(unsigned p)
 {
-	m_priority = p; 
+       m_priority = p;
 }
 
 unsigned CPluginBase::get_priority() const
 {
-	return m_priority; 
+       return m_priority;
 }
 
 
 CPluginBase::~CPluginBase()
 {
-	TRACE("CPluginBase::~CPluginBase()");
+       TRACE("CPluginBase::~CPluginBase()");
 }
 
 void CPluginBase::add_dependend_handlers(HandlerHelpMap& handler_map)
 {
-	TRACE_FUNCTION; 
-	cvdebug() << "Add dependend handler for plugin '" << get_name() << "'\n"; 
-	get_parameters().add_dependend_handlers(handler_map); 
+       TRACE_FUNCTION;
+       cvdebug() << "Add dependend handler for plugin '" << get_name() << "'\n";
+       get_parameters().add_dependend_handlers(handler_map);
 }
 
 
 void CPluginBase::append_interface(CPluginBase *plugin)
 {
-	if (m_next_interface)
-		m_next_interface->append_interface(plugin);
-	else
-		m_next_interface = plugin;
+       if (m_next_interface)
+              m_next_interface->append_interface(plugin);
+       else
+              m_next_interface = plugin;
 }
 
 CPluginBase *CPluginBase::next_interface()
 {
-	return m_next_interface;
+       return m_next_interface;
 }
 
 bool CPluginBase::has_property(const char *property) const
 {
-	return m_properties.has(property);
+       return m_properties.has(property);
 }
 
 void CPluginBase::add_property(const char *property)
 {
-	m_properties.add(property);
+       m_properties.add(property);
 }
 
 void CPluginBase::set_module(const PPluginModule& module)
 {
-	m_module = module;
+       m_module = module;
 }
 
 PPluginModule CPluginBase::get_module() const
 {
-	return m_module;
+       return m_module;
 }
 
-const char *g_plugin_root = nullptr; 
+const char *g_plugin_root = nullptr;
 
 PrepareTestPluginPath::PrepareTestPluginPath()
 {
-	g_plugin_root = MIA_BUILD_ROOT "/plugintest/";
+       g_plugin_root = MIA_BUILD_ROOT "/plugintest/";
 }
 
 PrepareTestPluginPath::~PrepareTestPluginPath()
 {
-	g_plugin_root = nullptr; 
+       g_plugin_root = nullptr;
 }
 
 
@@ -130,56 +130,64 @@ PrepareTestPluginPath::~PrepareTestPluginPath()
 
 EXPORT_CORE const string get_plugin_root()
 {
-	static string result;
-	static bool result_valid = false;
-	if (!result_valid) {
-		LONG retval;
-		LONG bsize = 0;
-		HKEY hkey;
-		string subkey = string("SOFTWARE\\") + string(VENDOR) + string("\\") + string(PACKAGE);
-		retval = RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey.c_str(), 0, KEY_READ, &hkey);
-		if (retval != ERROR_SUCCESS) {
-				stringstream err;
-				err << "Unknown registry key 'HKEY_LOCAL_MACHINE\\" << subkey << "'";
-				throw runtime_error(err.str());
-		}
+       static string result;
+       static bool result_valid = false;
 
+       if (!result_valid) {
+              LONG retval;
+              LONG bsize = 0;
+              HKEY hkey;
+              string subkey = string("SOFTWARE\\") + string(VENDOR) + string("\\") + string(PACKAGE);
+              retval = RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey.c_str(), 0, KEY_READ, &hkey);
 
-		retval = RegQueryValue(hkey, NULL, NULL, &bsize);
-		if (retval == ERROR_SUCCESS) {
-			char *keybuffer = new char[bsize];
-			retval = RegQueryValue(hkey, NULL, keybuffer, &bsize);
-			if (retval != ERROR_SUCCESS) {
-					stringstream err;
-					err << "Unknown registry key '" << subkey << "'";
-					throw runtime_error(err.str());
-			}
-			result = string(keybuffer) + string("\\") + string(PLUGIN_INSTALL_PATH);
-			result_valid = true;
-			delete[] keybuffer;
-		}else{
-			stringstream err;
-			err << "Unknown registry key '" << subkey << "'";
-			throw runtime_error(err.str());
-		}
-		RegCloseKey(hkey);
-	}
-	return result;
+              if (retval != ERROR_SUCCESS) {
+                     stringstream err;
+                     err << "Unknown registry key 'HKEY_LOCAL_MACHINE\\" << subkey << "'";
+                     throw runtime_error(err.str());
+              }
+
+              retval = RegQueryValue(hkey, NULL, NULL, &bsize);
+
+              if (retval == ERROR_SUCCESS) {
+                     char *keybuffer = new char[bsize];
+                     retval = RegQueryValue(hkey, NULL, keybuffer, &bsize);
+
+                     if (retval != ERROR_SUCCESS) {
+                            stringstream err;
+                            err << "Unknown registry key '" << subkey << "'";
+                            throw runtime_error(err.str());
+                     }
+
+                     result = string(keybuffer) + string("\\") + string(PLUGIN_INSTALL_PATH);
+                     result_valid = true;
+                     delete[] keybuffer;
+              } else {
+                     stringstream err;
+                     err << "Unknown registry key '" << subkey << "'";
+                     throw runtime_error(err.str());
+              }
+
+              RegCloseKey(hkey);
+       }
+
+       return result;
 }
 
 #else
 
 const string EXPORT_CORE get_plugin_root()
 {
-	// this is the override for tests
-	if (g_plugin_root) 
-		return string(g_plugin_root); 
+       // this is the override for tests
+       if (g_plugin_root)
+              return string(g_plugin_root);
 
-	// fixme: this should also go into some config file
-	char *plugin_root = getenv("MIA_PLUGIN_TESTPATH"); 
-	if (plugin_root) 
-		return string(plugin_root); 
-	return string(PLUGIN_SEARCH_PATH);
+       // fixme: this should also go into some config file
+       char *plugin_root = getenv("MIA_PLUGIN_TESTPATH");
+
+       if (plugin_root)
+              return string(plugin_root);
+
+       return string(PLUGIN_SEARCH_PATH);
 }
 
 #endif

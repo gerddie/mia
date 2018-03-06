@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,15 +31,12 @@ NS_MIA_USE
 
 BOOST_AUTO_TEST_CASE( test_sqmin )
 {
-	BOOST_CHECK_CLOSE(min_ax2_bx_c(0.5, 2.0, 1.0, 1.0), 0.75, 0.0001);
-	BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 2.0, 1.0, 1.0), 1.5, 0.0001);
-	BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 2.0, 1.0, 2.0), 1.0, 0.0001);
-
-	BOOST_CHECK_CLOSE(min_ax2_bx_c(0.5, 2.0, 0.0, 1.0), 1.0, 0.0001);
-	BOOST_CHECK_CLOSE(min_ax2_bx_c(0.5, 0.0, 2.0, 1.0), 0.0, 0.0001);
-
-	BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 1.0, 2.0, 4.0), 0.0, 0.0001);
-
-	BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 0.0, 1.0, 2.0), 0.0, 0.0001);
-	BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 2.0, 1.0, 0.0), 2.0, 0.0001);
+       BOOST_CHECK_CLOSE(min_ax2_bx_c(0.5, 2.0, 1.0, 1.0), 0.75, 0.0001);
+       BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 2.0, 1.0, 1.0), 1.5, 0.0001);
+       BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 2.0, 1.0, 2.0), 1.0, 0.0001);
+       BOOST_CHECK_CLOSE(min_ax2_bx_c(0.5, 2.0, 0.0, 1.0), 1.0, 0.0001);
+       BOOST_CHECK_CLOSE(min_ax2_bx_c(0.5, 0.0, 2.0, 1.0), 0.0, 0.0001);
+       BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 1.0, 2.0, 4.0), 0.0, 0.0001);
+       BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 0.0, 1.0, 2.0), 0.0, 0.0001);
+       BOOST_CHECK_CLOSE(min_ax2_bx_c(2.0, 2.0, 1.0, 0.0), 2.0, 0.0001);
 }

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,39 +26,42 @@ NS_BEGIN(labelxmap_3dimage_filter)
 typedef std::pair<size_t, size_t> XLabel;
 
 struct LessXLabel {
-	bool operator () (const XLabel& a, const XLabel& b)const
-	{
-		return a.first < b.first || (a.first == b.first && a.second < b.second);
-	}
+       bool operator () (const XLabel& a, const XLabel& b)const
+       {
+              return a.first < b.first || (a.first == b.first && a.second < b.second);
+       }
 };
 
-class CXLabelResult: public mia::CCombinerResult {
-	friend bool operator == (const CXLabelResult& a, const CXLabelResult& b);
+class CXLabelResult: public mia::CCombinerResult
+{
+       friend bool operator == (const CXLabelResult& a, const CXLabelResult& b);
 public:
-	void add(size_t a , size_t b);
+       void add(size_t a, size_t b);
 private:
-	virtual void do_save(const std::string& fname) const;
-        virtual boost::any do_get() const;  
-	typedef std::map<XLabel, size_t, LessXLabel> CLabelMap;
-	CLabelMap m_map;
+       virtual void do_save(const std::string& fname) const;
+       virtual boost::any do_get() const;
+       typedef std::map<XLabel, size_t, LessXLabel> CLabelMap;
+       CLabelMap m_map;
 };
 
-class CLabelXMap: public mia::C3DImageCombiner {
+class CLabelXMap: public mia::C3DImageCombiner
+{
 public:
-	template <typename T, typename S>
-	mia::C3DImageCombiner::result_type operator () ( const mia::T3DImage<T>& a, const mia::T3DImage<S>& b) const;
+       template <typename T, typename S>
+       mia::C3DImageCombiner::result_type operator () ( const mia::T3DImage<T>& a, const mia::T3DImage<S>& b) const;
 private:
-	virtual mia::PCombinerResult do_combine( const mia::C3DImage& a, const mia::C3DImage& b) const;
+       virtual mia::PCombinerResult do_combine( const mia::C3DImage& a, const mia::C3DImage& b) const;
 
 
 
 };
-class CLabelXMapPlugin: public mia::C3DImageCombinerPlugin {
+class CLabelXMapPlugin: public mia::C3DImageCombinerPlugin
+{
 public:
-	CLabelXMapPlugin();
+       CLabelXMapPlugin();
 private:
-	virtual mia::C3DImageCombiner *do_create()const;
-	virtual const std::string do_get_descr() const;
+       virtual mia::C3DImageCombiner *do_create()const;
+       virtual const std::string do_get_descr() const;
 
 };
 

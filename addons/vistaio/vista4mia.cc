@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,126 +29,144 @@ using namespace boost;
 
 NS_MIA_BEGIN
 
-template <typename T> 
+template <typename T>
 void vistaio_add_attribute(CAttributedData& attr, const string& name, T value)
 {
-	cvdebug() << "add attribute " << name << " of type 'string' and value '" << value << "'\n";
-	attr.set_attribute(name, PAttribute(new TAttribute<T>(value))); 
+       cvdebug() << "add attribute " << name << " of type 'string' and value '" << value << "'\n";
+       attr.set_attribute(name, PAttribute(new TAttribute<T>(value)));
 }
 
-template <> 
+template <>
 void vistaio_add_attribute(CAttributedData& attr, const string& name, VistaIOString value)
 {
-	cvdebug() << "add attribute " << name << " of type 'string' and value '" << value << "'\n";
-	attr.set_attribute(name, CStringAttrTranslatorMap::instance().to_attr(name, value)); 
+       cvdebug() << "add attribute " << name << " of type 'string' and value '" << value << "'\n";
+       attr.set_attribute(name, CStringAttrTranslatorMap::instance().to_attr(name, value));
 }
 
-template <> 
+template <>
 void vistaio_add_attribute(CAttributedData& attr, const string& name, VistaIOBit value)
 {
-	cvdebug() << "add attribute " << name << " of type " << typeid(VistaIOBit).name() << " and value '" << value << "'\n";
-	attr.set_attribute(name, PAttribute(new TAttribute<bool>(value))); 
+       cvdebug() << "add attribute " << name << " of type " << typeid(VistaIOBit).name() << " and value '" << value << "'\n";
+       attr.set_attribute(name, PAttribute(new TAttribute<bool>(value)));
 }
 
 VISTA4MIA_EXPORT void add_standard_vistaio_properties(CPluginBase& plugin)
 {
-	plugin.add_property(io_plugin_property_multi_record); 
-	plugin.add_property(io_plugin_property_history_split);
-	plugin.add_property(io_plugin_property_has_attributes);
-	plugin.add_property(io_plugin_property_can_pipe);
+       plugin.add_property(io_plugin_property_multi_record);
+       plugin.add_property(io_plugin_property_history_split);
+       plugin.add_property(io_plugin_property_has_attributes);
+       plugin.add_property(io_plugin_property_can_pipe);
 }
 
 
 VISTA4MIA_EXPORT void copy_attr_list(CAttributedData& attributes, const VistaIOAttrList in_list)
 {
-	VistaIOAttrListPosn pos;
-	VistaIOFirstAttr(in_list, &pos);
-	while (VistaIOAttrExists(&pos)){
-		std::string name(VistaIOGetAttrName(&pos));
+       VistaIOAttrListPosn pos;
+       VistaIOFirstAttr(in_list, &pos);
 
-		// actually, vistaio internally stores all scalar values as string
-		// which means most of this switch is dead code.
-		// 
-		cvdebug() << "got " << name << " " << VistaIOGetAttrRepn(&pos) << "\n";
-		switch (VistaIOGetAttrRepn(&pos)) {
-		case VistaIOStringRepn:{
-			VistaIOString s;
-			VistaIOGetAttrValue(&pos,NULL,VistaIOStringRepn,&s);
-			vistaio_add_attribute(attributes, name, s);
-		}break;
-		case VistaIOFloatRepn:{
-			float f;
-			VistaIOGetAttrValue(&pos,NULL,VistaIOFloatRepn,&f);
-			vistaio_add_attribute(attributes, name, f);
-		}break;
-		case VistaIODoubleRepn:{
-			double f;
-			VistaIOGetAttrValue(&pos,NULL,VistaIODoubleRepn,&f);
-			vistaio_add_attribute(attributes, name, f);
-		}break;
-		case VistaIOShortRepn:{
-			short f;
-			VistaIOGetAttrValue(&pos,NULL,VistaIOShortRepn,&f);
-			vistaio_add_attribute(attributes, name, f);
-		}break;
-		case VistaIOLongRepn:{
-			int f;
-			VistaIOGetAttrValue(&pos,NULL,VistaIOLongRepn,&f);
-			vistaio_add_attribute(attributes, name, f);
-		}break;
-		case VistaIOUByteRepn:{
-			unsigned char f;
-			VistaIOGetAttrValue(&pos,NULL,VistaIOUByteRepn,&f);
-			vistaio_add_attribute(attributes, name, f);
-		}break;
-		case VistaIOSByteRepn:{
-			signed char f;
-			VistaIOGetAttrValue(&pos,NULL,VistaIOSByteRepn,&f);
-			vistaio_add_attribute(attributes, name, f);
-		}break;
-		case VistaIOBitRepn:{
-			VistaIOBit b;
-			VistaIOGetAttrValue(&pos,NULL,VistaIOBitRepn,&b);
-			vistaio_add_attribute(attributes, name, b);
-		}break;
-		default:
-			cvwarn() << "Not yet implemented\n";
-		}
-		VistaIONextAttr(&pos);
-	}
+       while (VistaIOAttrExists(&pos)) {
+              std::string name(VistaIOGetAttrName(&pos));
+              // actually, vistaio internally stores all scalar values as string
+              // which means most of this switch is dead code.
+              //
+              cvdebug() << "got " << name << " " << VistaIOGetAttrRepn(&pos) << "\n";
+
+              switch (VistaIOGetAttrRepn(&pos)) {
+              case VistaIOStringRepn: {
+                     VistaIOString s;
+                     VistaIOGetAttrValue(&pos, NULL, VistaIOStringRepn, &s);
+                     vistaio_add_attribute(attributes, name, s);
+              }
+              break;
+
+              case VistaIOFloatRepn: {
+                     float f;
+                     VistaIOGetAttrValue(&pos, NULL, VistaIOFloatRepn, &f);
+                     vistaio_add_attribute(attributes, name, f);
+              }
+              break;
+
+              case VistaIODoubleRepn: {
+                     double f;
+                     VistaIOGetAttrValue(&pos, NULL, VistaIODoubleRepn, &f);
+                     vistaio_add_attribute(attributes, name, f);
+              }
+              break;
+
+              case VistaIOShortRepn: {
+                     short f;
+                     VistaIOGetAttrValue(&pos, NULL, VistaIOShortRepn, &f);
+                     vistaio_add_attribute(attributes, name, f);
+              }
+              break;
+
+              case VistaIOLongRepn: {
+                     int f;
+                     VistaIOGetAttrValue(&pos, NULL, VistaIOLongRepn, &f);
+                     vistaio_add_attribute(attributes, name, f);
+              }
+              break;
+
+              case VistaIOUByteRepn: {
+                     unsigned char f;
+                     VistaIOGetAttrValue(&pos, NULL, VistaIOUByteRepn, &f);
+                     vistaio_add_attribute(attributes, name, f);
+              }
+              break;
+
+              case VistaIOSByteRepn: {
+                     signed char f;
+                     VistaIOGetAttrValue(&pos, NULL, VistaIOSByteRepn, &f);
+                     vistaio_add_attribute(attributes, name, f);
+              }
+              break;
+
+              case VistaIOBitRepn: {
+                     VistaIOBit b;
+                     VistaIOGetAttrValue(&pos, NULL, VistaIOBitRepn, &b);
+                     vistaio_add_attribute(attributes, name, b);
+              }
+              break;
+
+              default:
+                     cvwarn() << "Not yet implemented\n";
+              }
+
+              VistaIONextAttr(&pos);
+       }
 }
 
 
 VISTA4MIA_EXPORT void copy_attr_list(VistaIOAttrList target, const CAttributedData& data)
 {
-	for (auto i = data.begin_attributes(); i != data.end_attributes(); ++i) {
-		VistaIOSetAttr(target, i->first.c_str(), NULL, VistaIOStringRepn, i->second->as_string().c_str());
-	}
+       for (auto i = data.begin_attributes(); i != data.end_attributes(); ++i) {
+              VistaIOSetAttr(target, i->first.c_str(), NULL, VistaIOStringRepn, i->second->as_string().c_str());
+       }
 }
 
 
-CVAttrList::CVAttrList(VistaIOAttrList list):m_list(list)
+CVAttrList::CVAttrList(VistaIOAttrList list): m_list(list)
 {
 }
 
 CVAttrList::~CVAttrList()
 {
-	VistaIODestroyAttrList(m_list);
+       VistaIODestroyAttrList(m_list);
 }
 
 CVAttrList::operator VistaIOAttrList()
 {
-	return m_list; 
+       return m_list;
 }
 
 VistaIOAttrList CVAttrList::operator ->()
 {
-	return m_list; 
+       return m_list;
 }
 
 bool CVAttrList::operator !() const
 {
-	return m_list == NULL; 
+       return m_list == NULL;
 }
 
 NS_MIA_END

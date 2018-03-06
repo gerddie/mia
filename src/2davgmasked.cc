@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -34,58 +34,60 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
-	{pdi_short, "Evaluate average intensities of an image series."}, 
-	{pdi_description, "Evaluate average intensities of an image series"
-	 "This program is used to evaluate the average intensity and its variation of a series "
-	 "of images in a given masked region."}, 
-}; 
+       {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"},
+       {pdi_short, "Evaluate average intensities of an image series."},
+       {
+              pdi_description, "Evaluate average intensities of an image series"
+              "This program is used to evaluate the average intensity and its variation of a series "
+              "of images in a given masked region."
+       },
+};
 
 struct C2DStat : public TFilter<bool> {
 
-	typedef pair<size_t, double> TCollector;
-	typedef map<size_t, TCollector> TSliceStat;
+       typedef pair<size_t, double> TCollector;
+       typedef map<size_t, TCollector> TSliceStat;
 
-	C2DStat(const C2DUBImage& mask):
-		m_mask(mask)
-	{
-	}
+       C2DStat(const C2DUBImage& mask):
+              m_mask(mask)
+       {
+       }
 
-	template <typename T>
-	bool operator ()(const T2DImage<T>& image)
-	{
-		if (image.get_size() != m_mask.get_size())
-			throw invalid_argument("Input image and mask differ in size");
+       template <typename T>
+       bool operator ()(const T2DImage<T>& image)
+       {
+              if (image.get_size() != m_mask.get_size())
+                     throw invalid_argument("Input image and mask differ in size");
 
-		typename T2DImage<T>::const_iterator i = image.begin();
-		typename T2DImage<T>::const_iterator e = image.end();
+              typename T2DImage<T>::const_iterator i = image.begin();
+              typename T2DImage<T>::const_iterator e = image.end();
+              C2DUBImage::const_iterator m = m_mask.begin();
+              TSliceStat slice;
 
-		C2DUBImage::const_iterator m = m_mask.begin();
+              while (i != e) {
+                     if (*m) {
+                            size_t idx = *m - 1;
+                            ++slice[idx].first;
+                            slice[idx].second += *i;
+                     }
 
-		TSliceStat slice;
+                     ++i;
+                     ++m;
+              }
 
-		while (i != e) {
-			if (*m) {
-				size_t idx = *m - 1;
-				++slice[idx].first;
-				slice[idx].second += *i;
-			}
-			++i;
-			++m;
-		}
+              m_counter.push_back(slice);
+              cvmsg() << "Got " << m_counter.size() << "slices\n";
+              return true;
+       }
 
-		m_counter.push_back(slice);
-		cvmsg() << "Got " << m_counter.size() << "slices\n";
-		return true;
-	}
-
-	const vector<TSliceStat>&  result() const {
-		return m_counter;
-	}
+       const vector<TSliceStat>&  result() const
+       {
+              return m_counter;
+       }
 
 private:
-	C2DUBImage m_mask;
-	vector<TSliceStat>  m_counter;
+       C2DUBImage m_mask;
+       vector<TSliceStat>  m_counter;
 };
 
 /* Revision string */
@@ -93,74 +95,71 @@ const char revision[] = "not specified";
 
 int do_main( int argc, char *argv[] )
 {
+       string in_filename;
+       string mask_filename;
+       const auto& image2dio = C2DImageIOPluginHandler::instance();
+       CCmdOptionList options(g_description);
+       options.add(make_opt( in_filename, "in-files", 'i', "input image(s)",
+                             CCmdOptionFlags::required_input, &image2dio));
+       options.add(make_opt( mask_filename, "mask-file", 'm', "mask image, must be of type byte",
+                             CCmdOptionFlags::required_input, &image2dio));
+       options.set_stdout_is_result();
 
-	string in_filename;
-	string mask_filename;
+       if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
-	const auto& image2dio = C2DImageIOPluginHandler::instance();
+       if (!options.get_remaining().empty())
+              throw runtime_error("unknown option given ...");
 
-	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-files", 'i', "input image(s)", 
-			      CCmdOptionFlags::required_input, &image2dio));
-	options.add(make_opt( mask_filename, "mask-file", 'm', "mask image, must be of type byte", 
-			      CCmdOptionFlags::required_input, &image2dio));
-	options.set_stdout_is_result();
-	if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no) 
-		return EXIT_SUCCESS; 
+       CHistory::instance().append(argv[0], revision, options);
+       size_t start_filenum = 0;
+       size_t end_filenum  = 0;
+       size_t format_width = 0;
+       std::string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
 
-	if (!options.get_remaining().empty())
-		throw runtime_error("unknown option given ...");
+       if (start_filenum >= end_filenum)
+              throw invalid_argument(string("no files match pattern ") + src_basename);
 
+       char new_line = cverb.show_debug() ? '\n' : '\r';
+       C2DImageIOPluginHandler::Instance::PData  mask_image_list = image2dio.load(mask_filename);
 
-	CHistory::instance().append(argv[0], revision, options);
+       if (!mask_image_list.get() || mask_image_list->empty())
+              throw invalid_argument("no mask found");
 
-	size_t start_filenum = 0;
-	size_t end_filenum  = 0;
-	size_t format_width = 0;
+       const C2DImage *mask_image = mask_image_list->begin()->get();
+       const C2DUBImage *mask = dynamic_cast<const C2DUBImage *>( mask_image );
 
-	std::string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
-	if (start_filenum >= end_filenum)
-		throw invalid_argument(string("no files match pattern ") + src_basename);
+       if (!mask)
+              throw create_exception<invalid_argument>("Mask image must be an image with pixel type byte, but pixel type '",
+                            CPixelTypeDict.get_name(mask_image->get_pixel_type()),
+                            "' was provided.");
 
-	char new_line = cverb.show_debug() ? '\n' : '\r';
+       C2DStat stat(*mask);
 
-	C2DImageIOPluginHandler::Instance::PData  mask_image_list = image2dio.load(mask_filename);
-	if (!mask_image_list.get() || mask_image_list->empty())
-		throw invalid_argument("no mask found");
+       for (size_t i = start_filenum; i < end_filenum; ++i) {
+              string src_name = create_filename(src_basename.c_str(), i);
+              cvmsg() << new_line << "Read: " << i << " out of " << "["
+                      << start_filenum << "," << end_filenum << "] = " << src_name ;
+              C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(src_name);
 
-	const C2DImage *mask_image = mask_image_list->begin()->get(); 
-	const C2DUBImage *mask = dynamic_cast<const C2DUBImage *>( mask_image );
+              if (in_image_list.get() && in_image_list->size()) {
+                     accumulate(stat, **in_image_list->begin());
+              }
+       }
 
-	if (!mask) 
-		throw create_exception<invalid_argument>("Mask image must be an image with pixel type byte, but pixel type '", 
-						      CPixelTypeDict.get_name(mask_image->get_pixel_type()), 
-						      "' was provided."); 
-	C2DStat stat(*mask);
+       cvmsg() << "\n";
+       const vector<C2DStat::TSliceStat>& ss = stat.result();
 
-	for (size_t i = start_filenum; i < end_filenum; ++i) {
+       for (vector<C2DStat::TSliceStat>::const_iterator i = ss.begin(); i != ss.end(); ++i) {
+              for (C2DStat::TSliceStat::const_iterator k = i->begin(); k != i->end(); ++k) {
+                     cout << k->second.second / k->second.first << " ";
+              }
 
-		string src_name = create_filename(src_basename.c_str(), i);
-		cvmsg() << new_line << "Read: " << i <<" out of "<< "[" 
-			<< start_filenum<< "," << end_filenum << "] = " << src_name ;
-		C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(src_name);
+              cout << "\n";
+       }
 
-		if (in_image_list.get() && in_image_list->size()) {
-			accumulate(stat, **in_image_list->begin());
-		}
-	}
-	cvmsg() << "\n";
-
-	const vector<C2DStat::TSliceStat>& ss = stat.result();
-
-	for (vector<C2DStat::TSliceStat>::const_iterator i = ss.begin(); i != ss.end(); ++i) {
-		for (C2DStat::TSliceStat::const_iterator k = i->begin(); k != i->end(); ++k) {
-			cout << k->second.second / k->second.first << " ";
-		}
-		cout << "\n";
-	}
-
-	return EXIT_SUCCESS;
+       return EXIT_SUCCESS;
 }
 
 #include <mia/internal/main.hh>
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);

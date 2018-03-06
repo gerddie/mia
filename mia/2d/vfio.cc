@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -35,37 +35,37 @@ C2DIOVectorfield::C2DIOVectorfield()
 
 /** Constructor to create empty Datafield if given size */
 C2DIOVectorfield::C2DIOVectorfield(const C2DBounds& _Size):
-	C2DFVectorfield(_Size)
+       C2DFVectorfield(_Size)
 {
 }
 
 
 C2DIOVectorfield::C2DIOVectorfield(const C2DIOVectorfield& org):
-	C2DFVectorfield(org),
-	CIOData(org)
+       C2DFVectorfield(org),
+       CIOData(org)
 {
 }
 
 
 C2DIOVectorfield::C2DIOVectorfield(const C2DFVectorfield& org):
-	C2DFVectorfield(org)
+       C2DFVectorfield(org)
 {
 }
 
 C2DIOVectorfield *C2DIOVectorfield::clone() const
 {
-	return new C2DIOVectorfield(*this);
+       return new C2DIOVectorfield(*this);
 }
 
 
-template <> const char *  const 
-TPluginHandler<C2DVFIOPlugin>::m_help =  
-   "These plug-ins handle loading and storing of the supported 2D vector field file types.";
+template <> const char   *const
+TPluginHandler<C2DVFIOPlugin>::m_help =
+       "These plug-ins handle loading and storing of the supported 2D vector field file types.";
 
 
-template class TPlugin<io_2dvf_type, io_plugin_type>; 
+template class TPlugin<io_2dvf_type, io_plugin_type>;
 template class TIOPlugin<io_2dvf_type>;
-template class THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> >;
+template class THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin>>;
 template class TIOPluginHandler<C2DVFIOPlugin>;
 template class TPluginHandler<C2DVFIOPlugin>;
 

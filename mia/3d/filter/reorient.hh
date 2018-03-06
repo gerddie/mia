@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -38,33 +38,35 @@ NS_BEGIN(reorient_3dimage_filter)
 /* This is the work-horse class of the filter plugin. It is initialised with above parameters
    and provides a templated operator () to be able to handle all pixel types.
  */
-class C3DReorient: public mia::C3DFilter {
+class C3DReorient: public mia::C3DFilter
+{
 public:
-	enum EOrientations {xyz,
-			    yzx, // permutate axes
-			    zxy, // permutate axes
-			    flip_yz, 
-			    flip_xy,
-			    flip_xz,
-			    rotate_x90,
-			    rotate_x180,
-			    rotate_x270,
-			    rotate_y90,
-			    rotate_y180,
-			    rotate_y270,
-			    rotate_z90,
-			    rotate_z180,
-			    rotate_z270,
-			    ooo};
+       enum EOrientations {xyz,
+                           yzx, // permutate axes
+                           zxy, // permutate axes
+                           flip_yz,
+                           flip_xy,
+                           flip_xz,
+                           rotate_x90,
+                           rotate_x180,
+                           rotate_x270,
+                           rotate_y90,
+                           rotate_y180,
+                           rotate_y270,
+                           rotate_z90,
+                           rotate_z180,
+                           rotate_z270,
+                           ooo
+                          };
 
-	C3DReorient(EOrientations strategy);
+       C3DReorient(EOrientations strategy);
 
-	template <typename T>
-	C3DReorient::result_type operator () (const mia::T3DImage<T>& data) const;
+       template <typename T>
+       C3DReorient::result_type operator () (const mia::T3DImage<T>& data) const;
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	mia::E3DImageOrientation get_new_orientation(EOrientations strategy, mia::E3DImageOrientation old_orientation)const;
-	EOrientations m_strategy;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       mia::E3DImageOrientation get_new_orientation(EOrientations strategy, mia::E3DImageOrientation old_orientation)const;
+       EOrientations m_strategy;
 };
 
 
@@ -72,16 +74,17 @@ private:
 /* The factory class - this is what the application gets first. This factory class is used to
    create the actual filter object. It also provides some filter testing routines.
 */
-class C3DReorientImageFilterFactory: public mia::C3DFilterPlugin {
+class C3DReorientImageFilterFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DReorientImageFilterFactory();
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C3DReorientImageFilterFactory();
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 
 private:
-	static const mia::TDictMap<C3DReorient::EOrientations>::Table table[];
-	static const mia::TDictMap<C3DReorient::EOrientations> map;
-	C3DReorient::EOrientations m_orientation;
+       static const mia::TDictMap<C3DReorient::EOrientations>::Table table[];
+       static const mia::TDictMap<C3DReorient::EOrientations> map;
+       C3DReorient::EOrientations m_orientation;
 };
 
 NS_END

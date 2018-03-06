@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,10 +23,10 @@
 
 NS_MIA_BEGIN
 
-const char * io_plugin_type::type_descr = "io";
-const char * const io_plugin_property_multi_record = "multi-record";
-const char * const io_plugin_property_history_split = "history-split";
-const char * const io_plugin_property_has_attributes = "has_attributes";
-const char * const io_plugin_property_can_pipe = "can-pipe";
+const char *io_plugin_type::type_descr = "io";
+const char *const io_plugin_property_multi_record = "multi-record";
+const char *const io_plugin_property_history_split = "history-split";
+const char *const io_plugin_property_has_attributes = "has_attributes";
+const char *const io_plugin_property_can_pipe = "can-pipe";
 
 NS_MIA_END

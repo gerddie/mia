@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,37 +27,39 @@
 
 NS_MIA_BEGIN
 
-///  @cond DOC_PLUGINS 
+///  @cond DOC_PLUGINS
 
-template <class Image> 
-class TBandPass: public TDataFilter<Image> {
-public: 	
-	typedef typename TDataFilter<Image>::result_type result_type; 
-	TBandPass(float min, float max); 
+template <class Image>
+class TBandPass: public TDataFilter<Image>
+{
+public:
+       typedef typename TDataFilter<Image>::result_type result_type;
+       TBandPass(float min, float max);
 
-	template <class  T>
-	typename TBandPass::result_type operator () (const T& data) const;
+       template <class  T>
+       typename TBandPass::result_type operator () (const T& data) const;
 
-private: 
-	typename TBandPass::result_type do_filter(const Image& image) const;
-	
-	float m_min; 
-	float m_max; 
+private:
+       typename TBandPass::result_type do_filter(const Image& image) const;
+
+       float m_min;
+       float m_max;
 };
 
-template <class Image> 
-class TBandPassFilterPlugin: public TDataFilterPlugin<Image>  {
-public: 
-	TBandPassFilterPlugin();
-	virtual TDataFilter<Image> *do_create()const;
-	virtual const std::string do_get_descr()const; 
-private: 
-	float m_min; 
-	float m_max; 
+template <class Image>
+class TBandPassFilterPlugin: public TDataFilterPlugin<Image>
+{
+public:
+       TBandPassFilterPlugin();
+       virtual TDataFilter<Image> *do_create()const;
+       virtual const std::string do_get_descr()const;
+private:
+       float m_min;
+       float m_max;
 };
 
 NS_MIA_END
 
-///  @endcond DOC_PLUGINS 
+///  @endcond DOC_PLUGINS
 
 #endif

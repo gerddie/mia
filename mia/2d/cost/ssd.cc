@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,12 +31,12 @@ template class TSSDCost<mia::C2DImageCost>;
 
 const string C2DSSDCostPlugin::do_get_descr()const
 {
-	return "2D imaga cost: sum of squared differences";
+       return "2D imaga cost: sum of squared differences";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DSSDCostPlugin();
+       return new C2DSSDCostPlugin();
 }
 
 

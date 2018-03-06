@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,18 +21,18 @@
 #include <mia/internal/autotest.hh>
 #include <mia/core/callback.hh>
 
-NS_MIA_USE; 
+NS_MIA_USE;
 
 BOOST_AUTO_TEST_CASE( test_callback )
 {
-	CMsgStreamPrintCallback cb("%1% of %2%"); 
-	cb.set_range(100); 
-	
-	for (size_t i = 0; i < 100; i++) {
-		cb.update(i); 
-	}
-	for (size_t i = 0; i < 10; i++) {
-		cb.pulse(); 
-	}
+       CMsgStreamPrintCallback cb("%1% of %2%");
+       cb.set_range(100);
 
+       for (size_t i = 0; i < 100; i++) {
+              cb.update(i);
+       }
+
+       for (size_t i = 0; i < 10; i++) {
+              cb.pulse();
+       }
 }

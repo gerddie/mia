@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,13 +26,13 @@
 #include <boost/test/unit_test_suite.hpp>
 
 NS_MIA_BEGIN
-/** 
+/**
     \cond INTERNAL
-    @ingroup test 
-    
+    @ingroup test
+
  */
-void EXPORT_3DTEST add_3dvfio_plugin_tests( boost::unit_test::test_suite* suite);
-/// \endcond 
+void EXPORT_3DTEST add_3dvfio_plugin_tests( boost::unit_test::test_suite *suite);
+/// \endcond
 NS_MIA_END
 
 #endif

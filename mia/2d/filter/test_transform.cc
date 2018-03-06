@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,74 +26,71 @@
 #include <mia/2d/filter/transform.hh>
 
 
-using namespace transform_2dimage_filter; 
-using namespace mia; 
+using namespace transform_2dimage_filter;
+using namespace mia;
 
 struct TransformFixture {
 
-	TransformFixture();
-	P2DImage src; 
-	C2DBounds size;
+       TransformFixture();
+       P2DImage src;
+       C2DBounds size;
 
-	static const float src_image_init[]; 
-	static const float test_image_init[]; 
+       static const float src_image_init[];
+       static const float test_image_init[];
 
-}; 
+};
 
 
 
 BOOST_FIXTURE_TEST_CASE( test_2dfilter_transform, TransformFixture )
 {
-	auto t = BOOST_TEST_create_from_plugin<C2DTransformFilterPluginFactory>("transform:file=transform.@");
-	auto transformed = t->filter(src); 
+       auto t = BOOST_TEST_create_from_plugin<C2DTransformFilterPluginFactory>("transform:file=transform.@");
+       auto transformed = t->filter(src);
+       const C2DFImage& r = dynamic_cast<const C2DFImage&>(*transformed);
+       BOOST_REQUIRE(r.get_size() == size);
+       const float *itest = test_image_init;
+       auto ir = r.begin();
 
-	const C2DFImage& r = dynamic_cast<const C2DFImage&>(*transformed); 
-	
-	BOOST_REQUIRE(r.get_size() == size); 
-	const float *itest = test_image_init; 
-	auto ir = r.begin(); 
-	for (size_t y = 0; y < size.y; ++y)
-		for (size_t x = 0; x < size.x; ++x, ++ir, ++itest)
-			BOOST_CHECK_EQUAL(*ir, *itest); 
-
+       for (size_t y = 0; y < size.y; ++y)
+              for (size_t x = 0; x < size.x; ++x, ++ir, ++itest)
+                     BOOST_CHECK_EQUAL(*ir, *itest);
 }
 
 TransformFixture::TransformFixture():
-	size(10,9)
+       size(10, 9)
 {
-		
-	src.reset((new C2DFImage(size, src_image_init))); 
-        auto transform_factory = produce_2dtransform_factory("translate:imgkernel=[bspline:d=0]"); 
-	auto transform = transform_factory->create(size); 
-	auto params = transform->get_parameters(); 
-	params[0] =  1; 
-	params[1] =  2; 
-	transform->set_parameters(params); 
-	save_transform("transform.@", *transform); 
+       src.reset((new C2DFImage(size, src_image_init)));
+       auto transform_factory = produce_2dtransform_factory("translate:imgkernel=[bspline:d=0]");
+       auto transform = transform_factory->create(size);
+       auto params = transform->get_parameters();
+       params[0] =  1;
+       params[1] =  2;
+       transform->set_parameters(params);
+       save_transform("transform.@", *transform);
 }
-	
+
 
 const float TransformFixture::src_image_init[10 * 9] = {
-	
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0,10,30,30, 0, 0, 0,
-	0, 0, 0, 0,50,50,50, 0, 0, 0,
-	0, 0, 0, 0,50,50,50, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 10, 30, 30, 0, 0, 0,
+       0, 0, 0, 0, 50, 50, 50, 0, 0, 0,
+       0, 0, 0, 0, 50, 50, 50, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 const float TransformFixture::test_image_init[] = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0,10,30,30, 0, 0,
-	0, 0, 0, 0, 0,50,50,50, 0, 0,
-	0, 0, 0, 0, 0,50,50,50, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 10, 30, 30, 0, 0,
+       0, 0, 0, 0, 0, 50, 50, 50, 0, 0,
+       0, 0, 0, 0, 0, 50, 50, 50, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };

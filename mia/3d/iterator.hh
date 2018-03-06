@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,426 +28,427 @@ NS_MIA_BEGIN
 
 
 /**
-   @ingroup basic 
-   \brief a 3D iterator that knows its position in the 3D grid, has a flag indicating 
-     whether it is on a boundary, and supports iterating over  sub-ranges 
-   
-   Iterator to iterate over a sub-range of 3D data that is given on a grid. 
-   Two iterators are considered to be equal, if their positions are equal.  
-   \tparam the internal iterator that is used to iterate of the original 
-   grid without skipping. 
-   
+   @ingroup basic
+   \brief a 3D iterator that knows its position in the 3D grid, has a flag indicating
+     whether it is on a boundary, and supports iterating over  sub-ranges
+
+   Iterator to iterate over a sub-range of 3D data that is given on a grid.
+   Two iterators are considered to be equal, if their positions are equal.
+   \tparam the internal iterator that is used to iterate of the original
+   grid without skipping.
+
  */
 
-template <typename I> 
-class EXPORT_3D range3d_iterator_with_boundary_flag: public std::forward_iterator_tag {
-public: 
-	/// data type reference 
-	typedef typename I::reference reference; 
+template <typename I>
+class EXPORT_3D range3d_iterator_with_boundary_flag: public std::forward_iterator_tag
+{
+public:
+       /// data type reference
+       typedef typename I::reference reference;
 
-	/// data type pointer  
-	typedef typename I::pointer pointer; 
+       /// data type pointer
+       typedef typename I::pointer pointer;
 
-	/// data value type 
-	typedef typename I::value_type value_type; 
+       /// data value type
+       typedef typename I::value_type value_type;
 
-	/// data type for the real iterator in the background 
-	typedef I internal_iterator; 
-	
-	/**
-	   Enumerate to describe the various positions on the domain boundarys. 
-	   These boundaries correspond to the full domain of the data, not to 
-           the sub-range this iteratior works on. 
-	   I.e. if the sub-range is a subset of the \a open domain (i.e. without its boundary) 
-	   then the iterator will never touch the domain boundary. 
-	 */
-	enum EBoundary {
-		eb_none  = 0, /**< no boundary */
-		eb_xlow  = 1, /**< at low x-boundary */ 
-		eb_xhigh = 2, /**< at high x-boundary */  
-		eb_x     = 3, /**< at one of the x-boundaries */  
-		eb_ylow = 4,  /**< at low y-boundary */ 
-		eb_yhigh = 8, /**< at high y-boundary */
-		eb_y     = 0xC, /**< at one of the y-boundaries */  
-		eb_zlow = 0x10, /**< at low x-boundary */ 
-		eb_zhigh = 0x20,/**< at high z-boundary */
-		eb_z     = 0x30 /**< at one of the z-boundaries */  
-	}; 
-	
+       /// data type for the real iterator in the background
+       typedef I internal_iterator;
 
-	
-	/** standard constructor */
-	range3d_iterator_with_boundary_flag(); 
-
-	/**
-	   Full constructor of the range iterator 
-	   @param pos iterator position to initialize the iterator with 
-	   @param size size of the original data field 
-	   @param start start of the iterator range 
-	   @param end end of the iterator range 
-	   @param iterator the iterator of the underlying 3D data structure 
-	*/
-	range3d_iterator_with_boundary_flag(const C3DBounds& pos, const C3DBounds& size, 
-			 const C3DBounds& start, const C3DBounds& end, I iterator);
-	
-	/**
-	   End iterator, can't be dereferenced  
-	   This iterator is only there to define the end position of the range_iterator. 
-	   \param pos end position to set this iterator to. 
-	 */
-	range3d_iterator_with_boundary_flag(const C3DBounds& pos);
-
-	/// assignment operator 
-	range3d_iterator_with_boundary_flag<I>& operator = (const range3d_iterator_with_boundary_flag<I>& other); 
-	
-	/// copy constructore 
-	range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<I>& other); 
-
-	/// friend iterator type because we may want to copy a iterator to a const_iterator. 
-	template <typename AI> 
-	friend class range3d_iterator_with_boundary_flag; 
+       /**
+          Enumerate to describe the various positions on the domain boundarys.
+          These boundaries correspond to the full domain of the data, not to
+           the sub-range this iteratior works on.
+          I.e. if the sub-range is a subset of the \a open domain (i.e. without its boundary)
+          then the iterator will never touch the domain boundary.
+        */
+       enum EBoundary {
+              eb_none  = 0, /**< no boundary */
+              eb_xlow  = 1, /**< at low x-boundary */
+              eb_xhigh = 2, /**< at high x-boundary */
+              eb_x     = 3, /**< at one of the x-boundaries */
+              eb_ylow = 4,  /**< at low y-boundary */
+              eb_yhigh = 8, /**< at high y-boundary */
+              eb_y     = 0xC, /**< at one of the y-boundaries */
+              eb_zlow = 0x10, /**< at low x-boundary */
+              eb_zhigh = 0x20,/**< at high z-boundary */
+              eb_z     = 0x30 /**< at one of the z-boundaries */
+       };
 
 
-	/**
-	   Constructor to construct the iterator  from one that is based on another 
-	   iterator type. The usual idea is that a iterator may be converted  into it's const variant. 
-	   \tparam AI the other iterator type. Iterator type I must be copy-constructable from 
-	   type AI 
-	   \param other 
-	 */
-	template <typename AI>
-	range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<AI>& other); 
 
-	/**
-	   Assignment operator from another type of iterator 
-	   \tparam AI other iterator type. The assignment I b = a; with a of type AI must be defined.
-	   \param other 
-	 */
-	template <typename AI>
-	range3d_iterator_with_boundary_flag<I>& operator = (const range3d_iterator_with_boundary_flag<AI>& other); 
+       /** standard constructor */
+       range3d_iterator_with_boundary_flag();
 
-	
-	/// prefix increment 
-	range3d_iterator_with_boundary_flag<I>& operator ++(); 
-	/// postfix increment 
-	range3d_iterator_with_boundary_flag<I> operator ++(int); 
-	
-	/// @returns current value the iterator points to 
-	reference  operator *() const;
-	
-	/// @returns pointer to the current value the iterator points to 
-	pointer    operator ->() const;
+       /**
+          Full constructor of the range iterator
+          @param pos iterator position to initialize the iterator with
+          @param size size of the original data field
+          @param start start of the iterator range
+          @param end end of the iterator range
+          @param iterator the iterator of the underlying 3D data structure
+       */
+       range3d_iterator_with_boundary_flag(const C3DBounds& pos, const C3DBounds& size,
+                                           const C3DBounds& start, const C3DBounds& end, I iterator);
 
-	/** \returns the current position within the 3D grid with respect to the 
-	    full size of the grid. 
-	 */
-	const C3DBounds& pos() const; 
+       /**
+          End iterator, can't be dereferenced
+          This iterator is only there to define the end position of the range_iterator.
+          \param pos end position to set this iterator to.
+        */
+       range3d_iterator_with_boundary_flag(const C3DBounds& pos);
 
-	/// @cond NOFRIENDDOC
-	template <typename T> friend
-	bool operator == (const range3d_iterator_with_boundary_flag<T>& left, const range3d_iterator_with_boundary_flag<T>& right); 
-	/// @endcond 
+       /// assignment operator
+       range3d_iterator_with_boundary_flag<I>& operator = (const range3d_iterator_with_boundary_flag<I>& other);
 
-	/**
-	   Return the internal iterator
-	 */
-	internal_iterator get_point(); 
+       /// copy constructore
+       range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<I>& other);
 
-	/// \returns the flags describing whether the iterator is on a domain boundary. 
-	int get_boundary_flags() const; 
+       /// friend iterator type because we may want to copy a iterator to a const_iterator.
+       template <typename AI>
+       friend class range3d_iterator_with_boundary_flag;
 
-private: 
 
-	void increment_y(); 
-	void increment_z(); 
+       /**
+          Constructor to construct the iterator  from one that is based on another
+          iterator type. The usual idea is that a iterator may be converted  into it's const variant.
+          \tparam AI the other iterator type. Iterator type I must be copy-constructable from
+          type AI
+          \param other
+        */
+       template <typename AI>
+       range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<AI>& other);
 
-	C3DBounds m_pos; 
-	C3DBounds m_size; 
-	C3DBounds m_begin; 
-	C3DBounds m_end; 
-	int m_xstride; 
-	int m_ystride; 
-	I m_iterator; 
-	int m_boundary; 
-}; 
+       /**
+          Assignment operator from another type of iterator
+          \tparam AI other iterator type. The assignment I b = a; with a of type AI must be defined.
+          \param other
+        */
+       template <typename AI>
+       range3d_iterator_with_boundary_flag<I>& operator = (const range3d_iterator_with_boundary_flag<AI>& other);
+
+
+       /// prefix increment
+       range3d_iterator_with_boundary_flag<I>& operator ++();
+       /// postfix increment
+       range3d_iterator_with_boundary_flag<I> operator ++(int);
+
+       /// @returns current value the iterator points to
+       reference  operator *() const;
+
+       /// @returns pointer to the current value the iterator points to
+       pointer    operator ->() const;
+
+       /** \returns the current position within the 3D grid with respect to the
+           full size of the grid.
+        */
+       const C3DBounds& pos() const;
+
+       /// @cond NOFRIENDDOC
+       template <typename T> friend
+       bool operator == (const range3d_iterator_with_boundary_flag<T>& left, const range3d_iterator_with_boundary_flag<T>& right);
+       /// @endcond
+
+       /**
+          Return the internal iterator
+        */
+       internal_iterator get_point();
+
+       /// \returns the flags describing whether the iterator is on a domain boundary.
+       int get_boundary_flags() const;
+
+private:
+
+       void increment_y();
+       void increment_z();
+
+       C3DBounds m_pos;
+       C3DBounds m_size;
+       C3DBounds m_begin;
+       C3DBounds m_end;
+       int m_xstride;
+       int m_ystride;
+       I m_iterator;
+       int m_boundary;
+};
 
 
 
 /**
-   @ingroup basic 
-   \brief a 3D iterator that knows its position in the 3D grid ans supports iterating over 
-   sub-ranges 
-   
-   Iterator to iterate over a sub-range of 3D data that is given on a grid. 
-   Two iterators are considered to be equal, if their positions are equal.  
-   \tparam the internal iterator that is used to iterate of the original 
-   grid without skipping. 
-   
+   @ingroup basic
+   \brief a 3D iterator that knows its position in the 3D grid ans supports iterating over
+   sub-ranges
+
+   Iterator to iterate over a sub-range of 3D data that is given on a grid.
+   Two iterators are considered to be equal, if their positions are equal.
+   \tparam the internal iterator that is used to iterate of the original
+   grid without skipping.
+
  */
 
-template <typename I> 
-class EXPORT_3D range3d_iterator: public std::forward_iterator_tag {
-public: 
-	/// data type reference 
-	typedef typename I::reference reference; 
-	/// data type pointer  
-	typedef typename I::pointer pointer; 
+template <typename I>
+class EXPORT_3D range3d_iterator: public std::forward_iterator_tag
+{
+public:
+       /// data type reference
+       typedef typename I::reference reference;
+       /// data type pointer
+       typedef typename I::pointer pointer;
 
-	/// data value type 
-	typedef typename I::value_type value_type; 
+       /// data value type
+       typedef typename I::value_type value_type;
 
-	/// data type for the real iterator in the background 
-	typedef I internal_iterator; 
-	
-	
-	/** standard constructor */
-	range3d_iterator(); 
-
-	/**
-	   Full constructor of the range iterator 
-	   @param pos iterator position to initialize the iterator with 
-	   @param size size of the original data field 
-	   @param start start of the iterator range 
-	   @param end end of the iterator range 
-	   @param iterator the iterator of the underlying 3D data structure 
-	*/
-	range3d_iterator(const C3DBounds& pos, const C3DBounds& size, 
-			 const C3DBounds& start, const C3DBounds& end, I iterator);
-	
-	/**
-	   End iterator, can't be dereferenced  
-	   This iterator is only there to define the end position of the range_iterator. 
-	   \param pos end position to set this iterator to. 
-	 */
-	range3d_iterator(const C3DBounds& pos);
-
-	/// assignment operator 
-	range3d_iterator<I>& operator = (const range3d_iterator<I>& other); 
-	
-	/// copy constructore 
-	range3d_iterator(const range3d_iterator<I>& other); 
-
-	/// friend iterator type because we may want to copy a iterator to a const_iterator. 
-	template <typename AI> 
-	friend class range3d_iterator; 
-
-	/// friend iterator type because we may want to copy a iterator to a const_iterator. 
-	template <typename AI> 
-	friend class range3d_iterator_with_boundary_flag; 
-
-	
-	/**
-	   Constructor to construct the iterator  from one that is based on another 
-	   iterator type. The usual idea is that a iterator may be converted  into it's const variant. 
-	   \tparam AI the other iterator type. Iterator type I must be copy-constructable from 
-	   type AI 
-	   \param other 
-	 */
-	template <typename AI>
-	range3d_iterator(const range3d_iterator<AI>& other); 
+       /// data type for the real iterator in the background
+       typedef I internal_iterator;
 
 
-	/**
-	   Assignment operator from another type of iterator 
-	   \tparam AI other iterator type. The assignment I b = a; with a of type AI must be defined.
-	   \param other 
-	 */
-	template <typename AI>
-	range3d_iterator<I>& operator = (const range3d_iterator<AI>& other); 
+       /** standard constructor */
+       range3d_iterator();
 
-	
-	/// prefix increment 
-	range3d_iterator<I>& operator ++(); 
-	/// postfix increment 
-	range3d_iterator<I> operator ++(int); 
-	
-	/// @returns current value the iterator points to 
-	reference  operator *() const;
-	
-	/// @returns pointer to the current value the iterator points to 
-	pointer    operator ->() const;
+       /**
+          Full constructor of the range iterator
+          @param pos iterator position to initialize the iterator with
+          @param size size of the original data field
+          @param start start of the iterator range
+          @param end end of the iterator range
+          @param iterator the iterator of the underlying 3D data structure
+       */
+       range3d_iterator(const C3DBounds& pos, const C3DBounds& size,
+                        const C3DBounds& start, const C3DBounds& end, I iterator);
 
-	/** \returns the current position within the 3D grid with respect to the 
-	    full size of the grid. 
-	 */
-	const C3DBounds& pos() const; 
+       /**
+          End iterator, can't be dereferenced
+          This iterator is only there to define the end position of the range_iterator.
+          \param pos end position to set this iterator to.
+        */
+       range3d_iterator(const C3DBounds& pos);
 
-	/// @cond NOFRIENDDOC
-	template <typename T> friend
-	bool operator == (const range3d_iterator<T>& left, const range3d_iterator<T>& right); 
-	/// @endcond 
+       /// assignment operator
+       range3d_iterator<I>& operator = (const range3d_iterator<I>& other);
 
-	/**
-	   \return the internal iterator
-	 */
-	internal_iterator get_point(); 
+       /// copy constructore
+       range3d_iterator(const range3d_iterator<I>& other);
 
-	/**
-	   \returns the same iterator but with boundary checks and flags. 
-	*/
-	range3d_iterator_with_boundary_flag<I> with_boundary_flag() const;
+       /// friend iterator type because we may want to copy a iterator to a const_iterator.
+       template <typename AI>
+       friend class range3d_iterator;
 
-	/**
-	   access elements relative to the iterator position 
-	 */
-	const reference operator[] (int i) const;
-
-private: 
-
-	void increment_y(); 
-	void increment_z(); 
-
-	C3DBounds m_pos; 
-	C3DBounds m_size; 
-	C3DBounds m_begin; 
-	C3DBounds m_end; 
-	int m_xstride; 
-	int m_ystride; 
-	I m_iterator; 
-}; 
+       /// friend iterator type because we may want to copy a iterator to a const_iterator.
+       template <typename AI>
+       friend class range3d_iterator_with_boundary_flag;
 
 
+       /**
+          Constructor to construct the iterator  from one that is based on another
+          iterator type. The usual idea is that a iterator may be converted  into it's const variant.
+          \tparam AI the other iterator type. Iterator type I must be copy-constructable from
+          type AI
+          \param other
+        */
+       template <typename AI>
+       range3d_iterator(const range3d_iterator<AI>& other);
 
-template <typename I> 
+
+       /**
+          Assignment operator from another type of iterator
+          \tparam AI other iterator type. The assignment I b = a; with a of type AI must be defined.
+          \param other
+        */
+       template <typename AI>
+       range3d_iterator<I>& operator = (const range3d_iterator<AI>& other);
+
+
+       /// prefix increment
+       range3d_iterator<I>& operator ++();
+       /// postfix increment
+       range3d_iterator<I> operator ++(int);
+
+       /// @returns current value the iterator points to
+       reference  operator *() const;
+
+       /// @returns pointer to the current value the iterator points to
+       pointer    operator ->() const;
+
+       /** \returns the current position within the 3D grid with respect to the
+           full size of the grid.
+        */
+       const C3DBounds& pos() const;
+
+       /// @cond NOFRIENDDOC
+       template <typename T> friend
+       bool operator == (const range3d_iterator<T>& left, const range3d_iterator<T>& right);
+       /// @endcond
+
+       /**
+          \return the internal iterator
+        */
+       internal_iterator get_point();
+
+       /**
+          \returns the same iterator but with boundary checks and flags.
+       */
+       range3d_iterator_with_boundary_flag<I> with_boundary_flag() const;
+
+       /**
+          access elements relative to the iterator position
+        */
+       const reference operator[] (int i) const;
+
+private:
+
+       void increment_y();
+       void increment_z();
+
+       C3DBounds m_pos;
+       C3DBounds m_size;
+       C3DBounds m_begin;
+       C3DBounds m_end;
+       int m_xstride;
+       int m_ystride;
+       I m_iterator;
+};
+
+
+
+template <typename I>
 template <typename AI>
 range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<AI>& other)
 {
-	m_pos = other.m_pos; 
-	m_size = other.m_size;  
-	m_begin = other.m_begin; 
-	m_end = other.m_end; 
-	m_iterator = other.m_iterator; 
-	m_xstride = other.m_xstride; 
-	m_ystride = other.m_ystride; 
-	return *this; 
+       m_pos = other.m_pos;
+       m_size = other.m_size;
+       m_begin = other.m_begin;
+       m_end = other.m_end;
+       m_iterator = other.m_iterator;
+       m_xstride = other.m_xstride;
+       m_ystride = other.m_ystride;
+       return *this;
 }
 
-template <typename I> 
+template <typename I>
 template <typename AI>
 range3d_iterator<I>::range3d_iterator(const range3d_iterator<AI>& other):
-	m_pos(other.m_pos), 
-	m_size(other.m_size), 
-	m_begin(other.m_begin), 
-	m_end(other.m_end), 
-	m_xstride(other.m_xstride),
-	m_ystride(other.m_ystride),
-	m_iterator(other.m_iterator)
+       m_pos(other.m_pos),
+       m_size(other.m_size),
+       m_begin(other.m_begin),
+       m_end(other.m_end),
+       m_xstride(other.m_xstride),
+       m_ystride(other.m_ystride),
+       m_iterator(other.m_iterator)
 {
-}	
+}
 
-template <typename I> 
+template <typename I>
 const typename range3d_iterator<I>::reference
 range3d_iterator<I>::operator[] (int i) const
 {
-	return m_iterator[i];
+       return m_iterator[i];
 }
 
 /**
-   Compare two range iterators. There equivalence is only decided based on the grid position. 
+   Compare two range iterators. There equivalence is only decided based on the grid position.
  */
 
-template <typename I> 
+template <typename I>
 bool operator == (const range3d_iterator<I>& left, const range3d_iterator<I>& right)
 {
-	// we really want these two to the same range 
+       // we really want these two to the same range
 //	assert(left.m_size == right.m_size);
 //	assert(left.m_begin == right.m_begin);
 //	assert(left.m_end == right.m_end);
-
-	return left.m_pos == right.m_pos; 
-
+       return left.m_pos == right.m_pos;
 }
 
 /**
-   Compare two range iterators. There equivalence is only decided based on the grid position. 
+   Compare two range iterators. There equivalence is only decided based on the grid position.
  */
-template <typename I> 
+template <typename I>
 bool operator != (const range3d_iterator<I>& a, const range3d_iterator<I>& b)
 {
-	return !(a == b); 
+       return !(a == b);
 }
 
 
 
 
 
-template <typename I> 
+template <typename I>
 template <typename AI>
 range3d_iterator_with_boundary_flag<I>& range3d_iterator_with_boundary_flag<I>::operator = (const range3d_iterator_with_boundary_flag<AI>& other)
 {
-	m_pos = other.m_pos; 
-	m_size = other.m_size;  
-	m_begin = other.m_begin; 
-	m_end = other.m_end; 
-	m_iterator = other.m_iterator; 
-	m_xstride = other.m_xstride; 
-	m_ystride = other.m_ystride; 
-	m_boundary = other.m_boundary; 
-	return *this; 
+       m_pos = other.m_pos;
+       m_size = other.m_size;
+       m_begin = other.m_begin;
+       m_end = other.m_end;
+       m_iterator = other.m_iterator;
+       m_xstride = other.m_xstride;
+       m_ystride = other.m_ystride;
+       m_boundary = other.m_boundary;
+       return *this;
 }
 
-template <typename I> 
+template <typename I>
 template <typename AI>
 range3d_iterator_with_boundary_flag<I>::range3d_iterator_with_boundary_flag(const range3d_iterator_with_boundary_flag<AI>& other):
-	m_pos(other.m_pos), 
-	m_size(other.m_size), 
-	m_begin(other.m_begin), 
-	m_end(other.m_end), 
-	m_xstride(other.m_xstride),
-	m_ystride(other.m_ystride),
-	m_iterator(other.m_iterator), 
-	m_boundary(other.m_boundary)
+       m_pos(other.m_pos),
+       m_size(other.m_size),
+       m_begin(other.m_begin),
+       m_end(other.m_end),
+       m_xstride(other.m_xstride),
+       m_ystride(other.m_ystride),
+       m_iterator(other.m_iterator),
+       m_boundary(other.m_boundary)
 {
-}	
+}
 
 /**
-   Compare two range iterators. There equivalence is only decided based on the grid position. 
+   Compare two range iterators. There equivalence is only decided based on the grid position.
  */
 
-template <typename I> 
+template <typename I>
 bool operator == (const range3d_iterator_with_boundary_flag<I>& left, const range3d_iterator_with_boundary_flag<I>& right)
 {
-	// we really want these two to the same range 
+       // we really want these two to the same range
 //	assert(left.m_size == right.m_size);
 //	assert(left.m_begin == right.m_begin);
 //	assert(left.m_end == right.m_end);
-
-	return left.m_pos == right.m_pos; 
-
+       return left.m_pos == right.m_pos;
 }
 
 /**
-   Compare two range iterators. There equivalence is only decided based on the grid position. 
+   Compare two range iterators. There equivalence is only decided based on the grid position.
  */
-template <typename I> 
+template <typename I>
 bool operator != (const range3d_iterator_with_boundary_flag<I>& a, const range3d_iterator_with_boundary_flag<I>& b)
 {
-	return !(a == b); 
+       return !(a == b);
 }
 
 NS_MIA_END
 
-namespace std {
+namespace std
+{
 
 template <typename I>
-class iterator_traits< mia::range3d_iterator<I> > {
-public: 
-	typedef typename I::difference_type  difference_type; 
-	typedef typename I::value_type	value_type; 
-	typedef typename I::pointer	pointer; 
-	typedef typename I::reference	reference; 
-	typedef forward_iterator_tag	iterator_category; 
-}; 
+class iterator_traits< mia::range3d_iterator<I>>
+{
+public:
+       typedef typename I::difference_type  difference_type;
+       typedef typename I::value_type	value_type;
+       typedef typename I::pointer	pointer;
+       typedef typename I::reference	reference;
+       typedef forward_iterator_tag	iterator_category;
+};
 
 template <typename I>
-class iterator_traits< mia::range3d_iterator_with_boundary_flag<I> > {
-public: 
-	typedef typename I::difference_type  difference_type; 
-	typedef typename I::value_type	value_type; 
-	typedef typename I::pointer	pointer; 
-	typedef typename I::reference	reference; 
-	typedef forward_iterator_tag	iterator_category; 
-}; 
+class iterator_traits< mia::range3d_iterator_with_boundary_flag<I>>
+{
+public:
+       typedef typename I::difference_type  difference_type;
+       typedef typename I::value_type	value_type;
+       typedef typename I::pointer	pointer;
+       typedef typename I::reference	reference;
+       typedef forward_iterator_tag	iterator_category;
+};
 
 }
 

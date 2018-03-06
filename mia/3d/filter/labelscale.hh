@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,27 +22,29 @@
 
 NS_BEGIN( labelscale_3dimage_filter)
 
-class C3DLabelscale : public mia::C3DFilter {
+class C3DLabelscale : public mia::C3DFilter
+{
 public:
-	C3DLabelscale(const mia::C3DBounds& out_size);
+       C3DLabelscale(const mia::C3DBounds& out_size);
 
-	template <class T>
-	typename C3DLabelscale::result_type operator () (const mia::T3DImage<T>& data) const ;
+       template <class T>
+       typename C3DLabelscale::result_type operator () (const mia::T3DImage<T>& data) const ;
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 
-	mia::C3DBounds m_out_size;
+       mia::C3DBounds m_out_size;
 
 };
 
-class C3DLabelscaleFilterPluginFactory: public mia::C3DFilterPlugin {
+class C3DLabelscaleFilterPluginFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DLabelscaleFilterPluginFactory();
+       C3DLabelscaleFilterPluginFactory();
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-        
-	mia::C3DBounds m_out_size;
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+
+       mia::C3DBounds m_out_size;
 };
 
 

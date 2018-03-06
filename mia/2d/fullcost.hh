@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,37 +29,37 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup registration 
-   \brief Base class for the full cost functions 
-   
-   This typedef is the base class of the full-cost cost funtions. 
+   \ingroup registration
+   \brief Base class for the full cost functions
+
+   This typedef is the base class of the full-cost cost funtions.
 */
-typedef TFullCost<C2DTransformation> C2DFullCost; 
+typedef TFullCost<C2DTransformation> C2DFullCost;
 
-/// Pointer type for the full-cost function types 
-typedef C2DFullCost::Pointer P2DFullCost; 
+/// Pointer type for the full-cost function types
+typedef C2DFullCost::Pointer P2DFullCost;
 
-/// Plug-in type for 2D full cost plug-ins 
-typedef TFullCostPlugin<C2DTransformation> C2DFullCostPlugin; 
+/// Plug-in type for 2D full cost plug-ins
+typedef TFullCostPlugin<C2DTransformation> C2DFullCostPlugin;
 
-/// plugin-handler for the full-cost plug-ins 
-typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> > C2DFullCostPluginHandler;
+/// plugin-handler for the full-cost plug-ins
+typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin>> C2DFullCostPluginHandler;
 
 /**
-   \ingroup convine 
+   \ingroup convine
    Function to create a full-cost object from a string description
-   \param descr 
-   \returns the full-cost object 
+   \param descr
+   \returns the full-cost object
 */
-inline P2DFullCost produce_2dfullcost(const std::string& descr) 
+inline P2DFullCost produce_2dfullcost(const std::string& descr)
 {
-	return C2DFullCostPluginHandler::instance().produce(descr); 
+       return C2DFullCostPluginHandler::instance().produce(descr);
 }
 
 
-/// @cond NEVER 
-FACTORY_TRAIT(C2DFullCostPluginHandler); 
-/// @endcond 
+/// @cond NEVER
+FACTORY_TRAIT(C2DFullCostPluginHandler);
+/// @endcond
 
 NS_MIA_END
 

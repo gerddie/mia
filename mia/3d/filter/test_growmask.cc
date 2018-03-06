@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 #include <mia/internal/plugintester.hh>
 #include <mia/template/filtertest.hh>
 #include <mia/3d/filter/growmask.hh>
-namespace bfs=boost::filesystem;
+namespace bfs = boost::filesystem;
 
 NS_MIA_USE
 using namespace std;
@@ -34,68 +34,60 @@ const size_t nz = 3;
 
 BOOST_FIXTURE_TEST_CASE( test_grow_mask, TFiltertestFixture<T3DImage> )
 {
-	bool result_mask[nx * ny * nz] = {
-		0, 1, 1, 0, 1,
-		1, 1, 0, 1, 0,
-		1, 1, 1, 1, 0,
-		1, 1, 1, 0, 0,
+       bool result_mask[nx * ny * nz] = {
+              0, 1, 1, 0, 1,
+              1, 1, 0, 1, 0,
+              1, 1, 1, 1, 0,
+              1, 1, 1, 0, 0,
 
-		0, 1, 1, 0, 1,
-		1, 1, 1, 0, 1,
-		1, 1, 0, 1, 0,
-		1, 1, 1, 0, 0,
+              0, 1, 1, 0, 1,
+              1, 1, 1, 0, 1,
+              1, 1, 0, 1, 0,
+              1, 1, 1, 0, 0,
 
-		0, 1, 1, 1, 1,
-		1, 1, 1, 0, 1,
-		1, 1, 0, 1, 0,
-		1, 1, 1, 1, 0
-	};
+              0, 1, 1, 1, 1,
+              1, 1, 1, 0, 1,
+              1, 1, 0, 1, 0,
+              1, 1, 1, 1, 0
+       };
+       unsigned short init_ref[nx * ny * nz] = {
+              0, 1, 2, 3, 1,
+              5, 6, 7, 1, 0,
+              3, 4, 1, 1, 3,
+              4, 5, 1, 2, 6,
 
+              0, 2, 4, 5, 1,
+              5, 6, 4, 0, 1,
+              5, 3, 0, 1, 5,
+              7, 8, 1, 3, 4,
 
-	unsigned short init_ref[nx * ny * nz] = {
-		0, 1, 2, 3, 1,
-		5, 6, 7, 1, 0,
-		3, 4, 1, 1, 3,
-		4, 5, 1, 2, 6,
+              0, 2, 4, 1, 1,
+              5, 6, 1, 0, 1,
+              5, 3, 0, 1, 5,
+              7, 1, 1, 1, 4
+       };
+       bool init_mask[nx * ny * nz] = {
+              0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0,
 
-		0, 2, 4, 5, 1,
-		5, 6, 4, 0, 1,
-		5, 3, 0, 1, 5,
-		7, 8, 1, 3, 4,
+              0, 0, 0, 0, 0,
+              0, 1, 0, 0, 0,
+              0, 1, 0, 0, 0,
+              0, 1, 0, 0, 0,
 
-		0, 2, 4, 1, 1,
-		5, 6, 1, 0, 1,
-		5, 3, 0, 1, 5,
-		7, 1, 1, 1, 4
-	};
-
-	bool init_mask[nx * ny * nz] = {
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-
-		0, 0, 0, 0, 0,
-		0, 1, 0, 0, 0,
-		0, 1, 0, 0, 0,
-		0, 1, 0, 0, 0,
-
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0
-	};
-	
-	C3DBounds size(nx,ny,nz); 
-	C3DUSImage ref(size, init_ref); 
-	P3DImage pref(&ref, void_destructor<C3DImage>()); 
-	
-	CDatapool::instance().add("ref.datapool", create_image3d_vector(pref));
-	
-	auto filter = BOOST_TEST_create_from_plugin<C3DGrowmaskImageFilterFactory>("growmask:ref=ref.datapool,shape=6n,min=1"); 
-	
-	run(size, init_mask, size, result_mask, *filter); 
-	
+              0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0
+       };
+       C3DBounds size(nx, ny, nz);
+       C3DUSImage ref(size, init_ref);
+       P3DImage pref(&ref, void_destructor<C3DImage>());
+       CDatapool::instance().add("ref.datapool", create_image3d_vector(pref));
+       auto filter = BOOST_TEST_create_from_plugin<C3DGrowmaskImageFilterFactory>("growmask:ref=ref.datapool,shape=6n,min=1");
+       run(size, init_mask, size, result_mask, *filter);
 }
 
 

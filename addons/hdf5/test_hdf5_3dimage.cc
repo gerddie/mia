@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,88 +27,81 @@
 
 #include <addons/hdf5/hdf5_3dimage.hh>
 
-using namespace std; 
-using namespace mia; 
-using namespace hdf5_3dimage; 
+using namespace std;
+using namespace mia;
+using namespace hdf5_3dimage;
 
-template <typename T> 
+template <typename T>
 struct __fill_image {
-	static void apply(T3DImage<T>& image) {
-		int v = 1; 
-		for (auto i = image.begin(); i != image.end(); ++i) 
-			*i = v++; 
-	}
-}; 
+       static void apply(T3DImage<T>& image)
+       {
+              int v = 1;
 
-template <> 
+              for (auto i = image.begin(); i != image.end(); ++i)
+                     *i = v++;
+       }
+};
+
+template <>
 struct __fill_image<bool> {
-	static void apply(C3DBitImage& image) {
-		bool v = false; 
-		for (auto i = image.begin(); i != image.end(); ++i) {
-			*i = v; 
-			v = !v; 
-		}
-	}
-}; 
+       static void apply(C3DBitImage& image)
+       {
+              bool v = false;
+
+              for (auto i = image.begin(); i != image.end(); ++i) {
+                     *i = v;
+                     v = !v;
+              }
+       }
+};
 
 typedef boost::mpl::vector<bool,
-		     int8_t,
-		     uint8_t,
-		     int16_t,
-		     uint16_t,
-		     int32_t,
-		     uint32_t,
-		     int64_t,
-		     uint64_t,
-		     float,
-		     double
-		     > test_types;
+        int8_t,
+        uint8_t,
+        int16_t,
+        uint16_t,
+        int32_t,
+        uint32_t,
+        int64_t,
+        uint64_t,
+        float,
+        double
+        > test_types;
 
 
-BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_types ) 
+BOOST_AUTO_TEST_CASE_TEMPLATE( test_simple_write_read, T, test_types )
 {
-	C3DBounds size (2,3,4); 
-	T3DImage<T> *image = new T3DImage<T>(size); 
-	image->set_attribute("int", PAttribute(new CIntAttribute(2))); 
-	const C3DFVector voxel_size(2,2.5,2.5); 
-	image->set_voxel_size(voxel_size); 
+       C3DBounds size (2, 3, 4);
+       T3DImage<T> *image = new T3DImage<T>(size);
+       image->set_attribute("int", PAttribute(new CIntAttribute(2)));
+       const C3DFVector voxel_size(2, 2.5, 2.5);
+       image->set_voxel_size(voxel_size);
+       __fill_image<T>::apply(*image);
+       CHDF53DImageIOPlugin io;
+       CHDF53DImageIOPlugin::Data images;
+       images.push_back(P3DImage(image));
+       stringstream filename;
+       filename << "testimage-" << __type_descr<T>::value << ".h5";
+       cvdebug() << "test with " << filename.str() << "\n";
+       BOOST_REQUIRE(io.save(filename.str(), images));
+       auto loaded = io.load(filename.str());
+       BOOST_REQUIRE(loaded);
+       BOOST_REQUIRE(loaded->size() == 1u);
+       const auto& ploaded = dynamic_cast<const T3DImage<T>&>(*(*loaded)[0]);
+       auto iv = image->begin();
+       auto ev = image->end();
+       auto il = ploaded.begin();
 
-	__fill_image<T>::apply(*image); 
-	
-	CHDF53DImageIOPlugin io; 
-        CHDF53DImageIOPlugin::Data images;
-        images.push_back(P3DImage(image)); 
-	
-	stringstream filename; 
-	filename << "testimage-" << __type_descr<T>::value << ".h5"; 
+       while (iv != ev) {
+              BOOST_CHECK_EQUAL(*il, *iv);
+              ++iv;
+              ++il;
+       }
 
-	cvdebug() << "test with " << filename.str() << "\n"; 
-
-	BOOST_REQUIRE(io.save(filename.str(), images)); 
-	
-	auto loaded = io.load(filename.str()); 
-	BOOST_REQUIRE(loaded); 
-	
-	BOOST_REQUIRE(loaded->size() == 1u); 
-        const auto& ploaded = dynamic_cast<const T3DImage<T>&>(*(*loaded)[0]); 	
-	auto iv = image->begin(); 
-	auto ev = image->end(); 
-
-
-	auto il = ploaded.begin(); 
-	
-	while (iv != ev) {
-		BOOST_CHECK_EQUAL(*il, *iv); 
-		++iv; 
-		++il; 
-	}
-	BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel_size); 
-	
-	auto int_attr = ploaded.template get_attribute_as<int>("int"); 
-	BOOST_CHECK_EQUAL(int_attr, 2); 
-
-        unlink(filename.str().c_str()); 
-
+       BOOST_CHECK_EQUAL(ploaded.get_voxel_size(), voxel_size);
+       auto int_attr = ploaded.template get_attribute_as<int>("int");
+       BOOST_CHECK_EQUAL(int_attr, 2);
+       unlink(filename.str().c_str());
 }
 
 

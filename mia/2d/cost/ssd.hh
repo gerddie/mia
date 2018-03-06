@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -35,9 +35,10 @@ NS_BEGIN(mia_2dcost_ssd)
 
 typedef TSSDCost<mia::C2DImageCost> C2DSSDCost;
 
-class C2DSSDCostPlugin: public TSSDCostPlugin<mia::C2DImageCostPlugin, C2DSSDCost> {
+class C2DSSDCostPlugin: public TSSDCostPlugin<mia::C2DImageCostPlugin, C2DSSDCost>
+{
 private:
-	virtual const std::string do_get_descr()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,32 +31,33 @@
 NS_MIA_BEGIN
 
 
-/** 
-   \ingroup basic 
-   \brief This class holds the complete history list of a data set. 
-   
-   \todo Use it. 
+/**
+   \ingroup basic
+   \brief This class holds the complete history list of a data set.
+
+   \todo Use it.
 */
 
 
-class EXPORT_CORE CHistory: public std::list<CHistoryEntry> {
+class EXPORT_CORE CHistory: public std::list<CHistoryEntry>
+{
 public:
-	/** append a new history record
-	    \param program name of the calling program
-	    \param version version of the program run
-	    \param options the options used in this call 
-	*/
-	void append(const std::string& program, const std::string& version, const CCmdOptionList& options);
+       /** append a new history record
+           \param program name of the calling program
+           \param version version of the program run
+           \param options the options used in this call
+       */
+       void append(const std::string& program, const std::string& version, const CCmdOptionList& options);
 
-	/**
-	    \returns the complete history as a string.
-	*/
-	std::string as_string()const;
+       /**
+           \returns the complete history as a string.
+       */
+       std::string as_string()const;
 
-	/** returns the reference to the singelton history object */
-	static CHistory& instance();
+       /** returns the reference to the singelton history object */
+       static CHistory& instance();
 private:
-	CHistory();
+       CHistory();
 };
 NS_MIA_END
 

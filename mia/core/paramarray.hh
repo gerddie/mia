@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,66 +25,69 @@
 
 #include <cassert>
 
-namespace mia {
+namespace mia
+{
 
 template <typename T>
-class TPerLevelScalarParam {
-public: 
-	TPerLevelScalarParam(T default_value);
+class TPerLevelScalarParam
+{
+public:
+       TPerLevelScalarParam(T default_value);
 
-	PCmdOption create_level_params_option(const char* long_name,
-                                              char short_name,
-                                              EParameterBounds flags,
-                                              const std::vector<T>& boundaries,
-                                              const char* help);
+       PCmdOption create_level_params_option(const char *long_name,
+                                             char short_name,
+                                             EParameterBounds flags,
+                                             const std::vector<T>& boundaries,
+                                             const char *help);
 
-	PCmdOption create_level_params_option(const char* long_name,
-                                              char short_name,
-					      const char* help);
+       PCmdOption create_level_params_option(const char *long_name,
+                                             char short_name,
+                                             const char *help);
 
-	
-	T operator [](unsigned l)const; 
+
+       T operator [](unsigned l)const;
 private:
-	std::vector<T> m_params;
-	T m_default_value; 
-}; 
+       std::vector<T> m_params;
+       T m_default_value;
+};
 
 template <typename T>
 TPerLevelScalarParam<T>::TPerLevelScalarParam(T default_value):
-	m_default_value(default_value)
+       m_default_value(default_value)
 {
 }
 
 template <typename T>
-PCmdOption TPerLevelScalarParam<T>::create_level_params_option(const char* long_opt,
-                                                               char short_opt,
-                                                               EParameterBounds bflags,
-                                                               const std::vector<T>& boundaries,
-                                                               const char* help)
+PCmdOption TPerLevelScalarParam<T>::create_level_params_option(const char *long_opt,
+              char short_opt,
+              EParameterBounds bflags,
+              const std::vector<T>& boundaries,
+              const char *help)
 {
-        return PCmdOption(new CParamOption( short_opt, long_opt, 
-                                            new TBoundedParameter<std::vector<T> >(m_params, bflags,
-										   boundaries, false, help))); 
+       return PCmdOption(new CParamOption( short_opt, long_opt,
+                                           new TBoundedParameter<std::vector<T>>(m_params, bflags,
+                                                         boundaries, false, help)));
 }
 
 template <typename T>
-PCmdOption TPerLevelScalarParam<T>::create_level_params_option(const char* long_opt,
-							       char short_opt,
-							       const char* help)
+PCmdOption TPerLevelScalarParam<T>::create_level_params_option(const char *long_opt,
+              char short_opt,
+              const char *help)
 {
-	return PCmdOption(new CParamOption( short_opt, long_opt, 
-                                            new CTParameter<std::vector<T> >(m_params, false, help))); 
+       return PCmdOption(new CParamOption( short_opt, long_opt,
+                                           new CTParameter<std::vector<T>>(m_params, false, help)));
 }
 
 template <typename T>
 T TPerLevelScalarParam<T>::operator [](unsigned l) const
 {
-	if (m_params.empty())
-		return m_default_value; 
-        return l < m_params.size() ? m_params[l] : m_params[m_params.size() - 1]; 
+       if (m_params.empty())
+              return m_default_value;
+
+       return l < m_params.size() ? m_params[l] : m_params[m_params.size() - 1];
 }
 
 
 } // namespace mia
 
-#endif 
+#endif

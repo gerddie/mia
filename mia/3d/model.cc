@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,14 +27,14 @@
 
 NS_MIA_BEGIN
 
-template <> const char *  const 
-TPluginHandler<C3DRegModelPlugin>::m_help =  
-   "These plug-ins define different models for time-marching non-linear image registration algorithms.";
+template <> const char   *const
+TPluginHandler<C3DRegModelPlugin>::m_help =
+       "These plug-ins define different models for time-marching non-linear image registration algorithms.";
 
 template class TRegModel<3>;
 template class TPlugin<C3DImage, regmodel_type>;
 template class TFactory<C3DRegModel>;
-template class THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
+template class THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin>>;
 template class TFactoryPluginHandler<C3DRegModelPlugin>;
 template class TPluginHandler<C3DRegModelPlugin>;
 

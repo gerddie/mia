@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,60 +28,60 @@ CProgressCallback::~CProgressCallback()
 {
 }
 
-void CProgressCallback::update(int step) 
+void CProgressCallback::update(int step)
 {
-	do_update(step); 
+       do_update(step);
 }
 
-void CProgressCallback::set_range(int range) 
+void CProgressCallback::set_range(int range)
 {
-	do_set_range(range); 
+       do_set_range(range);
 }
 
-void CProgressCallback::pulse() 
+void CProgressCallback::pulse()
 {
-	do_pulse(); 
+       do_pulse();
 }
 
 
 struct CMsgStreamPrintCallbackImpl {
-	CMsgStreamPrintCallbackImpl(const std::string& f); 
-	boost::format format; 
-	int range; 
-}; 
+       CMsgStreamPrintCallbackImpl(const std::string& f);
+       boost::format format;
+       int range;
+};
 
 
 CMsgStreamPrintCallback::CMsgStreamPrintCallback(const std::string& format):
-	impl(new CMsgStreamPrintCallbackImpl(format))
+       impl(new CMsgStreamPrintCallbackImpl(format))
 {
 }
 
 CMsgStreamPrintCallback::~CMsgStreamPrintCallback()
 {
-	cvmsg() << "\n";
-	delete impl; 
+       cvmsg() << "\n";
+       delete impl;
 }
 
 void CMsgStreamPrintCallback::do_set_range(int range)
 {
-	impl->range = range; 
+       impl->range = range;
 }
 
 void CMsgStreamPrintCallback::do_update(int step)
 {
-	impl->format % step % impl->range; 
-	auto str = impl->format.str(); 
-	cvmsg() << str << "\r"; 
+       impl->format % step % impl->range;
+       auto str = impl->format.str();
+       cvmsg() << str << "\r";
 }
 
 void CMsgStreamPrintCallback::do_pulse()
 {
-	cverb << '.'; 
+       cverb << '.';
 }
 
 CMsgStreamPrintCallbackImpl::CMsgStreamPrintCallbackImpl(const std::string& f):
-	format(f), 
-	range(0) 
+       format(f),
+       range(0)
 {
 }
 

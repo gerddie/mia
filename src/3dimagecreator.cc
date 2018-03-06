@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,46 +31,49 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+       {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"},
 
-	{pdi_short, "Create a synthetic 3D image."}, 
+       {pdi_short, "Create a synthetic 3D image."},
 
-	{pdi_description, "This program creates a 3D image that contains an object created by one of the object "  
-	 "creator plug-ins (creator/3dimage)"},
+       {
+              pdi_description, "This program creates a 3D image that contains an object created by one of the object "
+              "creator plug-ins (creator/3dimage)"
+       },
 
-	{pdi_example_descr, "Create an image output.v of size <64,128,256> that contains a lattic with "
-	 "frequencys 8, 16, and 4 in x, y and, z-direction respectively."},
+       {
+              pdi_example_descr, "Create an image output.v of size <64,128,256> that contains a lattic with "
+              "frequencys 8, 16, and 4 in x, y and, z-direction respectively."
+       },
 
-	{pdi_example_code, "-o lattic.v -j lattic:fx=8,fy=16,fz=4 -s \"<64,128,256>\""}
-}; 
-	
+       {pdi_example_code, "-o lattic.v -j lattic:fx=8,fy=16,fz=4 -s \"<64,128,256>\""}
+};
+
 int do_main(int argc, char *argv[])
 {
-	C3DImageCreatorPluginHandler::ProductPtr object_creator;
-	string out_filename;
-	EPixelType pixel_type = it_ubyte;
-	C3DBounds size(128,128,128);
+       C3DImageCreatorPluginHandler::ProductPtr object_creator;
+       string out_filename;
+       EPixelType pixel_type = it_ubyte;
+       C3DBounds size(128, 128, 128);
+       CCmdOptionList options(g_description);
+       options.add(make_opt( out_filename, "out-file", 'o', "output file for create object",
+                             CCmdOptionFlags::required_output, &C3DImageIOPluginHandler::instance()));
+       options.add(make_opt( size, "size", 's', "size of the object"));
+       options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r', "input pixel type "));
+       options.add(make_opt( object_creator, "sphere", "object", 'j', "object to be created"));
 
-	CCmdOptionList options(g_description);
+       if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
-	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", 
-			      CCmdOptionFlags::required_output, &C3DImageIOPluginHandler::instance()));
-	options.add(make_opt( size, "size", 's', "size of the object"));
-	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
-	options.add(make_opt( object_creator, "sphere", "object", 'j', "object to be created"));
+       P3DImage image = (*object_creator)(size, pixel_type);
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
+       if (!image) {
+              std::stringstream error;
+              error << "Creator '" << object_creator->get_init_string() << "' could not create object of size " << size
+                    << " and type " << CPixelTypeDict.get_name(pixel_type);
+              throw invalid_argument(error.str());
+       }
 
-
-	P3DImage image = (*object_creator)(size, pixel_type);
-	if (!image) {
-		std::stringstream error;
-		error << "Creator '" << object_creator->get_init_string() << "' could not create object of size " << size 
-		      << " and type " << CPixelTypeDict.get_name(pixel_type);
-		throw invalid_argument(error.str());
-	}
-	return !save_image(out_filename, image);
+       return !save_image(out_filename, image);
 }
 
 

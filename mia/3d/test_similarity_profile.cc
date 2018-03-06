@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,45 +25,42 @@
 #include <mia/3d/filter.hh>
 
 
-namespace bfs=::boost::filesystem;
-NS_MIA_USE; 
+namespace bfs =::boost::filesystem;
+NS_MIA_USE;
 
 struct SimityProfileFixture {
-	SimityProfileFixture(); 
+       SimityProfileFixture();
 
-	P3DFullCost cost; 
-	C3DImageSeries series; 
+       P3DFullCost cost;
+       C3DImageSeries series;
 
-}; 
+};
 
 
-BOOST_FIXTURE_TEST_CASE (test_C3DSimilarityProfile_ref10, SimityProfileFixture) 
+BOOST_FIXTURE_TEST_CASE (test_C3DSimilarityProfile_ref10, SimityProfileFixture)
 {
-	
-	C3DSimilarityProfile sp(cost, series, 10, 0); 
-	// test value obtained by using octave 
-	BOOST_CHECK_CLOSE(sp.get_peak_frequency(), 108.98704, 0.1);
-	
+       C3DSimilarityProfile sp(cost, series, 10, 0);
+       // test value obtained by using octave
+       BOOST_CHECK_CLOSE(sp.get_peak_frequency(), 108.98704, 0.1);
 }
 
 
 
 SimityProfileFixture::SimityProfileFixture()
 {
+       cost = C3DFullCostPluginHandler::instance().produce("image");
+       C3DBounds size(1, 1, 1);
+       float values[40] = {
+              -2, -3, -4, -1, 1, 4, 2, -1, -3, -2,
+              -2, -3, -4, -1, 1, 4, 2, -1, -3, -2,
+              -2, -3, -4, -1, 1, 4, 2, -1, -3, -2,
+              -2, -3, -4, -1, 1, 4, 2, -1, -3, -2
+       };
 
-	cost = C3DFullCostPluginHandler::instance().produce("image");
-
-	C3DBounds size(1,1,1); 
-	float values[40] = {
-		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2, 
-		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2, 
-		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2, 
-		-2, -3, -4, -1, 1, 4, 2, -1, -3, -2 }; 
- 
-	for(size_t i = 0; i < 40; ++i) {
-		C3DFImage *img = new C3DFImage(size); 
-		(*img)(0,0,0) = values[i]; 
-		series.push_back(P3DImage(img)); 
-	}
+       for (size_t i = 0; i < 40; ++i) {
+              C3DFImage *img = new C3DFImage(size);
+              (*img)(0, 0, 0) = values[i];
+              series.push_back(P3DImage(img));
+       }
 }
 

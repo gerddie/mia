@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -38,38 +38,39 @@ NS_MIA_USE;
 using namespace std;
 
 
-static char const * const format = "stl";
+static char const *const format = "stl";
 
-class CSTLMeshIO: public CMeshIOPlugin {
+class CSTLMeshIO: public CMeshIOPlugin
+{
 public:
-	CSTLMeshIO();
+       CSTLMeshIO();
 
 private:
-	virtual PTriangleMesh do_load(string const &  filename)const;
-	virtual bool do_save(string const &  filename, const CTriangleMesh& data)const;
-	virtual const std::string  do_get_descr()const;
+       virtual PTriangleMesh do_load(string const&   filename)const;
+       virtual bool do_save(string const&   filename, const CTriangleMesh& data)const;
+       virtual const std::string  do_get_descr()const;
 
-	struct vless {
-		bool operator ()(const C3DFVector& a, const C3DFVector& b)const
-		{
-			return (a.z < b.z) ||
-				((a.z == b.z) && ((a.y < b.y) ||
-						  ((a.y == b.y) && (a.x < b.x))
-						  )
-				 );
-		}
-	};
+       struct vless {
+              bool operator ()(const C3DFVector& a, const C3DFVector& b)const
+              {
+                     return (a.z < b.z) ||
+                            ((a.z == b.z) && ((a.y < b.y) ||
+                                              ((a.y == b.y) && (a.x < b.x))
+                                             )
+                            );
+              }
+       };
 
-	typedef map<CTriangleMesh::vertex_type, size_t, vless> CVertexMap;
-	PTriangleMesh load_ascii(istream& f)const;
-	bool read_vertex(CVertexMap& vmap, unsigned int& index, istream& f)const;
-	bool save_ascii(ostream& of, const CTriangleMesh& data)const;
+       typedef map<CTriangleMesh::vertex_type, size_t, vless> CVertexMap;
+       PTriangleMesh load_ascii(istream& f)const;
+       bool read_vertex(CVertexMap& vmap, unsigned int& index, istream& f)const;
+       bool save_ascii(ostream& of, const CTriangleMesh& data)const;
 };
 
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new CSTLMeshIO;
+       return new CSTLMeshIO;
 }
 
 const string start_solid("solid");
@@ -83,215 +84,208 @@ const string tag_loop("loop");
 const string end_loop("endloop");
 
 CSTLMeshIO::CSTLMeshIO():
-	CMeshIOPlugin(format)
+       CMeshIOPlugin(format)
 {
-	add_suffix(".stl");
-	add_suffix(".STL");
-
+       add_suffix(".stl");
+       add_suffix(".STL");
 }
 
 bool CSTLMeshIO::read_vertex(CVertexMap& vmap, unsigned int& index, istream& f)const
 {
-	string tag;
-	C3DFVector vertex;
+       string tag;
+       C3DFVector vertex;
+       f >> tag >> vertex.x >> vertex.y >> vertex.z;
 
-	f >> tag >> vertex.x >> vertex.y >> vertex.z;
-	// coverity[TAINTED_SCALAR]
-	if (tag != vertex_tag) {
-		cverr() << "not a valid ascii STL file\n";
-		return false;
-	}
-	cvdebug() << "Read vertex: " << vertex << "\n";
+       // coverity[TAINTED_SCALAR]
+       if (tag != vertex_tag) {
+              cverr() << "not a valid ascii STL file\n";
+              return false;
+       }
 
-	CVertexMap::const_iterator v = vmap.find(vertex);
+       cvdebug() << "Read vertex: " << vertex << "\n";
+       CVertexMap::const_iterator v = vmap.find(vertex);
 
-	if (v != vmap.end()) {
-		index = v->second;
-	}else {
-		index = vmap.size();
-		vmap[vertex] = index;
-	}
-	return true;
+       if (v != vmap.end()) {
+              index = v->second;
+       } else {
+              index = vmap.size();
+              vmap[vertex] = index;
+       }
+
+       return true;
 }
 
 PTriangleMesh CSTLMeshIO::load_ascii(istream& f)const
 {
-	string attribute;
-	string tag;
-	string solid_name;
-	CVertexMap vmap;
+       string attribute;
+       string tag;
+       string solid_name;
+       CVertexMap vmap;
+       vector<CTriangleMesh::triangle_type> faces;
+       f >> attribute;
 
+       // coverity is complaining when a tainted string is used in
+       // std::string::operator !=
+       //
+       // coverity[TAINTED_SCALAR]
+       if (attribute != start_solid)
+              return PTriangleMesh();
 
-	vector<CTriangleMesh::triangle_type> faces;
+       f >> tag;
 
+       // coverity[TAINTED_SCALAR]
+       if (tag != start_face) {
+              cvdebug() << "Loading solid " << tag  << "\n";
+              f >> tag;
+       }
 
-	f >> attribute;
+       // coverity[TAINTED_SCALAR]
+       while (tag != end_solid) {
+              CTriangleMesh::triangle_type face;
+              C3DFVector face_normal;
 
-        // coverity is complaining when a tainted string is used in
-	// std::string::operator !=
-	// 
-        // coverity[TAINTED_SCALAR]
-	if (attribute != start_solid)
-		return PTriangleMesh();
+              // coverity[TAINTED_SCALAR]
+              if (tag != start_face)
+                     goto fail;
 
-	f >> tag;
-	// coverity[TAINTED_SCALAR]
-	if (tag != start_face) {
-		cvdebug() << "Loading solid " <<tag  << "\n";
-		f >> tag;
-	}
+              cverb << "start face ";
+              f >> tag;
 
-	// coverity[TAINTED_SCALAR]
-	while (tag != end_solid) {
-		CTriangleMesh::triangle_type face;
-		C3DFVector face_normal;
+              // coverity[TAINTED_SCALAR]
+              if (tag != normal_tag)
+                     goto fail;
 
-		// coverity[TAINTED_SCALAR]
-		if (tag != start_face)
-			goto fail;
+              f >> face_normal.x >> face_normal.y >> face_normal.z;
+              //	face_normals.push_back(face_normal);
+              cverb << " normal " << face_normal;
+              f >> tag;
 
-		cverb << "start face ";
+              // coverity[TAINTED_SCALAR]
+              if (tag != start_loop)
+                     goto fail;
 
-		f >> tag;
-		// coverity[TAINTED_SCALAR]
-		if (tag != normal_tag)
-			goto fail;
+              f >> tag;
 
-		f >> face_normal.x >> face_normal.y >> face_normal.z;
-		//	face_normals.push_back(face_normal);
+              // coverity[TAINTED_SCALAR]
+              if (tag != tag_loop)
+                     goto fail;
 
-		cverb << " normal " << face_normal;
-		f >> tag;
-		// coverity[TAINTED_SCALAR]
-		if (tag != start_loop)
-			goto fail;
+              if (!read_vertex(vmap, face.x, f))
+                     goto fail;
 
-		f >> tag;
-		// coverity[TAINTED_SCALAR]
-		if (tag != tag_loop)
-			goto fail;
+              if (!read_vertex(vmap, face.y, f))
+                     goto fail;
 
-		if (!read_vertex(vmap, face.x, f))
-			goto fail;
-		if (!read_vertex(vmap, face.y, f))
-			goto fail;
-		if (!read_vertex(vmap, face.z, f))
-			goto fail;
+              if (!read_vertex(vmap, face.z, f))
+                     goto fail;
 
-		f >> tag;
-		// coverity[TAINTED_SCALAR]
-		if (tag != end_loop)
-			goto fail;
+              f >> tag;
 
-		f >> tag;
-		// coverity[TAINTED_SCALAR]
-		if (tag != end_face)
-			goto fail;
+              // coverity[TAINTED_SCALAR]
+              if (tag != end_loop)
+                     goto fail;
 
-		cverb << " finished\n";
+              f >> tag;
 
-		faces.push_back(face);
+              // coverity[TAINTED_SCALAR]
+              if (tag != end_face)
+                     goto fail;
 
-		f >> tag;
+              cverb << " finished\n";
+              faces.push_back(face);
+              f >> tag;
 
-		if (!f.good())
-			goto fail;
-	}
-	{
-		cvmsg() << "Got a mesh with " << vmap.size() << " vertices and " <<
-			faces.size() << " faces\n";
+              if (!f.good())
+                     goto fail;
+       }
 
-		CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(vmap.size()));
+       {
+              cvmsg() << "Got a mesh with " << vmap.size() << " vertices and " <<
+                      faces.size() << " faces\n";
+              CTriangleMesh::PVertexfield vertices(new CTriangleMesh::CVertexfield(vmap.size()));
 
-		// remap the vertices
-		for (CVertexMap::const_iterator i = vmap.begin();
-		     i != vmap.end(); ++i)
-			(*vertices)[i->second] = i->first;
+              // remap the vertices
+              for (CVertexMap::const_iterator i = vmap.begin();
+                   i != vmap.end(); ++i)
+                     (*vertices)[i->second] = i->first;
 
-		cvinfo() << "STL: For now the face normals given in the file are thrown away\n";
-
-		CTriangleMesh::PTrianglefield tri(new CTriangleMesh::CTrianglefield(faces.size()));
-		copy(faces.begin(), faces.end(), tri->begin());
-
-		return PTriangleMesh(new CTriangleMesh(tri,vertices));
-	}
+              cvinfo() << "STL: For now the face normals given in the file are thrown away\n";
+              CTriangleMesh::PTrianglefield tri(new CTriangleMesh::CTrianglefield(faces.size()));
+              copy(faces.begin(), faces.end(), tri->begin());
+              return PTriangleMesh(new CTriangleMesh(tri, vertices));
+       }
 
 fail:
-	throw create_exception<runtime_error>("STL: not a valid ascii STL mesh file\n");
-
+       throw create_exception<runtime_error>("STL: not a valid ascii STL mesh file\n");
 }
 
-PTriangleMesh CSTLMeshIO::do_load(string const &  filename)const
+PTriangleMesh CSTLMeshIO::do_load(string const&   filename)const
 {
-	PTriangleMesh result;
+       PTriangleMesh result;
+       cvdebug() << "try stl mesh\n";
 
-	cvdebug() << "try stl mesh\n";
+       if (filename != "-") {
+              ifstream inf(filename.c_str());
+              result = load_ascii(inf);
+       } else
+              result = load_ascii(cin);
 
-	if (filename != "-") {
-		ifstream inf(filename.c_str());
-		result = load_ascii(inf);
-	}else
-		result = load_ascii(cin);
+       if (!result) { // probably a binary file
+              cvinfo() << "If this is a binary STL mesh then it is not (yet) supported\n";
+              return PTriangleMesh();
+       }
 
-	if (!result) { // probably a binary file
-		cvinfo() << "If this is a binary STL mesh then it is not (yet) supported\n";
-		return PTriangleMesh();
-	}
-	return PTriangleMesh(result);
+       return PTriangleMesh(result);
 }
 
 bool CSTLMeshIO::save_ascii(ostream& of, const CTriangleMesh& data)const
 {
-	of << start_solid << '\n';
+       of << start_solid << '\n';
+       //	int s = data.triangle_size();
+       int i = 0;
 
-	//	int s = data.triangle_size();
-	int i = 0;
+       for (CTriangleMesh::const_triangle_iterator t = data.triangles_begin();
+            t != data.triangles_end(); ++t, ++i) {
+              const C3DFVector& vx = data.vertex_at(t->x);
+              const C3DFVector& vy = data.vertex_at(t->y);
+              const C3DFVector& vz = data.vertex_at(t->z);
+              C3DFVector e1 = vx - vy;
+              C3DFVector e2 = vz - vy;
+              C3DFVector normal = e2 ^ e1;
+              double n = normal.norm2();
 
-	for (CTriangleMesh::const_triangle_iterator t = data.triangles_begin();
-	     t != data.triangles_end(); ++t, ++i) {
+              if (n > 0.0)
+                     normal /= sqrt(n);
 
-		const C3DFVector& vx = data.vertex_at(t->x);
-		const C3DFVector& vy = data.vertex_at(t->y);
-		const C3DFVector& vz = data.vertex_at(t->z);
+              of << "  " << start_face << " " << normal_tag << " "
+                 << normal.x << " " << normal.y << " " << normal.z << "\n";
+              of << "    " << start_loop << " " << tag_loop << "\n";
+              of << "      "  << vertex_tag << " "
+                 << vx.x << " " << vx.y << " " << vx.z << "\n";
+              of << "      "  << vertex_tag << " "
+                 << vy.x << " " << vy.y << " " << vy.z << "\n";
+              of << "      "  << vertex_tag << " "
+                 << vz.x << " " << vz.y << " " << vz.z << "\n";
+              of << "    "  << end_loop << "\n";
+              of << "  "  << end_face << "\n";
+       }
 
-		C3DFVector e1 = vx - vy;
-		C3DFVector e2 = vz - vy;
-
-		C3DFVector normal = e2 ^ e1;
-		double n = normal.norm2();
-		if (n > 0.0)
-			normal /= sqrt(n);
-
-		of << "  " << start_face << " " << normal_tag << " "
-		   << normal.x << " " << normal.y << " " << normal.z << "\n";
-		of << "    " << start_loop << " " << tag_loop << "\n";
-		of << "      "  << vertex_tag << " "
-		   << vx.x << " " << vx.y << " " << vx.z<< "\n";
-		of << "      "  << vertex_tag << " "
-		   << vy.x << " " << vy.y << " " << vy.z<< "\n";
-		of << "      "  << vertex_tag << " "
-		   << vz.x << " " << vz.y << " " << vz.z<< "\n";
-		of << "    "  << end_loop << "\n";
-		of << "  "  << end_face << "\n";
-
-	}
-	of << end_solid << "\n";
-	return of.good();
+       of << end_solid << "\n";
+       return of.good();
 }
 
-bool CSTLMeshIO::do_save(string const &  filename, const CTriangleMesh& data)const
+bool CSTLMeshIO::do_save(string const&   filename, const CTriangleMesh& data)const
 {
-	if (filename != "-") {
-		ofstream of(filename.c_str());
-		return save_ascii(of, data);
-	}else
-		return save_ascii(cout, data);
-
+       if (filename != "-") {
+              ofstream of(filename.c_str());
+              return save_ascii(of, data);
+       } else
+              return save_ascii(cout, data);
 }
 
 const string CSTLMeshIO::do_get_descr()const
 {
-	return "STL mesh io plugin";
+       return "STL mesh io plugin";
 }
 
 NS_END

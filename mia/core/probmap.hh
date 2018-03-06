@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,87 +29,89 @@
 #include <mia/core/defines.hh>
 
 
-typedef std::vector<double> double_vector; 
+typedef std::vector<double> double_vector;
 
 NS_MIA_BEGIN
 
 /**
-   \ingroup misc 
-   \brief A vector of probablility values. 
-   
-   A vector of probablility values that supports loading and storing 
-   the data. 
+   \ingroup misc
+   \brief A vector of probablility values.
+
+   A vector of probablility values that supports loading and storing
+   the data.
  */
-class EXPORT_CORE CProbabilityVector: public std::vector<double_vector> {
+class EXPORT_CORE CProbabilityVector: public std::vector<double_vector>
+{
 public:
 
-	/**
-	   standard constructor
-	*/
-	CProbabilityVector();
+       /**
+          standard constructor
+       */
+       CProbabilityVector();
 
 
-	/**
-	   Constructor using describing the probability vector
-	   \param nClass number of probablilities per element
-	   \param nElm numer of elments (aka intensities)
-	 */
+       /**
+          Constructor using describing the probability vector
+          \param nClass number of probablilities per element
+          \param nElm numer of elments (aka intensities)
+        */
 
-	CProbabilityVector(size_t nClass, size_t nElm);
+       CProbabilityVector(size_t nClass, size_t nElm);
 
-	/**
-	   Loads a probability map from a file, throws an exception of the operation fails.
-	   \param in_fname input file name "-" reads from stdin
-	   \returns the probability map
-	*/
-	CProbabilityVector(const std::string& in_fname);
-	/**
-	   Saves a probability map to a file,
-	   \param out_fname output filemake, "-" uses stdout
-	   \returns \a true if successfull, \a false otherwise
+       /**
+          Loads a probability map from a file, throws an exception of the operation fails.
+          \param in_fname input file name "-" reads from stdin
+          \returns the probability map
+       */
+       CProbabilityVector(const std::string& in_fname);
+       /**
+          Saves a probability map to a file,
+          \param out_fname output filemake, "-" uses stdout
+          \returns \a true if successfull, \a false otherwise
 
-	*/
-	bool save(const std::string& out_fname) const;
+       */
+       bool save(const std::string& out_fname) const;
 
 private:
-	bool do_save(std::ostream& os) const;
-	void do_load(std::istream& is);
+       bool do_save(std::ostream& os) const;
+       void do_load(std::istream& is);
 };
 
 
-/// Compare two probability vectors 
+/// Compare two probability vectors
 EXPORT_CORE bool operator == (const CProbabilityVector& a, const CProbabilityVector& b);
 
 
 /**
-   \ingroup misc 
-   \brief A map to change labels. 
-   
-   This class implements a mapping to change labels stemming from out-of-core 
-   region growing. 
+   \ingroup misc
+   \brief A map to change labels.
+
+   This class implements a mapping to change labels stemming from out-of-core
+   region growing.
 */
-class EXPORT_CORE CLabelMap: public std::map<size_t, size_t> {
+class EXPORT_CORE CLabelMap: public std::map<size_t, size_t>
+{
 public:
-	CLabelMap();
+       CLabelMap();
 
-	/**
-	   Constructthe label map by reading from a file simple text file 
-	   @param in_fname input file name 
-	 */
-	CLabelMap(const std::string& in_fname);
+       /**
+          Constructthe label map by reading from a file simple text file
+          @param in_fname input file name
+        */
+       CLabelMap(const std::string& in_fname);
 
-	/**
-	   Save the label map to a file 
-	   @param out_fname output file name 
-	   @returns \a true if saving was successfull 
-	 */
-	bool save(const std::string& out_fname)const ;
+       /**
+          Save the label map to a file
+          @param out_fname output file name
+          @returns \a true if saving was successfull
+        */
+       bool save(const std::string& out_fname)const ;
 private:
-	bool do_save(std::ostream& os) const;
-	void do_load(std::istream& is);
+       bool do_save(std::ostream& os) const;
+       void do_load(std::istream& is);
 };
 
-/// element wise equal operator for a CLabelMap 
+/// element wise equal operator for a CLabelMap
 EXPORT_CORE bool operator == (const CLabelMap& a, const CLabelMap& b);
 
 NS_MIA_END

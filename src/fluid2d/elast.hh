@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -40,71 +40,74 @@
 
 NS_MIA_BEGIN
 
-class TElastReg {
-	C2DFVectorfield ut;
-	C2DFVectorfield B;			// force field
-	C2DFVectorfield u;			// displacement field
-	C2DFVectorfield r;			// perturbation field
+class TElastReg
+{
+       C2DFVectorfield ut;
+       C2DFVectorfield B;			// force field
+       C2DFVectorfield u;			// displacement field
+       C2DFVectorfield r;			// perturbation field
 
-	const C2DFImage& Ref;
-	const C2DFImage& Model;
-	C2DFImage Template;
-	C2DFImage Target;
-	std::shared_ptr<T2DInterpolator<float> >  target_interp;
-	float min_stepsize;
-	C2DBounds Start,End;
+       const C2DFImage& Ref;
+       const C2DFImage& Model;
+       C2DFImage Template;
+       C2DFImage Target;
+       std::shared_ptr<T2DInterpolator<float>>  target_interp;
+       float min_stepsize;
+       C2DBounds Start, End;
 
-	bool final_level;
-	float epsilon;
-	float  	delta;  		// step size
-	float  	stepSize;		// step size
-	float  	lambda, mu;		// elasticity constants
-  	float   omega;			// overrelaxation factor
-	float  	a_,a, b, c, a_b,b_4;		// integration constants
-	float  regrid_thresh;
+       bool final_level;
+       float epsilon;
+       float  	delta;  		// step size
+       float  	stepSize;		// step size
+       float  	lambda, mu;		// elasticity constants
+       float   omega;			// overrelaxation factor
+       float  	a_, a, b, c, a_b, b_4;		// integration constants
+       float  regrid_thresh;
 public:
-	TElastReg(const C2DFImage& _Ref, const C2DFImage& _Model,float __regrid_thresh,
-		  int level, float __epsilon,float __lambda, float __mu);
-	~TElastReg();
+       TElastReg(const C2DFImage& _Ref, const C2DFImage& _Model, float __regrid_thresh,
+                 int level, float __epsilon, float __lambda, float __mu);
+       ~TElastReg();
 
-	float  solveAt(int x, int y);
-	void	solvePDE(unsigned int nit);
+       float  solveAt(int x, int y);
+       void	solvePDE(unsigned int nit);
 
-	C2DFVector VdeformAt(const C2DFVector &p);
-	bool	Vdeform(C2DFVectorfield *im = NULL);
+       C2DFVector VdeformAt(const C2DFVector& p);
+       bool	Vdeform(C2DFVectorfield *im = NULL);
 
-	float  deformAt(const C2DFVector &p);
-	bool	deformTemplate(C2DFImage *im = NULL);
-	C2DFVector  forceAt(const C2DFVector &p, float s);
-	void	calculateForces();
-	void	calculateForcesHist();
+       float  deformAt(const C2DFVector& p);
+       bool	deformTemplate(C2DFImage *im = NULL);
+       C2DFVector  forceAt(const C2DFVector& p, float s);
+       void	calculateForces();
+       void	calculateForcesHist();
 
-	float  calculateStep();
-	float  calculateMismatch(bool apply);
-	float  calculateMismatchHist(bool apply);
-	bool	decreaseStep();
-	void	increaseStep();
-	void work(C2DFVectorfield *Shift, const C2DInterpolatorFactory& ipfac);
+       float  calculateStep();
+       float  calculateMismatch(bool apply);
+       float  calculateMismatchHist(bool apply);
+       bool	decreaseStep();
+       void	increaseStep();
+       void work(C2DFVectorfield *Shift, const C2DInterpolatorFactory& ipfac);
 
 };
 
 
 inline bool TElastReg::decreaseStep()
 {
-	stepSize *= 0.5;
-	if (stepSize >= min_stepsize) {
-		return true;
-	}else {
-		stepSize = min_stepsize;
-		return false;
-	}
+       stepSize *= 0.5;
+
+       if (stepSize >= min_stepsize) {
+              return true;
+       } else {
+              stepSize = min_stepsize;
+              return false;
+       }
 }
 
 inline void TElastReg::increaseStep()
 {
-	stepSize *= 1.5;
-	if (stepSize > MAX_STEP)
-		stepSize = MAX_STEP;
+       stepSize *= 1.5;
+
+       if (stepSize > MAX_STEP)
+              stepSize = MAX_STEP;
 }
 
 #endif

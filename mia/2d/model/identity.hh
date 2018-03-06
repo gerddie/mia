@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,9 +25,10 @@
 
 NS_BEGIN(identity_regmodel)
 
-class C2DIdentityRegModel: public mia::C2DRegModel {
+class C2DIdentityRegModel: public mia::C2DRegModel
+{
 private:
-	virtual void do_solve(const mia::C2DFVectorfield& b, mia::C2DFVectorfield& v) const;
+       virtual void do_solve(const mia::C2DFVectorfield& b, mia::C2DFVectorfield& v) const;
 };
 
 NS_END

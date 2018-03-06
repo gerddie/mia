@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,9 +26,11 @@
 
 #include <mia/core/defines.hh>
 
-namespace boost {
-namespace filesystem {
-class path; 
+namespace boost
+{
+namespace filesystem
+{
+class path;
 }
 }
 
@@ -95,27 +97,27 @@ EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filen
 /**
    \ingroup misc
 
-   Split the file name numbering pattern for names (e.g. "lala0000.bla") and get the number 
-     of digits 
-   \param infilename the input file name 
-   \param[out] base the base of the filename (would be "lala") 
-   \param[out] suffix the file suffix (would be ".bla") 
-   \returns the number of digits (would be 4) 
+   Split the file name numbering pattern for names (e.g. "lala0000.bla") and get the number
+     of digits
+   \param infilename the input file name
+   \param[out] base the base of the filename (would be "lala")
+   \param[out] suffix the file suffix (would be ".bla")
+   \returns the number of digits (would be 4)
  */
 EXPORT_CORE size_t get_filename_number_pattern(std::string const& infilename, std::string& base, std::string& suffix);
 
 /**
    \ingroup misc
 
-   Split the file name numbering pattern for names (e.g. "lala00210.bla") 
-   \param in_filename the input file name 
-   \param[out] base the base of the filename (would be "lala") 
-   \param[out] suffix the file suffix (would be ".bla") 
-   \param[out] number the file suffix (would be "00210") 
+   Split the file name numbering pattern for names (e.g. "lala00210.bla")
+   \param in_filename the input file name
+   \param[out] base the base of the filename (would be "lala")
+   \param[out] suffix the file suffix (would be ".bla")
+   \param[out] number the file suffix (would be "00210")
  */
 
 EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, std::string& base,
-					       std::string& suffix, std::string& number);
+              std::string& suffix, std::string& number);
 
 NS_MIA_END
 

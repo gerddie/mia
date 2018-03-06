@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -33,55 +33,51 @@ using namespace mia;
 using namespace std;
 using namespace boost::unit_test;
 
-class Cstreamredir: public streamredir {
+class Cstreamredir: public streamredir
+{
 public:
-	Cstreamredir(ostringstream& output);
-	~Cstreamredir();
+       Cstreamredir(ostringstream& output);
+       ~Cstreamredir();
 private:
-	virtual void do_put_buffer(const char *begin, const char *end);
-	ostringstream& m_output;
+       virtual void do_put_buffer(const char *begin, const char *end);
+       ostringstream& m_output;
 };
 
 Cstreamredir::Cstreamredir(ostringstream& output):
-	m_output(output)
+       m_output(output)
 {
 }
 
 Cstreamredir::~Cstreamredir()
 {
-	sync();
+       sync();
 }
 
 void Cstreamredir::do_put_buffer(const char *begin, const char *end)
 {
-	while (begin != end)
-		m_output << *begin++;
+       while (begin != end)
+              m_output << *begin++;
 }
 
 BOOST_AUTO_TEST_CASE( test_streamredir )
 {
-	ostringstream test;
-
-	Cstreamredir s(test);
-	ostream test_output(&s);
-
-	test_output << "test\n";
-	cvdebug() << "test string >>" << test.str() << "<<\n";
-
-	streambuf *os = test_output.rdbuf(0);
-	BOOST_CHECK_EQUAL((void*)os, (void *)&s);
-
-	BOOST_CHECK(test.str() == "test");
+       ostringstream test;
+       Cstreamredir s(test);
+       ostream test_output(&s);
+       test_output << "test\n";
+       cvdebug() << "test string >>" << test.str() << "<<\n";
+       streambuf *os = test_output.rdbuf(0);
+       BOOST_CHECK_EQUAL((void *)os, (void *)&s);
+       BOOST_CHECK(test.str() == "test");
 }
 
 BOOST_AUTO_TEST_CASE( test_streamredir_overflow )
 {
-	ostringstream test;
+       ostringstream test;
+       Cstreamredir s(test);
+       ostream test_output(&s);
 
-	Cstreamredir s(test);
-	ostream test_output(&s);
-
-	for (size_t i = 0; i < 2000; ++i) {
-		test_output << i;
-	}
+       for (size_t i = 0; i < 2000; ++i) {
+              test_output << i;
+       }
 }

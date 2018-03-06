@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -35,104 +35,94 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
-class CVista2DVFIOPlugin : public C2DVFIOPlugin {
+class CVista2DVFIOPlugin : public C2DVFIOPlugin
+{
 public:
-	CVista2DVFIOPlugin();
+       CVista2DVFIOPlugin();
 private:
-	PData do_load(const string& fname) const;
-	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const;
+       PData do_load(const string& fname) const;
+       bool do_save(const string& fname, const Data& data) const;
+       const string do_get_descr() const;
 };
 
 CVista2DVFIOPlugin::CVista2DVFIOPlugin():
-	C2DVFIOPlugin("vista")
+       C2DVFIOPlugin("vista")
 {
-	add_supported_type(it_float);
-	add_suffix(".v");
-	add_suffix(".vf");
-	add_suffix(".V");
-	add_suffix(".VF");
-	
-	add_standard_vistaio_properties(*this); 
-
+       add_supported_type(it_float);
+       add_suffix(".v");
+       add_suffix(".vf");
+       add_suffix(".V");
+       add_suffix(".VF");
+       add_standard_vistaio_properties(*this);
 }
 
 CVista2DVFIOPlugin::PData  CVista2DVFIOPlugin::do_load(const string& fname) const
 {
-	CInputFile f(fname);
+       CInputFile f(fname);
+       VistaIOAttrList vlist = VistaIOReadFile(f, NULL);
+       VistaIOResetProgressIndicator();
 
-	VistaIOAttrList vlist = VistaIOReadFile(f,NULL);
+       if (!vlist)
+              return CVista2DVFIOPlugin::PData();
 
-	VistaIOResetProgressIndicator();
+       CVista2DVFIOPlugin::PData result;
+       VistaIOAttrListPosn posn;
 
-	if (!vlist)
-		return CVista2DVFIOPlugin::PData();
+       for (VistaIOFirstAttr(vlist, &posn); VistaIOAttrExists(&posn) && !result; VistaIONextAttr(&posn)) {
+              if (VistaIOGetAttrRepn(&posn) != VistaIOField2DRepn)
+                     continue;
 
-	CVista2DVFIOPlugin::PData result;
-	VistaIOAttrListPosn posn;
+              VistaIOField2D field = NULL;
+              VistaIOGetAttrValue(&posn, 0, VistaIOField2DRepn, &field);
 
-	for (VistaIOFirstAttr(vlist, &posn); VistaIOAttrExists(&posn) && !result; VistaIONextAttr(&posn)) {
-		if (VistaIOGetAttrRepn(&posn) != VistaIOField2DRepn)
-			continue;
+              if (!field)
+                     throw runtime_error(fname + "looked like a vector field, but is none");
 
-		VistaIOField2D field = NULL;
-		VistaIOGetAttrValue(&posn, 0, VistaIOField2DRepn, &field);
+              if (field->nsize_element != 2)
+                     throw runtime_error(fname + "is not a field of 2D vectors");
 
-		if (!field)
-			throw runtime_error(fname + "looked like a vector field, but is none");
+              if (field->repn != VistaIOFloatRepn) {
+                     cvdebug() << "Skipping input field, which is not of type float\n";
+                     continue;
+              }
 
-		if (field->nsize_element != 2)
-			throw runtime_error(fname + "is not a field of 2D vectors");
+              result = CVista2DVFIOPlugin::PData(new C2DIOVectorfield(C2DBounds(field->x_dim, field->y_dim)));
+              T2DVector<VistaIOFloat> *input  = (T2DVector<VistaIOFloat> *)field->p.data;
+              copy(input, input + result->size(), result->begin());
+              copy_attr_list(*result, field->attr);
+       }
 
-		if (field->repn != VistaIOFloatRepn) {
-			cvdebug() << "Skipping input field, which is not of type float\n";
-			continue;
-		}
-
-
-		result = CVista2DVFIOPlugin::PData(new C2DIOVectorfield(C2DBounds(field->x_dim, field->y_dim)));
-		T2DVector<VistaIOFloat> * input  = (T2DVector<VistaIOFloat> *)field->p.data;
-		copy(input, input + result->size(), result->begin());
-		copy_attr_list(*result, field->attr);
-	}
-
-
-	VistaIODestroyAttrList(vlist);
-	return result;
+       VistaIODestroyAttrList(vlist);
+       return result;
 }
 
 
 bool CVista2DVFIOPlugin::do_save(const string& fname, const C2DIOVectorfield& data) const
 {
-
-	COutputFile f(fname);
-
-	VistaIOAttrList vlist = VistaIOCreateAttrList();
-	VistaIOField2D out_field = VistaIOCreateField2D(data.get_size().x,
-					    data.get_size().y,
-					    2,
-					    VistaIOFloatRepn);
-	T2DVector<VistaIOFloat> * output  = (T2DVector<VistaIOFloat> *)out_field->p.data;
-	copy(data.begin(), data.end(), output);
-
-	copy_attr_list(out_field->attr, data);
-	VistaIOSetAttr(vlist, "2DFVectorfield", NULL, VistaIOField2DRepn, out_field);
-
-	bool result = VistaIOWriteFile(f,vlist);
-	VistaIODestroyAttrList(vlist);
-
-	return result;
+       COutputFile f(fname);
+       VistaIOAttrList vlist = VistaIOCreateAttrList();
+       VistaIOField2D out_field = VistaIOCreateField2D(data.get_size().x,
+                                  data.get_size().y,
+                                  2,
+                                  VistaIOFloatRepn);
+       T2DVector<VistaIOFloat> *output  = (T2DVector<VistaIOFloat> *)out_field->p.data;
+       copy(data.begin(), data.end(), output);
+       copy_attr_list(out_field->attr, data);
+       VistaIOSetAttr(vlist, "2DFVectorfield", NULL, VistaIOField2DRepn, out_field);
+       bool result = VistaIOWriteFile(f, vlist);
+       VistaIODestroyAttrList(vlist);
+       return result;
 }
 
 const string CVista2DVFIOPlugin::do_get_descr() const
 {
-	return "a 2d vector field io plugin for vista";
+       return "a 2d vector field io plugin for vista";
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	C2DFVectorTranslator::register_for("pixel");
-	return new CVista2DVFIOPlugin();
+       C2DFVectorTranslator::register_for("pixel");
+       return new CVista2DVFIOPlugin();
 }
 
 NS_END

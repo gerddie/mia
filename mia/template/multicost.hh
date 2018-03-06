@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,41 +26,42 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup registration 
-   \tparam Transform the transformation type used to achieve registration by optimizing the cost function 
-   \brief A accumulation of cost functions that are weigted against each other 
+   \ingroup registration
+   \tparam Transform the transformation type used to achieve registration by optimizing the cost function
+   \brief A accumulation of cost functions that are weigted against each other
 
-   This class is used to accumulate various cost measures to be optimized for image registration. 
+   This class is used to accumulate various cost measures to be optimized for image registration.
  */
 template <typename Transform>
-class EXPORT_HANDLER TFullCostList : public TFullCost<Transform> {
-public: 
-	TFullCostList(); 
+class EXPORT_HANDLER TFullCostList : public TFullCost<Transform>
+{
+public:
+       TFullCostList();
 
-	/// The pointer type of this cost function 
-	typedef typename TFullCost<Transform>::Pointer  Pointer; 
+       /// The pointer type of this cost function
+       typedef typename TFullCost<Transform>::Pointer  Pointer;
 
-	/// The size type of this cost function type 
-	typedef typename TFullCost<Transform>::Size     Size; 
+       /// The size type of this cost function type
+       typedef typename TFullCost<Transform>::Size     Size;
 
-	/**
-	   Append a new cost function to the list 
-	   \param cost a shared pointer to the new cost measure. 
-	 */
-	void push(typename TFullCost<Transform>::Pointer cost); 
+       /**
+          Append a new cost function to the list
+          \param cost a shared pointer to the new cost measure.
+        */
+       void push(typename TFullCost<Transform>::Pointer cost);
 
-	
-private: 
-	bool do_has(const char *property) const;
 
-	virtual double do_evaluate(const Transform& t, CDoubleVector& gradient) const;
-	double do_value(const Transform& t) const; 
-	double do_value() const; 
-	void do_set_size(); 
-	void do_reinit(); 
-	bool do_get_full_size(Size& size) const; 
-	std::vector<typename TFullCost<Transform>::Pointer> m_costs; 
-}; 
+private:
+       bool do_has(const char *property) const;
+
+       virtual double do_evaluate(const Transform& t, CDoubleVector& gradient) const;
+       double do_value(const Transform& t) const;
+       double do_value() const;
+       void do_set_size();
+       void do_reinit();
+       bool do_get_full_size(Size& size) const;
+       std::vector<typename TFullCost<Transform>::Pointer> m_costs;
+};
 
 NS_MIA_END
 

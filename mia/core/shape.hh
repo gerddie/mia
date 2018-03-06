@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -40,15 +40,15 @@ NS_MIA_BEGIN
 
 
 struct EXPORT_CORE shape_type {
-	static  const char * type_descr;
+       static  const char *type_descr;
 };
 
 
 
 /**
-   \ingroup basic 
-   \brief a generic class for morphological shapes 
-   
+   \ingroup basic
+   \brief a generic class for morphological shapes
+
    Pixel representation of shapes and masks around the origin.
    Type T is the coordinate class (e.g. T2DVector) and type M is the Mask image
    type, usually an binary image of the same dimensionallity as the coordinate
@@ -60,63 +60,64 @@ struct EXPORT_CORE shape_type {
 */
 
 template <template <typename> class T, typename M>
-class EXPORT_SHAPE TShape :public CProductBase {
+class EXPORT_SHAPE TShape : public CProductBase
+{
 public:
-	/// helper type for use of the class in TFactory 
-	typedef shape_type plugin_type; 
-	
-	/// Obtain the data type that is used for the mask image from the template parameters 
-	typedef typename M::Super plugin_data; 
-	
-	/** type to store the mask coordinates in a set to be able to easily iterate over it 
-	    and avoid duplicate entries 
-	*/ 
-	typedef std::set< T<int>, less_then<T<int> > > Flat;
-	
-	/// the actual value type of the mask coordinates 
-	typedef T<int> value_type;
-	
-	/// iterator over the mask coordinate set 
-	typedef typename Flat::const_iterator const_iterator;
+       /// helper type for use of the class in TFactory
+       typedef shape_type plugin_type;
 
-	/// the mask image type 
-	typedef M Mask;
-	
-	/// the size type for the mask image 
-	typedef T<unsigned int> Size;
+       /// Obtain the data type that is used for the mask image from the template parameters
+       typedef typename M::Super plugin_data;
 
-	/// standard constructor initialises the shape set
-	TShape();
+       /** type to store the mask coordinates in a set to be able to easily iterate over it
+           and avoid duplicate entries
+       */
+       typedef std::set< T<int>, less_then<T<int>>> Flat;
 
-	/// \returns the iterator to the begin of the shape
-	const_iterator begin() const;
+       /// the actual value type of the mask coordinates
+       typedef T<int> value_type;
 
-	/// \returns the iterator to the past end of the shape
-	const_iterator end() const;
+       /// iterator over the mask coordinate set
+       typedef typename Flat::const_iterator const_iterator;
 
-	/// \returns an coordinate shifted image of the real mask
-	Mask get_mask()const;
+       /// the mask image type
+       typedef M Mask;
 
-	/// returns the nD size of the mask
-	Size get_size()const;
+       /// the size type for the mask image
+       typedef T<unsigned int> Size;
 
-	/// \returns the number of points in the shape definition 
-	typename Flat::size_type size() const; 
+       /// standard constructor initialises the shape set
+       TShape();
 
-	/** insert another pixel coordinate
-	    \param p the pixel coordinate to be added 
-	 */
-	void insert(const T<int>& p);
+       /// \returns the iterator to the begin of the shape
+       const_iterator begin() const;
 
-	/**
-	   Test if a certain pixel location is set in the shape
-	   \param p the pixel position 
-	   \returns true if the pixel location is part of the shape 
-	 */
-	bool has_location(const T<int>& p) const; 
+       /// \returns the iterator to the past end of the shape
+       const_iterator end() const;
+
+       /// \returns an coordinate shifted image of the real mask
+       Mask get_mask()const;
+
+       /// returns the nD size of the mask
+       Size get_size()const;
+
+       /// \returns the number of points in the shape definition
+       typename Flat::size_type size() const;
+
+       /** insert another pixel coordinate
+           \param p the pixel coordinate to be added
+        */
+       void insert(const T<int>& p);
+
+       /**
+          Test if a certain pixel location is set in the shape
+          \param p the pixel position
+          \returns true if the pixel location is part of the shape
+        */
+       bool has_location(const T<int>& p) const;
 private:
-	Flat m_shape;
-	T<int> m_size;
+       Flat m_shape;
+       T<int> m_size;
 };
 
 NS_MIA_END

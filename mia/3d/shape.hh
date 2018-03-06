@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,33 +27,33 @@
 NS_MIA_BEGIN
 
 /**
-   @ingroup misc 
+   @ingroup misc
    @brief a 3D bit shape for morphological processing \sa TShape
 */
 typedef TShape<T3DVector, C3DBitImage> C3DShape;
 
 /**
-   @ingroup misc 
+   @ingroup misc
    @brief pointer to a 3D bit shape for morphological processing \sa TShape
 */
 typedef std::shared_ptr<C3DShape > P3DShape;
 
 /**
-   @ingroup misc 
-   @brief Base class for the 3D shape plug-ins 
+   @ingroup misc
+   @brief Base class for the 3D shape plug-ins
 */
 typedef TFactory<C3DShape> C3DShapePlugin;
 
 /**
-   @ingroup misc 
-   @brief Plugin handler for 3D shapes 
+   @ingroup misc
+   @brief Plugin handler for 3D shapes
 */
-typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin>> C3DShapePluginHandler;
 
 extern template class EXPORT_3D TShape<T3DVector, C3DBitImage>;
 /// @cond never
-FACTORY_TRAIT(C3DShapePluginHandler); 
-/// @endcond 
+FACTORY_TRAIT(C3DShapePluginHandler);
+/// @endcond
 
 NS_MIA_END
 

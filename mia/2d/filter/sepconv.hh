@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,63 +29,68 @@
 
 NS_BEGIN(SeparableConvolute_2dimage_filter)
 
-class CSeparableConvolute: public mia::C2DFilter {
+class CSeparableConvolute: public mia::C2DFilter
+{
 public:
-	CSeparableConvolute(mia::P1DSpacialKernel kx,
-			    mia::P1DSpacialKernel ky);
+       CSeparableConvolute(mia::P1DSpacialKernel kx,
+                           mia::P1DSpacialKernel ky);
 
-	template <typename  T>
-	CSeparableConvolute::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <typename  T>
+       CSeparableConvolute::result_type operator () (const mia::T2DImage<T>& data) const;
 
-	template <typename T>
-	void fold(std::vector<T>& v, const mia::C1DFilterKernel& kernel)const;
+       template <typename T>
+       void fold(std::vector<T>& v, const mia::C1DFilterKernel& kernel)const;
 
 private:
-	CSeparableConvolute::result_type do_filter(const mia::C2DImage& image) const;
+       CSeparableConvolute::result_type do_filter(const mia::C2DImage& image) const;
 
-	mia::P1DSpacialKernel m_kx;
-	mia::P1DSpacialKernel m_ky;
+       mia::P1DSpacialKernel m_kx;
+       mia::P1DSpacialKernel m_ky;
 };
 
 
-class C2DSeparableConvoluteFilterPlugin: public mia::C2DFilterPlugin {
+class C2DSeparableConvoluteFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DSeparableConvoluteFilterPlugin();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DSeparableConvoluteFilterPlugin();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 private:
-	mia::P1DSpacialKernel m_kx;
-	mia::P1DSpacialKernel m_ky;
+       mia::P1DSpacialKernel m_kx;
+       mia::P1DSpacialKernel m_ky;
 };
 
-class C2DGaussFilterPlugin: public mia::C2DFilterPlugin {
+class C2DGaussFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DGaussFilterPlugin();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DGaussFilterPlugin();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 private:
-	int m_w;
+       int m_w;
 };
 
 enum EGradientDirection {gd_x, gd_y, gd_undefined};
 
-class C2DSobelFilterPlugin: public mia::C2DFilterPlugin {
+class C2DSobelFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DSobelFilterPlugin();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DSobelFilterPlugin();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 private:
 
-	EGradientDirection m_direction; 
+       EGradientDirection m_direction;
 };
 
-class C2DScharrFilterPlugin: public mia::C2DFilterPlugin {
+class C2DScharrFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DScharrFilterPlugin();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DScharrFilterPlugin();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 
-	EGradientDirection m_direction; 
+       EGradientDirection m_direction;
 };
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,43 +29,43 @@ NS_MIA_BEGIN
 
 /**
    \ingroup io
-   \brief base class for the creators of 3D transformations 
-    \todo rename this to factory 
+   \brief base class for the creators of 3D transformations
+    \todo rename this to factory
  */
-typedef TTransformCreator<C3DTransformation>  C3DTransformCreator; 
+typedef TTransformCreator<C3DTransformation>  C3DTransformCreator;
 
 /**
    \ingroup io
-   \brief pointer type of the class for the creators of 3D transformations 
+   \brief pointer type of the class for the creators of 3D transformations
 */
 typedef std::shared_ptr<C3DTransformCreator > P3DTransformationFactory;
 
 /**
    \ingroup io
-   \brief Base class for the transform creator plugins 
+   \brief Base class for the transform creator plugins
 */
-typedef TTransformCreatorPlugin<C3DTransformation>  C3DTransformCreatorPlugin; 
+typedef TTransformCreatorPlugin<C3DTransformation>  C3DTransformCreatorPlugin;
 
 /**
    \ingroup io
-   \brief Transform creator plugin handler 
+   \brief Transform creator plugin handler
 */
-typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
- 
+typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin>> C3DTransformCreatorHandler;
+
 
 /**
    Create a transformation creator from the given description
    \param descr
-   \returns the transformation creator 
+   \returns the transformation creator
  */
-inline 
-P3DTransformationFactory produce_3dtransform_factory(const std::string& descr) 
+inline
+P3DTransformationFactory produce_3dtransform_factory(const std::string& descr)
 {
-	return C3DTransformCreatorHandler::instance().produce(descr); 
+       return C3DTransformCreatorHandler::instance().produce(descr);
 }
 
-/// @cond NEVER 
-FACTORY_TRAIT(C3DTransformCreatorHandler); 
+/// @cond NEVER
+FACTORY_TRAIT(C3DTransformCreatorHandler);
 /// @endcond
 
 NS_MIA_END

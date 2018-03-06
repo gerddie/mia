@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -40,62 +40,65 @@ CNgfnorm::CNgfnorm()
 template <class T>
 CNgfnorm::result_type CNgfnorm::operator () (const T2DImage<T>& data) const
 {
-	TRACE("CNgfnorm::operator ()");
+       TRACE("CNgfnorm::operator ()");
+       const C2DFVectorfield vf = get_nfg(data);
+       T2DImage<float> *result = new T2DImage<float>(data.get_size(), data);
+       float max;
+       C2DFVectorfield::const_iterator  pfb = vf.begin();
+       C2DFVectorfield::const_iterator  pfe = vf.end();
 
-	const C2DFVectorfield vf = get_nfg(data);
+       if (pfb == pfe)
+              throw invalid_argument("Ngfnorm: Image should at least contain one pixel");
 
-	T2DImage<float> *result = new T2DImage<float>(data.get_size(), data);
-	float max;
+       T2DImage<float>::iterator i = result->begin();
+       max = *i = pfb->norm();
+       ++i;
+       ++pfb;
 
-	C2DFVectorfield::const_iterator  pfb = vf.begin();
-	C2DFVectorfield::const_iterator  pfe = vf.end();
-	if (pfb == pfe)
-		throw invalid_argument("Ngfnorm: Image should at least contain one pixel");
+       while (pfb != pfe) {
+              float v = *i = pfb->norm();
 
-	T2DImage<float>::iterator i = result->begin();
-	max = *i = pfb->norm();
-	++i;
-	++pfb;
-	while (pfb != pfe) {
-		float v = *i = pfb->norm();
-		if (v > max)
-			 max = v;
-		++pfb;
-		++i;
-	}
-	cvdebug() << "Ngfnorm: max = " << max << "\n";
-	if (max > 0) {
-		max = 1.0 / max;
-		transform(result->begin(), result->end(), result->begin(), bind2nd(multiplies<float>(), max));
-	}
+              if (v > max)
+                     max = v;
 
-	return CNgfnorm::result_type(result);
+              ++pfb;
+              ++i;
+       }
+
+       cvdebug() << "Ngfnorm: max = " << max << "\n";
+
+       if (max > 0) {
+              max = 1.0 / max;
+              transform(result->begin(), result->end(), result->begin(), bind2nd(multiplies<float>(), max));
+       }
+
+       return CNgfnorm::result_type(result);
 }
 
 CNgfnorm::result_type CNgfnorm::do_filter(const C2DImage& image) const
 {
-	return mia::filter(*this, image);
+       return mia::filter(*this, image);
 }
 
 
 C2DNgfnormFilterPlugin::C2DNgfnormFilterPlugin():
-	C2DFilterPlugin("ngfnorm")
+       C2DFilterPlugin("ngfnorm")
 {
 }
 
 C2DFilter *C2DNgfnormFilterPlugin::do_create()const
 {
-	return new CNgfnorm();
+       return new CNgfnorm();
 }
 
 const string C2DNgfnormFilterPlugin::do_get_descr()const
 {
-	return "2D image to normalized-gradiend-field-norm filter";
+       return "2D image to normalized-gradiend-field-norm filter";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DNgfnormFilterPlugin();
+       return new C2DNgfnormFilterPlugin();
 }
 
 NS_END

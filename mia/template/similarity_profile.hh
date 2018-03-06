@@ -1,7 +1,7 @@
 
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,60 +27,61 @@
 
 NS_MIA_BEGIN
 /**
-   @ingroup perf 
-   \brief A class to evaluate image similarity profiles of image series 
-   \tparam dim the dimenstion of the image data to be used 
+   @ingroup perf
+   \brief A class to evaluate image similarity profiles of image series
+   \tparam dim the dimenstion of the image data to be used
 
-   This class evaluates the similarity profile of a series of images 
-   with respect to a certain cost function and a given reference. 
-   It can then be used to evaluate a periodic subset and the 
-   highest frequency coefficient. 
+   This class evaluates the similarity profile of a series of images
+   with respect to a certain cost function and a given reference.
+   It can then be used to evaluate a periodic subset and the
+   highest frequency coefficient.
 */
 template <int dim>
-class EXPORT_HANDLER TSimilarityProfile {
-public: 
-        /// the trait to handle dimension based typedefs 
-	typedef dimension_traits<dim> this_dim_trait; 
-	
-	/// Pointer type for cost measure used to create the similarity profile 
-	typedef typename this_dim_trait::PFullCost PFullCost; 
+class EXPORT_HANDLER TSimilarityProfile
+{
+public:
+       /// the trait to handle dimension based typedefs
+       typedef dimension_traits<dim> this_dim_trait;
 
-	/// type of the image series to create the similarity profile from 
-	typedef typename this_dim_trait::ImageSeries ImageSeries; 
+       /// Pointer type for cost measure used to create the similarity profile
+       typedef typename this_dim_trait::PFullCost PFullCost;
 
-	/// pointer type for the actual images 
-	typedef typename this_dim_trait::PImage PImage; 
-	/**
-	   Contruct and prepare the similarity profile. Throws an std::invalid_argument exception 
-	   on failure. 
-	   \param cost image similarity to evaluate the similarity series 
-	   \param images the image series 
-	   \param reference the reference to use for evaluating the similarity series 
-	   \param max_delta  the maximum temporal delta for the subset 
-	 */
-	TSimilarityProfile(PFullCost cost, const ImageSeries& images, 
-			   size_t reference, size_t max_delta); 
-	
-	/// copy constructor 
-	TSimilarityProfile(const TSimilarityProfile<dim>& org) = default; 
-	
-	/// assignment operator 
-	TSimilarityProfile<dim>& operator = (const TSimilarityProfile<dim>& org)  = default; 
+       /// type of the image series to create the similarity profile from
+       typedef typename this_dim_trait::ImageSeries ImageSeries;
 
-	
-	/// \returns the peak frequency coefficent and its index
-	float get_peak_frequency() const;
+       /// pointer type for the actual images
+       typedef typename this_dim_trait::PImage PImage;
+       /**
+          Contruct and prepare the similarity profile. Throws an std::invalid_argument exception
+          on failure.
+          \param cost image similarity to evaluate the similarity series
+          \param images the image series
+          \param reference the reference to use for evaluating the similarity series
+          \param max_delta  the maximum temporal delta for the subset
+        */
+       TSimilarityProfile(PFullCost cost, const ImageSeries& images,
+                          size_t reference, size_t max_delta);
 
-	/// @returns a periodic subset including the first and last image of the series
-	std::vector<size_t> get_periodic_subset() const; 
-private: 
-	size_t m_skip; 
-	mutable float m_peak_freq;
-	mutable bool m_peak_freq_valid; 
-	size_t m_reference; 
-	size_t m_max_delta; 
-	std::vector<CFFT1D_R2C::Real> m_cost_values; 
-}; 
+       /// copy constructor
+       TSimilarityProfile(const TSimilarityProfile<dim>& org) = default;
+
+       /// assignment operator
+       TSimilarityProfile<dim>& operator = (const TSimilarityProfile<dim>& org)  = default;
+
+
+       /// \returns the peak frequency coefficent and its index
+       float get_peak_frequency() const;
+
+       /// @returns a periodic subset including the first and last image of the series
+       std::vector<size_t> get_periodic_subset() const;
+private:
+       size_t m_skip;
+       mutable float m_peak_freq;
+       mutable bool m_peak_freq_valid;
+       size_t m_reference;
+       size_t m_max_delta;
+       std::vector<CFFT1D_R2C::Real> m_cost_values;
+};
 
 NS_MIA_END
 

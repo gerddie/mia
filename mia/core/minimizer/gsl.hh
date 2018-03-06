@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,88 +27,91 @@
 NS_BEGIN(gsl)
 
 
-// The FDF minimizer of the GSL 
-class CGSLFDFMinimizer : public mia::CMinimizer {
-public: 
-	CGSLFDFMinimizer(const gsl_multimin_fdfminimizer_type *ot, 
-			 double gorth_tolerance, 
-			 double stop_eps, 
-			 unsigned int maxiter, 
-			 float start_step);
-	
-	~CGSLFDFMinimizer(); 
+// The FDF minimizer of the GSL
+class CGSLFDFMinimizer : public mia::CMinimizer
+{
+public:
+       CGSLFDFMinimizer(const gsl_multimin_fdfminimizer_type *ot,
+                        double gorth_tolerance,
+                        double stop_eps,
+                        unsigned int maxiter,
+                        float start_step);
 
-	static double f(const gsl_vector * x, void * params); 
-	static void df(const gsl_vector * x, void * params, gsl_vector * g); 
-	static void fdf(const gsl_vector * x, void * params, double * f, gsl_vector * g); 
-	
-private: 
-	virtual void do_set_problem();
-	virtual int do_run(mia::CDoubleVector& x);
-	
-	const gsl_multimin_fdfminimizer_type *m_ot; 
-	gsl_multimin_fdfminimizer *m_s; 
-	double m_gorth_tolerance; 
-	double m_stop_eps; 
-	gsl_multimin_function_fdf m_func; 
-	int m_maxiter;  
-	double m_start_step;
+       ~CGSLFDFMinimizer();
 
-}; 
+       static double f(const gsl_vector *x, void *params);
+       static void df(const gsl_vector *x, void *params, gsl_vector *g);
+       static void fdf(const gsl_vector *x, void *params, double *f, gsl_vector *g);
+
+private:
+       virtual void do_set_problem();
+       virtual int do_run(mia::CDoubleVector& x);
+
+       const gsl_multimin_fdfminimizer_type *m_ot;
+       gsl_multimin_fdfminimizer *m_s;
+       double m_gorth_tolerance;
+       double m_stop_eps;
+       gsl_multimin_function_fdf m_func;
+       int m_maxiter;
+       double m_start_step;
+
+};
 
 
-// The F minimizer of the GSL 
-class CGSLFMinimizer : public mia::CMinimizer {
-public: 
-	CGSLFMinimizer(const gsl_multimin_fminimizer_type *ot,
-		       double stop_eps, 
-		       unsigned int maxiter, 
-		       double start_step);
-	
-	~CGSLFMinimizer(); 
+// The F minimizer of the GSL
+class CGSLFMinimizer : public mia::CMinimizer
+{
+public:
+       CGSLFMinimizer(const gsl_multimin_fminimizer_type *ot,
+                      double stop_eps,
+                      unsigned int maxiter,
+                      double start_step);
 
-	static double f(const gsl_vector * x, void * params); 
-	
-private: 
-	virtual void do_set_problem();
-	virtual int do_run(mia::CDoubleVector& x);
-	
-	const gsl_multimin_fminimizer_type *m_ot; 
-	gsl_multimin_fminimizer *m_s; 
-	double m_stop_eps; 
-	gsl_multimin_function m_func; 
-	unsigned m_maxiter;  
-	double m_start_step;
-	gsl_vector *m_step_init; 	
-}; 
+       ~CGSLFMinimizer();
 
-class CGSLMinimizerPlugin: public mia::CMinimizerPlugin {
-public: 
-	CGSLMinimizerPlugin();
+       static double f(const gsl_vector *x, void *params);
 
-	enum EGSLOptimizer {
-		opt_simplex2, 
-		opt_cg_fr, 
-		opt_cg_pr, 
-		opt_bfgs, 
-		opt_bfgs2, 
-		opt_gd, 
-		opt_unknown
+private:
+       virtual void do_set_problem();
+       virtual int do_run(mia::CDoubleVector& x);
 
-	};
-	
+       const gsl_multimin_fminimizer_type *m_ot;
+       gsl_multimin_fminimizer *m_s;
+       double m_stop_eps;
+       gsl_multimin_function m_func;
+       unsigned m_maxiter;
+       double m_start_step;
+       gsl_vector *m_step_init;
+};
+
+class CGSLMinimizerPlugin: public mia::CMinimizerPlugin
+{
+public:
+       CGSLMinimizerPlugin();
+
+       enum EGSLOptimizer {
+              opt_simplex2,
+              opt_cg_fr,
+              opt_cg_pr,
+              opt_bfgs,
+              opt_bfgs2,
+              opt_gd,
+              opt_unknown
+
+       };
+
 private:
 
-	mia::CMinimizer *do_create() const;
-	const std::string do_get_descr() const;
-	
-	EGSLOptimizer m_ot;
-	double m_gorth_tolerance; 
-	double m_stop_eps; 
-	unsigned m_maxiter;  
-	double m_start_step;
+       mia::CMinimizer *do_create() const;
+       const std::string do_get_descr() const;
+
+       EGSLOptimizer m_ot;
+       double m_gorth_tolerance;
+       double m_stop_eps;
+       unsigned m_maxiter;
+       double m_start_step;
 
 
-}; 
+};
 
 NS_END

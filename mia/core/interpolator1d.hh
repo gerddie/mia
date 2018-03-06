@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -52,185 +52,189 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup interpol 
+   \ingroup interpol
    \brief Basic Interpolator type for 1D Data.
-   
-   \remark Why do we need this? 
+
+   \remark Why do we need this?
 */
 
-class EXPORT_CORE C1DInterpolator {
+class EXPORT_CORE C1DInterpolator
+{
 public:
-	/** a virtual destructor is neccessary for some of the interpolators */
-	virtual  ~C1DInterpolator();
+       /** a virtual destructor is neccessary for some of the interpolators */
+       virtual  ~C1DInterpolator();
 };
 
 
 /**
-   \ingroup interpol 
+   \ingroup interpol
 
-   \brief Interpolator base class providing the full interface 
-   
+   \brief Interpolator base class providing the full interface
+
    Basic Interpolator type for 1D Data.
-   \tparam T data type to be interpolated over 
+   \tparam T data type to be interpolated over
  */
 
 template <typename T>
-class  EXPORT_CORE T1DInterpolator : public  C1DInterpolator {
+class  EXPORT_CORE T1DInterpolator : public  C1DInterpolator
+{
 public:
 
-	/**
-	   \param x location of data value to read
-	   \returns interpolated value at location x
-	 */
-	virtual T operator () (const double& x) const = 0;
+       /**
+          \param x location of data value to read
+          \returns interpolated value at location x
+        */
+       virtual T operator () (const double& x) const = 0;
 
-	/**
-	   interface to evaluate the derivative of the spline defined function 
-	   @param x 
-	   @returns interpolated approximate derivative at x 
-	 */
-	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const = 0;
+       /**
+          interface to evaluate the derivative of the spline defined function
+          @param x
+          @returns interpolated approximate derivative at x
+        */
+       virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const = 0;
 
 
 };
 
-/** 
-   \ingroup interpol 
+/**
+   \ingroup interpol
 
-    \brief Interpolator that uses some kind of spaciel kernel. 
-    
-    Base type for interpolators that work with some kind of convolution  
-    \remark currently all interpolators are like this ... 
+    \brief Interpolator that uses some kind of spaciel kernel.
+
+    Base type for interpolators that work with some kind of convolution
+    \remark currently all interpolators are like this ...
 */
 template <class T>
-class EXPORT_CORE T1DConvoluteInterpolator: public T1DInterpolator<T> {
+class EXPORT_CORE T1DConvoluteInterpolator: public T1DInterpolator<T>
+{
 public:
-	/**
-	   Construtor to prefilter the input for proper interpolation 
-	   \param data the data used for interpolation 
-	   \param kernel the spline kernel used for interpolation 
-	   \param boundary_conditions boundary conditions to be applied when interpolating 
-	 */
-	
-	T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel kernel, 
-				 const CSplineBoundaryCondition& boundary_conditions);
-	
-	~T1DConvoluteInterpolator();
-	
-	/**
-	   The actual interpolation operator 
-	   \param x location to interpolate at 
-	   \returns the interpolated value 
-	 */
-	T  operator () (const double& x) const;
+       /**
+          Construtor to prefilter the input for proper interpolation
+          \param data the data used for interpolation
+          \param kernel the spline kernel used for interpolation
+          \param boundary_conditions boundary conditions to be applied when interpolating
+        */
 
-	/**
-	   The interpolation funtion for the first order derivative
-	   \param x location to interpolate at 
-	   \returns the interpolated derivative value 
-	 */
-	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
+       T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel kernel,
+                                const CSplineBoundaryCondition& boundary_conditions);
+
+       ~T1DConvoluteInterpolator();
+
+       /**
+          The actual interpolation operator
+          \param x location to interpolate at
+          \returns the interpolated value
+        */
+       T  operator () (const double& x) const;
+
+       /**
+          The interpolation funtion for the first order derivative
+          \param x location to interpolate at
+          \returns the interpolated derivative value
+        */
+       virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
 
 protected:
-	/// Type of the coefficients after filtering 
-	typedef std::vector< typename coeff_map< T >::coeff_type > TCoeff1D;
+       /// Type of the coefficients after filtering
+       typedef std::vector< typename coeff_map< T >::coeff_type > TCoeff1D;
 
-	/// vector to hold coefficients 
-	typedef TCoeff1D coeff_vector;
+       /// vector to hold coefficients
+       typedef TCoeff1D coeff_vector;
 private:
 
-	TCoeff1D m_coeff;
-	PSplineKernel m_kernel;
-	PSplineBoundaryCondition m_boundary_conditions; 
-	T m_min;
-	T m_max;
+       TCoeff1D m_coeff;
+       PSplineKernel m_kernel;
+       PSplineBoundaryCondition m_boundary_conditions;
+       T m_min;
+       T m_max;
 
-	// not thread save!!!
-	mutable CSplineKernel::VIndex m_x_index;
-	mutable CSplineKernel::VWeight m_x_weight;
+       // not thread save!!!
+       mutable CSplineKernel::VIndex m_x_index;
+       mutable CSplineKernel::VWeight m_x_weight;
 };
 
 
-/** 
-   \ingroup interpol 
-   \brief Factory class for 1D interpolators 
-   
-   Factory to create 1D interpolators of a give data type using the given input data.  
+/**
+   \ingroup interpol
+   \brief Factory class for 1D interpolators
+
+   Factory to create 1D interpolators of a give data type using the given input data.
 */
-class EXPORT_CORE C1DInterpolatorFactory {
+class EXPORT_CORE C1DInterpolatorFactory
+{
 public:
 
-	/** Initialize the factory according B-Spline kernel and a boundary condition  
-	    @param kernel 
-	    @param bc 
-	 */
-	C1DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& bc);
+       /** Initialize the factory according B-Spline kernel and a boundary condition
+           @param kernel
+           @param bc
+        */
+       C1DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& bc);
 
-	C1DInterpolatorFactory(const std::string& kernel_descr, const std::string& boundary_descr);
+       C1DInterpolatorFactory(const std::string& kernel_descr, const std::string& boundary_descr);
 
-	/// Copy constructor 
-	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
+       /// Copy constructor
+       C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
 
-	/// assignment operator 
-	C1DInterpolatorFactory& operator = ( const C1DInterpolatorFactory& o);
+       /// assignment operator
+       C1DInterpolatorFactory& operator = ( const C1DInterpolatorFactory& o);
 
-	virtual ~C1DInterpolatorFactory();
+       virtual ~C1DInterpolatorFactory();
 
-	/**
-	   Create a 1D interpolator from a set of sampes that 
-	   returns the same values as the original at grid points 
-	   @tparam data type to be interpolated 
-	   @param src input data 
-	   @returns the interpolator 
-	 */
-	template <class T>
-	T1DInterpolator<T> *create(const std::vector<T>& src) const
-		__attribute__ ((warn_unused_result));
+       /**
+          Create a 1D interpolator from a set of sampes that
+          returns the same values as the original at grid points
+          @tparam data type to be interpolated
+          @param src input data
+          @returns the interpolator
+        */
+       template <class T>
+       T1DInterpolator<T> *create(const std::vector<T>& src) const
+       __attribute__ ((warn_unused_result));
 
-	/// @returns the B-spline kernel 
-	PSplineKernel get_kernel() const;
+       /// @returns the B-spline kernel
+       PSplineKernel get_kernel() const;
 
 private:
-	PSplineKernel m_kernel;
-	PSplineBoundaryCondition m_bc; 
+       PSplineKernel m_kernel;
+       PSplineBoundaryCondition m_bc;
 };
 
-/** 
-   \ingroup interpol 
-    Pointer type for C1DInterpolatorFactory. 
+/**
+   \ingroup interpol
+    Pointer type for C1DInterpolatorFactory.
  */
 typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 
 /**
-   Create an interpolation factory from a type by also allocating the B-spline kernel if 
-   neccessary. 
-   @todo this should become the work of a plug-in handler 
+   Create an interpolation factory from a type by also allocating the B-spline kernel if
+   neccessary.
+   @todo this should become the work of a plug-in handler
  */
 
 // implementation
 template <class T>
 T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) const
 {
-	return new T1DConvoluteInterpolator<T>(src, m_kernel, *m_bc);
+       return new T1DConvoluteInterpolator<T>(src, m_kernel, *m_bc);
 }
 
 /**
-   @cond INTERNAL 
-   @ingroup traits 
-   \brief a trait to update the minimum and maxmimum values based on some input 
+   @cond INTERNAL
+   @ingroup traits
+   \brief a trait to update the minimum and maxmimum values based on some input
 */
 template <typename T>
 struct __dispatch_min_max {
-	static void apply(const T i, T& min, T &max);
+       static void apply(const T i, T& min, T& max);
 };
 
 /**
-   @ingroup traits 
+   @ingroup traits
    \brief a trait to copy some data
 */
 template <typename I, typename O>
 struct __dispatch_copy {
-	static void apply(const I& input, O& output);
+       static void apply(const I& input, O& output);
 };
 
 /// @endcond

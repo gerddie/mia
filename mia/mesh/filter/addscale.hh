@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,31 +21,33 @@
 #include <mia/mesh/filter.hh>
 
 
-NS_BEGIN(mia_meshfilter_addscale) 
+NS_BEGIN(mia_meshfilter_addscale)
 
-using mia::PTriangleMesh; 
-using mia::CTriangleMesh; 
-
-
-class CAddScaleMeshFilter: public mia::CMeshFilter {
-public: 
-	CAddScaleMeshFilter(const std::string& image_filename ); 
-private: 
-	PTriangleMesh do_filter(const CTriangleMesh& image) const; 
-	
-	std::string m_image_filename; 
-}; 
+using mia::PTriangleMesh;
+using mia::CTriangleMesh;
 
 
-class CAddScaleMeshFilterPlugin: public mia::CMeshFilterPlugin {
-public: 
-	CAddScaleMeshFilterPlugin(); 
+class CAddScaleMeshFilter: public mia::CMeshFilter
+{
+public:
+       CAddScaleMeshFilter(const std::string& image_filename );
+private:
+       PTriangleMesh do_filter(const CTriangleMesh& image) const;
 
-	virtual mia::CMeshFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       std::string m_image_filename;
+};
 
-private: 
-	std::string m_image_filename; 
-}; 
+
+class CAddScaleMeshFilterPlugin: public mia::CMeshFilterPlugin
+{
+public:
+       CAddScaleMeshFilterPlugin();
+
+       virtual mia::CMeshFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+
+private:
+       std::string m_image_filename;
+};
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,17 +21,21 @@
 #ifndef __pixel_h
 #define __pixel_h
 
-template <class T> class TPixel {
-	T value;
+template <class T> class TPixel
+{
+       T value;
 public:
-	TPixel():value(0){}
-	TPixel(T _value):value(_value){};
-	TPixel(const TPixel& org):value(org.value){}
-	operator T() { return value;}
+       TPixel(): value(0) {}
+       TPixel(T _value): value(_value) {};
+       TPixel(const TPixel& org): value(org.value) {}
+       operator T()
+       {
+              return value;
+       }
 };
 
 #endif
-	
+
 
 /* CVS LOG
 

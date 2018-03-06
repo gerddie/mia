@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,13 +24,14 @@
 #include <mia/3d/shape.hh>
 
 NS_MIA_BEGIN
-class CSphere3DShapeFactory: public C3DShapePlugin {
+class CSphere3DShapeFactory: public C3DShapePlugin
+{
 public:
-	CSphere3DShapeFactory();
+       CSphere3DShapeFactory();
 private:
-	virtual const std::string do_get_descr() const;
-	virtual C3DShape *do_create()const;
-	float m_r;
+       virtual const std::string do_get_descr() const;
+       virtual C3DShape *do_create()const;
+       float m_r;
 };
 NS_MIA_END
 #endif

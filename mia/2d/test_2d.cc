@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,37 +26,32 @@
 #include <mia/core/cmdlineparser.hh>
 
 
-using namespace mia; 
+using namespace mia;
 using namespace boost::unit_test;
 
-namespace bfs = ::boost::filesystem; 
+namespace bfs = ::boost::filesystem;
 
-extern void add_2ddatafield_tests(test_suite* suite); 
-extern void add_2dimage_tests(test_suite* suite); 
-extern void add_2dinterpol_tests(test_suite* suite); 
-extern void add_2dimage_nfg_tests(test_suite* suite);
+extern void add_2ddatafield_tests(test_suite *suite);
+extern void add_2dimage_tests(test_suite *suite);
+extern void add_2dinterpol_tests(test_suite *suite);
+extern void add_2dimage_nfg_tests(test_suite *suite);
 
-bool init_unit_test_suite( ) 
+bool init_unit_test_suite( )
 {
-	if (bfs::path::default_name_check_writable())
-		bfs::path::default_name_check(::boost::filesystem::portable_posix_name); 
+       if (bfs::path::default_name_check_writable())
+              bfs::path::default_name_check(::boost::filesystem::portable_posix_name);
 
-
-	
-	test_suite *suite = &framework::master_test_suite(); 
-
-	add_2ddatafield_tests(suite); 
-	add_2dimage_tests(suite); 
-	add_2dinterpol_tests(suite); 
-	add_2dimage_nfg_tests(suite); 
-
-
-	return true;
+       test_suite *suite = &framework::master_test_suite();
+       add_2ddatafield_tests(suite);
+       add_2dimage_tests(suite);
+       add_2dinterpol_tests(suite);
+       add_2dimage_nfg_tests(suite);
+       return true;
 }
 
 int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
+main( int argc, char *argv[] )
 {
-	CCmdOptionList().parse(argc, argv);
-	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
+       CCmdOptionList().parse(argc, argv);
+       return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }

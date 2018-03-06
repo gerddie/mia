@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,47 +26,49 @@ NS_BEGIN(minimizer_gdsq)
 #define SUCCESS_XTOLA 2
 #define SUCCESS_GTOLA 4
 
-// The FDF minimizer of the GSL 
-class CGDSQMinimizer : public mia::CMinimizer {
-public: 
-	CGDSQMinimizer(double start_step, double step_scale, 
-		       double xtol, double gtol, double ftolr, 
-		       unsigned int maxiter, double min_step);
-	
-private: 
-	virtual void do_set_problem();
-	virtual int do_run(mia::CDoubleVector& x);
-	int test_tol(mia::CDoubleVector& dx, double tol, int cause)const; 
-	
-	double m_xtol; 
-	double m_gtol; 
-	unsigned int m_maxiter; 
-	double m_step; 
-	double m_step_scale; 
-	double m_ftolr; 
-	double m_min_step; 
-}; 
+// The FDF minimizer of the GSL
+class CGDSQMinimizer : public mia::CMinimizer
+{
+public:
+       CGDSQMinimizer(double start_step, double step_scale,
+                      double xtol, double gtol, double ftolr,
+                      unsigned int maxiter, double min_step);
+
+private:
+       virtual void do_set_problem();
+       virtual int do_run(mia::CDoubleVector& x);
+       int test_tol(mia::CDoubleVector& dx, double tol, int cause)const;
+
+       double m_xtol;
+       double m_gtol;
+       unsigned int m_maxiter;
+       double m_step;
+       double m_step_scale;
+       double m_ftolr;
+       double m_min_step;
+};
 
 
 
-class CGDSQMinimizerPlugin: public mia::CMinimizerPlugin {
-public: 
-	CGDSQMinimizerPlugin();
+class CGDSQMinimizerPlugin: public mia::CMinimizerPlugin
+{
+public:
+       CGDSQMinimizerPlugin();
 
 private:
 
-	mia::CMinimizer *do_create() const;
-	const std::string do_get_descr() const;
-	
-	double m_xtol; 
-	double m_gtol; 
-	double m_ftolr; 
-	unsigned int m_maxiter; 
-	double m_start_step; 
-	double m_step_scale; 
-	double m_min_step; 
+       mia::CMinimizer *do_create() const;
+       const std::string do_get_descr() const;
+
+       double m_xtol;
+       double m_gtol;
+       double m_ftolr;
+       unsigned int m_maxiter;
+       double m_start_step;
+       double m_step_scale;
+       double m_min_step;
 
 
-}; 
+};
 
 NS_END

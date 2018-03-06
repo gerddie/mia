@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -33,69 +33,70 @@
 NS_MIA_BEGIN
 
 struct EXPORT_2D fft2d_kernel_data {
-	static const char *data_descr;
+       static const char *data_descr;
 };
 
 /**
-   \cond NEEDS_REHAUL 
+   \cond NEEDS_REHAUL
    @ingroup filtering
-   \brief Base class for 2D FFT filters. 
+   \brief Base class for 2D FFT filters.
 
-   This class provides tha basic interface for filters that work within the 
-   frequency domain by means of a FFT.  
-   Filter applications are applied like this: 
-   first a real-to-complex transformation is run, then run the filter on 
-   the half-complex transform and run the back-transform.  
+   This class provides tha basic interface for filters that work within the
+   frequency domain by means of a FFT.
+   Filter applications are applied like this:
+   first a real-to-complex transformation is run, then run the filter on
+   the half-complex transform and run the back-transform.
 */
-class EXPORT_2D CFFT2DKernel :public CProductBase {
+class EXPORT_2D CFFT2DKernel : public CProductBase
+{
 public:
-	/// plugin search path helper type 
-	typedef fft2d_kernel_data plugin_data; 
-	/// plugin search path helper type 
-	typedef kernel_plugin_type plugin_type; 
-		
-	CFFT2DKernel();
+       /// plugin search path helper type
+       typedef fft2d_kernel_data plugin_data;
+       /// plugin search path helper type
+       typedef kernel_plugin_type plugin_type;
 
-	virtual ~CFFT2DKernel();
+       CFFT2DKernel();
 
-	/**
-	   Run the FFT by first calling the forward plan, then 
-	   call do_apply() and then running the backward plan. 
-	   Normalization is left to the caller,  
-	 */
-	void apply() const;
-	
+       virtual ~CFFT2DKernel();
 
-	/**
-	   Prepare the FFT structures and return the buffer where the data needs to be 
-	   put when it should be processed. 
-	 */
-	float *prepare(const C2DBounds& size);
-	
+       /**
+          Run the FFT by first calling the forward plan, then
+          call do_apply() and then running the backward plan.
+          Normalization is left to the caller,
+        */
+       void apply() const;
+
+
+       /**
+          Prepare the FFT structures and return the buffer where the data needs to be
+          put when it should be processed.
+        */
+       float *prepare(const C2DBounds& size);
+
 private:
-	/*
-	  free all the FFT structures 
-	 */
-	void tear_down();
-	
-	virtual void do_apply(const C2DBounds& m_size, size_t m_realsize_x, 
-			      fftwf_complex *m_cbuffer) const = 0;
+       /*
+         free all the FFT structures
+        */
+       void tear_down();
 
-	C2DBounds m_size;
-	fftwf_complex *m_cbuffer;
-	float   *m_fbuffer;
-	float m_scale;
-	fftwf_plan m_forward_plan;
-	fftwf_plan m_backward_plan;
+       virtual void do_apply(const C2DBounds& m_size, size_t m_realsize_x,
+                             fftwf_complex *m_cbuffer) const = 0;
 
-	size_t m_realsize_x;
+       C2DBounds m_size;
+       fftwf_complex *m_cbuffer;
+       float   *m_fbuffer;
+       float m_scale;
+       fftwf_plan m_forward_plan;
+       fftwf_plan m_backward_plan;
+
+       size_t m_realsize_x;
 };
 
 typedef  std::shared_ptr<CFFT2DKernel > PFFT2DKernel;
 typedef TFactory<CFFT2DKernel> CFFT2DKernelPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<CFFT2DKernelPlugin> > CFFT2DKernelPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<CFFT2DKernelPlugin>> CFFT2DKernelPluginHandler;
 
-/// \endcond 
+/// \endcond
 
 NS_MIA_END
 

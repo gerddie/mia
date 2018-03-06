@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,25 +29,27 @@
 
 NS_BEGIN( kmeans_3dimage_filter)
 
-class C3DKMeans : public mia::C3DFilter {
+class C3DKMeans : public mia::C3DFilter
+{
 public:
-	C3DKMeans(size_t classes);
+       C3DKMeans(size_t classes);
 
-	template <class T>
-	typename C3DKMeans::result_type operator () (const mia::T3DImage<T>& data) const ;
+       template <class T>
+       typename C3DKMeans::result_type operator () (const mia::T3DImage<T>& data) const ;
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 
-	size_t m_classes;
+       size_t m_classes;
 };
 
-class C3DKMeansFilterPluginFactory: public mia::C3DFilterPlugin {
+class C3DKMeansFilterPluginFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DKMeansFilterPluginFactory();
+       C3DKMeansFilterPluginFactory();
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	int m_classes;
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+       int m_classes;
 };
 
 NS_END

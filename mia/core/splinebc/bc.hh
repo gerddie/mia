@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,112 +30,118 @@
 NS_MIA_BEGIN
 
 /*
-   \ingroup interpol 
+   \ingroup interpol
    \brief Class for mirroring on the boundary
-   
-   This is based directly on the implementation provided by Philip Thevenaz 
+
+   This is based directly on the implementation provided by Philip Thevenaz
 */
-class CMirrorOnBoundary : public CSplineBoundaryCondition {
-public: 
+class CMirrorOnBoundary : public CSplineBoundaryCondition
+{
+public:
 
-	CMirrorOnBoundary(); 
-	CMirrorOnBoundary(const CMirrorOnBoundary& /*other*/) = default; 
-	/**
-	   Constructor for the boundary conditions. 
-	   \param width size of the coefficent domain 
-	 */
+       CMirrorOnBoundary();
+       CMirrorOnBoundary(const CMirrorOnBoundary& /*other*/) = default;
+       /**
+          Constructor for the boundary conditions.
+          \param width size of the coefficent domain
+        */
 
-	CMirrorOnBoundary(int width); 
-	CSplineBoundaryCondition *clone() const; 
-private: 
-	void do_set_width(int width); 
-	int get_index(int idx) const; 
-	void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
-	virtual void test_supported(int npoles) const;
-	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
-	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const ;
+       CMirrorOnBoundary(int width);
+       CSplineBoundaryCondition *clone() const;
+private:
+       void do_set_width(int width);
+       int get_index(int idx) const;
+       void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
+       virtual void test_supported(int npoles) const;
+       virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
+       virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const ;
 
-	int m_width2; 
-}; 
+       int m_width2;
+};
 
 /*
-   \ingroup interpol 
-   \brief Boundary condition that sets all the values outside the coefficient domain to zero 
-   
-   \todo the pre-filtering is not yet implemented 
+   \ingroup interpol
+   \brief Boundary condition that sets all the values outside the coefficient domain to zero
+
+   \todo the pre-filtering is not yet implemented
 */
-class CZeroBoundary : public CSplineBoundaryCondition {
-public: 
+class CZeroBoundary : public CSplineBoundaryCondition
+{
+public:
 
-	CZeroBoundary() = default; 
-	/**
-	   Constructor for the boundary conditions. 
-	   \param width size of the coefficent domain 
-	 */
-	CZeroBoundary(int width); 
-	CZeroBoundary(const CZeroBoundary& /*other*/) = default; 
+       CZeroBoundary() = default;
+       /**
+          Constructor for the boundary conditions.
+          \param width size of the coefficent domain
+        */
+       CZeroBoundary(int width);
+       CZeroBoundary(const CZeroBoundary& /*other*/) = default;
 
-	CSplineBoundaryCondition *clone() const; 
-private: 
-	void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
-	virtual void test_supported(int npoles) const;
-	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
-	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const ;
+       CSplineBoundaryCondition *clone() const;
+private:
+       void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
+       virtual void test_supported(int npoles) const;
+       virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
+       virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const ;
 
-}; 
+};
 
 
 /*
-   \ingroup interpol 
-   \brief Boundary condition that repeats the value at the boundary 
-   \todo the pre-filtering is not yet implemented 
+   \ingroup interpol
+   \brief Boundary condition that repeats the value at the boundary
+   \todo the pre-filtering is not yet implemented
 */
-class CRepeatBoundary : public CSplineBoundaryCondition {
-public: 
+class CRepeatBoundary : public CSplineBoundaryCondition
+{
+public:
 
-	CRepeatBoundary(); 
-	/**
-	   Constructor for the boundary conditions. 
-	   \param width size of the coefficent domain 
-	 */
-	CRepeatBoundary(int width); 
-	CRepeatBoundary(const CRepeatBoundary& /*other*/) = default; 
-	
-	CSplineBoundaryCondition *clone() const; 
-private: 
-	void do_set_width(int width); 
-	void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
+       CRepeatBoundary();
+       /**
+          Constructor for the boundary conditions.
+          \param width size of the coefficent domain
+        */
+       CRepeatBoundary(int width);
+       CRepeatBoundary(const CRepeatBoundary& /*other*/) = default;
 
-	virtual void test_supported(int npoles) const;
-	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
-	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const;
-	int m_widthm1; 
-}; 
+       CSplineBoundaryCondition *clone() const;
+private:
+       void do_set_width(int width);
+       void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
+
+       virtual void test_supported(int npoles) const;
+       virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
+       virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const;
+       int m_widthm1;
+};
 
 
-class CMirrorOnBoundaryPlugin: public CSplineBoundaryConditionPlugin {
-public: 
-	CMirrorOnBoundaryPlugin(); 
-private: 
-	virtual CSplineBoundaryCondition *do_create(int width) const; 
-	virtual const std::string do_get_descr() const; 
-}; 
+class CMirrorOnBoundaryPlugin: public CSplineBoundaryConditionPlugin
+{
+public:
+       CMirrorOnBoundaryPlugin();
+private:
+       virtual CSplineBoundaryCondition *do_create(int width) const;
+       virtual const std::string do_get_descr() const;
+};
 
-class CRepeatBoundaryPlugin: public CSplineBoundaryConditionPlugin {
-public: 
-	CRepeatBoundaryPlugin(); 
-private: 
-	virtual CSplineBoundaryCondition *do_create(int width) const; 
-	virtual const std::string do_get_descr() const; 
-}; 
+class CRepeatBoundaryPlugin: public CSplineBoundaryConditionPlugin
+{
+public:
+       CRepeatBoundaryPlugin();
+private:
+       virtual CSplineBoundaryCondition *do_create(int width) const;
+       virtual const std::string do_get_descr() const;
+};
 
-class CZeroBoundaryPlugin: public CSplineBoundaryConditionPlugin {
-public: 
-	CZeroBoundaryPlugin(); 
-private: 
-	virtual CSplineBoundaryCondition *do_create(int width) const; 
-	virtual const std::string do_get_descr() const; 
-}; 
+class CZeroBoundaryPlugin: public CSplineBoundaryConditionPlugin
+{
+public:
+       CZeroBoundaryPlugin();
+private:
+       virtual CSplineBoundaryCondition *do_create(int width) const;
+       virtual const std::string do_get_descr() const;
+};
 
 
 NS_MIA_END

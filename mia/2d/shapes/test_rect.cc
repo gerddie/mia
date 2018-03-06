@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,56 +22,49 @@
 
 #include <mia/2d/shapes/rect.hh>
 
-using namespace std; 
-NS_MIA_USE; 
+using namespace std;
+NS_MIA_USE;
 
 
-BOOST_AUTO_TEST_CASE( test_rect_filled ) 
+BOOST_AUTO_TEST_CASE( test_rect_filled )
 {
-	auto shape = BOOST_TEST_create_from_plugin<CRectangle2DShapePlugin>("rectangle:width=3,height=4,fill=1"); 
-	BOOST_REQUIRE(shape); 
+       auto shape = BOOST_TEST_create_from_plugin<CRectangle2DShapePlugin>("rectangle:width=3,height=4,fill=1");
+       BOOST_REQUIRE(shape);
+       BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(7, 9));
+       auto mask = shape->get_mask();
+       BOOST_CHECK_EQUAL(mask.get_size().x, 7u);
+       BOOST_CHECK_EQUAL(mask.get_size().y, 9u);
 
-	BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(7,9)); 
-	auto mask = shape->get_mask(); 
-	
-	BOOST_CHECK_EQUAL(mask.get_size().x, 7u); 
-	BOOST_CHECK_EQUAL(mask.get_size().y, 9u); 
-	
-	for (auto i = mask.begin(); i != mask.end(); ++i) {
-		BOOST_CHECK(*i); 
-	}
+       for (auto i = mask.begin(); i != mask.end(); ++i) {
+              BOOST_CHECK(*i);
+       }
 }
 
-BOOST_AUTO_TEST_CASE( test_rect_not_filled ) 
+BOOST_AUTO_TEST_CASE( test_rect_not_filled )
 {
-	auto shape = BOOST_TEST_create_from_plugin<CRectangle2DShapePlugin>("rectangle:width=3,height=4,fill=0"); 
-	BOOST_REQUIRE(shape); 
+       auto shape = BOOST_TEST_create_from_plugin<CRectangle2DShapePlugin>("rectangle:width=3,height=4,fill=0");
+       BOOST_REQUIRE(shape);
+       BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(7, 9));
+       auto mask = shape->get_mask();
+       BOOST_CHECK_EQUAL(mask.get_size().x, 7u);
+       BOOST_CHECK_EQUAL(mask.get_size().y, 9u);
+       auto im = mask.begin();
 
-	BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(7,9)); 
-	auto mask = shape->get_mask(); 
-	
-	BOOST_CHECK_EQUAL(mask.get_size().x, 7u); 
-	BOOST_CHECK_EQUAL(mask.get_size().y, 9u); 
-
-	auto im = mask.begin(); 
-	for (size_t y = 0; y < 9; ++y) 
-		for (size_t x = 0; x < 7; ++x, ++im)
-			BOOST_CHECK_EQUAL(*im, y == 0 || y == 8 || x == 0 || x == 6); 
-	
+       for (size_t y = 0; y < 9; ++y)
+              for (size_t x = 0; x < 7; ++x, ++im)
+                     BOOST_CHECK_EQUAL(*im, y == 0 || y == 8 || x == 0 || x == 6);
 }
 
-BOOST_AUTO_TEST_CASE( test_square_filled ) 
+BOOST_AUTO_TEST_CASE( test_square_filled )
 {
-	auto shape = BOOST_TEST_create_from_plugin<CSquare2DShapePlugin>("square:width=3,fill=1"); 
-	BOOST_REQUIRE(shape); 
+       auto shape = BOOST_TEST_create_from_plugin<CSquare2DShapePlugin>("square:width=3,fill=1");
+       BOOST_REQUIRE(shape);
+       BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(7, 7));
+       auto mask = shape->get_mask();
+       BOOST_CHECK_EQUAL(mask.get_size().x, 7u);
+       BOOST_CHECK_EQUAL(mask.get_size().y, 7u);
 
-	BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(7,7)); 
-	auto mask = shape->get_mask(); 
-	
-	BOOST_CHECK_EQUAL(mask.get_size().x, 7u); 
-	BOOST_CHECK_EQUAL(mask.get_size().y, 7u); 
-	
-	for (auto i = mask.begin(); i != mask.end(); ++i) {
-		BOOST_CHECK(*i); 
-	}
+       for (auto i = mask.begin(); i != mask.end(); ++i) {
+              BOOST_CHECK(*i);
+       }
 }

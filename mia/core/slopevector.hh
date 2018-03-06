@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,13 +24,13 @@
 #include <vector>
 #include <mia/core/defines.hh>
 
-NS_MIA_BEGIN 
+NS_MIA_BEGIN
 
 /**
    \ingroup perf
-   \brief class to store the ICA weight matrix 
+   \brief class to store the ICA weight matrix
 */
-typedef std::vector<std::vector<float> > CSlopeColumns;
+typedef std::vector<std::vector<float>> CSlopeColumns;
 NS_MIA_END
 
 #endif

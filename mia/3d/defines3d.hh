@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,43 +23,44 @@
 
 #ifdef WIN32
 #  include <cstdlib>
-   inline double drand48() {
-	return double(rand()) / RAND_MAX; 
-   }
+inline double drand48()
+{
+       return double(rand()) / RAND_MAX;
+}
 #endif
 
 #ifdef WIN32
 #  ifdef mia3d_EXPORTS
-#    define EXPORT_3D __declspec(dllexport) 
+#    define EXPORT_3D __declspec(dllexport)
 #  else
-#    define EXPORT_3D __declspec(dllimport) 
+#    define EXPORT_3D __declspec(dllimport)
 #  endif
 #  ifdef mia3dtest_EXPORTS
-#    define EXPORT_3DTEST __declspec(dllexport) 
+#    define EXPORT_3DTEST __declspec(dllexport)
 #  else
-#    define EXPORT_3DTEST __declspec(dllimport) 
+#    define EXPORT_3DTEST __declspec(dllimport)
 #  endif
 #else
 #  ifdef __GNUC__
 #    define EXPORT_3D __attribute__((visibility("default")))
 #    define EXPORT_3DTEST __attribute__((visibility("default")))
 #  else
-#    define EXPORT_3D 
-#    define EXPORT_3DTEST 
+#    define EXPORT_3D
+#    define EXPORT_3DTEST
 #  endif
 #endif
 
 #ifdef mia3d_EXPORTS
-#  ifdef VSTREAM 
-#    undef VSTREAM  
-#  endif 
+#  ifdef VSTREAM
+#    undef VSTREAM
+#  endif
 #  define VSTREAM "MIA3D"
 #endif
 
 #ifdef mia3dtest_EXPORTS
-#  ifdef VSTREAM 
-#    undef VSTREAM  
-#  endif 
+#  ifdef VSTREAM
+#    undef VSTREAM
+#  endif
 #  define VSTREAM "MIA3DTEST"
 #endif
 

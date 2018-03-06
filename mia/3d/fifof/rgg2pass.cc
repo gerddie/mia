@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -35,39 +35,39 @@ NAMESPACE_BEGIN(rgg2pass_2dstack_filter)
 
 USING_NAMESPACE_MONA;
 
-using namespace std; 
+using namespace std;
 
-static char const * plugin_name = "rgg2pass";
+static char const *plugin_name = "rgg2pass";
 static const CStringOption param_map("map", "seed class map", "");
-static const CFloatOption  param_seed("seed", "threshold for seed probability", 0.9f, 0.0f, 1.0f); 
-static const CIntOption    param_depth("depth", "number of slices to keep during processing", 5, 1, 
-				       numeric_limits<int>::max()); 
-static const CFloatOption  param_gt("gt", "gradient thresh", 4.0, 0.0, numeric_limits<float>::max()); 
-static const CIntOption    param_pass("pass", "segmentation pass", 0, 0, 2); 
+static const CFloatOption  param_seed("seed", "threshold for seed probability", 0.9f, 0.0f, 1.0f);
+static const CIntOption    param_depth("depth", "number of slices to keep during processing", 5, 1,
+                                       numeric_limits<int>::max());
+static const CFloatOption  param_gt("gt", "gradient thresh", 4.0, 0.0, numeric_limits<float>::max());
+static const CIntOption    param_pass("pass", "segmentation pass", 0, 0, 2);
 
 
-class C2DRGG2PassStackFilterFactory: public C2DStackFilterFactory {
-public: 	
-	C2DRGG2PassStackFilterFactory();
-	C2DStackFilterFactory::ProductPtr create(const CParsedOptions& options) const;
-	const string short_descr()const; 
+class C2DRGG2PassStackFilterFactory: public C2DStackFilterFactory
+{
+public:
+       C2DRGG2PassStackFilterFactory();
+       C2DStackFilterFactory::ProductPtr create(const CParsedOptions& options) const;
+       const string short_descr()const;
 };
 
 
 C2DRGG2PassStackFilterFactory::C2DRGG2PassStackFilterFactory()
 {
-	
 }
-	
-C2DStackFilterFactory::ProductPtr 
+
+C2DStackFilterFactory::ProductPtr
 C2DRGG2PassStackFilterFactory::create(const CParsedOptions& options) const
 {
-	return C2DStackFilterFactory::ProductPtr(NULL);
+       return C2DStackFilterFactory::ProductPtr(NULL);
 }
 
 const string C2DRGG2PassStackFilterFactory::short_descr()const
 {
-	return "A 2-pass image stack seeded region growing filter";  
+       return "A 2-pass image stack seeded region growing filter";
 }
 
 NAMESPACE_END // end namespace rgg2pass_2dstack_filter

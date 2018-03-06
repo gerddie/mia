@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -37,12 +37,12 @@ template class TSSDAutomaskCost<C2DImageCost>;
 
 const string C2DSSDAutomaskCostPlugin::do_get_descr()const
 {
-	return "2D image cost: sum of squared differences, with automasking based on given thresholds";
+       return "2D image cost: sum of squared differences, with automasking based on given thresholds";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DSSDAutomaskCostPlugin();
+       return new C2DSSDAutomaskCostPlugin();
 }
 
 

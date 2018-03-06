@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,44 +29,42 @@
 #include <boost/filesystem/path.hpp>
 
 NS_MIA_USE
-using namespace std; 
+using namespace std;
 using namespace boost::unit_test;
 
-namespace bfs=::boost::filesystem; 
+namespace bfs =::boost::filesystem;
 
 template <typename P>
 void test_plugins(const P& ph)
 {
-	for (typename P::const_iterator i = ph.begin(); 
-	     ph.end() != i; ++i) {
-		cvmsg() << "Testing: " << i->second->get_long_name() << "\n"; 
-		if (!i->second->test(true))
-			BOOST_FAIL(i->second->get_long_name()); 
-	}
+       for (typename P::const_iterator i = ph.begin();
+            ph.end() != i; ++i) {
+              cvmsg() << "Testing: " << i->second->get_long_name() << "\n";
+
+              if (!i->second->test(true))
+                     BOOST_FAIL(i->second->get_long_name());
+       }
 }
 
 static void test_regplugin()
 {
-	test_plugins(C2DRegModelPluginHandler::instance()); 
-	test_plugins(C2DRegTimeStepPluginHandler::instance()); 
+       test_plugins(C2DRegModelPluginHandler::instance());
+       test_plugins(C2DRegTimeStepPluginHandler::instance());
 }
 
 static void prepare_regplugin_path()
 {
-
-	std::list< bfs::path> searchpath; 
-	bfs::path::default_name_check(bfs::portable_posix_name); 
-	searchpath.push_back( bfs::path("reg2d")); 
-	
-	C2DRegModelPluginHandler::set_search_path(searchpath); 
-	C2DRegTimeStepPluginHandler::set_search_path(searchpath); 
-	
+       std::list< bfs::path> searchpath;
+       bfs::path::default_name_check(bfs::portable_posix_name);
+       searchpath.push_back( bfs::path("reg2d"));
+       C2DRegModelPluginHandler::set_search_path(searchpath);
+       C2DRegTimeStepPluginHandler::set_search_path(searchpath);
 }
 
 
-void add_regplugin_tests(test_suite* test)
-{	
-	prepare_regplugin_path(); 
-	test->add( BOOST_TEST_CASE( &test_regplugin));
+void add_regplugin_tests(test_suite *test)
+{
+       prepare_regplugin_path();
+       test->add( BOOST_TEST_CASE( &test_regplugin));
 }
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -34,70 +34,79 @@ NS_MIA_BEGIN
 
 /**
    \ingroup logging
-   \brief implements the direct streaming of std::vectors. 
+   \brief implements the direct streaming of std::vectors.
 */
-template <typename T> 
-std::ostream& operator << (std::ostream& os, const std::vector<T>& v) {
-	auto i = v.begin();
-	auto e = v.end(); 
+template <typename T>
+std::ostream& operator << (std::ostream& os, const std::vector<T>& v)
+{
+       auto i = v.begin();
+       auto e = v.end();
 
-	if (i != e)
-		os << *i++;
-	while (i != e)
-		os << "," << *i++;
-	return os; 
+       if (i != e)
+              os << *i++;
+
+       while (i != e)
+              os << "," << *i++;
+
+       return os;
 }
 
-template <typename T> 
+template <typename T>
 struct __dispatch_translate {
-	static bool apply(const std::string& str, T& v){
-		char c; 
-		std::istringstream s(str); 
-		s >> v;
-		if (s.fail())
-			return false; 
-		while (!s.eof() && s.peek() == ' ') 
-			s >> c; 
-		return s.eof(); 
-	}
-}; 
+       static bool apply(const std::string& str, T& v)
+       {
+              char c;
+              std::istringstream s(str);
+              s >> v;
 
-template <> 
+              if (s.fail())
+                     return false;
+
+              while (!s.eof() && s.peek() == ' ')
+                     s >> c;
+
+              return s.eof();
+       }
+};
+
+template <>
 struct __dispatch_translate<std::string> {
-	static bool apply(const std::string& s, std::string& str){
-		str = s; 
-		return true; 
-	}
-}; 
+       static bool apply(const std::string& s, std::string& str)
+       {
+              str = s;
+              return true;
+       }
+};
 
 
-template <typename T> 
+template <typename T>
 std::istream&  operator >> (std::istream& is, std::vector<T>& v)
 {
-	std::vector<T> values; 
-	std::string token; 
-	T val; 
-	
-	while(std::getline(is, token, ',')) {
-		if (__dispatch_translate<T>::apply(token, val))
-			values.push_back(val); 
-		else {
-			throw create_exception<std::invalid_argument>("Reading vector: value, '", token, 
-								      "' could not be translate to ", 
-								      mia::__type_descr<T>::value);
-		}
-	}
-	
-	if (!v.empty() && v.size() != values.size()) {
-			throw create_exception<std::invalid_argument>("Reading vector: expected ", 
-								 v.size(), " values, but got ", values.size()); 
-	}
-	v.swap(values); 
-	return is; 
+       std::vector<T> values;
+       std::string token;
+       T val;
+
+       while (std::getline(is, token, ',')) {
+              if (__dispatch_translate<T>::apply(token, val))
+                     values.push_back(val);
+              else {
+                     throw create_exception<std::invalid_argument>("Reading vector: value, '", token,
+                                   "' could not be translate to ",
+                                   mia::__type_descr<T>::value);
+              }
+       }
+
+       if (!v.empty() && v.size() != values.size()) {
+              throw create_exception<std::invalid_argument>("Reading vector: expected ",
+                            v.size(), " values, but got ", values.size());
+       }
+
+       v.swap(values);
+       return is;
 }
 
 
 NS_MIA_END
 
-#endif 
+#endif
 

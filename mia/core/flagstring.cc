@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,54 +28,64 @@ using namespace std;
 
 CFlagString::CFlagString(const Table table[])
 {
-	const Table *t = table;
-	while (t->id != 0) {
-		m_map[t->id] = t->flag;
-		m_backmap[t->flag] = t->id;
-		++t;
-	}
+       const Table *t = table;
+
+       while (t->id != 0) {
+              m_map[t->id] = t->flag;
+              m_backmap[t->flag] = t->id;
+              ++t;
+       }
 }
 
 int CFlagString::get(const string& flags)const
 {
-	int result = 0;
-	for (auto i = flags.begin(); i != flags.end(); ++i) {
-		auto f = m_map.find(*i);
-		if (f == m_map.end())
-			throw create_exception<invalid_argument>("CFlagString::get: flag '", *i, "' unknown");
-		result |= f->second;
-	}
-	return result;
+       int result = 0;
+
+       for (auto i = flags.begin(); i != flags.end(); ++i) {
+              auto f = m_map.find(*i);
+
+              if (f == m_map.end())
+                     throw create_exception<invalid_argument>("CFlagString::get: flag '", *i, "' unknown");
+
+              result |= f->second;
+       }
+
+       return result;
 }
 
 const string CFlagString::get(int flags)const
 {
-	string result;
+       string result;
+       // first try to find the flag directly
+       auto f = m_backmap.find(flags);
 
-	// first try to find the flag directly
-	auto f = m_backmap.find(flags);
-	if (f != m_backmap.end()) {
-		result.push_back(f->second);
-		return result;
-	}
-	// combined flag
-	int acc = 0;
-	for(auto f = m_backmap.begin(); flags != acc && f != m_backmap.end(); ++f) {
-		if ((flags & f->first) == f->first) {
-			result.push_back(f->second);
-			acc |= f->first;
-		}
-	}
-	return result;
+       if (f != m_backmap.end()) {
+              result.push_back(f->second);
+              return result;
+       }
+
+       // combined flag
+       int acc = 0;
+
+       for (auto f = m_backmap.begin(); flags != acc && f != m_backmap.end(); ++f) {
+              if ((flags & f->first) == f->first) {
+                     result.push_back(f->second);
+                     acc |= f->first;
+              }
+       }
+
+       return result;
 }
 
 const string CFlagString::get_flagnames()const
 {
-	string result;
-	for(auto f = m_map.begin(); f != m_map.end(); ++f)
-		result.push_back(f->first);
-	sort(result.begin(), result.end());
-	return result;
+       string result;
+
+       for (auto f = m_map.begin(); f != m_map.end(); ++f)
+              result.push_back(f->first);
+
+       sort(result.begin(), result.end());
+       return result;
 }
 
 NS_MIA_END

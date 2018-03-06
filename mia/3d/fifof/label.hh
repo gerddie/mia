@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -36,56 +36,58 @@
 NS_BEGIN(label_2dstack_filter)
 
 
-class CLabelRemapper {
-public: 
-	void clear(); 
-	
-	void add_pair(unsigned int  a, unsigned int  b); 
-	
-	mia::CLabelMap get_map() const; 
-private: 
-	std::set<mia::T2DVector<unsigned int >, 
-		 mia::less_then<mia::T2DVector<unsigned int >>> m_raw_map;
-}; 
+class CLabelRemapper
+{
+public:
+       void clear();
 
-class C2DLabelStackFilter: public mia::C2DImageFifoFilter {
-public: 
-	typedef mia::C2DImage *result_type; 
+       void add_pair(unsigned int  a, unsigned int  b);
+
+       mia::CLabelMap get_map() const;
+private:
+       std::set<mia::T2DVector<unsigned int >,
+           mia::less_then<mia::T2DVector<unsigned int >>> m_raw_map;
+};
+
+class C2DLabelStackFilter: public mia::C2DImageFifoFilter
+{
+public:
+       typedef mia::C2DImage *result_type;
 
 
-	C2DLabelStackFilter(const std::string& mapfile, mia::P2DShape n); 
-	~C2DLabelStackFilter(); 
+       C2DLabelStackFilter(const std::string& mapfile, mia::P2DShape n);
+       ~C2DLabelStackFilter();
 
-	// only for testing 
-	void set_start_label(unsigned int); 
-	
-	// this is public for testing 
-	const mia::CLabelMap& get_joints() const; 
-private: 
-	virtual void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x); 
-	virtual void do_push(::boost::call_traits<mia::P2DImage>::param_type x); 
-	virtual mia::P2DImage do_filter();
-	virtual void post_finalize(); 
+       // only for testing
+       void set_start_label(unsigned int);
 
-	
-	void label(mia::C2DBitImage& input); 
-	void new_label(mia::C2DBitImage& input); 
-	void re_label(mia::C2DBitImage& input);
-	void label_new_regions(mia::C2DBitImage& input); 
-	void grow( int x, int y, mia::C2DBitImage& input, unsigned int l); 
+       // this is public for testing
+       const mia::CLabelMap& get_joints() const;
+private:
+       virtual void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x);
+       virtual void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
+       virtual mia::P2DImage do_filter();
+       virtual void post_finalize();
 
-	mia::P2DShape m_neigbourhood;
-	unsigned int   m_start_label;
-	mutable unsigned int   m_last_label;
-	CLabelRemapper m_joints; 
-	std::string   m_map_file;
-	bool m_first_pass; 
 
-	mia::C2DBounds m_slice_size; 
-	mia::C2DUIImage m_out_buffer;
-	
-	mia::CLabelMap m_target; 
-	
+       void label(mia::C2DBitImage& input);
+       void new_label(mia::C2DBitImage& input);
+       void re_label(mia::C2DBitImage& input);
+       void label_new_regions(mia::C2DBitImage& input);
+       void grow( int x, int y, mia::C2DBitImage& input, unsigned int l);
+
+       mia::P2DShape m_neigbourhood;
+       unsigned int   m_start_label;
+       mutable unsigned int   m_last_label;
+       CLabelRemapper m_joints;
+       std::string   m_map_file;
+       bool m_first_pass;
+
+       mia::C2DBounds m_slice_size;
+       mia::C2DUIImage m_out_buffer;
+
+       mia::CLabelMap m_target;
+
 
 };
 

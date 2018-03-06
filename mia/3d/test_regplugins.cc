@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,41 +30,36 @@
 #include <boost/filesystem/path.hpp>
 using namespace boost::unit_test;
 
-namespace bfs=::boost::filesystem; 
+namespace bfs =::boost::filesystem;
 
 
 NS_MIA_USE
-using namespace std; 
+using namespace std;
 
 template <typename P>
 void test_plugin(const P& i)
 {
-	BOOST_CHECK_MESSAGE(i.second->test(true), i.second->get_long_name()); 
-
+       BOOST_CHECK_MESSAGE(i.second->test(true), i.second->get_long_name());
 }
 
 static void prepare_regplugin_path()
 {
-
-	std::list< ::boost::filesystem::path> searchpath; 
-	::boost::filesystem::path::default_name_check(::boost::filesystem::portable_posix_name); 
-	searchpath.push_back( ::boost::filesystem::path("reg3d")); 
-	
-	C3DRegModelPluginHandler::set_search_path(searchpath); 
-	C3DRegTimeStepPluginHandler::set_search_path(searchpath); 
-	
+       std::list< ::boost::filesystem::path> searchpath;
+       ::boost::filesystem::path::default_name_check(::boost::filesystem::portable_posix_name);
+       searchpath.push_back( ::boost::filesystem::path("reg3d"));
+       C3DRegModelPluginHandler::set_search_path(searchpath);
+       C3DRegTimeStepPluginHandler::set_search_path(searchpath);
 }
 
-void add_regplugin_tests(test_suite* test)
-{	
-	prepare_regplugin_path(); 
-	test->add( BOOST_PARAM_TEST_CASE( &test_plugin<C3DRegModelPluginHandler::value_type>, 
-					  C3DRegModelPluginHandler::instance().begin(),
-					  C3DRegModelPluginHandler::instance().end() 
-			   ));
-	
-	test->add( BOOST_PARAM_TEST_CASE( &test_plugin<C3DRegTimeStepPluginHandler::value_type>, 
-					  C3DRegTimeStepPluginHandler::instance().begin(),
-					  C3DRegTimeStepPluginHandler::instance().end() 
-			   ));
+void add_regplugin_tests(test_suite *test)
+{
+       prepare_regplugin_path();
+       test->add( BOOST_PARAM_TEST_CASE( &test_plugin<C3DRegModelPluginHandler::value_type>,
+                                         C3DRegModelPluginHandler::instance().begin(),
+                                         C3DRegModelPluginHandler::instance().end()
+                                       ));
+       test->add( BOOST_PARAM_TEST_CASE( &test_plugin<C3DRegTimeStepPluginHandler::value_type>,
+                                         C3DRegTimeStepPluginHandler::instance().begin(),
+                                         C3DRegTimeStepPluginHandler::instance().end()
+                                       ));
 }

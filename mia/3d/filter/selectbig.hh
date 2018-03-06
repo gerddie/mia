@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -36,24 +36,26 @@ NS_BEGIN(selectbig_3dimage_filter)
 /* This is the work-horse class of the filter plugin. It is initialised with above parameters
    and provides a templated operator () to be able to handle all pixel types.
  */
-class C3DSelectBig: public mia::C3DFilter {
+class C3DSelectBig: public mia::C3DFilter
+{
 public:
-	C3DSelectBig();
+       C3DSelectBig();
 
-	template <typename T>
-	C3DSelectBig::result_type operator () (const mia::T3DImage<T>& data) const;
+       template <typename T>
+       C3DSelectBig::result_type operator () (const mia::T3DImage<T>& data) const;
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 };
 
 /* The factory class - this is what the application gets first. This factory class is used to
    create the actual filter object. It also provides some filter testing routines.
 */
-class C3DSelectBigImageFilterFactory: public mia::C3DFilterPlugin {
+class C3DSelectBigImageFilterFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DSelectBigImageFilterFactory();
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C3DSelectBigImageFilterFactory();
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

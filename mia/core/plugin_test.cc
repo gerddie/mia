@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_general_help = {
-	{pdi_group, "Test"}, 
-	{pdi_head,"This program runs plugin-tests."}
+       {pdi_group, "Test"},
+       {pdi_head, "This program runs plugin-tests."}
 };
 
 bool uninstalled = false;
@@ -37,40 +37,41 @@ bool passed = true;
 
 static void test_plugin(const char *modname)
 {
-	
+       cvmsg() << "Testing '" << modname << "'\n";
+       auto_ptr<CPluginModule> module(new CPluginModule(modname));
+       CPluginBase *plugin = module->get_interface();
 
-	cvmsg() << "Testing '" << modname << "'\n";
-	auto_ptr<CPluginModule> module(new CPluginModule(modname));
-	CPluginBase *plugin = module->get_interface();
-	if (!plugin) {
-		cverr() <<"'"<< modname << "'  doesn't provide a plugin interface\n";
-		return;
-	}
-	do {
-		cvmsg() << "  '" << plugin->get_name() << "'\n";
-		if ( !plugin->test(uninstalled) ) {
-			cvfail() << "'"<< plugin->get_name() << "'  tests failed\n";
-			passed = false;
-		}
-		plugin = plugin->next_interface();
-	}while (plugin);
-	delete plugin;
+       if (!plugin) {
+              cverr() << "'" << modname << "'  doesn't provide a plugin interface\n";
+              return;
+       }
+
+       do {
+              cvmsg() << "  '" << plugin->get_name() << "'\n";
+
+              if ( !plugin->test(uninstalled) ) {
+                     cvfail() << "'" << plugin->get_name() << "'  tests failed\n";
+                     passed = false;
+              }
+
+              plugin = plugin->next_interface();
+       } while (plugin);
+
+       delete plugin;
 }
 
 int do_main(int argc, char *argv[])
 {
-	
-	CCmdOptionList options(g_general_help);
-	options.add(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
-	if (options.parse(argc, argv, "plugin"))
-		return EXIT_SUCCESS; 
-	
-	for_each(options.get_remaining().begin(),
-		 options.get_remaining().end(), test_plugin);
-	
-	return passed ? EXIT_SUCCESS : EXIT_FAILURE;
+       CCmdOptionList options(g_general_help);
+       options.add(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
 
+       if (options.parse(argc, argv, "plugin"))
+              return EXIT_SUCCESS;
+
+       for_each(options.get_remaining().begin(),
+                options.get_remaining().end(), test_plugin);
+       return passed ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 #include <mia/template/main.hh>
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);

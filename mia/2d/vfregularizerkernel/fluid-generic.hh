@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,50 +25,52 @@
 
 NS_MIA_BEGIN
 
-class  C2DFVfFluidStandardRegularizerKernel: public C2DFVectorfieldRegularizerKernel {
-public: 
-        C2DFVfFluidStandardRegularizerKernel(float mu, float lambda, float relax); 
-	
-	void multiply_with_matrix(C2DFVectorfield& out, const C2DFVectorfield& in);  
+class  C2DFVfFluidStandardRegularizerKernel: public C2DFVectorfieldRegularizerKernel
+{
+public:
+       C2DFVfFluidStandardRegularizerKernel(float mu, float lambda, float relax);
 
-private: 
-	void post_set_data_fields() override; 
+       void multiply_with_matrix(C2DFVectorfield& out, const C2DFVectorfield& in);
 
-        float do_evaluate_row(unsigned y, CBuffers& buf) override; 
-                
-        float do_evaluate_row_sparse(unsigned y, CBuffers& buf)  override; 
+private:
+       void post_set_data_fields() override;
 
-	float do_evaluate_pertuberation_row(unsigned  y, CBuffers& buffers) const  override; 
+       float do_evaluate_row(unsigned y, CBuffers& buf) override;
 
-	unsigned do_get_boundary_padding() const  override; 
-        
-        void set_update_flags(unsigned idx); 
+       float do_evaluate_row_sparse(unsigned y, CBuffers& buf)  override;
 
-	float solve_at(C2DFVector *v, const C2DFVector& b); 
+       float do_evaluate_pertuberation_row(unsigned  y, CBuffers& buffers) const  override;
 
-        float m_a; 
-        float m_a_b; 
-        float m_b4; 
-        float m_relax; 
-        float m_c; 
-        int m_dx;
-	int m_dxy;
+       unsigned do_get_boundary_padding() const  override;
 
-}; 
+       void set_update_flags(unsigned idx);
 
-class  C2DFVfFluidStandardRegularizerKernelPlugin: public C2DFVectorfieldRegularizerKernelPlugin {
-public: 
-        C2DFVfFluidStandardRegularizerKernelPlugin(); 
-        
-private: 
-        C2DFVfFluidStandardRegularizerKernel *do_create() const;
-        
-        const std::string do_get_descr() const;
+       float solve_at(C2DFVector *v, const C2DFVector& b);
 
-        float m_mu; 
-        float m_lambda; 
-        float m_relax; 
-}; 
+       float m_a;
+       float m_a_b;
+       float m_b4;
+       float m_relax;
+       float m_c;
+       int m_dx;
+       int m_dxy;
+
+};
+
+class  C2DFVfFluidStandardRegularizerKernelPlugin: public C2DFVectorfieldRegularizerKernelPlugin
+{
+public:
+       C2DFVfFluidStandardRegularizerKernelPlugin();
+
+private:
+       C2DFVfFluidStandardRegularizerKernel *do_create() const;
+
+       const std::string do_get_descr() const;
+
+       float m_mu;
+       float m_lambda;
+       float m_relax;
+};
 
 NS_MIA_END
-#endif 
+#endif

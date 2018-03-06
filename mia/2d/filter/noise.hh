@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,31 +25,33 @@
 
 NS_BEGIN(noise_2dimage_filter)
 
-class C2DNoise: public mia::C2DFilter {
-	mia::PNoiseGenerator m_generator;
-	bool m_modulated;
+class C2DNoise: public mia::C2DFilter
+{
+       mia::PNoiseGenerator m_generator;
+       bool m_modulated;
 public:
-	C2DNoise(mia::PNoiseGenerator generator, bool modulate):
-		m_generator(generator),
-		m_modulated(modulate)
-	{
-	}
+       C2DNoise(mia::PNoiseGenerator generator, bool modulate):
+              m_generator(generator),
+              m_modulated(modulate)
+       {
+       }
 
-	template <class T>
-	typename C2DNoise::result_type operator () (const mia::T2DImage<T>& data) const ;
+       template <class T>
+       typename C2DNoise::result_type operator () (const mia::T2DImage<T>& data) const ;
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 };
 
 
-class C2DNoiseImageFilterFactory: public mia::C2DFilterPlugin {
+class C2DNoiseImageFilterFactory: public mia::C2DFilterPlugin
+{
 public:
-	C2DNoiseImageFilterFactory();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DNoiseImageFilterFactory();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 private:
-	mia::PNoiseGenerator m_noise_gen;
-	bool m_modulate;
+       mia::PNoiseGenerator m_noise_gen;
+       bool m_modulate;
 };
 
 NS_END

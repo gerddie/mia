@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,42 +27,45 @@
 
 NS_MIA_BEGIN
 
-using std::string; 
-using std::invalid_argument; 
+using std::string;
+using std::invalid_argument;
 
-static const char l_header[] = "MiaLabelmap"; 
+static const char l_header[] = "MiaLabelmap";
 
 CLabelMap::CLabelMap(std::istream& is)
 {
-	string header; 
-	is >> header; 
-	if (header != l_header) 
-		throw create_exception<invalid_argument>("C2DLabelMapImageFilterFactory: input does not contain a label map"); 
-	
-	int n; 
-	is >> n; 
-	int idx; 
-	int new_label; 
-	int k = 0; 
-	while (is.good() && k < n) {
-		is >> idx >> new_label; 
-		(*this)[idx] = new_label; 
-		k++; 
-	}
-	if (is.fail()) 
-		throw create_exception<invalid_argument>("C2DLabelMapImageFilterFactory: bogus label map"); 
-	
-	if (k < n) 
-		throw create_exception<invalid_argument>("C2DLabelMapImageFilterFactory: expected ", n,  
-					       " records but got only ", k);
-	
+       string header;
+       is >> header;
+
+       if (header != l_header)
+              throw create_exception<invalid_argument>("C2DLabelMapImageFilterFactory: input does not contain a label map");
+
+       int n;
+       is >> n;
+       int idx;
+       int new_label;
+       int k = 0;
+
+       while (is.good() && k < n) {
+              is >> idx >> new_label;
+              (*this)[idx] = new_label;
+              k++;
+       }
+
+       if (is.fail())
+              throw create_exception<invalid_argument>("C2DLabelMapImageFilterFactory: bogus label map");
+
+       if (k < n)
+              throw create_exception<invalid_argument>("C2DLabelMapImageFilterFactory: expected ", n,
+                            " records but got only ", k);
 }
 
 void CLabelMap::save(std::ostream& os)
 {
-	os << l_header << "\n" << size() << "\n"; 
-	for (auto i = begin(); i != end() && os.good(); ++i) 
-		os << i->first << " " << i->second << "\n"; 
+       os << l_header << "\n" << size() << "\n";
+
+       for (auto i = begin(); i != end() && os.good(); ++i)
+              os << i->first << " " << i->second << "\n";
 }
 
 NS_MIA_END

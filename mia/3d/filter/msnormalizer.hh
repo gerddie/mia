@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,34 +24,36 @@
 #include <mia/3d/filter.hh>
 
 NS_BEGIN(msnormalizer_3dimage_filter)
- 
-int n_elements( int i, int n, int w); 
 
-class C3DMSNormalizerFilter: public mia::C3DFilter {
+int n_elements( int i, int n, int w);
+
+class C3DMSNormalizerFilter: public mia::C3DFilter
+{
 public:
-	C3DMSNormalizerFilter(int hwidth);
-        
-	template <class T>
-	mia::P3DImage operator () (const mia::T3DImage<T>& data) const;
-        
+       C3DMSNormalizerFilter(int hwidth);
+
+       template <class T>
+       mia::P3DImage operator () (const mia::T3DImage<T>& data) const;
+
 private:
 
-        template <class T>
-        void  add(mia::C3DFImage& mean, mia::C3DFImage& variance, const mia::T3DImage<T>& data, 
-                  const mia::C3DBounds& bi, const mia::C3DBounds& bo, const mia::C3DBounds& ei) const; 
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	int m_hwidth;
+       template <class T>
+       void  add(mia::C3DFImage& mean, mia::C3DFImage& variance, const mia::T3DImage<T>& data,
+                 const mia::C3DBounds& bi, const mia::C3DBounds& bo, const mia::C3DBounds& ei) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       int m_hwidth;
 };
 
-class C3DMSNormalizerFilterPlugin: public mia::C3DFilterPlugin {
+class C3DMSNormalizerFilterPlugin: public mia::C3DFilterPlugin
+{
 public:
-	C3DMSNormalizerFilterPlugin();
+       C3DMSNormalizerFilterPlugin();
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string  do_get_descr() const;
-	int m_hw;
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string  do_get_descr() const;
+       int m_hw;
 };
 
 NS_END
 
-#endif 
+#endif

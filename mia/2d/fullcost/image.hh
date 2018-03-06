@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,38 +28,39 @@
 
 NS_MIA_BEGIN
 
-class EXPORT C2DImageFullCost : public C2DFullCost {
-public: 
-	C2DImageFullCost(const std::string& src, 
-			 const std::string& ref, 
-			 C2DImageCostPluginHandler::ProductPtr cost, 
-			 double weight, 
-			 bool debug); 
-private: 
-	double do_evaluate(const C2DTransformation& t, CDoubleVector& gradient) const;
-	void do_set_size(); 
+class EXPORT C2DImageFullCost : public C2DFullCost
+{
+public:
+       C2DImageFullCost(const std::string& src,
+                        const std::string& ref,
+                        C2DImageCostPluginHandler::ProductPtr cost,
+                        double weight,
+                        bool debug);
+private:
+       double do_evaluate(const C2DTransformation& t, CDoubleVector& gradient) const;
+       void do_set_size();
 
-	static P2DImage get_from_pool(const C2DImageDataKey& key); 
+       static P2DImage get_from_pool(const C2DImageDataKey& key);
 
-	bool do_has(const char *property) const; 
-	double do_value(const C2DTransformation& t) const; 
-	bool do_get_full_size(C2DBounds& size) const; 
+       bool do_has(const char *property) const;
+       double do_value(const C2DTransformation& t) const;
+       bool do_get_full_size(C2DBounds& size) const;
 
-	double do_value() const; 
-	void do_reinit(); 
+       double do_value() const;
+       void do_reinit();
 
-	C2DImageDataKey m_src_key;
-	C2DImageDataKey m_ref_key;
-	
-	P2DImage m_src; 
-	P2DImage m_ref; 
+       C2DImageDataKey m_src_key;
+       C2DImageDataKey m_ref_key;
 
-	P2DImage m_src_scaled; 
-	P2DImage m_ref_scaled; 
+       P2DImage m_src;
+       P2DImage m_ref;
 
-	P2DImageCost m_cost_kernel; 
-	bool m_debug;
-}; 
+       P2DImage m_src_scaled;
+       P2DImage m_ref_scaled;
+
+       P2DImageCost m_cost_kernel;
+       bool m_debug;
+};
 
 NS_MIA_END
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,23 +21,25 @@
 #include <mia/3d/filter.hh>
 NS_BEGIN(gradnorm_3dimage_filter)
 
-class CGradnorm: public mia::C3DFilter {
+class CGradnorm: public mia::C3DFilter
+{
 public:
-	CGradnorm();
+       CGradnorm();
 
-	template <typename  T>
-	CGradnorm::result_type operator () (const mia::T3DImage<T>& data) const;
+       template <typename  T>
+       CGradnorm::result_type operator () (const mia::T3DImage<T>& data) const;
 
 private:
-	CGradnorm::result_type do_filter(const mia::C3DImage& image) const;
+       CGradnorm::result_type do_filter(const mia::C3DImage& image) const;
 };
 
 
-class C3DGradnormFilterPlugin: public mia::C3DFilterPlugin {
+class C3DGradnormFilterPlugin: public mia::C3DFilterPlugin
+{
 public:
-	C3DGradnormFilterPlugin();
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C3DGradnormFilterPlugin();
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

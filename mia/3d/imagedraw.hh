@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,105 +27,107 @@
 NS_MIA_BEGIN
 
 /**
-   \brief base class for a 3D volume raster graphics draw target 
-   
-   
+   \brief base class for a 3D volume raster graphics draw target
+
+
 */
 
-class EXPORT_3D C3DDrawBox {
-public: 
-	C3DDrawBox(const C3DBounds& size, const C3DFVector& origin, const C3DFVector& spacing); 
-	
-	void draw_point(const C3DFVector& p); 
+class EXPORT_3D C3DDrawBox
+{
+public:
+       C3DDrawBox(const C3DBounds& size, const C3DFVector& origin, const C3DFVector& spacing);
 
-        /**
-           Draw a line from a to b in the volume with the current draw color. 
-           The line will be clipped at the output boundaries.
-           \param a 
-           \param b 
-         */
-	void draw_line(const C3DFVector& a, const C3DFVector& b); 
+       void draw_point(const C3DFVector& p);
 
-        /**
-           Draw a filled triangle with the corners a, b, d in the volume with the 
-           current draw color. 
-           The triangle will be clipped at the output boundaries.
-           \param a 
-           \param b 
-           \param c
+       /**
+          Draw a line from a to b in the volume with the current draw color.
+          The line will be clipped at the output boundaries.
+          \param a
+          \param b
         */
+       void draw_line(const C3DFVector& a, const C3DFVector& b);
 
-	void draw_triangle(const C3DFVector& a, const C3DFVector& b, const C3DFVector& c); 
-	
-private: 
-	/**
-	   \returns true if the given point is inside the drawing volume
-	*/
+       /**
+          Draw a filled triangle with the corners a, b, d in the volume with the
+          current draw color.
+          The triangle will be clipped at the output boundaries.
+          \param a
+          \param b
+          \param c
+       */
 
-	bool is_inside(const C3DFVector& p) const; 
+       void draw_triangle(const C3DFVector& a, const C3DFVector& b, const C3DFVector& c);
 
-	/**
-	   This function moves p along and in the direction of searchdir
-	   so that it is inside the draw volume
-	 */
-	bool make_inside(C3DFVector& p, const C3DFVector& searchdir) const;
+private:
+       /**
+          \returns true if the given point is inside the drawing volume
+       */
 
-	void draw_line_pivot_x(C3DFVector& x, C3DFVector& y, C3DFVector& v); 
-	void draw_line_pivot_y(C3DFVector& x, C3DFVector& y, C3DFVector& v); 
-	void draw_line_pivot_z(C3DFVector& x, C3DFVector& y, C3DFVector& v); 
+       bool is_inside(const C3DFVector& p) const;
 
-	void draw_triangle_internal(const C3DFVector& a, const C3DFVector& b, const C3DFVector& c); 
-	void draw_line_internal(const C3DFVector& x, const C3DFVector& y); 
+       /**
+          This function moves p along and in the direction of searchdir
+          so that it is inside the draw volume
+        */
+       bool make_inside(C3DFVector& p, const C3DFVector& searchdir) const;
 
-	// check wether the bounding box enclosing the triangle overlaps with the drawing area
-	bool has_overlap(const C3DFVector& x, const C3DFVector& y, const C3DFVector& z); 
+       void draw_line_pivot_x(C3DFVector& x, C3DFVector& y, C3DFVector& v);
+       void draw_line_pivot_y(C3DFVector& x, C3DFVector& y, C3DFVector& v);
+       void draw_line_pivot_z(C3DFVector& x, C3DFVector& y, C3DFVector& v);
 
-	virtual void do_draw_point(const C3DBounds& p) = 0; 
-	
-	C3DBounds m_size; 
-	C3DFVector m_fsize; 
-	C3DFVector m_origin; 
-	C3DFVector m_stepping; 
-	
-}; 
+       void draw_triangle_internal(const C3DFVector& a, const C3DFVector& b, const C3DFVector& c);
+       void draw_line_internal(const C3DFVector& x, const C3DFVector& y);
+
+       // check wether the bounding box enclosing the triangle overlaps with the drawing area
+       bool has_overlap(const C3DFVector& x, const C3DFVector& y, const C3DFVector& z);
+
+       virtual void do_draw_point(const C3DBounds& p) = 0;
+
+       C3DBounds m_size;
+       C3DFVector m_fsize;
+       C3DFVector m_origin;
+       C3DFVector m_stepping;
+
+};
 
 
 /**
-   \brief implements T3DImage as a target for drawing operations 
+   \brief implements T3DImage as a target for drawing operations
 
 */
-template <typename T> 
-class T3DImageDrawTarget : public C3DDrawBox {
-        
-public: 
-        /**
-           Create a draw target of the given output size and the given voxel spacing
-         */
-        T3DImageDrawTarget(const C3DBounds& size, const C3DFVector& origin, const C3DFVector& spacing); 
+template <typename T>
+class T3DImageDrawTarget : public C3DDrawBox
+{
+
+public:
+       /**
+          Create a draw target of the given output size and the given voxel spacing
+        */
+       T3DImageDrawTarget(const C3DBounds& size, const C3DFVector& origin, const C3DFVector& spacing);
 
 
-        /// \param c New drawing color  
-        void set_color(T c); 
+       /// \param c New drawing color
+       void set_color(T c);
 
-        
-        /// \returns the draw target 
-        const T3DImage<T>& get_image() const; 
-private: 
-	void do_draw_point(const C3DBounds& p); 
-	
-        T3DImage<T> m_target; 
-        T m_color; 
-}; 
 
-typedef T3DImageDrawTarget<bool> C3DBitImageDrawTarget; 
-typedef T3DImageDrawTarget<unsigned char> C3DUBImageDrawTarget; 
-typedef T3DImageDrawTarget<signed char> C3DSBImageDrawTarget; 
-typedef T3DImageDrawTarget<unsigned short> C3DUSImageDrawTarget; 
-typedef T3DImageDrawTarget<signed short> C3DSSImageDrawTarget; 
-typedef T3DImageDrawTarget<unsigned int> C3DUIImageDrawTarget; 
-typedef T3DImageDrawTarget<signed int> C3DSIImageDrawTarget; 
-typedef T3DImageDrawTarget<float> C3DFImageDrawTarget; 
-typedef T3DImageDrawTarget<double> C3DDImageDrawTarget; 
+       /// \returns the draw target
+       const T3DImage<T>& get_image() const;
+private:
+       void do_draw_point(const C3DBounds& p);
+
+       T3DImage<T> m_target;
+       T m_color;
+};
+
+typedef T3DImageDrawTarget<bool> C3DBitImageDrawTarget;
+typedef T3DImageDrawTarget<unsigned char> C3DUBImageDrawTarget;
+typedef T3DImageDrawTarget<signed char> C3DSBImageDrawTarget;
+typedef T3DImageDrawTarget<unsigned short> C3DUSImageDrawTarget;
+typedef T3DImageDrawTarget<signed short> C3DSSImageDrawTarget;
+typedef T3DImageDrawTarget<unsigned int> C3DUIImageDrawTarget;
+typedef T3DImageDrawTarget<signed int> C3DSIImageDrawTarget;
+typedef T3DImageDrawTarget<float> C3DFImageDrawTarget;
+typedef T3DImageDrawTarget<double> C3DDImageDrawTarget;
 
 NS_MIA_END
 

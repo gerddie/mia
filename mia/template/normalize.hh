@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,20 +27,20 @@
 NS_MIA_BEGIN
 
 /**
-   \cond INTERNAL 
+   \cond INTERNAL
    \ingroup traits
    if the compiler wants to instanciate this functions, A and B are different types
-   the compiler will 
+   the compiler will
 */
 
-template <typename A, typename B> 
-void __assert_type_equal (A& a, B& b) 
+template <typename A, typename B>
+void __assert_type_equal (A& a, B& b)
 {
-	static_assert(sizeof(A) == 0); 
+       static_assert(sizeof(A) == 0);
 }
 
-template <typename A> 
-void __assert_type_equal (A& /*a*/, A& /*b*/) 
+template <typename A>
+void __assert_type_equal (A& /*a*/, A& /*b*/)
 {
 }
 
@@ -50,88 +50,92 @@ void __assert_type_equal (A& /*a*/, A& /*b*/)
 		__assert_type_equal(a,b); \
 	}
 
-template <template <typename> class  Data, typename T> 
+template <template <typename> class  Data, typename T>
 struct __eval {
-	static Data<float> *apply(const Data<T> &input, double m, double v) {
-		Data<float> *result = new Data<float>(input.get_size()); 
-		double invv = 1.0/v; 
-		transform(input.begin(), input.end(), result->begin(), 
-			  [invv,m](T x){(x - m) * invv;}); 
-		return result; 
-	}
-}; 
+       static Data<float> *apply(const Data<T>& input, double m, double v)
+       {
+              Data<float> *result = new Data<float>(input.get_size());
+              double invv = 1.0 / v;
+              transform(input.begin(), input.end(), result->begin(),
+              [invv, m](T x) {
+                     (x - m) * invv;
+              });
+              return result;
+       }
+};
 
 
-template <template <typename> class  Data> 
+template <template <typename> class  Data>
 struct __eval<Data, bool> {
-	static Data<float> *apply(const Data<bool> &input, double m, double v) {
-
-		Data<float> *result = new Data<float>(input.get_size()); 
-		float rtrue = (1.0 - m) / v; 
-		float rfalse =  - m / v; 
-		
-		transform(input.begin(), input.end(), result->begin(),
-			  [rtrue, rfalse](bool x){b ? rtrue : rfalse;});
-		return result; 
-	}
-}; 
+       static Data<float> *apply(const Data<bool>& input, double m, double v)
+       {
+              Data<float> *result = new Data<float>(input.get_size());
+              float rtrue = (1.0 - m) / v;
+              float rfalse =  - m / v;
+              transform(input.begin(), input.end(), result->begin(),
+              [rtrue, rfalse](bool x) {
+                     b ? rtrue : rfalse;
+              });
+              return result;
+       }
+};
 
 
 
 /**
-   \ingroup templates 
-   \brief Generic filter to normalize an image 
+   \ingroup templates
+   \brief Generic filter to normalize an image
 
-   Generic implementation of a filter that normalizes an Image to have a zero-mean intensity 
-   and an intensity variation of one. 
-   \tparam the image type 
+   Generic implementation of a filter that normalizes an Image to have a zero-mean intensity
+   and an intensity variation of one.
+   \tparam the image type
  */
-template <class Image> 
-struct FNormalizer: public TFilter<Image *>
-{
-	template <typename T, template <typename> class  Data>
-	typename FNormalizer::result_type operator ()(const Data<T> &image) const {
-		ASSERT_TYPE_EQUAL(Image, typename Data<T>::Super); 
-		double sum = 0.0; 
-		double sum2 = 0.0; 
-		typename Data<T>::const_iterator i = image.begin(); 
-		typename Data<T>::const_iterator e = image.end(); 
-		while ( i != e ) {
-			sum += *i; 
-			sum2 += *i * *i; 
-			++i; 
-		}
-		double n = image.size(); 
-		double m = sum / n; 
-		double v = sqrt((sum2 - n * m * m) / (n - 1)); 
+template <class Image>
+struct FNormalizer: public TFilter<Image *> {
+       template <typename T, template <typename> class  Data>
+       typename FNormalizer::result_type operator ()(const Data<T>& image) const
+       {
+              ASSERT_TYPE_EQUAL(Image, typename Data<T>::Super);
+              double sum = 0.0;
+              double sum2 = 0.0;
+              typename Data<T>::const_iterator i = image.begin();
+              typename Data<T>::const_iterator e = image.end();
 
-		mia::cvdebug() << "FNormalizer: avg = " << m << " var = " << v << "\n"; 
+              while ( i != e ) {
+                     sum += *i;
+                     sum2 += *i * *i;
+                     ++i;
+              }
 
-		if (v < 0.000001) 
-			v = 1.0;
-		
-		return __eval<Data, T>::apply(image, m, v); 
-		
-	}
-}; 
+              double n = image.size();
+              double m = sum / n;
+              double v = sqrt((sum2 - n * m * m) / (n - 1));
+              mia::cvdebug() << "FNormalizer: avg = " << m << " var = " << v << "\n";
+
+              if (v < 0.000001)
+                     v = 1.0;
+
+              return __eval<Data, T>::apply(image, m, v);
+       }
+};
 
 /// @endcond
 
 /**
-   \ingroup templates 
-   \brief a normalizer for image intensities 
-   
-   The intensities of the input image are normalized to have a zero mean and a deviation of one. 
-   The output image is of the same dimensions as the input image and has pixel type float. 
-   \tparam Image the image type 
-   \param image the input image 
-   \returns the normalized image 
+   \ingroup templates
+   \brief a normalizer for image intensities
+
+   The intensities of the input image are normalized to have a zero mean and a deviation of one.
+   The output image is of the same dimensions as the input image and has pixel type float.
+   \tparam Image the image type
+   \param image the input image
+   \returns the normalized image
  */
 template <class Image>
 std::shared_ptr<Image > normalize(const Image& image)
 {
-	FNormalizer<Image> n; 
-	return std::shared_ptr<Image >(mia::filter(n, image)); 
+       FNormalizer<Image> n;
+       return std::shared_ptr<Image >(mia::filter(n, image));
 }
 
 NS_MIA_END

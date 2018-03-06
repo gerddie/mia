@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,67 +27,73 @@
 
 NS_BEGIN(ngf_3dimage_cost)
 
-class FEvaluator {
+class FEvaluator
+{
 public:
-	typedef mia::C3DFVectorfield::const_range_iterator_with_boundary_flag field_range_iterator; 
-	typedef double result_type; 
-        virtual ~FEvaluator(){};
-	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const = 0;
-	virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
-				     const mia::C3DFVector& ref, double& cost) const = 0;
+       typedef mia::C3DFVectorfield::const_range_iterator_with_boundary_flag field_range_iterator;
+       typedef double result_type;
+       virtual ~FEvaluator() {};
+       virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const = 0;
+       virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
+                                    const mia::C3DFVector& ref, double& cost) const = 0;
 
-	double operator()(const mia::C3DFVector& src, const mia::C3DFVector& ref) const; 
+       double operator()(const mia::C3DFVector& src, const mia::C3DFVector& ref) const;
 protected:
-	mia::C3DFMatrix get_gradient(field_range_iterator& isrc, int nx, int nxy) const; 
+       mia::C3DFMatrix get_gradient(field_range_iterator& isrc, int nx, int nxy) const;
 };
 
-class FScalar: public FEvaluator {
+class FScalar: public FEvaluator
+{
 public:
-	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const;
-	virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
-				     const mia::C3DFVector& ref, double& cost) const;
+       virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const;
+       virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
+                                    const mia::C3DFVector& ref, double& cost) const;
 };
 
-class FCross: public FEvaluator {
+class FCross: public FEvaluator
+{
 public:
-	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const; 
-	
-	virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
-				     const mia::C3DFVector& ref, double& cost) const;
+       virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const;
+
+       virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
+                                    const mia::C3DFVector& ref, double& cost) const;
 };
 
-class FDeltaScalar: public FEvaluator {
+class FDeltaScalar: public FEvaluator
+{
 public:
-	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const; 
-	virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
-				     const mia::C3DFVector& ref, double& cost) const; 
+       virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const;
+       virtual mia::C3DFVector grad(int nx, int nxy, field_range_iterator& isrc,
+                                    const mia::C3DFVector& ref, double& cost) const;
 };
 
 typedef std::shared_ptr<FEvaluator > PEvaluator;
 
 
-class C3DNFGImageCost : public mia::C3DImageCost {
+class C3DNFGImageCost : public mia::C3DImageCost
+{
 public:
-	C3DNFGImageCost(PEvaluator evaluator);
+       C3DNFGImageCost(PEvaluator evaluator);
 private:
-	virtual double do_value(const mia::C3DImage& a, const mia::C3DImage& b) const ;
-	virtual double do_evaluate_force(const mia::C3DImage& a, const mia::C3DImage& b, mia::C3DFVectorfield& force) const;
+       virtual double do_value(const mia::C3DImage& a, const mia::C3DImage& b) const ;
+       virtual double do_evaluate_force(const mia::C3DImage& a, const mia::C3DImage& b, mia::C3DFVectorfield& force) const;
 
-	virtual void post_set_reference(const mia::C3DImage& ref); 
+       virtual void post_set_reference(const mia::C3DImage& ref);
 
-	mia::C3DFVectorfield m_ng_ref;
-	PEvaluator m_evaluator;
+       mia::C3DFVectorfield m_ng_ref;
+       PEvaluator m_evaluator;
 };
 
-class C3DNFGImageCostPlugin: public mia::C3DImageCostPlugin {
+class C3DNFGImageCostPlugin: public mia::C3DImageCostPlugin
+{
 public:
-	enum ESubTypes {st_unknown, st_delta_scalar, st_scalar, st_cross};
-	C3DNFGImageCostPlugin();
+       enum ESubTypes {st_unknown, st_delta_scalar, st_scalar, st_cross};
+       C3DNFGImageCostPlugin();
 private:
-	virtual mia::C3DImageCost *do_create()const;
+       virtual mia::C3DImageCost *do_create()const;
 
-	const std::string do_get_descr()const;
-	ESubTypes m_kernel;
+       const std::string do_get_descr()const;
+       ESubTypes m_kernel;
 };
 
 

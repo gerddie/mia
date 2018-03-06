@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 NS_MIA_BEGIN
 
 /**
-   @ingroup io 
-   @brief 3D Landmark list IO plugin base 
+   @ingroup io
+   @brief 3D Landmark list IO plugin base
 */
 typedef TIOPlugin<C3DLandmarklist> C3DLandmarklistIOPlugin;
 
@@ -48,13 +48,13 @@ extern template class EXPORT_3D TPlugin<C3DLandmarklist, io_plugin_type>;
 #endif
 
 /**
-   @ingroup io 
-   @brief 3D Landmark list IO plugin handler 
+   @ingroup io
+   @brief 3D Landmark list IO plugin handler
 */
-typedef THandlerSingleton<TIOPluginHandler<C3DLandmarklistIOPlugin> > C3DLandmarklistIOPluginHandler;
+typedef THandlerSingleton<TIOPluginHandler<C3DLandmarklistIOPlugin>> C3DLandmarklistIOPluginHandler;
 
 /**
-   @ingroup io 
+   @ingroup io
    @brief 3D Landmark list data key to load and store to the CDatapool
 */
 typedef C3DLandmarklistIOPluginHandler::Instance::DataKey C3DLandmarklistDataKey;

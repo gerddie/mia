@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,27 +22,29 @@
 
 NS_BEGIN( labelscale_2dimage_filter)
 
-class C2DLabelscale : public mia::C2DFilter {
+class C2DLabelscale : public mia::C2DFilter
+{
 public:
-	C2DLabelscale(const mia::C2DBounds& out_size);
+       C2DLabelscale(const mia::C2DBounds& out_size);
 
-	template <class T>
-	typename C2DLabelscale::result_type operator () (const mia::T2DImage<T>& data) const ;
+       template <class T>
+       typename C2DLabelscale::result_type operator () (const mia::T2DImage<T>& data) const ;
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	mia::C2DBounds m_out_size;
+       mia::C2DBounds m_out_size;
 
 };
 
-class C2DLabelscaleFilterPluginFactory: public mia::C2DFilterPlugin {
+class C2DLabelscaleFilterPluginFactory: public mia::C2DFilterPlugin
+{
 public:
-	C2DLabelscaleFilterPluginFactory();
+       C2DLabelscaleFilterPluginFactory();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-        
-	mia::C2DBounds m_out_size;
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+
+       mia::C2DBounds m_out_size;
 };
 
 

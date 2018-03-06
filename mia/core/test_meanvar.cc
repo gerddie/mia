@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,36 +24,32 @@
 #include <mia/core/meanvar.hh>
 
 NS_MIA_USE;
-using namespace std; 
+using namespace std;
 
 BOOST_AUTO_TEST_CASE( test_meanvar_0 )
 {
-	vector<double> data(0); 
-	auto r = mean_var(data.begin(), data.end()); 
-
-	BOOST_CHECK_EQUAL(r.first, 0.0); 
-	BOOST_CHECK_EQUAL(r.second, 0.0); 
+       vector<double> data(0);
+       auto r = mean_var(data.begin(), data.end());
+       BOOST_CHECK_EQUAL(r.first, 0.0);
+       BOOST_CHECK_EQUAL(r.second, 0.0);
 }
 
 BOOST_AUTO_TEST_CASE( test_meanvar_1 )
 {
-	vector<double> data(1, 1.0); 
-	auto r = mean_var(data.begin(), data.end()); 
-
-	BOOST_CHECK_EQUAL(r.first, 1.0); 
-	BOOST_CHECK_EQUAL(r.second, 0.0); 
+       vector<double> data(1, 1.0);
+       auto r = mean_var(data.begin(), data.end());
+       BOOST_CHECK_EQUAL(r.first, 1.0);
+       BOOST_CHECK_EQUAL(r.second, 0.0);
 }
 
 BOOST_AUTO_TEST_CASE( test_meanvar_3 )
 {
-	vector<double> data(3); 
-	data[0] = 1.0; 
-	data[1] = 3.0; 
-	data[2] = 5.0; 
-	
-	auto r = mean_var(data.begin(), data.end()); 
-
-	BOOST_CHECK_EQUAL(r.first, 3.0); 
-	BOOST_CHECK_EQUAL(r.second, 2.0); 
+       vector<double> data(3);
+       data[0] = 1.0;
+       data[1] = 3.0;
+       data[2] = 5.0;
+       auto r = mean_var(data.begin(), data.end());
+       BOOST_CHECK_EQUAL(r.first, 3.0);
+       BOOST_CHECK_EQUAL(r.second, 2.0);
 }
 

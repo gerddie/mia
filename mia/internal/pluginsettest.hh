@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,20 +25,20 @@
 #include <set>
 #include <boost/test/unit_test.hpp>
 
-template <typename Hander> 
+template <typename Hander>
 void test_available_plugins(const  Hander& handler, const  std::set<std::string>& test)
 {
-	auto data = handler.get_set(); 
-	BOOST_CHECK_EQUAL(data.size(), test.size()); 
-	for (auto p = data.begin(); p != data.end(); ++p) {
-		BOOST_CHECK_MESSAGE(test.find(*p) != test.end(), "unexpected plugin '" << *p << "' found"); 
-	}
-	
-	for (auto p = test.begin(); p != test.end(); ++p)
-		BOOST_CHECK_MESSAGE(data.find(*p) != data.end(), "expected plugin '" << *p << "' not found"); 
+       auto data = handler.get_set();
+       BOOST_CHECK_EQUAL(data.size(), test.size());
 
+       for (auto p = data.begin(); p != data.end(); ++p) {
+              BOOST_CHECK_MESSAGE(test.find(*p) != test.end(), "unexpected plugin '" << *p << "' found");
+       }
+
+       for (auto p = test.begin(); p != test.end(); ++p)
+              BOOST_CHECK_MESSAGE(data.find(*p) != data.end(), "expected plugin '" << *p << "' not found");
 }
 
 
 
-#endif 
+#endif

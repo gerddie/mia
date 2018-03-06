@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,30 +29,26 @@ using namespace selectbig_2dimage_filter;
 
 BOOST_AUTO_TEST_CASE( test_selectbig )
 {
-	const unsigned short input_data[4*4] = {
-		1, 2, 2, 3,
-		1, 1, 3, 3,
-		1, 1, 3, 3,
-		1, 6, 6, 6,
-	};
+       const unsigned short input_data[4 * 4] = {
+              1, 2, 2, 3,
+              1, 1, 3, 3,
+              1, 1, 3, 3,
+              1, 6, 6, 6,
+       };
+       bool test_data[4 * 4]  = {
+              1, 0, 0, 0,
+              1, 1, 0, 0,
+              1, 1, 0, 0,
+              1, 0, 0, 0,
+       };
+       auto  f = BOOST_TEST_create_from_plugin<C2DSelectBigImageFilterFactory>("selectbig");
+       C2DUSImage src(C2DBounds(4, 4), input_data);
+       P2DImage result_wrap = f->filter(src);
+       const C2DBitImage *result = dynamic_cast<const C2DBitImage *>(result_wrap.get());
+       BOOST_REQUIRE(result);
+       size_t k = 0;
 
-	bool test_data[4 * 4]  = {
-		1, 0, 0, 0,
-		1, 1, 0, 0,
-		1, 1, 0, 0,
-		1, 0, 0, 0,
-	};
-
-	auto  f = BOOST_TEST_create_from_plugin<C2DSelectBigImageFilterFactory>("selectbig"); 
-	
-	C2DUSImage src(C2DBounds(4,4), input_data);
-
-	P2DImage result_wrap = f->filter(src);
-	const C2DBitImage *result = dynamic_cast<const C2DBitImage *>(result_wrap.get());
-	BOOST_REQUIRE(result);
-
-	size_t k = 0;
-	for (C2DBitImage::const_iterator i = result->begin(), e = result->end();
-	     i != e; ++i,  ++k)
-		BOOST_CHECK_EQUAL(*i, test_data[k]);
+       for (C2DBitImage::const_iterator i = result->begin(), e = result->end();
+            i != e; ++i,  ++k)
+              BOOST_CHECK_EQUAL(*i, test_data[k]);
 }

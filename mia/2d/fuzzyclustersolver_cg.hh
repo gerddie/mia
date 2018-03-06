@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ using namespace std;
 */
 extern bool fborder (long index, long nx, long ny);
 
-/*! 
+/*!
   @ingroup filtering
   \brief solve_sCG -- a class providing a CG solver
 
@@ -55,122 +55,126 @@ extern bool fborder (long index, long nx, long ny);
 
 \author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
 \remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
-\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2011 
+\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2011
 */
 
 
-class C2DSolveCG {
+class C2DSolveCG
+{
 
-  private:
-	double m_lambda1;
-	double m_lambda2;
+private:
+       double m_lambda1;
+       double m_lambda2;
 
-	// Dimension of images
-	long m_iter;
-	int  m_nx, m_ny;
-	unsigned long m_count;
+       // Dimension of images
+       long m_iter;
+       int  m_nx, m_ny;
+       unsigned long m_count;
 
-	// Pointer to Elements of w
-	float *m_weight_imagePtr;
-	float *m_fptr;
-	float *m_gain_image_ptr;
-
-
-
-	// b and x for solution of system
-	std::vector<double> m_b;
-	std::vector<double> m_v;
-
-	// counts iterations
+       // Pointer to Elements of w
+       float *m_weight_imagePtr;
+       float *m_fptr;
+       float *m_gain_image_ptr;
 
 
-	// help pointers for one iteration cycle
-	std::vector<double> m_r;	   // r^(k)
-	std::vector<double> m_rho;     // p^(k)
-	std::vector<double> m_g;
-	std::vector<double> m_Ag;	   // speichert A * p
-	// Field of scaling factors
-	std::vector<double> m_scale;
-	std::vector<double> m_scale2;
 
-	// field for border voxels
-	std::vector<bool> m_border;
+       // b and x for solution of system
+       std::vector<double> m_b;
+       std::vector<double> m_v;
+
+       // counts iterations
 
 
-	double m_r1rho1;   // speichert r1 * rho1
-	double m_r2rho2;   // speichert r2 * rho2
-	double m_normr0;
-	double m_q, m_e, m_sprod;
+       // help pointers for one iteration cycle
+       std::vector<double> m_r;	   // r^(k)
+       std::vector<double> m_rho;     // p^(k)
+       std::vector<double> m_g;
+       std::vector<double> m_Ag;	   // speichert A * p
+       // Field of scaling factors
+       std::vector<double> m_scale;
+       std::vector<double> m_scale2;
 
-	// minimal residuum
-	double m_min_res, m_relres;
+       // field for border voxels
+       std::vector<bool> m_border;
 
-	/** function for initialising
+
+       double m_r1rho1;   // speichert r1 * rho1
+       double m_r2rho2;   // speichert r2 * rho2
+       double m_normr0;
+       double m_q, m_e, m_sprod;
+
+       // minimal residuum
+       double m_min_res, m_relres;
+
+       /** function for initialising
          */
-        void init();
+       void init();
 
-  public:
-	/** constructor
-	    \param w1
-	    \param f1
-	    \param g1
-	    \param l1
-	    \param l2
-	    \param r_res
-	    \param m_res
-	 */
-	C2DSolveCG (C2DFImage& w1, C2DFImage&  f1, C2DFImage& g1, double l1, double l2, double r_res, double m_res);
+public:
+       /** constructor
+           \param w1
+           \param f1
+           \param g1
+           \param l1
+           \param l2
+           \param r_res
+           \param m_res
+        */
+       C2DSolveCG (C2DFImage& w1, C2DFImage&  f1, C2DFImage& g1, double l1, double l2, double r_res, double m_res);
 
-	~C2DSolveCG();
+       ~C2DSolveCG();
 
-	/** Function to solve ...
-	    \param max_iterations Maximum number of iterations
-	    \param firstnormr0
-	    \returns
-	 */
-	int solve(long max_iterations, double *firstnormr0);
+       /** Function to solve ...
+           \param max_iterations Maximum number of iterations
+           \param firstnormr0
+           \returns
+        */
+       int solve(long max_iterations, double *firstnormr0);
 
-	/** Function to get preset number of iterations
-	    \returns Number of iterations
-	 */
-	inline long get_iterations() {return m_iter;}
+       /** Function to get preset number of iterations
+           \returns Number of iterations
+        */
+       inline long get_iterations()
+       {
+              return m_iter;
+       }
 
-	/** Multiplication of vector and matrix
+       /** Multiplication of vector and matrix
 
-	TODO mit standard classe Austauschen
+       TODO mit standard classe Austauschen
 
-	    \param x
-	    \param result
-	    \param start
-	    \param ende
-	 */
-	void multA(std::vector<double>& x, std::vector<double>& result, long start, long ende);
+           \param x
+           \param result
+           \param start
+           \param ende
+        */
+       void multA(std::vector<double>& x, std::vector<double>& result, long start, long ende);
 
-	/** Multiplication
+       /** Multiplication
 
-	TODO mit standard classe Austauschen
+       TODO mit standard classe Austauschen
 
-	    \param x Pointer at
-	    \param result Pointer at
-	 */
-	void multA_float(float *x, float *result);
+           \param x Pointer at
+           \param result Pointer at
+        */
+       void multA_float(float *x, float *result);
 
-	/**
-	    \param gain Image with gain-field
-	 */
-	void get_solution(C2DFImage& gain);
+       /**
+           \param gain Image with gain-field
+        */
+       void get_solution(C2DFImage& gain);
 
-	/**
-	    \param e
-	 */
-	void add_to_solution(C2DFImage *e);
+       /**
+           \param e
+        */
+       void add_to_solution(C2DFImage *e);
 
-	/** function for parallel solver
-	    @param max_iteration
-	    @param normr
-	    @param firstnormr0
-	 */
-	void solvepar(long *max_iteration, double *normr, double *firstnormr0);
+       /** function for parallel solver
+           @param max_iteration
+           @param normr
+           @param firstnormr0
+        */
+       void solvepar(long *max_iteration, double *normr, double *firstnormr0);
 
 };
 

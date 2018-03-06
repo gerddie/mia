@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,83 +25,84 @@
 
 NS_MIA_BEGIN
 
-using boost::filesystem::path; 
+using boost::filesystem::path;
 
 CPluginHandlerBase::CPluginHandlerBase(const char *data_descr, const char *type_descr):
-	m_descriptor((path(data_descr) / path(type_descr)).string())
+       m_descriptor((path(data_descr) / path(type_descr)).string())
 {
 }
 
-CPluginHandlerBase::~CPluginHandlerBase() 
+CPluginHandlerBase::~CPluginHandlerBase()
 {
-	
 }
 
 void CPluginHandlerBase::print_short_help(std::ostream& os) const
 {
-	do_print_short_help(os); 
+       do_print_short_help(os);
 }
 
 void CPluginHandlerBase::print_help(std::ostream& os) const
 {
-	TRACE_FUNCTION; 
-	do_print_help(os); 
+       TRACE_FUNCTION;
+       do_print_help(os);
 }
 
 void CPluginHandlerBase::get_xml_help(CXMLElement& root) const
 {
-	auto handlerRoot = root.add_child("handler");
-	handlerRoot->set_attribute("name", get_descriptor());
-	do_get_xml_help(*handlerRoot); 
+       auto handlerRoot = root.add_child("handler");
+       handlerRoot->set_attribute("name", get_descriptor());
+       do_get_xml_help(*handlerRoot);
 }
 
 const std::string& CPluginHandlerBase::get_descriptor() const
 {
-	return m_descriptor; 
+       return m_descriptor;
 }
 
 void CPluginHandlerBase::add_dependend_handlers(HandlerHelpMap& handler_map) const
 {
-	TRACE_FUNCTION; 
-	if (handler_map.find(m_descriptor) != handler_map.end()) 
-		return; 
-        cvdebug() << "Add '"  << m_descriptor << "' to dependend handlers\n"; 
-	handler_map[m_descriptor] = this; 	
-	do_add_dependend_handlers(handler_map);
+       TRACE_FUNCTION;
+
+       if (handler_map.find(m_descriptor) != handler_map.end())
+              return;
+
+       cvdebug() << "Add '"  << m_descriptor << "' to dependend handlers\n";
+       handler_map[m_descriptor] = this;
+       do_add_dependend_handlers(handler_map);
 }
 
 void CPluginHandlerBase::get_string_help_description_xml(std::ostream& os, CXMLElement& parent) const
 {
-	auto type = get_handler_type_string_and_help(os); 
-	auto factory = parent.add_child(type.c_str());
-	factory->set_attribute("name", get_descriptor());
-	parent.set_attribute("type", type);
+       auto type = get_handler_type_string_and_help(os);
+       auto factory = parent.add_child(type.c_str());
+       factory->set_attribute("name", get_descriptor());
+       parent.set_attribute("type", type);
 }
 
 std::string CPluginHandlerBase::get_handler_type_string_and_help(std::ostream& MIA_PARAM_UNUSED(os)) const
 {
-	return do_get_handler_type_string(); 
+       return do_get_handler_type_string();
 }
 
 std::string CPluginHandlerBase::get_handler_type_string() const
 {
-	return do_get_handler_type_string(); 
+       return do_get_handler_type_string();
 }
 
 std::string CPluginHandlerBase::do_get_handler_type_string() const
 {
-	return "io";
+       return "io";
 }
 
 
 bool CPluginHandlerBase::validate_parameter_string(const std::string& s) const
 {
-	return do_validate_parameter_string(s);
+       return do_validate_parameter_string(s);
 }
 
 bool CPluginHandlerBase::do_validate_parameter_string(const std::string& MIA_PARAM_UNUSED(s)) const
 {
-	return true; 
+       return true;
 }
 
 

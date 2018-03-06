@@ -27,17 +27,17 @@
 
 NS_MIA_BEGIN
 
-bool cpu_has_sse(); 
+bool cpu_has_sse();
 
-bool cpu_has_sse2(); 
+bool cpu_has_sse2();
 
-bool cpu_has_sse3(); 
+bool cpu_has_sse3();
 
-bool cpu_has_ssse3(); 
+bool cpu_has_ssse3();
 
-bool cpu_has_fma(); 
+bool cpu_has_fma();
 
-bool cpu_has_fma4(); 
+bool cpu_has_fma4();
 
 bool cpu_has_neon();
 
@@ -46,4 +46,4 @@ NS_MIA_END
 
 
 
-#endif 
+#endif

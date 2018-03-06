@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,57 +25,61 @@
 
 NS_BEGIN(mean_3dimage_filter)
 
-class C3DMeanFilter: public mia::C3DFilter {
+class C3DMeanFilter: public mia::C3DFilter
+{
 public:
-	C3DMeanFilter(int hwidth);
+       C3DMeanFilter(int hwidth);
 
-	template <class T>
-	mia::T3DImage<T> *apply(const mia::T3DImage<T>& data) const ;
+       template <class T>
+       mia::T3DImage<T> *apply(const mia::T3DImage<T>& data) const ;
 
 
-	template <class T>
-	mia::P3DImage operator () (const mia::T3DImage<T>& data) const ;
+       template <class T>
+       mia::P3DImage operator () (const mia::T3DImage<T>& data) const ;
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	int m_hwidth;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       int m_hwidth;
 };
 
 
 
-class C3DMeanFilterPlugin: public mia::C3DFilterPlugin {
+class C3DMeanFilterPlugin: public mia::C3DFilterPlugin
+{
 public:
-	C3DMeanFilterPlugin();
+       C3DMeanFilterPlugin();
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string  do_get_descr() const;
-	int m_hw;
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string  do_get_descr() const;
+       int m_hw;
 };
 
 
-class C3DVarianceFilter: public mia::C3DFilter {
+class C3DVarianceFilter: public mia::C3DFilter
+{
 public:
-	C3DVarianceFilter(int hwidth);
+       C3DVarianceFilter(int hwidth);
 
-	template <class T>
-	mia::P3DImage operator () (const mia::T3DImage<T>& data) const;
+       template <class T>
+       mia::P3DImage operator () (const mia::T3DImage<T>& data) const;
 
-	mia::P3DImage operator () (const mia::C3DBitImage& data) const;
+       mia::P3DImage operator () (const mia::C3DBitImage& data) const;
 
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	int m_hwidth;
-        C3DMeanFilter m_mean; 
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       int m_hwidth;
+       C3DMeanFilter m_mean;
 };
 
 
 
-class C3DVarianceFilterPlugin: public mia::C3DFilterPlugin {
+class C3DVarianceFilterPlugin: public mia::C3DFilterPlugin
+{
 public:
-	C3DVarianceFilterPlugin();
+       C3DVarianceFilterPlugin();
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string  do_get_descr() const;
-	int m_hw;
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string  do_get_descr() const;
+       int m_hw;
 };
 
 

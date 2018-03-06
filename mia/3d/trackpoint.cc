@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,31 +24,35 @@
 
 
 NS_MIA_BEGIN
-using namespace std; 
+using namespace std;
 
-template <> 
-struct NDVectorIOcvd<C3DFVector>{
-	static bool read(istream& is, C3DFVector& value) {
-		char c; 
-		is >> value.x; 
-		is >> c; 
-		if (c != ';') 
-			return false;
-		
-		is >> value.y; 
-		is >> c; 
-		if (c != ';') 
-			return false; 
-		
-		is >> value.z;
-		return true; 
-	}
-	
-	static void write(ostream& os, const C3DFVector& value){
-		os << value.x << ";" << value.y << ";" << value.z; 
-	}
-}; 
+template <>
+struct NDVectorIOcvd<C3DFVector> {
+       static bool read(istream& is, C3DFVector& value)
+       {
+              char c;
+              is >> value.x;
+              is >> c;
 
-template class  TTrackPoint<C3DTransformation>; 
+              if (c != ';')
+                     return false;
+
+              is >> value.y;
+              is >> c;
+
+              if (c != ';')
+                     return false;
+
+              is >> value.z;
+              return true;
+       }
+
+       static void write(ostream& os, const C3DFVector& value)
+       {
+              os << value.x << ";" << value.y << ";" << value.z;
+       }
+};
+
+template class  TTrackPoint<C3DTransformation>;
 
 NS_MIA_END

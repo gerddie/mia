@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,20 +25,21 @@
 
 NS_MIA_BEGIN
 
-class EXPORT_MESH  CTrianglesWithAdjacentList {
-public: 
-        CTrianglesWithAdjacentList(const CTriangleMesh& mesh); 
+class EXPORT_MESH  CTrianglesWithAdjacentList
+{
+public:
+       CTrianglesWithAdjacentList(const CTriangleMesh& mesh);
 
-        const std::set<unsigned>& operator [](unsigned idx) const; 
+       const std::set<unsigned>& operator [](unsigned idx) const;
 
-private: 
+private:
 
-        std::vector<std::set<unsigned> > m_triangle_neighborhood; 
+       std::vector<std::set<unsigned>> m_triangle_neighborhood;
 
-        
-}; 
+
+};
 
 
 NS_MIA_END
 
-#endif 
+#endif

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,31 +23,33 @@
 NS_BEGIN( tmean_2dimage_filter)
 
 
-class C2DTmean : public mia::C2DFilter {
+class C2DTmean : public mia::C2DFilter
+{
 public:
-	C2DTmean(int hw, float thresh);
+       C2DTmean(int hw, float thresh);
 
-	template <class T>
-	C2DTmean::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <class T>
+       C2DTmean::result_type operator () (const mia::T2DImage<T>& data) const;
 
-	C2DTmean::result_type operator () (const mia::T2DImage<bool>& data) const;
+       C2DTmean::result_type operator () (const mia::T2DImage<bool>& data) const;
 
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	int m_hw;
-        float m_thresh; 
+       int m_hw;
+       float m_thresh;
 };
 
 
-class C2DTmeanFilterPlugin: public mia::C2DFilterPlugin {
+class C2DTmeanFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DTmeanFilterPlugin();
+       C2DTmeanFilterPlugin();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	int m_hw;
-        float m_thresh; 
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+       int m_hw;
+       float m_thresh;
 };
 
 NS_END

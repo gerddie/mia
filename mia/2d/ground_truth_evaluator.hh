@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,40 +26,41 @@
 NS_MIA_BEGIN
 
 /**
-   @ingroup perf 
-   \brief Main class for peudo ground truth estimation for perfusion series 
-   
+   @ingroup perf
+   \brief Main class for peudo ground truth estimation for perfusion series
+
    This class implements the Ground Truth Estimation for perfusion series
    as given in
    Chao Li and Ying Sun, "Nonrigid Registration of Myocardial Perfusion
    MRI Using Pseudo Ground Truth", MICCAI 2009, pp 165-172
 
-   The class make use of GroundTruthProblem and CCorrelationEvaluator in order 
-   to evaluate the pseudo ground truth. 
+   The class make use of GroundTruthProblem and CCorrelationEvaluator in order
+   to evaluate the pseudo ground truth.
 
-   There is a new paper about this methos that requires a segmentation 
-   for better pseudo graound truth estimation. 
+   There is a new paper about this methos that requires a segmentation
+   for better pseudo graound truth estimation.
 
 */
-class  EXPORT_2D C2DGroundTruthEvaluator {
+class  EXPORT_2D C2DGroundTruthEvaluator
+{
 public:
 
-	/**
-	   Initialize the gound truth estimator with the given parameters. 
-	   unfortunately the paper is silent about sensible values.
-	 */
-	C2DGroundTruthEvaluator(double alpha, double beta, double rho);
-	~C2DGroundTruthEvaluator();
+       /**
+          Initialize the gound truth estimator with the given parameters.
+          unfortunately the paper is silent about sensible values.
+        */
+       C2DGroundTruthEvaluator(double alpha, double beta, double rho);
+       ~C2DGroundTruthEvaluator();
 
-	/**
-	   Run the estimation algorithm.
-	   @param originals iriginal image series 
-	   @param[in,out]  estimate the estimated pseudo ground truth. 
-	 */
-	void operator () (const std::vector<P2DImage>& originals,
-			  std::vector<P2DImage>& estimate) const;
+       /**
+          Run the estimation algorithm.
+          @param originals iriginal image series
+          @param[in,out]  estimate the estimated pseudo ground truth.
+        */
+       void operator () (const std::vector<P2DImage>& originals,
+                         std::vector<P2DImage>& estimate) const;
 private:
-	struct C2DGroundTruthEvaluatorImpl *impl;
+       struct C2DGroundTruthEvaluatorImpl *impl;
 };
 
 NS_MIA_END

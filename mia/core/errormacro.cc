@@ -1,7 +1,7 @@
 
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h> 
+#include <config.h>
 #endif
 
 #include <mia/core/defines.hh>
@@ -30,7 +30,7 @@
 #if defined(HAVE_CXXABI_H) && defined(HAVE_EXEINFO_H)
 #include <execinfo.h>
 #include <cxxabi.h>
-#endif 
+#endif
 
 NS_MIA_BEGIN
 
@@ -39,56 +39,55 @@ using std::ostream;
 #if defined(HAVE_CXXABI_H) && defined(HAVE_EXECINFO_H)
 void append_stacktrace(ostream& os)
 {
-        os << "backtrace:\n"; 
-        void* addrlist[64];
+       os << "backtrace:\n";
+       void *addrlist[64];
+       int addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void *));
 
-        int addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
+       if (addrlen == 0) {
+              os << "  not availble\n";
+              return;
+       }
 
-        if (addrlen == 0) {
-                os << "  not availble\n";
-                return; 
-        }
-        char** symbollist = backtrace_symbols(addrlist, addrlen);
+       char **symbollist = backtrace_symbols(addrlist, addrlen);
 
+       for (int i = 0; i < addrlen, ++i) {
+              char *begin_name = 0, *begin_offset = 0, *end_offset = 0;
+              p = symbollist[i];
 
-        for (int i = 0; i < addrlen, ++i){
-                char *begin_name = 0, *begin_offset = 0, *end_offset = 0;
+              while (!begin_name && *p != 0) {
+                     if (*p == '(') {
+                            *p++ = 0;
+                            begin_name = p;
+                     }
+              }
 
-                p = symbollist[i];
-                
-                while (!begin_name && *p != 0) {
-                        if (*p == '(') {
-                                *p++ = 0; 
-                                begin_name = p;
-                        }
-                }
+              while (!begin_offset && *p != 0) {
+                     if (*p == '+') {
+                            *p++ = 0;
+                            begin_offset = p;
+                     }
+              }
 
-                while (!begin_offset && *p != 0) {
-                        if (*p == '+') {
-                                *p++ = 0; 
-                                begin_offset = p;
-                        }
-                }
-                
-                
-                int status;
-                char* ret = abi::__cxa_demangle(begin_name, 0, 0, &status);
-                if (status == 0) {
-                        msg << "  " << symbollist[i] << "("
-                            << ret << "+" << begin_offset << "\n";  
-                        free(ret);
-                }else {
-                          msg << "  " << symbollist[i] << "("
-                              << begin_name << "+" << begin_offset << "\n";  
-                }
-	}
-        free(symbollist); 
+              int status;
+              char *ret = abi::__cxa_demangle(begin_name, 0, 0, &status);
+
+              if (status == 0) {
+                     msg << "  " << symbollist[i] << "("
+                         << ret << "+" << begin_offset << "\n";
+                     free(ret);
+              } else {
+                     msg << "  " << symbollist[i] << "("
+                         << begin_name << "+" << begin_offset << "\n";
+              }
+       }
+
+       free(symbollist);
 }
 #else
 void append_stacktrace(ostream& os)
 {
-        os << "\nStack unwinding not implemented for this platform\n";
+       os << "\nStack unwinding not implemented for this platform\n";
 }
-#endif 
+#endif
 
 NS_MIA_END

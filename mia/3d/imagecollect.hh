@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,20 +26,21 @@
 
 NS_MIA_BEGIN
 
-class  EXPORT_3D C3DImageCollector : public TFilter<void> {
-public: 
-	C3DImageCollector(size_t slices); 
-	
-	template <typename T>
-	void operator ()(const T2DImage<T>& image); 
+class  EXPORT_3D C3DImageCollector : public TFilter<void>
+{
+public:
+       C3DImageCollector(size_t slices);
 
-	void add(const C2DImage &image); 
-	
-	P3DImage get_result()const; 
+       template <typename T>
+       void operator ()(const T2DImage<T>& image);
+
+       void add(const C2DImage& image);
+
+       P3DImage get_result()const;
 private:
-	size_t m_slices;
-	size_t m_cur_slice;
-	P3DImage m_image;
+       size_t m_slices;
+       size_t m_cur_slice;
+       P3DImage m_image;
 };
 
 NS_MIA_END

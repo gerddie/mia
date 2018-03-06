@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,85 +30,86 @@
 NS_MIA_BEGIN
 
 class CXMLElement;
-class CXMLDocument; 
+class CXMLDocument;
 /**
-   @ingroup perf 
-   \brief A set of images and its segmentations, related to heart perfusion analysis  
-   
-   A set of slices containing segmentationinformation as well as the images. 
+   @ingroup perf
+   \brief A set of images and its segmentations, related to heart perfusion analysis
+
+   A set of slices containing segmentationinformation as well as the images.
  */
-class EXPORT_2D CSegSetWithImages: public CSegSet {
+class EXPORT_2D CSegSetWithImages: public CSegSet
+{
 public:
-	static const char *data_descr;	
-	typedef CSegSetWithImages type;	
-	typedef std::shared_ptr<CSegSetWithImages> Pointer; 
-	
-	CSegSetWithImages();
+       static const char *data_descr;
+       typedef CSegSetWithImages type;
+       typedef std::shared_ptr<CSegSetWithImages> Pointer;
 
-	CSegSetWithImages(int version);
+       CSegSetWithImages();
 
-
-	/**
-	   Read the segmentation set and load the images 
-	   \param node the root node of the XML segmentation set description
-	   \param fileroot is the root location of the set file and it is used as 
-	   base path for the images. 
-	*/
-	CSegSetWithImages(const CXMLDocument& node, const std::string& fileroot); 
-	
-
-	/**
-	   Read the segmentation set and load the images 
-	   \param filename segmentation set 
-	   \param ignore_path if \a true the image reader will ignore the path 
-	   assosiated with the images, and use the base directory of the segmentation set.  
-	 */
-	CSegSetWithImages(const std::string& filename, bool ignore_path);
-
-	/// \returns a vector of the images 
-	const C2DImageSeries& get_images()const;
-
-	/// sets the image series @param series 
-	void set_images(const C2DImageSeries& series); 
-	
-	/// save the images to their give file names with the given directory as root @param root 
-	void save_images(const std::string& root) const; 
+       CSegSetWithImages(int version);
 
 
-	using CSegSet::add_frame; 
-	/**
-	   Add a frame ant its correcponding image 
-	   \param frame the new frame 
-	   \param image the image 
-	 */
-	void add_frame(const CSegFrame& frame, P2DImage image); 
-	
-	/** Run acropping on the inout images and correct the segmentation information accordingly 
-	    \param start upper left corner of the cropping reagion 
-	    \param end lower right corner  of the cropping reagion 
-	    \param crop_filename_base new file name base for the cropped images 
-	    \returns a new segmentation set with the cropped images and the corrected segmentation information
-	*/
-	CSegSetWithImages crop(const C2DIVector&  start, const C2DIVector&  end,
-			       const std::string& crop_filename_base);
+       /**
+          Read the segmentation set and load the images
+          \param node the root node of the XML segmentation set description
+          \param fileroot is the root location of the set file and it is used as
+          base path for the images.
+       */
+       CSegSetWithImages(const CXMLDocument& node, const std::string& fileroot);
 
-	CSegSetWithImages *clone() const; 
+
+       /**
+          Read the segmentation set and load the images
+          \param filename segmentation set
+          \param ignore_path if \a true the image reader will ignore the path
+          assosiated with the images, and use the base directory of the segmentation set.
+        */
+       CSegSetWithImages(const std::string& filename, bool ignore_path);
+
+       /// \returns a vector of the images
+       const C2DImageSeries& get_images()const;
+
+       /// sets the image series @param series
+       void set_images(const C2DImageSeries& series);
+
+       /// save the images to their give file names with the given directory as root @param root
+       void save_images(const std::string& root) const;
+
+
+       using CSegSet::add_frame;
+       /**
+          Add a frame ant its correcponding image
+          \param frame the new frame
+          \param image the image
+        */
+       void add_frame(const CSegFrame& frame, P2DImage image);
+
+       /** Run acropping on the inout images and correct the segmentation information accordingly
+           \param start upper left corner of the cropping reagion
+           \param end lower right corner  of the cropping reagion
+           \param crop_filename_base new file name base for the cropped images
+           \returns a new segmentation set with the cropped images and the corrected segmentation information
+       */
+       CSegSetWithImages crop(const C2DIVector&  start, const C2DIVector&  end,
+                              const std::string& crop_filename_base);
+
+       CSegSetWithImages *clone() const;
 private:
-	C2DImageSeries m_images;
+       C2DImageSeries m_images;
 };
 
-typedef CSegSetWithImages::Pointer PSegSetWithImages; 
+typedef CSegSetWithImages::Pointer PSegSetWithImages;
 
 extern template class EXPORT_2DMYOCARD TPlugin<CSegSetWithImages, io_plugin_type>;
-extern template class EXPORT_2DMYOCARD TIOPlugin<CSegSetWithImages>; 
+extern template class EXPORT_2DMYOCARD TIOPlugin<CSegSetWithImages>;
 
 typedef TIOPlugin<CSegSetWithImages> CSegSetWithImagesIOPlugin;
-typedef THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin > > CSegSetWithImagesIOPluginHandler;
+typedef THandlerSingleton< TIOPluginHandler<CSegSetWithImagesIOPlugin >> CSegSetWithImagesIOPluginHandler;
 
-template <> 
+template <>
 struct IOHandler_of<CSegSetWithImages> {
-	typedef CSegSetWithImagesIOPluginHandler type;
-}; 
+       typedef CSegSetWithImagesIOPluginHandler type;
+};
 
 
 

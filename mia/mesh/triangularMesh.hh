@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@
 #  endif
 #else
 #  ifdef __GNUC__
-/// define visibility for proper export 
+/// define visibility for proper export
 #    define EXPORT_MESH __attribute__((visibility("default")))
 #  else
 #    define EXPORT_MESH
@@ -51,240 +51,244 @@
 
 NS_MIA_BEGIN
 
-/** 
-    @ingroup basic 
-    \brief A class to deine a triangle mesh with some attributes 
-    
-    This class defines the representation of a triangle-mesh.  
+/**
+    @ingroup basic
+    \brief A class to deine a triangle mesh with some attributes
+
+    This class defines the representation of a triangle-mesh.
 */
 
-class EXPORT_MESH CTriangleMesh: public CIOData {
+class EXPORT_MESH CTriangleMesh: public CIOData
+{
 
 public:
-	/** The type description provides information about the data type that is
-	    used by the plug-in system */
-        static const char *data_descr;
+       /** The type description provides information about the data type that is
+           used by the plug-in system */
+       static const char *data_descr;
 
-	typedef CTriangleMesh type; 
-
-
-	typedef std::shared_ptr<CTriangleMesh> Pointer; 
-
-	/// these are some flags to indicate, which data is actually available
-	enum EData {ed_none = 0,
-		    ed_vertex  = 1,
-		    ed_normal  = 2,
-		    ed_color   = 4,
-		    ed_scale   = 8};
-
-	/// \cond SELFEXPLAINING 
-	typedef std::vector<T3DVector<unsigned int> >   CTrianglefield;
-	typedef std::vector<C3DFVector>  CVertexfield;
-	typedef std::vector<C3DFVector>  CNormalfield;
-	typedef std::vector<C3DFVector>  CColorfield;
-	typedef std::vector<float>       CScalefield;
-
-	typedef std::shared_ptr<CTrianglefield > PTrianglefield;
-	typedef std::shared_ptr<CVertexfield > PVertexfield;
-	typedef std::shared_ptr<CNormalfield > PNormalfield;
-	typedef std::shared_ptr<CColorfield >  PColorfield;
-	typedef std::shared_ptr<CScalefield >  PScalefield;
-
-	typedef CTrianglefield::value_type   triangle_type;
-	typedef CVertexfield::value_type     vertex_type;
-	typedef CNormalfield::value_type     normal_type;
-	typedef CColorfield::value_type      color_type;
-	typedef CScalefield::value_type      scale_type;
-
-	typedef CVertexfield::const_iterator const_vertex_iterator;
-	typedef CVertexfield::iterator       vertex_iterator;
-
-	typedef CTrianglefield::const_iterator const_triangle_iterator;
-	typedef CTrianglefield::iterator       triangle_iterator;
-
-	typedef CNormalfield::const_iterator const_normal_iterator;
-	typedef CNormalfield::iterator       normal_iterator;
-
-	typedef CScalefield::const_iterator const_scale_iterator;
-	typedef CScalefield::iterator       scale_iterator;
-
-	typedef CColorfield::const_iterator const_color_iterator;
-	typedef CColorfield::iterator       color_iterator;
-	/// \endcond 
-
-	/// Standart constructor creates an empty mesh
-	CTriangleMesh();
-
-	/** copy constructor makes a shallow copy of the mesh, i.e.
-	    the storage for triangles, vertices, normals, textur-coordinates,
-	    colors and the deformation-scale is shared between original and copy
-	    \param orig the mesh to be copied
-	*/
-	CTriangleMesh(const CTriangleMesh& orig);
-
-	/** contruct an mesh with uninitialized data
-	    \param n_triangles number of triangles
-	    \param n_vertices number of vertices
-	*/
-	CTriangleMesh(int n_triangles, int n_vertices);
-
-	/** creates a new mesh from given input data
-	    \param triangles the triangle data (required)
-	    \param vertices the vertex data (required)
-	    \param normals per vertex normals - can be NULL, in this case then the normals are calculated
-	    \param colors per vertex color
-	    \param scales
-	*/
-	CTriangleMesh(PTrianglefield triangles,
-		      PVertexfield vertices,
-		      PNormalfield normals,
-		      PColorfield colors,
-		      PScalefield scales);
-
-	/** creates a new mesh from given input data
-	    \param triangles the triangle data (required)
-	    \param vertices the vertex data (required)
-	*/
-	CTriangleMesh(PTrianglefield triangles, PVertexfield vertices);
+       typedef CTriangleMesh type;
 
 
-	/// \returns a copy of this mesh 
-	CTriangleMesh *clone() const __attribute__((warn_unused_result));
+       typedef std::shared_ptr<CTriangleMesh> Pointer;
 
-	/** \returns a  mesh where the connectivity is copied, the vertices are allocated, but not set,
-	    and without normals and scale values */
-	CTriangleMesh clone_connectivity()const;
+       /// these are some flags to indicate, which data is actually available
+       enum EData {ed_none = 0,
+                   ed_vertex  = 1,
+                   ed_normal  = 2,
+                   ed_color   = 4,
+                   ed_scale   = 8
+                  };
 
-	/// Destructor - it releases all the data
-	~CTriangleMesh();
+       /// \cond SELFEXPLAINING
+       typedef std::vector<T3DVector<unsigned int>>   CTrianglefield;
+       typedef std::vector<C3DFVector>  CVertexfield;
+       typedef std::vector<C3DFVector>  CNormalfield;
+       typedef std::vector<C3DFVector>  CColorfield;
+       typedef std::vector<float>       CScalefield;
 
-	/*!
-	  \returns a type sescription name usefull for some plugin handling
-	*/
-	static const std::string get_type_description();
+       typedef std::shared_ptr<CTrianglefield > PTrianglefield;
+       typedef std::shared_ptr<CVertexfield > PVertexfield;
+       typedef std::shared_ptr<CNormalfield > PNormalfield;
+       typedef std::shared_ptr<CColorfield >  PColorfield;
+       typedef std::shared_ptr<CScalefield >  PScalefield;
 
-	/*!
-	  \returns a set of \a EData flags indicating which data is available
-	*/
-	int get_available_data() const;
+       typedef CTrianglefield::value_type   triangle_type;
+       typedef CVertexfield::value_type     vertex_type;
+       typedef CNormalfield::value_type     normal_type;
+       typedef CColorfield::value_type      color_type;
+       typedef CScalefield::value_type      scale_type;
 
-	/*!
-	  \returns a raw pointer to the vertices
-	*/
-	const void *get_vertex_pointer()const;
+       typedef CVertexfield::const_iterator const_vertex_iterator;
+       typedef CVertexfield::iterator       vertex_iterator;
 
-	/*!
-	  \returns a raw pointer to the normals
-	*/
-	const void *get_normal_pointer()const;
+       typedef CTrianglefield::const_iterator const_triangle_iterator;
+       typedef CTrianglefield::iterator       triangle_iterator;
 
+       typedef CNormalfield::const_iterator const_normal_iterator;
+       typedef CNormalfield::iterator       normal_iterator;
 
-	/*!
-	  \returns a raw pointer to the triangles
-	*/
-	const void *get_triangle_pointer()const;
+       typedef CScalefield::const_iterator const_scale_iterator;
+       typedef CScalefield::iterator       scale_iterator;
 
-	/*!
-	  \returns a raw pointer to the colors
-	*/
-	const void *get_color_pointer()const;
+       typedef CColorfield::const_iterator const_color_iterator;
+       typedef CColorfield::iterator       color_iterator;
+       /// \endcond
 
+       /// Standart constructor creates an empty mesh
+       CTriangleMesh();
 
-	/*!
-	  \returns the number of triangles, the mesh consists of
-	*/
-	unsigned int triangle_size()const;
+       /** copy constructor makes a shallow copy of the mesh, i.e.
+           the storage for triangles, vertices, normals, textur-coordinates,
+           colors and the deformation-scale is shared between original and copy
+           \param orig the mesh to be copied
+       */
+       CTriangleMesh(const CTriangleMesh& orig);
 
-	/*!
-	  \returns the number of vertices the mesh consists of
-	*/
-	unsigned int vertices_size()const;
+       /** contruct an mesh with uninitialized data
+           \param n_triangles number of triangles
+           \param n_vertices number of vertices
+       */
+       CTriangleMesh(int n_triangles, int n_vertices);
 
-	/*!
-	  \returns a cost reference to the triangle at index i
-	*/
-	const triangle_type&    triangle_at(unsigned int i)const;
+       /** creates a new mesh from given input data
+           \param triangles the triangle data (required)
+           \param vertices the vertex data (required)
+           \param normals per vertex normals - can be NULL, in this case then the normals are calculated
+           \param colors per vertex color
+           \param scales
+       */
+       CTriangleMesh(PTrianglefield triangles,
+                     PVertexfield vertices,
+                     PNormalfield normals,
+                     PColorfield colors,
+                     PScalefield scales);
 
-	/*!
-	  \returns a const reference to the i-th vertex
-		*/
-	const vertex_type&      vertex_at(unsigned int i)const;
-
-	/*!
-	  \returns a const reference to the normal of the i-th vertex
-	*/
-	const normal_type&      normal_at(unsigned int i)const;
-
-	/*!
-	  \returns a const reference to the scale at the i-th vertex
-	*/
-	const scale_type&       scale_at(unsigned int i)const;
-
-	/**
-	   \returns the color at the given index i 
-	   \param i 
-	 */
-	const color_type&       color_at(unsigned int i)const;
+       /** creates a new mesh from given input data
+           \param triangles the triangle data (required)
+           \param vertices the vertex data (required)
+       */
+       CTriangleMesh(PTrianglefield triangles, PVertexfield vertices);
 
 
-	const CVertexfield& get_vertices() const;
-	const CTrianglefield& get_triangles() const; 
+       /// \returns a copy of this mesh
+       CTriangleMesh *clone() const __attribute__((warn_unused_result));
 
-	/// \cond SELFEXPLAINING 
-	const_triangle_iterator triangles_begin() const;
-	triangle_iterator       triangles_begin();
-	const_triangle_iterator triangles_end() const;
-	triangle_iterator       triangles_end();
+       /** \returns a  mesh where the connectivity is copied, the vertices are allocated, but not set,
+           and without normals and scale values */
+       CTriangleMesh clone_connectivity()const;
 
-	const_vertex_iterator vertices_begin()const;
-	const_vertex_iterator vertices_end()const;
-	vertex_iterator       vertices_begin();
-	vertex_iterator       vertices_end();
+       /// Destructor - it releases all the data
+       ~CTriangleMesh();
 
-	const_normal_iterator normals_begin()const;
-	const_normal_iterator normals_end()const;
-	normal_iterator       normals_begin();
-	normal_iterator       normals_end();
+       /*!
+         \returns a type sescription name usefull for some plugin handling
+       */
+       static const std::string get_type_description();
 
-	const_scale_iterator scale_begin()const;
-	const_scale_iterator scale_end()const;
-	scale_iterator       scale_begin();
-	scale_iterator       scale_end();
+       /*!
+         \returns a set of \a EData flags indicating which data is available
+       */
+       int get_available_data() const;
 
-	const_color_iterator color_begin()const;
-	const_color_iterator color_end()const;
-	color_iterator       color_begin();
-	color_iterator       color_end();
-	/// \endcond 
-	
-	/** \returns the format the mesh was given in the beginning */
-	const std::string& get_sourceformat()const {
-			return m_sourceformat;
-	}
+       /*!
+         \returns a raw pointer to the vertices
+       */
+       const void *get_vertex_pointer()const;
 
-	/** \param fmt set the save format of the mesh */
-	void set_sourceformat(const std::string& fmt){
-		m_sourceformat = fmt;
-	}
+       /*!
+         \returns a raw pointer to the normals
+       */
+       const void *get_normal_pointer()const;
 
-	/** Force the re-evaluation of the normals of the mesh. The normal at a vertex
-	    is evaluared as the area-weighted average of the normals of the triangles,
-	    the vertex is part of.
-	*/
 
-	void evaluate_normals();
+       /*!
+         \returns a raw pointer to the triangles
+       */
+       const void *get_triangle_pointer()const;
+
+       /*!
+         \returns a raw pointer to the colors
+       */
+       const void *get_color_pointer()const;
+
+
+       /*!
+         \returns the number of triangles, the mesh consists of
+       */
+       unsigned int triangle_size()const;
+
+       /*!
+         \returns the number of vertices the mesh consists of
+       */
+       unsigned int vertices_size()const;
+
+       /*!
+         \returns a cost reference to the triangle at index i
+       */
+       const triangle_type&    triangle_at(unsigned int i)const;
+
+       /*!
+         \returns a const reference to the i-th vertex
+       	*/
+       const vertex_type&      vertex_at(unsigned int i)const;
+
+       /*!
+         \returns a const reference to the normal of the i-th vertex
+       */
+       const normal_type&      normal_at(unsigned int i)const;
+
+       /*!
+         \returns a const reference to the scale at the i-th vertex
+       */
+       const scale_type&       scale_at(unsigned int i)const;
+
+       /**
+          \returns the color at the given index i
+          \param i
+        */
+       const color_type&       color_at(unsigned int i)const;
+
+
+       const CVertexfield& get_vertices() const;
+       const CTrianglefield& get_triangles() const;
+
+       /// \cond SELFEXPLAINING
+       const_triangle_iterator triangles_begin() const;
+       triangle_iterator       triangles_begin();
+       const_triangle_iterator triangles_end() const;
+       triangle_iterator       triangles_end();
+
+       const_vertex_iterator vertices_begin()const;
+       const_vertex_iterator vertices_end()const;
+       vertex_iterator       vertices_begin();
+       vertex_iterator       vertices_end();
+
+       const_normal_iterator normals_begin()const;
+       const_normal_iterator normals_end()const;
+       normal_iterator       normals_begin();
+       normal_iterator       normals_end();
+
+       const_scale_iterator scale_begin()const;
+       const_scale_iterator scale_end()const;
+       scale_iterator       scale_begin();
+       scale_iterator       scale_end();
+
+       const_color_iterator color_begin()const;
+       const_color_iterator color_end()const;
+       color_iterator       color_begin();
+       color_iterator       color_end();
+       /// \endcond
+
+       /** \returns the format the mesh was given in the beginning */
+       const std::string& get_sourceformat()const
+       {
+              return m_sourceformat;
+       }
+
+       /** \param fmt set the save format of the mesh */
+       void set_sourceformat(const std::string& fmt)
+       {
+              m_sourceformat = fmt;
+       }
+
+       /** Force the re-evaluation of the normals of the mesh. The normal at a vertex
+           is evaluared as the area-weighted average of the normals of the triangles,
+           the vertex is part of.
+       */
+
+       void evaluate_normals();
 
 private:
-	std::string m_sourceformat;
-	struct CTriangleMeshData * data;
+       std::string m_sourceformat;
+       struct CTriangleMeshData *data;
 };
 
 /// Pointer type of the CTriangle mesh class
 typedef CTriangleMesh::Pointer PTriangleMesh;
 
 
-PTriangleMesh EXPORT_MESH get_sub_mesh(const CTriangleMesh& mesh, const std::vector<unsigned>& triangle_indices); 
-	
+PTriangleMesh EXPORT_MESH get_sub_mesh(const CTriangleMesh& mesh, const std::vector<unsigned>& triangle_indices);
+
 
 /** This function is used to generate  the deformation scale of a mesh as the
     scalar product of the surface normal and a deformation field.
@@ -296,23 +300,19 @@ PTriangleMesh EXPORT_MESH get_sub_mesh(const CTriangleMesh& mesh, const std::vec
 template <class Deformation>
 void colorize_mesh(CTriangleMesh  *mesh, const Deformation& deform)
 {
-	if (! (mesh->get_available_data() & CTriangleMesh::ed_normal))
-		mesh->evaluate_normals();
+       if (! (mesh->get_available_data() & CTriangleMesh::ed_normal))
+              mesh->evaluate_normals();
 
-	// make sure we use the const versions of some iterators to keep the sharing of
-	// vertex (and evl. normal) data
-	const CTriangleMesh& cmesh = *mesh;
+       // make sure we use the const versions of some iterators to keep the sharing of
+       // vertex (and evl. normal) data
+       const CTriangleMesh& cmesh = *mesh;
+       CTriangleMesh::scale_iterator  sb = mesh->scale_begin();
+       CTriangleMesh::scale_iterator  se = mesh->scale_end();
+       CTriangleMesh::const_vertex_iterator vb = cmesh.vertices_begin();
+       CTriangleMesh::const_normal_iterator nb = cmesh.normals_begin();
 
-
-	CTriangleMesh::scale_iterator  sb = mesh->scale_begin();
-	CTriangleMesh::scale_iterator  se = mesh->scale_end();
-
-	CTriangleMesh::const_vertex_iterator vb = cmesh.vertices_begin();
-	CTriangleMesh::const_normal_iterator nb = cmesh.normals_begin();
-
-	while (sb != se)
-		*sb++ = dot(*nb++, deform.apply(*vb++));
-
+       while (sb != se)
+              *sb++ = dot(*nb++, deform.apply(*vb++));
 }
 
 
@@ -327,9 +327,9 @@ void colorize_mesh(CTriangleMesh  *mesh, const Deformation& deform)
 template <class Deformation>
 CTriangleMesh colorize_mesh(const CTriangleMesh& mesh, const Deformation& deform)
 {
-	CTriangleMesh result(mesh);
-	colorize_mesh(&result,deform);
-	return result;
+       CTriangleMesh result(mesh);
+       colorize_mesh(&result, deform);
+       return result;
 }
 
 
@@ -343,11 +343,11 @@ CTriangleMesh colorize_mesh(const CTriangleMesh& mesh, const Deformation& deform
 /// IO plugin for triangular meshes
 typedef TIOPlugin<CTriangleMesh> CMeshIOPlugin;
 
-extern template class EXPORT_MESH TPlugin<CTriangleMesh, io_plugin_type>; 
-extern template class EXPORT_MESH TIOPlugin<CTriangleMesh>; 
+extern template class EXPORT_MESH TPlugin<CTriangleMesh, io_plugin_type>;
+extern template class EXPORT_MESH TIOPlugin<CTriangleMesh>;
 
-/// Plug-in handler for triangulat mesh IO 
-typedef THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;
+/// Plug-in handler for triangulat mesh IO
+typedef THandlerSingleton<TIOPluginHandler<CMeshIOPlugin>> CMeshIOPluginHandler;
 
 
 NS_MIA_END

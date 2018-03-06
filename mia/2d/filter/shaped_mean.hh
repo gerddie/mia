@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,27 +24,29 @@
 NS_BEGIN( shapedmean_2dimage_filter)
 
 
-class C2DShapedMean : public mia::C2DFilter {
+class C2DShapedMean : public mia::C2DFilter
+{
 public:
-	C2DShapedMean(mia::P2DShape shape);
+       C2DShapedMean(mia::P2DShape shape);
 
-	template <class T>
-	typename C2DShapedMean::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <class T>
+       typename C2DShapedMean::result_type operator () (const mia::T2DImage<T>& data) const;
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	mia::P2DShape m_shape; 
+       mia::P2DShape m_shape;
 };
 
 
-class C2DShapedMeanFilterPlugin: public mia::C2DFilterPlugin {
+class C2DShapedMeanFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DShapedMeanFilterPlugin();
+       C2DShapedMeanFilterPlugin();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 
-	mia::P2DShape m_shape;
+       mia::P2DShape m_shape;
 };
 
 NS_END

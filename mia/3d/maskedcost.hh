@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,34 +27,34 @@
 NS_MIA_BEGIN
 
 /**
-   @ingroup registration 
-   @brief the image-to-image cost function base class 
+   @ingroup registration
+   @brief the image-to-image cost function base class
 */
 typedef TMaskedCost<C3DImage, C3DBitImage, C3DFVectorfield> C3DMaskedImageCost;
 
 /**
-   @ingroup registration 
-   @brief pointer type of the image-to-image cost function base class 
+   @ingroup registration
+   @brief pointer type of the image-to-image cost function base class
 */
 typedef std::shared_ptr<C3DMaskedImageCost > P3DMaskedImageCost;
 
 /**
-   @ingroup registration 
-   @brief plug-in for the image-to-image cost function base class 
+   @ingroup registration
+   @brief plug-in for the image-to-image cost function base class
 */
 typedef TFactory<C3DMaskedImageCost> C3DMaskedImageCostPlugin;
 
 /**
-   @ingroup registration 
-   @brief plug-in handler for the image-to-image cost function base class 
+   @ingroup registration
+   @brief plug-in handler for the image-to-image cost function base class
 */
-typedef THandlerSingleton<TFactoryPluginHandler<C3DMaskedImageCostPlugin> > C3DMaskedImageCostPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<C3DMaskedImageCostPlugin>> C3DMaskedImageCostPluginHandler;
 
-/// @cond NEVER 
+/// @cond NEVER
 FACTORY_TRAIT(C3DMaskedImageCostPluginHandler);
-/// @endcond 
+/// @endcond
 
 NS_MIA_END
 
 
-#endif 
+#endif

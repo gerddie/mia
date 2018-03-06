@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,39 +24,36 @@
 #include <vtk/vtkvf.hh>
 #include <unistd.h>
 
-using namespace mia; 
-using namespace std; 
-using namespace vtkvf; 
+using namespace mia;
+using namespace std;
+using namespace vtkvf;
 
 
-BOOST_AUTO_TEST_CASE( test_simple_write_read ) 
+BOOST_AUTO_TEST_CASE( test_simple_write_read )
 {
-	C3DBounds size(2,3,4);
-	C3DIOVectorfield vf(size); 
+       C3DBounds size(2, 3, 4);
+       C3DIOVectorfield vf(size);
+       auto iv = vf.begin_range(C3DBounds::_0, size);
+       auto ev = vf.end_range(C3DBounds::_0, size);
 
-	auto iv = vf.begin_range(C3DBounds::_0, size); 
-	auto ev = vf.end_range(C3DBounds::_0, size);
+       while (iv != ev) {
+              *iv = C3DFVector(iv.pos());
+              ++iv;
+       }
 
-	while (iv != ev) {
-		*iv = C3DFVector(iv.pos());
-		++iv; 
-	}
+       CVtk3DVFIOPlugin io;
+       BOOST_REQUIRE(io.save("testvf.vtk", vf));
+       auto loaded = io.load("testvf.vtk");
+       BOOST_REQUIRE(loaded);
+       BOOST_REQUIRE(loaded->get_size() == size);
+       iv = vf.begin_range(C3DBounds::_0, size);
+       auto il = loaded->begin_range(C3DBounds::_0, size);
 
-	CVtk3DVFIOPlugin io; 
-	BOOST_REQUIRE(io.save("testvf.vtk", vf)); 
-	
-	auto loaded = io.load("testvf.vtk"); 
-	BOOST_REQUIRE(loaded); 
-	
-	BOOST_REQUIRE(loaded->get_size() == size); 
-	
-	iv = vf.begin_range(C3DBounds::_0, size); 
-	auto il = loaded->begin_range(C3DBounds::_0, size); 
-	
-	while (iv != ev) {
-		BOOST_CHECK_EQUAL(*il, *iv); 
-		++iv; 
-		++il; 
-	}
-        unlink("testvf.vtk"); 
+       while (iv != ev) {
+              BOOST_CHECK_EQUAL(*il, *iv);
+              ++iv;
+              ++il;
+       }
+
+       unlink("testvf.vtk");
 }

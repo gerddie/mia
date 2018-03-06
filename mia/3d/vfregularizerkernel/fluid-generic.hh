@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,50 +25,52 @@
 
 NS_MIA_BEGIN
 
-class  C3DFVfFluidStandardRegularizerKernel: public C3DFVectorfieldRegularizerKernel {
-public: 
-        C3DFVfFluidStandardRegularizerKernel(float mu, float lambda, float relax); 
-	
-	void multiply_with_matrix(C3DFVectorfield& out, const C3DFVectorfield& in);  
+class  C3DFVfFluidStandardRegularizerKernel: public C3DFVectorfieldRegularizerKernel
+{
+public:
+       C3DFVfFluidStandardRegularizerKernel(float mu, float lambda, float relax);
 
-private: 
-	void post_set_data_fields(); 
+       void multiply_with_matrix(C3DFVectorfield& out, const C3DFVectorfield& in);
 
-        float do_evaluate_row(unsigned y, unsigned z, CBuffers& buf); 
-                
-        float do_evaluate_row_sparse(unsigned y, unsigned z, CBuffers& buf); 
+private:
+       void post_set_data_fields();
 
-	float do_evaluate_pertuberation_row(unsigned  y, unsigned  z, CBuffers& buffers) const; 
+       float do_evaluate_row(unsigned y, unsigned z, CBuffers& buf);
 
-	unsigned do_get_boundary_padding() const; 
-        
-        void set_update_flags(unsigned idx); 
+       float do_evaluate_row_sparse(unsigned y, unsigned z, CBuffers& buf);
 
-	float solve_at(C3DFVector *v, const C3DFVector& b); 
+       float do_evaluate_pertuberation_row(unsigned  y, unsigned  z, CBuffers& buffers) const;
 
-        float m_a; 
-        float m_a_b; 
-        float m_b4; 
-        float m_relax; 
-        float m_c; 
-        int m_dx;
-	int m_dxy;
+       unsigned do_get_boundary_padding() const;
 
-}; 
+       void set_update_flags(unsigned idx);
 
-class  C3DFVfFluidStandardRegularizerKernelPlugin: public C3DFVectorfieldRegularizerKernelPlugin {
-public: 
-        C3DFVfFluidStandardRegularizerKernelPlugin(); 
-        
-private: 
-        C3DFVfFluidStandardRegularizerKernel *do_create() const;
-        
-        const std::string do_get_descr() const;
+       float solve_at(C3DFVector *v, const C3DFVector& b);
 
-        float m_mu; 
-        float m_lambda; 
-        float m_relax; 
-}; 
+       float m_a;
+       float m_a_b;
+       float m_b4;
+       float m_relax;
+       float m_c;
+       int m_dx;
+       int m_dxy;
+
+};
+
+class  C3DFVfFluidStandardRegularizerKernelPlugin: public C3DFVectorfieldRegularizerKernelPlugin
+{
+public:
+       C3DFVfFluidStandardRegularizerKernelPlugin();
+
+private:
+       C3DFVfFluidStandardRegularizerKernel *do_create() const;
+
+       const std::string do_get_descr() const;
+
+       float m_mu;
+       float m_lambda;
+       float m_relax;
+};
 
 NS_MIA_END
-#endif 
+#endif

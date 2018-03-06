@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,57 +27,59 @@
 
 NS_BEGIN(nlopt)
 
-extern const mia::TDictMap<nlopt_algorithm>::Table optimizer_table[];  
+extern const mia::TDictMap<nlopt_algorithm>::Table optimizer_table[];
 
 struct SOpt {
-	SOpt(); 
-	nlopt_algorithm algo; 
-	nlopt_algorithm local_opt;
-	double stopval; 
-	double abs_xtol; 
-	double rel_xtol; 
-	double rel_ftol; 
-	double abs_ftol; 
-	double step; 
-	double min_boundary; 
-	double max_boundary;
-	int maxiter; 
-}; 
+       SOpt();
+       nlopt_algorithm algo;
+       nlopt_algorithm local_opt;
+       double stopval;
+       double abs_xtol;
+       double rel_xtol;
+       double rel_ftol;
+       double abs_ftol;
+       double step;
+       double min_boundary;
+       double max_boundary;
+       int maxiter;
+};
 
 
 // The FDF minimizer of the NOPT
-class CNLOptFDFMinimizer : public mia::CMinimizer {
-public: 
+class CNLOptFDFMinimizer : public mia::CMinimizer
+{
+public:
 
-	CNLOptFDFMinimizer(const SOpt& options);
-	
-	~CNLOptFDFMinimizer(); 
+       CNLOptFDFMinimizer(const SOpt& options);
 
-	static double fdf(unsigned n, const double *x, double *grad, void *self); 
-	
-		
+       ~CNLOptFDFMinimizer();
 
-private: 
-	virtual void do_set_problem();
-	virtual int do_run(mia::CDoubleVector& x);
+       static double fdf(unsigned n, const double *x, double *grad, void *self);
 
-	bool require_gradient(nlopt_algorithm algo) const;
 
-	nlopt_opt m_opt;
-	SOpt m_options; 
 
-}; 
-
-class CNLOptMinimizerPlugin: public mia::CMinimizerPlugin {
-public: 
-	CNLOptMinimizerPlugin();
 private:
-	mia::CMinimizer *do_create() const;
-	const std::string do_get_descr() const;
+       virtual void do_set_problem();
+       virtual int do_run(mia::CDoubleVector& x);
 
-	SOpt m_options;
+       bool require_gradient(nlopt_algorithm algo) const;
 
-}; 
+       nlopt_opt m_opt;
+       SOpt m_options;
+
+};
+
+class CNLOptMinimizerPlugin: public mia::CMinimizerPlugin
+{
+public:
+       CNLOptMinimizerPlugin();
+private:
+       mia::CMinimizer *do_create() const;
+       const std::string do_get_descr() const;
+
+       SOpt m_options;
+
+};
 
 NS_END
 

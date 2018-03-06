@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,65 +29,64 @@
 #include <boost/serialization/split_free.hpp>
 #include <mia/3d/transformfactory.hh>
 
-namespace boost { namespace serialization {
-template<class Archive>
-void save(Archive & ar, const mia::C3DTransformation& t, unsigned int )
+namespace boost
 {
-	ar << make_nvp("creator", t.get_creator_string()); 
-	ar << make_nvp("size_x", t.get_size().x); 
-	ar << make_nvp("size_y", t.get_size().y); 
-	ar << make_nvp("size_z", t.get_size().z); 
+namespace serialization
+{
+template<class Archive>
+void save(Archive& ar, const mia::C3DTransformation& t, unsigned int )
+{
+       ar << make_nvp("creator", t.get_creator_string());
+       ar << make_nvp("size_x", t.get_size().x);
+       ar << make_nvp("size_y", t.get_size().y);
+       ar << make_nvp("size_z", t.get_size().z);
+       std::map<std::string, std::string> attr;
 
-	std::map<std::string, std::string> attr; 
-	for (auto i = t.begin_attributes(); i != t.end_attributes(); ++i) {
-		attr.insert(std::make_pair(i->first, i->second->as_string())); 
-	}
-	ar << make_nvp("attributes", attr);
+       for (auto i = t.begin_attributes(); i != t.end_attributes(); ++i) {
+              attr.insert(std::make_pair(i->first, i->second->as_string()));
+       }
 
-	auto params = t.get_parameters(); 
-	std::vector<double> help(params.size()); 
-	std::copy(params.begin(), params.end(), help.begin()); 
-	ar << make_nvp("params", help);
+       ar << make_nvp("attributes", attr);
+       auto params = t.get_parameters();
+       std::vector<double> help(params.size());
+       std::copy(params.begin(), params.end(), help.begin());
+       ar << make_nvp("params", help);
 }
 
 template<class Archive>
-void load(Archive & ar, mia::P3DTransformation & t, unsigned int )
+void load(Archive& ar, mia::P3DTransformation& t, unsigned int )
 {
-	std::string init; 
-	mia::C3DBounds size; 
-	std::vector<double> help; 
-	
-	ar >> make_nvp("creator",init); 
-	ar >> make_nvp("size_x",size.x); 
-	ar >> make_nvp("size_y",size.y); 
-	ar >> make_nvp("size_z",size.z); 
+       std::string init;
+       mia::C3DBounds size;
+       std::vector<double> help;
+       ar >> make_nvp("creator", init);
+       ar >> make_nvp("size_x", size.x);
+       ar >> make_nvp("size_y", size.y);
+       ar >> make_nvp("size_z", size.z);
+       std::map<std::string, std::string> attr;
+       ar >> make_nvp("attributes", attr);
+       ar >> make_nvp("params", help);
+       auto creator = mia::C3DTransformCreatorHandler::instance().produce(init);
+       t = creator->create(size);
+       auto params = t->get_parameters();
+       assert(params.size() == help.size());
+       std::copy(help.begin(), help.end(), params.begin());
+       t->set_parameters(params);
 
-	std::map<std::string, std::string> attr; 
-	ar >> make_nvp("attributes", attr); 
-
-	ar >> make_nvp("params", help); 
-
-	auto creator = mia::C3DTransformCreatorHandler::instance().produce(init);  
-	t = creator->create(size); 
-	auto params = t->get_parameters(); 
-	assert(params.size() == help.size()); 
-	std::copy(help.begin(), help.end(), params.begin()); 
-	t->set_parameters(params); 
-
-	for(auto i = attr.begin(); i != attr.end(); ++i) {
-		t->set_attribute(i->first, mia::CStringAttrTranslatorMap::instance().to_attr(i->first, i->second)); 
-	}
-
+       for (auto i = attr.begin(); i != attr.end(); ++i) {
+              t->set_attribute(i->first, mia::CStringAttrTranslatorMap::instance().to_attr(i->first, i->second));
+       }
 }
 
 /*
 template<class Archive, class Object>
 inline void serialize(Archive & ar, Object & t, const unsigned int file_version)
 {
-    split_free(ar, t, file_version); 
+    split_free(ar, t, file_version);
 }
 */
 
-}}
+}
+}
 
 #endif

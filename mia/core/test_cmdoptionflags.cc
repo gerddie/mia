@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,26 +22,21 @@
 #include <mia/core/cmdoptionflags.hh>
 
 
-NS_MIA_USE; 
+NS_MIA_USE;
 
-BOOST_AUTO_TEST_CASE( test_some_combinations ) 
+BOOST_AUTO_TEST_CASE( test_some_combinations )
 {
-        BOOST_CHECK_EQUAL(CCmdOptionFlags::required_output & CCmdOptionFlags::output, CCmdOptionFlags::output); 
-        BOOST_CHECK_EQUAL(CCmdOptionFlags::required_input & CCmdOptionFlags::input, CCmdOptionFlags::input); 
-
-        BOOST_CHECK_EQUAL(CCmdOptionFlags::input | CCmdOptionFlags::required, CCmdOptionFlags::required_input);
-        BOOST_CHECK_EQUAL(CCmdOptionFlags::output | CCmdOptionFlags::required, CCmdOptionFlags::required_output);
-
-
-        BOOST_CHECK(has_flag(CCmdOptionFlags::required_output, CCmdOptionFlags::output)); 
-        BOOST_CHECK(has_flag(CCmdOptionFlags::required_input, CCmdOptionFlags::input)); 
-
+       BOOST_CHECK_EQUAL(CCmdOptionFlags::required_output & CCmdOptionFlags::output, CCmdOptionFlags::output);
+       BOOST_CHECK_EQUAL(CCmdOptionFlags::required_input & CCmdOptionFlags::input, CCmdOptionFlags::input);
+       BOOST_CHECK_EQUAL(CCmdOptionFlags::input | CCmdOptionFlags::required, CCmdOptionFlags::required_input);
+       BOOST_CHECK_EQUAL(CCmdOptionFlags::output | CCmdOptionFlags::required, CCmdOptionFlags::required_output);
+       BOOST_CHECK(has_flag(CCmdOptionFlags::required_output, CCmdOptionFlags::output));
+       BOOST_CHECK(has_flag(CCmdOptionFlags::required_input, CCmdOptionFlags::input));
 }
 
-BOOST_AUTO_TEST_CASE( test_some_ops ) 
+BOOST_AUTO_TEST_CASE( test_some_ops )
 {
-        CCmdOptionFlags flags = CCmdOptionFlags::required_output; 
-        
-        flags -= CCmdOptionFlags::output; 
-        BOOST_CHECK_EQUAL(flags, CCmdOptionFlags::required); 
+       CCmdOptionFlags flags = CCmdOptionFlags::required_output;
+       flags -= CCmdOptionFlags::output;
+       BOOST_CHECK_EQUAL(flags, CCmdOptionFlags::required);
 }

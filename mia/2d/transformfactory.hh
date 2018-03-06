@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,41 +29,41 @@
 
 NS_MIA_BEGIN
 
-/** 
+/**
     @ingroup registration
-    \brief The base class for 2D transformation creators 
-    \remark should the name be C2DTransformFactory? 
-*/ 
-typedef TTransformCreator<C2DTransformation>  C2DTransformCreator; 
+    \brief The base class for 2D transformation creators
+    \remark should the name be C2DTransformFactory?
+*/
+typedef TTransformCreator<C2DTransformation>  C2DTransformCreator;
 
-/** 
+/**
     @ingroup registration
     \brief Pointer type to the transformation factory
 */
 typedef std::shared_ptr<C2DTransformCreator > P2DTransformationFactory;
 
-typedef TTransformCreatorPlugin<C2DTransformation>  C2DTransformCreatorPlugin; 
+typedef TTransformCreatorPlugin<C2DTransformation>  C2DTransformCreatorPlugin;
 
-/** 
+/**
     @ingroup registration
     \brief The plugin handler to manage the transformation creators
 */
-typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin>> C2DTransformCreatorHandler;
 
 
 /**
-   Produce a transformation creator from a string 
+   Produce a transformation creator from a string
    \param descr description of the transformation type
-   \returns the creator for the transformation type 
+   \returns the creator for the transformation type
  */
-inline P2DTransformationFactory produce_2dtransform_factory(const std::string& descr) 
+inline P2DTransformationFactory produce_2dtransform_factory(const std::string& descr)
 {
-	return C2DTransformCreatorHandler::instance().produce(descr); 
+       return C2DTransformCreatorHandler::instance().produce(descr);
 }
 
-/// @cond NEVER  
-FACTORY_TRAIT(C2DTransformCreatorHandler); 
-/// @endcond 
+/// @cond NEVER
+FACTORY_TRAIT(C2DTransformCreatorHandler);
+/// @endcond
 NS_MIA_END
 
 

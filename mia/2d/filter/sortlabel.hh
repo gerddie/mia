@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,20 +22,22 @@
 
 NS_BEGIN(sort_label_2dimage_filter)
 
-class CSortLabel: public mia::C2DFilter {
+class CSortLabel: public mia::C2DFilter
+{
 public:
-	template <typename T> 
-	mia::P2DImage operator() (const mia::T2DImage<T>& image) const; 
+       template <typename T>
+       mia::P2DImage operator() (const mia::T2DImage<T>& image) const;
 private:
-	CSortLabel::result_type do_filter(const mia::C2DImage& image) const;
+       CSortLabel::result_type do_filter(const mia::C2DImage& image) const;
 };
 
-class CSortLabelFilterPlugin: public mia::C2DFilterPlugin {
+class CSortLabelFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	CSortLabelFilterPlugin();
+       CSortLabelFilterPlugin();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

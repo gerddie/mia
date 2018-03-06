@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -46,53 +46,54 @@
 NS_MIA_BEGIN
 
 
-class TFluidReg {
-	C2DFVectorfield v;			// velocity field
-	C2DFVectorfield B;			// force field
-	C2DFVectorfield u;			// displacement field
-	C2DFVectorfield r;			// perturbation field
+class TFluidReg
+{
+       C2DFVectorfield v;			// velocity field
+       C2DFVectorfield B;			// force field
+       C2DFVectorfield u;			// displacement field
+       C2DFVectorfield r;			// perturbation field
 
-	C2DFImage Ref;
-	C2DFImage Model;
-	C2DFImage Template;
-	std::shared_ptr<T2DInterpolator<float> >  target_interp;
+       C2DFImage Ref;
+       C2DFImage Model;
+       C2DFImage Template;
+       std::shared_ptr<T2DInterpolator<float>>  target_interp;
 
 
-	float min_stepsize;
-	C2DBounds Start,End;
+       float min_stepsize;
+       C2DBounds Start, End;
 
-	bool final_level;
-	float epsilon;
-	float  	delta;  		// step size
-	float  	stepSize;		// step size
-	float  	lambda, mu;		// elasticity constants
-  	float   omega;			// overrelaxation factor
-	float  	a_,a, b, c, a_b,b_4;		// integration constants
-	float  regrid_thresh;
+       bool final_level;
+       float epsilon;
+       float  	delta;  		// step size
+       float  	stepSize;		// step size
+       float  	lambda, mu;		// elasticity constants
+       float   omega;			// overrelaxation factor
+       float  	a_, a, b, c, a_b, b_4;		// integration constants
+       float  regrid_thresh;
 public:
-	TFluidReg(const C2DFImage& _Ref, const C2DFImage& _Model, float __regrid_thresh, int level,
-		  float __epsilon, float __lambda, float __mu);
-	~TFluidReg();
+       TFluidReg(const C2DFImage& _Ref, const C2DFImage& _Model, float __regrid_thresh, int level,
+                 float __epsilon, float __lambda, float __mu);
+       ~TFluidReg();
 
 
-	float  solveAt(unsigned int x, unsigned int y);
-	void	solvePDE(unsigned int nit);
-	//	void	solvePDE(C2DFVectorfield& v, const C2DFVectorfield& B, unsigned int nit);
+       float  solveAt(unsigned int x, unsigned int y);
+       void	solvePDE(unsigned int nit);
+       //	void	solvePDE(C2DFVectorfield& v, const C2DFVectorfield& B, unsigned int nit);
 
 
-	C2DFVector  forceAt(const C2DFVector &p, float s);
-	void	calculateForces();
-	float  calculateMismatch(bool apply);
-	bool	decreaseStep();
-	void	increaseStep();
-	void work(C2DFVectorfield *Shift, const C2DInterpolatorFactory& ipfac);
+       C2DFVector  forceAt(const C2DFVector& p, float s);
+       void	calculateForces();
+       float  calculateMismatch(bool apply);
+       bool	decreaseStep();
+       void	increaseStep();
+       void work(C2DFVectorfield *Shift, const C2DInterpolatorFactory& ipfac);
 
 private:
 
-float  perturbationAt(unsigned int x, unsigned int y);
-float  calculatePerturbation();
-float  jacobianAt(unsigned int x, unsigned int y);
-float  calculateJacobian();
+       float  perturbationAt(unsigned int x, unsigned int y);
+       float  calculatePerturbation();
+       float  jacobianAt(unsigned int x, unsigned int y);
+       float  calculateJacobian();
 
 
 
@@ -103,20 +104,22 @@ float  calculateJacobian();
 
 inline bool TFluidReg::decreaseStep()
 {
-	stepSize *= 0.5;
-	if (stepSize >= min_stepsize) {
-		return true;
-	}else {
-		stepSize = min_stepsize;
-		return false;
-	}
+       stepSize *= 0.5;
+
+       if (stepSize >= min_stepsize) {
+              return true;
+       } else {
+              stepSize = min_stepsize;
+              return false;
+       }
 }
 
 inline void TFluidReg::increaseStep()
 {
-	stepSize *= 1.5;
-	if (stepSize > MAX_STEP)
-		stepSize = MAX_STEP;
+       stepSize *= 1.5;
+
+       if (stepSize > MAX_STEP)
+              stepSize = MAX_STEP;
 }
 
 #endif

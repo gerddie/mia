@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,50 +29,49 @@ NS_MIA_USE
 using namespace std;
 
 struct DeformFixture {
-	DeformFixture();
-	void check(const string& ip);
+       DeformFixture();
+       void check(const string& ip);
 
-	C3DFVector voxel;
-	C3DBounds size;
-	C3DFVectorfield transform;
-	C3DFImage image;
+       C3DFVector voxel;
+       C3DBounds size;
+       C3DFVectorfield transform;
+       C3DFImage image;
 };
 
 DeformFixture::DeformFixture():
-	voxel(1,2,3),
-	size(8,7,9),
-	transform(size),
-	image(size)
+       voxel(1, 2, 3),
+       size(8, 7, 9),
+       transform(size),
+       image(size)
 {
-	image(4,3,5) = 1;
-	transform(4,4,5) = C3DFVector(0,1,0);
-	transform(5,3,5) = C3DFVector(1,0,0);
-	transform(4,3,6) = C3DFVector(0,0,1);
-	image.set_voxel_size(voxel);
+       image(4, 3, 5) = 1;
+       transform(4, 4, 5) = C3DFVector(0, 1, 0);
+       transform(5, 3, 5) = C3DFVector(1, 0, 0);
+       transform(4, 3, 6) = C3DFVector(0, 0, 1);
+       image.set_voxel_size(voxel);
 }
 
 void DeformFixture::check(const string& ip)
 {
-	C3DInterpolatorFactory ipf(ip,"mirror");
-	FDeformer3D d(transform, ipf);
-	C3DImage& img = image;
-	P3DImage result = mia::filter(d, img);
-	const C3DFImage& r = dynamic_cast<const C3DFImage&>(*result);
-	BOOST_REQUIRE(r.get_size() == size);
-	BOOST_CHECK_EQUAL(r(4,4,5), 1);
-	BOOST_CHECK_EQUAL(r(5,3,5), 1);
-	BOOST_CHECK_EQUAL(r(4,3,6), 1);
-
-	BOOST_CHECK_EQUAL(r.get_voxel_size(), voxel);
+       C3DInterpolatorFactory ipf(ip, "mirror");
+       FDeformer3D d(transform, ipf);
+       C3DImage& img = image;
+       P3DImage result = mia::filter(d, img);
+       const C3DFImage& r = dynamic_cast<const C3DFImage&>(*result);
+       BOOST_REQUIRE(r.get_size() == size);
+       BOOST_CHECK_EQUAL(r(4, 4, 5), 1);
+       BOOST_CHECK_EQUAL(r(5, 3, 5), 1);
+       BOOST_CHECK_EQUAL(r(4, 3, 6), 1);
+       BOOST_CHECK_EQUAL(r.get_voxel_size(), voxel);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_deform_nn, DeformFixture )
 {
-	check("bspline:d=0");
+       check("bspline:d=0");
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_deform_bspline3, DeformFixture )
 {
-	check("bspline:d=3");
+       check("bspline:d=3");
 }

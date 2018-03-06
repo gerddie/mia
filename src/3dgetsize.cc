@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -34,33 +34,33 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
-	{pdi_short, "Print the dimensions of a 3D image."}, 
-	{pdi_description, "Write the dimensions of the input 3D image to stdout."}, 
-	{pdi_example_descr, "Print out the size of image.v."}, 
-	{pdi_example_code, "-i image.v"}
-}; 
+       {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"},
+       {pdi_short, "Print the dimensions of a 3D image."},
+       {pdi_description, "Write the dimensions of the input 3D image to stdout."},
+       {pdi_example_descr, "Print out the size of image.v."},
+       {pdi_example_code, "-i image.v"}
+};
 
 int do_main( int argc, char *argv[] )
 {
-	string in_filename;
-	const auto& imageio3d = C3DImageIOPluginHandler::instance();
-	
-	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
-			      CCmdOptionFlags::required_input, &imageio3d));
-	options.set_stdout_is_result();
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
-	
-	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);
-	
-	
-	if (in_image_list.get() && in_image_list->size()) {
-		cout << (*in_image_list->begin())->get_size() << "\n";
-		return EXIT_SUCCESS;
-	}
-	return EXIT_FAILURE;
+       string in_filename;
+       const auto& imageio3d = C3DImageIOPluginHandler::instance();
+       CCmdOptionList options(g_description);
+       options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered",
+                             CCmdOptionFlags::required_input, &imageio3d));
+       options.set_stdout_is_result();
+
+       if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
+
+       C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);
+
+       if (in_image_list.get() && in_image_list->size()) {
+              cout << (*in_image_list->begin())->get_size() << "\n";
+              return EXIT_SUCCESS;
+       }
+
+       return EXIT_FAILURE;
 }
 
 #include <mia/internal/main.hh>

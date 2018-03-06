@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,27 +27,30 @@
 
 #include <mia/3d/image.hh>
 
-class TLinEqnSolver {
+class TLinEqnSolver
+{
 public:
-	virtual int solve(const mia::C3DFVectorfield& right_side, mia::C3DFVectorfield *solution)=0;
-	virtual ~TLinEqnSolver(){};
+       virtual int solve(const mia::C3DFVectorfield& right_side, mia::C3DFVectorfield *solution) = 0;
+       virtual ~TLinEqnSolver() {};
 };
 
-class TIterLinEqnSolver: public TLinEqnSolver {
+class TIterLinEqnSolver: public TLinEqnSolver
+{
 protected:
-	int max_steps;
-	float rel_res;
-	float abs_res;
+       int max_steps;
+       float rel_res;
+       float abs_res;
 public:
-	TIterLinEqnSolver(int _max_steps, float _rel_res, float _abs_res);
+       TIterLinEqnSolver(int _max_steps, float _rel_res, float _abs_res);
 };
 
 
-class TFluidHomogenSolver : public TIterLinEqnSolver {
+class TFluidHomogenSolver : public TIterLinEqnSolver
+{
 protected:
-	float b_4,a_b,a,c,b;
+       float b_4, a_b, a, c, b;
 public:
-	TFluidHomogenSolver(int _max_steps, float _rel_res, float _abs_res, float mu, float lambda);
+       TFluidHomogenSolver(int _max_steps, float _rel_res, float _abs_res, float mu, float lambda);
 };
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
  */
 
 /*
-  This plug in implements a BOOST binary serialization object for 2D transformations. 
+  This plug in implements a BOOST binary serialization object for 2D transformations.
   The output is non-portable (what ever that  exacly means)
 */
 
@@ -31,57 +31,52 @@
 #include <iostream>
 
 NS_MIA_BEGIN
-using namespace std; 
-namespace bs=boost::serialization; 
+using namespace std;
+namespace bs = boost::serialization;
 
-class C3DXMLTransformationIO: public C3DTransformationIO {
-public: 	
-	C3DXMLTransformationIO(); 
-private: 
-	virtual PData do_load(const std::string& fname) const;
-	virtual bool do_save(const std::string& fname, const C3DTransformation& data) const;
-	const string do_get_descr() const;
-}; 
+class C3DXMLTransformationIO: public C3DTransformationIO
+{
+public:
+       C3DXMLTransformationIO();
+private:
+       virtual PData do_load(const std::string& fname) const;
+       virtual bool do_save(const std::string& fname, const C3DTransformation& data) const;
+       const string do_get_descr() const;
+};
 
 
 C3DXMLTransformationIO::C3DXMLTransformationIO():
-	C3DTransformationIO("xml")
+       C3DTransformationIO("xml")
 {
-	add_suffix(".x3dt");
+       add_suffix(".x3dt");
 }
 
 
 P3DTransformation C3DXMLTransformationIO::do_load(const std::string& fname) const
 {
-	std::ifstream ifs(fname);
-        boost::archive::xml_iarchive ia(ifs);
-        
-	P3DTransformation result; 
-	
-	bs::load(ia, result, 0); 
-
-	return result; 
+       std::ifstream ifs(fname);
+       boost::archive::xml_iarchive ia(ifs);
+       P3DTransformation result;
+       bs::load(ia, result, 0);
+       return result;
 }
 
 bool C3DXMLTransformationIO::do_save(const std::string& fname, const C3DTransformation& data) const
 {
-	ofstream ofs(fname);
-
-        boost::archive::xml_oarchive oa(ofs);
-	
-	bs::save(oa, data, 0); 
-	
-	return ofs.good();
+       ofstream ofs(fname);
+       boost::archive::xml_oarchive oa(ofs);
+       bs::save(oa, data, 0);
+       return ofs.good();
 }
 
 const string C3DXMLTransformationIO::do_get_descr() const
 {
-	return "XML serialized IO of 3D transformations"; 
+       return "XML serialized IO of 3D transformations";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-		return new C3DXMLTransformationIO;
+       return new C3DXMLTransformationIO;
 }
 
 NS_MIA_END

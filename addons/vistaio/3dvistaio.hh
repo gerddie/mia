@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,14 +24,15 @@ NS_BEGIN(vista_3d_io)
 
 
 
-class CVista3DImageIOPlugin : public mia::C3DImageIOPlugin {
+class CVista3DImageIOPlugin : public mia::C3DImageIOPlugin
+{
 public:
-	CVista3DImageIOPlugin();
+       CVista3DImageIOPlugin();
 private:
-        PData do_load(const std::string& fname) const;
-	bool do_save(const std::string& fname, const Data& data) const;
-	const std::string do_get_descr() const;
-	const std::string do_get_preferred_suffix() const; 
+       PData do_load(const std::string& fname) const;
+       bool do_save(const std::string& fname, const Data& data) const;
+       const std::string do_get_descr() const;
+       const std::string do_get_preferred_suffix() const;
 };
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,30 +27,31 @@
 
 NS_MIA_BEGIN
 
-template <typename Image> 
-class EXPORT_HANDLER TImageCombiner : public TFilter< typename Image::Pointer > ,
-				   public CProductBase {
+template <typename Image>
+class EXPORT_HANDLER TImageCombiner : public TFilter< typename Image::Pointer >,
+       public CProductBase
+{
 public:
-	/// data type for plug-in serachpath component 
-	typedef Image plugin_data; 
-	/// plug-in type for plug-in serachpath component 
-	typedef combiner_type plugin_type; 
-	
-        typedef typename TFilter< typename Image::Pointer >::result_type result_type; 
+       /// data type for plug-in serachpath component
+       typedef Image plugin_data;
+       /// plug-in type for plug-in serachpath component
+       typedef combiner_type plugin_type;
 
-	/**
-	   Combine two images by a given operator 
-	   @param a 
-	   @param b 
-	   @returns combined image 
-	   
-	 */
-	result_type combine( const Image& a, const Image& b) const;
+       typedef typename TFilter< typename Image::Pointer >::result_type result_type;
+
+       /**
+          Combine two images by a given operator
+          @param a
+          @param b
+          @returns combined image
+
+        */
+       result_type combine( const Image& a, const Image& b) const;
 private:
-	virtual result_type do_combine( const Image& a, const Image& b) const = 0;
+       virtual result_type do_combine( const Image& a, const Image& b) const = 0;
 };
 
 
 NS_MIA_END
 
-#endif 
+#endif

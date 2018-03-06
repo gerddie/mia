@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -35,15 +35,10 @@ using namespace mia;
 
 BOOST_AUTO_TEST_CASE( test_2dvector_parameter )
 {
-	T2DVector<int> intv_value(1, 2);
-
-	TParameter<T2DVector<int> > param(intv_value, true, "a float vector value");
-
-	BOOST_CHECK_EQUAL(intv_value , T2DVector<int>(1,2));
-
-	param.set("<3,12>");
-	BOOST_CHECK_EQUAL(intv_value , T2DVector<int>(3,12));
-
-
-	BOOST_CHECK_THROW(param.set("<3,12.2"), std::invalid_argument);
+       T2DVector<int> intv_value(1, 2);
+       TParameter<T2DVector<int>> param(intv_value, true, "a float vector value");
+       BOOST_CHECK_EQUAL(intv_value, T2DVector<int>(1, 2));
+       param.set("<3,12>");
+       BOOST_CHECK_EQUAL(intv_value, T2DVector<int>(3, 12));
+       BOOST_CHECK_THROW(param.set("<3,12.2"), std::invalid_argument);
 }

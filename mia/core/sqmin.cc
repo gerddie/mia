@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,27 +29,24 @@ NS_MIA_BEGIN
 // float x0 = 0.0, float x1 = 1.0,
 EXPORT_CORE  double min_ax2_bx_c(double x, double y0, double y1, double y2)
 {
-	assert (x != 0.0 && x != 1.0);
-	const double d10 = y1 - y0;
-	const double d20 = y2 - y0;
-	const double x2 = x * x;
-	const double b = (d10 * x2 - d20) / (x2 - x);
-	const double a = 2.0 * (b - d10);
+       assert (x != 0.0 && x != 1.0);
+       const double d10 = y1 - y0;
+       const double d20 = y2 - y0;
+       const double x2 = x * x;
+       const double b = (d10 * x2 - d20) / (x2 - x);
+       const double a = 2.0 * (b - d10);
 
-	if ( ( ((x > 1.0 ) ? x : 1.0)  * fabs(a) )  <   fabs(b) ) {
-		if ( b > 0 )
-			return 0.0;
-		else
-			return (x > 1.0 ) ? x : 1.0;
-	}
+       if ( ( ((x > 1.0 ) ? x : 1.0)  * fabs(a) )  <   fabs(b) ) {
+              if ( b > 0 )
+                     return 0.0;
+              else
+                     return (x > 1.0 ) ? x : 1.0;
+       }
 
+       if (a * b < 0.0)
+              return 0.0;
 
-
-
-	if (a * b < 0.0)
-		return 0.0;
-
-	return b /  a;
+       return b /  a;
 }
 
 NS_MIA_END

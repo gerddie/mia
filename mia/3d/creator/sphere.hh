@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,26 +22,28 @@
 
 NS_BEGIN(creator_sphere_3d);
 
-class C3DSphereCreator	: public mia::C3DImageCreator {
+class C3DSphereCreator	: public mia::C3DImageCreator
+{
 public:
-	C3DSphereCreator(float f, float p);
-	virtual mia::P3DImage operator () (const mia::C3DBounds& size, mia::EPixelType type) const;
+       C3DSphereCreator(float f, float p);
+       virtual mia::P3DImage operator () (const mia::C3DBounds& size, mia::EPixelType type) const;
 private:
-	template <typename T>
- 	mia::P3DImage do_create(const mia::C3DBounds& size) const;
-	float m_f;
-	double m_p;
+       template <typename T>
+       mia::P3DImage do_create(const mia::C3DBounds& size) const;
+       float m_f;
+       double m_p;
 };
 
 
-class C3DSphereCreatorPlugin : public  mia::C3DImageCreatorPlugin {
+class C3DSphereCreatorPlugin : public  mia::C3DImageCreatorPlugin
+{
 public:
-	C3DSphereCreatorPlugin();
+       C3DSphereCreatorPlugin();
 private:
-	virtual mia::C3DImageCreator *do_create()const;
-	virtual const std::string do_get_descr()const;
-	float m_f;
-	float m_p;
+       virtual mia::C3DImageCreator *do_create()const;
+       virtual const std::string do_get_descr()const;
+       float m_f;
+       float m_p;
 };
 
 NS_END

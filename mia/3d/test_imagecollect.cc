@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -20,38 +20,33 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/imagecollect.hh>
-using namespace mia; 
+using namespace mia;
 
 BOOST_AUTO_TEST_CASE( test_collect_slices )
 {
-	C2DBounds size(2,3); 
-	C2DUIImage slice0(size); 
-	fill(slice0.begin(), slice0.end(), 1); 
-	
-	unsigned char k = 0; 
-	C2DUIImage slice1(size); 
-	for (auto i = slice1.begin(); i != slice1.end(); ++i, ++k) 
-		*i =k; 
-	
-	C3DImageCollector ic(2);
-        ic.add(slice0); 
-        ic.add(slice1);
+       C2DBounds size(2, 3);
+       C2DUIImage slice0(size);
+       fill(slice0.begin(), slice0.end(), 1);
+       unsigned char k = 0;
+       C2DUIImage slice1(size);
 
-	auto result = ic.get_result(); 
+       for (auto i = slice1.begin(); i != slice1.end(); ++i, ++k)
+              *i = k;
 
-	BOOST_REQUIRE(result->get_pixel_type() == it_uint); 
-	BOOST_REQUIRE(result->get_size() == C3DBounds(2,3,2));
+       C3DImageCollector ic(2);
+       ic.add(slice0);
+       ic.add(slice1);
+       auto result = ic.get_result();
+       BOOST_REQUIRE(result->get_pixel_type() == it_uint);
+       BOOST_REQUIRE(result->get_size() == C3DBounds(2, 3, 2));
+       auto r = dynamic_cast<const C3DUIImage&>(*result);
+       const unsigned int test[12] = {
+              1, 1, 1, 1, 1, 1,
+              0, 1, 2, 3, 4, 5
+       };
+       const unsigned int *t = test;
 
-	auto r = dynamic_cast<const C3DUIImage&>(*result); 
-
-	const unsigned int test[12] = {
-		1,1,1,1,1,1,
-		0,1,2,3,4,5
-	}; 
-	const unsigned int *t = test; 
-	
-	for (auto i = r.begin(); i != r.end(); ++i, ++t)
-		BOOST_CHECK_EQUAL(*i,*t); 
-	
+       for (auto i = r.begin(); i != r.end(); ++i, ++t)
+              BOOST_CHECK_EQUAL(*i, *t);
 }
 

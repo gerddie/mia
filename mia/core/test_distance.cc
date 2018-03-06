@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,41 +21,39 @@
 #include <mia/internal/autotest.hh>
 #include <mia/core/distance.hh>
 
-NS_MIA_USE; 
-using std::vector; 
-using std::numeric_limits; 
+NS_MIA_USE;
+using std::vector;
+using std::numeric_limits;
 
-BOOST_AUTO_TEST_CASE( test_distance_from_inifinity ) 
+BOOST_AUTO_TEST_CASE( test_distance_from_inifinity )
 {
-	vector<bool> in_1d { 0, 0, 0, 1, 
-			0, 0, 0, 0, 
-			0, 0, 1, 0, 
-			0, 0, 0, 0 }; 
-	float out_1d[16] = { 9, 4, 1, 0, 
-			     1, 4, 9, 9, 
-			     4, 1, 0, 1, 
-			     4, 9, 16, 25 };
-	
-	vector<float> src(16); 
-	distance_transform_prepare(in_1d.begin(), in_1d.end(),src.begin(), true); 	
-	distance_transform_inplace(src);
-	
-	for (size_t i = 0; i < 16; ++i) {
-		BOOST_CHECK_CLOSE(src[i], out_1d[i], 0.1); 
-	}
+       vector<bool> in_1d { 0, 0, 0, 1,
+                            0, 0, 0, 0,
+                            0, 0, 1, 0,
+                            0, 0, 0, 0 };
+       float out_1d[16] = { 9, 4, 1, 0,
+                            1, 4, 9, 9,
+                            4, 1, 0, 1,
+                            4, 9, 16, 25
+                          };
+       vector<float> src(16);
+       distance_transform_prepare(in_1d.begin(), in_1d.end(), src.begin(), true);
+       distance_transform_inplace(src);
+
+       for (size_t i = 0; i < 16; ++i) {
+              BOOST_CHECK_CLOSE(src[i], out_1d[i], 0.1);
+       }
 }
 
-BOOST_AUTO_TEST_CASE( test_distance_from_function ) 
+BOOST_AUTO_TEST_CASE( test_distance_from_function )
 {
-	float in_1d[16]  = { 20, 2, 11, 0, 7, 9, 12, 12, 17, 100, 0,  2, 100,  4, 100, 100}; 
+       float in_1d[16]  = { 20, 2, 11, 0, 7, 9, 12, 12, 17, 100, 0,  2, 100,  4, 100, 100};
+       float out_1d[16] = {  5, 4,  1, 0, 1, 4,  9,  9,  4,   1, 0,  1,   4,  8,  13,  20};
+       vector<float> src(16);
+       distance_transform_prepare(&in_1d[0], &in_1d[16], src.begin(), false);
+       distance_transform_inplace(src);
 
-	float out_1d[16] = {  5, 4,  1, 0, 1, 4,  9,  9,  4,   1, 0,  1,   4,  8,  13,  20};
-	
-	vector<float> src(16); 
-	distance_transform_prepare(&in_1d[0], &in_1d[16],src.begin(), false); 
-	distance_transform_inplace(src);
-	
-	for (size_t i = 0; i < 16; ++i) {
-		BOOST_CHECK_CLOSE(src[i], out_1d[i], 0.1); 
-	}
+       for (size_t i = 0; i < 16; ++i) {
+              BOOST_CHECK_CLOSE(src[i], out_1d[i], 0.1);
+       }
 }

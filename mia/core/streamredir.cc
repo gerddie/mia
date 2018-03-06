@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,58 +25,62 @@ NS_MIA_BEGIN
 using namespace std;
 
 streamredir::streamredir():
-	m_begin(new char[2048])
+       m_begin(new char[2048])
 {
-	setp(m_begin, m_begin + 2048);
+       setp(m_begin, m_begin + 2048);
 }
 
 streamredir::~streamredir()
 {
-	delete[] m_begin;
+       delete[] m_begin;
 }
 
 int streamredir::overflow(int c)
 {
-	cvdebug() << "streamredir::overflow:" << c << "\n";
-	put_buffer();
-	sputc(c);
-	return 0;
+       cvdebug() << "streamredir::overflow:" << c << "\n";
+       put_buffer();
+       sputc(c);
+       return 0;
 }
 
-streamsize streamredir::xsputn ( const char * s, streamsize n )
+streamsize streamredir::xsputn ( const char *s, streamsize n )
 {
-	streamsize i = 0;
-	while (i < n) {
-		if (*s == '\n' || *s == '\r')
-			put_buffer();
-		else
-			sputc(*s);
-		++s;
-		++i;
-	}
-	return i;
+       streamsize i = 0;
+
+       while (i < n) {
+              if (*s == '\n' || *s == '\r')
+                     put_buffer();
+              else
+                     sputc(*s);
+
+              ++s;
+              ++i;
+       }
+
+       return i;
 }
 
 int streamredir::sync()
 {
-	put_buffer();
-	return 0;
+       put_buffer();
+       return 0;
 }
 
 void streamredir::put_char(int c)
 {
-	cvdebug() << "streamredir::put_char:" << c << "\n";
-	if (c == '\n' || c == '\r')
-		put_buffer();
-	else {
-		cverr() << "Handle put_char " << (char)c << "?\n";
-	}
+       cvdebug() << "streamredir::put_char:" << c << "\n";
+
+       if (c == '\n' || c == '\r')
+              put_buffer();
+       else {
+              cverr() << "Handle put_char " << (char)c << "?\n";
+       }
 }
 
 void streamredir::put_buffer(void)
 {
-	do_put_buffer(pbase(), pptr());
-	setp(pbase(),  epptr());
+       do_put_buffer(pbase(), pptr());
+       setp(pbase(),  epptr());
 }
 
 NS_MIA_END

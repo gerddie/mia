@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,180 +28,186 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup filtering 
-   \brief create and use a chain of filters 
-   
-   This template is used to create and use a chain of filters. 
-   \tparam a plug-in handler that is used to create the filters from strings 
-   
+   \ingroup filtering
+   \brief create and use a chain of filters
+
+   This template is used to create and use a chain of filters.
+   \tparam a plug-in handler that is used to create the filters from strings
+
 */
 
-template <typename Handler> 
-class TFilterChain {
-	typedef typename Handler::ProductPtr PFilter; 
-public: 
-	/// the pointer type of the data to be filtered 
+template <typename Handler>
+class TFilterChain
+{
+       typedef typename Handler::ProductPtr PFilter;
+public:
+       /// the pointer type of the data to be filtered
 
-	typedef typename PFilter::element_type::plugin_data::Pointer PData; 
-	/**
-	   The filter chain constrctor 
-	   \param filters an array of strings describing the filters 
-	   \param nfilters number of parameter strings 
-	*/
-	TFilterChain(const char *filters[], int nfilters); 
+       typedef typename PFilter::element_type::plugin_data::Pointer PData;
+       /**
+          The filter chain constrctor
+          \param filters an array of strings describing the filters
+          \param nfilters number of parameter strings
+       */
+       TFilterChain(const char *filters[], int nfilters);
 
 
-	/**
-	   The filter chain constrctor 
-	   \param filters a vector of strings describing the filters 
-	*/
-	TFilterChain(std::vector<std::string> filters);
-	
-	/**
-	   Runs the filter chain. the input data will not be changed. 
-	   \param input the input data given as shared pointer 
-	   \returns the filtered data as shared pointer 
-	*/
-	PData run(PData input) const;
+       /**
+          The filter chain constrctor
+          \param filters a vector of strings describing the filters
+       */
+       TFilterChain(std::vector<std::string> filters);
 
-	/**
-	   Add a filter at the front of the chain
-	*/
-	void push_front(const char * filter); 
+       /**
+          Runs the filter chain. the input data will not be changed.
+          \param input the input data given as shared pointer
+          \returns the filtered data as shared pointer
+       */
+       PData run(PData input) const;
 
-	/**
-	   Add a filter at the end of the chain
-	*/
-	void push_back(const char * filter); 
+       /**
+          Add a filter at the front of the chain
+       */
+       void push_front(const char *filter);
 
-	/// \returns true if the chain doesn't contain any filters
-	bool empty() const; 
-private: 
-	void init(const char *filters[], int nfilters); 
-	std::vector<PFilter> m_chain; 
-}; 
+       /**
+          Add a filter at the end of the chain
+       */
+       void push_back(const char *filter);
+
+       /// \returns true if the chain doesn't contain any filters
+       bool empty() const;
+private:
+       void init(const char *filters[], int nfilters);
+       std::vector<PFilter> m_chain;
+};
 
 /**
-   \ingroup filtering 
-   \cond INTERNAL 
+   \ingroup filtering
+   \cond INTERNAL
 */
 
 template <typename Handler>
-typename Handler::ProductPtr __get_filter(const Handler& /*h*/, typename Handler::ProductPtr filter) 
+typename Handler::ProductPtr __get_filter(const Handler& /*h*/, typename Handler::ProductPtr filter)
 {
-	return filter; 
+       return filter;
 }
 
 template <typename Handler>
-typename Handler::ProductPtr __get_filter(const Handler& h, const char *filter) 
+typename Handler::ProductPtr __get_filter(const Handler& h, const char *filter)
 {
-	return h.produce(filter); 
+       return h.produce(filter);
 }
 
 template <typename Handler>
-typename Handler::ProductPtr __get_filter(const Handler& h, const std::string& filter) 
+typename Handler::ProductPtr __get_filter(const Handler& h, const std::string& filter)
 {
-	return h.produce(filter); 
+       return h.produce(filter);
 }
 
 template <typename PData, typename Handler, typename T>
-PData __run_filters(PData image, const Handler& h, T filter_descr) 
+PData __run_filters(PData image, const Handler& h, T filter_descr)
 {
-	auto f = __get_filter(h, filter_descr); 
-	return f->filter(image);
+       auto f = __get_filter(h, filter_descr);
+       return f->filter(image);
 }
 
 template <typename PData, typename Handler, typename T, typename... Filters>
-PData __run_filters(PData image, const Handler& h, T filter_descr, Filters ...filters) 
+PData __run_filters(PData image, const Handler& h, T filter_descr, Filters ...filters)
 {
-	image = __run_filters(image, h, filter_descr);
-	return __run_filters(image, h, filters...);
+       image = __run_filters(image, h, filter_descr);
+       return __run_filters(image, h, filters...);
 }
 
-/// \endcond 
+/// \endcond
 
 /**
-   \ingroup filtering 
-   \brief run a chain of filters on an input image 
-   
-   This template is used to run a chain of filters on an input image 
+   \ingroup filtering
+   \brief run a chain of filters on an input image
+
+   This template is used to run a chain of filters on an input image
    The filters can be described by strings, or given as already created filters
-   \tparam PData the image pointer type of the image to be filtered 
-   \tparam Filters the filter description types or filters 
-  
+   \tparam PData the image pointer type of the image to be filtered
+   \tparam Filters the filter description types or filters
+
 */
 template <typename PData, typename... Filters>
-PData run_filters(PData image, Filters... filters) 
+PData run_filters(PData image, Filters... filters)
 {
-	typedef std::shared_ptr<TDataFilter<typename PData::element_type> > PFilter; 
-	typedef typename FactoryTrait<PFilter>::type Handler;
-
-	return __run_filters(image, Handler::instance(), filters...); 
+       typedef std::shared_ptr<TDataFilter<typename PData::element_type>> PFilter;
+       typedef typename FactoryTrait<PFilter>::type Handler;
+       return __run_filters(image, Handler::instance(), filters...);
 }
 
-template <typename Handler> 
+template <typename Handler>
 void TFilterChain<Handler>::init(const char *filters[], int nfilters)
 {
-	for(int i = 0; i < nfilters; ++i) {
-		m_chain[i] = Handler::instance().produce(filters[i]); 
-		if (!m_chain[i]) {
-			throw create_exception<std::invalid_argument>( "Can't create filter from '", filters[i], "'"); 
-		}
-	}
+       for (int i = 0; i < nfilters; ++i) {
+              m_chain[i] = Handler::instance().produce(filters[i]);
+
+              if (!m_chain[i]) {
+                     throw create_exception<std::invalid_argument>( "Can't create filter from '", filters[i], "'");
+              }
+       }
 }
 
 
-template <typename Handler> 
+template <typename Handler>
 TFilterChain<Handler>::TFilterChain(const char *filters[], int nfilters):
-	m_chain(nfilters)
+       m_chain(nfilters)
 {
-	init(filters, nfilters); 
+       init(filters, nfilters);
 }
 
-template <typename Handler> 
+template <typename Handler>
 TFilterChain<Handler>::TFilterChain(std::vector<std::string> filters):
-	m_chain(filters.size())
+       m_chain(filters.size())
 {
-	std::transform(filters.begin(), filters.end(), m_chain.begin(), 
-		       [](const std::string& s){ return Handler::instance().produce(s); }); 
+       std::transform(filters.begin(), filters.end(), m_chain.begin(),
+       [](const std::string & s) {
+              return Handler::instance().produce(s);
+       });
 }
 
-template <typename Handler> 
-void TFilterChain<Handler>::push_front(const char * filter)
+template <typename Handler>
+void TFilterChain<Handler>::push_front(const char *filter)
 {
-	auto f = Handler::instance().produce(filter); 
-	if (f) 
-		m_chain.insert(m_chain.begin(), f); 
-	else 
-		throw create_exception<std::invalid_argument>( "Can't create filter from '", filter, "'"); 
+       auto f = Handler::instance().produce(filter);
+
+       if (f)
+              m_chain.insert(m_chain.begin(), f);
+       else
+              throw create_exception<std::invalid_argument>( "Can't create filter from '", filter, "'");
 }
 
-template <typename Handler> 
-void TFilterChain<Handler>::push_back(const char * filter)
+template <typename Handler>
+void TFilterChain<Handler>::push_back(const char *filter)
 {
-	auto f = Handler::instance().produce(filter); 
-	if (f) 
-		m_chain.push_back(f); 
-	else 
-		throw create_exception<std::invalid_argument>( "Can't create filter from '", filter, "'"); 
+       auto f = Handler::instance().produce(filter);
+
+       if (f)
+              m_chain.push_back(f);
+       else
+              throw create_exception<std::invalid_argument>( "Can't create filter from '", filter, "'");
 }
 
-template <typename Handler> 
-typename TFilterChain<Handler>::PData 
+template <typename Handler>
+typename TFilterChain<Handler>::PData
 TFilterChain<Handler>::run(typename TFilterChain<Handler>::PData input) const
 {
-	for ( auto i = m_chain.begin(); i != m_chain.end(); ++i) {
-		input = (*i)->filter(input); 
-	}
-	return input; 
+       for ( auto i = m_chain.begin(); i != m_chain.end(); ++i) {
+              input = (*i)->filter(input);
+       }
+
+       return input;
 }
 
-template <typename Handler> 
+template <typename Handler>
 bool TFilterChain<Handler>::empty() const
 {
-	return m_chain.empty(); 
+       return m_chain.empty();
 }
 
 NS_MIA_END
 
-#endif 
+#endif

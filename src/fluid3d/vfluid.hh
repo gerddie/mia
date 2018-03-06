@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -40,81 +40,82 @@ extern int STARTSIZE;
 #define OMEGA	1.0	// overrelaxation factor
 
 typedef struct {
-	mia::P3DImage source;
-	mia::P3DImage reference;
-	float InitialStepsize;
-	float Lambda;
-	float My;
-	int HalfFilterDim;
-	float Overrelaxation;
-	int  maxiter;
-	float factor;
-	bool useMutual;
-	bool checkerboard;
-	float matter_threshold;
+       mia::P3DImage source;
+       mia::P3DImage reference;
+       float InitialStepsize;
+       float Lambda;
+       float My;
+       int HalfFilterDim;
+       float Overrelaxation;
+       int  maxiter;
+       float factor;
+       bool useMutual;
+       bool checkerboard;
+       float matter_threshold;
 } TFluidRegParams;
 
 typedef struct {
-	mia::C3DBounds Size;
-	double PDETime;
-	int    PDEEval;
-	int    Regrids;
-	int    niter;
-	double allovertime;
-}TMeasurement;
+       mia::C3DBounds Size;
+       double PDETime;
+       int    PDEEval;
+       int    Regrids;
+       int    niter;
+       double allovertime;
+} TMeasurement;
 typedef std::list<TMeasurement> TMeasureList;
 extern double g_start;
 
 
-mia::P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *solver,
-				     bool use_multigrid, bool use_fullres,TMeasureList *measure_list,
-				     const mia::C3DInterpolatorFactory& ipf
-				);
+mia::P3DFVectorfield fluid_transform(const TFluidRegParams& params, TLinEqnSolver *solver,
+                                     bool use_multigrid, bool use_fullres, TMeasureList *measure_list,
+                                     const mia::C3DInterpolatorFactory& ipf
+                                    );
 
 
-class TFluidReg  {
+class TFluidReg
+{
 
 protected:
-	// Hmm, yeah, I know, bad style'n'stuff
+       // Hmm, yeah, I know, bad style'n'stuff
 
-        mia::C3DFImage src;	// source image
-	mia::C3DFImage tmp;
-        mia::C3DFImage ref;	// reference image
-	float  a, b, c;
-	float  lambda, my;     // elasticity constants
-	mia::C3DBounds Start,End;
-	mia::C3DBounds ROI;            // Size of Regin of Interest
-	mia::C3DFVectorfield *u;        // Shiftfield
-	float  delta;          // step size
-	float mismatch;
-	float matter_threshold;
+       mia::C3DFImage src;	// source image
+       mia::C3DFImage tmp;
+       mia::C3DFImage ref;	// reference image
+       float  a, b, c;
+       float  lambda, my;     // elasticity constants
+       mia::C3DBounds Start, End;
+       mia::C3DBounds ROI;            // Size of Regin of Interest
+       mia::C3DFVectorfield *u;        // Shiftfield
+       float  delta;          // step size
+       float mismatch;
+       float matter_threshold;
 private:
-	mia::C3DFVectorfield *B;
-	mia::C3DFVectorfield *V;
-	TLinEqnSolver *solver;
+       mia::C3DFVectorfield *B;
+       mia::C3DFVectorfield *V;
+       TLinEqnSolver *solver;
 
-	float  initialStepsize;       // step size
-	const mia::C3DInterpolatorFactory& ipf;
+       float  initialStepsize;       // step size
+       const mia::C3DInterpolatorFactory& ipf;
 
-	void  InitTemps();
-	void  DeleteTemps();
-	void  solvePDE();
-	float perturbationAt(int x, int y, int z);
-	float  calculateForces();
-	float jacobianAt(int x, int y, int z)const;
-	void  ApplyShift();
-	mia::C3DFVector forceAt(int hardcode,float *misma)const;
-	mia::C3DFVector forceAt(int x, int y ,int z,float *misma)const;
-        float  calculatePerturbation();
-        float  calculateJacobian()const;
-	unsigned int GetLinCoord(unsigned int x,unsigned int y,unsigned int z) const;
+       void  InitTemps();
+       void  DeleteTemps();
+       void  solvePDE();
+       float perturbationAt(int x, int y, int z);
+       float  calculateForces();
+       float jacobianAt(int x, int y, int z)const;
+       void  ApplyShift();
+       mia::C3DFVector forceAt(int hardcode, float *misma)const;
+       mia::C3DFVector forceAt(int x, int y, int z, float *misma)const;
+       float  calculatePerturbation();
+       float  calculateJacobian()const;
+       unsigned int GetLinCoord(unsigned int x, unsigned int y, unsigned int z) const;
 public:
-        TFluidReg(const TFluidRegParams& params, TLinEqnSolver *solver, const mia::C3DInterpolatorFactory& _ipf);
-	~TFluidReg();
+       TFluidReg(const TFluidRegParams& params, TLinEqnSolver *solver, const mia::C3DInterpolatorFactory& _ipf);
+       ~TFluidReg();
 
-	float work(mia::P3DImage NewSource, mia::C3DFVectorfield& Shift);
+       float work(mia::P3DImage NewSource, mia::C3DFVectorfield& Shift);
 
-	TMeasurement Measurement;
+       TMeasurement Measurement;
 };
 
 #endif

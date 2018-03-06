@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -42,64 +42,66 @@ NS_MIA_BEGIN
 
 /**
    \ingroup basic
-   \brief The class of all attributes of data that is considered to ve meta-data. 
-   
+   \brief The class of all attributes of data that is considered to ve meta-data.
+
    CAttribute is the base class used for generric attributes of images and similar
-   entities. This class is abstract and most likely you want to use one of the 
+   entities. This class is abstract and most likely you want to use one of the
    provided specializations of the class TAttribute or create your own specializations.
 */
-class EXPORT_CORE CAttribute {
+class EXPORT_CORE CAttribute
+{
 public:
-	/// virtual destructor since derived classes may define dynamic objetcs
-	virtual ~CAttribute();
+       /// virtual destructor since derived classes may define dynamic objetcs
+       virtual ~CAttribute();
 
-	/// returns the value as a atring
-	std::string as_string() const;
+       /// returns the value as a atring
+       std::string as_string() const;
 
-	/** compare this attribute to another one
+       /** compare this attribute to another one
         \param other other attribute to compare to
         \returns true if the attributes are of the same type and hold the same value, false otherwiese
         */
-	bool is_equal(const CAttribute& other) const;
+       bool is_equal(const CAttribute& other) const;
 
-	/** compare this attribute to another one for a strict ordering
-	    \param other other attribute to compare to
-	    \returns a result dependend on the actual implementation of the private virtual method
-	    \a do_is_less
+       /** compare this attribute to another one for a strict ordering
+           \param other other attribute to compare to
+           \returns a result dependend on the actual implementation of the private virtual method
+           \a do_is_less
 
-	 */
-	bool is_less(const CAttribute& other) const; 
+        */
+       bool is_less(const CAttribute& other) const;
 
-	/// \returns a descriptive name of the type
-	virtual const char *typedescr() const = 0;
+       /// \returns a descriptive name of the type
+       virtual const char *typedescr() const = 0;
 
-	/// \returns a  type is
-	virtual int type_id() const = 0; 
+       /// \returns a  type is
+       virtual int type_id() const = 0;
 private:
-	virtual std::string do_as_string() const = 0;
+       virtual std::string do_as_string() const = 0;
 
-	virtual bool do_is_equal(const CAttribute& other) const = 0;
+       virtual bool do_is_equal(const CAttribute& other) const = 0;
 
-	virtual bool do_is_less(const CAttribute& other) const = 0;
+       virtual bool do_is_less(const CAttribute& other) const = 0;
 };
 
 
 inline
-std::ostream& operator << (std::ostream& os, const CAttribute& attr) {
-	os << attr.as_string();
-	return os;
+std::ostream& operator << (std::ostream& os, const CAttribute& attr)
+{
+       os << attr.as_string();
+       return os;
 };
 
 inline bool operator == (const CAttribute& a, const CAttribute& b)
 {
-	return a.is_equal(b);
+       return a.is_equal(b);
 }
 
 
 /// define the shared pointer wrapped attribute pointer
 typedef std::shared_ptr<CAttribute > PAttribute;
 
-/** 
+/**
    \ingroup basic
 
     \brief Class of an attribute that holds data of type  \a T
@@ -113,42 +115,43 @@ typedef std::shared_ptr<CAttribute > PAttribute;
     if a string-compare strcmp between the type descriptions returns -1.
  */
 template <typename T>
-class EXPORT_CORE TAttribute : public CAttribute {
+class EXPORT_CORE TAttribute : public CAttribute
+{
 public:
-	//! \name Constructors
-        //@{
-	/**
-	   Construct the attribute by setting its value to
-	   \param value
-	 */
-	TAttribute(typename ::boost::reference_wrapper<T>::type value);
-	//@}
+       //! \name Constructors
+       //@{
+       /**
+          Construct the attribute by setting its value to
+          \param value
+        */
+       TAttribute(typename ::boost::reference_wrapper<T>::type value);
+       //@}
 
 
-	/**
-	   provide a transparent conversion to the content type
-	   \remark should we really use this?
-	 */
-	operator T()const;
+       /**
+          provide a transparent conversion to the content type
+          \remark should we really use this?
+        */
+       operator T()const;
 
-	/// \returns typeid(T).name(), and is, therefore, dependend on the compiler
-	virtual const char *typedescr() const;
+       /// \returns typeid(T).name(), and is, therefore, dependend on the compiler
+       virtual const char *typedescr() const;
 
-	virtual int type_id() const; 
+       virtual int type_id() const;
 protected:
-	/// @returns the value of the attribute 
-	const T& get_value() const;
+       /// @returns the value of the attribute
+       const T& get_value() const;
 private:
-	virtual std::string do_as_string() const;
-	virtual bool do_is_equal(const CAttribute& other) const;
-	virtual bool do_is_less(const CAttribute& other) const;
+       virtual std::string do_as_string() const;
+       virtual bool do_is_equal(const CAttribute& other) const;
+       virtual bool do_is_less(const CAttribute& other) const;
 
-	T m_value;
+       T m_value;
 };
 
 /**
    \ingroup basic
-    
+
    Helper function to get the value of an attribute. Thr function throws a bad_cast exception,
    if the attribute doesn't hold a value of the requested type T
    \tparam T target type
@@ -156,87 +159,88 @@ private:
  */
 
 template <typename T>
-T EXPORT_CORE get_attribute_as(const CAttribute& attr) {
-	const TAttribute<T>& a = dynamic_cast<const TAttribute<T>&>(attr);
-	return a;
+T EXPORT_CORE get_attribute_as(const CAttribute& attr)
+{
+       const TAttribute<T>& a = dynamic_cast<const TAttribute<T>&>(attr);
+       return a;
 }
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief an integer attribute
 */
 typedef TAttribute<int> CIntAttribute;
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief a vector of integers attribute
 */
-typedef TAttribute<std::vector<int> > CVIntAttribute;
+typedef TAttribute<std::vector<int>> CVIntAttribute;
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief a float attribute
 */
 typedef TAttribute<float> CFloatAttribute;
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     brief a vector of floats attribute
 */
-typedef TAttribute<std::vector<float> > CVFloatAttribute;
+typedef TAttribute<std::vector<float>> CVFloatAttribute;
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief a double attribute
 */
 typedef TAttribute<double> CDoubleAttribute;
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief a vector of doubles attribute
 */
-typedef TAttribute<std::vector<double> > CVDoubleAttribute;
+typedef TAttribute<std::vector<double>> CVDoubleAttribute;
 
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief a string attribute
 */
 typedef TAttribute<std::string> CStringAttribute;
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief a vector of strings attribute
 */
-typedef TAttribute<std::vector<std::string> > CVStringAttribute;
+typedef TAttribute<std::vector<std::string>> CVStringAttribute;
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief A name:attribute map
 */
 typedef std::map<std::string, PAttribute> CAttributeMap;
 
-template <> 
-struct attribute_type<CAttributeMap> : public EAttributeType { 
-        static const int value = 1000;
-}; 
+template <>
+struct attribute_type<CAttributeMap> : public EAttributeType {
+       static const int value = 1000;
+};
 
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief providing the possibility to nest attribute lists
 */
 typedef TAttribute<CAttributeMap> CAttributeList;
 
-/** 
-    \ingroup basic 
+/**
+    \ingroup basic
     \brief another pointer-usage easy maker
 */
 typedef std::shared_ptr<CAttributeMap > PAttributeMap;
 
 
 /**
-   \ingroup basic 
+   \ingroup basic
    \brief Facility to write an attribute map to a stream
    \param os output stream
    \param data map of values
@@ -245,151 +249,153 @@ typedef std::shared_ptr<CAttributeMap > PAttributeMap;
 EXPORT_CORE  std::ostream& operator << (std::ostream& os, const CAttributeMap& data);
 
 
-/** 
-    \ingroup basic 
-    \brief A collection of attributes 
-    
-    This is the base class for all data that uses attributes. It provides all the needed functions to store 
-    and retrieve attributes. 
+/**
+    \ingroup basic
+    \brief A collection of attributes
+
+    This is the base class for all data that uses attributes. It provides all the needed functions to store
+    and retrieve attributes.
 */
-class EXPORT_CORE CAttributedData {
+class EXPORT_CORE CAttributedData
+{
 public:
 
-	//! \name Constructors
-        //@{
+       //! \name Constructors
+       //@{
 
-	CAttributedData();
-	CAttributedData(const CAttributedData& org);
+       CAttributedData();
+       CAttributedData(const CAttributedData& org);
 
-	/**
-	   Constructor that initialises with a certain attribute map
-	   \param attr the map to be initialised with
-	 */
-	CAttributedData(PAttributeMap attr);
+       /**
+          Constructor that initialises with a certain attribute map
+          \param attr the map to be initialised with
+        */
+       CAttributedData(PAttributeMap attr);
 
-	//@}
+       //@}
 
-	/// Assignemt operator 
-	CAttributedData& operator =(const CAttributedData& org);
+       /// Assignemt operator
+       CAttributedData& operator =(const CAttributedData& org);
 
-	/** \param key
-	    \returns the attribute with name \a name or \a NULL (wrapped as shared pointer)
+       /** \param key
+           \returns the attribute with name \a name or \a NULL (wrapped as shared pointer)
                      if the attribute with \a name is not found
-	*/
-	const PAttribute get_attribute(const std::string& key) const;
+       */
+       const PAttribute get_attribute(const std::string& key) const;
 
-	/**
-	   \returns the begin iterator to the attributes 
-	 */
-	CAttributeMap::const_iterator begin_attributes() const; 
-	
-	/**
-	   \returns the end iterator to the attributes 
-	*/
-	CAttributeMap::const_iterator end_attributes() const; 
+       /**
+          \returns the begin iterator to the attributes
+        */
+       CAttributeMap::const_iterator begin_attributes() const;
 
-	/**
-	   Sets the attribute \a name to value \a attr. If \a attr is \a NULL, then
-	   the attribute is removed from the list (or not added)
-	   \param key
-	   \param attr
-	*/
-	void set_attribute(const std::string& key, PAttribute attr);
+       /**
+          \returns the end iterator to the attributes
+       */
+       CAttributeMap::const_iterator end_attributes() const;
 
-
-	/**
-	   Insersts or overwrites the attributes given in the input range 
-	   \param begin 
-	   \param end
-	*/
-	void set_attributes(CAttributeMap::const_iterator begin, CAttributeMap::const_iterator end);
-
-	/**
-	   Set an attribute using one of the defined translators
-	   \param key
-	   \param value
-	 */
-	void set_attribute(const std::string& key, const std::string& value);
+       /**
+          Sets the attribute \a name to value \a attr. If \a attr is \a NULL, then
+          the attribute is removed from the list (or not added)
+          \param key
+          \param attr
+       */
+       void set_attribute(const std::string& key, PAttribute attr);
 
 
-        /**
-	   Set an attribute, generic version.  
-	   \tparam T type of the attribute value to be set 
-	   \param key
-	   \param value
-	 */
-	template <typename T> 
-	void set_attribute(const std::string& key, const T& value);
+       /**
+          Insersts or overwrites the attributes given in the input range
+          \param begin
+          \param end
+       */
+       void set_attributes(CAttributeMap::const_iterator begin, CAttributeMap::const_iterator end);
 
-	/**
-	   Set an attribute using one of the defined translators
-	   \param key
-	   \param value
-	 */
-	void set_attribute(const std::string& key, const char* value);
-
-	
-	/// returns the requested attribute as string, returns an empty string if attribute doesn't exist
-	const std::string get_attribute_as_string(const std::string& key)const;
+       /**
+          Set an attribute using one of the defined translators
+          \param key
+          \param value
+        */
+       void set_attribute(const std::string& key, const std::string& value);
 
 
-	/**
-	   Look for a certain attribute and try to cast it to the output type. 
-	   If the attribute is not found, a std::invalid_argument exception is thrown. 
-	   If the cast fails then std::bad_cast exception will be thrown.
-	   @param key the key of the attribute to look up. 
-	   @returns the value of the attribute 
-	*/
-	template <typename T>
-	const T get_attribute_as(const std::string& key)const;
+       /**
+         Set an attribute, generic version.
+         \tparam T type of the attribute value to be set
+         \param key
+         \param value
+       */
+       template <typename T>
+       void set_attribute(const std::string& key, const T& value);
 
-	/**
-	   Look for a certain attribute and try to cast it to the output type. 
-	   If the attribute is not found, or the cast goes wrong use the default value
-	   In the latter case a warning is written out. 
-	   @param key the key of the attribute to look up. 
-	   @param default_value the default value 
-	   @returns the value of the attribute 
-	*/
-	template <typename T>
-	const T get_attribute_as(const std::string& key, T default_value)const;
+       /**
+          Set an attribute using one of the defined translators
+          \param key
+          \param value
+        */
+       void set_attribute(const std::string& key, const char *value);
 
-	/**
-	   Delete the attribute with a given key from the list 
-	   @param key 
-	 */
 
-	void delete_attribute(const std::string& key);
+       /// returns the requested attribute as string, returns an empty string if attribute doesn't exist
+       const std::string get_attribute_as_string(const std::string& key)const;
 
-	/**
-	   See if a certain attribute exists 
-	   @param key
-	   @returns true if attribute exists, false otherwise
-	*/
-	bool has_attribute(const std::string& key)const;
 
-	/// @cond FRIENDSDOC
-	friend EXPORT_CORE bool operator == (const CAttributedData& a, const CAttributedData& b);
-	/// @endcond 
+       /**
+          Look for a certain attribute and try to cast it to the output type.
+          If the attribute is not found, a std::invalid_argument exception is thrown.
+          If the cast fails then std::bad_cast exception will be thrown.
+          @param key the key of the attribute to look up.
+          @returns the value of the attribute
+       */
+       template <typename T>
+       const T get_attribute_as(const std::string& key)const;
 
-	void print(std::ostream& os) const  {
-		os << *m_attr; 
-	}
+       /**
+          Look for a certain attribute and try to cast it to the output type.
+          If the attribute is not found, or the cast goes wrong use the default value
+          In the latter case a warning is written out.
+          @param key the key of the attribute to look up.
+          @param default_value the default value
+          @returns the value of the attribute
+       */
+       template <typename T>
+       const T get_attribute_as(const std::string& key, T default_value)const;
+
+       /**
+          Delete the attribute with a given key from the list
+          @param key
+        */
+
+       void delete_attribute(const std::string& key);
+
+       /**
+          See if a certain attribute exists
+          @param key
+          @returns true if attribute exists, false otherwise
+       */
+       bool has_attribute(const std::string& key)const;
+
+       /// @cond FRIENDSDOC
+       friend EXPORT_CORE bool operator == (const CAttributedData& a, const CAttributedData& b);
+       /// @endcond
+
+       void print(std::ostream& os) const
+       {
+              os << *m_attr;
+       }
 private:
-	PAttributeMap m_attr;
+       PAttributeMap m_attr;
 };
 
 
 inline std::ostream& operator << (std::ostream& os, const CAttributedData& data)
 {
-	data.print(os); 
-	return os; 
+       data.print(os);
+       return os;
 }
 
 
 
 /**
-   \ingroup basic 
+   \ingroup basic
 
    \brief Compare two attribute data instances \a a  and \a b
    \returns \a true, if \a a and \a b hold the same set of attributes with the same values,
@@ -400,75 +406,77 @@ EXPORT_CORE bool operator == (const CAttributeMap& am, const CAttributeMap& bm);
 
 
 /**
-   \ingroup basic 
+   \ingroup basic
    @brief A class to translate an attribute from a string.
-   
-   This class is the base class to translate attributes from their typed value to a string and back. 
+
+   This class is the base class to translate attributes from their typed value to a string and back.
 */
 
-class EXPORT_CORE CAttrTranslator {
+class EXPORT_CORE CAttrTranslator
+{
 public:
-        /// The virtual destructor just ensures virtual destruction and silences a warning
-        virtual ~CAttrTranslator() {};
+       /// The virtual destructor just ensures virtual destruction and silences a warning
+       virtual ~CAttrTranslator() {};
 
-	/**
-	   \param value the string value of the object
-	   \returns a shared pointer to the newly created attribute
-	*/
-	PAttribute from_string(const std::string& value) const;
+       /**
+          \param value the string value of the object
+          \returns a shared pointer to the newly created attribute
+       */
+       PAttribute from_string(const std::string& value) const;
 private:
-	virtual PAttribute do_from_string(const std::string& value) const = 0;
+       virtual PAttribute do_from_string(const std::string& value) const = 0;
 protected:
-	CAttrTranslator();
+       CAttrTranslator();
 
-	/**
-	   Register this translator to handle attributes with the given key 
-	   @param key 
-	 */
-	bool do_register(const std::string& key);
+       /**
+          Register this translator to handle attributes with the given key
+          @param key
+        */
+       bool do_register(const std::string& key);
 };
 
 /**
-   \ingroup basic 
-    
+   \ingroup basic
+
    \brief A singelton class to translate strings to attributes based on keys.
-   
+
    This class provides a singleton to translate strings to attributes. For the translation to take
    place for each attribute key a CAttrTranslator needs to be registered first.
 */
-class EXPORT_CORE CStringAttrTranslatorMap {
+class EXPORT_CORE CStringAttrTranslatorMap
+{
 public:
-	/**
-	   Converts the input string \a value to a PAttribute by using the translator that was registered for the
-	   given \a key.
-	   \param key
-	   \param value
-	   \returns the respective attribute
-	 */
-	PAttribute to_attr(const std::string& key, const std::string& value) const;
+       /**
+          Converts the input string \a value to a PAttribute by using the translator that was registered for the
+          given \a key.
+          \param key
+          \param value
+          \returns the respective attribute
+        */
+       PAttribute to_attr(const std::string& key, const std::string& value) const;
 
-	/// \returns an instance to the translator map singleton
-	static CStringAttrTranslatorMap& instance();
+       /// \returns an instance to the translator map singleton
+       static CStringAttrTranslatorMap& instance();
 private:
-	friend class  CAttrTranslator;
-	CStringAttrTranslatorMap();
-	/**
-	   Add a new translator to the map. If there is already another translator registered for the given \a key, then
-	   throw an \a invalid_argument exception.
-	   \param key a key that is used to pick the translator
-	   \param t the translator object
-	 */
+       friend class  CAttrTranslator;
+       CStringAttrTranslatorMap();
+       /**
+          Add a new translator to the map. If there is already another translator registered for the given \a key, then
+          throw an \a invalid_argument exception.
+          \param key a key that is used to pick the translator
+          \param t the translator object
+        */
 
-	bool add(const std::string& key, CAttrTranslator * t);
+       bool add(const std::string& key, CAttrTranslator *t);
 
-	typedef std::map<std::string, std::shared_ptr<CAttrTranslator>> CMap;
-	CMap m_translators;
+       typedef std::map<std::string, std::shared_ptr<CAttrTranslator>> CMap;
+       CMap m_translators;
 };
 
 
 /**
-   \ingroup basic 
-   
+   \ingroup basic
+
    convenience function to set an attribute in an attribute map:
    \remark review its use
    \tparam type of the attribute value to be added
@@ -480,24 +488,24 @@ private:
 template <typename T>
 void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key, T value)
 {
-	cvdebug() << "add attribute " << key << " of type " << typeid(T).name() << " and value '" << value << "'\n";
-	attributes[key] = PAttribute(new TAttribute<T>(value));
+       cvdebug() << "add attribute " << key << " of type " << typeid(T).name() << " and value '" << value << "'\n";
+       attributes[key] = PAttribute(new TAttribute<T>(value));
 }
 
 template <>
 inline void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key, const char *value)
 {
-	attributes[key] =  CStringAttrTranslatorMap::instance().to_attr(key, value);
-	cvdebug() << "add_attribute '"  << key
-		  << "' to '" << value << "' of type '"
-		  << attributes[key]->typedescr() << "'\n";
+       attributes[key] =  CStringAttrTranslatorMap::instance().to_attr(key, value);
+       cvdebug() << "add_attribute '"  << key
+                 << "' to '" << value << "' of type '"
+                 << attributes[key]->typedescr() << "'\n";
 }
 
 
 
-/** 
-   \ingroup basic 
-   
+/**
+   \ingroup basic
+
    \brief Generic string vs. attribute translator singleton
 
    This class defines a generic translator between strings and a specific attribute type.
@@ -506,17 +514,18 @@ inline void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::stri
    can be accessed via CStringAttrTranslatorMap::instance()
  */
 template <typename T>
-class EXPORT_CORE TTranslator: public CAttrTranslator {
+class EXPORT_CORE TTranslator: public CAttrTranslator
+{
 public:
-	/**
-	   Register this translator for attributed for the given \a key. The translator is handled as a
-	   singleton and is stateless.
-	   Any translator type can be registered multiple times but keys must be different
-	   if the target translation type is different.
-	 */
-	static  bool register_for(const std::string& key);
+       /**
+          Register this translator for attributed for the given \a key. The translator is handled as a
+          singleton and is stateless.
+          Any translator type can be registered multiple times but keys must be different
+          if the target translation type is different.
+        */
+       static  bool register_for(const std::string& key);
 private:
-	virtual PAttribute do_from_string(const std::string& value) const;
+       virtual PAttribute do_from_string(const std::string& value) const;
 };
 
 
@@ -524,298 +533,331 @@ private:
 
 template <typename T>
 TAttribute<T>::TAttribute(typename ::boost::reference_wrapper<T>::type value):
-	m_value(value)
+       m_value(value)
 {
 }
 
 template <typename T>
 TAttribute<T>::operator T() const
 {
-	return m_value;
+       return m_value;
 }
 
 template <typename T>
 const T& TAttribute<T>::get_value() const
 {
-	return m_value;
+       return m_value;
 }
 
 template <typename T>
 const char *TAttribute<T>::typedescr() const
 {
-	return typeid(T).name();
+       return typeid(T).name();
 }
 
 template <typename T>
 int TAttribute<T>::type_id() const
 {
-	static_assert(attribute_type<T>::value != EAttributeType::attr_unknown, 
-		      "You must provide a type specialization for attribute_type<T>"); 
-	
-	return attribute_type<T>::value; 
+       static_assert(attribute_type<T>::value != EAttributeType::attr_unknown,
+                     "You must provide a type specialization for attribute_type<T>");
+       return attribute_type<T>::value;
 }
 
 /**
-   @cond INTERNAL 
-   @ingroup traits 
-   
-   A trait to translate between a string and a value  
-   \remark this should replace the parameter translation methods 
+   @cond INTERNAL
+   @ingroup traits
+
+   A trait to translate between a string and a value
+   \remark this should replace the parameter translation methods
 */
 
 template <typename T, bool is_floating>
-struct __convert_to_string
-{
-	static std::string apply(const typename ::boost::reference_wrapper<T>::type value) {
-		return boost::lexical_cast<std::string>(value);
-	}
-}; 
+struct __convert_to_string {
+       static std::string apply(const typename ::boost::reference_wrapper<T>::type value)
+       {
+              return boost::lexical_cast<std::string>(value);
+       }
+};
 
 template <typename T>
 struct __convert_to_string<T, true> {
-	static std::string apply(const typename ::boost::reference_wrapper<T>::type value) {
-		std::stringstream sval;
-		sval << std::setprecision(10) << value; 
-		return sval.str();
-	}
-}; 
+       static std::string apply(const typename ::boost::reference_wrapper<T>::type value)
+       {
+              std::stringstream sval;
+              sval << std::setprecision(10) << value;
+              return sval.str();
+       }
+};
 
 
 template <typename T>
 struct dispatch_attr_string {
-	static std::string val2string(const typename ::boost::reference_wrapper<T>::type value) {
-		return __convert_to_string<T, std::is_floating_point<T>::value>::apply(value);
-	}
-	static T string2val(const std::string& str) {
-		T v;
-		std::istringstream svalue(str);
-		svalue >> v;
-		return v;
-	}
+       static std::string val2string(const typename ::boost::reference_wrapper<T>::type value)
+       {
+              return __convert_to_string<T, std::is_floating_point<T>::value>::apply(value);
+       }
+       static T string2val(const std::string& str)
+       {
+              T v;
+              std::istringstream svalue(str);
+              svalue >> v;
+              return v;
+       }
 };
 
 
 template <typename T>
-struct dispatch_attr_string<std::vector<T> > {
-	static std::string val2string(const std::vector<T>& value) {
-		std::stringstream sval;
-		sval << value.size();
-		for (size_t i = 0; i < value.size(); ++i)
-			sval << " "
-			     <<  __convert_to_string<T, std::is_floating_point<T>::value>::apply(value[i]); 
-	        return sval.str();
-	}
-	static std::vector<T> string2val(const std::string& str) {
-		size_t s;
-		std::istringstream svalue(str);
-		std::vector<T> v; 
-		svalue >> s;
-		if (s > v.max_size())
-			throw create_exception<std::runtime_error>("string2val: try to create a vector of size ", 
-								   s, " but support only size ", v.max_size()); 
-		v.resize(s);
-		for (size_t i = 0; i < s; ++i)
-			svalue >> v[i];
-		if (svalue.fail()) {
-			std::stringstream msg;
-			msg << "string2val: unable to convert '" << str << "'";
-			throw std::invalid_argument(msg.str());
-		}
-		return v;
-	}
+struct dispatch_attr_string<std::vector<T>> {
+       static std::string val2string(const std::vector<T>& value)
+       {
+              std::stringstream sval;
+              sval << value.size();
+
+              for (size_t i = 0; i < value.size(); ++i)
+                     sval << " "
+                          <<  __convert_to_string<T, std::is_floating_point<T>::value>::apply(value[i]);
+
+              return sval.str();
+       }
+       static std::vector<T> string2val(const std::string& str)
+       {
+              size_t s;
+              std::istringstream svalue(str);
+              std::vector<T> v;
+              svalue >> s;
+
+              if (s > v.max_size())
+                     throw create_exception<std::runtime_error>("string2val: try to create a vector of size ",
+                                   s, " but support only size ", v.max_size());
+
+              v.resize(s);
+
+              for (size_t i = 0; i < s; ++i)
+                     svalue >> v[i];
+
+              if (svalue.fail()) {
+                     std::stringstream msg;
+                     msg << "string2val: unable to convert '" << str << "'";
+                     throw std::invalid_argument(msg.str());
+              }
+
+              return v;
+       }
 };
 
 
 template <>
-struct dispatch_attr_string<std::vector<bool> > {
-	static std::string val2string(const std::vector<bool>& value) {
-		std::stringstream sval;
-		sval << value.size();
-		for (size_t i = 0; i < value.size(); ++i)
-			sval << " " << value[i];
-		return sval.str();
-	}
-	static std::vector<bool> string2val(const std::string& str) {
-		size_t s;
-		std::istringstream svalue(str);
-		svalue >> s;
-		std::vector<bool> v(s);
+struct dispatch_attr_string<std::vector<bool>> {
+       static std::string val2string(const std::vector<bool>& value)
+       {
+              std::stringstream sval;
+              sval << value.size();
 
-		// Added override for coverity
-		// 
-		// Since s is used as the size for the new vector, a large
-		// value will result in a std::bad_alloc exception. This
-		// is not worse than bailing out because s is larger than
-		// an abitrary set boundary that youle be cheked here.
-		// 
-		// coverity[tainted_scalar] 
-		for (size_t i = 0; i < s; ++i) {
-			bool value;
-			svalue >> value;
-			v[i] = value;
-		}
-		if (svalue.fail()) {
-			std::stringstream msg;
-			msg << "string2val: unable to convert '" << str << "'";
-			throw std::invalid_argument(msg.str());
-		}
-		return v;
-	}
+              for (size_t i = 0; i < value.size(); ++i)
+                     sval << " " << value[i];
+
+              return sval.str();
+       }
+       static std::vector<bool> string2val(const std::string& str)
+       {
+              size_t s;
+              std::istringstream svalue(str);
+              svalue >> s;
+              std::vector<bool> v(s);
+
+              // Added override for coverity
+              //
+              // Since s is used as the size for the new vector, a large
+              // value will result in a std::bad_alloc exception. This
+              // is not worse than bailing out because s is larger than
+              // an abitrary set boundary that youle be cheked here.
+              //
+              // coverity[tainted_scalar]
+              for (size_t i = 0; i < s; ++i) {
+                     bool value;
+                     svalue >> value;
+                     v[i] = value;
+              }
+
+              if (svalue.fail()) {
+                     std::stringstream msg;
+                     msg << "string2val: unable to convert '" << str << "'";
+                     throw std::invalid_argument(msg.str());
+              }
+
+              return v;
+       }
 };
 
 template <>
 struct dispatch_attr_string<unsigned char> {
-	static std::string val2string(unsigned char value) {
-		std::stringstream sval;
-		sval << (unsigned int)value;
-		return sval.str();
-	}
-	static unsigned char string2val(const std::string& str) {
-		unsigned int v;
-		std::istringstream svalue(str);
-		svalue >> v;
-		return (unsigned char)v;
-	}
+       static std::string val2string(unsigned char value)
+       {
+              std::stringstream sval;
+              sval << (unsigned int)value;
+              return sval.str();
+       }
+       static unsigned char string2val(const std::string& str)
+       {
+              unsigned int v;
+              std::istringstream svalue(str);
+              svalue >> v;
+              return (unsigned char)v;
+       }
 };
 
 template <>
 struct dispatch_attr_string<signed char> {
-	static std::string val2string(signed char value) {
-		std::stringstream sval;
-		sval << (signed int)value;
-		return sval.str();
-	}
-	static signed char string2val(const std::string& str) {
-		int v;
-		std::istringstream svalue(str);
-		svalue >> v;
-		return (signed char)v;
-	}
+       static std::string val2string(signed char value)
+       {
+              std::stringstream sval;
+              sval << (signed int)value;
+              return sval.str();
+       }
+       static signed char string2val(const std::string& str)
+       {
+              int v;
+              std::istringstream svalue(str);
+              svalue >> v;
+              return (signed char)v;
+       }
 };
 
 template <>
 struct dispatch_attr_string<std::string> {
-	static std::string val2string(std::string value) {
-		return value;
-	}
-	static std::string string2val(const std::string& str) {
-		return str;
-	}
+       static std::string val2string(std::string value)
+       {
+              return value;
+       }
+       static std::string string2val(const std::string& str)
+       {
+              return str;
+       }
 };
 
 template <>
 struct dispatch_attr_string<CAttributeMap> {
-	static std::string val2string(const CAttributeMap& /*value*/) {
-		throw std::invalid_argument("Conversion of a CAttributeMap to a string not implemented");
-	}
-	static CAttributeMap string2val(const std::string& /*str*/) {
-		throw std::invalid_argument("Conversion of a string to a CAttributeMap not implemented");
-	}
+       static std::string val2string(const CAttributeMap& /*value*/)
+       {
+              throw std::invalid_argument("Conversion of a CAttributeMap to a string not implemented");
+       }
+       static CAttributeMap string2val(const std::string& /*str*/)
+       {
+              throw std::invalid_argument("Conversion of a string to a CAttributeMap not implemented");
+       }
 };
 
 /// @endcond
 
-template <typename T> 
+template <typename T>
 void CAttributedData::set_attribute(const std::string& key, const T& value)
 {
-	add_attribute(*m_attr, key, value); 
+       add_attribute(*m_attr, key, value);
 }
 
 
 template <typename T>
 std::string TAttribute<T>::do_as_string() const
 {
-	return dispatch_attr_string<T>::val2string(m_value);
+       return dispatch_attr_string<T>::val2string(m_value);
 }
 
 template <typename T>
 bool TAttribute<T>::do_is_equal(const CAttribute& other) const
 {
-	const TAttribute<T>* o = dynamic_cast<const TAttribute<T> *>(&other);
-	if (!o) {
-		cvdebug() << "TAttribute<T>::do_is_equal:Cast to "
-			  << typeid(const TAttribute<T>*).name()
-			  << "failed\n";
-		return false;
-	}
-	return m_value == o->m_value;
+       const TAttribute<T> *o = dynamic_cast<const TAttribute<T> *>(&other);
+
+       if (!o) {
+              cvdebug() << "TAttribute<T>::do_is_equal:Cast to "
+                        << typeid(const TAttribute<T> *).name()
+                        << "failed\n";
+              return false;
+       }
+
+       return m_value == o->m_value;
 }
 
 template <typename T>
 bool TAttribute<T>::do_is_less(const CAttribute& other) const
 {
-	const TAttribute<T>* o = dynamic_cast<const TAttribute<T> *>(&other);
-	if (o)
-		return m_value < o->m_value;
+       const TAttribute<T> *o = dynamic_cast<const TAttribute<T> *>(&other);
 
-	return strcmp(typedescr(), other.typedescr()) < 0;
+       if (o)
+              return m_value < o->m_value;
+
+       return strcmp(typedescr(), other.typedescr()) < 0;
 }
 
 template <typename T>
 const T CAttributedData::get_attribute_as(const std::string& key)const
 {
-	PAttribute attr = get_attribute(key);
-	if (attr)
-		return dynamic_cast<const TAttribute<T>&>(*attr);
-	else
-		throw create_exception<std::invalid_argument>("CAttributedData: no attribute '", key, "' found");
+       PAttribute attr = get_attribute(key);
+
+       if (attr)
+              return dynamic_cast<const TAttribute<T>&>(*attr);
+       else
+              throw create_exception<std::invalid_argument>("CAttributedData: no attribute '", key, "' found");
 }
 
 template <typename T>
 const T CAttributedData::get_attribute_as(const std::string& key, T default_value)const
 {
-	PAttribute pattr = get_attribute(key);
-	if (!pattr) 
-		return default_value; 
-	auto attr = dynamic_cast<const TAttribute<T> *>(pattr.get());
-	if (!attr) {
-		cvwarn() << "Attribute '" << key << "'exists but is not of the expected type, returning default\n";
-		return default_value; 
-	}
-	return *attr; 
+       PAttribute pattr = get_attribute(key);
+
+       if (!pattr)
+              return default_value;
+
+       auto attr = dynamic_cast<const TAttribute<T> *>(pattr.get());
+
+       if (!attr) {
+              cvwarn() << "Attribute '" << key << "'exists but is not of the expected type, returning default\n";
+              return default_value;
+       }
+
+       return *attr;
 }
 
 
 /// \cond NEVER
 extern template class EXPORT_CORE TAttribute<uint8_t>;
-extern template class EXPORT_CORE TAttribute<int8_t>; 
+extern template class EXPORT_CORE TAttribute<int8_t>;
 
-extern template class EXPORT_CORE TAttribute<std::vector<uint8_t> >;
-extern template class EXPORT_CORE TAttribute<std::vector<int8_t> >; 
+extern template class EXPORT_CORE TAttribute<std::vector<uint8_t>>;
+extern template class EXPORT_CORE TAttribute<std::vector<int8_t>>;
 /// \endcond NEVER
 
 typedef TTranslator<double> CDoubleTranslator;
-typedef TTranslator<std::vector<double> > CVDoubleTranslator;
+typedef TTranslator<std::vector<double>> CVDoubleTranslator;
 
 typedef TTranslator<float> CFloatTranslator;
-typedef TTranslator<std::vector<float> > CVFloatTranslator;
+typedef TTranslator<std::vector<float>> CVFloatTranslator;
 
 typedef TTranslator<uint64_t> CULTranslator;
-typedef TTranslator<std::vector<uint64_t> > CVULTranslator;
+typedef TTranslator<std::vector<uint64_t>> CVULTranslator;
 
 typedef TTranslator<int64_t> CSLTranslator;
-typedef TTranslator<std::vector<int64_t> > CVSLTranslator;
+typedef TTranslator<std::vector<int64_t>> CVSLTranslator;
 
 typedef TTranslator<unsigned int> CUITranslator;
-typedef TTranslator<std::vector<uint32_t> > CVUITranslator;
+typedef TTranslator<std::vector<uint32_t>> CVUITranslator;
 
 typedef TTranslator<signed int>   CSITranslator;
-typedef TTranslator<std::vector<int32_t> > CVSITranslator;
+typedef TTranslator<std::vector<int32_t>> CVSITranslator;
 
 typedef TTranslator<uint16_t> CUSTranslator;
-typedef TTranslator<std::vector<uint16_t> > CVUSTranslator;
+typedef TTranslator<std::vector<uint16_t>> CVUSTranslator;
 
 typedef TTranslator<int16_t> CSSTranslator;
-typedef TTranslator<std::vector<int16_t> > CVSSTranslator;
+typedef TTranslator<std::vector<int16_t>> CVSSTranslator;
 
 typedef TTranslator<uint8_t> CUBTranslator;
-typedef TTranslator<std::vector<uint8_t> > CVUBTranslator;
+typedef TTranslator<std::vector<uint8_t>> CVUBTranslator;
 
 typedef TTranslator<int8_t> CSBTranslator;
-typedef TTranslator<std::vector<int8_t> > CVSBTranslator;
+typedef TTranslator<std::vector<int8_t>> CVSBTranslator;
 
 typedef TTranslator<bool> CBitTranslator;
-typedef TTranslator<std::vector<bool> > CVBitTranslator;
+typedef TTranslator<std::vector<bool>> CVBitTranslator;
 
 NS_MIA_END
 

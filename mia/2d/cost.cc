@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,16 +29,16 @@
 
 
 NS_MIA_BEGIN
-namespace bfs=::boost::filesystem; 
+namespace bfs =::boost::filesystem;
 
 template class TCost<C2DImage, C2DFVectorfield>;
 
-template <> const char *  const
-TPluginHandler<TFactory<C2DImageCost>>::m_help =  
-	"2D image similarity kernels evaluate the according similarity measure between "
-	"two images. These kernels may be used standalone, like e.g. in linear registration, "
-	"or will be called from generalized image similarity cost plug-ins that also take "
-	"care of transforming and scaling the images during the image registration process. ";
+template <> const char   *const
+TPluginHandler<TFactory<C2DImageCost>>::m_help =
+              "2D image similarity kernels evaluate the according similarity measure between "
+              "two images. These kernels may be used standalone, like e.g. in linear registration, "
+              "or will be called from generalized image similarity cost plug-ins that also take "
+              "care of transforming and scaling the images during the image registration process. ";
 
 EXPLICIT_INSTANCE_HANDLER(C2DImageCost);
 

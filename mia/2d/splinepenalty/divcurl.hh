@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,38 +23,40 @@
 
 NS_BEGIN(divcurl_splinepenalty)
 
-class C2DDivcurlSplinePenalty: public mia::C2DSplineTransformPenalty {
-public: 
-	
-	C2DDivcurlSplinePenalty(double weight, bool normalize, double div_weight, double curl_weight);
-	
-private: 
-	void do_initialize(); 
-	
-	double do_value(const mia::C2DFVectorfield&  coefficients) const; 
-	
-	double do_value_and_gradient(const mia::C2DFVectorfield&  coefficients, mia::CDoubleVector& gradient) const;
-	
-	mia::C2DSplineTransformPenalty *do_clone() const;
+class C2DDivcurlSplinePenalty: public mia::C2DSplineTransformPenalty
+{
+public:
 
-	double m_div_weight; 
-	double m_curl_weight; 
+       C2DDivcurlSplinePenalty(double weight, bool normalize, double div_weight, double curl_weight);
 
-	std::unique_ptr<mia::C2DPPDivcurlMatrix> m_ppmatrix;
+private:
+       void do_initialize();
 
-}; 
+       double do_value(const mia::C2DFVectorfield&  coefficients) const;
+
+       double do_value_and_gradient(const mia::C2DFVectorfield&  coefficients, mia::CDoubleVector& gradient) const;
+
+       mia::C2DSplineTransformPenalty *do_clone() const;
+
+       double m_div_weight;
+       double m_curl_weight;
+
+       std::unique_ptr<mia::C2DPPDivcurlMatrix> m_ppmatrix;
+
+};
 
 
-class C2DDivcurlSplinePenaltyPlugin : public mia::C2DSplineTransformPenaltyPlugin {
-public: 
-	C2DDivcurlSplinePenaltyPlugin(); 
-	
-private: 
-	virtual const std::string do_get_descr() const;
-	virtual Product *do_create(float weight, bool normalize) const __attribute__((warn_unused_result));
-	float m_div_weight; 
-	float m_curl_weight; 
+class C2DDivcurlSplinePenaltyPlugin : public mia::C2DSplineTransformPenaltyPlugin
+{
+public:
+       C2DDivcurlSplinePenaltyPlugin();
 
-}; 
+private:
+       virtual const std::string do_get_descr() const;
+       virtual Product *do_create(float weight, bool normalize) const __attribute__((warn_unused_result));
+       float m_div_weight;
+       float m_curl_weight;
+
+};
 
 NS_END

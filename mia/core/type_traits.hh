@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,75 +25,75 @@
 
 NS_MIA_BEGIN
 
-/// @cond INTERNAL 
+/// @cond INTERNAL
 
-template <typename T> 
+template <typename T>
 struct __holder_type_dispatch  {
-	typedef T type; 
-}; 
+       typedef T type;
+};
 
 
-template <> 
+template <>
 struct __holder_type_dispatch<bool>  {
-	typedef unsigned char type; 
-}; 
+       typedef unsigned char type;
+};
 
 
 template <typename T>
 struct __is_mask_pixel {
-	static const bool value = false;
-}; 
+       static const bool value = false;
+};
 
 template <>
 struct __is_mask_pixel<bool> {
-	static const bool value = true;
-}; 
+       static const bool value = true;
+};
 
 /**
-   @ingroup traits 
-   @brief A trait to derive the actual type handled by a plug-in based on some 
-   possibly unrelated type 
+   @ingroup traits
+   @brief A trait to derive the actual type handled by a plug-in based on some
+   possibly unrelated type
 */
-template <typename T> 
+template <typename T>
 struct plugin_data_type {
-	typedef T type; 
-}; 
+       typedef T type;
+};
 
 /**
-   @ingroup traits 
-   @brief This trait provides information about the number of (equal typed) elements a type holds 
-   and the element type. 
-   @tparam T the type to provide information about 
-   
-   In the standard version, the element type is the same as the template parameter 
-   and the number of elements is one. 
-*/
-template <typename T> 
-struct atomic_data {
-	typedef T type; 
-	static const int size; 
-}; 
+   @ingroup traits
+   @brief This trait provides information about the number of (equal typed) elements a type holds
+   and the element type.
+   @tparam T the type to provide information about
 
-template <typename T> 
-const int atomic_data<T>::size = 1; 
+   In the standard version, the element type is the same as the template parameter
+   and the number of elements is one.
+*/
+template <typename T>
+struct atomic_data {
+       typedef T type;
+       static const int size;
+};
+
+template <typename T>
+const int atomic_data<T>::size = 1;
 
 /**
    \ingroup misc
-   This struct is a place holder for some templates. The actual template specialization 
-   must implement the operator 
-   bool operator()(T a, T b) const; 
-   that returns true of lhs is smaller then rhs and false otherwise. The operator should implement 
-   a strict weak ordering. 
-   \tparam T the type to compare  
+   This struct is a place holder for some templates. The actual template specialization
+   must implement the operator
+   bool operator()(T a, T b) const;
+   that returns true of lhs is smaller then rhs and false otherwise. The operator should implement
+   a strict weak ordering.
+   \tparam T the type to compare
  */
 
 template <typename T>
 struct less_then {
-	/// type of the values handled by the operator 
-	typedef T value_type; 
+       /// type of the values handled by the operator
+       typedef T value_type;
 };
 
-/// @endcond 
+/// @endcond
 
 NS_MIA_END
 

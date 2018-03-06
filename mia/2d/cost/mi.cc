@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,11 +28,11 @@ using namespace std;
 using namespace boost;
 
 template class TMIImageCost<mia::C2DImageCost>;
-template class TMIImageCostPlugin<mia::C2DImageCostPlugin, mia::C2DImageCost>; 
+template class TMIImageCostPlugin<mia::C2DImageCostPlugin, mia::C2DImageCost>;
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DMICostPlugin();
+       return new C2DMICostPlugin();
 }
 
 NS_END

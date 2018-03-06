@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -32,80 +32,80 @@ using namespace std;
 
 C1n2DShape::C1n2DShape()
 {
-	insert(C2DShape::Flat::value_type( 0, 0));
-}	
+       insert(C2DShape::Flat::value_type( 0, 0));
+}
 
 C1n2DShapeFactory::C1n2DShapeFactory():
-	C2DShapePlugin("1n")
+       C2DShapePlugin("1n")
 {
-}	
+}
 
 const string C1n2DShapeFactory::do_get_descr() const
 {
-	return "A shape that only contains the central point";  
+       return "A shape that only contains the central point";
 }
 
 C2DShape *C1n2DShapeFactory::do_create()const
 {
-	return new C1n2DShape();
+       return new C1n2DShape();
 }
 
 
 C4n2DShape::C4n2DShape()
 {
-	insert(C2DShape::Flat::value_type(-1, 0));
-	insert(C2DShape::Flat::value_type( 1, 0));
-	insert(C2DShape::Flat::value_type( 0,-1));
-	insert(C2DShape::Flat::value_type( 0, 1));
+       insert(C2DShape::Flat::value_type(-1, 0));
+       insert(C2DShape::Flat::value_type( 1, 0));
+       insert(C2DShape::Flat::value_type( 0, -1));
+       insert(C2DShape::Flat::value_type( 0, 1));
 }
 
 C4n2DShapeFactory::C4n2DShapeFactory():
-	C2DShapePlugin("4n")
+       C2DShapePlugin("4n")
 {
 }
 
 C2DShape *C4n2DShapeFactory::do_create()const
 {
-	return new C4n2DShape();
+       return new C4n2DShape();
 }
 
 
 const string C4n2DShapeFactory::do_get_descr()const
 {
-	return string("4n neighborhood 2D shape");
+       return string("4n neighborhood 2D shape");
 }
 
 
 C8n2DShape::C8n2DShape()
 {
-	insert(C2DShape::Flat::value_type(-1,-1));
-	insert(C2DShape::Flat::value_type(-1, 1));
-	insert(C2DShape::Flat::value_type( 1,-1));
-	insert(C2DShape::Flat::value_type( 1, 1));
+       insert(C2DShape::Flat::value_type(-1, -1));
+       insert(C2DShape::Flat::value_type(-1, 1));
+       insert(C2DShape::Flat::value_type( 1, -1));
+       insert(C2DShape::Flat::value_type( 1, 1));
 }
 
 C8n2DShapeFactory::C8n2DShapeFactory():
-	C2DShapePlugin("8n")
+       C2DShapePlugin("8n")
 {
 }
 
 C2DShape *C8n2DShapeFactory::do_create()const
 {
-	return new C8n2DShape();
+       return new C8n2DShape();
 }
 
 
 const string C8n2DShapeFactory::do_get_descr()const
 {
-	return string("8n neighborhood 2D shape");
+       return string("8n neighborhood 2D shape");
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	CPluginBase *p = new C1n2DShapeFactory();
-	p->append_interface(new C4n2DShapeFactory());
-	p->append_interface(new C8n2DShapeFactory());
-	return p;
+       CPluginBase *p = new C1n2DShapeFactory();
+       p->append_interface(new C4n2DShapeFactory());
+       p->append_interface(new C8n2DShapeFactory());
+       return p;
 }
 
 NS_END

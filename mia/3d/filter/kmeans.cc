@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ NS_MIA_USE;
 using namespace std;
 
 C3DKMeans::C3DKMeans(size_t cls):
-	m_classes(cls)
+       m_classes(cls)
 {
 }
 
@@ -38,43 +38,39 @@ C3DKMeans::C3DKMeans(size_t cls):
 template <typename T>
 typename C3DKMeans::result_type C3DKMeans::operator () (const T3DImage<T>& data) const
 {
-	cvdebug() << "C3DKMeans::operator () begin\n";
-
-	C3DUBImage *tresult = new C3DUBImage(data.get_size(), data);
-	P3DImage result(tresult);
-	std::vector<double> classes(m_classes);
-
-	kmeans(data.begin(), data.end(), tresult->begin(), classes);
-
-	// store class centers in attributes;
-	tresult->set_attribute(ATTR_IMAGE_KMEANS_CLASSES, PAttribute(new CVDoubleAttribute(classes)));
-
-	cvdebug() << "C3DKMeans::operator () end\n";
-	return result;
+       cvdebug() << "C3DKMeans::operator () begin\n";
+       C3DUBImage *tresult = new C3DUBImage(data.get_size(), data);
+       P3DImage result(tresult);
+       std::vector<double> classes(m_classes);
+       kmeans(data.begin(), data.end(), tresult->begin(), classes);
+       // store class centers in attributes;
+       tresult->set_attribute(ATTR_IMAGE_KMEANS_CLASSES, PAttribute(new CVDoubleAttribute(classes)));
+       cvdebug() << "C3DKMeans::operator () end\n";
+       return result;
 }
 
 P3DImage C3DKMeans::do_filter(const C3DImage& image) const
 {
-	return mia::filter(*this, image);
+       return mia::filter(*this, image);
 }
 
 
 C3DKMeansFilterPluginFactory::C3DKMeansFilterPluginFactory():
-	C3DFilterPlugin("kmeans"),
-	m_classes(3)
+       C3DFilterPlugin("kmeans"),
+       m_classes(3)
 {
-	add_parameter("c", make_lc_param(m_classes, 2, false, "number of classes"));
+       add_parameter("c", make_lc_param(m_classes, 2, false, "number of classes"));
 }
 
 C3DFilter *C3DKMeansFilterPluginFactory::do_create()const
 {
-	return new C3DKMeans(m_classes);
+       return new C3DKMeans(m_classes);
 }
 
 const string C3DKMeansFilterPluginFactory::do_get_descr()const
 {
-	return "3D image k-means filter. In the output image the pixel value represents the class "
-		"membership and the class centers are stored as attribute in the image.";
+       return "3D image k-means filter. In the output image the pixel value represents the class "
+              "membership and the class centers are stored as attribute in the image.";
 }
 
 
@@ -82,7 +78,7 @@ const string C3DKMeansFilterPluginFactory::do_get_descr()const
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new  C3DKMeansFilterPluginFactory();
+       return new  C3DKMeansFilterPluginFactory();
 }
 
 NS_END

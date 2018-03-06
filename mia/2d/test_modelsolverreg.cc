@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,32 +29,33 @@ NS_MIA_USE
 using namespace std;
 
 
-class TestTimeStep : public C2DRegTimeStep {
+class TestTimeStep : public C2DRegTimeStep
+{
 private:
 
-	virtual float do_calculate_pertuberation(C2DFVectorfield& io,
-		         const C2DTransformation& shift) const;
-	virtual bool do_regrid_requested (const C2DTransformation& b,
-                         const C2DFVectorfield& v, float delta) const;
-	virtual bool do_has_regrid () const;
+       virtual float do_calculate_pertuberation(C2DFVectorfield& io,
+                     const C2DTransformation& shift) const;
+       virtual bool do_regrid_requested (const C2DTransformation& b,
+                                         const C2DFVectorfield& v, float delta) const;
+       virtual bool do_has_regrid () const;
 };
 
 
 float TestTimeStep::do_calculate_pertuberation(C2DFVectorfield& /*io*/,
-					       const C2DTransformation& /*shift*/) const
+              const C2DTransformation& /*shift*/) const
 {
-	return 2.0;
+       return 2.0;
 }
 
 bool TestTimeStep::do_regrid_requested (const C2DTransformation& /*b*/,
-					const C2DFVectorfield& /*v*/, float /*delta*/) const
+                                        const C2DFVectorfield& /*v*/, float /*delta*/) const
 {
-	return false;
+       return false;
 }
 
 bool TestTimeStep::do_has_regrid () const
 {
-	return false;
+       return false;
 }
 
 

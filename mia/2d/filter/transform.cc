@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,40 +23,39 @@
 
 NS_BEGIN( transform_2dimage_filter)
 
-NS_MIA_USE; 
+NS_MIA_USE;
 
 C2DTransform::C2DTransform(const std::string& name):
-	m_name(name)
+       m_name(name)
 {
 }
 
 mia::P2DImage C2DTransform::do_filter(const mia::C2DImage& image) const
 {
-        auto transform = load_transform<P2DTransformation>(m_name); 
-        return (*transform)(image); 
-	
+       auto transform = load_transform<P2DTransformation>(m_name);
+       return (*transform)(image);
 }
 
-C2DTransformFilterPluginFactory::C2DTransformFilterPluginFactory(): 
-	C2DFilterPlugin("transform")
+C2DTransformFilterPluginFactory::C2DTransformFilterPluginFactory():
+       C2DFilterPlugin("transform")
 {
-	add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_input,
-						   "Name of the file containing the transformation.", 
-						   &C2DTransformationIOPluginHandler::instance()));
+       add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_input,
+                     "Name of the file containing the transformation.",
+                     &C2DTransformationIOPluginHandler::instance()));
 }
 
 mia::C2DFilter *C2DTransformFilterPluginFactory::do_create()const
 {
-	return new C2DTransform(m_filename); 
+       return new C2DTransform(m_filename);
 }
 
 const std::string C2DTransformFilterPluginFactory::do_get_descr()const
 {
-	return "Transform the input image with the given transformation."; 
+       return "Transform the input image with the given transformation.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DTransformFilterPluginFactory();
+       return new C2DTransformFilterPluginFactory();
 }
 NS_END

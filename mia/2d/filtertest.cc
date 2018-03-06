@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 
 NS_MIA_BEGIN
 using namespace std;
-namespace bfs=::boost::filesystem;
+namespace bfs =::boost::filesystem;
 using namespace boost::unit_test;
 
 EXPORT_2DTEST void imagefiltertest2d_prepare_plugin_path()

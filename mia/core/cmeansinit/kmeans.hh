@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,23 +24,25 @@
 
 NS_MIA_BEGIN
 
-class CKMeansInitializer : public CMeans::Initializer {
-public: 
-        CKMeansInitializer(size_t nclasses);
-        
-        CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const;
-private: 
-        size_t m_nclasses; 
-        
-}; 
+class CKMeansInitializer : public CMeans::Initializer
+{
+public:
+       CKMeansInitializer(size_t nclasses);
 
-class CKMeansInitializerPlugin : public CMeansInitializerSizedPlugin {
-public: 
-        CKMeansInitializerPlugin();
+       CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const;
 private:
-        CMeansInitializerPlugin::Product * do_create() const;
-        virtual const std::string do_get_descr() const;
-}; 
+       size_t m_nclasses;
+
+};
+
+class CKMeansInitializerPlugin : public CMeansInitializerSizedPlugin
+{
+public:
+       CKMeansInitializerPlugin();
+private:
+       CMeansInitializerPlugin::Product *do_create() const;
+       virtual const std::string do_get_descr() const;
+};
 
 
 NS_MIA_END

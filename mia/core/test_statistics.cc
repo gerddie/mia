@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,82 +22,88 @@
 #include <mia/core/statistics.hh>
 
 NS_MIA_BEGIN
-class CSTDVector {
-public: 
-	EPixelType get_pixel_type() const {
-		return m_pt; 
-	}
-	virtual size_t size() const = 0; 
-protected: 
-	CSTDVector(EPixelType pt): m_pt(pt) {}
-private: 
-	EPixelType m_pt; 
-}; 
+class CSTDVector
+{
+public:
+       EPixelType get_pixel_type() const
+       {
+              return m_pt;
+       }
+       virtual size_t size() const = 0;
+protected:
+       CSTDVector(EPixelType pt): m_pt(pt) {}
+private:
+       EPixelType m_pt;
+};
 
-template <typename T> 
-class TSTDVector: public CSTDVector {
-	
-public: 
-	TSTDVector(size_t size):
-		CSTDVector((EPixelType)pixel_type<T>::value), 
-		m_data(size){}; 
-	
-	size_t size() const {
-		return m_data.size(); 
-	} 
-	typename std::vector<T>::const_iterator begin() const {
-		return m_data.begin(); 
-	}
-	typename std::vector<T>::const_iterator end() const {
-		return m_data.end(); 
-	}
+template <typename T>
+class TSTDVector: public CSTDVector
+{
 
-	typename std::vector<T>::iterator begin() {
-		return m_data.begin(); 
-	}
-	typename std::vector<T>::iterator end() {
-		return m_data.end(); 
-	}
+public:
+       TSTDVector(size_t size):
+              CSTDVector((EPixelType)pixel_type<T>::value),
+              m_data(size) {};
 
-private: 
-	std::vector<T> m_data; 
-}; 
+       size_t size() const
+       {
+              return m_data.size();
+       }
+       typename std::vector<T>::const_iterator begin() const
+       {
+              return m_data.begin();
+       }
+       typename std::vector<T>::const_iterator end() const
+       {
+              return m_data.end();
+       }
+
+       typename std::vector<T>::iterator begin()
+       {
+              return m_data.begin();
+       }
+       typename std::vector<T>::iterator end()
+       {
+              return m_data.end();
+       }
+
+private:
+       std::vector<T> m_data;
+};
 
 template <>
 struct Binder<CSTDVector> {
-	typedef __bind_all<TSTDVector> Derived;
+       typedef __bind_all<TSTDVector> Derived;
 };
 NS_MIA_END
 
-NS_MIA_USE; 
+NS_MIA_USE;
 
 
 BOOST_AUTO_TEST_CASE( test_mean_var )
 {
-	const float test_data[5] = {
-		1.0, 0.0, -1.0, 2.0, 3.0
-	};
-	TSTDVector<double> data(5); 
-	copy(test_data, test_data + 5, data.begin()); 
-
-	CSTDVector& help = data; 
-	auto mean_var = mia::filter(FMeanVariance(), help); 
-	BOOST_CHECK_CLOSE(mean_var.first, 1.0, 0.1);
-	BOOST_CHECK_CLOSE(mean_var.second, 1.5811, 0.1);
+       const float test_data[5] = {
+              1.0, 0.0, -1.0, 2.0, 3.0
+       };
+       TSTDVector<double> data(5);
+       copy(test_data, test_data + 5, data.begin());
+       CSTDVector& help = data;
+       auto mean_var = mia::filter(FMeanVariance(), help);
+       BOOST_CHECK_CLOSE(mean_var.first, 1.0, 0.1);
+       BOOST_CHECK_CLOSE(mean_var.second, 1.5811, 0.1);
 }
 
 
 BOOST_AUTO_TEST_CASE( test_median_MAD_1 )
 {
-	const float test_data[5] = {
-		1.0, 0.0, -1.0, 2.0, 3.0
-	};
-	TSTDVector<double> data(5); 
-	copy(test_data, test_data + 5, data.begin()); 
-
-	CSTDVector& help = data; 
-	auto median_MAD = mia::filter(FMedianMAD(), help); 
-	BOOST_CHECK_EQUAL(median_MAD.first, 1.0);
-	BOOST_CHECK_EQUAL(median_MAD.second, 1.0);
+       const float test_data[5] = {
+              1.0, 0.0, -1.0, 2.0, 3.0
+       };
+       TSTDVector<double> data(5);
+       copy(test_data, test_data + 5, data.begin());
+       CSTDVector& help = data;
+       auto median_MAD = mia::filter(FMedianMAD(), help);
+       BOOST_CHECK_EQUAL(median_MAD.first, 1.0);
+       BOOST_CHECK_EQUAL(median_MAD.second, 1.0);
 }
 

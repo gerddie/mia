@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -20,24 +20,27 @@
 
 #include <mia/3d/filter.hh>
 
-namespace distance_3d_filter {
+namespace distance_3d_filter
+{
 
-class C3DDistanceFilter: public mia::C3DFilter {
+class C3DDistanceFilter: public mia::C3DFilter
+{
 public:
-	template <typename T>
-	C3DDistanceFilter::result_type operator () (const mia::T3DImage<T>& data) const;
+       template <typename T>
+       C3DDistanceFilter::result_type operator () (const mia::T3DImage<T>& data) const;
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 };
 
 /* The factory class - this is what the application gets first. This factory class is used to
    create the actual filter object. It also provides some filter testing routines.
 */
-class C3DDistanceImageFilterFactory: public mia::C3DFilterPlugin {
+class C3DDistanceImageFilterFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DDistanceImageFilterFactory();
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C3DDistanceImageFilterFactory();
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 private:
 };
 

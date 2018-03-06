@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,53 +29,57 @@ NS_MIA_BEGIN
 
 
 
-class CParamizedFunctor : public CParamTranslator  {
-public: 
-        CParamizedFunctor(const char *name); 
+class CParamizedFunctor : public CParamTranslator
+{
+public:
+       CParamizedFunctor(const char *name);
 
-        class Selector {
-                void add_functor(CParamizedFunctor *t); 
-                
-                void set_value(const char *str_value); 
-                
-                void write_value(std::ostream& os) const;
-                
-                static instance(); 
-	private: 
-		virtual void post_add_translator(CTranslator& t) = 0; 
-                virtual bool do_set_value(const CTranslator& t, const CComplexOptionParser::CParts& options) = 0; 
-                virtual void do_write_value(std::ostream& os) const = 0;
-                
-                std::map<std::string, std::shared_ptr<CTranslator> > m_translators;
-                
-        }
-                
-private: 
-        
-}; 
+       class Selector
+       {
+              void add_functor(CParamizedFunctor *t);
+
+              void set_value(const char *str_value);
+
+              void write_value(std::ostream& os) const;
+
+              static instance();
+       private:
+              virtual void post_add_translator(CTranslator& t) = 0;
+              virtual bool do_set_value(const CTranslator& t, const CComplexOptionParser::CParts& options) = 0;
+              virtual void do_write_value(std::ostream& os) const = 0;
+
+              std::map<std::string, std::shared_ptr<CTranslator>> m_translators;
+
+       }
+
+private:
+
+};
 
 
-class CTranslatorSelector {
-public: 
+class CTranslatorSelector
+{
+public:
 
-        
 
-}; 
 
-class EXPORT_CORE CCmdParametrizedFunktorOption  {
- public: 
-        CCmdParametrizedFunktorOption(CParamizedFunctor& vt, const char *init, char short_opt, const char *long_opt, 
-                                      const char *long_help, const char *short_help, CCmdOptionFlags flags);
+};
 
- private: 
-        virtual bool do_set_value(const char *str_value);
-	virtual void do_write_value(std::ostream& os) const;
+class EXPORT_CORE CCmdParametrizedFunktorOption
+{
+public:
+       CCmdParametrizedFunktorOption(CParamizedFunctor& vt, const char *init, char short_opt, const char *long_opt,
+                                     const char *long_help, const char *short_help, CCmdOptionFlags flags);
 
-        ValueTranslator& m_vt;
+private:
+       virtual bool do_set_value(const char *str_value);
+       virtual void do_write_value(std::ostream& os) const;
+
+       ValueTranslator& m_vt;
 };
 
 
 NS_MIA_END
 
 
-#endif 
+#endif

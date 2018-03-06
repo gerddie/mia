@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,22 +23,24 @@
 NS_BEGIN( load_3dimage_filter)
 
 
-class C3DLoad : public mia::C3DFilter {
+class C3DLoad : public mia::C3DFilter
+{
 public:
-	C3DLoad(const std::string& name);
+       C3DLoad(const std::string& name);
 
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	std::string m_name; 
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       std::string m_name;
 };
 
-class C3DLoadFilterPluginFactory: public mia::C3DFilterPlugin {
+class C3DLoadFilterPluginFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DLoadFilterPluginFactory();
+       C3DLoadFilterPluginFactory();
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	std::string m_filename; 
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+       std::string m_filename;
 };
 
 NS_END

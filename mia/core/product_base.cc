@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,17 +25,17 @@ NS_MIA_BEGIN
 
 void CProductBase::set_module(PPluginModule module)
 {
-	m_module = module;
+       m_module = module;
 }
 
 void CProductBase::set_init_string(const char *init)
 {
-	m_init_string = init; 
+       m_init_string = init;
 }
 
 const char *CProductBase::get_init_string() const
 {
-	return m_init_string.c_str(); 
+       return m_init_string.c_str();
 }
 
 

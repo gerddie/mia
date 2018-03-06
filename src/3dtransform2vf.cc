@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,53 +28,50 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
-	{pdi_short, "Create Vectorfield from a transformation."}, 
-	{pdi_description, "Create a 3D vector field from a given transformation. The output vector field will "
-	 "have the dimesions as given in the transformation description."}, 
-	{pdi_example_descr, "Transform the input transformation trans.v3df to a vector field field.vtk."}, 
-	{pdi_example_code, "-i trans.v3df   -o field.vtk"}
-	
-}; 
+       {pdi_group, "Registration, Comparison, and Transformation of 3D images"},
+       {pdi_short, "Create Vectorfield from a transformation."},
+       {
+              pdi_description, "Create a 3D vector field from a given transformation. The output vector field will "
+              "have the dimesions as given in the transformation description."
+       },
+       {pdi_example_descr, "Transform the input transformation trans.v3df to a vector field field.vtk."},
+       {pdi_example_code, "-i trans.v3df   -o field.vtk"}
+
+};
 
 int do_main(int argc, char **argv)
 {
-	CCmdOptionList options(g_description);
+       CCmdOptionList options(g_description);
+       string src_filename;
+       string out_filename;
+       options.add(make_opt( src_filename, "in-file", 'i', "input transformation ",
+                             CCmdOptionFlags::required_input, &C3DTransformationIOPluginHandler::instance()));
+       options.add(make_opt( out_filename, "out-file", 'o', "output vector field ",
+                             CCmdOptionFlags::required_output, &C3DVFIOPluginHandler::instance()));
 
-	string src_filename;
-	string out_filename;
+       if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
+       auto transformation = C3DTransformationIOPluginHandler::instance().load(src_filename);
+       C3DIOVectorfield outfield(transformation->get_size());
+       cvdebug() << transformation->get_size() << "\n";
+       auto it = transformation->begin();
+       auto et = transformation->end();
+       auto ivf = outfield.begin_range(C3DBounds::_0, transformation->get_size());
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input transformation ", 
-			      CCmdOptionFlags::required_input, &C3DTransformationIOPluginHandler::instance()));
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", 
-			      CCmdOptionFlags::required_output, &C3DVFIOPluginHandler::instance()));
+       while (it != et) {
+              *ivf = C3DFVector(ivf.pos()) - *it;
+              cvdebug() << *ivf << "\n";
+              ++it;
+              ++ivf;
+       }
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
-	
+       if (!C3DVFIOPluginHandler::instance().save(out_filename, outfield)) {
+              cerr << "Unable to save result vector field to " << out_filename << "\n";
+              return EXIT_FAILURE;
+       }
 
-	auto transformation = C3DTransformationIOPluginHandler::instance().load(src_filename);
-
-	C3DIOVectorfield outfield(transformation->get_size());
-
-	cvdebug() << transformation->get_size() << "\n"; 
-	auto it = transformation->begin(); 
-	auto et = transformation->end(); 
-	auto ivf = outfield.begin_range(C3DBounds::_0, transformation->get_size()); 
-	
-	while (it != et) {
-		*ivf = C3DFVector(ivf.pos()) - *it; 
-		cvdebug() << *ivf << "\n"; 
-		++it; 
-		++ivf; 
-	}
-
-	if (!C3DVFIOPluginHandler::instance().save(out_filename, outfield)){
-		cerr << "Unable to save result vector field to " << out_filename << "\n";
-		return EXIT_FAILURE;
-	}
-	return EXIT_SUCCESS;	
+       return EXIT_SUCCESS;
 }
 
 MIA_MAIN(do_main);

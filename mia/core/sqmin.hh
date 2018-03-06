@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ NS_MIA_BEGIN
 
 /**
    \ingroup misc
-   
+
    given three points (0.0, y0), (1.0, y,1), (x, y2) evaluate
    \f$ r = arg(min (ax^2 + bx + c)) \forall r \in [min(0.0, x), max(1.0, x)] \f$
  */

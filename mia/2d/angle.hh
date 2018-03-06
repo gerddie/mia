@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,24 +25,24 @@
 
 NS_MIA_BEGIN
 /**
-   @ingroup misc 
-   
-   Evaluate the angle between rays ray_a and ray_b, returned values are in 
-   radians, clockwise. 
-   \param ray_a 
+   @ingroup misc
+
+   Evaluate the angle between rays ray_a and ray_b, returned values are in
+   radians, clockwise.
+   \param ray_a
    \param ray_b
  */
-float EXPORT_2D angle(const C2DFVector& ray_a, const C2DFVector& ray_b); 
+float EXPORT_2D angle(const C2DFVector& ray_a, const C2DFVector& ray_b);
 
 /**
-   @ingroup misc 
-   Evaluate the angle between rays s-a and s-b, returned values are in 
-   radians, clockwise. 
-   \param a 
+   @ingroup misc
+   Evaluate the angle between rays s-a and s-b, returned values are in
+   radians, clockwise.
+   \param a
    \param b
-   \param s 
+   \param s
  */
-float EXPORT_2D angle(const C2DFVector& a, const C2DFVector& b, const C2DFVector& s); 
+float EXPORT_2D angle(const C2DFVector& a, const C2DFVector& b, const C2DFVector& s);
 
 NS_MIA_END
 #endif

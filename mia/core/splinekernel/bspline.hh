@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,95 +27,104 @@ NS_MIA_BEGIN
 NS_BEGIN(bsplinekernel)
 
 /** implements a B-Spline kernel of degree 0 */
-class CBSplineKernel0: public  CSplineKernel{
+class CBSplineKernel0: public  CSplineKernel
+{
 public:
-	CBSplineKernel0();
-	virtual void get_weights(double x, VWeight& weight)const;
-	virtual void get_derivative_weights(double x, VWeight& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	virtual void get_derivative_weights(double x, VWeight& weight, int order) const;
+       CBSplineKernel0();
+       virtual void get_weights(double x, VWeight& weight)const;
+       virtual void get_derivative_weights(double x, VWeight& weight) const;
+       virtual double get_weight_at(double x, int order) const;
+       virtual void get_derivative_weights(double x, VWeight& weight, int order) const;
 };
 
 /** implements a B-Spline kernel of degree 0 */
-class CBSplineKernel1: public  CSplineKernel{
+class CBSplineKernel1: public  CSplineKernel
+{
 public:
-	CBSplineKernel1();
-	virtual void get_weights(double x, VWeight& weight)const;
-	virtual void get_derivative_weights(double x, VWeight& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	virtual void get_derivative_weights(double x, VWeight& weight, int order) const;
+       CBSplineKernel1();
+       virtual void get_weights(double x, VWeight& weight)const;
+       virtual void get_derivative_weights(double x, VWeight& weight) const;
+       virtual double get_weight_at(double x, int order) const;
+       virtual void get_derivative_weights(double x, VWeight& weight, int order) const;
 };
 
 
 /** implements a B-Spline kernel of degree 2 */
-class CBSplineKernel2: public  CSplineKernel{
+class CBSplineKernel2: public  CSplineKernel
+{
 public:
-	CBSplineKernel2();
-	virtual void get_weights(double x, VWeight& weight)const;
-	virtual void get_derivative_weights(double x, VWeight& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	virtual void get_derivative_weights(double x, VWeight& weight, int order) const;
+       CBSplineKernel2();
+       virtual void get_weights(double x, VWeight& weight)const;
+       virtual void get_derivative_weights(double x, VWeight& weight) const;
+       virtual double get_weight_at(double x, int order) const;
+       virtual void get_derivative_weights(double x, VWeight& weight, int order) const;
 };
 
 /** implements a B-Spline kernel of degree 3 */
-class CBSplineKernel3: public  CSplineKernel{
+class CBSplineKernel3: public  CSplineKernel
+{
 public:
-	CBSplineKernel3();
-	virtual void get_weights(double x, VWeight& weight)const;
-	virtual void get_derivative_weights(double x, VWeight& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	void get_derivative_weights(double x, VWeight& weight, int order) const;
-private: 
+       CBSplineKernel3();
+       virtual void get_weights(double x, VWeight& weight)const;
+       virtual void get_derivative_weights(double x, VWeight& weight) const;
+       virtual double get_weight_at(double x, int order) const;
+       void get_derivative_weights(double x, VWeight& weight, int order) const;
+private:
 };
 
 /** implements a B-Spline kernel of degree 4 */
-class CBSplineKernel4: public  CSplineKernel{
+class CBSplineKernel4: public  CSplineKernel
+{
 public:
-	CBSplineKernel4();
-	virtual void get_weights(double x, VWeight& weight)const;
-	virtual void get_derivative_weights(double x, VWeight& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	void get_derivative_weights(double x, VWeight& weight, int order) const;
-private: 
+       CBSplineKernel4();
+       virtual void get_weights(double x, VWeight& weight)const;
+       virtual void get_derivative_weights(double x, VWeight& weight) const;
+       virtual double get_weight_at(double x, int order) const;
+       void get_derivative_weights(double x, VWeight& weight, int order) const;
+private:
 };
 
 /** implements a B-Spline kernel of degree 5 */
-class CBSplineKernel5: public  CSplineKernel{
+class CBSplineKernel5: public  CSplineKernel
+{
 public:
-	CBSplineKernel5();
-	virtual void get_weights(double x, VWeight& weight)const;
-	virtual void get_derivative_weights(double x, VWeight& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	void get_derivative_weights(double x, VWeight& weight, int order) const;
+       CBSplineKernel5();
+       virtual void get_weights(double x, VWeight& weight)const;
+       virtual void get_derivative_weights(double x, VWeight& weight) const;
+       virtual double get_weight_at(double x, int order) const;
+       void get_derivative_weights(double x, VWeight& weight, int order) const;
 };
 
 /** implements a o-Moms kernel of degree 3 */
-class CBSplineKernelOMoms3 : public  CSplineKernel{
+class CBSplineKernelOMoms3 : public  CSplineKernel
+{
 public:
-	CBSplineKernelOMoms3();
-	virtual void get_weights(double x, VWeight& weight)const;
-	virtual void get_derivative_weights(double x, VWeight& weight) const;
-	void get_derivative_weights(double x, VWeight& weight, int order) const;
+       CBSplineKernelOMoms3();
+       virtual void get_weights(double x, VWeight& weight)const;
+       virtual void get_derivative_weights(double x, VWeight& weight) const;
+       void get_derivative_weights(double x, VWeight& weight, int order) const;
 };
 
-class CBSplineKernelPlugin: public CSplineKernelPlugin {
-public: 
-	CBSplineKernelPlugin(); 
-	virtual CSplineKernel *do_create() const;
-	virtual const std::string do_get_descr()const;
-private: 
-	int m_degree; 
-}; 
+class CBSplineKernelPlugin: public CSplineKernelPlugin
+{
+public:
+       CBSplineKernelPlugin();
+       virtual CSplineKernel *do_create() const;
+       virtual const std::string do_get_descr()const;
+private:
+       int m_degree;
+};
 
 
-class COMomsSplineKernelPlugin: public CSplineKernelPlugin {
-public: 
-	COMomsSplineKernelPlugin(); 
-	virtual CSplineKernel *do_create() const;
-	virtual const std::string do_get_descr()const;
-private: 
-	int m_degree; 
-}; 
+class COMomsSplineKernelPlugin: public CSplineKernelPlugin
+{
+public:
+       COMomsSplineKernelPlugin();
+       virtual CSplineKernel *do_create() const;
+       virtual const std::string do_get_descr()const;
+private:
+       int m_degree;
+};
 
 NS_END
 NS_MIA_END

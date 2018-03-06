@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -42,117 +42,105 @@ using namespace boost;
 using namespace Imf;
 using namespace Imath;
 
-class CEXR2DVFIOPlugin : public C2DVFIOPlugin {
+class CEXR2DVFIOPlugin : public C2DVFIOPlugin
+{
 public:
-	CEXR2DVFIOPlugin();
+       CEXR2DVFIOPlugin();
 private:
-	PData do_load(const string& fname) const;
-	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const;
+       PData do_load(const string& fname) const;
+       bool do_save(const string& fname, const Data& data) const;
+       const string do_get_descr() const;
 };
 
 CEXR2DVFIOPlugin::CEXR2DVFIOPlugin():
-	C2DVFIOPlugin("exr")
+       C2DVFIOPlugin("exr")
 {
-	add_supported_type(it_float);
-	add_supported_type(it_uint);
-
-	add_suffix(".exr");
-	add_suffix(".EXR");
+       add_supported_type(it_float);
+       add_supported_type(it_uint);
+       add_suffix(".exr");
+       add_suffix(".EXR");
 }
 
 CEXR2DVFIOPlugin::PData  CEXR2DVFIOPlugin::do_load(const string& filename) const
 {
-	try {
-		InputFile file (filename.c_str());
+       try {
+              InputFile file (filename.c_str());
+              Box2i dw = file.header().dataWindow();
+              C2DBounds size(dw.max.x - dw.min.x + 1, dw.max.y - dw.min.y + 1);
+              int dx = dw.min.x;
+              int dy = dw.min.y;
+              cvdebug() << "EXR:Get vf of size " << size.x << ", " << size.y << "\n";
+              const ChannelList& channels = file.header().channels();
+              FrameBuffer frameBuffer;
+              std::shared_ptr<C2DIOVectorfield > vf(new C2DIOVectorfield(size));
 
-		Box2i dw = file.header().dataWindow();
-		C2DBounds size(dw.max.x - dw.min.x + 1, dw.max.y - dw.min.y + 1);
-		int dx = dw.min.x;
-		int dy = dw.min.y;
-		cvdebug() << "EXR:Get vf of size " <<size.x << ", "<< size.y << "\n";
+              for (ChannelList::ConstIterator i = channels.begin(); i != channels.end(); ++i) {
+                     const Channel& channel = i.channel();
+                     cvdebug() << "channel '" << i.name() << "' of type " << channel.type << "\n";
 
-		const ChannelList& channels = file.header().channels();
-		FrameBuffer frameBuffer;
+                     switch (channel.type) {
+                     case FLOAT: {
+                            frameBuffer.insert ("X", Slice(FLOAT, (char *)(&(*vf)(0, 0).x - (dx + size.x * dy)),
+                                                           8, 8 * size.x, 1, 1, 0.0));
+                            frameBuffer.insert ("Y", Slice(FLOAT, (char *)(&(*vf)(0, 0).y - (dx + size.x * dy)),
+                                                           8, 8 * size.x, 1, 1, 0.0));
+                     }
+                     break;
 
-		std::shared_ptr<C2DIOVectorfield > vf(new C2DIOVectorfield(size));
+                     default:
+                            throw invalid_argument("EXRVFIO::load: only FLOAT supported");
+                     };
+              }
 
-		for (ChannelList::ConstIterator i = channels.begin(); i != channels.end(); ++i) {
+              file.setFrameBuffer (frameBuffer);
+              file.readPixels (dw.min.y, dw.max.y);
+              return vf;
+       } catch (const std::exception& x) {
+              // should add an debug message
+              cvwarn() << "OpenXER: failed reading vector field from '" << filename << "':" << x.what() << "\n";
+       }
 
-			const Channel& channel = i.channel();
-
-			cvdebug() << "channel '"<< i.name() <<"' of type " << channel.type << "\n";
-			switch (channel.type) {
-			case FLOAT: {
-
-				frameBuffer.insert ("X", Slice(FLOAT, (char*)(&(*vf)(0,0).x - (dx + size.x * dy)),
-							       8, 8 * size.x, 1, 1, 0.0));
-				frameBuffer.insert ("Y", Slice(FLOAT, (char*)(&(*vf)(0,0).y - (dx + size.x * dy)),
-                                                                    8, 8 * size.x, 1, 1, 0.0));
-			}break;
-			default:
-				throw invalid_argument("EXRVFIO::load: only FLOAT supported");
-			};
-		}
-		file.setFrameBuffer (frameBuffer);
-		file.readPixels (dw.min.y, dw.max.y);
-		return vf;
-	}
-
-	catch (const std::exception& x) {
-		// should add an debug message 
-		cvwarn() << "OpenXER: failed reading vector field from '"<< filename<< "':" << x.what() << "\n"; 
-	}
-	return CEXR2DVFIOPlugin::PData();
+       return CEXR2DVFIOPlugin::PData();
 }
 
 bool CEXR2DVFIOPlugin::do_save(const string& fname, const Data& vf) const
 {
+       cvdebug() << "CEXR2DVFIOPlugin::do_save vf size (" <<
+                 vf.get_size().x << ", " << vf.get_size().y << ")\n";
 
-	cvdebug() << "CEXR2DVFIOPlugin::do_save vf size ("<<
-		vf.get_size().x << ", " << vf.get_size().y<<")\n";
+       try {
+              Header header (vf.get_size().x, vf.get_size().y);
+              header.channels().insert ("X", Channel (FLOAT));
+              header.channels().insert ("Y", Channel (FLOAT));
+              OutputFile file (fname.c_str(), header);
+              FrameBuffer frameBuffer;
+              frameBuffer.insert ("X",                    // name
+                                  Slice (FLOAT,               // type
+                                         (char *) &vf(0, 0).x, // base
+                                         8,           // xStride
+                                         8 * vf.get_size().x));     // yStride
+              frameBuffer.insert ("Y",                         // name
+                                  Slice (FLOAT,                // type
+                                         (char *) &vf(0, 0).y, // base
+                                         8,                    // xStride
+                                         8 * vf.get_size().x));// yStride
+              file.setFrameBuffer (frameBuffer);
+              file.writePixels (vf.get_size().y);
+       } catch (...) {
+              return false;
+       }
 
-	try {
-		Header header (vf.get_size().x, vf.get_size().y);
-
-		header.channels().insert ("X", Channel (FLOAT));
-		header.channels().insert ("Y", Channel (FLOAT));
-
-		OutputFile file (fname.c_str(), header);
-
-		FrameBuffer frameBuffer;
-
-		frameBuffer.insert ("X",                    // name
-				    Slice (FLOAT,               // type
-					   (char *) &vf(0,0).x, // base
-					   8,           // xStride
-					   8 * vf.get_size().x));     // yStride
-
-		frameBuffer.insert ("Y",                         // name
-				    Slice (FLOAT,                // type
-					   (char *) &vf(0,0).y,  // base
-					   8,                    // xStride
-					   8 * vf.get_size().x));// yStride
-
-
-		file.setFrameBuffer (frameBuffer);
-		file.writePixels (vf.get_size().y);
-	}
-	catch (...) {
-		return false;
-	}
-
-	return true;
+       return true;
 }
 
 const string CEXR2DVFIOPlugin::do_get_descr() const
 {
-	return "a 2dvf io plugin for OpenEXR vfs";
+       return "a 2dvf io plugin for OpenEXR vfs";
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	return new CEXR2DVFIOPlugin();
+       return new CEXR2DVFIOPlugin();
 }
 
 NS_END

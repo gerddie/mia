@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -42,90 +42,78 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
-	{pdi_short, "Fuzzy c-means segmentation of a 3D image."}, 
-	{pdi_description, "This program runs a combined fuzzy c-means clustering and B-field correction "
-	"to facilitate a 3D segmentation of 3D image"}, 
-	{pdi_example_descr, "Run a 5-class segmentation over inpt image input.v and store the class "
-	"probability images in cls.v and the B0-field corrected image in b0.v."}, 
-	{pdi_example_code, "-i input.v -c 5 -o b0.v -c cls.v"}
-}; 
+       {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"},
+       {pdi_short, "Fuzzy c-means segmentation of a 3D image."},
+       {
+              pdi_description, "This program runs a combined fuzzy c-means clustering and B-field correction "
+              "to facilitate a 3D segmentation of 3D image"
+       },
+       {
+              pdi_example_descr, "Run a 5-class segmentation over inpt image input.v and store the class "
+              "probability images in cls.v and the B0-field corrected image in b0.v."
+       },
+       {pdi_example_code, "-i input.v -c 5 -o b0.v -c cls.v"}
+};
 
 
 int do_main( int argc, char *argv[] )
 {
+       string in_filename;
+       string out_filename;
+       string cls_filename;
+       int    noOfClasses = 3;
+       float  residuum = 0.1;
+       const auto& imageio = C3DImageIOPluginHandler::instance();
+       CCmdOptionList options(g_description);
+       options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be segmenetd",
+                             CCmdOptionFlags::required_input, &imageio));
+       options.add(make_opt( cls_filename, "cls-file", 'c', "output class probability images. Note, the "
+                             "used file format must support multible images (best is to use vista)",
+                             CCmdOptionFlags::output, &imageio));
+       options.add(make_opt( out_filename, "b0-file", 'o', "image corrected for intensity non-uniformity",
+                             CCmdOptionFlags::output, &imageio));
+       options.add(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
+       options.add(make_opt( residuum, "residuum", 'r', "relative residuum"));
 
+       if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
-	string in_filename;
-	string out_filename;
-	string cls_filename;
-	int    noOfClasses = 3;
-	float  residuum = 0.1;
+       if (cls_filename.empty() && out_filename.empty())
+              throw runtime_error("Not a single output file given");
 
-	const auto& imageio = C3DImageIOPluginHandler::instance();
+       C3DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);
 
-	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be segmenetd", 
-			      CCmdOptionFlags::required_input, &imageio));
-	
-	options.add(make_opt( cls_filename, "cls-file", 'c', "output class probability images. Note, the "
-			      "used file format must support multible images (best is to use vista)", 
-			      CCmdOptionFlags::output, &imageio));
-	options.add(make_opt( out_filename, "b0-file", 'o', "image corrected for intensity non-uniformity", 
-			      CCmdOptionFlags::output , &imageio));
-	options.add(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
-	options.add(make_opt( residuum, "residuum", 'r', "relative residuum"));
+       if (!inImage_list.get() || !inImage_list->size() ) {
+              string not_found = ("No supported data found in ") + in_filename;
+              throw runtime_error(not_found);
+       }
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
+       // segment image
+       if (inImage_list->size() > 1)
+              cvwarn() << "Only segmenting first input image\n";
 
+       C3DImageVector classes;
+       P3DImage b0_corrected = fuzzy_segment_3d(**inImage_list->begin(), noOfClasses, residuum, classes);
 
-	if (cls_filename.empty() && out_filename.empty())
-		throw runtime_error("Not a single output file given"); 
+       if (!out_filename.empty()) {
+              // save corrected image to out-file
+              C3DImageIOPluginHandler::Instance::Data out_list;
+              out_list.push_back(b0_corrected);
 
+              if ( !imageio.save(out_filename, out_list) ) {
+                     string not_save = ("unable to save result to ") + out_filename;
+                     throw runtime_error(not_save);
+              };
+       };
 
-	C3DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);
+       //CHistory::instance().append(argv[0], revision, opts);
+       if ( !imageio.save(cls_filename, classes) ) {
+              string not_save = ("unable to save result to ") + cls_filename;
+              throw runtime_error(not_save);
+       }
 
-	if (!inImage_list.get() || !inImage_list->size() ) {
-		string not_found = ("No supported data found in ") + in_filename;
-		throw runtime_error(not_found);
-	}
-
-	// segment image
-	if (inImage_list->size() > 1)
-		cvwarn() << "Only segmenting first input image\n";
-
-	C3DImageVector classes;
-
-	P3DImage b0_corrected = fuzzy_segment_3d(**inImage_list->begin(), noOfClasses, residuum, classes);
-
-	if (!out_filename.empty()) {
-
-		// save corrected image to out-file
-		C3DImageIOPluginHandler::Instance::Data out_list;
-
-		out_list.push_back(b0_corrected);
-		if ( !imageio.save(out_filename, out_list) ){
-
-			string not_save = ("unable to save result to ") + out_filename;
-			throw runtime_error(not_save);
-
-		};
-
-	};
-
-	//CHistory::instance().append(argv[0], revision, opts);
-
-	if ( !imageio.save(cls_filename, classes) ){
-		string not_save = ("unable to save result to ") + cls_filename;
-		throw runtime_error(not_save);
-
-	}
-
-
-	return EXIT_SUCCESS;
-
+       return EXIT_SUCCESS;
 }
 
 #include <mia/internal/main.hh>
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);

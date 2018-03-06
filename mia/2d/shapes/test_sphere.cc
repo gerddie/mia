@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,32 +22,28 @@
 
 #include <mia/2d/shapes/sphere.hh>
 
-using namespace std; 
-NS_MIA_USE; 
+using namespace std;
+NS_MIA_USE;
 
 
-BOOST_AUTO_TEST_CASE( test_sphere ) 
+BOOST_AUTO_TEST_CASE( test_sphere )
 {
-	auto shape = BOOST_TEST_create_from_plugin<CSphere2DShapeFactory>("sphere:r=3"); 
-	BOOST_REQUIRE(shape); 
+       auto shape = BOOST_TEST_create_from_plugin<CSphere2DShapeFactory>("sphere:r=3");
+       BOOST_REQUIRE(shape);
+       size_t s = 2 * 3 + 1;
+       size_t r2 = 3 * 3;
+       BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(s, s));
+       auto mask = shape->get_mask();
+       BOOST_CHECK_EQUAL(mask.get_size().x, mask.get_size().y);
+       BOOST_CHECK_EQUAL(mask.get_size(), C2DBounds(s, s));
 
-	size_t s = 2 * 3 + 1;
-	size_t r2 = 3*3;
+       for ( size_t y = 0; y < s; ++y)
+              for ( size_t x = 0; x < s; ++x) {
+                     float r_h = (x - 3) * (x - 3) + (y - 3) * (y - 3);
 
-
-	BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(s,s)); 
-	auto mask = shape->get_mask(); 
-	
-	
-	BOOST_CHECK_EQUAL(mask.get_size().x, mask.get_size().y); 
-	BOOST_CHECK_EQUAL(mask.get_size(), C2DBounds(s,s)); 
-	
-	for ( size_t y = 0; y < s; ++y)
-		for ( size_t x = 0; x < s; ++x) {
-			float r_h = (x - 3) * (x - 3) + (y - 3) * (y - 3);
-			if (r_h <= r2) 
-				BOOST_CHECK( mask(x,y)); 
-			else 
-				BOOST_CHECK(!mask(x,y)); 
-		}
-}; 
+                     if (r_h <= r2)
+                            BOOST_CHECK( mask(x, y));
+                     else
+                            BOOST_CHECK(!mask(x, y));
+              }
+};

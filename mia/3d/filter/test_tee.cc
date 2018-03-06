@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,41 +29,41 @@ using namespace ::boost::unit_test;
 using namespace tee_3dimage_filter;
 
 struct TeeFixture {
-	TeeFixture(); 
-	~TeeFixture(); 
-	
+       TeeFixture();
+       ~TeeFixture();
 
-	C3DUBImage *orig; 
-	P3DImage image; 
-}; 
+
+       C3DUBImage *orig;
+       P3DImage image;
+};
 
 TeeFixture::TeeFixture()
 {
-	const unsigned char init[4] = {1,2,3,4}; 
-	orig = new C3DUBImage(C3DBounds(2,2,1), init); 
-	image.reset(orig); 
+       const unsigned char init[4] = {1, 2, 3, 4};
+       orig = new C3DUBImage(C3DBounds(2, 2, 1), init);
+       image.reset(orig);
 }
 
 TeeFixture::~TeeFixture()
 {
-	CDatapool::instance().remove("test.@");
+       CDatapool::instance().remove("test.@");
 }
-	
+
 
 BOOST_FIXTURE_TEST_CASE( test_3dfilter_tee_shared_ptr, TeeFixture )
 {
-	auto t = BOOST_TEST_create_from_plugin<C3DTeeFilterPluginFactory>("tee:file=test.@");
-	auto passthrough = t->filter(image); 
-	BOOST_CHECK(*image == *passthrough);
-	auto loaded = load_image3d("test.@");
-	BOOST_CHECK(*image == *loaded);
+       auto t = BOOST_TEST_create_from_plugin<C3DTeeFilterPluginFactory>("tee:file=test.@");
+       auto passthrough = t->filter(image);
+       BOOST_CHECK(*image == *passthrough);
+       auto loaded = load_image3d("test.@");
+       BOOST_CHECK(*image == *loaded);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_3dfilter_tee, TeeFixture )
 {
-	auto t = BOOST_TEST_create_from_plugin<C3DTeeFilterPluginFactory>("tee:file=test.@");
-	auto passthrough2 = t->filter(*image); 
-	BOOST_CHECK(*image == *passthrough2);
-	auto loaded2 = load_image3d("test.@");
-	BOOST_CHECK(*image == *loaded2);
+       auto t = BOOST_TEST_create_from_plugin<C3DTeeFilterPluginFactory>("tee:file=test.@");
+       auto passthrough2 = t->filter(*image);
+       BOOST_CHECK(*image == *passthrough2);
+       auto loaded2 = load_image3d("test.@");
+       BOOST_CHECK(*image == *loaded2);
 }

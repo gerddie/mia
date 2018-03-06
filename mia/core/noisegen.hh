@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,63 +28,64 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE grayscale_noise_data {
-	static const char *data_descr;
+       static const char *data_descr;
 };
 
 
 struct EXPORT_CORE generator_type {
-	static const char *type_descr;
+       static const char *type_descr;
 };
 
 /**
-   \ingroup basic 
+   \ingroup basic
    \brief Base class for the noise generators.
 
-   This class defines the interface for noise generators. Real implementations 
-   are provided as plug-ins. 
+   This class defines the interface for noise generators. Real implementations
+   are provided as plug-ins.
 */
-class EXPORT_CORE  CNoiseGenerator : public CProductBase {
+class EXPORT_CORE  CNoiseGenerator : public CProductBase
+{
 public:
-	/// typedef helber for plugin search path 
-	typedef grayscale_noise_data plugin_data; 
-	
-	/// typedef helber for plugin search path 
-	typedef generator_type plugin_type; 
+       /// typedef helber for plugin search path
+       typedef grayscale_noise_data plugin_data;
 
-	/**
-	   Constructor to initialize the noise generator with the given seed 
-	   \param seed 
-	 */
-	CNoiseGenerator(unsigned int seed);
+       /// typedef helber for plugin search path
+       typedef generator_type plugin_type;
 
-	
-	virtual ~CNoiseGenerator();
-	
-	/// \returns the next random value comprising the noise 
-	double operator ()()const;
+       /**
+          Constructor to initialize the noise generator with the given seed
+          \param seed
+        */
+       CNoiseGenerator(unsigned int seed);
+
+
+       virtual ~CNoiseGenerator();
+
+       /// \returns the next random value comprising the noise
+       double operator ()()const;
 protected:
-	/** @return a random value by using the system call to rand()  and 
-	    that is then used to create the noise as requested 
-	    
-	 */
-	double ranf() const;
+       /** @return a random value by using the system call to rand()  and
+           that is then used to create the noise as requested
+
+        */
+       double ranf() const;
 private:
-	virtual double get() const = 0;
+       virtual double get() const = 0;
 
 };
 
-typedef std::shared_ptr<CNoiseGenerator> PNoiseGenerator; 
+typedef std::shared_ptr<CNoiseGenerator> PNoiseGenerator;
 
-/// Base class for al noise generator plugins 
+/// Base class for al noise generator plugins
 typedef TFactory<CNoiseGenerator> CNoiseGeneratorPlugin;
 
-/// The noise generator plugin handler 
-typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > 
-      CNoiseGeneratorPluginHandler;
+/// The noise generator plugin handler
+typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin>>
+              CNoiseGeneratorPluginHandler;
 
 /// @cond never
-FACTORY_TRAIT(CNoiseGeneratorPluginHandler); 
-/// @endcond 
+FACTORY_TRAIT(CNoiseGeneratorPluginHandler);
+/// @endcond
 
 
 NS_MIA_END

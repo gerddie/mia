@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,39 +23,38 @@
 
 NS_BEGIN( load_2dimage_filter)
 
-NS_MIA_USE; 
+NS_MIA_USE;
 
 C2DLoad::C2DLoad(const std::string& name):
-	m_name(name)
+       m_name(name)
 {
 }
 
 mia::P2DImage C2DLoad::do_filter(const mia::C2DImage& MIA_PARAM_UNUSED(image)) const
 {
-	return load_image2d(m_name); 
-	
+       return load_image2d(m_name);
 }
 
-C2DLoadFilterPluginFactory::C2DLoadFilterPluginFactory(): 
-	C2DFilterPlugin("load")
+C2DLoadFilterPluginFactory::C2DLoadFilterPluginFactory():
+       C2DFilterPlugin("load")
 {
-	add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_input,
-						   "name of the input file to load from.", 
-						   &C2DImageIOPluginHandler::instance()));
+       add_parameter("file", new CStringParameter(m_filename, CCmdOptionFlags::required_input,
+                     "name of the input file to load from.",
+                     &C2DImageIOPluginHandler::instance()));
 }
 
 mia::C2DFilter *C2DLoadFilterPluginFactory::do_create()const
 {
-	return new C2DLoad(m_filename); 
+       return new C2DLoad(m_filename);
 }
 
 const std::string C2DLoadFilterPluginFactory::do_get_descr()const
 {
-	return "Load the input image from a file and use it to replace the current image in the pipeline."; 
+       return "Load the input image from a file and use it to replace the current image in the pipeline.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DLoadFilterPluginFactory();
+       return new C2DLoadFilterPluginFactory();
 }
 NS_END

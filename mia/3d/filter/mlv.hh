@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,37 +25,39 @@
 
 NS_BEGIN(mlv_3dimage_filter)
 
-class C3DMLVImageFilter: public mia::C3DFilter {
-	int m_l;
-	int m_kh;
+class C3DMLVImageFilter: public mia::C3DFilter
+{
+       int m_l;
+       int m_kh;
 public:
-	C3DMLVImageFilter(int hw);
+       C3DMLVImageFilter(int hw);
 
-	template <typename T>
-	typename mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& data) const ;
+       template <typename T>
+       typename mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& data) const ;
 
 private:
-	template <typename T>
-	T get(const mia::C3DFImage& mu, const mia::C3DFImage& sigma,
-					int x, int y, int z, T ref) const;
+       template <typename T>
+       T get(const mia::C3DFImage& mu, const mia::C3DFImage& sigma,
+             int x, int y, int z, T ref) const;
 
-	template <typename InputIterator>
-	void run_sub(InputIterator begin, InputIterator end,  int cy, int cz,
-		     mia::C3DFImage& mu, mia::C3DFImage& sigma,
-		     mia::C3DFImage& n, std::vector<float>& buffer, int row_length)const;
+       template <typename InputIterator>
+       void run_sub(InputIterator begin, InputIterator end,  int cy, int cz,
+                    mia::C3DFImage& mu, mia::C3DFImage& sigma,
+                    mia::C3DFImage& n, std::vector<float>& buffer, int row_length)const;
 
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 
 };
 
-class C3DMLVImageFilterFactory: public mia::C3DFilterPlugin {
+class C3DMLVImageFilterFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DMLVImageFilterFactory();
+       C3DMLVImageFilterFactory();
 private:
 
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr() const;
-	int m_hw;
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr() const;
+       int m_hw;
 };
 
 

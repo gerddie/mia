@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,27 +21,29 @@
 #include <mia/mesh/filter.hh>
 
 
-NS_BEGIN(mia_meshfilter_selectbig) 
+NS_BEGIN(mia_meshfilter_selectbig)
 
-using mia::C3DFVector; 
-using mia::PTriangleMesh; 
-using mia::CTriangleMesh; 
-
-
-class CSelectBigMeshFilter: public mia::CMeshFilter {
-public: 
-	CSelectBigMeshFilter(); 
-private: 
-	PTriangleMesh do_filter(const CTriangleMesh& image) const; 
-}; 
+using mia::C3DFVector;
+using mia::PTriangleMesh;
+using mia::CTriangleMesh;
 
 
-class CSelectBigMeshFilterPlugin: public mia::CMeshFilterPlugin {
-public: 
-	CSelectBigMeshFilterPlugin(); 
+class CSelectBigMeshFilter: public mia::CMeshFilter
+{
+public:
+       CSelectBigMeshFilter();
+private:
+       PTriangleMesh do_filter(const CTriangleMesh& image) const;
+};
 
-	virtual mia::CMeshFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-}; 
+
+class CSelectBigMeshFilterPlugin: public mia::CMeshFilterPlugin
+{
+public:
+       CSelectBigMeshFilterPlugin();
+
+       virtual mia::CMeshFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+};
 
 NS_END

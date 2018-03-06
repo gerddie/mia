@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,32 +27,35 @@ using std::pair;
 using std::make_pair;
 
 CSparseHistogram::CSparseHistogram():
-        m_shift(0), 
-        m_pixeltype(it_none)
+       m_shift(0),
+       m_pixeltype(it_none)
 {
 }
 
 CSparseHistogram::Compressed CSparseHistogram::get_compressed_histogram()const
 {
-        int nonzero_bins = 0;
-        for (auto b: m_histogram) {
-                if (b > 0)
-                        ++nonzero_bins; 
-        }
+       int nonzero_bins = 0;
 
-        Compressed result;
-        result.reserve(nonzero_bins);
-        for (unsigned i = 0; i < m_histogram.size(); ++i) {
-                if (m_histogram[i] != 0)
-                        result.push_back(make_pair(i - m_shift, m_histogram[i])); 
-        }
-        return result; 
+       for (auto b : m_histogram) {
+              if (b > 0)
+                     ++nonzero_bins;
+       }
+
+       Compressed result;
+       result.reserve(nonzero_bins);
+
+       for (unsigned i = 0; i < m_histogram.size(); ++i) {
+              if (m_histogram[i] != 0)
+                     result.push_back(make_pair(i - m_shift, m_histogram[i]));
+       }
+
+       return result;
 }
 
 EXPORT_CORE  std::ostream& operator << (std::ostream& os, const std::pair<short, unsigned long>& pair)
 {
-	os << "[" << pair.first << ": " << pair.second << "]";
-	return os; 
+       os << "[" << pair.first << ": " << pair.second << "]";
+       return os;
 }
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,87 +22,87 @@
 #include <mia/core/xmlinterface.hh>
 
 NS_MIA_BEGIN
-using std::invalid_argument; 
+using std::invalid_argument;
 
 
 CParamTranslator::CParamTranslator(const char *name):
-        m_name(name)
+       m_name(name)
 {
 }
 
 CParamTranslator::~CParamTranslator()
 {
 }
-        
+
 void CParamTranslator::add_parameter(const std::string& name, CParameter *param)
 {
-        CParamList::PParameter p(param);
-	if ( m_parameters.has_key(name) ) {
-                throw create_exception<invalid_argument>("CParamTranslator: Parameter name '", 
-                                                         name, "' already in use'");
-	}
-	m_parameters[name] = p;
+       CParamList::PParameter p(param);
+
+       if ( m_parameters.has_key(name) ) {
+              throw create_exception<invalid_argument>("CParamTranslator: Parameter name '",
+                            name, "' already in use'");
+       }
+
+       m_parameters[name] = p;
 }
 
 void CParamTranslator::set_parameters(const CParsedOptions& options)
 {
-        try {
-		m_parameters.set(options);
-	}
-	catch (invalid_argument& x) {
-                throw create_exception<invalid_argument>("CParamTranslator:", x.what());
-	}
+       try {
+              m_parameters.set(options);
+       } catch (invalid_argument& x) {
+              throw create_exception<invalid_argument>("CParamTranslator:", x.what());
+       }
 }
 
 void CParamTranslator::check_parameters()
 {
-	try {
-		m_parameters.check_required();
-	}
-	catch (invalid_argument& x) {
-                throw create_exception<invalid_argument>("CParamTranslator:", x.what());
-        }
+       try {
+              m_parameters.check_required();
+       } catch (invalid_argument& x) {
+              throw create_exception<invalid_argument>("CParamTranslator:", x.what());
+       }
 }
 
 void CParamTranslator::get_short_help(std::ostream& os) const
 {
-	os << get_name() << ": " << get_descr() << "\n";
-	m_parameters.print_help(os);
-	os  << "\n";
+       os << get_name() << ": " << get_descr() << "\n";
+       m_parameters.print_help(os);
+       os  << "\n";
 }
 
 const char *CParamTranslator::get_name() const
 {
-        return m_name; 
+       return m_name;
 }
 
 const std::string CParamTranslator::get_descr() const
 {
-	return do_get_descr();
+       return do_get_descr();
 }
 
 
 void CParamTranslator::get_help(std::ostream& os) const
 {
-	m_parameters.print_help(os);
+       m_parameters.print_help(os);
 }
 
 void CParamTranslator::get_help_xml(CXMLElement& root) const
 {
-	cvdebug() << "Get help for " << m_name << "\n"; 
-	root.set_child_text(get_descr()); 
-	do_get_help_xml(root); 
+       cvdebug() << "Get help for " << m_name << "\n";
+       root.set_child_text(get_descr());
+       do_get_help_xml(root);
 }
 
 void CParamTranslator::do_get_help_xml(CXMLElement& root) const
 {
-	TRACE_FUNCTION; 
-	m_parameters.get_help_xml(root);
+       TRACE_FUNCTION;
+       m_parameters.get_help_xml(root);
 }
 
 CParamList& CParamTranslator::get_parameters()
 {
-        return m_parameters; 
+       return m_parameters;
 }
 
 NS_MIA_END

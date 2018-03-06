@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,16 +30,16 @@
 
 NS_MIA_BEGIN
 
-using std::stringstream; 
-using std::invalid_argument; 
+using std::stringstream;
+using std::invalid_argument;
 
-const char *const CMinimizer::type_descr = "singlecost"; 
-const char *const CMinimizer::data_descr = "minimizer"; 
+const char *const CMinimizer::type_descr = "singlecost";
+const char *const CMinimizer::data_descr = "minimizer";
 
 
 size_t CMinimizer::Problem::size() const
 {
-	return do_size(); 
+       return do_size();
 }
 
 CMinimizer::CMinimizer()
@@ -48,13 +48,13 @@ CMinimizer::CMinimizer()
 
 void CMinimizer::set_problem(PProblem p)
 {
-	m_problem = p; 
-	do_set_problem(); 
+       m_problem = p;
+       do_set_problem();
 }
 
 size_t CMinimizer::size() const
 {
-	return m_problem ? m_problem->size() : 0; 
+       return m_problem ? m_problem->size() : 0;
 }
 
 void CMinimizer::do_set_problem()
@@ -63,46 +63,46 @@ void CMinimizer::do_set_problem()
 
 double  CMinimizer::Problem::f(const std::vector<double>& x)
 {
-	assert(x.size() == size()); 
-	const CDoubleVector params(x.size(), &x[0]); 
-	return do_f(params); 	
+       assert(x.size() == size());
+       const CDoubleVector params(x.size(), &x[0]);
+       return do_f(params);
 }
 void    CMinimizer::Problem::df(const std::vector<double>& x, std::vector<double>& g)
 {
-	assert(x.size() == size()); 
-	assert(g.size() == size()); 
-	const CDoubleVector params_x(x.size(), &x[0]); 
-	CDoubleVector params_g(g.size(), &g[0]); 
-	do_df(params_x, params_g); 	
+       assert(x.size() == size());
+       assert(g.size() == size());
+       const CDoubleVector params_x(x.size(), &x[0]);
+       CDoubleVector params_g(g.size(), &g[0]);
+       do_df(params_x, params_g);
 }
 
 double  CMinimizer::Problem::fdf(const std::vector<double>& x, std::vector<double>& g)
 {
-	assert(x.size() == size()); 
-	assert(g.size() == size()); 
-	const CDoubleVector params_x(x.size(), &x[0]); 
-	CDoubleVector params_g(g.size(), &g[0]); 
-	return do_fdf(params_x, params_g); 	
+       assert(x.size() == size());
+       assert(g.size() == size());
+       const CDoubleVector params_x(x.size(), &x[0]);
+       CDoubleVector params_g(g.size(), &g[0]);
+       return do_fdf(params_x, params_g);
 }
 
 double  CMinimizer::Problem::f(const CDoubleVector& x)
 {
-	assert(x.size() == size()); 
-	return do_f(x); 	
+       assert(x.size() == size());
+       return do_f(x);
 }
 
 void    CMinimizer::Problem::df(const CDoubleVector& x, CDoubleVector& g)
 {
-	assert(x.size() == size()); 
-	assert(g.size() == size()); 
-	do_df(x, g); 	
+       assert(x.size() == size());
+       assert(g.size() == size());
+       do_df(x, g);
 }
 
 double  CMinimizer::Problem::fdf(const CDoubleVector& x, CDoubleVector& g)
 {
-	assert(x.size() == size()); 
-	assert(g.size() == size()); 
-	return do_fdf(x, g); 	
+       assert(x.size() == size());
+       assert(g.size() == size());
+       return do_fdf(x, g);
 }
 
 
@@ -112,25 +112,25 @@ CMinimizer::Problem::~Problem()
 
 double  CMinimizer::Problem::f(size_t n, const double *x)
 {
-	assert(n == size()); 
-	const CDoubleVector params(n, x); 
-	return do_f(params); 	
+       assert(n == size());
+       const CDoubleVector params(n, x);
+       return do_f(params);
 }
 
 void    CMinimizer::Problem::df(size_t n, const double *x, double *g)
 {
-	assert(n == size()); 
-	const CDoubleVector params_x(n, x); 
-	CDoubleVector params_g(n, g); 
-	do_df(params_x, params_g); 
+       assert(n == size());
+       const CDoubleVector params_x(n, x);
+       CDoubleVector params_g(n, g);
+       do_df(params_x, params_g);
 }
 
 double  CMinimizer::Problem::fdf(size_t n, const double *x, double *g)
 {
-	assert(n == size()); 
-	const CDoubleVector params_x(n, x); 
-	CDoubleVector params_g(n, g); 
-	return do_fdf(params_x, params_g); 
+       assert(n == size());
+       const CDoubleVector params_x(n, x);
+       CDoubleVector params_g(n, g);
+       return do_fdf(params_x, params_g);
 }
 
 CMinimizer::~CMinimizer()
@@ -139,26 +139,30 @@ CMinimizer::~CMinimizer()
 
 CMinimizer::Problem *CMinimizer::get_problem_pointer()
 {
-	return m_problem.get(); 
-}
-	
-int CMinimizer::run(CDoubleVector& x)
-{
-	DEBUG_ASSERT_RELEASE_THROW(m_problem, "CMinimizer::run: no minimization problem given");
-	if (!m_problem->has_all_in(*this)) {
-		stringstream msg; 
-		msg << "The optimizer requests some properties that the minimization problem"
-			" doesn't provide:"; 
-		auto missing = m_problem->get_missing_properties(*this); 
-		for (auto i = missing.begin(); i != missing.end(); ++i) 
-			msg << "'" <<  *i << "' ";
-		throw invalid_argument(msg.str()); 
-	}
-	return do_run(x); 
+       return m_problem.get();
 }
 
-template<> const char * const 
-TPluginHandler<TFactory<CMinimizer>>::m_help = "These plug-ins provide optimizers of many-to-one functions"; 
+int CMinimizer::run(CDoubleVector& x)
+{
+       DEBUG_ASSERT_RELEASE_THROW(m_problem, "CMinimizer::run: no minimization problem given");
+
+       if (!m_problem->has_all_in(*this)) {
+              stringstream msg;
+              msg << "The optimizer requests some properties that the minimization problem"
+                  " doesn't provide:";
+              auto missing = m_problem->get_missing_properties(*this);
+
+              for (auto i = missing.begin(); i != missing.end(); ++i)
+                     msg << "'" <<  *i << "' ";
+
+              throw invalid_argument(msg.str());
+       }
+
+       return do_run(x);
+}
+
+template<> const char *const
+TPluginHandler<TFactory<CMinimizer>>::m_help = "These plug-ins provide optimizers of many-to-one functions";
 
 EXPLICIT_INSTANCE_HANDLER(CMinimizer);
 

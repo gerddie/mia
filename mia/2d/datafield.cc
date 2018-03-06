@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ NS_MIA_BEGIN
 
 
 
-INSTANCIATE(float); 
+INSTANCIATE(float);
 INSTANCIATE(double);
 INSTANCIATE(int64_t);
 INSTANCIATE(uint64_t);
@@ -59,17 +59,17 @@ INSTANCIATE(C2DDVector)
 
 template class  EXPORT_2D T2DDatafield<bool>;
 
-DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds"); 
-DEFINE_TYPE_DESCR2(C2DFVector, "2dfvector"); 
+DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds");
+DEFINE_TYPE_DESCR2(C2DFVector, "2dfvector");
 
 template class EXPORT_2D CTParameter<C2DFVector>;
 template class EXPORT_2D CTParameter<C2DBounds>;
-template class EXPORT_2D TTranslator<C2DFVector>; 
-template class EXPORT_2D TAttribute<C2DFVector>; 
+template class EXPORT_2D TTranslator<C2DFVector>;
+template class EXPORT_2D TAttribute<C2DFVector>;
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
-#endif 
+#endif
 
 NS_MIA_END
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,77 +21,84 @@
 #include <mia/2d/filter.hh>
 #include <mia/2d/filter/distance.hh>
 
-NS_BEGIN(distance_2d_filter) 
+NS_BEGIN(distance_2d_filter)
 
 NS_MIA_USE;
-using namespace std; 
+using namespace std;
 
 
 template <class T>
-typename C2DDistance::result_type 
+typename C2DDistance::result_type
 C2DDistance::operator () (const T2DImage<T>& image) const
 {
-	C2DDImage *result = new C2DDImage(image.get_size(), image); 
-	fill(result->begin(),   result->end(), numeric_limits<C2DDImage::value_type>::max()); 
-	
-	// brute force approach, there is a better way ...
-	auto i = image.begin(); 
-	for (size_t yi = 0; yi < image.get_size().y; ++yi) {
-		for (size_t xi = 0; xi < image.get_size().x; ++xi, ++i) {
-			if (!*i) 
-				continue;
-			auto r = result->begin(); 
-			for (size_t yr = 0; yr < image.get_size().y; ++yr) {
-				double dy2 = double(yr) - yi; 
-				dy2 *= dy2; 
-				for (int xr = 0; xr < (int)image.get_size().x; ++xr, ++r) {
-					const double dx = double(xi) - xr; 
-					const double d = dx * dx + dy2; 
-					if (*r > d) 
-						*r = d;
-					
-				}
-			}
-		}
-	}
-	transform(result->begin(), result->end(), result->begin(), 
-		  [](double x) {return sqrt(x);}); 
-	return P2DImage(result); 
+       C2DDImage *result = new C2DDImage(image.get_size(), image);
+       fill(result->begin(),   result->end(), numeric_limits<C2DDImage::value_type>::max());
+       // brute force approach, there is a better way ...
+       auto i = image.begin();
+
+       for (size_t yi = 0; yi < image.get_size().y; ++yi) {
+              for (size_t xi = 0; xi < image.get_size().x; ++xi, ++i) {
+                     if (!*i)
+                            continue;
+
+                     auto r = result->begin();
+
+                     for (size_t yr = 0; yr < image.get_size().y; ++yr) {
+                            double dy2 = double(yr) - yi;
+                            dy2 *= dy2;
+
+                            for (int xr = 0; xr < (int)image.get_size().x; ++xr, ++r) {
+                                   const double dx = double(xi) - xr;
+                                   const double d = dx * dx + dy2;
+
+                                   if (*r > d)
+                                          *r = d;
+                            }
+                     }
+              }
+       }
+
+       transform(result->begin(), result->end(), result->begin(),
+       [](double x) {
+              return sqrt(x);
+       });
+       return P2DImage(result);
 }
 
 
 P2DImage C2DDistance::do_filter(const C2DImage& image) const
 {
-	return ::mia::filter(*this, image); 
+       return ::mia::filter(*this, image);
 }
 
 
-class C2DDistanceImageFilterFactory: public C2DFilterPlugin {
+class C2DDistanceImageFilterFactory: public C2DFilterPlugin
+{
 public:
-	C2DDistanceImageFilterFactory();
+       C2DDistanceImageFilterFactory();
 private:
-	virtual C2DFilter *do_create()const;
-	virtual const std::string do_get_descr() const;
+       virtual C2DFilter *do_create()const;
+       virtual const std::string do_get_descr() const;
 };
 
 C2DDistanceImageFilterFactory::C2DDistanceImageFilterFactory():
-	C2DFilterPlugin("distance")
+       C2DFilterPlugin("distance")
 {
 }
 
 C2DFilter *C2DDistanceImageFilterFactory::do_create() const
 {
-	return new C2DDistance(); 
+       return new C2DDistance();
 }
 
 const string C2DDistanceImageFilterFactory::do_get_descr()const
 {
-	return "2D image distance filter, evaluates the distance map for a binary mask."; 
+       return "2D image distance filter, evaluates the distance map for a binary mask.";
 }
-	
+
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DDistanceImageFilterFactory(); 
+       return new C2DDistanceImageFilterFactory();
 }
 
 NS_END

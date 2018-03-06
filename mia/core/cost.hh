@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -37,84 +37,85 @@ NS_MIA_BEGIN
 
 /// plugin helper type
 struct EXPORT_CORE cost_type {
-	/// plugin path helper variable 
-	static const char *type_descr;
+       /// plugin path helper variable
+       static const char *type_descr;
 };
 
 
 /**
-   \ingroup registration 
+   \ingroup registration
 
-   \brief The generic cost function interface. 
+   \brief The generic cost function interface.
 
-   The class defines an abstract interface for a cost function between two entities of the same 
-   type. 
-   The pure virtual functions 
-    -double do_value(const T& a, const T& b) const, and 
+   The class defines an abstract interface for a cost function between two entities of the same
+   type.
+   The pure virtual functions
+    -double do_value(const T& a, const T& b) const, and
     -double do_evaluate_force(const T& a, const T& b, float scale, V& force) const
-    have to be implemented in the derived class to make it a real cost function. 
-    The virtual function 
+    have to be implemented in the derived class to make it a real cost function.
+    The virtual function
     - void post_set_reference(const T& ref)
     may be overwritten in order to prepare the reference data for the implemented cost function.
-    \tparam T the data type of the objects that the cost evaluation is based on 
-    \tparam V the type of the gradient force field created by this cost function 
+    \tparam T the data type of the objects that the cost evaluation is based on
+    \tparam V the type of the gradient force field created by this cost function
 */
 
 template <typename T, typename V>
-class EXPORT_HANDLER TCost : public CProductBase{
+class EXPORT_HANDLER TCost : public CProductBase
+{
 public:
-	/// typedef for generic programming: The data type used by the cost function 
-	typedef T Data;
-	
-	/// typedef for generic programming: The gradient forca type create by the cost function 
-	typedef V Force;
+       /// typedef for generic programming: The data type used by the cost function
+       typedef T Data;
 
-	/// Const reference holder TRefHolder of the cost function data 
-	typedef TRefHolder<T> RData; 
-	
-	/// Pointer to const reference holder TRefHolder of the cost function data 
-	typedef typename RData::Pointer PData;
+       /// typedef for generic programming: The gradient forca type create by the cost function
+       typedef V Force;
 
-	/// plugin searchpath helper type 
-	typedef T plugin_data; 
-	
-	/// plugin searchpath helper type 
-	typedef cost_type plugin_type; 
+       /// Const reference holder TRefHolder of the cost function data
+       typedef TRefHolder<T> RData;
 
-	/// ensure virtual destruction, since we have virtual functions
-	virtual ~TCost();
+       /// Pointer to const reference holder TRefHolder of the cost function data
+       typedef typename RData::Pointer PData;
 
-	/**
-	   Evaluate the value of the cost function petreen the given src image and 
-	   the reference that was set by calling set_reference(const T& ref). 
-	   \param src 
-	   \returns the cost function value 
-	 */
-	double value(const T& src) const;
+       /// plugin searchpath helper type
+       typedef T plugin_data;
+
+       /// plugin searchpath helper type
+       typedef cost_type plugin_type;
+
+       /// ensure virtual destruction, since we have virtual functions
+       virtual ~TCost();
+
+       /**
+          Evaluate the value of the cost function petreen the given src image and
+          the reference that was set by calling set_reference(const T& ref).
+          \param src
+          \returns the cost function value
+        */
+       double value(const T& src) const;
 
 
-	/**
-	   Evaluate the value of the cost function and its gradient with respect 
-	   to the given src image and  the reference that was set by 
-           calling set_reference(const T& ref). 
-	   \param src 
-	   \param[out] force gradient force 
-	   \returns the cost function value 
-	 */
-	double evaluate_force(const T& src, V& force) const;
-	
-	/**
-	   Set the new reference of the cost function. The virtual private function  
-	   post_set_reference(const T& ref) is then called to run possible preparations 
-	   on the reference image. 
-	 */
-	void set_reference(const T& ref);
+       /**
+          Evaluate the value of the cost function and its gradient with respect
+          to the given src image and  the reference that was set by
+           calling set_reference(const T& ref).
+          \param src
+          \param[out] force gradient force
+          \returns the cost function value
+        */
+       double evaluate_force(const T& src, V& force) const;
+
+       /**
+          Set the new reference of the cost function. The virtual private function
+          post_set_reference(const T& ref) is then called to run possible preparations
+          on the reference image.
+        */
+       void set_reference(const T& ref);
 private:
-	virtual double do_value(const T& a, const T& b) const = 0;
-	virtual double do_evaluate_force(const T& a, const T& b, V& force) const = 0;
-	virtual void post_set_reference(const T& ref); 
-	
-	PData m_reference; 
+       virtual double do_value(const T& a, const T& b) const = 0;
+       virtual double do_evaluate_force(const T& a, const T& b, V& force) const = 0;
+       virtual void post_set_reference(const T& ref);
+
+       PData m_reference;
 };
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,47 +24,51 @@
 
 NS_MIA_BEGIN
 
-class CEqualInitializer : public CMeans::Initializer {
+class CEqualInitializer : public CMeans::Initializer
+{
 public:
-        CEqualInitializer(size_t nclasses);
+       CEqualInitializer(size_t nclasses);
 
-        CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const; 
-        
+       CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const;
+
 private:
 
-        size_t m_nclasses; 
-        
-}; 
+       size_t m_nclasses;
+
+};
 
 
-class CPredefinedInitializer : public CMeans::Initializer {
-public: 
+class CPredefinedInitializer : public CMeans::Initializer
+{
+public:
 
-	CPredefinedInitializer(const CMeans::DVector& init); 
-	CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const;
+       CPredefinedInitializer(const CMeans::DVector& init);
+       CMeans::DVector run(const CMeans::NormalizedHistogram& nh) const;
 private:
-	CMeans::DVector m_init; 
-}; 
+       CMeans::DVector m_init;
+};
 
 
 
 
-class CPredefinedInitializerPlugin : public CMeansInitializerPlugin {
-public: 
-        CPredefinedInitializerPlugin();
+class CPredefinedInitializerPlugin : public CMeansInitializerPlugin
+{
+public:
+       CPredefinedInitializerPlugin();
 private:
-        CMeansInitializerPlugin::Product * do_create() const;
-        virtual const std::string do_get_descr() const;
-        CMeans::DVector m_init; 
-}; 
+       CMeansInitializerPlugin::Product *do_create() const;
+       virtual const std::string do_get_descr() const;
+       CMeans::DVector m_init;
+};
 
-class CEqualInitializerPlugin : public CMeansInitializerSizedPlugin {
-public: 
-        CEqualInitializerPlugin();
+class CEqualInitializerPlugin : public CMeansInitializerSizedPlugin
+{
+public:
+       CEqualInitializerPlugin();
 private:
-        CMeansInitializerPlugin::Product * do_create() const;
-        virtual const std::string do_get_descr() const;
-}; 
+       CMeansInitializerPlugin::Product *do_create() const;
+       virtual const std::string do_get_descr() const;
+};
 
 
 NS_MIA_END

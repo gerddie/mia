@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -34,39 +34,37 @@ C2DFVectorfieldRegularizer::~C2DFVectorfieldRegularizer()
 
 double C2DFVectorfieldRegularizer::run(C2DFVectorfield& velocity, C2DFVectorfield& force, const C2DFVectorfield& deform) const
 {
-        assert(velocity.get_size() == m_size); 
-        assert(force.get_size() == m_size); 
-        assert(deform.get_size() == m_size); 
-
-        return do_run(velocity, force, deform); 
+       assert(velocity.get_size() == m_size);
+       assert(force.get_size() == m_size);
+       assert(deform.get_size() == m_size);
+       return do_run(velocity, force, deform);
 }
 
 void C2DFVectorfieldRegularizer::set_size(const C2DBounds& size)
 {
-        if (size != m_size) {
-                m_size = size; 
-                on_size_changed(); 
-        }
+       if (size != m_size) {
+              m_size = size;
+              on_size_changed();
+       }
 }
 
 const C2DBounds& C2DFVectorfieldRegularizer::get_size() const
 {
-        return m_size; 
+       return m_size;
 }
 
 void C2DFVectorfieldRegularizer::on_size_changed()
 {
-        
 }
 
-template <> const char *  const 
-TPluginHandler<C2DFVectorfieldRegularizerPlugin>::m_help =  
-        "This class of plug-ins implement various regularizations for "
-        "2D vector fields that are typically used in image registration "
-        "to translate the force driving the registration to a smooth "
-        "velocity field.";
+template <> const char   *const
+TPluginHandler<C2DFVectorfieldRegularizerPlugin>::m_help =
+       "This class of plug-ins implement various regularizations for "
+       "2D vector fields that are typically used in image registration "
+       "to translate the force driving the registration to a smooth "
+       "velocity field.";
 
-EXPLICIT_INSTANCE_HANDLER(C2DFVectorfieldRegularizer); 
+EXPLICIT_INSTANCE_HANDLER(C2DFVectorfieldRegularizer);
 
 NS_MIA_END
 

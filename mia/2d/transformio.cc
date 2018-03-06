@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,17 +30,17 @@ NS_MIA_BEGIN
 
 C2DTransformIOPluginHandlerImpl::C2DTransformIOPluginHandlerImpl()
 {
-	C2DFVectorTranslator::register_for(C2DTransformation::input_spacing_attr);
-	C2DFVectorTranslator::register_for(C2DTransformation::output_spacing_attr);
+       C2DFVectorTranslator::register_for(C2DTransformation::input_spacing_attr);
+       C2DFVectorTranslator::register_for(C2DTransformation::output_spacing_attr);
 }
 
 
-template <> const char *  const 
-	TPluginHandler<C2DTransformationIO>::m_help =  
+template <> const char   *const
+TPluginHandler<C2DTransformationIO>::m_help =
        "These plug-ins implement the support for loading and storing 2D transformations to various file types.";
 
 
-template class TPlugin<C2DTransformation, io_plugin_type>; 
+template class TPlugin<C2DTransformation, io_plugin_type>;
 template class TIOPlugin<C2DTransformation>;
 template class THandlerSingleton<C2DTransformIOPluginHandlerImpl>;
 template class TIOPluginHandler<C2DTransformationIO>;

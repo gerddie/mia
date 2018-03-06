@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,27 +31,27 @@
 NS_MIA_BEGIN
 
 /**
-   @cond INTERNAL 
-   \ingroup traits 
-   \brief Trait used for the non-linear registration 
+   @cond INTERNAL
+   \ingroup traits
+   \brief Trait used for the non-linear registration
 */
 template <>
 struct dimension_traits<2> {
-	typedef C2DTransformation Transformation; 
-	typedef C2DTransformation::Pointer PTransformation; 
-	typedef C2DBounds Size; 
-	typedef C2DImage Image; 
-	typedef C2DImage::Pointer PImage; 
-	typedef std::vector<PImage> ImageSeries; 
-	typedef P2DTransformationFactory PTransformationFactory; 
-	typedef C2DFullCostList FullCostList; 
-	typedef C2DFullCost::Pointer PFullCost; 
-	typedef C2DFilter Filter; 
-	typedef P2DFilter PFilter; 
-	typedef C2DFilterPluginHandler FilterPluginHandler;
-	typedef C2DInterpolatorFactory InterpolatorFactory; 
-	
-}; 
-/// @endcond 
+       typedef C2DTransformation Transformation;
+       typedef C2DTransformation::Pointer PTransformation;
+       typedef C2DBounds Size;
+       typedef C2DImage Image;
+       typedef C2DImage::Pointer PImage;
+       typedef std::vector<PImage> ImageSeries;
+       typedef P2DTransformationFactory PTransformationFactory;
+       typedef C2DFullCostList FullCostList;
+       typedef C2DFullCost::Pointer PFullCost;
+       typedef C2DFilter Filter;
+       typedef P2DFilter PFilter;
+       typedef C2DFilterPluginHandler FilterPluginHandler;
+       typedef C2DInterpolatorFactory InterpolatorFactory;
+
+};
+/// @endcond
 NS_MIA_END
 #endif

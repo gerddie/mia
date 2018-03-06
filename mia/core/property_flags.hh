@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,53 +26,54 @@
 
 NS_MIA_BEGIN
 
-/// constant defining the gradient property 
+/// constant defining the gradient property
 extern EXPORT_CORE const char *property_gradient;
 
 
 /**
    \ingroup cmdline
-   \brief This class holds a set of properties. 
-   
-   This class holds a set of properies that can be compared 
-   \remark These properties are stored as plain text 
-   strings, but in the end only the pointer is compared. 
+   \brief This class holds a set of properties.
+
+   This class holds a set of properies that can be compared
+   \remark These properties are stored as plain text
+   strings, but in the end only the pointer is compared.
 */
-class  EXPORT_CORE CPropertyFlagHolder {
+class  EXPORT_CORE CPropertyFlagHolder
+{
 public:
-	/// define the type of the set of flags 
-	typedef std::set<const char *> Set;
+       /// define the type of the set of flags
+       typedef std::set<const char *> Set;
 
-	/**
-	   Ensure evirtual destructor 
-	 */
-	virtual ~CPropertyFlagHolder(); 
-	/** check if a certain property is available 
-	    \param property
-	    \returns true if the property is available
-	*/
-	bool has(const char *property) const;
+       /**
+          Ensure evirtual destructor
+        */
+       virtual ~CPropertyFlagHolder();
+       /** check if a certain property is available
+           \param property
+           \returns true if the property is available
+       */
+       bool has(const char *property) const;
 
-	/** add  a certain property
-	    \param property proprety to add 
-	*/
-	void add(const char *property);
+       /** add  a certain property
+           \param property proprety to add
+       */
+       void add(const char *property);
 
-	/**
-	   Tests if all properties in the testset are available in this instance 
-	   \param testset
-	 */
-	bool has_all_in(const CPropertyFlagHolder& testset)const;
+       /**
+          Tests if all properties in the testset are available in this instance
+          \param testset
+        */
+       bool has_all_in(const CPropertyFlagHolder& testset)const;
 
-	/**
-	   Evalaute the set of properties that is available in the testset but not in this one
-	   @param testset 
-	   @return set of missing flags 
-	 */
-	Set get_missing_properties(const CPropertyFlagHolder& testset)const; 
+       /**
+          Evalaute the set of properties that is available in the testset but not in this one
+          @param testset
+          @return set of missing flags
+        */
+       Set get_missing_properties(const CPropertyFlagHolder& testset)const;
 private:
-	virtual bool do_has(const char *property) const;
-	Set m_properties;
+       virtual bool do_has(const char *property) const;
+       Set m_properties;
 };
 
 NS_MIA_END

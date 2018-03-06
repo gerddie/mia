@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,14 +31,14 @@ NS_MIA_BEGIN
 /**
    \brief Class to track pixel movement based on a transformation
 
-   This class holds the information to track a single pixel in 3D space 
-   over time and with a given transformation.  
+   This class holds the information to track a single pixel in 3D space
+   over time and with a given transformation.
 */
 
-typedef TTrackPoint<C3DTransformation>  C3DTrackPoint; 
+typedef TTrackPoint<C3DTransformation>  C3DTrackPoint;
 
 
 NS_MIA_END
 
-#endif 
+#endif
 

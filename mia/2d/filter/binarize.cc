@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ template class EXPORT mia::TBinarizeImageFilterFactory<mia::C2DImage>;
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DImageBinarizeFilterPlugin();
+       return new C2DImageBinarizeFilterPlugin();
 }
 
 NS_END

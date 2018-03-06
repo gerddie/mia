@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -34,39 +34,37 @@ C3DFVectorfieldRegularizer::~C3DFVectorfieldRegularizer()
 
 double C3DFVectorfieldRegularizer::run(C3DFVectorfield& velocity, C3DFVectorfield& force, const C3DFVectorfield& deform) const
 {
-        assert(velocity.get_size() == m_size); 
-        assert(force.get_size() == m_size); 
-        assert(deform.get_size() == m_size); 
-
-        return do_run(velocity, force, deform); 
+       assert(velocity.get_size() == m_size);
+       assert(force.get_size() == m_size);
+       assert(deform.get_size() == m_size);
+       return do_run(velocity, force, deform);
 }
 
 void C3DFVectorfieldRegularizer::set_size(const C3DBounds& size)
 {
-        if (size != m_size) {
-                m_size = size; 
-                on_size_changed(); 
-        }
+       if (size != m_size) {
+              m_size = size;
+              on_size_changed();
+       }
 }
 
 const C3DBounds& C3DFVectorfieldRegularizer::get_size() const
 {
-        return m_size; 
+       return m_size;
 }
 
 void C3DFVectorfieldRegularizer::on_size_changed()
 {
-        
 }
 
-template <> const char *  const 
-TPluginHandler<C3DFVectorfieldRegularizerPlugin>::m_help =  
-        "This class of plug-ins implement various regularizations for "
-        "3D vector fields that are typically used in image registration "
-        "to translate the force driving the registration to a smooth "
-        "velocity field.";
+template <> const char   *const
+TPluginHandler<C3DFVectorfieldRegularizerPlugin>::m_help =
+       "This class of plug-ins implement various regularizations for "
+       "3D vector fields that are typically used in image registration "
+       "to translate the force driving the registration to a smooth "
+       "velocity field.";
 
-EXPLICIT_INSTANCE_HANDLER(C3DFVectorfieldRegularizer); 
+EXPLICIT_INSTANCE_HANDLER(C3DFVectorfieldRegularizer);
 
 NS_MIA_END
 

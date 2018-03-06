@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,11 +22,11 @@
 #define mia_gsldefines_hh
 
 #if defined(_MSC_VER)
-#  define DO_EXPORT __declspec(dllexport) 
-#  define DO_IMPORT __declspec(dllimport) 
+#  define DO_EXPORT __declspec(dllexport)
+#  define DO_IMPORT __declspec(dllimport)
 #elif  defined(__GNUC__)
 #  define DO_EXPORT __attribute__((visibility("default")))
-#  define DO_IMPORT __attribute__((visibility("default")))	
+#  define DO_IMPORT __attribute__((visibility("default")))
 #else
 #  define DO_EXPORT
 #  define DO_IMPORT

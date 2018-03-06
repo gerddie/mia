@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,33 +26,59 @@
 NS_MIA_BEGIN
 
 enum class CCmdOptionFlags : int {
-        none = 0, 
-	required = 1, 
-	input = 2, 
-        output = 4, 
-        required_input = 3, 
-	required_output = 5,
-	validate = 8, 	
-        nonipype = 16
-}; 
+       none = 0,
+       required = 1,
+       input = 2,
+       output = 4,
+       required_input = 3,
+       required_output = 5,
+       validate = 8,
+       nonipype = 16
+};
 
 
-IMPLEMENT_FLAG_OPERATIONS(CCmdOptionFlags); 
+IMPLEMENT_FLAG_OPERATIONS(CCmdOptionFlags);
 
-inline std::ostream& operator << (std::ostream& os, CCmdOptionFlags flags) 
+inline std::ostream& operator << (std::ostream& os, CCmdOptionFlags flags)
 {
-        switch (flags) {
-        case CCmdOptionFlags::none: os << "CCmdOptionFlags::none"; break; 
-        case CCmdOptionFlags::required: os << "CCmdOptionFlags::required"; break; 
-        case CCmdOptionFlags::input: os << "CCmdOptionFlags::input"; break; 
-        case CCmdOptionFlags::output: os << "CCmdOptionFlags::output"; break; 
-        case CCmdOptionFlags::required_input: os << "CCmdOptionFlags::required_input"; break; 
-        case CCmdOptionFlags::required_output: os << "CCmdOptionFlags::required_output"; break; 
-        case CCmdOptionFlags::validate: os << "CCmdOptionFlags::validate"; break; 
-	case CCmdOptionFlags::nonipype: os << "CCmdOptionFlags::nonipype"; break; 
-        default: os << "CCmdOptionFlags::<undefined>"; 
-        }; 
-        return os; 
+       switch (flags) {
+       case CCmdOptionFlags::none:
+              os << "CCmdOptionFlags::none";
+              break;
+
+       case CCmdOptionFlags::required:
+              os << "CCmdOptionFlags::required";
+              break;
+
+       case CCmdOptionFlags::input:
+              os << "CCmdOptionFlags::input";
+              break;
+
+       case CCmdOptionFlags::output:
+              os << "CCmdOptionFlags::output";
+              break;
+
+       case CCmdOptionFlags::required_input:
+              os << "CCmdOptionFlags::required_input";
+              break;
+
+       case CCmdOptionFlags::required_output:
+              os << "CCmdOptionFlags::required_output";
+              break;
+
+       case CCmdOptionFlags::validate:
+              os << "CCmdOptionFlags::validate";
+              break;
+
+       case CCmdOptionFlags::nonipype:
+              os << "CCmdOptionFlags::nonipype";
+              break;
+
+       default:
+              os << "CCmdOptionFlags::<undefined>";
+       };
+
+       return os;
 }
 
 
@@ -60,4 +86,4 @@ inline std::ostream& operator << (std::ostream& os, CCmdOptionFlags flags)
 
 NS_MIA_END
 
-#endif 
+#endif

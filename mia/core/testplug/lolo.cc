@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,38 +24,39 @@ NS_MIA_USE
 
 using namespace std;
 
-class CLoloIOPlugin : public CTestIOPlugin {
+class CLoloIOPlugin : public CTestIOPlugin
+{
 public:
-	CLoloIOPlugin();
+       CLoloIOPlugin();
 private:
-	PData do_load(const string& fname) const;
-	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const;
+       PData do_load(const string& fname) const;
+       bool do_save(const string& fname, const Data& data) const;
+       const string do_get_descr() const;
 };
 
 CLoloIOPlugin::CLoloIOPlugin():
-	CTestIOPlugin("lo")
+       CTestIOPlugin("lo")
 {
-	this->add_suffix(".lo"); 
+       this->add_suffix(".lo");
 }
 
 CLoloIOPlugin::PData  CLoloIOPlugin::do_load(const string& /*fname*/) const
 {
-	return CLoloIOPlugin::PData(new CDummyType("lolo"));
+       return CLoloIOPlugin::PData(new CDummyType("lolo"));
 }
 
 
 bool CLoloIOPlugin::do_save(const string& /*fname*/, const Data& /*data*/) const
 {
-	return true;
+       return true;
 }
 
 const string CLoloIOPlugin::do_get_descr() const
 {
-	return "a dummy plugin to test io-plugin handling";
+       return "a dummy plugin to test io-plugin handling";
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	return new CLoloIOPlugin();
+       return new CLoloIOPlugin();
 }

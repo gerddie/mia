@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,28 +27,28 @@ NS_BEGIN ( admean_2dimage_filter )
 
 class C2DAdmean : public mia::C2DFilter
 {
-	int m_width;
+       int m_width;
 public:
-	C2DAdmean ( int hwidth ) :
-		m_width ( hwidth )
-	{
-	}
+       C2DAdmean ( int hwidth ) :
+              m_width ( hwidth )
+       {
+       }
 
-	template <class Data2D>
-	typename C2DAdmean::result_type operator () ( const Data2D& data ) const ;
+       template <class Data2D>
+       typename C2DAdmean::result_type operator () ( const Data2D& data ) const ;
 
 private:
-	virtual mia::P2DImage do_filter ( const mia::C2DImage& image ) const;
+       virtual mia::P2DImage do_filter ( const mia::C2DImage& image ) const;
 };
 
 class CAdmean2DImageFilterFactory: public mia::C2DFilterPlugin
 {
 public:
-	CAdmean2DImageFilterFactory();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr() const;
+       CAdmean2DImageFilterFactory();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr() const;
 private:
-	int m_hwidth;
+       int m_hwidth;
 };
 
 NS_END

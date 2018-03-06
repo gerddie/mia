@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,15 +23,15 @@
 #include <mia/internal/autotest.hh>
 
 NS_MIA_USE
-namespace bfs=::boost::filesystem; 
+namespace bfs =::boost::filesystem;
 using namespace boost::unit_test;
-using std::set; 
-using std::string; 
+using std::set;
+using std::string;
 
 BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
 {
-	set<string> test_data = {"lncc","lsd", "mi", "ngf", "ncc", "ssd", "ssd-automask"}; 
-	test_pluginsets(C2DImageCostPluginHandler::instance().get_set(), test_data); 
+       set<string> test_data = {"lncc", "lsd", "mi", "ngf", "ncc", "ssd", "ssd-automask"};
+       test_pluginsets(C2DImageCostPluginHandler::instance().get_set(), test_data);
 }
 
 

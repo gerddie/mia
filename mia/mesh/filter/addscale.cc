@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,66 +22,63 @@
 #include <mia/3d/imageio.hh>
 #include <mia/3d/interpolator.hh>
 
-NS_BEGIN(mia_meshfilter_addscale) 
-using namespace mia; 
-using namespace std; 
+NS_BEGIN(mia_meshfilter_addscale)
+using namespace mia;
+using namespace std;
 
 
 CAddScaleMeshFilter::CAddScaleMeshFilter(const string& image_filename ):
-	m_image_filename(image_filename) 
+       m_image_filename(image_filename)
 {
 }
-	
+
 struct FSetScale: public TFilter<void> {
-        FSetScale(CTriangleMesh& mesh): m_mesh(mesh){}; 
-        
-        template <typename T> 
-        void operator ()( const T3DImage<T>& image) {
-                C3DInterpolatorFactory ipf("bspline:d=1", "zero");
-                unique_ptr<T3DConvoluteInterpolator<T>> ip(ipf.create(image.data())); 
-                
-		
-                transform(m_mesh.vertices_begin(), m_mesh.vertices_end(), 
-                          m_mesh.scale_begin(), [&ip](const C3DFVector& v) -> float {
-                                  return (*ip)(v); 
-                          });
-        }
-private: 
-        CTriangleMesh& m_mesh; 
-}; 
+       FSetScale(CTriangleMesh& mesh): m_mesh(mesh) {};
+
+       template <typename T>
+       void operator ()( const T3DImage<T>& image)
+       {
+              C3DInterpolatorFactory ipf("bspline:d=1", "zero");
+              unique_ptr<T3DConvoluteInterpolator<T>> ip(ipf.create(image.data()));
+              transform(m_mesh.vertices_begin(), m_mesh.vertices_end(),
+              m_mesh.scale_begin(), [&ip](const C3DFVector & v) -> float {
+                     return (*ip)(v);
+              });
+       }
+private:
+       CTriangleMesh& m_mesh;
+};
 
 PTriangleMesh CAddScaleMeshFilter::do_filter(const CTriangleMesh& mesh) const
 {
-        PTriangleMesh result = make_shared<CTriangleMesh>(mesh); 
-        P3DImage image = load_image3d(m_image_filename); 
-        
-        FSetScale ssc(*result); 
-        mia::accumulate(ssc, *image); 
-
-        return result; 
+       PTriangleMesh result = make_shared<CTriangleMesh>(mesh);
+       P3DImage image = load_image3d(m_image_filename);
+       FSetScale ssc(*result);
+       mia::accumulate(ssc, *image);
+       return result;
 }
 
 CAddScaleMeshFilterPlugin::CAddScaleMeshFilterPlugin():
-	CMeshFilterPlugin("addscale")
+       CMeshFilterPlugin("addscale")
 {
-	add_parameter("img", make_param(m_image_filename, true, 
-					"3DImage that contains the scale values as a volume image."));
+       add_parameter("img", make_param(m_image_filename, true,
+                                       "3DImage that contains the scale values as a volume image."));
 }
 
 mia::CMeshFilter *CAddScaleMeshFilterPlugin::do_create()const
 {
-	return new CAddScaleMeshFilter(m_image_filename);
+       return new CAddScaleMeshFilter(m_image_filename);
 }
 
 const std::string CAddScaleMeshFilterPlugin::do_get_descr()const
 {
-	return "This filter sorts sets the scale parameter for each vertex from a 3D image. "
-                "Image and mesh are expected to be in the same physical coordinate space."; 
+       return "This filter sorts sets the scale parameter for each vertex from a 3D image. "
+              "Image and mesh are expected to be in the same physical coordinate space.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new CAddScaleMeshFilterPlugin();
+       return new CAddScaleMeshFilterPlugin();
 }
 
 NS_END

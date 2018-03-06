@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,113 +27,118 @@
 
 NS_BEGIN(ssd_2dimage_cost)
 
-NS_MIA_USE; 
-using namespace std; 
-using namespace boost; 
+NS_MIA_USE;
+using namespace std;
+using namespace boost;
 
 
 
-class CSSDCost: public C2DImageCost {
-public: 	
+class CSSDCost: public C2DImageCost
+{
+public:
 
-private: 
-	virtual double do_value(const C2DImage& a, const C2DImage& b) const; 
-	virtual void do_evaluate_force(const C2DImage& a, const C2DImage& b, float scale, C2DFVectorfield& force) const; 
+private:
+       virtual double do_value(const C2DImage& a, const C2DImage& b) const;
+       virtual void do_evaluate_force(const C2DImage& a, const C2DImage& b, float scale, C2DFVectorfield& force) const;
 };
 
 struct FEvalSSD : public TFilter<double> {
-	
-	template <typename T, typename R>
-	struct SQD {
-		double operator ()(T a, R b) const {
-			double d = (double)a - (double)b; 
-			return d * d;
-		}
-	}; 
-	
-	template <typename  T, typename  R>
-	FEvalSSD::result_type operator () (const T2DImage<T>& a, const T2DImage<R>& b) const {
-		return inner_product(a.begin(), a.end(), b.begin(), 0.0,  plus<double>(), SQD<T,R>()); 
-	}
-}; 
+
+       template <typename T, typename R>
+       struct SQD {
+              double operator ()(T a, R b) const
+              {
+                     double d = (double)a - (double)b;
+                     return d * d;
+              }
+       };
+
+       template <typename  T, typename  R>
+       FEvalSSD::result_type operator () (const T2DImage<T>& a, const T2DImage<R>& b) const
+       {
+              return inner_product(a.begin(), a.end(), b.begin(), 0.0,  plus<double>(), SQD<T, R>());
+       }
+};
 
 double CSSDCost::do_value(const C2DImage& a, const C2DImage& b) const
 {
-	FEvalSSD essd; 
-	return filter(essd, a, b); 
+       FEvalSSD essd;
+       return filter(essd, a, b);
 }
 
 struct FEvalForce: public TFilter<int> {
-	FEvalForce(C2DFVectorfield& force, float scale):
-		m_force(force),
-		m_scale(scale)
-		{
-		}
-	template <typename T, typename R> 
-	int operator ()( const T2DImage<T>& a, const T2DImage<R>& b) const {
-		
-		C2DFImage help(a.get_size()); 
-		
-		typename T2DImage<T>::const_iterator ai = a.begin(); 
-		typename T2DImage<T>::const_iterator ae = a.end(); 
-		typename T2DImage<R>::const_iterator bi = b.begin(); 
-		C2DFImage::iterator hi = help.begin(); 
-		while (ai != ae) {
-			*hi = ((float)*ai - (float)*bi) * m_scale; 
-			++hi; ++ai; ++bi; 
-		}
-		
-		m_force = get_gradient(help); 
+       FEvalForce(C2DFVectorfield& force, float scale):
+              m_force(force),
+              m_scale(scale)
+       {
+       }
+       template <typename T, typename R>
+       int operator ()( const T2DImage<T>& a, const T2DImage<R>& b) const
+       {
+              C2DFImage help(a.get_size());
+              typename T2DImage<T>::const_iterator ai = a.begin();
+              typename T2DImage<T>::const_iterator ae = a.end();
+              typename T2DImage<R>::const_iterator bi = b.begin();
+              C2DFImage::iterator hi = help.begin();
 
-		return 0; 
-	}
-private: 
-	mutable C2DFVectorfield& m_force; 
-	float m_scale; 
+              while (ai != ae) {
+                     *hi = ((float) * ai - (float) * bi) * m_scale;
+                     ++hi;
+                     ++ai;
+                     ++bi;
+              }
 
-}; 
-		
+              m_force = get_gradient(help);
+              return 0;
+       }
+private:
+       mutable C2DFVectorfield& m_force;
+       float m_scale;
+
+};
+
 
 void CSSDCost::do_evaluate_force(const C2DImage& a, const C2DImage& b, float scale, C2DFVectorfield& force) const
 {
-	assert(a.get_size() == b.get_size()); 
-	assert(a.get_size() == force.get_size()); 
-	FEvalForce ef(force, scale); 
-	filter(ef, a, b); 
+       assert(a.get_size() == b.get_size());
+       assert(a.get_size() == force.get_size());
+       FEvalForce ef(force, scale);
+       filter(ef, a, b);
 }
 
 
-class C2DSSDCostPlugin: public C2DImageCostPlugin {
-public: 
-	C2DSSDCostPlugin();
-	virtual C2DSSDCostPlugin::ProductPtr do_create()const;
-	virtual const string do_get_descr()const; 
-private: 
+class C2DSSDCostPlugin: public C2DImageCostPlugin
+{
+public:
+       C2DSSDCostPlugin();
+       virtual C2DSSDCostPlugin::ProductPtr do_create()const;
+       virtual const string do_get_descr()const;
+private:
 
-	float m_min; 
-	float m_max; 
+       float m_min;
+       float m_max;
 };
 
 
 C2DSSDCostPlugin::C2DSSDCostPlugin():
-	C2DImageCostPlugin("ssddf")
+       C2DImageCostPlugin("ssddf")
 {
 }
 
 C2DSSDCostPlugin::ProductPtr C2DSSDCostPlugin::do_create()const
 {
-	return C2DSSDCostPlugin::ProductPtr(new CSSDCost()); 
+       return C2DSSDCostPlugin::ProductPtr(new CSSDCost());
 }
 
 
 const string C2DSSDCostPlugin::do_get_descr()const
 {
-	return "2D image cost: sum of squared intensity differences, alternative formulation ";
+       return "2D image cost: sum of squared intensity differences, alternative formulation ";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DSSDCostPlugin(); 
+       return new C2DSSDCostPlugin();
 }
 
 NS_END

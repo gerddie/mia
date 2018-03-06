@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,9 +24,9 @@
 NS_MIA_BEGIN
 
 /**
-   A accumulation of cost functions that are weigted against each other 
+   A accumulation of cost functions that are weigted against each other
  */
-typedef TFullCostList<C2DTransformation> C2DFullCostList; 
+typedef TFullCostList<C2DTransformation> C2DFullCostList;
 
 
 NS_MIA_END

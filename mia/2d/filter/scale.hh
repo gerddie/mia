@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,32 +26,34 @@
 NS_BEGIN(scale_2dimage_filter)
 
 
-class CScale: public mia::C2DFilter {
+class CScale: public mia::C2DFilter
+{
 public:
-	CScale(const mia::C2DBounds& size, mia::PSplineKernel kernel);
+       CScale(const mia::C2DBounds& size, mia::PSplineKernel kernel);
 
-	~CScale();
+       ~CScale();
 
-	template <typename  T>
-	mia::C2DFilter::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <typename  T>
+       mia::C2DFilter::result_type operator () (const mia::T2DImage<T>& data) const;
 
 private:
-	CScale::result_type do_filter(const mia::C2DImage& image) const;
+       CScale::result_type do_filter(const mia::C2DImage& image) const;
 
-	const mia::C2DBounds m_size;
-	mia::PSplineKernel m_kernel;
+       const mia::C2DBounds m_size;
+       mia::PSplineKernel m_kernel;
 };
 
 
 
-class C2DScaleFilterPlugin: public mia::C2DFilterPlugin {
+class C2DScaleFilterPlugin: public mia::C2DFilterPlugin
+{
 public:
-	C2DScaleFilterPlugin();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DScaleFilterPlugin();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 private:
-	mia::C2DBounds m_s; 
-	mia::PSplineKernel m_interp;
+       mia::C2DBounds m_s;
+       mia::PSplineKernel m_interp;
 };
 
 NS_END

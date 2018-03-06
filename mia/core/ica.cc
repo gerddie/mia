@@ -27,45 +27,46 @@
 #include <mia/core/handler.cxx>
 
 
-namespace  mia {
+namespace  mia
+{
 
 CIndepCompAnalysis::~CIndepCompAnalysis()
 {
-
 }
 
 CIndepCompAnalysisFactory::CIndepCompAnalysisFactory():
-	m_deterministic_seed(-1)
+       m_deterministic_seed(-1)
 {
 }
-	
+
 void CIndepCompAnalysisFactory::set_deterministic_seed(int seed)
 {
-	m_deterministic_seed = seed; 
+       m_deterministic_seed = seed;
 }
 
 CIndepCompAnalysis *CIndepCompAnalysisFactory::create() const
 {
-	auto retval = do_create();
-	if (m_deterministic_seed >= 0) {
-		cvdebug() << "Set deterministic to " << m_deterministic_seed << "\n";
-		retval->set_deterministic_seed(m_deterministic_seed);
-	}
-	return retval; 
+       auto retval = do_create();
+
+       if (m_deterministic_seed >= 0) {
+              cvdebug() << "Set deterministic to " << m_deterministic_seed << "\n";
+              retval->set_deterministic_seed(m_deterministic_seed);
+       }
+
+       return retval;
 }
 
 CIndepCompAnalysisFactory::~CIndepCompAnalysisFactory()
 {
-
 }
 
 const char *CIndepCompAnalysisFactory::data_descr = "fastica";
 const char *CIndepCompAnalysisFactory::type_descr = "implementation";
 
-template<>  const char * const 
-TPluginHandler<TFactory<CIndepCompAnalysisFactory>>::m_help = 
-	"These plug-ins provide implementations for the ICA algoritm.";
+template<>  const char *const
+TPluginHandler<TFactory<CIndepCompAnalysisFactory>>::m_help =
+                     "These plug-ins provide implementations for the ICA algoritm.";
 
-EXPLICIT_INSTANCE_HANDLER(CIndepCompAnalysisFactory); 
+EXPLICIT_INSTANCE_HANDLER(CIndepCompAnalysisFactory);
 
 }

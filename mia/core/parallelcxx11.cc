@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,15 +24,16 @@ NS_MIA_BEGIN
 
 int CMaxTasks::get_max_tasks()
 {
-        if (max_tasks < 0) {
-                max_tasks = std::thread::hardware_concurrency(); 
-        }
-        return max_tasks; 
+       if (max_tasks < 0) {
+              max_tasks = std::thread::hardware_concurrency();
+       }
+
+       return max_tasks;
 }
 
 void CMaxTasks::set_max_tasks(int mt)
 {
-        max_tasks = mt; 
+       max_tasks = mt;
 }
 
 int CMaxTasks::max_tasks = -1;

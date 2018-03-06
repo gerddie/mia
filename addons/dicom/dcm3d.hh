@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,19 +22,20 @@
 
 NS_BEGIN(IMAGEIO_3D_DICOM)
 
-class CDicom3DImageIOPlugin: public mia::C3DImageIOPlugin {
+class CDicom3DImageIOPlugin: public mia::C3DImageIOPlugin
+{
 public:
-	CDicom3DImageIOPlugin();
-	typedef mia::C3DImageIOPlugin::Data Data;
-	typedef mia::C3DImageIOPlugin::PData PData;
+       CDicom3DImageIOPlugin();
+       typedef mia::C3DImageIOPlugin::Data Data;
+       typedef mia::C3DImageIOPlugin::PData PData;
 
 private:
 
-	mia::C3DImageIOPlugin::PData get_images(const std::vector<mia::P2DImage>& candidates) const;
-	PData do_load(const std::string& fname) const;
-	bool do_save(const std::string& fname, const Data& data) const;
-	const std::string do_get_descr() const;
-	const std::string do_get_preferred_suffix() const; 
+       mia::C3DImageIOPlugin::PData get_images(const std::vector<mia::P2DImage>& candidates) const;
+       PData do_load(const std::string& fname) const;
+       bool do_save(const std::string& fname, const Data& data) const;
+       const std::string do_get_descr() const;
+       const std::string do_get_preferred_suffix() const;
 };
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,49 +30,50 @@
 NS_MIA_BEGIN
 
 /**
-   @ingroup io 
+   @ingroup io
    @brief An interface class to wrap a vector field into something, IO plugins can understand.
 */
 
-class EXPORT_3D C3DIOVectorfield: public C3DFVectorfield, public CIOData {
+class EXPORT_3D C3DIOVectorfield: public C3DFVectorfield, public CIOData
+{
 public:
 
-	typedef C3DIOVectorfield type; 
-        typedef C3DFVectorfield plugin_data;
-	
-	C3DIOVectorfield();
+       typedef C3DIOVectorfield type;
+       typedef C3DFVectorfield plugin_data;
 
-        /** Constructor to create empty Datafield if given size */
-        C3DIOVectorfield(const C3DBounds& _Size);
+       C3DIOVectorfield();
 
-        /** copy - Constructor */
-        C3DIOVectorfield(const C3DIOVectorfield& org);
+       /** Constructor to create empty Datafield if given size */
+       C3DIOVectorfield(const C3DBounds& _Size);
 
-	/** copy from normal vectorfield constructor */
-	C3DIOVectorfield(const C3DFVectorfield& org);
+       /** copy - Constructor */
+       C3DIOVectorfield(const C3DIOVectorfield& org);
 
-	/// @returns a dynamically allocated copy of the IO object 
-	C3DIOVectorfield *clone() const __attribute__((warn_unused_result));
+       /** copy from normal vectorfield constructor */
+       C3DIOVectorfield(const C3DFVectorfield& org);
+
+       /// @returns a dynamically allocated copy of the IO object
+       C3DIOVectorfield *clone() const __attribute__((warn_unused_result));
 
 };
 
 /**
-   @ingroup io 
-   @brief Base class for vector field IO plug-ins 
+   @ingroup io
+   @brief Base class for vector field IO plug-ins
 */
 typedef TIOPlugin<C3DIOVectorfield> C3DVFIOPlugin;
 
-template <> const char *  const TPluginHandler<C3DVFIOPlugin>::m_help; 
+template <> const char   *const TPluginHandler<C3DVFIOPlugin>::m_help;
 
 extern template class EXPORT_3D TPlugin<C3DIOVectorfield, io_plugin_type>;
 extern template class EXPORT_3D TIOPlugin<C3DIOVectorfield>;
-extern template class EXPORT_3D TIOPluginHandler<C3DVFIOPlugin>; 
-extern template class EXPORT_3D THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> >; 
+extern template class EXPORT_3D TIOPluginHandler<C3DVFIOPlugin>;
+extern template class EXPORT_3D THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin>>;
 /**
-   @ingroup io 
-   @brief Plug-in handler for vector field IO 
+   @ingroup io
+   @brief Plug-in handler for vector field IO
 */
-typedef THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> > C3DVFIOPluginHandler;
+typedef THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin>> C3DVFIOPluginHandler;
 
 NS_MIA_END
 

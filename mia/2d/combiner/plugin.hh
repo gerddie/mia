@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,32 +23,33 @@
 
 NS_MIA_BEGIN
 
-template <typename Combiner, const char * const name> 
-class T2DImageCombinerPlugin: public C2DImageCombinerPlugin {
+template <typename Combiner, const char *const name>
+class T2DImageCombinerPlugin: public C2DImageCombinerPlugin
+{
 public:
-	T2DImageCombinerPlugin(); 
+       T2DImageCombinerPlugin();
 private:
-	virtual Combiner *do_create()const;
-	virtual const std::string do_get_descr() const;
-}; 
+       virtual Combiner *do_create()const;
+       virtual const std::string do_get_descr() const;
+};
 
 
-template <typename Combiner, const char * const name> 
+template <typename Combiner, const char *const name>
 T2DImageCombinerPlugin<Combiner, name>::T2DImageCombinerPlugin():
-	C2DImageCombinerPlugin(name) 
+       C2DImageCombinerPlugin(name)
 {
 }
-	
-template <typename Combiner, const char * const name> 
+
+template <typename Combiner, const char *const name>
 Combiner *T2DImageCombinerPlugin<Combiner, name>::do_create()const
 {
-	return new Combiner; 
+       return new Combiner;
 }
 
-template <typename Combiner, const char name[]> 
+template <typename Combiner, const char name[]>
 const std::string T2DImageCombinerPlugin<Combiner, name>::do_get_descr() const
 {
-	return std::string("Image combiner '") +  std::string(name) + std::string("'"); 
+       return std::string("Image combiner '") +  std::string(name) + std::string("'");
 }
 
 

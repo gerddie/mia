@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -36,64 +36,62 @@
 
 using namespace std;
 using namespace mia;
-namespace bfs=boost::filesystem;
+namespace bfs = boost::filesystem;
 
 
 const SProgramDescription g_description = {
-        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
-	{pdi_short, "Evaluate the Hausdorff distance between segmentations."}, 
-	{pdi_description, "This program is used to evaluate the Hausdorff distance between each frame "
-	 "of a perfusion time series of the input set to the corresponding frame of the reference set "
-	 "and prints the result to stdout."}, 
-	{pdi_example_descr, "Evaluate the per-slice Hausdorff distance of input.set and reference.set."}, 
-	{pdi_example_code, "-i input.set -r reference.set"}
-}; 
+       {pdi_group, "Tools for Myocardial Perfusion Analysis"},
+       {pdi_short, "Evaluate the Hausdorff distance between segmentations."},
+       {
+              pdi_description, "This program is used to evaluate the Hausdorff distance between each frame "
+              "of a perfusion time series of the input set to the corresponding frame of the reference set "
+              "and prints the result to stdout."
+       },
+       {pdi_example_descr, "Evaluate the per-slice Hausdorff distance of input.set and reference.set."},
+       {pdi_example_code, "-i input.set -r reference.set"}
+};
 
 int do_main(int argc, char *argv[])
 {
-	string src_filename;
-	string ref_filename;
+       string src_filename;
+       string ref_filename;
+       CCmdOptionList options(g_description);
+       options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
+       options.add(make_opt( ref_filename, "ref-file", 'r', "reference  segmentation set", CCmdOptionFlags::required_input));
+       options.set_stdout_is_result();
 
-	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "reference  segmentation set", CCmdOptionFlags::required_input));
-	options.set_stdout_is_result();
-	
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
+       if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
+       CSegSet src_segset(src_filename);
+       CSegSet ref_segset(ref_filename);
+       const CSegSet::Frames& src_frames = src_segset.get_frames();
+       const CSegSet::Frames& ref_frames = ref_segset.get_frames();
 
-	CSegSet src_segset(src_filename);
-	CSegSet ref_segset(ref_filename);
+       if (ref_frames.size() != src_frames.size())
+              throw invalid_argument("segmentations have different frame numbers");
 
-	const CSegSet::Frames& src_frames = src_segset.get_frames();
-	const CSegSet::Frames& ref_frames = ref_segset.get_frames();
+       auto iframe = src_frames.begin();
+       auto rframe = ref_frames.begin();
+       auto eframe = src_frames.end();
 
-	if (ref_frames.size() != src_frames.size())
-		throw invalid_argument("segmentations have different frame numbers");
+       while (iframe != eframe) {
+              const auto& src_sections = iframe->get_sections();
+              const auto& ref_sections = rframe->get_sections();
+              cout << iframe->get_hausdorff_distance(*rframe) << " ";
 
+              if (src_sections.size() == ref_sections.size() )
+                     for (size_t j = 0; j < src_sections.size(); ++j)
+                            cout << src_sections[j].get_hausdorff_distance(ref_sections[j]) << " ";
+              else
+                     cout << "slice segmented with different number of sections";
 
-	auto iframe = src_frames.begin();
-	auto rframe = ref_frames.begin();
-	auto eframe = src_frames.end();
+              cout << "\n";
+              ++iframe;
+              ++rframe;
+       }
 
-	while (iframe != eframe) {
-		const auto& src_sections = iframe->get_sections();
-		const auto& ref_sections = rframe->get_sections();
-
-		cout << iframe->get_hausdorff_distance(*rframe) << " ";
-		if (src_sections.size() == ref_sections.size() ) 
-			for (size_t j = 0; j < src_sections.size(); ++j)
-				cout << src_sections[j].get_hausdorff_distance(ref_sections[j]) << " ";
-		else 
-			cout << "slice segmented with different number of sections"; 
-		cout << "\n";
-
-		++iframe;
-		++rframe;
-	}
-	return 0;
-
+       return 0;
 }
 
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);

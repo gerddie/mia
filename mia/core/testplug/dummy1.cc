@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,33 +23,34 @@
 NS_MIA_USE
 using namespace std;
 
-class EXPORT CDummy1 :public CTestPlugin {
+class EXPORT CDummy1 : public CTestPlugin
+{
 public:
-	CDummy1();
+       CDummy1();
 private:
-	virtual const string do_get_descr() const;
+       virtual const string do_get_descr() const;
 };
 
 CDummy1::CDummy1():
-  CTestPlugin("dummy1")
+       CTestPlugin("dummy1")
 {
 }
 
 const std::string test_dummy_symbol()
 {
-	return "test_dummy_symbol from dummy1"; 
+       return "test_dummy_symbol from dummy1";
 }
 
 const string CDummy1::do_get_descr() const
 {
-	return test_dummy_symbol();;
+       return test_dummy_symbol();;
 }
 
 
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	return new CDummy1();
+       return new CDummy1();
 }
 
 

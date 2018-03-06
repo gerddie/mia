@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,110 +31,107 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-        {pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
-	{pdi_short, "Evaluate the cost gradient between two images and convert it to a spline representation."}, 
-	{pdi_description, "Evaluate the cost gradient between two images and evaluate the "
-	 "transformation related gradient for it based on the given transformation model."}, 
-	{pdi_example_descr, "Evaluate the SSD cost between src.v and ref.v and store the "
-	 "gradient gradient corresponding to a spline transformation in grad.v3dt."}, 
-	{pdi_example_code, "-i src.v -o grad.v3dt -f spline:rate=8 -c ssd"}
-}; 
+       {pdi_group, "Registration, Comparison, and Transformation of 3D images"},
+       {pdi_short, "Evaluate the cost gradient between two images and convert it to a spline representation."},
+       {
+              pdi_description, "Evaluate the cost gradient between two images and evaluate the "
+              "transformation related gradient for it based on the given transformation model."
+       },
+       {
+              pdi_example_descr, "Evaluate the SSD cost between src.v and ref.v and store the "
+              "gradient gradient corresponding to a spline transformation in grad.v3dt."
+       },
+       {pdi_example_code, "-i src.v -o grad.v3dt -f spline:rate=8 -c ssd"}
+};
 
 int do_main(int argc, char **argv)
 {
-	CCmdOptionList options(g_description);
+       CCmdOptionList options(g_description);
+       string src_filename;
+       string ref_filename;
+       string out_filename;
+       string grad_image_filename;
+       string cost_grad_filename;
+       P3DImageCost cost;
+       P3DTransformationFactory transform_creator;
+       const auto& imageio  = C3DImageIOPluginHandler::instance();
+       options.add(make_opt( src_filename, "in-file", 'i', "input image ", CCmdOptionFlags::required_input, &imageio));
+       options.add(make_opt( ref_filename, "ref-file", 'r', "reference image ", CCmdOptionFlags::required_input, &imageio));
+       options.add(make_opt( out_filename, "out-file", 'o', "output vector field ",
+                             CCmdOptionFlags::required_output, &C3DTransformationIOPluginHandler::instance()));
+       options.add(make_opt( grad_image_filename, "gradimg-file", 'g', "norm image of the spline transformed gradient",
+                             CCmdOptionFlags::output, &imageio));
+       options.add(make_opt( cost_grad_filename, "cost-gradimg-file", 'C', "norm image of the cost gradient",
+                             CCmdOptionFlags::output, &imageio));
+       options.add(make_opt( transform_creator, "spline:rate=5", "transForm", 'f', "Transformation the gradient relates to"));
+       options.add(make_opt( cost, "ssd", "cost", 'c', "cost function to use"));
 
-	string src_filename;
-	string ref_filename;
-	string out_filename;
+       if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
-	string grad_image_filename;
-	string cost_grad_filename;
+       auto source = load_image<P3DImage>(src_filename);
+       auto ref    = load_image<P3DImage>(ref_filename);
 
-	
+       if (!source) {
+              throw create_exception<runtime_error>("No image found in '", src_filename, "'");
+       }
 
-	P3DImageCost cost; 
-	P3DTransformationFactory transform_creator; 
-	
-	const auto & imageio  = C3DImageIOPluginHandler::instance(); 
-	
-	options.add(make_opt( src_filename, "in-file", 'i', "input image ", CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image ", CCmdOptionFlags::required_input, &imageio));
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", 
-			      CCmdOptionFlags::required_output, &C3DTransformationIOPluginHandler::instance()));
-	options.add(make_opt( grad_image_filename, "gradimg-file", 'g', "norm image of the spline transformed gradient", 
-			      CCmdOptionFlags::output, &imageio));
-	options.add(make_opt( cost_grad_filename, "cost-gradimg-file", 'C', "norm image of the cost gradient", 
-			      CCmdOptionFlags::output, &imageio));
+       if (!ref)
+              throw create_exception<runtime_error>("No image found in '", src_filename, "'");
 
-	options.add(make_opt( transform_creator, "spline:rate=5", "transForm", 'f', "Transformation the gradient relates to"));
-	options.add(make_opt( cost, "ssd", "cost", 'c', "cost function to use"));
-	
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
+       C3DFVectorfield forcefield(source->get_size());
+       cost->set_reference(*ref);
+       cost->evaluate_force(*source, forcefield);
+       auto t = transform_creator->create(forcefield.get_size());
+       auto grad = t->get_parameters();
+       t->translate(forcefield, grad);
+       t->set_parameters(grad);
 
-	auto source = load_image<P3DImage>(src_filename);
-	auto ref    = load_image<P3DImage>(ref_filename);
+       if (!C3DTransformationIOPluginHandler::instance().save(out_filename, *t))
+              throw create_exception<runtime_error>("Grad can not be saved to  '", out_filename, "'");
 
-	if (!source) {
-		throw create_exception<runtime_error>("No image found in '", src_filename, "'");
-	}
-	if (!ref)
-		throw create_exception<runtime_error>("No image found in '", src_filename, "'");
+       if (!cost_grad_filename.empty()) {
+              C3DFImage image(forcefield.get_size());
+              float maxnorm = 0.0;
+              transform(forcefield.begin(), forcefield.end(), image.begin(),
+              [&maxnorm](const C3DFVector & x)->float{
+                     float n = x.norm();
 
-	C3DFVectorfield forcefield(source->get_size());
-	cost->set_reference(*ref);  
-	cost->evaluate_force(*source, forcefield);
+                     if (maxnorm < n)
+                            maxnorm = n;
+                     return n;
+              });
+//		float imn = 1.0/ maxnorm;
+//		transform(image.begin(), image.end(), image.begin(), [imn](float x) {return imn * x;});
+              save_image(cost_grad_filename, image);
+              cvmsg() << "max gradient norm before translation = " << maxnorm << "\n";
+       }
 
-	auto t = transform_creator->create(forcefield.get_size()); 
-	auto grad = t->get_parameters(); 
-	
-	t->translate(forcefield, grad);
-	t->set_parameters(grad); 
-	if (!C3DTransformationIOPluginHandler::instance().save(out_filename, *t)) 
-		throw create_exception<runtime_error>("Grad can not be saved to  '", out_filename, "'");
+       if (!grad_image_filename.empty()) {
+              C3DFImage image(forcefield.get_size());
+              float maxnorm = 0.0;
+              auto ti = t->begin();
+              auto te = t->end();
+              auto ii = image.begin_range(C3DBounds::_0, forcefield.get_size());
 
-	if (!cost_grad_filename.empty()) {
-		C3DFImage image(forcefield.get_size()); 
-		float maxnorm = 0.0; 
-		transform(forcefield.begin(), forcefield.end(), image.begin(), 
-			  [&maxnorm](const C3DFVector& x)->float{
-				  float n = x.norm();
-				  if (maxnorm < n)
-					  maxnorm = n; 
-				  return n; 
-			  }); 
-//		float imn = 1.0/ maxnorm; 
-//		transform(image.begin(), image.end(), image.begin(), [imn](float x) {return imn * x;}); 
-		save_image(cost_grad_filename, image); 
+              while ( ti != te )  {
+                     const C3DFVector d = *ti - C3DFVector(ii.pos());
+                     *ii = d.norm();
 
-		cvmsg() << "max gradient norm before translation = " << maxnorm << "\n"; 
-	}
+                     if (maxnorm < *ii)
+                            maxnorm = *ii;
 
-	if (!grad_image_filename.empty()) {
-		C3DFImage image(forcefield.get_size()); 
+                     ++ii;
+                     ++ti;
+              }
 
-		float maxnorm = 0.0; 
-		auto ti = t->begin();
-		auto te = t->end(); 
-		auto ii = image.begin_range(C3DBounds::_0, forcefield.get_size()); 
-		
-		while ( ti != te )  { 
-			const C3DFVector d = *ti - C3DFVector(ii.pos()); 
-			*ii = d.norm(); 
-			if (maxnorm < *ii) 
-				maxnorm = *ii; 
-			++ii; 
-			++ti; 
-		}
-//		float imn = 1.0/ maxnorm; 
-//		transform(image.begin(), image.end(), image.begin(), [imn](float x) {return imn * x;}); 
-		save_image(grad_image_filename, image); 
-		cvmsg() << "max gradient norm after translation = " << maxnorm << "\n"; 
-		
-	}
-	
-	return EXIT_SUCCESS;	
+//		float imn = 1.0/ maxnorm;
+//		transform(image.begin(), image.end(), image.begin(), [imn](float x) {return imn * x;});
+              save_image(grad_image_filename, image);
+              cvmsg() << "max gradient norm after translation = " << maxnorm << "\n";
+       }
+
+       return EXIT_SUCCESS;
 }
 
 MIA_MAIN(do_main);

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,18 +24,18 @@
 NS_MIA_BEGIN
 float EXPORT_2D angle(const C2DFVector& ray_a, const C2DFVector& ray_b)
 {
+       const double norm = ray_a.norm() * ray_b.norm();
 
-	const double norm = ray_a.norm() * ray_b.norm(); 
-	if (norm == 0.0) 
-		return 0.0; 
-	
-	const double ddot = dot(ray_a, ray_b); 
-	return (cross(ray_a, ray_b) >= 0.0 ) ? acos(ddot / norm): 2*M_PI - acos(ddot / norm);
+       if (norm == 0.0)
+              return 0.0;
+
+       const double ddot = dot(ray_a, ray_b);
+       return (cross(ray_a, ray_b) >= 0.0 ) ? acos(ddot / norm) : 2 * M_PI - acos(ddot / norm);
 }
 
 float EXPORT_2D angle(const C2DFVector& a, const C2DFVector& b, const C2DFVector& s)
 {
-	return angle(a - s, b - s); 
+       return angle(a - s, b - s);
 }
 
 

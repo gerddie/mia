@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,31 +24,34 @@
 
 NS_MIA_BEGIN
 
-using std::numeric_limits; 
+using std::numeric_limits;
 
 
 FIntensityStatsAccumulator::FIntensityStatsAccumulator():
-	m_stats_valid(false)
+       m_stats_valid(false)
 {
-	m_stats.sum = 0; 
-	m_stats.sumsq = 0;
-	m_stats.mean  = 0;
-	m_stats.variation = 0; 
-	m_stats.min = numeric_limits<double>::max(); 
-	m_stats.max =-numeric_limits<double>::max(); 
-	m_stats.n = 0; 
+       m_stats.sum = 0;
+       m_stats.sumsq = 0;
+       m_stats.mean  = 0;
+       m_stats.variation = 0;
+       m_stats.min = numeric_limits<double>::max();
+       m_stats.max = -numeric_limits<double>::max();
+       m_stats.n = 0;
 }
-		
+
 const SIntensityStats& FIntensityStatsAccumulator::get_result() const
 {
-	if (!m_stats_valid) {
-		if (m_stats.n > 0) 
-			m_stats.mean = m_stats.sum / m_stats.n; 
-		if (m_stats.n > 1) 
-			m_stats.variation = sqrt(( m_stats.sumsq - m_stats.sum * m_stats.mean) / (m_stats.n - 1));
-		m_stats_valid = true; 
-	}
-	return m_stats; 
+       if (!m_stats_valid) {
+              if (m_stats.n > 0)
+                     m_stats.mean = m_stats.sum / m_stats.n;
+
+              if (m_stats.n > 1)
+                     m_stats.variation = sqrt(( m_stats.sumsq - m_stats.sum * m_stats.mean) / (m_stats.n - 1));
+
+              m_stats_valid = true;
+       }
+
+       return m_stats;
 }
 
 NS_MIA_END

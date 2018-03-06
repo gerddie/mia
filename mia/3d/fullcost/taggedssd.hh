@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,36 +28,37 @@
 
 NS_BEGIN(taggedssd_3d)
 
-class EXPORT C3DTaggedSSDCost : public mia::C3DFullCost {
- public: 
-	C3DTaggedSSDCost(const std::string& src_x, 
-			 const std::string& ref_x, 
-			 const std::string& src_y, 
-			 const std::string& ref_y, 
-			 const std::string& src_z, 
-			 const std::string& ref_z,
-			 double weight); 
- private: 
-	double do_evaluate(const mia::C3DTransformation& t, mia::CDoubleVector& gradient) const;
-	void do_set_size(); 
+class EXPORT C3DTaggedSSDCost : public mia::C3DFullCost
+{
+public:
+       C3DTaggedSSDCost(const std::string& src_x,
+                        const std::string& ref_x,
+                        const std::string& src_y,
+                        const std::string& ref_y,
+                        const std::string& src_z,
+                        const std::string& ref_z,
+                        double weight);
+private:
+       double do_evaluate(const mia::C3DTransformation& t, mia::CDoubleVector& gradient) const;
+       void do_set_size();
 
-	static mia::P3DImage get_from_pool(const mia::C3DImageDataKey& key); 
+       static mia::P3DImage get_from_pool(const mia::C3DImageDataKey& key);
 
-	double do_value(const mia::C3DTransformation& t) const; 
+       double do_value(const mia::C3DTransformation& t) const;
 
-	double do_value() const; 
-	void do_reinit(); 
-	bool do_get_full_size(mia::C3DBounds& size) const; 
+       double do_value() const;
+       void do_reinit();
+       bool do_get_full_size(mia::C3DBounds& size) const;
 
-	mia::C3DImageDataKey m_src_key[3];
-	mia::C3DImageDataKey m_ref_key[3];
-	
-	mia::P3DImage m_src[3]; 
-	mia::P3DImage m_ref[3]; 
-	
-	mia::P3DImage m_src_scaled[3]; 
-	mia::P3DImage m_ref_scaled[3];
-}; 
+       mia::C3DImageDataKey m_src_key[3];
+       mia::C3DImageDataKey m_ref_key[3];
+
+       mia::P3DImage m_src[3];
+       mia::P3DImage m_ref[3];
+
+       mia::P3DImage m_src_scaled[3];
+       mia::P3DImage m_ref_scaled[3];
+};
 
 NS_END
 

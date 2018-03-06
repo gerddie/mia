@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,50 +22,54 @@
 
 NS_BEGIN( median_2dimage_filter)
 
-class C2DMedian : public mia::C2DFilter {
+class C2DMedian : public mia::C2DFilter
+{
 public:
-	C2DMedian(int hw);
+       C2DMedian(int hw);
 
-	template <class T>
-	typename C2DMedian::result_type operator () (const mia::T2DImage<T>& data) const ;
+       template <class T>
+       typename C2DMedian::result_type operator () (const mia::T2DImage<T>& data) const ;
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	int m_hw;
+       int m_hw;
 };
 
-class C2DMedianFilterPluginFactory: public mia::C2DFilterPlugin {
+class C2DMedianFilterPluginFactory: public mia::C2DFilterPlugin
+{
 public:
-	C2DMedianFilterPluginFactory();
+       C2DMedianFilterPluginFactory();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	int m_hw;
-};
-
-
-class C2DSaltAndPepperFilter: public mia::C2DFilter {
-	int m_width;
-	float m_thresh;
-public:
-	C2DSaltAndPepperFilter(int hwidth, float thresh);
-
-	template <class T>
-	mia::P2DImage operator () (const mia::T2DImage<T>& data) const ;
-
-private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+       int m_hw;
 };
 
 
-class C2DSaltAndPepperFilterFactory: public mia::C2DFilterPlugin {
+class C2DSaltAndPepperFilter: public mia::C2DFilter
+{
+       int m_width;
+       float m_thresh;
 public:
-	C2DSaltAndPepperFilterFactory();
+       C2DSaltAndPepperFilter(int hwidth, float thresh);
+
+       template <class T>
+       mia::P2DImage operator () (const mia::T2DImage<T>& data) const ;
+
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string  do_get_descr() const;
-	int m_hw;
-	float m_thresh;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+};
+
+
+class C2DSaltAndPepperFilterFactory: public mia::C2DFilterPlugin
+{
+public:
+       C2DSaltAndPepperFilterFactory();
+private:
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string  do_get_descr() const;
+       int m_hw;
+       float m_thresh;
 };
 
 NS_END

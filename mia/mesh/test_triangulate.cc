@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -36,46 +36,40 @@ NS_MIA_USE
 
 BOOST_AUTO_TEST_CASE(  test_trianguale )
 {
-	std::vector<C3DFVector> vlist;
+       std::vector<C3DFVector> vlist;
+       vlist.push_back(C3DFVector(0.0, 0.0, 0.0));
+       vlist.push_back(C3DFVector(0.0, 3.0, 0.0));
+       vlist.push_back(C3DFVector(3.0, 3.0, 0.0));
+       vlist.push_back(C3DFVector(3.0, 1.0, 0.0));
+       vlist.push_back(C3DFVector(4.0, 1.0, 0.0));
+       vlist.push_back(C3DFVector(4.0, 3.0, 0.0));
+       vlist.push_back(C3DFVector(5.0, 3.0, 0.0));
+       vlist.push_back(C3DFVector(5.0, 0.0, 0.0));
+       vlist.push_back(C3DFVector(2.0, 0.0, 0.0));
+       vlist.push_back(C3DFVector(2.0, 2.0, 0.0));
+       vlist.push_back(C3DFVector(1.0, 2.0, 0.0));
+       vlist.push_back(C3DFVector(1.0, 0.0, 0.0));
+       TPolyTriangulator<std::vector<C3DFVector>, std::vector<int>>  triangulator(vlist);
+       std::vector<int> polygon;
+       polygon.push_back(0);
+       polygon.push_back(1);
+       polygon.push_back(2);
+       polygon.push_back(3);
+       polygon.push_back(4);
+       polygon.push_back(5);
+       polygon.push_back(6);
+       polygon.push_back(7);
+       polygon.push_back(8);
+       polygon.push_back(9);
+       polygon.push_back(10);
+       polygon.push_back(11);
+       std::vector<C3DBounds> triangles;
+       triangulator.triangulate(triangles, polygon);
 
-	vlist.push_back(C3DFVector(0.0, 0.0, 0.0));
-	vlist.push_back(C3DFVector(0.0, 3.0, 0.0));
-	vlist.push_back(C3DFVector(3.0, 3.0, 0.0));
-	vlist.push_back(C3DFVector(3.0, 1.0, 0.0));
-	vlist.push_back(C3DFVector(4.0, 1.0, 0.0));
-	vlist.push_back(C3DFVector(4.0, 3.0, 0.0));
-	vlist.push_back(C3DFVector(5.0, 3.0, 0.0));
-	vlist.push_back(C3DFVector(5.0, 0.0, 0.0));
-	vlist.push_back(C3DFVector(2.0, 0.0, 0.0));
-	vlist.push_back(C3DFVector(2.0, 2.0, 0.0));
-	vlist.push_back(C3DFVector(1.0, 2.0, 0.0));
-	vlist.push_back(C3DFVector(1.0, 0.0, 0.0));
+       for (size_t i = 0; i < triangles.size(); ++i) {
+              cvdebug() << triangles[i] << std::endl;
+       }
 
-	TPolyTriangulator<std::vector<C3DFVector>,std::vector<int> >  triangulator(vlist);
-
-	std::vector<int> polygon;
-
-	polygon.push_back(0);
-	polygon.push_back(1);
-	polygon.push_back(2);
-	polygon.push_back(3);
-	polygon.push_back(4);
-	polygon.push_back(5);
-	polygon.push_back(6);
-	polygon.push_back(7);
-	polygon.push_back(8);
-	polygon.push_back(9);
-	polygon.push_back(10);
-	polygon.push_back(11);
-
-	std::vector<C3DBounds> triangles;
-	triangulator.triangulate(triangles, polygon);
-
-	for (size_t i = 0; i < triangles.size(); ++i) {
-		cvdebug() << triangles[i] << std::endl;
-	}
-
-	BOOST_CHECK_EQUAL(triangles.size(), 10u);
-
+       BOOST_CHECK_EQUAL(triangles.size(), 10u);
 }
 

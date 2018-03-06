@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,30 +28,27 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/noisegen.hh>
 
-using namespace std; 
-using namespace mia; 
+using namespace std;
+using namespace mia;
 using namespace boost;
-namespace bfs=::boost::filesystem; 
+namespace bfs =::boost::filesystem;
 
-BOOST_AUTO_TEST_CASE( test_plugins )	
+BOOST_AUTO_TEST_CASE( test_plugins )
 {
-	list< bfs::path> searchpath; 
+       list< bfs::path> searchpath;
+       searchpath.push_back( bfs::path("core") / bfs::path("noise"));
+       searchpath.push_back( bfs::path("noise"));
+       CNoiseGeneratorPluginHandler::set_search_path(searchpath);
+       const CNoiseGeneratorPluginHandler::Instance& fh = CNoiseGeneratorPluginHandler::instance();
 
-	searchpath.push_back( bfs::path("core") / bfs::path("noise"));
-	searchpath.push_back( bfs::path("noise"));
-	
-	CNoiseGeneratorPluginHandler::set_search_path(searchpath); 
-
-	const CNoiseGeneratorPluginHandler::Instance& fh = CNoiseGeneratorPluginHandler::instance();
-
-	for (CNoiseGeneratorPluginHandler::Instance::const_iterator i = fh.begin(); 
-	     i != fh.end(); ++i)
-		BOOST_CHECK(i->second->test(true)); 
+       for (CNoiseGeneratorPluginHandler::Instance::const_iterator i = fh.begin();
+            i != fh.end(); ++i)
+              BOOST_CHECK(i->second->test(true));
 }
 
-BOOST_AUTO_TEST_CASE( test_factory_trait ) 
+BOOST_AUTO_TEST_CASE( test_factory_trait )
 {
-	FactoryTrait<CNoiseGeneratorPluginHandler::ProductPtr>::type::Instance help = 
-		CNoiseGeneratorPluginHandler::instance();
-	BOOST_CHECK(!help.empty()); 
+       FactoryTrait<CNoiseGeneratorPluginHandler::ProductPtr>::type::Instance help =
+              CNoiseGeneratorPluginHandler::instance();
+       BOOST_CHECK(!help.empty());
 }

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,44 +29,46 @@
 
 NS_BEGIN(NS)
 
-///  @cond DOC_PLUGINS 
+///  @cond DOC_PLUGINS
 
 /**
 
-   @ingroup registation 
+   @ingroup registation
 */
-template <typename TCost> 
-class TSSDAutomaskCost: public TCost {
-public: 	
-	typedef typename TCost::Data Data; 
-	typedef typename TCost::Force Force; 
+template <typename TCost>
+class TSSDAutomaskCost: public TCost
+{
+public:
+       typedef typename TCost::Data Data;
+       typedef typename TCost::Force Force;
 
-	TSSDAutomaskCost(); 
-	TSSDAutomaskCost(double src_mask_thresh, double ref_mask_thresh); 
-private: 
-	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
-	double m_src_mask_thresh;
-	double m_ref_mask_thresh; 
+       TSSDAutomaskCost();
+       TSSDAutomaskCost(double src_mask_thresh, double ref_mask_thresh);
+private:
+       virtual double do_value(const Data& a, const Data& b) const;
+       virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const;
+       double m_src_mask_thresh;
+       double m_ref_mask_thresh;
 };
 
 
 /**
-   This is the plug-in declaration - the actual plugin needs to define the 
-   cost plugin type and the data type (this could be unified) 
-   do_test and do_get_descr need to be implemented 
+   This is the plug-in declaration - the actual plugin needs to define the
+   cost plugin type and the data type (this could be unified)
+   do_test and do_get_descr need to be implemented
 */
-template <typename CP, typename C> 
-class TSSDAutomaskCostPlugin: public CP {
-public: 
-	TSSDAutomaskCostPlugin();
-	C *do_create()const;
-private: 
-	double m_src_mask_thresh;
-	double m_ref_mask_thresh; 
+template <typename CP, typename C>
+class TSSDAutomaskCostPlugin: public CP
+{
+public:
+       TSSDAutomaskCostPlugin();
+       C *do_create()const;
+private:
+       double m_src_mask_thresh;
+       double m_ref_mask_thresh;
 
 };
 
 
-/// @endcond 
+/// @endcond
 NS_END

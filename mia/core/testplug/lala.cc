@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,45 +23,46 @@
 NS_MIA_USE
 using namespace std;
 
-class CLalaIOPlugin : public CTestIOPlugin {
+class CLalaIOPlugin : public CTestIOPlugin
+{
 public:
-	CLalaIOPlugin();
+       CLalaIOPlugin();
 private:
-	PData do_load(const string& fname) const;
-	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const;
-	const std::string do_get_preferred_suffix() const; 
+       PData do_load(const string& fname) const;
+       bool do_save(const string& fname, const Data& data) const;
+       const string do_get_descr() const;
+       const std::string do_get_preferred_suffix() const;
 };
 
 CLalaIOPlugin::CLalaIOPlugin():
-	CTestIOPlugin("la")
+       CTestIOPlugin("la")
 {
-	add_suffix(".la"); 
-	add_suffix(".hey"); 
+       add_suffix(".la");
+       add_suffix(".hey");
 }
 
 CLalaIOPlugin::PData  CLalaIOPlugin::do_load(const string& /*fname*/) const
 {
-	return CLalaIOPlugin::PData(new CDummyType("lala"));
+       return CLalaIOPlugin::PData(new CDummyType("lala"));
 }
 
 
 bool CLalaIOPlugin::do_save(const string& /*fname*/, const Data& /*data*/) const
 {
-	return true;
+       return true;
 }
 
 const string CLalaIOPlugin::do_get_descr() const
 {
-	return "a dummy plugin to test io-plugin handling";
+       return "a dummy plugin to test io-plugin handling";
 }
 
 const std::string CLalaIOPlugin::do_get_preferred_suffix() const
 {
-	return "hey"; 
+       return "hey";
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	return new CLalaIOPlugin();
+       return new CLalaIOPlugin();
 }

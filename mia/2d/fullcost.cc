@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,21 +26,21 @@
 #include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
-namespace bfs=::boost::filesystem; 
+namespace bfs =::boost::filesystem;
 
 
-template class TFullCostPlugin<C2DTransformation>; 
-template class TFullCost<C2DTransformation>; 
+template class TFullCostPlugin<C2DTransformation>;
+template class TFullCost<C2DTransformation>;
 
-template <> const char *  const 
-TPluginHandler<C2DFullCostPlugin>::m_help =  
-	"This class of cost functions evaluates the cost resulting from the "
-	"use of a certain transformation. This may include a penalty term that ensures "
-	"the smoothness of a transformation or the evaluation of a similarity measure "
-	"between a transformed study data set and a reference data set.";
+template <> const char   *const
+TPluginHandler<C2DFullCostPlugin>::m_help =
+       "This class of cost functions evaluates the cost resulting from the "
+       "use of a certain transformation. This may include a penalty term that ensures "
+       "the smoothness of a transformation or the evaluation of a similarity measure "
+       "between a transformed study data set and a reference data set.";
 
 
 EXPLICIT_INSTANCE_PLUGIN(C2DFullCost);
-EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin); 
+EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin);
 
 NS_MIA_END

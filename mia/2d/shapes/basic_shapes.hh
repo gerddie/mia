@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,43 +28,49 @@
 
 NS_BEGIN(basic_2dshape_creator)
 
-class C1n2DShape: public mia::C2DShape {
+class C1n2DShape: public mia::C2DShape
+{
 public:
-	C1n2DShape();
+       C1n2DShape();
 };
 
-class C1n2DShapeFactory: public mia::C2DShapePlugin {
+class C1n2DShapeFactory: public mia::C2DShapePlugin
+{
 public:
-	C1n2DShapeFactory();
+       C1n2DShapeFactory();
 private:
-	virtual const std::string do_get_descr() const;
-	virtual mia::C2DShape *do_create()const;
+       virtual const std::string do_get_descr() const;
+       virtual mia::C2DShape *do_create()const;
 };
 
-class C4n2DShape: public C1n2DShape {
+class C4n2DShape: public C1n2DShape
+{
 public:
-	C4n2DShape();
+       C4n2DShape();
 };
 
-class C4n2DShapeFactory: public mia::C2DShapePlugin {
+class C4n2DShapeFactory: public mia::C2DShapePlugin
+{
 public:
-	C4n2DShapeFactory();
+       C4n2DShapeFactory();
 private:
-	virtual const std::string do_get_descr() const;
-	virtual mia::C2DShape *do_create()const;
+       virtual const std::string do_get_descr() const;
+       virtual mia::C2DShape *do_create()const;
 };
 
-class C8n2DShape: public C4n2DShape {
+class C8n2DShape: public C4n2DShape
+{
 public:
-	C8n2DShape();
+       C8n2DShape();
 };
 
-class C8n2DShapeFactory: public mia::C2DShapePlugin {
+class C8n2DShapeFactory: public mia::C2DShapePlugin
+{
 public:
-	C8n2DShapeFactory();
+       C8n2DShapeFactory();
 private:
-	virtual const std::string do_get_descr() const;
-	virtual mia::C2DShape *do_create()const;
+       virtual const std::string do_get_descr() const;
+       virtual mia::C2DShape *do_create()const;
 };
 
 NS_END

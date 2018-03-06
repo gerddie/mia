@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,77 +26,65 @@
 #include <mia/internal/autotest.hh>
 
 NS_MIA_USE
-namespace bfs=::boost::filesystem;
+namespace bfs =::boost::filesystem;
 
 struct ImagefullcostFixture {
-	ImagefullcostFixture(); 
-	
-}; 
+       ImagefullcostFixture();
+
+};
 
 
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 {
+       // create two images
+       const unsigned char src_data[64] = {
+              0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,
+              0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,
+              0, 0, 0, 0,  0, 255, 255, 0,  0, 255, 255, 0,   0, 0, 0, 0,
+              0, 0, 0, 0,   0, 255, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0
 
-	// create two images 
-	const unsigned char src_data[64] = {
-		0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,
- 		0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,
- 		0, 0, 0, 0,  0,255,255,0,  0,255,255,0,   0, 0, 0, 0,
-		0, 0, 0, 0,   0,255, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0
+       };
+       const unsigned char ref_data[64] = {
+              0, 0, 0, 0,  0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
 
-	};
-	const unsigned char ref_data[64] = {
-		0, 0, 0, 0,  0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
 
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
 
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0,
+              0, 0, 0, 0
 
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0
-
-	};
-	C3DBounds size(4,4,4); 
-
-	P3DImage src(new C3DUBImage(size, src_data ));
-	P3DImage ref(new C3DUBImage(size, ref_data ));
-	
-	BOOST_REQUIRE(save_image("src.@", src)); 
-	BOOST_REQUIRE(save_image("ref.@", ref)); 
-
-	C3DImageFullCost cost("src.@", "ref.@", C3DImageCostPluginHandler::instance().produce("ssd"), 1.0, false); 
-	cost.reinit(); 
-	cost.set_size(size);
-	
-	C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror")); 
-	
-	CDoubleVector gradient(t.degrees_of_freedom()); 
-	double cost_value = cost.evaluate(t, gradient);
-	BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u); 
-
-	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 5.0 , 0.1);
-
-	double value = cost.cost_value(t);
-
-	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 5.0 , 0.1);
-	
-	BOOST_CHECK_CLOSE(gradient[111], 255 * 255 * 0.5f , 0.1);
-	BOOST_CHECK_CLOSE(gradient[112], 255 * 255 * 0.5f , 0.1);
-	BOOST_CHECK_CLOSE(gradient[113], 255 * 255 * 0.5f , 0.1);
-	
+       };
+       C3DBounds size(4, 4, 4);
+       P3DImage src(new C3DUBImage(size, src_data ));
+       P3DImage ref(new C3DUBImage(size, ref_data ));
+       BOOST_REQUIRE(save_image("src.@", src));
+       BOOST_REQUIRE(save_image("ref.@", ref));
+       C3DImageFullCost cost("src.@", "ref.@", C3DImageCostPluginHandler::instance().produce("ssd"), 1.0, false);
+       cost.reinit();
+       cost.set_size(size);
+       C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror"));
+       CDoubleVector gradient(t.degrees_of_freedom());
+       double cost_value = cost.evaluate(t, gradient);
+       BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u);
+       BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 5.0, 0.1);
+       double value = cost.cost_value(t);
+       BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 5.0, 0.1);
+       BOOST_CHECK_CLOSE(gradient[111], 255 * 255 * 0.5f, 0.1);
+       BOOST_CHECK_CLOSE(gradient[112], 255 * 255 * 0.5f, 0.1);
+       BOOST_CHECK_CLOSE(gradient[113], 255 * 255 * 0.5f, 0.1);
 }
 
 ImagefullcostFixture::ImagefullcostFixture()
 {
-
 }

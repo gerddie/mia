@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,5 +22,5 @@
 #include <mia/template/multicost.cxx>
 
 NS_MIA_BEGIN
-template class TFullCostList<C3DTransformation>; 
+template class TFullCostList<C3DTransformation>;
 NS_MIA_END

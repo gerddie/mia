@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -40,25 +40,27 @@
 NS_MIA_BEGIN
 
 typedef tbb::blocked_range<int> C1DParallelRange;
-typedef tbb::mutex CMutex; 
+typedef tbb::mutex CMutex;
 typedef tbb::mutex::scoped_lock CScopedLock;
 
-typedef tbb::recursive_mutex CRecursiveMutex; 
-typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock; 
+typedef tbb::recursive_mutex CRecursiveMutex;
+typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock;
 
 #define ATOMIC tbb::atomic
 
 template <typename Range, typename Func>
-void pfor(const Range& range, Func body) {
-	tbb::parallel_for(range, body); 
+void pfor(const Range& range, Func body)
+{
+       tbb::parallel_for(range, body);
 }
 
-template<typename Range, typename Value, 
+template<typename Range, typename Value,
          typename Func, typename Reduction>
 Value preduce( const Range& range, const Value& identity,
-	       const Func& func, const Reduction& reduction) {
-	return tbb::parallel_reduce(range, identity, func, reduction); 
-}; 
+               const Func& func, const Reduction& reduction)
+{
+       return tbb::parallel_reduce(range, identity, func, reduction);
+};
 
 NS_MIA_END
 
@@ -69,4 +71,4 @@ NS_MIA_END
 #endif
 
 
-#endif 
+#endif

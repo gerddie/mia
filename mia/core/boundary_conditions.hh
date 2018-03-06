@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -33,260 +33,270 @@
 NS_MIA_BEGIN
 
 enum EBoundaryConditions  {
-	bc_mirror_on_bounds, 
-	bc_repeat, 
-	bc_zero, 
-	bc_unknown
-}; 
+       bc_mirror_on_bounds,
+       bc_repeat,
+       bc_zero,
+       bc_unknown
+};
 
 /**
-   \ingroup interpol 
+   \ingroup interpol
 
-   \brief Abstract base class for B-spline interpolation boundary conditions 
-   
-   This class is the abstract base class for B-spline interpolation boundary conditions. 
+   \brief Abstract base class for B-spline interpolation boundary conditions
 
-   The actual boundary conditions are implemented as plug-ins and instances are 
-   created by calling produce_spline_boundary_condition. 
+   This class is the abstract base class for B-spline interpolation boundary conditions.
+
+   The actual boundary conditions are implemented as plug-ins and instances are
+   created by calling produce_spline_boundary_condition.
 */
-class EXPORT_CORE CSplineBoundaryCondition : public CProductBase{
-public: 
+class EXPORT_CORE CSplineBoundaryCondition : public CProductBase
+{
+public:
 
-	/// helper typedef for plug-in handling 
-	typedef CSplineBoundaryCondition plugin_data; 
-	
-	/// helper typedef for plug-in handling 
-	typedef CSplineBoundaryCondition plugin_type; 
+       /// helper typedef for plug-in handling
+       typedef CSplineBoundaryCondition plugin_data;
 
-	/// type portion of the plugin search path 
-	static const char * const type_descr; 
-	
-	/// data portion of the plugin search path 
-	static const char * const data_descr; 
+       /// helper typedef for plug-in handling
+       typedef CSplineBoundaryCondition plugin_type;
 
+       /// type portion of the plugin search path
+       static const char *const type_descr;
 
-	/// pointer type to this boundary condition
-	typedef std::unique_ptr<CSplineBoundaryCondition> Pointer; 
-
-	CSplineBoundaryCondition(); 
+       /// data portion of the plugin search path
+       static const char *const data_descr;
 
 
-	/**
-	   Delete copy operations 
-	 */
-	CSplineBoundaryCondition(const CSplineBoundaryCondition& /*other*/) = delete;
+       /// pointer type to this boundary condition
+       typedef std::unique_ptr<CSplineBoundaryCondition> Pointer;
 
-	CSplineBoundaryCondition& operator = (const CSplineBoundaryCondition& /*other*/) = delete; 
+       CSplineBoundaryCondition();
 
-	/**
-	   Constructor for the boundary conditions. 
-	   \param width size of the coefficent domain 
-	 */
-	
-	CSplineBoundaryCondition(int width); 
 
-	/**
-	   Apply the boundary conditions 
-	   \param index - indices into the coeffisicnt domain will be changed to fit domain 
-	   \param weights - according weights
-	   \returns true if the index set was in the coefficient domain 
-	 */
-	bool apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
-	
-	/**
-	   (re-)set the width of the supported index range 
-	   \param width new width 
-	 */
+       /**
+          Delete copy operations
+        */
+       CSplineBoundaryCondition(const CSplineBoundaryCondition& /*other*/) = delete;
 
-	void set_width(int width); 
+       CSplineBoundaryCondition& operator = (const CSplineBoundaryCondition& /*other*/) = delete;
 
-	/// \returns the width of the coefficient domain 
-	int get_width() const {
-		return m_width; 
-	}
-	
-	/**
-	   Prefiltering function to convert a vector of input data to spline coefficients 
-	   \tparam T must either be a scalar type or an array of scalar data types whose elements 
-	   can be accessed by using the operator[]. This restriction is currently necessary to 
-	   allow a dynamic polymorphic implementation  of the pre-filtering step needed for 
-           different boundary condition models. 
-	   \param[in,out] coeff vector of function values that will be converted to spline coefficients 
-	   \param poles the poles of the B-spline the coefficients are created for 
-	   
-	 */
-	template <typename T> 
-	void filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
+       /**
+          Constructor for the boundary conditions.
+          \param width size of the coefficent domain
+        */
 
-        /**
-	   Prefiltering function to convert a vector of double valued input data to spline coefficients 
-	   This is the actual work routine that will be called by the other filter_line functions 
-	   after type conversion and decomposition has been executed 
-	   \param[in,out] coeff vector of function values that will be converted to spline coefficients 
-	   \param poles the poles of the B-spline the coefficients are created for 
-	*/
-	void filter_line(std::vector<double>& coeff, const std::vector<double>& poles) const;
+       CSplineBoundaryCondition(int width);
 
-	/**
-	   Prefiltering function to convert a vector of scalar valued input data to spline coefficients. 
-	   \tparam T a scalar type. 
-	   \param[in,out] coeff vector of function values that will be converted to spline coefficients 
-	   \param poles the poles of the B-spline the coefficients are created for 
-	*/
-	
-	template <typename T> 
-	void template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
+       /**
+          Apply the boundary conditions
+          \param index - indices into the coeffisicnt domain will be changed to fit domain
+          \param weights - according weights
+          \returns true if the index set was in the coefficient domain
+        */
+       bool apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
 
-	/**
-	   \returns a copy of the (derived) instance of this boundary condition 
-	 */
-	virtual 
-		CSplineBoundaryCondition *clone() const __attribute__((warn_unused_result)) = 0 ; 
+       /**
+          (re-)set the width of the supported index range
+          \param width new width
+        */
+
+       void set_width(int width);
+
+       /// \returns the width of the coefficient domain
+       int get_width() const
+       {
+              return m_width;
+       }
+
+       /**
+          Prefiltering function to convert a vector of input data to spline coefficients
+          \tparam T must either be a scalar type or an array of scalar data types whose elements
+          can be accessed by using the operator[]. This restriction is currently necessary to
+          allow a dynamic polymorphic implementation  of the pre-filtering step needed for
+           different boundary condition models.
+          \param[in,out] coeff vector of function values that will be converted to spline coefficients
+          \param poles the poles of the B-spline the coefficients are created for
+
+        */
+       template <typename T>
+       void filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
+
+       /**
+         Prefiltering function to convert a vector of double valued input data to spline coefficients
+         This is the actual work routine that will be called by the other filter_line functions
+         after type conversion and decomposition has been executed
+         \param[in,out] coeff vector of function values that will be converted to spline coefficients
+         \param poles the poles of the B-spline the coefficients are created for
+       */
+       void filter_line(std::vector<double>& coeff, const std::vector<double>& poles) const;
+
+       /**
+          Prefiltering function to convert a vector of scalar valued input data to spline coefficients.
+          \tparam T a scalar type.
+          \param[in,out] coeff vector of function values that will be converted to spline coefficients
+          \param poles the poles of the B-spline the coefficients are created for
+       */
+
+       template <typename T>
+       void template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
+
+       /**
+          \returns a copy of the (derived) instance of this boundary condition
+        */
+       virtual
+       CSplineBoundaryCondition *clone() const __attribute__((warn_unused_result)) = 0 ;
 private:
 
-	virtual void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const = 0;
-	virtual void test_supported(int npoles) const = 0;
-	
-	virtual void do_set_width(int width); 
+       virtual void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const = 0;
+       virtual void test_supported(int npoles) const = 0;
 
-	
-	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const = 0;
-	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const = 0;
+       virtual void do_set_width(int width);
 
 
-	int m_width; 
-}; 
+       virtual double initial_coeff(const std::vector<double>& coeff, double pole) const = 0;
+       virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const = 0;
+
+
+       int m_width;
+};
 
 
 
-/**  \ingroup interpol 
-     Pointer type of the boundary conditions. 
+/**  \ingroup interpol
+     Pointer type of the boundary conditions.
 */
-typedef CSplineBoundaryCondition::Pointer PSplineBoundaryCondition; 
+typedef CSplineBoundaryCondition::Pointer PSplineBoundaryCondition;
 
-extern template class EXPORT_CORE TFactory<CSplineBoundaryCondition>; 
+extern template class EXPORT_CORE TFactory<CSplineBoundaryCondition>;
 
-/**  \ingroup interpol 
+/**  \ingroup interpol
      \brief Base plugin for spline boundary conditions
 */
-class EXPORT_CORE CSplineBoundaryConditionPlugin: public TFactory<CSplineBoundaryCondition> {
-public: 
-	/**
-	   Constructor for the spline boundary conditions plug-ins. 
-	 */
+class EXPORT_CORE CSplineBoundaryConditionPlugin: public TFactory<CSplineBoundaryCondition>
+{
+public:
+       /**
+          Constructor for the spline boundary conditions plug-ins.
+        */
 
-	CSplineBoundaryConditionPlugin(const char * name); 
-private: 
-	virtual CSplineBoundaryCondition *do_create() const;
-	
-	virtual CSplineBoundaryCondition *do_create(int width) const = 0; 
+       CSplineBoundaryConditionPlugin(const char *name);
+private:
+       virtual CSplineBoundaryCondition *do_create() const;
 
-	int m_width; 
-}; 
+       virtual CSplineBoundaryCondition *do_create(int width) const = 0;
+
+       int m_width;
+};
 
 
 
 /**
-   \ingroup interpol 
+   \ingroup interpol
    Plugin handler for the creation of spline boundary conditions
 */
-typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> > CSplineBoundaryConditionPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin>> CSplineBoundaryConditionPluginHandler;
 
-template<> 
-const char * const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help;
+template<>
+const char *const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help;
 
-extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> >; 
+extern template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin>>;
 
-/// make spline boundary conditions parsable by the command line 
-FACTORY_TRAIT(CSplineBoundaryConditionPluginHandler); 
+/// make spline boundary conditions parsable by the command line
+FACTORY_TRAIT(CSplineBoundaryConditionPluginHandler);
 
 
 /**
-   Create a specific instance of a spline interpolation boundary condition. 
+   Create a specific instance of a spline interpolation boundary condition.
    \param descr Description of the requested boundary conditions
-   \returns the actual boundary condition 
+   \returns the actual boundary condition
 */
-inline 
+inline
 PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr)
 {
-	return CSplineBoundaryConditionPluginHandler::instance().produce_unique(descr); 
+       return CSplineBoundaryConditionPluginHandler::instance().produce_unique(descr);
 }
 
 
 /**
-   Create a specific instance of a spline interpolation boundary condition. 
+   Create a specific instance of a spline interpolation boundary condition.
    \param descr Description of the requested boundary conditions
-   \param width width of the input domain 
-   \returns the actual boundary condition 
+   \param width width of the input domain
+   \returns the actual boundary condition
 */
 EXPORT_CORE PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width)
- __attribute__((deprecated)); 
+__attribute__((deprecated));
 
 
-/// @cond INTERNAL 
+/// @cond INTERNAL
 
 /**
-   \ingroup traits 
+   \ingroup traits
    \brief This trait handles dispatching the pre-filtering of coefficients
-   
-   This trait handles dispatching the pre-filtering of coefficients based on the number of 
-   elements a coefficient holds. If the number of components is one, then the filtering can be called directly, 
-   otherwise the data needs to be copied element-wiese  to and from a temporary array. 
-   This is required to make the actual filtering template-free and, hence make it possible to call it as a virtual function. 
+
+   This trait handles dispatching the pre-filtering of coefficients based on the number of
+   elements a coefficient holds. If the number of components is one, then the filtering can be called directly,
+   otherwise the data needs to be copied element-wiese  to and from a temporary array.
+   This is required to make the actual filtering template-free and, hence make it possible to call it as a virtual function.
 
    \tparam T the data type of the coefficients, if the type holds more than one element, it must support the operator []
-   for element indexing. 
-   \tparam size the number of scalar elements the type holds 
-   \remark performance wise it could be better to copy the data to a flat array and add a stride parametsr to the 
+   for element indexing.
+   \tparam size the number of scalar elements the type holds
+   \remark performance wise it could be better to copy the data to a flat array and add a stride parametsr to the
    filter algorithm
 */
 template <typename T, int size>
 struct __dispatch_filter_line {
-	static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
-}; 
+       static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles);
+};
 
 template <typename T, int size>
-void __dispatch_filter_line<T, size>::apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, 
-					 const std::vector<double>& poles) 
+void __dispatch_filter_line<T, size>::apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff,
+              const std::vector<double>& poles)
 {
-	std::vector<double> temp(coeff.size());
-	for (int i = 0; i < size; ++i) {
-		std::transform(coeff.begin(), coeff.end(), temp.begin(), 
-			       [i](const T& x) { return x[i]; }); 
-		bc.filter_line(temp, poles); 
-		for (size_t j = 0; j < coeff.size(); ++j)
-			coeff[j][i] = temp[j]; 
-	}
+       std::vector<double> temp(coeff.size());
+
+       for (int i = 0; i < size; ++i) {
+              std::transform(coeff.begin(), coeff.end(), temp.begin(),
+              [i](const T & x) {
+                     return x[i];
+              });
+              bc.filter_line(temp, poles);
+
+              for (size_t j = 0; j < coeff.size(); ++j)
+                     coeff[j][i] = temp[j];
+       }
 }
 
 /**
-   \ingroup traits 
-   \brief This trait handles dispatching the pre-filtering of coefficients in the one-element case 
+   \ingroup traits
+   \brief This trait handles dispatching the pre-filtering of coefficients in the one-element case
 
-*/ 
+*/
 template <typename T>
-struct __dispatch_filter_line<T,1> {
-	static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles) {
-		bc.template_filter_line(coeff, poles); 
-	}
-}; 
+struct __dispatch_filter_line<T, 1> {
+       static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles)
+       {
+              bc.template_filter_line(coeff, poles);
+       }
+};
 
-/// @endcond 
+/// @endcond
 
-template <typename T> 
+template <typename T>
 void CSplineBoundaryCondition::filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
 {
-	typedef atomic_data<T> atom; 
-	__dispatch_filter_line<T, atom::size>::apply(*this, coeff, poles); 
+       typedef atomic_data<T> atom;
+       __dispatch_filter_line<T, atom::size>::apply(*this, coeff, poles);
 }
 
 
-template <typename T> 
+template <typename T>
 void CSplineBoundaryCondition::template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
 {
-	std::vector<double> temp(coeff.begin(), coeff.end()); 
-	filter_line(temp, poles); 
-	std::transform(temp.begin(), temp.end(), coeff.begin(), [](double x) {return static_cast<T>(x);});
+       std::vector<double> temp(coeff.begin(), coeff.end());
+       filter_line(temp, poles);
+       std::transform(temp.begin(), temp.end(), coeff.begin(), [](double x) {
+              return static_cast<T>(x);
+       });
 }
 
 NS_MIA_END

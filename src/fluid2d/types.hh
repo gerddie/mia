@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -36,8 +36,14 @@ typedef int int32;
 
 
 #ifdef WORDS_BIGENDIAN
-inline void ENDIANDAPT(int16& x) { x = ((x & 0xFF) << 8)| ((x >> 8) & 0xFF);}
-inline void ENDIANADAPT(uint16& x) { x = ((x & 0xFF) << 8)| ((x >> 8) & 0xFF);}
+inline void ENDIANDAPT(int16& x)
+{
+       x = ((x & 0xFF) << 8) | ((x >> 8) & 0xFF);
+}
+inline void ENDIANADAPT(uint16& x)
+{
+       x = ((x & 0xFF) << 8) | ((x >> 8) & 0xFF);
+}
 #else
 #define ENDIANADAPT(x)
 #endif

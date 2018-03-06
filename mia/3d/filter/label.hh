@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,24 +27,26 @@
 
 NS_BEGIN(label_3dimage_filter)
 
-class CLabel: public mia::C3DFilter {
+class CLabel: public mia::C3DFilter
+{
 public:
-	CLabel(mia::P3DShape m_mask);
+       CLabel(mia::P3DShape m_mask);
 
 private:
-	void grow_region(const mia::C3DBounds& loc, const mia::C3DBitImage& input,
-			 mia::C3DUSImage& result, unsigned short label)const;
-	CLabel::result_type do_filter(const mia::C3DImage& image) const;
-	mia::P3DShape m_mask;
+       void grow_region(const mia::C3DBounds& loc, const mia::C3DBitImage& input,
+                        mia::C3DUSImage& result, unsigned short label)const;
+       CLabel::result_type do_filter(const mia::C3DImage& image) const;
+       mia::P3DShape m_mask;
 };
 
-class C3DLabelFilterPlugin: public mia::C3DFilterPlugin {
+class C3DLabelFilterPlugin: public mia::C3DFilterPlugin
+{
 public:
-	C3DLabelFilterPlugin();
+       C3DLabelFilterPlugin();
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	mia::P3DShape m_mask;
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+       mia::P3DShape m_mask;
 };
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,45 +31,45 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	{pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
-	{pdi_short, "Evaluate the similarity between two 2D images."}, 
-	{pdi_description, 	"This program is used to evaluate the cost between two "
-	 "images by using a given cost function."}, 
-	{pdi_example_descr, "Evaluate the SSD cost function between image1.png and image2.png"}, 
-	{pdi_example_code, "image:src=image1.png,ref=image2.png,cost=ssd"}
+       {pdi_group, "Registration, Comparison, and Transformation of 2D images"},
+       {pdi_short, "Evaluate the similarity between two 2D images."},
+       {
+              pdi_description, 	"This program is used to evaluate the cost between two "
+              "images by using a given cost function."
+       },
+       {pdi_example_descr, "Evaluate the SSD cost function between image1.png and image2.png"},
+       {pdi_example_code, "image:src=image1.png,ref=image2.png,cost=ssd"}
 
-}; 
+};
 
 // set op the command line parameters and run the registration
 int do_main(int argc, char **argv)
 {
+       CCmdOptionList options(g_description);
+       options.set_stdout_is_result();
 
-	CCmdOptionList options(g_description);
-	options.set_stdout_is_result();
-	
-	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
+       if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
+       auto cost_chain = options.get_remaining();
 
-	
-	auto cost_chain = options.get_remaining();
+       if (cost_chain.empty()) {
+              cvfatal() << "require cost functions given as extra parameters\n";
+              return EXIT_FAILURE;
+       }
 
-	if (cost_chain.empty()) {
-		cvfatal() << "require cost functions given as extra parameters\n";
-		return EXIT_FAILURE;
-	}
+       C2DFullCostList cost_list;
 
-	C2DFullCostList cost_list;
-	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
-		cost_list.push(produce_2dfullcost(*i)); 
-	}
-	auto size = C2DBounds::_0; 
-	cost_list.reinit(); 
-	cost_list.get_full_size(size); 
-	cost_list.set_size(size); 
-	cout << cost_list.cost_value() << "\n";
+       for (auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
+              cost_list.push(produce_2dfullcost(*i));
+       }
 
-	return EXIT_SUCCESS;
+       auto size = C2DBounds::_0;
+       cost_list.reinit();
+       cost_list.get_full_size(size);
+       cost_list.set_size(size);
+       cout << cost_list.cost_value() << "\n";
+       return EXIT_SUCCESS;
 }
 
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);

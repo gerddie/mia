@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -34,52 +34,53 @@ NS_BEGIN(fluid_timestep_2d)
 
 
 C2DFluidRegTimeStep::C2DFluidRegTimeStep(float min, float max):
-	C2DRegTimeStep(min, max)
+       C2DRegTimeStep(min, max)
 {
 }
 
 float C2DFluidRegTimeStep::do_calculate_pertuberation(C2DFVectorfield& io, const C2DTransformation& shift) const
 {
-	return shift.pertuberate(io);
+       return shift.pertuberate(io);
 }
 
 bool C2DFluidRegTimeStep::do_regrid_requested (const C2DTransformation& u, const C2DFVectorfield& v, float delta) const
 {
-	return u.get_jacobian(v, delta) < 0.5;
+       return u.get_jacobian(v, delta) < 0.5;
 }
 
 bool C2DFluidRegTimeStep::do_has_regrid () const
 {
-	return true;
+       return true;
 }
 
-class C2DFluidRegTimeStepPlugin : public C2DRegTimeStepPlugin {
+class C2DFluidRegTimeStepPlugin : public C2DRegTimeStepPlugin
+{
 public:
-	C2DFluidRegTimeStepPlugin();
+       C2DFluidRegTimeStepPlugin();
 private:
-	C2DRegTimeStep *do_create()const;
-	const string do_get_descr()const;
+       C2DRegTimeStep *do_create()const;
+       const string do_get_descr()const;
 };
 
 
 C2DFluidRegTimeStepPlugin::C2DFluidRegTimeStepPlugin():
-	C2DRegTimeStepPlugin("fluid")
+       C2DRegTimeStepPlugin("fluid")
 {
 }
 
 C2DRegTimeStep *C2DFluidRegTimeStepPlugin::do_create()const
 {
-	return new C2DFluidRegTimeStep(get_min_timestep(), get_max_timestep());
+       return new C2DFluidRegTimeStep(get_min_timestep(), get_max_timestep());
 }
 
 const string C2DFluidRegTimeStepPlugin::do_get_descr()const
 {
-	return "a fluidly applied time step operator";
+       return "a fluidly applied time step operator";
 }
 
 extern "C"  EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DFluidRegTimeStepPlugin();
+       return new C2DFluidRegTimeStepPlugin();
 }
 
 

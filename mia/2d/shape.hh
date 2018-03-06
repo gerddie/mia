@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,38 +28,38 @@
 
 NS_MIA_BEGIN
 
-/// 2D shape class, see also TShape 
+/// 2D shape class, see also TShape
 typedef TShape<T2DVector, C2DBitImage> C2DShape;
 
-/// Pointer type of the C2DShape 
+/// Pointer type of the C2DShape
 typedef std::shared_ptr<C2DShape > P2DShape;
 
-/// Base class for Shape generating plug-ins 
+/// Base class for Shape generating plug-ins
 typedef TFactory<C2DShape> C2DShapePlugin;
 
-template <> const char *  const TPluginHandler<TFactory<C2DShape>>::m_help; 
+template <> const char   *const TPluginHandler<TFactory<C2DShape>>::m_help;
 
-/// Plug-in handler for the shape plug-ins 
-typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
+/// Plug-in handler for the shape plug-ins
+typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin>> C2DShapePluginHandler;
 
 extern template class EXPORT_2D TShape<T2DVector, C2DBitImage>;
 
 /**
    Convenience function to produce a shape from a plugin
-   \param shape the description of the shape 
-   \returns the newly created shape 
+   \param shape the description of the shape
+   \returns the newly created shape
 */
 
-P2DShape EXPORT_2D rotate_90_degree(const C2DShape& shape); 
+P2DShape EXPORT_2D rotate_90_degree(const C2DShape& shape);
 
-/// @cond NEVER 
-// Trait to make the shape definition parsable on the command line  
-FACTORY_TRAIT(C2DShapePluginHandler); 
-/// @endcond 
+/// @cond NEVER
+// Trait to make the shape definition parsable on the command line
+FACTORY_TRAIT(C2DShapePluginHandler);
+/// @endcond
 
-inline P2DShape produce_2d_shape(const std::string& descr) 
+inline P2DShape produce_2d_shape(const std::string& descr)
 {
-	return C2DShapePluginHandler::instance().produce(descr); 
+       return C2DShapePluginHandler::instance().produce(descr);
 }
 
 NS_MIA_END

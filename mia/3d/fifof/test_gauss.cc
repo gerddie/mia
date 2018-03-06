@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,36 +25,32 @@
 NS_USE(gauss_2dstack_filter);
 NS_MIA_USE;
 
-namespace bfs=::boost::filesystem;
+namespace bfs =::boost::filesystem;
 
 
 BOOST_FIXTURE_TEST_CASE( test_fifof_gauss, fifof_Fixture )
 {
-	const size_t slices = 4;
-	const C2DBounds size(3,3);
+       const size_t slices = 4;
+       const C2DBounds size(3, 3);
+       float input_data[slices][9] = {
+              {  0, 0, 0, 0, 0, 0, 0, 0, 0},
+              {  0, 0, 0, 0, 0, 0, 0, 0, 0},
+              {  0, 0, 0, 0, 64.0, 0, 0, 0, 0},
+              {  0, 0, 0, 0, 0, 0, 0, 0, 0}
+       };
+       float test_data[slices][9] = {
+              {  0, 0, 0, 0, 0, 0, 0, 0, 0},
+              {  1, 2, 1, 2, 4, 2, 1, 2, 1},
+              {  2, 4, 2, 4, 8, 4, 2, 4, 2},
+              {  1, 2, 1, 2, 4, 2, 1, 2, 1}
+       };
+       C2DGaussFifoFilter f(1);
 
-	float input_data[slices][9] = {
-		{  0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{  0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{  0, 0, 0, 0, 64.0, 0, 0, 0, 0},
-		{  0, 0, 0, 0, 0, 0, 0, 0, 0}
-	};
+       for (size_t i = 0; i < slices; ++i) {
+              m_in_data.push_back(P2DImage(new C2DFImage(size, input_data[i])));
+              m_test_data.push_back(P2DImage(new C2DFImage(size, test_data[i])));
+       }
 
-	float test_data[slices][9] = {
-		{  0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{  1, 2, 1, 2, 4, 2, 1, 2, 1},
-		{  2, 4, 2, 4, 8, 4, 2, 4, 2},
-		{  1, 2, 1, 2, 4, 2, 1, 2, 1}
-	};
-
-	C2DGaussFifoFilter f(1);
-
-
-	for (size_t i = 0; i < slices; ++i) {
-		m_in_data.push_back(P2DImage(new C2DFImage(size, input_data[i])));
-		m_test_data.push_back(P2DImage(new C2DFImage(size, test_data[i])));
-	}
-
-	call_test(f);
+       call_test(f);
 }
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,29 +31,30 @@ NS_MIA_BEGIN
 
 /**
    \ingroup misc
-   \brief A simple class to add loadind and storeing to a map of labels. 
+   \brief A simple class to add loadind and storeing to a map of labels.
 */
-class EXPORT_CORE CLabelMap: public std::map<unsigned int,  unsigned int> {
-public: 
-	CLabelMap() = default; 
+class EXPORT_CORE CLabelMap: public std::map<unsigned int,  unsigned int>
+{
+public:
+       CLabelMap() = default;
 
-	/// standard copy construtor 
-	CLabelMap(const CLabelMap& /*org*/) = default;
-	
-	/**
-	   Constructor to load the map from a file
-	   \param is input stream 
-	 */
-	CLabelMap(std::istream& is); 
+       /// standard copy construtor
+       CLabelMap(const CLabelMap& /*org*/) = default;
 
-	/**
-	   Function to save the map to a file 
-	   \param os  output stream 
-	   \returns true if successfull and false otherwise 
-	 */
-	void save(std::ostream& os); 
+       /**
+          Constructor to load the map from a file
+          \param is input stream
+        */
+       CLabelMap(std::istream& is);
+
+       /**
+          Function to save the map to a file
+          \param os  output stream
+          \returns true if successfull and false otherwise
+        */
+       void save(std::ostream& os);
 };
 
 NS_MIA_END
 
-#endif 
+#endif

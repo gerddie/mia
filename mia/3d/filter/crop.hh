@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,29 +22,31 @@
 
 NS_BEGIN(crop_3d_filter)
 
-class C3DCrop: public mia::C3DFilter {
+class C3DCrop: public mia::C3DFilter
+{
 public:
-	C3DCrop(const mia::C3DBounds& begin, const mia::C3DBounds& end);
+       C3DCrop(const mia::C3DBounds& begin, const mia::C3DBounds& end);
 
-	template <typename T>
-	C3DCrop::result_type operator () (const mia::T3DImage<T>& data) const;
+       template <typename T>
+       C3DCrop::result_type operator () (const mia::T3DImage<T>& data) const;
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	const mia::C3DBounds m_begin;
-	const mia::C3DBounds m_end;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       const mia::C3DBounds m_begin;
+       const mia::C3DBounds m_end;
 };
 
 /* The factory class - this is what the application gets first. This factory class is used to
    create the actual filter object. It also provides some filter testing routines.
 */
-class C3DCropImageFilterFactory: public mia::C3DFilterPlugin {
+class C3DCropImageFilterFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DCropImageFilterFactory();
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C3DCropImageFilterFactory();
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 private:
-	mia::C3DBounds m_begin;
-	mia::C3DBounds m_end;
+       mia::C3DBounds m_begin;
+       mia::C3DBounds m_end;
 };
 
 NS_END

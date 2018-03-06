@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,90 +22,92 @@
 #include <mia/mesh/filter/selectbig.hh>
 #include <mia/mesh/triangle_neighbourhood.hh>
 
-NS_BEGIN(mia_meshfilter_selectbig) 
-using namespace mia; 
-using namespace std; 
+NS_BEGIN(mia_meshfilter_selectbig)
+using namespace mia;
+using namespace std;
 
 
 CSelectBigMeshFilter::CSelectBigMeshFilter()
 {
 }
-	
+
 
 PTriangleMesh CSelectBigMeshFilter::do_filter(const CTriangleMesh& mesh) const
 {
-        CTrianglesWithAdjacentList tri_neigh(mesh); 
-        
-        vector<bool> taken(mesh.triangle_size(), false); 
-        vector<bool> added(mesh.triangle_size(), false); 
-        
-        size_t remaining = mesh.triangle_size(); 
-        
-        vector<unsigned> largest_section; 
-                
-        while (remaining) {
-                vector<unsigned> section; 
-                
-                unsigned int idx = 0; 
-                while (taken[idx]) 
-                        ++idx; 
-        
-                cvdebug() << "Start section at " << idx << "\n"; 
-                queue<unsigned> next_triangle; 
-                next_triangle.push(idx); 
-		added[idx] = true; 
-                while (!next_triangle.empty()) {
-                        unsigned t = next_triangle.front(); 
-                        next_triangle.pop(); 
-                        if (!taken[t]) {
-				cvdebug() << "Add " << t << "\n"; 
-                                section.push_back(t); 
-                                taken[t] = true; 
-                                --remaining; 
-                        }
-                        
-                        auto& ajd =  tri_neigh[t]; 
-                        for ( auto a: ajd) {
-                                if (!taken[a] && !added[a]) {
-                                        next_triangle.push(a); 
-					added[a] = true; 
-				}
-                        }
-                }
-                if (section.size() > largest_section.size()) {
-                        swap(largest_section, section); 
-                        cvdebug() << "got section of size " << largest_section.size() << "\n"; 
-                }
-                if (largest_section.size() > remaining) {
-                        cvdebug() << "Only remain " << remaining << " triangles, stop processing\n"; 
-                        break; 
-                }
-        }
-        
-        return get_sub_mesh(mesh, largest_section);
+       CTrianglesWithAdjacentList tri_neigh(mesh);
+       vector<bool> taken(mesh.triangle_size(), false);
+       vector<bool> added(mesh.triangle_size(), false);
+       size_t remaining = mesh.triangle_size();
+       vector<unsigned> largest_section;
+
+       while (remaining) {
+              vector<unsigned> section;
+              unsigned int idx = 0;
+
+              while (taken[idx])
+                     ++idx;
+
+              cvdebug() << "Start section at " << idx << "\n";
+              queue<unsigned> next_triangle;
+              next_triangle.push(idx);
+              added[idx] = true;
+
+              while (!next_triangle.empty()) {
+                     unsigned t = next_triangle.front();
+                     next_triangle.pop();
+
+                     if (!taken[t]) {
+                            cvdebug() << "Add " << t << "\n";
+                            section.push_back(t);
+                            taken[t] = true;
+                            --remaining;
+                     }
+
+                     auto& ajd =  tri_neigh[t];
+
+                     for ( auto a : ajd) {
+                            if (!taken[a] && !added[a]) {
+                                   next_triangle.push(a);
+                                   added[a] = true;
+                            }
+                     }
+              }
+
+              if (section.size() > largest_section.size()) {
+                     swap(largest_section, section);
+                     cvdebug() << "got section of size " << largest_section.size() << "\n";
+              }
+
+              if (largest_section.size() > remaining) {
+                     cvdebug() << "Only remain " << remaining << " triangles, stop processing\n";
+                     break;
+              }
+       }
+
+       return get_sub_mesh(mesh, largest_section);
 }
 
 CSelectBigMeshFilterPlugin::CSelectBigMeshFilterPlugin():
-	CMeshFilterPlugin("selectbig")
+       CMeshFilterPlugin("selectbig")
 {
 }
 
 mia::CMeshFilter *CSelectBigMeshFilterPlugin::do_create()const
 {
-	return new CSelectBigMeshFilter();
+       return new CSelectBigMeshFilter();
 }
 
 const std::string CSelectBigMeshFilterPlugin::do_get_descr()const
 {
-	return "This filter selects the component with the highest number of triangles from "
-                "a mesh that is actually composed of disconnected components. Components are "
-                "considered to be disconnected if they don't share a common edge (they might "
-                "share a common vertex though"; 
+       return "This filter selects the component with the highest number of triangles from "
+              "a mesh that is actually composed of disconnected components. Components are "
+              "considered to be disconnected if they don't share a common edge (they might "
+              "share a common vertex though";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new CSelectBigMeshFilterPlugin();
+       return new CSelectBigMeshFilterPlugin();
 }
 
 NS_END

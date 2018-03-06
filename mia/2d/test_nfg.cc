@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,71 +31,56 @@ using namespace std;
 
 P2DImage create_test_image()
 {
-	const float init_data[9] = { 0, 1, 0,  6, 4, 0,  4, 9, 4 };
-	C2DBounds size(3,3);
-	return P2DImage(new C2DFImage(size, init_data));
+       const float init_data[9] = { 0, 1, 0,  6, 4, 0,  4, 9, 4 };
+       C2DBounds size(3, 3);
+       return P2DImage(new C2DFImage(size, init_data));
 }
 
 BOOST_AUTO_TEST_CASE(check_nfg_n )
 {
-	P2DImage image = create_test_image();
-
-	const float noise_level = 1.0;
-	C2DFVectorfield ngf = get_nfg_n(*image,  noise_level);
-
-	
-
-	C2DFVector center = ngf(1,1);
-
-	BOOST_CHECK_CLOSE(center.x , -3.0f / sqrtf(26.f), 0.1);
-	BOOST_CHECK_CLOSE(center.y , 4.0f / sqrtf(26.f), 0.1);
-
-	C2DFVectorfield ngf2 = get_nfg_n(*image,  0.0);
-	center = ngf2(1,1);
-
-	BOOST_CHECK_CLOSE(center.x , -3.0f / 5.0f, 0.1);
-	BOOST_CHECK_CLOSE(center.y , 4.0f / 5.0f, 0.1);
+       P2DImage image = create_test_image();
+       const float noise_level = 1.0;
+       C2DFVectorfield ngf = get_nfg_n(*image,  noise_level);
+       C2DFVector center = ngf(1, 1);
+       BOOST_CHECK_CLOSE(center.x, -3.0f / sqrtf(26.f), 0.1);
+       BOOST_CHECK_CLOSE(center.y, 4.0f / sqrtf(26.f), 0.1);
+       C2DFVectorfield ngf2 = get_nfg_n(*image,  0.0);
+       center = ngf2(1, 1);
+       BOOST_CHECK_CLOSE(center.x, -3.0f / 5.0f, 0.1);
+       BOOST_CHECK_CLOSE(center.y, 4.0f / 5.0f, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(check_nfg_j)
 {
-	P2DImage image = create_test_image();
-
-	const float jump_level = get_jump_level(*image, 1.0);
-	C2DFVectorfield ngf = get_nfg_j(*image,  jump_level*jump_level);
-
-	C2DFVector center = ngf(1,1);
-
-	BOOST_CHECK_CLOSE(center.x , -3.0f / sqrtf(26.f), 0.1);
-	BOOST_CHECK_CLOSE(center.y , 4.0f / sqrtf(26.f), 0.1);
-
-	C2DFVectorfield ngf2 = get_nfg_j(*image,  0.0);
-	center = ngf2(1,1);
-
-	BOOST_CHECK_CLOSE(center.x , -3.0f / 5.0f, 0.1);
-	BOOST_CHECK_CLOSE(center.y , 4.0f / 5.0f, 0.1);
+       P2DImage image = create_test_image();
+       const float jump_level = get_jump_level(*image, 1.0);
+       C2DFVectorfield ngf = get_nfg_j(*image,  jump_level * jump_level);
+       C2DFVector center = ngf(1, 1);
+       BOOST_CHECK_CLOSE(center.x, -3.0f / sqrtf(26.f), 0.1);
+       BOOST_CHECK_CLOSE(center.y, 4.0f / sqrtf(26.f), 0.1);
+       C2DFVectorfield ngf2 = get_nfg_j(*image,  0.0);
+       center = ngf2(1, 1);
+       BOOST_CHECK_CLOSE(center.x, -3.0f / 5.0f, 0.1);
+       BOOST_CHECK_CLOSE(center.y, 4.0f / 5.0f, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(check_intensity_jump_level)
 {
-	P2DImage image = create_test_image();
-	const float noise_level = 1.0 ;
-
-	BOOST_CHECK_CLOSE(get_jump_level(*image, noise_level), 1.0f, 0.1);
-
+       P2DImage image = create_test_image();
+       const float noise_level = 1.0 ;
+       BOOST_CHECK_CLOSE(get_jump_level(*image, noise_level), 1.0f, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE(test_get_jump_level2)
 {
-	P2DImage image = create_test_image();
-
-	BOOST_CHECK_CLOSE(get_jump_level(*image), 1.94624734f , 0.1);
+       P2DImage image = create_test_image();
+       BOOST_CHECK_CLOSE(get_jump_level(*image), 1.94624734f, 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( check_get_noise_level )
 {
-	P2DImage image = create_test_image();
-	BOOST_CHECK_CLOSE(get_noise_level(*image),1.94624734f, 0.1);
+       P2DImage image = create_test_image();
+       BOOST_CHECK_CLOSE(get_noise_level(*image), 1.94624734f, 0.1);
 }
 
 

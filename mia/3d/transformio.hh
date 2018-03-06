@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,71 +29,72 @@ NS_MIA_BEGIN
 
 /**
    \ingroup io
-   \brief Base class for the generic IO of transformations 
+   \brief Base class for the generic IO of transformations
 */
-typedef TIOPlugin<C3DTransformation> C3DTransformationIO; 
+typedef TIOPlugin<C3DTransformation> C3DTransformationIO;
 
 extern template class EXPORT_3D TPlugin<C3DTransformation, io_plugin_type>;
 extern template class EXPORT_3D TIOPlugin<C3DTransformation>;
 
 /**
    \ingroup io
-   \brief The non-singleton plug-in handler for 3D transformations 
+   \brief The non-singleton plug-in handler for 3D transformations
 */
 
 
-class EXPORT_3D C3DTransformIOPluginHandlerImpl: public TIOPluginHandler<C3DTransformationIO> {
-protected:  
-	C3DTransformIOPluginHandlerImpl(); 
+class EXPORT_3D C3DTransformIOPluginHandlerImpl: public TIOPluginHandler<C3DTransformationIO>
+{
+protected:
+       C3DTransformIOPluginHandlerImpl();
 };
 
-extern template class EXPORT_3D THandlerSingleton< C3DTransformIOPluginHandlerImpl >; 
+extern template class EXPORT_3D THandlerSingleton< C3DTransformIOPluginHandlerImpl >;
 /**
    \ingroup io
-   \brief Plug-in handler for the transformation IO plug-ins 
+   \brief Plug-in handler for the transformation IO plug-ins
 */
 typedef THandlerSingleton< C3DTransformIOPluginHandlerImpl > C3DTransformationIOPluginHandler;
 
 /**
    \ingroup io
-   \brief data key type for temporary storage of 3D transformations \sa CDatapool 
+   \brief data key type for temporary storage of 3D transformations \sa CDatapool
 */
 typedef C3DTransformationIOPluginHandler::Instance::DataKey C3DTransformationDataKey;
 
 
 /**
-   \ingroup io 
-   \brief convenienance function to load a transformation 
+   \ingroup io
+   \brief convenienance function to load a transformation
    \param file file name to load the transformation from
-   \returns the loaded transformation or an empty std::shared_ptr 
+   \returns the loaded transformation or an empty std::shared_ptr
 */
 inline P3DTransformation load_3dtransform(const std::string& file)
 {
-	return C3DTransformationIOPluginHandler::instance().load(file); 
+       return C3DTransformationIOPluginHandler::instance().load(file);
 }
 
 /**
-   \ingroup io 
-   \brief specialized version to load a transformation 
+   \ingroup io
+   \brief specialized version to load a transformation
    \param file file name to load the transformation from
-   \returns the loaded transformation or an empty std::shared_ptr 
+   \returns the loaded transformation or an empty std::shared_ptr
  */
 template <>
 inline P3DTransformation load_transform<P3DTransformation>(const std::string& file)
 {
-	return load_3dtransform(file); 
+       return load_3dtransform(file);
 }
 
 
 /**
-   \ingroup io 
-   \brief convenienance function to save a transformation 
-   \param file file name to store the transformation in 
+   \ingroup io
+   \brief convenienance function to save a transformation
+   \param file file name to store the transformation in
    \param transform the transformation to be stored
 */
 inline bool save_transform(const std::string& file, const C3DTransformation& transform)
 {
-	return C3DTransformationIOPluginHandler::instance().save(file, transform); 
+       return C3DTransformationIOPluginHandler::instance().save(file, transform);
 }
 
 

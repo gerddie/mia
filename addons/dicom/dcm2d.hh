@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,17 +22,18 @@
 
 NS_BEGIN(IMAGEIO_2D_DICOM)
 
-class CDicom2DImageIOPlugin: public mia::C2DImageIOPlugin {
+class CDicom2DImageIOPlugin: public mia::C2DImageIOPlugin
+{
 public:
-	CDicom2DImageIOPlugin();
-	typedef mia::C2DImageIOPlugin::Data Data;
-	typedef mia::C2DImageIOPlugin::PData PData;
+       CDicom2DImageIOPlugin();
+       typedef mia::C2DImageIOPlugin::Data Data;
+       typedef mia::C2DImageIOPlugin::PData PData;
 
 private:
-	PData do_load(const std::string& fname) const;
-	bool do_save(const std::string& fname, const Data& data) const;
-	const std::string do_get_descr() const;
-	const std::string do_get_preferred_suffix() const; 
+       PData do_load(const std::string& fname) const;
+       bool do_save(const std::string& fname, const Data& data) const;
+       const std::string do_get_descr() const;
+       const std::string do_get_preferred_suffix() const;
 };
 
 NS_END

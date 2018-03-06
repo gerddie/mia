@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,34 +27,36 @@
 
 NS_MIA_BEGIN
 
-template <class Image>       
-class TLabelMapFilter: public TDataFilter<Image> {
-	std::map<size_t, size_t>  m_map;
+template <class Image>
+class TLabelMapFilter: public TDataFilter<Image>
+{
+       std::map<size_t, size_t>  m_map;
 public:
 
-	typedef typename TDataFilter<Image>::result_type result_type; 
-	
-	TLabelMapFilter(const CLabelMap& lmap); 
-	
-	template <class TImage>
-	typename TLabelMapFilter<Image>::result_type operator () (const TImage& data) const ;
+       typedef typename TDataFilter<Image>::result_type result_type;
 
-private: 
-	virtual typename TLabelMapFilter<Image>::result_type do_filter(const Image& image) const;
+       TLabelMapFilter(const CLabelMap& lmap);
+
+       template <class TImage>
+       typename TLabelMapFilter<Image>::result_type operator () (const TImage& data) const ;
+
+private:
+       virtual typename TLabelMapFilter<Image>::result_type do_filter(const Image& image) const;
 
 };
 
-template <class Image> 
-class TLabelMapFilterPlugin: public TDataFilterPlugin<Image> {
-public: 
-	TLabelMapFilterPlugin();
-	virtual TDataFilter<Image> *do_create()const; 
-	virtual const std::string do_get_descr()const; 
+template <class Image>
+class TLabelMapFilterPlugin: public TDataFilterPlugin<Image>
+{
+public:
+       TLabelMapFilterPlugin();
+       virtual TDataFilter<Image> *do_create()const;
+       virtual const std::string do_get_descr()const;
 
-private: 
-	std::string m_map; 
+private:
+       std::string m_map;
 };
 
 NS_END
 
-#endif 
+#endif

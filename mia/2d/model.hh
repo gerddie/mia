@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,48 +29,48 @@
 NS_MIA_BEGIN
 
 /**
-   @cond INTERNAL 
-   @ingroup registration 
+   @cond INTERNAL
+   @ingroup registration
 */
-template <> 
+template <>
 struct RegistrationTraits<2> {
-	typedef C2DImage Data;
-	typedef C2DFVectorfield Force; 
-	typedef C2DFVectorfield Transformation; 
-}; 
-/// @endcond 
+       typedef C2DImage Data;
+       typedef C2DFVectorfield Force;
+       typedef C2DFVectorfield Transformation;
+};
+/// @endcond
 
 /**
-   \ingroup registration 
-   \brief the 2D time-marching registration model 
-   
-   The 2D time-marching registration model 
+   \ingroup registration
+   \brief the 2D time-marching registration model
+
+   The 2D time-marching registration model
 */
 typedef TRegModel<2> C2DRegModel;
 
-/// Pointer type for the registration model 
+/// Pointer type for the registration model
 typedef std::shared_ptr<C2DRegModel > P2DRegModel;
 
 /**
-   @ingroup registration 
-   @brief Plugin for the 2D registration model. 
+   @ingroup registration
+   @brief Plugin for the 2D registration model.
 */
 typedef TFactory<C2DRegModel>  C2DRegModelPlugin;
 
 /**
-   @ingroup registration 
-   @brief Plugin handler for the 2D registration model. 
+   @ingroup registration
+   @brief Plugin handler for the 2D registration model.
 */
 
-template <> const char *  const TPluginHandler<C2DRegModelPlugin>::m_help; 
+template <> const char   *const TPluginHandler<C2DRegModelPlugin>::m_help;
 
-typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> > C2DRegModelPluginHandler;
+typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin>> C2DRegModelPluginHandler;
 
 extern template class EXPORT_2D TRegModel<2>;
 extern template class EXPORT_2D TPlugin<C2DImage, regmodel_type>;
 extern template class EXPORT_2D TFactory<C2DRegModel>;
 extern template class EXPORT_2D TFactoryPluginHandler<C2DRegModelPlugin>;
-extern template class EXPORT_2D THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >; 
+extern template class EXPORT_2D THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin>>;
 
 
 NS_MIA_END

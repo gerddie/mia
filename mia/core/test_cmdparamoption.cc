@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,44 +29,40 @@ using namespace mia;
 using namespace std;
 
 const SProgramDescription general_help {
-	{pdi_group, "Test"}, 
-	{pdi_short, "program tests"}, 
-	{pdi_description, "This program tests the command line parser."}, 
-	{pdi_example_descr, "Example text"}, 
-	{pdi_example_code, "Example command"}
+       {pdi_group, "Test"},
+       {pdi_short, "program tests"},
+       {pdi_description, "This program tests the command line parser."},
+       {pdi_example_descr, "Example text"},
+       {pdi_example_code, "Example command"}
 };
 
 struct CmdlineParserFixture {
-	CmdlineParserFixture():m_level(cverb.get_level()) {
-	}
-	~CmdlineParserFixture() {
-		cverb.set_verbosity(m_level);
-	}
+       CmdlineParserFixture(): m_level(cverb.get_level())
+       {
+       }
+       ~CmdlineParserFixture()
+       {
+              cverb.set_verbosity(m_level);
+       }
 private:
-	vstream::Level m_level;
+       vstream::Level m_level;
 
 };
 
 BOOST_FIXTURE_TEST_CASE( test_string_repeatable_option, CmdlineParserFixture )
 {
-        const char *v1 = "string";
-        const char *v2 = "list"; 
-        
-        vector<string> value;
-	PCmdOption popt(make_repeatable_opt(value, "string", 's', "a string option"));
-
-        popt->set_value(v1);
-        
-        BOOST_CHECK_EQUAL(value.size(), 1u);
-        BOOST_REQUIRE(value.size() == 1);
-        BOOST_CHECK_EQUAL(value[0], v1);
-        
-        popt->set_value(v2);
-        BOOST_CHECK_EQUAL(value.size(), 2u);
-        BOOST_REQUIRE(value.size() == 2);
-        BOOST_CHECK_EQUAL(value[0], v1);
-        BOOST_CHECK_EQUAL(value[1], v2);
-        
-        //BOOST_CHECK_EQUAL(popt->get_value_as_string(), string(str_value));
-	
+       const char *v1 = "string";
+       const char *v2 = "list";
+       vector<string> value;
+       PCmdOption popt(make_repeatable_opt(value, "string", 's', "a string option"));
+       popt->set_value(v1);
+       BOOST_CHECK_EQUAL(value.size(), 1u);
+       BOOST_REQUIRE(value.size() == 1);
+       BOOST_CHECK_EQUAL(value[0], v1);
+       popt->set_value(v2);
+       BOOST_CHECK_EQUAL(value.size(), 2u);
+       BOOST_REQUIRE(value.size() == 2);
+       BOOST_CHECK_EQUAL(value[0], v1);
+       BOOST_CHECK_EQUAL(value[1], v2);
+       //BOOST_CHECK_EQUAL(popt->get_value_as_string(), string(str_value));
 }

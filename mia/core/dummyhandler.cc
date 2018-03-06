@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,24 +28,24 @@ NS_MIA_BEGIN
 using namespace std;
 
 CDummyType::CDummyType(const char *s):
-	string(s)
+       string(s)
 {
 }
 
-CDummyType* CDummyType::clone() const
+CDummyType *CDummyType::clone() const
 {
-	return new CDummyType(c_str());
+       return new CDummyType(c_str());
 }
 
 const char *test_io_data::data_descr = "test";
 
 CTestIOPlugin::CTestIOPlugin(const char *name):
-	TIOPlugin<test_io_data>(name)
+       TIOPlugin<test_io_data>(name)
 {
 }
 
-template<> const char * const 
-TPluginHandler<CTestIOPlugin>::m_help = "These are some dummy plug-ins for IO handler testing."; 
+template<> const char *const
+TPluginHandler<CTestIOPlugin>::m_help = "These are some dummy plug-ins for IO handler testing.";
 
 
 void CDummyIOPluginHandler::check_file_exists(const std::string& MIA_PARAM_UNUSED(fname)) const
@@ -53,9 +53,9 @@ void CDummyIOPluginHandler::check_file_exists(const std::string& MIA_PARAM_UNUSE
 }
 
 
-template class TPlugin<test_io_data,io_plugin_type>; 
+template class TPlugin<test_io_data, io_plugin_type>;
 template class TPluginHandler<CTestIOPlugin>;
-template class TIOPlugin<test_io_data>; 
+template class TIOPlugin<test_io_data>;
 template class TIOPluginHandler<CTestIOPlugin>;
 template class THandlerSingleton<CDummyIOPluginHandler>;
 

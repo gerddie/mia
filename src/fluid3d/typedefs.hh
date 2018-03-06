@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@
 
 #endif
 
-/* Changes to this file 
-   
+/* Changes to this file
+
   $Log$
   Revision 1.4  2005/06/29 13:43:35  wollny
   cg removed and libmona-0.7
@@ -39,13 +39,13 @@
   removed vistaio dependecy
 
   Revision 1.1.1.1  2005/02/21 15:00:37  wollny
-  initial import 
+  initial import
 
   Revision 1.4  2004/04/05 15:24:33  gerddie
   change filter allocation
 
   Revision 1.3  2002/06/20 09:59:49  gerddie
   added cvs-log entry
- 
-  
+
+
 */

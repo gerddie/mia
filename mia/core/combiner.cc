@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,17 +24,16 @@ NS_MIA_BEGIN
 
 CCombinerResult::~CCombinerResult()
 {
-
 }
 
 void CCombinerResult::save(const std::string& fname)const
 {
-	do_save(fname);
+       do_save(fname);
 }
 
 boost::any CCombinerResult::get() const
 {
-	return do_get(); 
+       return do_get();
 }
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,95 +27,103 @@
 
 NS_BEGIN(morph_3dimage_filter)
 
-class C3DDilate: public mia::C3DFilter {
+class C3DDilate: public mia::C3DFilter
+{
 public:
-	C3DDilate(mia::P3DShape shape, bool hint);
+       C3DDilate(mia::P3DShape shape, bool hint);
 
-	template <typename T>
-	typename mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& result)const;
+       template <typename T>
+       typename mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& result)const;
 
 private:
 
-	virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
 
-	mia::P3DShape m_shape;
-	bool m_more_dark;
+       mia::P3DShape m_shape;
+       bool m_more_dark;
 };
 
 
-class C3DErode: public mia::C3DFilter {
+class C3DErode: public mia::C3DFilter
+{
 public:
-	C3DErode(mia::P3DShape shape, bool hint);
+       C3DErode(mia::P3DShape shape, bool hint);
 
-	template <typename T>
-	typename mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& result)const;
+       template <typename T>
+       typename mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& result)const;
 
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
 
-	mia::P3DShape m_shape;
-	bool m_more_dark;
+       mia::P3DShape m_shape;
+       bool m_more_dark;
 };
 
-class C3DOpenClose: public mia::C3DFilter {
+class C3DOpenClose: public mia::C3DFilter
+{
 public:
-	C3DOpenClose(mia::P3DShape shape, bool hint, bool open);
+       C3DOpenClose(mia::P3DShape shape, bool hint, bool open);
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
+       virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
 
-	C3DErode m_erode;
-	C3DDilate m_dilate;
-	bool m_open;
+       C3DErode m_erode;
+       C3DDilate m_dilate;
+       bool m_open;
 };
 
-class C3DMorphFilterFactory: public mia::C3DFilterPlugin {
+class C3DMorphFilterFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DMorphFilterFactory(const char *name);
+       C3DMorphFilterFactory(const char *name);
 
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const = 0;
+       virtual mia::C3DFilter *do_create()const;
+       virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const = 0;
 
-	mia::P3DShape m_shape;
-	std::string m_hint;
+       mia::P3DShape m_shape;
+       std::string m_hint;
 };
 
-class C3DDilateFilterFactory: public C3DMorphFilterFactory {
+class C3DDilateFilterFactory: public C3DMorphFilterFactory
+{
 public:
-	C3DDilateFilterFactory();
+       C3DDilateFilterFactory();
 private:
-	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
+       virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
-	virtual const std::string do_get_descr()const;
-};
-
-
-class C3DErodeFilterFactory: public C3DMorphFilterFactory {
-public:
-	C3DErodeFilterFactory();
-private:
-	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
-
-	virtual const std::string do_get_descr()const;
+       virtual const std::string do_get_descr()const;
 };
 
 
-class C3DOpenFilterFactory: public C3DMorphFilterFactory {
+class C3DErodeFilterFactory: public C3DMorphFilterFactory
+{
 public:
-	C3DOpenFilterFactory();
+       C3DErodeFilterFactory();
 private:
-	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
+       virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
-	virtual const std::string do_get_descr()const;
+       virtual const std::string do_get_descr()const;
 };
 
-class C3DCloseFilterFactory: public C3DMorphFilterFactory {
-public:
-	C3DCloseFilterFactory();
-private:
-	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
-	virtual const std::string do_get_descr()const;
+class C3DOpenFilterFactory: public C3DMorphFilterFactory
+{
+public:
+       C3DOpenFilterFactory();
+private:
+       virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
+
+       virtual const std::string do_get_descr()const;
+};
+
+class C3DCloseFilterFactory: public C3DMorphFilterFactory
+{
+public:
+       C3DCloseFilterFactory();
+private:
+       virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
+
+       virtual const std::string do_get_descr()const;
 };
 
 

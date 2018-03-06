@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,63 +27,68 @@ using namespace std;
 NS_BEGIN(direct_timestep_2d)
 
 C2DDirectRegTimeStep::C2DDirectRegTimeStep(float min, float max):
-	C2DRegTimeStep(min, max)
+       C2DRegTimeStep(min, max)
 {
 }
 
 bool C2DDirectRegTimeStep::do_regrid_requested (const C2DTransformation& /*b*/,
-						const C2DFVectorfield& /*v*/, float /*delta*/) const
+              const C2DFVectorfield& /*v*/, float /*delta*/) const
 {
-	return false;
+       return false;
 }
 
 bool C2DDirectRegTimeStep::do_has_regrid () const
 {
-	return false;
+       return false;
 }
 
 float C2DDirectRegTimeStep::do_calculate_pertuberation(C2DFVectorfield& io, const C2DTransformation& /*shift*/) const
 {
-	// this should be done based of the transformation type
-	C2DFVectorfield::const_iterator i = io.begin();
-	C2DFVectorfield::const_iterator e = io.end();
-	float max_norm = 0.0;
-	while (i != e)  {
-		float n = i->norm2();
-		if (n > max_norm)
-			max_norm = n;
-		++i;
-	}
-	return sqrt(max_norm);
+       // this should be done based of the transformation type
+       C2DFVectorfield::const_iterator i = io.begin();
+       C2DFVectorfield::const_iterator e = io.end();
+       float max_norm = 0.0;
+
+       while (i != e)  {
+              float n = i->norm2();
+
+              if (n > max_norm)
+                     max_norm = n;
+
+              ++i;
+       }
+
+       return sqrt(max_norm);
 }
 
-class C2DDirectRegTimeStepPlugin : public C2DRegTimeStepPlugin {
+class C2DDirectRegTimeStepPlugin : public C2DRegTimeStepPlugin
+{
 public:
-	C2DDirectRegTimeStepPlugin();
+       C2DDirectRegTimeStepPlugin();
 private:
-	C2DRegTimeStep *do_create()const;
-	const string do_get_descr()const;
+       C2DRegTimeStep *do_create()const;
+       const string do_get_descr()const;
 };
 
 
 C2DDirectRegTimeStepPlugin::C2DDirectRegTimeStepPlugin():
-	C2DRegTimeStepPlugin("direct")
+       C2DRegTimeStepPlugin("direct")
 {
 }
 
 C2DRegTimeStep *C2DDirectRegTimeStepPlugin::do_create()const
 {
-	return new C2DDirectRegTimeStep(get_min_timestep(), get_max_timestep());
+       return new C2DDirectRegTimeStep(get_min_timestep(), get_max_timestep());
 }
 
 const string C2DDirectRegTimeStepPlugin::do_get_descr()const
 {
-	return "a directly applied time step operator";
+       return "a directly applied time step operator";
 }
 
 extern "C"  EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DDirectRegTimeStepPlugin();
+       return new C2DDirectRegTimeStepPlugin();
 }
 
 NS_END

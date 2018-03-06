@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -46,4 +46,4 @@
 		static value_type get(gsl_vector_type *v, size_t i) {	\
 			gsl_vector_##TYPE##_get(v,i);			\
 		}							\
-	}; 
+	};

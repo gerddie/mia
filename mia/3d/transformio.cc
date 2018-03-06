@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,13 +30,12 @@ NS_MIA_BEGIN
 
 C3DTransformIOPluginHandlerImpl::C3DTransformIOPluginHandlerImpl()
 {
-	C3DFVectorTranslator::register_for(C3DTransformation::input_spacing_attr);
-	C3DFVectorTranslator::register_for(C3DTransformation::output_spacing_attr);
-
+       C3DFVectorTranslator::register_for(C3DTransformation::input_spacing_attr);
+       C3DFVectorTranslator::register_for(C3DTransformation::output_spacing_attr);
 }
 
-template <> const char *  const 
-	TPluginHandler<C3DTransformationIO>::m_help =  
+template <> const char   *const
+TPluginHandler<C3DTransformationIO>::m_help =
        "These plug-ins implement support for loading and saving 3D transformations to various file types.";
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -37,38 +37,39 @@ NS_MIA_BEGIN
    The specialization must implement the do_put_buffer method, which writes out
    the characters from \a begin to \a end using a function of the output device.
 */
-class EXPORT_CORE streamredir: public std::streambuf   {
+class EXPORT_CORE streamredir: public std::streambuf
+{
 public:
-	streamredir();
-	virtual ~streamredir();
+       streamredir();
+       virtual ~streamredir();
 protected:
-	
-	/**
-	   implement the overflow function to force output of buffer 
-	   @param c next character to write 
-	   @returns 0 
-	 */
-	int overflow(int c);
-	/**
-	   Force writing of buffer. 
-	   @returns 0 
-	 */
-	int sync();
 
-	/**
-	   implement function to handle \a newline and \a return properly 
-	   @param s string to write 
-	   @param n number of bytes in string 
-	   @return number of chars written 
-	*/
-	std::streamsize xsputn ( const char * s, std::streamsize n );
+       /**
+          implement the overflow function to force output of buffer
+          @param c next character to write
+          @returns 0
+        */
+       int overflow(int c);
+       /**
+          Force writing of buffer.
+          @returns 0
+        */
+       int sync();
+
+       /**
+          implement function to handle \a newline and \a return properly
+          @param s string to write
+          @param n number of bytes in string
+          @return number of chars written
+       */
+       std::streamsize xsputn ( const char *s, std::streamsize n );
 private:
-	void put_buffer(void);
-	void put_char(int);
+       void put_buffer(void);
+       void put_char(int);
 
-	/// this function needs to be overwritten in order to write to a specific output 
-	virtual void do_put_buffer(const char *begin, const char *end) = 0;
-	char *m_begin;
+       /// this function needs to be overwritten in order to write to a specific output
+       virtual void do_put_buffer(const char *begin, const char *end) = 0;
+       char *m_begin;
 };
 
 NS_MIA_END

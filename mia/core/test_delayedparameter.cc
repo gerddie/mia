@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -39,38 +39,32 @@ using namespace boost;
 
 BOOST_AUTO_TEST_CASE( test_pool_inout )
 {
-	TDelayedParameter<int> a("code");
+       TDelayedParameter<int> a("code");
+       BOOST_CHECK(a.key_is_valid());
+       BOOST_CHECK(!a.pool_has_key());
+       CDatapool::instance().add("code", 10);
+       BOOST_CHECK(a.pool_has_key());
 
-	BOOST_CHECK(a.key_is_valid()); 
-
-	BOOST_CHECK(!a.pool_has_key()); 
-
-	CDatapool::instance().add("code", 10);
-
-	BOOST_CHECK(a.pool_has_key()); 
-
-	try {
-		BOOST_CHECK_EQUAL(10, a.get());
-	}
-	catch (std::exception& x) {
-		BOOST_FAIL(x.what());
-	}
+       try {
+              BOOST_CHECK_EQUAL(10, a.get());
+       } catch (std::exception& x) {
+              BOOST_FAIL(x.what());
+       }
 }
 
 
 BOOST_AUTO_TEST_CASE( test_is_invalid )
 {
-	TDelayedParameter<int> a;
-	BOOST_CHECK(!a.key_is_valid()); 
+       TDelayedParameter<int> a;
+       BOOST_CHECK(!a.key_is_valid());
 }
 
 
 BOOST_AUTO_TEST_CASE( test_pool_type_mismatch )
 {
-	TDelayedParameter<int> a("code");
-	CDatapool::instance().add("code", 10.1);
-	
-	BOOST_CHECK_THROW(a.get(), std::bad_cast); 
+       TDelayedParameter<int> a("code");
+       CDatapool::instance().add("code", 10.1);
+       BOOST_CHECK_THROW(a.get(), std::bad_cast);
 }
 
 

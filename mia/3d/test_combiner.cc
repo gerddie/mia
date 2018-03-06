@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,33 +26,31 @@
 #include <mia/core/spacial_kernel.hh>
 
 NS_MIA_USE
-using namespace std; 
-namespace bfs=::boost::filesystem; 
+using namespace std;
+namespace bfs =::boost::filesystem;
 
 static void setup_filter_search_path()
 {
-	list< bfs::path> searchpath; 
-	if (bfs::path::default_name_check_writable())
-		bfs::path::default_name_check(bfs::portable_posix_name); 
+       list< bfs::path> searchpath;
 
-	searchpath.push_back(bfs::path("3d") / bfs::path("combiner")); 
+       if (bfs::path::default_name_check_writable())
+              bfs::path::default_name_check(bfs::portable_posix_name);
 
-
-	C3DImageCombinerPluginHandler::set_search_path(searchpath);
+       searchpath.push_back(bfs::path("3d") / bfs::path("combiner"));
+       C3DImageCombinerPluginHandler::set_search_path(searchpath);
 }
 
-static void test_3dcombiner(const C3DImageCombinerPluginHandler::value_type& i) 
+static void test_3dcombiner(const C3DImageCombinerPluginHandler::value_type& i)
 {
-	BOOST_CHECK_MESSAGE(i.second->test(true), i.second->get_long_name()); 
+       BOOST_CHECK_MESSAGE(i.second->test(true), i.second->get_long_name());
 }
 
 
-void add_3dcombiner_plugin_tests( boost::unit_test::test_suite* suite)
+void add_3dcombiner_plugin_tests( boost::unit_test::test_suite *suite)
 {
-	setup_filter_search_path(); 
-
-	suite->add( BOOST_PARAM_TEST_CASE(&test_3dcombiner, 
-					  C3DImageCombinerPluginHandler::instance().begin(), 
-					  C3DImageCombinerPluginHandler::instance().end()
-			    )); 
+       setup_filter_search_path();
+       suite->add( BOOST_PARAM_TEST_CASE(&test_3dcombiner,
+                                         C3DImageCombinerPluginHandler::instance().begin(),
+                                         C3DImageCombinerPluginHandler::instance().end()
+                                        ));
 }

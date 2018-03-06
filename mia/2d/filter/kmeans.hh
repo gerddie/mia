@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,25 +29,27 @@
 
 NS_BEGIN( kmeans_2dimage_filter)
 
-class C2DKMeans : public mia::C2DFilter {
+class C2DKMeans : public mia::C2DFilter
+{
 public:
-	C2DKMeans(size_t classes);
+       C2DKMeans(size_t classes);
 
-	template <class T>
-	typename C2DKMeans::result_type operator () (const mia::T2DImage<T>& data) const ;
+       template <class T>
+       typename C2DKMeans::result_type operator () (const mia::T2DImage<T>& data) const ;
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	size_t m_classes;
+       size_t m_classes;
 };
 
-class C2DKMeansFilterPluginFactory: public mia::C2DFilterPlugin {
+class C2DKMeansFilterPluginFactory: public mia::C2DFilterPlugin
+{
 public:
-	C2DKMeansFilterPluginFactory();
+       C2DKMeansFilterPluginFactory();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	int m_classes;
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+       int m_classes;
 };
 
 NS_END

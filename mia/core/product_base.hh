@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,40 +28,41 @@ NS_MIA_BEGIN
 
 /**
    \ingroup plugin
-   
-   \brief The base class for all plug-in created object. 
-   
-   Base of all objects that are created from within plug-ins using a factory method. 
+
+   \brief The base class for all plug-in created object.
+
+   Base of all objects that are created from within plug-ins using a factory method.
    It also holds the creator string for the instance of the created object.
-   \remark The pointer to the modules should take care that the module is valid until the 
-   object is destroyed. 
+   \remark The pointer to the modules should take care that the module is valid until the
+   object is destroyed.
  */
 
-class EXPORT_CORE CProductBase: public CPropertyFlagHolder {
+class EXPORT_CORE CProductBase: public CPropertyFlagHolder
+{
 public:
-	/**
-	   Set the string used to create this object using its factory. 
-	   \param init init string 
-	 */
-	void set_init_string(const char *init); 
+       /**
+          Set the string used to create this object using its factory.
+          \param init init string
+        */
+       void set_init_string(const char *init);
 
-	/**
-	   \returns the init string used to create this instance 
-	 */
-	const char *get_init_string() const; 
-	
-	/**
-	   Set the plugin module which holds the code for this object 
-	   \param module
-	   \remark In a perfect world, the module could be unloaded after 
-	   all instances of the class using its code are destroyed. 
-	   Unfortunately, the destructor still required the code after 
-	   dereferencing the module. 
-	*/
-	void set_module(PPluginModule module);
+       /**
+          \returns the init string used to create this instance
+        */
+       const char *get_init_string() const;
+
+       /**
+          Set the plugin module which holds the code for this object
+          \param module
+          \remark In a perfect world, the module could be unloaded after
+          all instances of the class using its code are destroyed.
+          Unfortunately, the destructor still required the code after
+          dereferencing the module.
+       */
+       void set_module(PPluginModule module);
 private:
-	PPluginModule m_module;
-	std::string m_init_string; 
+       PPluginModule m_module;
+       std::string m_init_string;
 };
 NS_MIA_END
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -37,82 +37,84 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-        {pdi_group, "3D image registration"}, 
-	{pdi_short, "Non-linear registration of  3D images."}, 
-	{pdi_description, "This program implements 3D gray scale image registration "
-	"by optimizing a dense vector field that defines a transformation for each pixel. "
-	"The input images must be of the same size and dimensions. "
-	"The registration can be achieved by optimizing a combined cost function. "}
-}; 
-	
+       {pdi_group, "3D image registration"},
+       {pdi_short, "Non-linear registration of  3D images."},
+       {
+              pdi_description, "This program implements 3D gray scale image registration "
+              "by optimizing a dense vector field that defines a transformation for each pixel. "
+              "The input images must be of the same size and dimensions. "
+              "The registration can be achieved by optimizing a combined cost function. "
+       }
+};
+
 // set op the command line parameters and run the registration
 int do_main(int argc, char **argv)
 {
+       CCmdOptionList options(g_description);
+       string out_filename;
+       string regmodel("navier");
+       string timestep("fluid");
+       int start_size = 16;
+       EInterpolation interpolator = ip_bspline3;
+       int max_iter = 200;
+       float epsilon = 0.01;
+       options.add(make_opt( out_filename, "out-file", 'o', "output vector field",
+                             CCmdOptionFlags::required_output));
+       options.add(make_opt( regmodel, "regmodel", 'm', "registration model"));
+       options.add(make_opt( timestep, "timestep", 't', "time setp"));
+       options.add(make_opt( start_size, "mgsize", 's', "multigrid start size"));
+       options.add(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations"));
+       options.add(make_opt( interpolator, GInterpolatorTable, "interpolator", 'p',
+                             "image interpolator"));
+       options.add(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration "
+                             "at a multi-grid level"));
+       options.parse(argc, argv, true);
 
-	CCmdOptionList options(g_description);
-	string out_filename;
-	string regmodel("navier");
-	string timestep("fluid");
-	int start_size = 16;
-	EInterpolation interpolator = ip_bspline3;
-	int max_iter = 200;
-	float epsilon = 0.01;
+       if (out_filename.empty()) {
+              cvfatal() << "No output filename given\n";
+              return EXIT_FAILURE;
+       }
 
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", 
-			      CCmdOptionFlags::required_output));
-	options.add(make_opt( regmodel, "regmodel", 'm', "registration model"));
-	options.add(make_opt( timestep, "timestep", 't', "time setp"));
-	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size"));
-	options.add(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator"));
-	options.add(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration "
-				    "at a multi-grid level"));
+       vector<const char *> cost_chain = options.get_remaining();
 
-	options.parse(argc, argv, true);
+       if (cost_chain.empty()) {
+              cvfatal() << "require cost functions given as extra parameters\n";
+              return EXIT_FAILURE;
+       }
 
-	if (out_filename.empty()) {
-		cvfatal() << "No output filename given\n";
-		return EXIT_FAILURE;
-	}
+       P3DRegModel model = C3DRegModelPluginHandler::instance().produce(regmodel.c_str());
+       P3DRegTimeStep time_step = C3DRegTimeStepPluginHandler::instance().produce(timestep.c_str());
 
-	vector<const char *> cost_chain = options.get_remaining();
+       if (!model || !time_step)
+              return EXIT_FAILURE;
 
-	if (cost_chain.empty()) {
-		cvfatal() << "require cost functions given as extra parameters\n";
-		return EXIT_FAILURE;
-	}
+       std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(interpolator));
 
-	P3DRegModel model = C3DRegModelPluginHandler::instance().produce(regmodel.c_str());
-	P3DRegTimeStep time_step = C3DRegTimeStepPluginHandler::instance().produce(timestep.c_str());
+       if (!ipf)
+              throw invalid_argument("unknown interpolator requested");
 
-	if (!model || !time_step)
-		return EXIT_FAILURE;
+       C3DImageFatCostList cost_list;
 
+       for (vector<const char *>::const_iterator i = cost_chain.begin(); i != cost_chain.end(); ++i) {
+              P3DImageFatCost c = C3DFatImageCostPluginHandler::instance().produce(*i);
 
-	std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(interpolator));
-	if (!ipf)
-		throw invalid_argument("unknown interpolator requested");
+              if (c)
+                     cost_list.push_back(c);
+       }
 
-	C3DImageFatCostList cost_list;
-	for(vector<const char *>::const_iterator i = cost_chain.begin(); i != cost_chain.end(); ++i) {
-		P3DImageFatCost c = C3DFatImageCostPluginHandler::instance().produce(*i);
-		if (c)
-			cost_list.push_back(c);
-	}
-	if (cost_list.empty()) {
-		cerr << "Could not create a single cost function\n";
-		return EXIT_FAILURE;
-	}
+       if (cost_list.empty()) {
+              cerr << "Could not create a single cost function\n";
+              return EXIT_FAILURE;
+       }
 
-	C3DMultiImageRegister reg(start_size, max_iter, *model,  *time_step, epsilon);
+       C3DMultiImageRegister reg(start_size, max_iter, *model,  *time_step, epsilon);
 
-	if (!reg(cost_list, ipf)->save(out_filename, "")) {
-		cerr << "Unable to save result vector field to " << out_filename << "\n";
-		return EXIT_FAILURE;
-	}
+       if (!reg(cost_list, ipf)->save(out_filename, "")) {
+              cerr << "Unable to save result vector field to " << out_filename << "\n";
+              return EXIT_FAILURE;
+       }
 
-	return EXIT_SUCCESS;
+       return EXIT_SUCCESS;
 }
 
 

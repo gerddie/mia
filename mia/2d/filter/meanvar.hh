@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,30 +26,32 @@
 
 NS_BEGIN(meanvar_2dimage_filter);
 
-class C2DMeanVar: public mia::C2DFilter {
+class C2DMeanVar: public mia::C2DFilter
+{
 public:
-	C2DMeanVar(unsigned  hw, double thresh, const std::string& m_varfilenme);
+       C2DMeanVar(unsigned  hw, double thresh, const std::string& m_varfilenme);
 
-	template <typename T>
-	C2DMeanVar::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <typename T>
+       C2DMeanVar::result_type operator () (const mia::T2DImage<T>& data) const;
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	unsigned m_hw;
-	double m_thresh;
-	std::string m_varfilename; 
+       unsigned m_hw;
+       double m_thresh;
+       std::string m_varfilename;
 };
 
 
-class C2DMeanVarImageFilterFactory: public mia::C2DFilterPlugin {
+class C2DMeanVarImageFilterFactory: public mia::C2DFilterPlugin
+{
 public:
-	C2DMeanVarImageFilterFactory();
+       C2DMeanVarImageFilterFactory();
 private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr() const;
-	unsigned m_hw;
-	double m_thresh;
-	std::string m_varfilename;
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr() const;
+       unsigned m_hw;
+       double m_thresh;
+       std::string m_varfilename;
 };
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,14 +23,14 @@ NS_MIA_USE
 
 int main(int argc, const char **args)
 {
-	if (argc > 1) {
-		CCmdOptionList olist; 
-		float value = 10; 
-		std::string s("fun"); 
-		olist.push_back(make_opt(value, "float",'f',  "a really long help string to test the line break of the output", "float")); 
-		olist.push_back(make_opt(s, "string",'s',  "a string option", "string")); 
+       if (argc > 1) {
+              CCmdOptionList olist;
+              float value = 10;
+              std::string s("fun");
+              olist.push_back(make_opt(value, "float", 'f',  "a really long help string to test the line break of the output", "float"));
+              olist.push_back(make_opt(s, "string", 's',  "a string option", "string"));
+              olist.parse(argc, args);
+       }
 
-		olist.parse(argc, args); 
-	}
-	return 0; 
+       return 0;
 }

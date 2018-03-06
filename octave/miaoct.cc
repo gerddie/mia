@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -19,13 +19,13 @@
  */
 
 #include <octave/oct.h>
-     
+
 DEFUN_DLD (mia, args, nargout,
-	   "Hello World Help String")
+           "Hello World Help String")
 {
-	int nargin = args.length ();
-	octave_stdout << "Hello World has " << nargin 
-		      << " input arguments and "
-		      << nargout << " output arguments.\n";
-	return octave_value_list ();
+       int nargin = args.length ();
+       octave_stdout << "Hello World has " << nargin
+                     << " input arguments and "
+                     << nargout << " output arguments.\n";
+       return octave_value_list ();
 }

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,44 +28,45 @@
 NS_MIA_BEGIN
 
 /**
-   @cond NOT_EXPOSED 
-   
-   \ingroup registration 
-   \brief This class implements a 1D histogram using Parzen Windows. 
+   @cond NOT_EXPOSED
 
-   This class uses NFFT to implement the Parzen windows probability estimation. 
-   Input samples are given once with a fixed operation range and the number 
-   of output samples used to interpolate the histogram 
-   Then the histogram values itself are evaluated using cubic B-Splines. 
-   
-   @remark Usually this class is not compiled in 
-   
+   \ingroup registration
+   \brief This class implements a 1D histogram using Parzen Windows.
+
+   This class uses NFFT to implement the Parzen windows probability estimation.
+   Input samples are given once with a fixed operation range and the number
+   of output samples used to interpolate the histogram
+   Then the histogram values itself are evaluated using cubic B-Splines.
+
+   @remark Usually this class is not compiled in
+
  */
 
-class CParzenWindowHistogram {
-public: 
-	/**
-	   Constructor: input samples are clamped to the input range 
-	   \param low lower bound of the input sample range 
-	   \param high higher bound of the input sample range 
-	   \param output_knots number of knodes used for the histogram 
-	   \param samples input samples 
-	   \todo some kind of shared object should be craated to instanciate only 
-	     one fastsum plan that is reused for multiple histograms
-	 */
-	CParzenWindowHistogram(double low, double high, size_t output_knots, const std::vector<double>& samples); 
+class CParzenWindowHistogram
+{
+public:
+       /**
+          Constructor: input samples are clamped to the input range
+          \param low lower bound of the input sample range
+          \param high higher bound of the input sample range
+          \param output_knots number of knodes used for the histogram
+          \param samples input samples
+          \todo some kind of shared object should be craated to instanciate only
+            one fastsum plan that is reused for multiple histograms
+        */
+       CParzenWindowHistogram(double low, double high, size_t output_knots, const std::vector<double>& samples);
 
-	
-	~CParzenWindowHistogram(); 
 
-	/// \returns the probability of intensity x 
-	double operator [] (double x) const; 
+       ~CParzenWindowHistogram();
 
-	/// \returns the derivative of probability of intensity x 
-	double derivative (double x) const; 
-private: 
-	struct CParzenWindowHistogramImpl *impl; 
-}; 
+       /// \returns the probability of intensity x
+       double operator [] (double x) const;
+
+       /// \returns the derivative of probability of intensity x
+       double derivative (double x) const;
+private:
+       struct CParzenWindowHistogramImpl *impl;
+};
 
 /// @endcond
 

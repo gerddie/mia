@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,69 +24,60 @@
 
 #include <boost/mpl/vector.hpp>
 #include <boost/test/test_case_template.hpp>
-namespace bmpl=boost::mpl;
+namespace bmpl = boost::mpl;
 
 
-NS_USE(sort_label_2dimage_filter); 
+NS_USE(sort_label_2dimage_filter);
 
 NS_MIA_USE
 using namespace std;
 
 BOOST_FIXTURE_TEST_CASE(test_sort_ubyte, TFiltertestFixture<T2DImage>)
 {
-	// 5 - 5   1 
-	// 4 - 3   2
-	// 3 - 1   5
-	// 2 - 2   4
-	// 1 - 2   3
-	// 9 - 1   6
-	
-	const unsigned char src[15] =   { 0, 5, 5, 5, 5, 5, 4, 4, 4, 1, 1, 2, 2, 9, 3};
-	const unsigned char ref[15] =   { 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3 ,4, 4, 6, 5};
-
-	C2DBounds size(3,5);
-
-	auto filter = BOOST_TEST_create_from_plugin<CSortLabelFilterPlugin>("sort-label"); 
-	
-	run(size, src, size, ref, *filter); 
+       // 5 - 5   1
+       // 4 - 3   2
+       // 3 - 1   5
+       // 2 - 2   4
+       // 1 - 2   3
+       // 9 - 1   6
+       const unsigned char src[15] =   { 0, 5, 5, 5, 5, 5, 4, 4, 4, 1, 1, 2, 2, 9, 3};
+       const unsigned char ref[15] =   { 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 6, 5};
+       C2DBounds size(3, 5);
+       auto filter = BOOST_TEST_create_from_plugin<CSortLabelFilterPlugin>("sort-label");
+       run(size, src, size, ref, *filter);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_sort_ushort, TFiltertestFixture<T2DImage>)
 {
-	// 5 - 5   1 
-	// 4 - 3   2
-	// 3 - 1   5
-	// 2 - 2   4
-	// 1 - 2   3
-	// 9 - 1   6
-	
-	const unsigned short src[15] =   { 0, 5, 5, 5, 5, 5, 4, 4, 4, 1, 1, 2, 2, 9, 3};
-	const unsigned short ref[15] =   { 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3 ,4, 4, 6, 5};
-
-	C2DBounds size(3,5);
-
-	auto filter = BOOST_TEST_create_from_plugin<CSortLabelFilterPlugin>("sort-label"); 
-	
-	run(size, src, size, ref, *filter); 
+       // 5 - 5   1
+       // 4 - 3   2
+       // 3 - 1   5
+       // 2 - 2   4
+       // 1 - 2   3
+       // 9 - 1   6
+       const unsigned short src[15] =   { 0, 5, 5, 5, 5, 5, 4, 4, 4, 1, 1, 2, 2, 9, 3};
+       const unsigned short ref[15] =   { 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 6, 5};
+       C2DBounds size(3, 5);
+       auto filter = BOOST_TEST_create_from_plugin<CSortLabelFilterPlugin>("sort-label");
+       run(size, src, size, ref, *filter);
 }
 
 
-typedef bmpl::vector<signed char,
-		     signed short,
-		     signed int,
-		     unsigned int,
-		     float,
-		     double
+typedef bmpl::vector < signed char,
+        signed short,
+        signed int,
+        unsigned int,
+        float,
+        double
 #ifdef HAVE_INT64
-		     ,mia_int64,
-		     mia_uint64
+        , mia_int64,
+        mia_uint64
 #endif
-		     > __PixelTypes;
+        > __PixelTypes;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_sort_unsupported, T, __PixelTypes)
 {
-	CSortLabel sortlabel;
-	C2DBounds size(1,1);
-
-	BOOST_CHECK_THROW(sortlabel.filter(T2DImage<T>(size)), invalid_argument); 
+       CSortLabel sortlabel;
+       C2DBounds size(1, 1);
+       BOOST_CHECK_THROW(sortlabel.filter(T2DImage<T>(size)), invalid_argument);
 }

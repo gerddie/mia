@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,34 +21,36 @@
 #include <mia/mesh/filter.hh>
 
 
-NS_BEGIN(mia_meshfilter_deltribynormal) 
+NS_BEGIN(mia_meshfilter_deltribynormal)
 
-using mia::C3DFVector; 
-using mia::PTriangleMesh; 
-using mia::CTriangleMesh; 
-
-
-class CDeleteTriangleByNormalMeshFilter: public mia::CMeshFilter {
-public: 
-	CDeleteTriangleByNormalMeshFilter(const C3DFVector& point_direction, float angle); 
-private: 
-	PTriangleMesh do_filter(const CTriangleMesh& image) const; 
-	
-	C3DFVector m_point_direction; 
-	float m_test_angle_cos; 
-}; 
+using mia::C3DFVector;
+using mia::PTriangleMesh;
+using mia::CTriangleMesh;
 
 
-class CDeleteTriangleByNormalMeshFilterPlugin: public mia::CMeshFilterPlugin {
-public: 
-	CDeleteTriangleByNormalMeshFilterPlugin(); 
+class CDeleteTriangleByNormalMeshFilter: public mia::CMeshFilter
+{
+public:
+       CDeleteTriangleByNormalMeshFilter(const C3DFVector& point_direction, float angle);
+private:
+       PTriangleMesh do_filter(const CTriangleMesh& image) const;
 
-	virtual mia::CMeshFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C3DFVector m_point_direction;
+       float m_test_angle_cos;
+};
 
-private: 
-	C3DFVector m_point_direction; 
-	float m_tolerance_angle; 
-}; 
+
+class CDeleteTriangleByNormalMeshFilterPlugin: public mia::CMeshFilterPlugin
+{
+public:
+       CDeleteTriangleByNormalMeshFilterPlugin();
+
+       virtual mia::CMeshFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+
+private:
+       C3DFVector m_point_direction;
+       float m_tolerance_angle;
+};
 
 NS_END

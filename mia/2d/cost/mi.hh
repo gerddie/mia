@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 NS_BEGIN(NS)
 
 typedef TMIImageCost<mia::C2DImageCost> C2DMIImageCost;
-typedef TMIImageCostPlugin<mia::C2DImageCostPlugin, mia::C2DImageCost> C2DMICostPlugin; 
+typedef TMIImageCostPlugin<mia::C2DImageCostPlugin, mia::C2DImageCost> C2DMICostPlugin;
 
 NS_END
 

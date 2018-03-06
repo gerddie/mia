@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,8 +29,8 @@
 NS_MIA_BEGIN
 
 /**
-   @ingroup perf 
-   @brief 3D image series for ICA 
+   @ingroup perf
+   @brief 3D image series for ICA
 */
 typedef TDataSeriesICA<C3DFImage>  C3DImageSeriesICA;
 

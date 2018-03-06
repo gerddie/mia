@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,28 +28,30 @@
 
 NS_BEGIN(NS)
 
-class CLNCC3DImageCost: public mia::C3DImageCost {
-public: 	
-	typedef mia::C3DImageCost::Data Data; 
+class CLNCC3DImageCost: public mia::C3DImageCost
+{
+public:
+       typedef mia::C3DImageCost::Data Data;
 
-	CLNCC3DImageCost(int hw);
-private: 
-	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const; 
+       CLNCC3DImageCost(int hw);
+private:
+       virtual double do_value(const Data& a, const Data& b) const;
+       virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const;
 
-        int m_hwidth;
-	mia::P3DFilter m_copy_to_double; 
+       int m_hwidth;
+       mia::P3DFilter m_copy_to_double;
 };
 
-class CLNCC3DImageCostPlugin: public mia::C3DImageCostPlugin {
-public: 
-	CLNCC3DImageCostPlugin();
-	mia::C3DImageCost *do_create() const;
-private: 
-	const std::string do_get_descr() const; 
-        unsigned int m_hw; 
+class CLNCC3DImageCostPlugin: public mia::C3DImageCostPlugin
+{
+public:
+       CLNCC3DImageCostPlugin();
+       mia::C3DImageCost *do_create() const;
+private:
+       const std::string do_get_descr() const;
+       unsigned int m_hw;
 };
 
 NS_END
 
-#endif 
+#endif

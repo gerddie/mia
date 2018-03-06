@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,40 +22,39 @@
 #include <cmath>
 
 #include <mia/2d/angle.hh>
-using namespace mia; 
+using namespace mia;
 
 BOOST_AUTO_TEST_CASE( test_some_angles )
 {
-	C2DFVector s(0.0, 0.0); 
-	C2DFVector a(1.0, 0.0); 
-	
-	for (size_t i= 0; i < 20; ++i) {
-		const double ang = i * 2 * M_PI / 180.0; 
-		C2DFVector b(cos(ang), sin(ang)); 
-		BOOST_CHECK_CLOSE(angle(a, b, s), ang, 0.1); 
-	}
+       C2DFVector s(0.0, 0.0);
+       C2DFVector a(1.0, 0.0);
+
+       for (size_t i = 0; i < 20; ++i) {
+              const double ang = i * 2 * M_PI / 180.0;
+              C2DFVector b(cos(ang), sin(ang));
+              BOOST_CHECK_CLOSE(angle(a, b, s), ang, 0.1);
+       }
 }
 
 BOOST_AUTO_TEST_CASE( test_some_other_angles )
 {
-	C2DFVector s(1.0, 1.0); 
-	C2DFVector a(2.0, 1.0); 
-	
-	for (size_t i= 0; i < 20; ++i) {
-		const double ang = i * 2 * M_PI / 180.0; 
-		C2DFVector b(cos(ang) + s.x, sin(ang) + s.y) ; 
-		BOOST_CHECK_CLOSE(angle(a, b, s), ang, 0.1); 
-	}
+       C2DFVector s(1.0, 1.0);
+       C2DFVector a(2.0, 1.0);
+
+       for (size_t i = 0; i < 20; ++i) {
+              const double ang = i * 2 * M_PI / 180.0;
+              C2DFVector b(cos(ang) + s.x, sin(ang) + s.y) ;
+              BOOST_CHECK_CLOSE(angle(a, b, s), ang, 0.1);
+       }
 }
 
 BOOST_AUTO_TEST_CASE( test_sero_length )
 {
-	C2DFVector s(1.0, 1.0); 
-	C2DFVector a(2.0, 1.0); 
-	C2DFVector b(2.0, 2.0); 
-	
-	BOOST_CHECK_EQUAL(angle(a, b, a), 0.0); 
-	BOOST_CHECK_EQUAL(angle(a, b, b), 0.0); 
+       C2DFVector s(1.0, 1.0);
+       C2DFVector a(2.0, 1.0);
+       C2DFVector b(2.0, 2.0);
+       BOOST_CHECK_EQUAL(angle(a, b, a), 0.0);
+       BOOST_CHECK_EQUAL(angle(a, b, b), 0.0);
 }
 
 

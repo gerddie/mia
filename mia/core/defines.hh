@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -19,8 +19,8 @@
  */
 
 /**
-   @file core/defines.hh 
-   This file provides some defines to make life easier 
+   @file core/defines.hh
+   This file provides some defines to make life easier
 */
 
 
@@ -29,82 +29,82 @@
 
 #include <mia/core/gsl_defines.hh>
 
-/// conveniance define to start the mia namespace 
+/// conveniance define to start the mia namespace
 #define NS_MIA_BEGIN namespace mia {
 
-/// conveniance define to end the mia namespace 
+/// conveniance define to end the mia namespace
 #define NS_MIA_END }
 
-/// conveniance define to use the mia namespace 
-#define NS_MIA_USE using namespace mia; 
+/// conveniance define to use the mia namespace
+#define NS_MIA_USE using namespace mia;
 
-/// conveniance define to start a namespace 
+/// conveniance define to start a namespace
 #define NS_BEGIN(NS) namespace NS {
 
-/// conveniance define to end a namespace 
+/// conveniance define to end a namespace
 #define NS_END }
 
-/// conveniance define to use s namespace 
+/// conveniance define to use s namespace
 #define NS_USE(NS) using namespace NS
 
 
 /*
-  
-   The mia namespace is the general namespace of this library.  
+
+   The mia namespace is the general namespace of this library.
    Currently, only plug-ins have additional namespace to avoid name clashes
-   between dynamically loaded modules that might have been developed outside 
-   this source package. 
+   between dynamically loaded modules that might have been developed outside
+   this source package.
 */
 NS_MIA_BEGIN
 
 
 /// some constants for interpoation types
 enum EInterpolation {
-	ip_nn,       /**< nearest neighbor interpolation */
-	ip_linear,   /**< linear interpolation */
-	ip_bspline0, /**< bsplines of degree 0 (nearest neighbor interpolation) */ 
-	ip_bspline1, /**< bsplines of degree 1 (linear interpolation)*/ 
-	ip_bspline2, /**< bsplines of degree 2 */ 
-	ip_bspline3, /**< bsplines of degree 3 */  
-	ip_bspline4, /**< bsplines of degree 4 */ 
-	ip_bspline5, /**< bsplines of degree 5 */  
-	ip_omoms3,   /**< omoms splines of degree 3 */
-	ip_unknown   /**< unknown type */
+       ip_nn,       /**< nearest neighbor interpolation */
+       ip_linear,   /**< linear interpolation */
+       ip_bspline0, /**< bsplines of degree 0 (nearest neighbor interpolation) */
+       ip_bspline1, /**< bsplines of degree 1 (linear interpolation)*/
+       ip_bspline2, /**< bsplines of degree 2 */
+       ip_bspline3, /**< bsplines of degree 3 */
+       ip_bspline4, /**< bsplines of degree 4 */
+       ip_bspline5, /**< bsplines of degree 5 */
+       ip_omoms3,   /**< omoms splines of degree 3 */
+       ip_unknown   /**< unknown type */
 };
 
-/// Enumerate for the types of possible interpolator factories 
+/// Enumerate for the types of possible interpolator factories
 enum EInterpolationFactory {
-	ipf_spline, /**< bspline based interpolation */ 
-	ipf_unknown /**< unkown type */ 
+       ipf_spline, /**< bspline based interpolation */
+       ipf_unknown /**< unkown type */
 };
 
 NS_MIA_END
 
-/// \brief suffix for plug-ins 
+/// \brief suffix for plug-ins
 #define MIA_MODULE_SUFFIX "mia"
 
 #ifndef __GNUC__
-// remove the __attribute__ syntax if the compiler is not GCC compatible 
-#  define __attribute__(x) 
-#  define MIA_PARAM_UNUSED(x) x  
+// remove the __attribute__ syntax if the compiler is not GCC compatible
+#  define __attribute__(x)
+#  define MIA_PARAM_UNUSED(x) x
 #endif
 
 #ifndef MIA_PARAM_UNUSED
 #define MIA_PARAM_UNUSED(x) x __attribute__((unused))
-#endif 
+#endif
 
 #ifdef miacore_EXPORTS
-/// Macro to manage Visual C++ style dllimport/dllexport 
+/// Macro to manage Visual C++ style dllimport/dllexport
 #  define EXPORT_CORE DO_EXPORT
 #else
-/// Macro to manage Visual C++ style dllimport/dllexport 
+/// Macro to manage Visual C++ style dllimport/dllexport
 #  define EXPORT_CORE DO_IMPORT
 #endif
 
-/// Macro to set visibility to default, resp. __declspec(dllexport) 
+/// Macro to set visibility to default, resp. __declspec(dllexport)
 #define EXPORT DO_EXPORT
 
-#ifdef WIN32 
+#ifdef WIN32
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -122,7 +122,7 @@ NS_MIA_END
 #endif
 
 #ifdef miacore_EXPORTS
-#  ifdef VSTREAM 
+#  ifdef VSTREAM
 #    undef VSTREAM
 #  endif
 #  define VSTREAM "MIA-CORE"
@@ -130,7 +130,7 @@ NS_MIA_END
 
 NS_MIA_BEGIN
 
-EXPORT_CORE extern char const *get_revision(); 
+EXPORT_CORE extern char const *get_revision();
 
 NS_MIA_END
 

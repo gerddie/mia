@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 NS_MIA_BEGIN
 
-typedef TLabelMapFilter<C2DImage> C2DLabelMapFilter;  
-typedef TLabelMapFilterPlugin<C2DImage> C2DLabelMapFilterPlugin;  
+typedef TLabelMapFilter<C2DImage> C2DLabelMapFilter;
+typedef TLabelMapFilterPlugin<C2DImage> C2DLabelMapFilterPlugin;
 
 NS_MIA_END

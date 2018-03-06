@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,10 +22,8 @@
 #include <mia/core/revision.hh>
 
 NS_MIA_BEGIN
-char const * EXPORT_CORE get_revision()
+char const *EXPORT_CORE get_revision()
 {
-
-	return LIBMIA_REVISION;
-
+       return LIBMIA_REVISION;
 }
 NS_MIA_END

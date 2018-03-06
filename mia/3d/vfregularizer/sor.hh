@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,42 +26,44 @@
 
 NS_MIA_BEGIN
 
-class C3DSORVectorfieldRegularizer : public C3DFVectorfieldRegularizer {
-      
-public: 
-        C3DSORVectorfieldRegularizer(float abs_epsilon, float rel_epsilon, 
-                                     unsigned maxiter, 
-                                     P3DVectorfieldRegularizerKernel kernel);
-        
-private: 
-        double do_run(C3DFVectorfield& velocity, C3DFVectorfield& force, const C3DFVectorfield& deform) const; 
-        
-        float m_abs_epsilon;
-        float m_rel_epsilon; 
-        unsigned m_maxiter; 
-        P3DVectorfieldRegularizerKernel m_kernel; 
-                
-};  
+class C3DSORVectorfieldRegularizer : public C3DFVectorfieldRegularizer
+{
 
-class C3DSORVectorfieldRegularizerPlugin : public C3DFVectorfieldRegularizerPlugin {
+public:
+       C3DSORVectorfieldRegularizer(float abs_epsilon, float rel_epsilon,
+                                    unsigned maxiter,
+                                    P3DVectorfieldRegularizerKernel kernel);
 
-public: 
-        C3DSORVectorfieldRegularizerPlugin(); 
-        
 private:
-        
-        C3DFVectorfieldRegularizer *do_create() const;
-        
-        const std::string do_get_descr() const;
+       double do_run(C3DFVectorfield& velocity, C3DFVectorfield& force, const C3DFVectorfield& deform) const;
+
+       float m_abs_epsilon;
+       float m_rel_epsilon;
+       unsigned m_maxiter;
+       P3DVectorfieldRegularizerKernel m_kernel;
+
+};
+
+class C3DSORVectorfieldRegularizerPlugin : public C3DFVectorfieldRegularizerPlugin
+{
+
+public:
+       C3DSORVectorfieldRegularizerPlugin();
+
+private:
+
+       C3DFVectorfieldRegularizer *do_create() const;
+
+       const std::string do_get_descr() const;
 
 
-        float m_abs_epsilon;
-        float m_rel_epsilon; 
-        unsigned m_maxiter; 
-        P3DVectorfieldRegularizerKernel m_kernel; 
-        
-}; 
+       float m_abs_epsilon;
+       float m_rel_epsilon;
+       unsigned m_maxiter;
+       P3DVectorfieldRegularizerKernel m_kernel;
+
+};
 
 NS_MIA_END
 
-#endif 
+#endif

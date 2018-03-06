@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,264 +21,231 @@
 #include <mia/internal/plugintester.hh>
 #include <mia/core/fastica/deflationnonlinearity.hh>
 
-using namespace fastica_deflnonlin; 
-using namespace mia; 
-using namespace gsl; 
-using namespace std; 
+using namespace fastica_deflnonlin;
+using namespace mia;
+using namespace gsl;
+using namespace std;
 
 struct DeflationNonlinearityFixture {
 
-	DeflationNonlinearityFixture(); 
-	Matrix signal;
-	Vector w;
+       DeflationNonlinearityFixture();
+       Matrix signal;
+       Vector w;
 
-}; 
+};
 
 struct NonlinearitySaddlevalueFixture {
 
-	NonlinearitySaddlevalueFixture(); 
-	Vector u;
-}; 
+       NonlinearitySaddlevalueFixture();
+       Vector u;
+};
 
 struct NonlinearitySaddleMatrixFixture {
 
-	NonlinearitySaddleMatrixFixture(); 
-	Matrix U;
-}; 
+       NonlinearitySaddleMatrixFixture();
+       Matrix U;
+};
 
 
-BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity, DeflationNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity, DeflationNonlinearityFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
-	
-	plugin->set_signal(&signal);
-	plugin->apply(w); 
-	
-	BOOST_CHECK_CLOSE(w[0],  0.67748, 0.01); 
-	BOOST_CHECK_CLOSE(w[1], -0.48505, 0.01); 
-	BOOST_CHECK_CLOSE(w[2], -1.35082, 0.01); 
-	BOOST_CHECK_CLOSE(w[3], -0.35110, 0.01); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
+       plugin->set_signal(&signal);
+       plugin->apply(w);
+       BOOST_CHECK_CLOSE(w[0],  0.67748, 0.01);
+       BOOST_CHECK_CLOSE(w[1], -0.48505, 0.01);
+       BOOST_CHECK_CLOSE(w[2], -1.35082, 0.01);
+       BOOST_CHECK_CLOSE(w[3], -0.35110, 0.01);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_pow3_SIR,  NonlinearitySaddlevalueFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_pow3_SIR,  NonlinearitySaddlevalueFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
-	BOOST_CHECK_CLOSE(plugin->get_saddle_test_value(u), 8.9148, 0.1); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
+       BOOST_CHECK_CLOSE(plugin->get_saddle_test_value(u), 8.9148, 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_pow3_SIR_Matrix,  NonlinearitySaddleMatrixFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_pow3_SIR_Matrix,  NonlinearitySaddleMatrixFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
-	auto values = plugin->get_saddle_test_table(U); 
-	BOOST_CHECK_CLOSE(values[0], 8.9148, 0.1); 
-	BOOST_CHECK_CLOSE(values[1], 8.1902, 0.1); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
+       auto values = plugin->get_saddle_test_table(U);
+       BOOST_CHECK_CLOSE(values[0], 8.9148, 0.1);
+       BOOST_CHECK_CLOSE(values[1], 8.1902, 0.1);
 }
 
 
 
-BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity_stabelized, DeflationNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_pow3_nonlinearity_stabelized, DeflationNonlinearityFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
-	
-	plugin->set_signal(&signal);
-	plugin->set_mu(0.1); 
-	plugin->apply(w); 
-	 
-	BOOST_CHECK_CLOSE(w[0], -0.22633, 0.01); 
-	BOOST_CHECK_CLOSE(w[1], 0.16169, 0.01); 
-	BOOST_CHECK_CLOSE(w[2], 0.45097, 0.01); 
-	BOOST_CHECK_CLOSE(w[3], 0.11686, 0.01); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
+       plugin->set_signal(&signal);
+       plugin->set_mu(0.1);
+       plugin->apply(w);
+       BOOST_CHECK_CLOSE(w[0], -0.22633, 0.01);
+       BOOST_CHECK_CLOSE(w[1], 0.16169, 0.01);
+       BOOST_CHECK_CLOSE(w[2], 0.45097, 0.01);
+       BOOST_CHECK_CLOSE(w[3], 0.11686, 0.01);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity, DeflationNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity, DeflationNonlinearityFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
-		
-	plugin->set_signal(&signal);
-	plugin->apply(w); 
-	 
-	BOOST_CHECK_CLOSE(w[0],  0.26363, 0.01); 
-	BOOST_CHECK_CLOSE(w[1], -0.22528, 0.01); 
-	BOOST_CHECK_CLOSE(w[2], -0.57095, 0.01); 
-	BOOST_CHECK_CLOSE(w[3], -0.17719, 0.01); 
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
+       plugin->set_signal(&signal);
+       plugin->apply(w);
+       BOOST_CHECK_CLOSE(w[0],  0.26363, 0.01);
+       BOOST_CHECK_CLOSE(w[1], -0.22528, 0.01);
+       BOOST_CHECK_CLOSE(w[2], -0.57095, 0.01);
+       BOOST_CHECK_CLOSE(w[3], -0.17719, 0.01);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_tanh_1_SIR,  NonlinearitySaddlevalueFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_tanh_1_SIR,  NonlinearitySaddlevalueFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh");
-	BOOST_CHECK_CLOSE(plugin->get_saddle_test_value(u), 0.11077, 0.1); 
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh");
+       BOOST_CHECK_CLOSE(plugin->get_saddle_test_value(u), 0.11077, 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_tanh_SIR_Matrix,  NonlinearitySaddleMatrixFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_tanh_SIR_Matrix,  NonlinearitySaddleMatrixFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh");
-	auto values = plugin->get_saddle_test_table(U); 
-	BOOST_CHECK_CLOSE(values[0], 0.11077, 0.1); 
-	BOOST_CHECK_CLOSE(values[1], 0.070633, 0.1); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh");
+       auto values = plugin->get_saddle_test_table(U);
+       BOOST_CHECK_CLOSE(values[0], 0.11077, 0.1);
+       BOOST_CHECK_CLOSE(values[1], 0.070633, 0.1);
 }
 
 
 
-BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_stabelized, DeflationNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_stabelized, DeflationNonlinearityFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
-		
-	plugin->set_signal(&signal);
-	plugin->set_mu(0.1); 
-	plugin->apply(w); 
-
-	BOOST_CHECK_CLOSE(w[0], -0.22299, 0.01); 
-	BOOST_CHECK_CLOSE(w[1], 0.16196, 0.01); 
-	BOOST_CHECK_CLOSE(w[2], 0.44761, 0.01); 
-	BOOST_CHECK_CLOSE(w[3], 0.11809, 0.01); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
+       plugin->set_signal(&signal);
+       plugin->set_mu(0.1);
+       plugin->apply(w);
+       BOOST_CHECK_CLOSE(w[0], -0.22299, 0.01);
+       BOOST_CHECK_CLOSE(w[1], 0.16196, 0.01);
+       BOOST_CHECK_CLOSE(w[2], 0.44761, 0.01);
+       BOOST_CHECK_CLOSE(w[3], 0.11809, 0.01);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity, DeflationNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity, DeflationNonlinearityFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss:a=1.1");
-	
-	plugin->set_signal(&signal);
-	plugin->apply(w); 
-	   
-	BOOST_CHECK_CLOSE(w[0],  0.17860, 0.01); 
-	BOOST_CHECK_CLOSE(w[1], -0.15242, 0.01); 
-	BOOST_CHECK_CLOSE(w[2], -0.38649, 0.01); 
-	BOOST_CHECK_CLOSE(w[3], -0.11984, 0.01); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss:a=1.1");
+       plugin->set_signal(&signal);
+       plugin->apply(w);
+       BOOST_CHECK_CLOSE(w[0],  0.17860, 0.01);
+       BOOST_CHECK_CLOSE(w[1], -0.15242, 0.01);
+       BOOST_CHECK_CLOSE(w[2], -0.38649, 0.01);
+       BOOST_CHECK_CLOSE(w[3], -0.11984, 0.01);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_gauss_SIR_matrix,  NonlinearitySaddleMatrixFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_gauss_SIR_matrix,  NonlinearitySaddleMatrixFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss");
-
-	auto values = plugin->get_saddle_test_table(U); 
-	BOOST_CHECK_CLOSE(values[0], 0.063381, 0.1); 
-	BOOST_CHECK_CLOSE(values[1], 0.036016, 0.1); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss");
+       auto values = plugin->get_saddle_test_table(U);
+       BOOST_CHECK_CLOSE(values[0], 0.063381, 0.1);
+       BOOST_CHECK_CLOSE(values[1], 0.036016, 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_gauss_SIR,  NonlinearitySaddlevalueFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_gauss_SIR,  NonlinearitySaddlevalueFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss");
-	BOOST_CHECK_CLOSE(plugin->get_saddle_test_value(u), 0.063381, 0.1); 
-	
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss");
+       BOOST_CHECK_CLOSE(plugin->get_saddle_test_value(u), 0.063381, 0.1);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity_stabilized, DeflationNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_gauss_nonlinearity_stabilized, DeflationNonlinearityFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss:a=1.1");
-	
-	plugin->set_signal(&signal);
-	plugin->set_mu(0.1); 
-	plugin->apply(w); 
-	 
-	BOOST_CHECK_CLOSE(w[0],  -0.22302, 0.01); 
-	BOOST_CHECK_CLOSE(w[1],  0.16196, 0.01); 
-	BOOST_CHECK_CLOSE(w[2],  0.44763, 0.01); 
-	BOOST_CHECK_CLOSE(w[3],  0.11809, 0.01); 
-
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflGaussPlugin>("gauss:a=1.1");
+       plugin->set_signal(&signal);
+       plugin->set_mu(0.1);
+       plugin->apply(w);
+       BOOST_CHECK_CLOSE(w[0],  -0.22302, 0.01);
+       BOOST_CHECK_CLOSE(w[1],  0.16196, 0.01);
+       BOOST_CHECK_CLOSE(w[2],  0.44763, 0.01);
+       BOOST_CHECK_CLOSE(w[3],  0.11809, 0.01);
 }
 
 const double init_signal[] = {
-	-0.150788,  0.185673,  0.253528, -0.192714,  0.309594,  0.384079,  0.117799,  0.200267, -0.212151, -0.257026,
-	0.221388, -0.166861,  0.128731, -0.207766, -0.041186, -0.089463, -0.151564,  0.249002, -0.060958,  0.223747,
-	0.170328, -0.071203, -0.435380,  0.093816, -0.206290, -0.408690, -0.212328, -0.211139,  0.499941, -0.015164,
-	-0.240928,  0.052391,  0.053121,  0.306664, -0.062118,  0.114074,  0.246093, -0.238130, -0.226832,  0.048444
+       -0.150788,  0.185673,  0.253528, -0.192714,  0.309594,  0.384079,  0.117799,  0.200267, -0.212151, -0.257026,
+       0.221388, -0.166861,  0.128731, -0.207766, -0.041186, -0.089463, -0.151564,  0.249002, -0.060958,  0.223747,
+       0.170328, -0.071203, -0.435380,  0.093816, -0.206290, -0.408690, -0.212328, -0.211139,  0.499941, -0.015164,
+       -0.240928,  0.052391,  0.053121,  0.306664, -0.062118,  0.114074,  0.246093, -0.238130, -0.226832,  0.048444
 };
 
 DeflationNonlinearityFixture::DeflationNonlinearityFixture()
 {
-	double init_w[] = { -0.22638, 0.16168, 0.45102, 0.11684}; 
-
-	signal = Matrix(4, 10, init_signal); 
-	w = Vector(4, false); 
-	std::copy(init_w, init_w + 4, w.begin()); 
-
-
+       double init_w[] = { -0.22638, 0.16168, 0.45102, 0.11684};
+       signal = Matrix(4, 10, init_signal);
+       w = Vector(4, false);
+       std::copy(init_w, init_w + 4, w.begin());
 }
 
 struct SymmetryNonlinearityFixture {
 
-	SymmetryNonlinearityFixture(); 
-	Matrix signal;
-	Matrix W;
+       SymmetryNonlinearityFixture();
+       Matrix signal;
+       Matrix W;
 
-}; 
+};
 
 
-BOOST_FIXTURE_TEST_CASE( test_pow_nonlinearity_stabilized_Symm, SymmetryNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_pow_nonlinearity_stabilized_Symm, SymmetryNonlinearityFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
-	
-	plugin->set_signal(&signal);
-	plugin->apply(W); 
-	 
-	BOOST_CHECK_CLOSE(W(0,0), 1.24114, 0.01); 
-	BOOST_CHECK_CLOSE(W(0,1), -2.34633, 0.01); 
-	BOOST_CHECK_CLOSE(W(1,0), -0.89385, 0.01); 
-	BOOST_CHECK_CLOSE(W(1,1), -1.22523, 0.01); 
-	BOOST_CHECK_CLOSE(W(2,0), -2.47949, 0.01); 
-	BOOST_CHECK_CLOSE(W(2,1), -0.39022, 0.01); 
-	BOOST_CHECK_CLOSE(W(3,0), -0.64952, 0.01); 
-	BOOST_CHECK_CLOSE(W(3,1), -1.35443, 0.01); 
-
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflPow3Plugin>("pow3");
+       plugin->set_signal(&signal);
+       plugin->apply(W);
+       BOOST_CHECK_CLOSE(W(0, 0), 1.24114, 0.01);
+       BOOST_CHECK_CLOSE(W(0, 1), -2.34633, 0.01);
+       BOOST_CHECK_CLOSE(W(1, 0), -0.89385, 0.01);
+       BOOST_CHECK_CLOSE(W(1, 1), -1.22523, 0.01);
+       BOOST_CHECK_CLOSE(W(2, 0), -2.47949, 0.01);
+       BOOST_CHECK_CLOSE(W(2, 1), -0.39022, 0.01);
+       BOOST_CHECK_CLOSE(W(3, 0), -0.64952, 0.01);
+       BOOST_CHECK_CLOSE(W(3, 1), -1.35443, 0.01);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_Symm, SymmetryNonlinearityFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_tanh_nonlinearity_Symm, SymmetryNonlinearityFixture )
 {
-	auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
-	
-	plugin->set_signal(&signal);
-	plugin->apply(W); 
-	    
-	BOOST_CHECK_CLOSE(W(0,0), 0.42007, 0.01); 
-	BOOST_CHECK_CLOSE(W(0,1), -1.05476, 0.01); 
-	BOOST_CHECK_CLOSE(W(1,0),  -0.36337, 0.01); 
-	BOOST_CHECK_CLOSE(W(1,1), -0.58123, 0.01); 
-	BOOST_CHECK_CLOSE(W(2,0), -0.91679, 0.01); 
-	BOOST_CHECK_CLOSE(W(2,1), -0.24641, 0.01); 
-	BOOST_CHECK_CLOSE(W(3,0),  -0.28688, 0.01); 
-	BOOST_CHECK_CLOSE(W(3,1), -0.62782, 0.01); 
-
+       auto plugin = BOOST_TEST_create_from_plugin<CFastICADeflTanhPlugin>("tanh:a=1.5");
+       plugin->set_signal(&signal);
+       plugin->apply(W);
+       BOOST_CHECK_CLOSE(W(0, 0), 0.42007, 0.01);
+       BOOST_CHECK_CLOSE(W(0, 1), -1.05476, 0.01);
+       BOOST_CHECK_CLOSE(W(1, 0),  -0.36337, 0.01);
+       BOOST_CHECK_CLOSE(W(1, 1), -0.58123, 0.01);
+       BOOST_CHECK_CLOSE(W(2, 0), -0.91679, 0.01);
+       BOOST_CHECK_CLOSE(W(2, 1), -0.24641, 0.01);
+       BOOST_CHECK_CLOSE(W(3, 0),  -0.28688, 0.01);
+       BOOST_CHECK_CLOSE(W(3, 1), -0.62782, 0.01);
 }
 
 
 
 SymmetryNonlinearityFixture::SymmetryNonlinearityFixture()
 {
-	double init_W[] = { -0.41718, 0.78261, 
-			     0.29795, 0.40841,    
-			     0.83116, 0.12941,   
-			     0.21532, 0.45165}; 
-
-	signal = Matrix(4, 10, init_signal); 
-	W = Matrix(4, 2, init_W);
+       double init_W[] = { -0.41718, 0.78261,
+                           0.29795, 0.40841,
+                           0.83116, 0.12941,
+                           0.21532, 0.45165
+                         };
+       signal = Matrix(4, 10, init_signal);
+       W = Matrix(4, 2, init_W);
 }
 
 NonlinearitySaddlevalueFixture::NonlinearitySaddlevalueFixture():
-	u(7,false)
+       u(7, false)
 {
-	double init_u[] = { .1, .2, .3, .4, .5, .1, .2 }; 
-	copy(init_u, init_u +7, u.begin()); 
-
+       double init_u[] = { .1, .2, .3, .4, .5, .1, .2 };
+       copy(init_u, init_u + 7, u.begin());
 }
 
 
 NonlinearitySaddleMatrixFixture::NonlinearitySaddleMatrixFixture()
 {
-	double init_U[] = { .1, .2, .3, .4, .5, .1, .2, 
-			    .3, .1, .5, .7, .1, .9, .0
-	}; 
-	U = Matrix(2, 7, init_U); 
+       double init_U[] = { .1, .2, .3, .4, .5, .1, .2,
+                           .3, .1, .5, .7, .1, .9, .0
+                         };
+       U = Matrix(2, 7, init_U);
 }

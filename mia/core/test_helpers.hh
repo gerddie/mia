@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,32 +23,31 @@
 
 #ifndef mia_internal_autotest_hh
 #include <mia/internal/autotest.hh>
-#endif 
+#endif
 
 #include <set>
 #include <string>
 
 /**
-   \ingroup  test 
-   Test help template to check whether a plug-in handler loads a certain set of expected 
-   plug-ins. The function uses boost::unittest to handele the testing. 
+   \ingroup  test
+   Test help template to check whether a plug-in handler loads a certain set of expected
+   plug-ins. The function uses boost::unittest to handele the testing.
 
-   \tparam the plug-in handler type to be tested 
-   \param expected the set of expected plug-ins given by their name 
+   \tparam the plug-in handler type to be tested
+   \param expected the set of expected plug-ins given by their name
 */
-template <class PluginHandler> 
+template <class PluginHandler>
 void test_plugin_names_and_count(const std::set<std::string>& expected)
 {
-	auto plugins = PluginHandler::instance().get_set(); 
-	BOOST_CHECK_EQUAL(plugins.size(), expected.size()); 
-	
-	for (auto p = plugins.begin(); p != plugins.end(); ++p) {
-		BOOST_CHECK_MESSAGE(expected.find(*p) != expected.end(), "unexpected plugin '" << *p << "' found"); 
-	}
-	
-	for (auto p = expected.begin(); p != expected.end(); ++p)
-		BOOST_CHECK_MESSAGE(plugins.find(*p) != plugins.end(), "expected plugin '" << *p << "' not found"); 
+       auto plugins = PluginHandler::instance().get_set();
+       BOOST_CHECK_EQUAL(plugins.size(), expected.size());
 
+       for (auto p = plugins.begin(); p != plugins.end(); ++p) {
+              BOOST_CHECK_MESSAGE(expected.find(*p) != expected.end(), "unexpected plugin '" << *p << "' found");
+       }
+
+       for (auto p = expected.begin(); p != expected.end(); ++p)
+              BOOST_CHECK_MESSAGE(plugins.find(*p) != plugins.end(), "expected plugin '" << *p << "' not found");
 }
 
 

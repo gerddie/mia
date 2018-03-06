@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,48 +27,49 @@ NS_MIA_BEGIN
 
 /**
    \ingroup misc
-   
-   \brief A class to adress a circulat bufer of a fixed size. 
 
-   This class provides the structure for the translation of a linear index to 
-   a circular buffer. 
+   \brief A class to adress a circulat bufer of a fixed size.
+
+   This class provides the structure for the translation of a linear index to
+   a circular buffer.
    An example for its use can be found in mia/3d/translate/spline.cc: on_grid (BLAS_VERSION)
  */
 
-class EXPORT_CORE CCircularIndex {
-public: 
-	/**
-	  Construct the buffer
-	  \param size size of the buffer 
-	  \param start start index
-	*/
-	CCircularIndex(unsigned int size, unsigned int start); 
-	
-	/** Insert one index */
-	void insert_one(); 
+class EXPORT_CORE CCircularIndex
+{
+public:
+       /**
+         Construct the buffer
+         \param size size of the buffer
+         \param start start index
+       */
+       CCircularIndex(unsigned int size, unsigned int start);
 
-	/** get the next index */
-	unsigned int next() const; 
+       /** Insert one index */
+       void insert_one();
 
-	/** reset the start index */ 
-	void new_start(unsigned int start);
+       /** get the next index */
+       unsigned int next() const;
 
-	/** \returns the number of occupied indices */
-	unsigned int fill()const; 
+       /** reset the start index */
+       void new_start(unsigned int start);
 
-	/** 
-	    Translate the linear index i to the index in the circular buffer 
-	    \param i 
-	    \returns circular index 
-	 */
-	unsigned int value(unsigned int i) const; 
-private: 
-	unsigned int m_size; 
-	unsigned int m_start; 
-	unsigned int m_fill;
-	unsigned int m_next_fill; 
-	unsigned int m_cur_start; 
-}; 
+       /** \returns the number of occupied indices */
+       unsigned int fill()const;
+
+       /**
+           Translate the linear index i to the index in the circular buffer
+           \param i
+           \returns circular index
+        */
+       unsigned int value(unsigned int i) const;
+private:
+       unsigned int m_size;
+       unsigned int m_start;
+       unsigned int m_fill;
+       unsigned int m_next_fill;
+       unsigned int m_cur_start;
+};
 
 NS_MIA_END
 

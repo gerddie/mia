@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -34,33 +34,33 @@ C3DIOVectorfield::C3DIOVectorfield()
 
 /** Constructor to create empty Datafield if given size */
 C3DIOVectorfield::C3DIOVectorfield(const C3DBounds& _Size):
-	C3DFVectorfield(_Size)
+       C3DFVectorfield(_Size)
 {
 }
 
 C3DIOVectorfield::C3DIOVectorfield(const C3DIOVectorfield& org):
-	C3DFVectorfield(org),
-	CIOData(org)
+       C3DFVectorfield(org),
+       CIOData(org)
 {
 }
 
 C3DIOVectorfield::C3DIOVectorfield(const C3DFVectorfield& org):
-	C3DFVectorfield(org)
+       C3DFVectorfield(org)
 {
 }
 
 C3DIOVectorfield *C3DIOVectorfield::clone() const
 {
-	return new C3DIOVectorfield(*this);
+       return new C3DIOVectorfield(*this);
 }
 
-template <> const char *  const 
-TPluginHandler<C3DVFIOPlugin>::m_help =  
-   "These plug-ins implement loading and saving of vector fields to certain file formats.";
+template <> const char   *const
+TPluginHandler<C3DVFIOPlugin>::m_help =
+       "These plug-ins implement loading and saving of vector fields to certain file formats.";
 
 template class TPlugin<C3DIOVectorfield, io_plugin_type>;
 template class TIOPlugin<C3DIOVectorfield>;
-template class THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> >;
+template class THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin>>;
 template class TIOPluginHandler<C3DVFIOPlugin>;
 template class TPluginHandler<C3DVFIOPlugin>;
 

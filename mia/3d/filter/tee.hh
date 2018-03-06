@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,25 +23,27 @@
 NS_BEGIN( tee_3dimage_filter)
 
 
-class C3DTee : public mia::C3DFilter {
+class C3DTee : public mia::C3DFilter
+{
 public:
-	C3DTee(const std::string& name);
+       C3DTee(const std::string& name);
 
-	template <class T>
-	C3DTee::result_type operator () (const mia::T3DImage<T>& data) const ;
+       template <class T>
+       C3DTee::result_type operator () (const mia::T3DImage<T>& data) const ;
 private:
-	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	virtual mia::P3DImage do_filter(mia::P3DImage image) const;
-	std::string m_name; 
+       virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+       virtual mia::P3DImage do_filter(mia::P3DImage image) const;
+       std::string m_name;
 };
 
-class C3DTeeFilterPluginFactory: public mia::C3DFilterPlugin {
+class C3DTeeFilterPluginFactory: public mia::C3DFilterPlugin
+{
 public:
-	C3DTeeFilterPluginFactory();
+       C3DTeeFilterPluginFactory();
 private:
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	std::string m_filename; 
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
+       std::string m_filename;
 };
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,41 +26,39 @@
 NS_MIA_BEGIN
 
 
-CCmdBoolOption::CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help, 
-			       CCmdOptionFlags flags):
-	CCmdOption(short_opt, long_opt, long_help, long_opt, flags), 
-	m_value(value)
+CCmdBoolOption::CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help,
+                               CCmdOptionFlags flags):
+       CCmdOption(short_opt, long_opt, long_help, long_opt, flags),
+       m_value(value)
 {
-	m_value = false; 
-
-	assert(!has_flag(CCmdOptionFlags::required) && "A boolean flag option must not have the flag CCmdOptionFlags::required"); 
+       m_value = false;
+       assert(!has_flag(CCmdOptionFlags::required) && "A boolean flag option must not have the flag CCmdOptionFlags::required");
 }
 
 bool CCmdBoolOption::do_set_value(const char */*str_value*/)
 {
-	m_value = true; 
-	return true; 
+       m_value = true;
+       return true;
 }
 
 void CCmdBoolOption::do_write_value(std::ostream& /*os*/) const
 {
-}									
+}
 
 void CCmdBoolOption::do_get_long_help_xml(std::ostream& os, CXMLElement& parent, HandlerHelpMap& /*handler_map*/) const
 {
-	do_get_long_help(os);
-	parent.set_attribute("type", __type_descr<bool>::value);
-
+       do_get_long_help(os);
+       parent.set_attribute("type", __type_descr<bool>::value);
 }
 
 const std::string CCmdBoolOption::do_get_value_as_string() const
 {
-	return m_value ? "true": "false"; 
+       return m_value ? "true" : "false";
 }
 
 size_t CCmdBoolOption::do_get_needed_args() const
 {
-	return 0; 
+       return 0;
 }
 
-NS_END 
+NS_END

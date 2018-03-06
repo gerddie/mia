@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,141 +30,142 @@ using namespace std;
 
 
 struct ThreadFixture {
-	ThreadFixture(); 
+       ThreadFixture();
 
-	void operator () ( const C1DParallelRange& range ) const; 
+       void operator () ( const C1DParallelRange& range ) const;
 
-}; 
+};
 
 struct ThreadFixture2 {
-	ThreadFixture2(); 
+       ThreadFixture2();
 
-	void operator () ( const C1DParallelRange& range ) const; 
-}; 
+       void operator () ( const C1DParallelRange& range ) const;
+};
 
 
-stringstream master_stream; 
+stringstream master_stream;
 
 ThreadFixture::ThreadFixture()
 {
-	CThreadMsgStream::set_master_stream(master_stream); 
+       CThreadMsgStream::set_master_stream(master_stream);
 }
 
 void ThreadFixture::operator () ( const C1DParallelRange& range ) const
 {
-	CThreadMsgStream thread_stream;
+       CThreadMsgStream thread_stream;
 
-	for( int i=range.begin(); i!=range.end(); ++i ) {
-		cvmsg() << "This " << "is " << "part " << "of" << " a" << " message ..." << setw(3) << i; 
-		cverb << " and" << " this" << " is" <<" the" <<" other" << " part\n"; 
-	}
+       for ( int i = range.begin(); i != range.end(); ++i ) {
+              cvmsg() << "This " << "is " << "part " << "of" << " a" << " message ..." << setw(3) << i;
+              cverb << " and" << " this" << " is" << " the" << " other" << " part\n";
+       }
 }
 
 ThreadFixture2::ThreadFixture2()
 {
-	CThreadMsgStream::set_master_stream(master_stream); 
+       CThreadMsgStream::set_master_stream(master_stream);
 }
 
 void ThreadFixture2::operator () ( const C1DParallelRange& range ) const
 {
-	CThreadMsgStream thread_stream;
+       CThreadMsgStream thread_stream;
 
-	for( int i=range.begin(); i!=range.end(); ++i ) {
-		cvmsg() << "This "<<"message "<<"has "<<"no "<< "newline"; 
-		thread_stream.flush(); 
-	}
+       for ( int i = range.begin(); i != range.end(); ++i ) {
+              cvmsg() << "This " << "message " << "has " << "no " << "newline";
+              thread_stream.flush();
+       }
 }
 
 
 
 BOOST_AUTO_TEST_CASE( test_threaded_msg )
 {
-	auto old_level =  cverb.get_level();
-	cverb.set_verbosity(vstream::ml_message); 
-	ThreadFixture fix; 
-	pfor(C1DParallelRange( 0, 100), fix);
-	
-	cverb.set_verbosity(old_level); 
-	
-	cvdebug()  << master_stream.str(); 
-	
-	string help = master_stream.str(); 
-	const char *s = help.c_str(); 
+       auto old_level =  cverb.get_level();
+       cverb.set_verbosity(vstream::ml_message);
+       ThreadFixture fix;
+       pfor(C1DParallelRange( 0, 100), fix);
+       cverb.set_verbosity(old_level);
+       cvdebug()  << master_stream.str();
+       string help = master_stream.str();
+       const char *s = help.c_str();
+       BOOST_REQUIRE(s);
+       int lines = 0;
+       BOOST_REQUIRE(s);
 
-	BOOST_REQUIRE(s);
+       while (*s)  {
+              int counter = 0;
 
-	int lines = 0; 
-	BOOST_REQUIRE(s); 
-	while (*s)  {
-		int counter = 0; 
-		while (*s && *s != '\n') {
-			++counter; 
-			++s; 
-		}
-		++lines; 
-		BOOST_CHECK_EQUAL(counter, 84); 
-		++s; 
-	}; 
-	BOOST_CHECK_EQUAL(lines, 100); 
-	master_stream.str(""); 
+              while (*s && *s != '\n') {
+                     ++counter;
+                     ++s;
+              }
+
+              ++lines;
+              BOOST_CHECK_EQUAL(counter, 84);
+              ++s;
+       };
+
+       BOOST_CHECK_EQUAL(lines, 100);
+
+       master_stream.str("");
 }
 
 
 BOOST_AUTO_TEST_CASE( test_threaded_msg_sync )
 {
-	auto old_level =  cverb.get_level();
-	cverb.set_verbosity(vstream::ml_message); 
-	ThreadFixture2 fix; 
-	pfor(C1DParallelRange( 0, 100), fix);
-	
-	cverb.set_verbosity(old_level); 
-	
-	cvdebug()  << master_stream.str(); 
+       auto old_level =  cverb.get_level();
+       cverb.set_verbosity(vstream::ml_message);
+       ThreadFixture2 fix;
+       pfor(C1DParallelRange( 0, 100), fix);
+       cverb.set_verbosity(old_level);
+       cvdebug()  << master_stream.str();
+       string help = master_stream.str();
+       const char *s = help.c_str();
+       BOOST_REQUIRE(s);
+       int lines = 0;
 
-	string help = master_stream.str(); 
-	const char *s = help.c_str(); 
+       while (*s)  {
+              int counter = 0;
 
-	BOOST_REQUIRE(s);
+              while (*s && *s != '\n') {
+                     ++counter;
+                     ++s;
+              }
 
-	int lines = 0; 
-	while (*s)  {
-		int counter = 0; 
-		while (*s && *s != '\n') {
-			++counter; 
-			++s; 
-		}
-		BOOST_CHECK_EQUAL(counter, 52); 
-		++lines; 
-		++s; 
-	}; 
-	BOOST_CHECK_EQUAL(lines, 100); 
-	master_stream.str(""); 
+              BOOST_CHECK_EQUAL(counter, 52);
+              ++lines;
+              ++s;
+       };
+
+       BOOST_CHECK_EQUAL(lines, 100);
+
+       master_stream.str("");
 }
 
 
 /* normally a compile time error tells us that we can't set a CThreadMsgStream
-   as thread master output stream. 
-   However, when this stream comes disguised as a std::ostream, no compile time error 
-   will be generated. This test checks if the user at least gets to see the logic-error 
+   as thread master output stream.
+   However, when this stream comes disguised as a std::ostream, no compile time error
+   will be generated. This test checks if the user at least gets to see the logic-error
 */
 BOOST_AUTO_TEST_CASE( test_set_master_CThreadMsgStream_throws  )
 {
-	CThreadMsgStream s; 
-	ostream& h = s; 
-	BOOST_CHECK_THROW(CThreadMsgStream::set_master_stream(h), logic_error); 
+       CThreadMsgStream s;
+       ostream& h = s;
+       BOOST_CHECK_THROW(CThreadMsgStream::set_master_stream(h), logic_error);
 }
 
 /*
-  The following test is to check that a user gets the message that is is not a good idea to 
-  use a stream derived from CThreadMsgStream as master stream for threaded output. 
-  Unortunately, this can not be checked at compile time. 
+  The following test is to check that a user gets the message that is is not a good idea to
+  use a stream derived from CThreadMsgStream as master stream for threaded output.
+  Unortunately, this can not be checked at compile time.
 */
-class WeAreBoned : public CThreadMsgStream {
+class WeAreBoned : public CThreadMsgStream
+{
 
-}; 
+};
 
 BOOST_AUTO_TEST_CASE( test_set_are_we_boned  )
 {
-	WeAreBoned s; 
-	BOOST_CHECK_THROW(CThreadMsgStream::set_master_stream(s), logic_error); 
+       WeAreBoned s;
+       BOOST_CHECK_THROW(CThreadMsgStream::set_master_stream(s), logic_error);
 }

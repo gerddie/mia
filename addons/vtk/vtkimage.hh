@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,40 +23,44 @@
 
 #include <mia/3d/imageio.hh>
 
-namespace vtkimage {
+namespace vtkimage
+{
 
-class CVtk3DImageIOPlugin : public mia::C3DImageIOPlugin {
+class CVtk3DImageIOPlugin : public mia::C3DImageIOPlugin
+{
 public:
-	CVtk3DImageIOPlugin();
+       CVtk3DImageIOPlugin();
 private:
 
-        virtual PData do_load(const std::string&  filename) const;
-	virtual bool do_save(const std::string& fname, const Data& data) const;
-	virtual const std::string do_get_descr() const;
+       virtual PData do_load(const std::string&  filename) const;
+       virtual bool do_save(const std::string& fname, const Data& data) const;
+       virtual const std::string do_get_descr() const;
 };
 
 
-class CVtkXML3DImageIOPlugin : public mia::C3DImageIOPlugin {
+class CVtkXML3DImageIOPlugin : public mia::C3DImageIOPlugin
+{
 public:
-	CVtkXML3DImageIOPlugin();
+       CVtkXML3DImageIOPlugin();
 private:
 
-        virtual PData do_load(const std::string&  filename) const;
-	virtual bool do_save(const std::string& fname, const Data& data) const;
-	virtual const std::string do_get_descr() const;
+       virtual PData do_load(const std::string&  filename) const;
+       virtual bool do_save(const std::string& fname, const Data& data) const;
+       virtual const std::string do_get_descr() const;
 };
 
 
-class CMhd3DImageIOPlugin : public mia::C3DImageIOPlugin {
+class CMhd3DImageIOPlugin : public mia::C3DImageIOPlugin
+{
 public:
-	CMhd3DImageIOPlugin();
+       CMhd3DImageIOPlugin();
 private:
 
-        virtual PData do_load(const std::string&  filename) const;
-	virtual bool do_save(const std::string& fname, const Data& data) const;
-	virtual const std::string do_get_descr() const;
+       virtual PData do_load(const std::string&  filename) const;
+       virtual bool do_save(const std::string& fname, const Data& data) const;
+       virtual const std::string do_get_descr() const;
 };
 
 }
 
-#endif 
+#endif

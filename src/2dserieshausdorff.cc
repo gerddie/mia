@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -35,56 +35,60 @@
 
 using namespace std;
 using namespace mia;
-namespace bfs=boost::filesystem;
+namespace bfs = boost::filesystem;
 
 const SProgramDescription g_description = {
-        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
-	{pdi_short, "Evaluate Hausdorff distance between segmentation sets."}, 
-	{pdi_description, "Get the per-slice Hausdorff distance of a segmentation with "
-	 "respect to a given reference segmentation set."}, 
-	{pdi_example_descr, "Evaluate the per-frame Hausdorff distance of the segmentations "
-	 "of set segment.set with respect to the segmentation set reference.set skipping "
-	 "two images at the beginning."}, 
-	{pdi_example_code, " -i segment.set -r reference.set -k 2"}
-}; 
+       {pdi_group, "Tools for Myocardial Perfusion Analysis"},
+       {pdi_short, "Evaluate Hausdorff distance between segmentation sets."},
+       {
+              pdi_description, "Get the per-slice Hausdorff distance of a segmentation with "
+              "respect to a given reference segmentation set."
+       },
+       {
+              pdi_example_descr, "Evaluate the per-frame Hausdorff distance of the segmentations "
+              "of set segment.set with respect to the segmentation set reference.set skipping "
+              "two images at the beginning."
+       },
+       {pdi_example_code, " -i segment.set -r reference.set -k 2"}
+};
 
 int do_main(int argc, char *argv[])
 {
-	string src_filename;
-	string ref_filename;
-	int skip = 0; 
+       string src_filename;
+       string ref_filename;
+       int skip = 0;
+       CCmdOptionList options(g_description);
+       options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
+       options.add(make_opt( ref_filename, "ref-file", 'r', "reference segmentation set", CCmdOptionFlags::required_input));
+       options.add(make_opt( skip, "skip", 'k', "skip images at the beginning"));
+       options.set_stdout_is_result();
 
-	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOptionFlags::required_input));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "reference segmentation set", CCmdOptionFlags::required_input));
-	options.add(make_opt( skip, "skip", 'k', "skip images at the beginning"));
-	options.set_stdout_is_result();
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-		return EXIT_SUCCESS; 
+       if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+              return EXIT_SUCCESS;
 
-	CSegSet srcset(src_filename);
-	CSegSet refset(ref_filename);
+       CSegSet srcset(src_filename);
+       CSegSet refset(ref_filename);
+       const auto& src_frames = srcset.get_frames();
+       const auto& ref_frames = refset.get_frames();
 
-	const auto& src_frames = srcset.get_frames();
-	const auto& ref_frames = refset.get_frames();
+       if (src_frames.size() != ref_frames.size())
+              throw invalid_argument("Input data sets must have the same number of slices");
 
-	if (src_frames.size() != ref_frames.size())
-		throw invalid_argument("Input data sets must have the same number of slices"); 
-	
-	if (skip >= (int)src_frames.size()) 
-		throw invalid_argument("Can't skip the whole series"); 
+       if (skip >= (int)src_frames.size())
+              throw invalid_argument("Can't skip the whole series");
 
-	auto isrc_frame = srcset.get_frames().begin() + skip;
-	auto iref_frame = refset.get_frames().begin() + skip;
-	auto esrc_frame = srcset.get_frames().end();
+       auto isrc_frame = srcset.get_frames().begin() + skip;
+       auto iref_frame = refset.get_frames().begin() + skip;
+       auto esrc_frame = srcset.get_frames().end();
 
-	while (isrc_frame != esrc_frame) {
-		cout << iref_frame->get_hausdorff_distance(*isrc_frame) << "\n";
-		++iref_frame;
-		++isrc_frame; 
-	}
-	return 0;
+       while (isrc_frame != esrc_frame) {
+              cout << iref_frame->get_hausdorff_distance(*isrc_frame) << "\n";
+              ++iref_frame;
+              ++isrc_frame;
+       }
+
+       return 0;
 }
 
 #include <mia/internal/main.hh>
-MIA_MAIN(do_main); 
+MIA_MAIN(do_main);

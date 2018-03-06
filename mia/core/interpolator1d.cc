@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 NS_MIA_BEGIN
 
-using std::invalid_argument; 
+using std::invalid_argument;
 
 C1DInterpolator::~C1DInterpolator()
 {
@@ -33,37 +33,36 @@ C1DInterpolator::~C1DInterpolator()
 
 
 C1DInterpolatorFactory::C1DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& bc):
-	m_kernel(kernel),
-	m_bc(bc.clone())
+       m_kernel(kernel),
+       m_bc(bc.clone())
 {
-	assert(m_kernel);
-	assert(m_bc); 
+       assert(m_kernel);
+       assert(m_bc);
 }
 
 C1DInterpolatorFactory::C1DInterpolatorFactory(const std::string& kernel_descr, const std::string& boundary_descr):
-	m_kernel(produce_spline_kernel(kernel_descr)),
-	m_bc(produce_spline_boundary_condition(boundary_descr))
+       m_kernel(produce_spline_kernel(kernel_descr)),
+       m_bc(produce_spline_boundary_condition(boundary_descr))
 {
 }
 
 
 C1DInterpolatorFactory::C1DInterpolatorFactory(const C1DInterpolatorFactory& o):
-	m_kernel(o.m_kernel), 
-	m_bc(o.m_bc->clone())
+       m_kernel(o.m_kernel),
+       m_bc(o.m_bc->clone())
 {
 }
 
 C1DInterpolatorFactory& C1DInterpolatorFactory::operator = ( const C1DInterpolatorFactory& o)
 {
-	m_kernel = o.m_kernel;
-	m_bc.reset(o.m_bc->clone()); 
-
-	return *this;
+       m_kernel = o.m_kernel;
+       m_bc.reset(o.m_bc->clone());
+       return *this;
 }
 
 PSplineKernel C1DInterpolatorFactory::get_kernel() const
 {
-	return m_kernel;
+       return m_kernel;
 }
 
 C1DInterpolatorFactory::~C1DInterpolatorFactory()

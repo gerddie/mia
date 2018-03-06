@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,27 +28,28 @@
 
 NS_MIA_BEGIN
 
-class  EXPORT_CORE CFlagString {
+class  EXPORT_CORE CFlagString
+{
 public:
-	typedef struct {
-		char id;
-		int  flag;
-	} Table;
+       typedef struct {
+              char id;
+              int  flag;
+       } Table;
 
-	CFlagString(const Table table[]);
+       CFlagString(const Table table[]);
 
-	int get(const std::string& flags)const;
+       int get(const std::string& flags)const;
 
-	const std::string get(int flags)const;
+       const std::string get(int flags)const;
 
-	const std::string get_flagnames()const;
+       const std::string get_flagnames()const;
 
 private:
-	typedef std::map<char, int> TMap;
-	typedef std::map<int, char> TBackMap;
+       typedef std::map<char, int> TMap;
+       typedef std::map<int, char> TBackMap;
 
-	TMap m_map;
-	TBackMap m_backmap;
+       TMap m_map;
+       TBackMap m_backmap;
 
 };
 

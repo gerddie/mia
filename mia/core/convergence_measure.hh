@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Genoa 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,61 +25,63 @@
 #include <deque>
 #include <cstdint>
 
-#include <mia/core/defines.hh> 
+#include <mia/core/defines.hh>
 
-namespace mia {
+namespace mia
+{
 
 /**
-   \brief Class to get a convergence value as mean over various time steps 
+   \brief Class to get a convergence value as mean over various time steps
 
-   This class can is used to measure the mean of a value over a user-defined 
+   This class can is used to measure the mean of a value over a user-defined
    number of steps.
-   
+
 
 */
 
 
-class EXPORT_CORE CConvergenceMeasure {
+class EXPORT_CORE CConvergenceMeasure
+{
 public:
-	
-	/**
-	   Contruct the class by giving the number of steps the 
-	   measure should be averaged over. 
 
-	   \param size default number of steps to take into account
-	   
-	*/
-	
-	CConvergenceMeasure(uint32_t size);
+       /**
+          Contruct the class by giving the number of steps the
+          measure should be averaged over.
 
-	/**
-	   Add a new value to the measure. If the maximum number of 
-	   values is already in consideration, the oldest value will 
-	   be dropped. 
-	 */
-	
-        void push(double value);
+          \param size default number of steps to take into account
 
-	/// 	   \returns current average of the measure 
-        double value() const;
+       */
+
+       CConvergenceMeasure(uint32_t size);
+
+       /**
+          Add a new value to the measure. If the maximum number of
+          values is already in consideration, the oldest value will
+          be dropped.
+        */
+
+       void push(double value);
+
+       /// 	   \returns current average of the measure
+       double value() const;
 
 
-	/** \returns the (linear) rate of change as linear regression of
-	    the values currently in the buffer. 
-	*/
-	double rate() const; 
-	
-        ///  \returns the number of values currently in the buffer
-        uint32_t fill() const;
+       /** \returns the (linear) rate of change as linear regression of
+           the values currently in the buffer.
+       */
+       double rate() const;
 
-	/// \returns whether the buffer is at maximal expected capacity 
-        bool is_full_size() const;
+       ///  \returns the number of values currently in the buffer
+       uint32_t fill() const;
+
+       /// \returns whether the buffer is at maximal expected capacity
+       bool is_full_size() const;
 
 private:
-        std::deque<double> m_v;
-        uint32_t m_size;
-}; 
+       std::deque<double> m_v;
+       uint32_t m_size;
+};
 
 }; // namespace mia
 
-#endif 
+#endif

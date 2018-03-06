@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/fft1d_r2c.hh>
 #include <mia/core/errormacro.hh>
-#include <complex> 
+#include <complex>
 
 #include <pwpdf/pwd2.h>
 
@@ -39,67 +39,67 @@
 
 
 NS_MIA_BEGIN
-using namespace std; 
+using namespace std;
 
 struct CParzenWindowHistogramImpl {
-	CParzenWindowHistogramImpl(double low, double high, 
-				   size_t values, const std::vector<double>& samples); 
-	~CParzenWindowHistogramImpl(); 
-	
-	double at(double x) const; 
-	double derivative(double x) const; 
+       CParzenWindowHistogramImpl(double low, double high,
+                                  size_t values, const std::vector<double>& samples);
+       ~CParzenWindowHistogramImpl();
 
-	C1DSpacialKernelPlugin::ProductPtr kernel; 
-	std::shared_ptr<T1DConvoluteInterpolator<double> > interp; 
-	double  range_low; 
-	double  range_high;  
-	double target_shift; 
-	double target_scale; 
-	double output_scale; 
-}; 
+       double at(double x) const;
+       double derivative(double x) const;
 
-CParzenWindowHistogram::CParzenWindowHistogram(double low, double high, 
-					       size_t values, const std::vector<double>& samples):
-	impl(new CParzenWindowHistogramImpl(low, high, values, samples))
+       C1DSpacialKernelPlugin::ProductPtr kernel;
+       std::shared_ptr<T1DConvoluteInterpolator<double>> interp;
+       double  range_low;
+       double  range_high;
+       double target_shift;
+       double target_scale;
+       double output_scale;
+};
+
+CParzenWindowHistogram::CParzenWindowHistogram(double low, double high,
+              size_t values, const std::vector<double>& samples):
+       impl(new CParzenWindowHistogramImpl(low, high, values, samples))
 {
 }
 
 CParzenWindowHistogram::~CParzenWindowHistogram()
 {
-	delete impl; 
+       delete impl;
 }
 
 
 
 double CParzenWindowHistogram::operator [] (double i) const
 {
-	return impl->at(i); 
+       return impl->at(i);
 }
 
 double CParzenWindowHistogram::derivative (double i) const
 {
-	return impl->derivative(i); 
+       return impl->derivative(i);
 }
 
 
 
-CParzenWindowHistogramImpl::CParzenWindowHistogramImpl(double low, double high, 
-						       size_t values, const vector<double>& samples):
-	range_low(low), 
-	range_high(high), 
-	target_shift(low)
+CParzenWindowHistogramImpl::CParzenWindowHistogramImpl(double low, double high,
+              size_t values, const vector<double>& samples):
+       range_low(low),
+       range_high(high),
+       target_shift(low)
 
 {
+       ParzenWindowsNfftPDF2 *pwd = parzen_windows_nfft_pdf2_new(samples.size(), values, low, high);
+       vector<double> alpha(samples.size(), 1.0);
+       vector<double> fast_sumresult(values);
+       bool result = parzen_windows_nfft_pdf2_estimate(pwd, &samples[0], &alpha[0], &fast_sumresult[0]);
+       parzen_windows_nfft_pdf2_free(pwd);
 
-	ParzenWindowsNfftPDF2 *pwd = parzen_windows_nfft_pdf2_new(samples.size(), values, low, high); 
-	vector<double> alpha(samples.size(), 1.0); 
-	vector<double> fast_sumresult(values);  
-	bool result = parzen_windows_nfft_pdf2_estimate(pwd, &samples[0], &alpha[0], &fast_sumresult[0]); 
-	parzen_windows_nfft_pdf2_free(pwd); 
-	if (!result) 
-		throw invalid_argument("CParzenWindowHistogram: input data bogus (bad range or number of samples"); 
+       if (!result)
+              throw invalid_argument("CParzenWindowHistogram: input data bogus (bad range or number of samples");
 
-	interp.reset(new T1DConvoluteInterpolator<double>(fast_sumresult, PSplineKernel(new CSplineKernel3()))); 
+       interp.reset(new T1DConvoluteInterpolator<double>(fast_sumresult, PSplineKernel(new CSplineKernel3())));
 }
 
 CParzenWindowHistogramImpl::~CParzenWindowHistogramImpl()
@@ -108,18 +108,18 @@ CParzenWindowHistogramImpl::~CParzenWindowHistogramImpl()
 
 double CParzenWindowHistogramImpl::at(double x) const
 {
-	// this should be an option of the interpolator 
-	if (x >= range_low && x <= range_high) 
-		return (*interp)(x); 
-	else return 0.0; 
+       // this should be an option of the interpolator
+       if (x >= range_low && x <= range_high)
+              return (*interp)(x);
+       else return 0.0;
 }
 
 double CParzenWindowHistogramImpl::derivative(double x) const
 {
-	// this should be an option of the interpolator 
-	if (x >= range_low && x <= range_high) 
-		return interp->derivative_at(x); 
-	else return 0.0; 
+       // this should be an option of the interpolator
+       if (x >= range_low && x <= range_high)
+              return interp->derivative_at(x);
+       else return 0.0;
 }
 NS_MIA_END
 

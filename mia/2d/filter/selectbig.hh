@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -37,24 +37,26 @@ NS_BEGIN(selectbig_2dimage_filter)
 /* This is the work-horse class of the filter plugin. It is initialised with above parameters
    and provides a templated operator () to be able to handle all pixel types.
  */
-class C2DSelectBig: public mia::C2DFilter {
+class C2DSelectBig: public mia::C2DFilter
+{
 public:
-	C2DSelectBig();
+       C2DSelectBig();
 
-	template <typename T>
-	C2DSelectBig::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <typename T>
+       C2DSelectBig::result_type operator () (const mia::T2DImage<T>& data) const;
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 };
 
 /* The factory class - this is what the application gets first. This factory class is used to
    create the actual filter object. It also provides some filter testing routines.
 */
-class C2DSelectBigImageFilterFactory: public mia::C2DFilterPlugin {
+class C2DSelectBigImageFilterFactory: public mia::C2DFilterPlugin
+{
 public:
-	C2DSelectBigImageFilterFactory();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DSelectBigImageFilterFactory();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

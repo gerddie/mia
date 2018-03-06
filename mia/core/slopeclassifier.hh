@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,79 +29,80 @@ NS_MIA_BEGIN
 
 /**
    \ingroup perf
-   \brief Curve classifier for heart perfusion data 
-   
+   \brief Curve classifier for heart perfusion data
+
    Classify a set of curves. This class is mostly usefull for the analysis
    of series of perfusion images that are aquired using free breathing.
 */
 
-class  EXPORT_CORE  CSlopeClassifier {
+class  EXPORT_CORE  CSlopeClassifier
+{
 public:
-	/// typedef to define the matrix of curves 
-	typedef CSlopeColumns Columns; 
+       /// typedef to define the matrix of curves
+       typedef CSlopeColumns Columns;
 
 
-	/**
-	   Helper structure to store the correlation of two curves 
-	 */
-	typedef struct  {
-		/// correlation 
-		float corr; 
-		/// index of first row 
-		int row1;
-		/// index of second row 
-		int row2;
-	} SCorrelation;
+       /**
+          Helper structure to store the correlation of two curves
+        */
+       typedef struct  {
+              /// correlation
+              float corr;
+              /// index of first row
+              int row1;
+              /// index of second row
+              int row2;
+       } SCorrelation;
 
-	/**
-	   Initialize the classifier with the given curves and the information whether the means were stripped 
-	   @param m matrix of curves 
-	   @param mean_stripped
-	 */
-	CSlopeClassifier(const Columns& m, bool mean_stripped);
+       /**
+          Initialize the classifier with the given curves and the information whether the means were stripped
+          @param m matrix of curves
+          @param mean_stripped
+        */
+       CSlopeClassifier(const Columns& m, bool mean_stripped);
 
-	/** copy constructor */
-	CSlopeClassifier(const CSlopeClassifier& other);
-	
-	CSlopeClassifier(); 
-	
-	/// assignment operator 
-	CSlopeClassifier& operator =(const CSlopeClassifier& other);
+       /** copy constructor */
+       CSlopeClassifier(const CSlopeClassifier& other);
 
-	~CSlopeClassifier();
+       CSlopeClassifier();
 
-	/// @return the index of the periodic curve or -1 if none was found 
-	int get_periodic_idx() const;
-	
-	/// @return the index of the RV enhancement curve or -1 if not identified 
-	int get_RV_idx()const;
-	
-	/// @return the index of the LV enhancement curve or -1 if not identified 
-	int get_LV_idx() const;
+       /// assignment operator
+       CSlopeClassifier& operator =(const CSlopeClassifier& other);
 
-	/// @return the index of the baseline curve or -1 if not identified 
-	int get_baseline_idx() const;
-	
-	/// @return the index of the perfusion curve or -1 if not identified 
-	int get_perfusion_idx() const;
+       ~CSlopeClassifier();
 
-	/// @return the time index of the RV peak image or  -1 if not identified 
-	int get_RV_peak()const;
-	
-	/// @return the time index of the LV peak image or  -1 if not identified 
-	int get_LV_peak() const;
+       /// @return the index of the periodic curve or -1 if none was found
+       int get_periodic_idx() const;
 
-	/// \returns the absolute difference between the length of the longest and second longest curve in the list
-	float get_max_slope_length_diff() const;
+       /// @return the index of the RV enhancement curve or -1 if not identified
+       int get_RV_idx()const;
 
-	/// \returns the maximum value of the correlation between the curves and the rows for which it occures 
-	SCorrelation  max_selfcorrelation() const;
+       /// @return the index of the LV enhancement curve or -1 if not identified
+       int get_LV_idx() const;
 
-	/// \returns the column index of this slope
-	int index() const; 
+       /// @return the index of the baseline curve or -1 if not identified
+       int get_baseline_idx() const;
+
+       /// @return the index of the perfusion curve or -1 if not identified
+       int get_perfusion_idx() const;
+
+       /// @return the time index of the RV peak image or  -1 if not identified
+       int get_RV_peak()const;
+
+       /// @return the time index of the LV peak image or  -1 if not identified
+       int get_LV_peak() const;
+
+       /// \returns the absolute difference between the length of the longest and second longest curve in the list
+       float get_max_slope_length_diff() const;
+
+       /// \returns the maximum value of the correlation between the curves and the rows for which it occures
+       SCorrelation  max_selfcorrelation() const;
+
+       /// \returns the column index of this slope
+       int index() const;
 
 private:
-	struct CSlopeClassifierImpl *impl;
+       struct CSlopeClassifierImpl *impl;
 };
 
 /// \returns Pearsons correlation coefficient between two series

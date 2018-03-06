@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -20,41 +20,42 @@
 
 #include <jpeglib.h>
 
-namespace miajpeg {
+namespace miajpeg
+{
 
 struct JpegDecompress {
-	
-	JpegDecompress()
-        {
-                info.err = jpeg_std_error(&err);	
-                jpeg_create_decompress(&info);
-        }
-        
-	~JpegDecompress()
-        {
-                jpeg_destroy_decompress(&info);	
-        }
-        
-	struct jpeg_decompress_struct info;
-	struct jpeg_error_mgr err;
-}; 
 
-struct JpegCompress {
-	
-	JpegCompress()
-        {
-                info.err = jpeg_std_error(&err);	
-                jpeg_create_compress(&info);
-        }
-        
-	~JpegCompress()
-        {
-                jpeg_destroy_compress(&info);	
-        }
+       JpegDecompress()
+       {
+              info.err = jpeg_std_error(&err);
+              jpeg_create_decompress(&info);
+       }
 
+       ~JpegDecompress()
+       {
+              jpeg_destroy_decompress(&info);
+       }
 
-	struct jpeg_compress_struct info; 
-	struct jpeg_error_mgr       err; 
+       struct jpeg_decompress_struct info;
+       struct jpeg_error_mgr err;
 };
 
-}; 
+struct JpegCompress {
+
+       JpegCompress()
+       {
+              info.err = jpeg_std_error(&err);
+              jpeg_create_compress(&info);
+       }
+
+       ~JpegCompress()
+       {
+              jpeg_destroy_compress(&info);
+       }
+
+
+       struct jpeg_compress_struct info;
+       struct jpeg_error_mgr       err;
+};
+
+};

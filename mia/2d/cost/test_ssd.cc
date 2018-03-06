@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,39 +24,34 @@
 
 using namespace std;
 using namespace boost;
-namespace bfs=::boost::filesystem;
+namespace bfs =::boost::filesystem;
 using namespace mia;
 using namespace mia_2dcost_ssd;
 
 BOOST_AUTO_TEST_CASE( test_SSD_2D )
 {
-	const float src_data[16] = {
-		0, 0, 0, 0,
-		0, 3, 1, 0,
-		0, 6, 7, 0,
-		0, 0, 0, 0
-	};
-	const float ref_data[16] = {
-		0, 0, 0, 0,
-		0, 2, 3, 0,
-		0, 1, 2, 0,
-		0, 0, 0, 0
-	};
-
-	P2DImage src(new C2DFImage(C2DBounds(4,4), src_data ));
-	P2DImage ref(new C2DFImage(C2DBounds(4,4), ref_data ));
-
-	C2DSSDCost cost(true, 0.0f);
-	cost.set_reference(*ref); 
-	double cost_value = cost.value(*src);
-	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0 / 16.0, 0.1);
-
-	C2DFVectorfield force(C2DBounds(4,4));
-
-	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, force), 0.5 * 55.0 / 16.0, 0.1);
-
-	BOOST_CHECK_CLOSE(force(1,1).x, 0.25f / 8.0f, 0.1);
-	BOOST_CHECK_CLOSE(force(1,1).y, 1.50f / 8.0f, 0.1);
+       const float src_data[16] = {
+              0, 0, 0, 0,
+              0, 3, 1, 0,
+              0, 6, 7, 0,
+              0, 0, 0, 0
+       };
+       const float ref_data[16] = {
+              0, 0, 0, 0,
+              0, 2, 3, 0,
+              0, 1, 2, 0,
+              0, 0, 0, 0
+       };
+       P2DImage src(new C2DFImage(C2DBounds(4, 4), src_data ));
+       P2DImage ref(new C2DFImage(C2DBounds(4, 4), ref_data ));
+       C2DSSDCost cost(true, 0.0f);
+       cost.set_reference(*ref);
+       double cost_value = cost.value(*src);
+       BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0 / 16.0, 0.1);
+       C2DFVectorfield force(C2DBounds(4, 4));
+       BOOST_CHECK_CLOSE(cost.evaluate_force(*src, force), 0.5 * 55.0 / 16.0, 0.1);
+       BOOST_CHECK_CLOSE(force(1, 1).x, 0.25f / 8.0f, 0.1);
+       BOOST_CHECK_CLOSE(force(1, 1).y, 1.50f / 8.0f, 0.1);
 }
 
 

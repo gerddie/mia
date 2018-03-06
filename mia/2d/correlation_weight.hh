@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,45 +27,46 @@
 NS_MIA_BEGIN
 
 /**
-   @ingroup perf 
-   \brief evaluate the correlation between neighboring pixels in an image series  
-   
-   Evaluate time-intensity correlations of neighboring pixels in a series of images. 
-   This class is used to evaluate a pseude ground truth for motion compensation. 
-   See C2DGroundTruthEvaluator for more information 
-   
+   @ingroup perf
+   \brief evaluate the correlation between neighboring pixels in an image series
+
+   Evaluate time-intensity correlations of neighboring pixels in a series of images.
+   This class is used to evaluate a pseude ground truth for motion compensation.
+   See C2DGroundTruthEvaluator for more information
+
  */
 
-class EXPORT_2D CCorrelationEvaluator {
+class EXPORT_2D CCorrelationEvaluator
+{
 public:
-	/**
-	   helper structure to hold the correlation data 
-	 */
-	typedef struct {
-		/// data field to hold the correlation in horizontal direction 
-		C2DFImage horizontal;
-		/// data field to hold the correlation in vertical direction 
-		C2DFImage vertical;
-	} result_type;
+       /**
+          helper structure to hold the correlation data
+        */
+       typedef struct {
+              /// data field to hold the correlation in horizontal direction
+              C2DFImage horizontal;
+              /// data field to hold the correlation in vertical direction
+              C2DFImage vertical;
+       } result_type;
 
-	/**
-	   Construct the correlation evaluator 
-	   @param thresh considers what correlation should identify pixels as belonging 
-	   to the same tissue. 
-	 */
-	CCorrelationEvaluator(double thresh);
-	
-	~CCorrelationEvaluator();
+       /**
+          Construct the correlation evaluator
+          @param thresh considers what correlation should identify pixels as belonging
+          to the same tissue.
+        */
+       CCorrelationEvaluator(double thresh);
 
-	/**
-	   Evaluate the time-intensity correlation images 
-	   @param images image series 
-	   @param skip number of images that should be skipped at the beginning of the series. 
-	 */
-	result_type operator() (const std::vector<P2DImage>& images, size_t skip = 0) const;
+       ~CCorrelationEvaluator();
+
+       /**
+          Evaluate the time-intensity correlation images
+          @param images image series
+          @param skip number of images that should be skipped at the beginning of the series.
+        */
+       result_type operator() (const std::vector<P2DImage>& images, size_t skip = 0) const;
 
 private:
-	struct CCorrelationEvaluatorImpl *impl;
+       struct CCorrelationEvaluatorImpl *impl;
 };
 
 NS_MIA_END

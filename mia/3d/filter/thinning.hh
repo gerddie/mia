@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -22,20 +22,22 @@
 
 NS_BEGIN(thinning_3dimage_filter)
 
-class C3DThinning: public mia::C3DFilter {
+class C3DThinning: public mia::C3DFilter
+{
 public:
-	C3DThinning();
+       C3DThinning();
 
 private:
-	mia::C3DFilter::result_type do_filter(const mia::C3DImage& image) const;
+       mia::C3DFilter::result_type do_filter(const mia::C3DImage& image) const;
 };
 
 
-class C3DThinningFilterPlugin: public mia::C3DFilterPlugin {
+class C3DThinningFilterPlugin: public mia::C3DFilterPlugin
+{
 public:
-	C3DThinningFilterPlugin();
-	virtual mia::C3DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C3DThinningFilterPlugin();
+       virtual mia::C3DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

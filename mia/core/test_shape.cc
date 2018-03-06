@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,68 +23,69 @@
 #include <mia/core/shape.cxx>
 
 
-template <typename T> 
+template <typename T>
 struct pass_type {
-	typedef T value_type; 
+       typedef T value_type;
 
-	pass_type(): x(T()){}; 
-	pass_type(T _x): x(_x){}; 
-	T x; 
-}; 
+       pass_type(): x(T()) {};
+       pass_type(T _x): x(_x) {};
+       T x;
+};
 
-namespace mia {
+namespace mia
+{
 
-	template <typename T>
-	struct less_then<pass_type<T> > {
-		bool operator() (const pass_type<T>& a, const pass_type<T>& b) const {
-			return a.x < b.x;
-		}
-	}; 
+template <typename T>
+struct less_then<pass_type<T>> {
+       bool operator() (const pass_type<T>& a, const pass_type<T>& b) const
+       {
+              return a.x < b.x;
+       }
+};
 
-	template <>
-	struct __adjust<pass_type<int> > {
-		static void apply(pass_type<int>& size, const pass_type<int>& p)  {
-			int x = (p.x < 0 ? -2 * p.x : 2 *  p.x) + 1;
-			
-			if (size.x < x)
-				size.x = x;
-			
-		}
-	};
+template <>
+struct __adjust<pass_type<int>> {
+       static void apply(pass_type<int>& size, const pass_type<int>& p)
+       {
+              int x = (p.x < 0 ? -2 * p.x : 2 *  p.x) + 1;
+
+              if (size.x < x)
+                     size.x = x;
+       }
+};
 
 }
 
 
-NS_MIA_USE; 
+NS_MIA_USE;
 struct vector_size_type {
-	unsigned int x; 
-}; 
+       unsigned int x;
+};
 
 
 struct TestVector : public std::vector<bool> {
-	typedef int Super; 
+       typedef int Super;
 
-	vector_size_type get_size() const {
-		vector_size_type s; 
-		s.x = size(); 
-		return s; 
-	}
-}; 
+       vector_size_type get_size() const
+       {
+              vector_size_type s;
+              s.x = size();
+              return s;
+       }
+};
 
 
-typedef TShape<pass_type, TestVector > C1DShape; 
+typedef TShape<pass_type, TestVector > C1DShape;
 
-BOOST_AUTO_TEST_CASE( test_shape_has_location ) 
+BOOST_AUTO_TEST_CASE( test_shape_has_location )
 {
-	pass_type<int> x = {1}; 
-	pass_type<int> y = {2}; 
-	C1DShape shape; 
-	shape.insert(x); 
-	
-	BOOST_CHECK_EQUAL(shape.size(), 1u); 
-
-	BOOST_CHECK(shape.has_location(x)); 
-	BOOST_CHECK(!shape.has_location(y));
+       pass_type<int> x = {1};
+       pass_type<int> y = {2};
+       C1DShape shape;
+       shape.insert(x);
+       BOOST_CHECK_EQUAL(shape.size(), 1u);
+       BOOST_CHECK(shape.has_location(x));
+       BOOST_CHECK(!shape.has_location(y));
 }
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -31,35 +31,33 @@
 #include <mia/3d/vfiotest.hh>
 
 NS_MIA_USE
-using namespace std; 
-namespace bfs=::boost::filesystem; 
+using namespace std;
+namespace bfs =::boost::filesystem;
 
 static void prepare_handler()
 {
-	std::list< ::boost::filesystem::path> searchpath; 
-	if (bfs::path::default_name_check_writable())
-		bfs::path::default_name_check(bfs::portable_posix_name); 
-	searchpath.push_back(bfs::path("3d") / bfs::path("io")); 
-	searchpath.push_back(bfs::path("io")); 
+       std::list< ::boost::filesystem::path> searchpath;
 
-	C3DVFIOPluginHandler::set_search_path(searchpath); 	
+       if (bfs::path::default_name_check_writable())
+              bfs::path::default_name_check(bfs::portable_posix_name);
+
+       searchpath.push_back(bfs::path("3d") / bfs::path("io"));
+       searchpath.push_back(bfs::path("io"));
+       C3DVFIOPluginHandler::set_search_path(searchpath);
 }
 
 
 
 static void test_3dvfio_plugin_avail()
 {
-	const C3DVFIOPluginHandler::Instance&  handler = C3DVFIOPluginHandler::instance(); 
-
-	BOOST_CHECK(handler.size() == 1); 
-	BOOST_CHECK(handler.get_plugin_names() == "vtk ");
-
+       const C3DVFIOPluginHandler::Instance&  handler = C3DVFIOPluginHandler::instance();
+       BOOST_CHECK(handler.size() == 1);
+       BOOST_CHECK(handler.get_plugin_names() == "vtk ");
 }
 
-void add_3dvfio_tests( boost::unit_test::test_suite* suite)
+void add_3dvfio_tests( boost::unit_test::test_suite *suite)
 {
-	prepare_handler();
-
-	suite->add( BOOST_TEST_CASE(&test_3dvfio_plugin_avail)); 
-	add_3dvfio_plugin_tests(suite);
+       prepare_handler();
+       suite->add( BOOST_TEST_CASE(&test_3dvfio_plugin_avail));
+       add_3dvfio_plugin_tests(suite);
 }

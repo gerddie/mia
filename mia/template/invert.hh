@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,28 +28,30 @@
 
 NS_MIA_BEGIN
 
-///  @cond DOC_PLUGINS 
-template <class Image> 
-class TInvert: public TDataFilter<Image> {
-public: 	
-	typedef typename TDataFilter<Image>::result_type result_type; 
-	TInvert(); 
+///  @cond DOC_PLUGINS
+template <class Image>
+class TInvert: public TDataFilter<Image>
+{
+public:
+       typedef typename TDataFilter<Image>::result_type result_type;
+       TInvert();
 
-	template <class  T>
-	typename TInvert::result_type operator () (const T& data) const;
-private: 
-	typename TInvert::result_type do_filter(const Image& image) const;
+       template <class  T>
+       typename TInvert::result_type operator () (const T& data) const;
+private:
+       typename TInvert::result_type do_filter(const Image& image) const;
 };
 
-template <class Image> 
-class TInvertFilterPlugin: public TDataFilterPlugin<Image>  {
-public: 
-	TInvertFilterPlugin();
-	virtual TDataFilter<Image> *do_create()const;
-	virtual const std::string do_get_descr()const; 
+template <class Image>
+class TInvertFilterPlugin: public TDataFilterPlugin<Image>
+{
+public:
+       TInvertFilterPlugin();
+       virtual TDataFilter<Image> *do_create()const;
+       virtual const std::string do_get_descr()const;
 };
 
-///  @endcond 
+///  @endcond
 NS_MIA_END
 
 

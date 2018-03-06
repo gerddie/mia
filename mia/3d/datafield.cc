@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ template <>
 T3DDatafield<bool>::value_type
 T3DDatafield<bool>::strip_avg()
 {
-	throw std::invalid_argument("strip_avg() doesn't make sense for boolean fields");
+       throw std::invalid_argument("strip_avg() doesn't make sense for boolean fields");
 }
 
 
@@ -67,13 +67,13 @@ INSTANCIATE(uint64_t);
 
 template class  T3DDatafield<bool>;
 
-DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
-DEFINE_TYPE_DESCR2(C3DFVector, "3dfvector"); 
+DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds");
+DEFINE_TYPE_DESCR2(C3DFVector, "3dfvector");
 
 template class CTParameter<C3DBounds>;
 template class CTParameter<C3DFVector>;
-template class TTranslator<C3DFVector>; 
-template class TAttribute<C3DFVector>; 
+template class TTranslator<C3DFVector>;
+template class TAttribute<C3DFVector>;
 
 NS_MIA_END
 

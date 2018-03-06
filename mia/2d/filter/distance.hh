@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,14 +23,15 @@
 
 #include <mia/2d/filter.hh>
 
-NS_BEGIN(distance_2d_filter) 
+NS_BEGIN(distance_2d_filter)
 
-class C2DDistance: public mia::C2DFilter {
+class C2DDistance: public mia::C2DFilter
+{
 public:
-	template <class T>
-	typename C2DDistance::result_type operator () (const mia::T2DImage<T>& data) const ;
-private: 
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       template <class T>
+       typename C2DDistance::result_type operator () (const mia::T2DImage<T>& data) const ;
+private:
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 };
 
 

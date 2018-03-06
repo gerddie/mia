@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -39,24 +39,24 @@ NS_MIA_BEGIN
 static const char *test_plugin_type_str = "test";
 static const char *test_plugin_data_str = "none";
 
-const char * const test_property = "testprop";
+const char *const test_property = "testprop";
 
 struct test_plugin_type {
-	static  const char *type_descr;
+       static  const char *type_descr;
 };
 
-const char * test_plugin_type::type_descr =  test_plugin_type_str;
+const char *test_plugin_type::type_descr =  test_plugin_type_str;
 
 struct test_plugin_data {
-	static  const char *data_descr;
+       static  const char *data_descr;
 
 };
 
-const char * test_plugin_data::data_descr = test_plugin_data_str;
+const char *test_plugin_data::data_descr = test_plugin_data_str;
 
 
 CTestPlugin::CTestPlugin(const char *name):
-	TPlugin<test_plugin_data, test_plugin_type>(name)
+       TPlugin<test_plugin_data, test_plugin_type>(name)
 {
 }
 
@@ -66,13 +66,13 @@ CTestPluginHandlerImpl::CTestPluginHandlerImpl()
 
 CTestPlugin *CTestPluginHandlerImpl::get_plugin(const char *name) const
 {
-	return plugin(name);
+       return plugin(name);
 }
 
-template<> 
-const char * const TPluginHandler<CTestPlugin>::m_help = "This is a handler for the test plug-ins"; 
+template<>
+const char *const TPluginHandler<CTestPlugin>::m_help = "This is a handler for the test plug-ins";
 
-template class TPlugin<test_plugin_data, test_plugin_type>; 
+template class TPlugin<test_plugin_data, test_plugin_type>;
 template class TPluginHandler<CTestPlugin>;
 template class THandlerSingleton<CTestPluginHandlerImpl>;
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2016 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -18,13 +18,13 @@
  *
  */
 
-// the plug-in tester function tests whether a plug-in is created according to the specification 
+// the plug-in tester function tests whether a plug-in is created according to the specification
 #include <mia/internal/plugintester.hh>
 
-/* the filtertest fnction takes input data in a given data typa and an expected result in the expected data 
-   type and the filter to be tested. 
-   A test attribute is also created and it is tested whether the filter properly passed this attribute. 
-*/ 
+/* the filtertest fnction takes input data in a given data typa and an expected result in the expected data
+   type and the filter to be tested.
+   A test attribute is also created and it is tested whether the filter properly passed this attribute.
+*/
 #include <mia/template/filtertest.hh>
 
 // this gives the declaration of the filter to be tested
@@ -42,45 +42,38 @@ using namespace simple_2dimage_filter;
 
 BOOST_FIXTURE_TEST_CASE(test_simple_1, TFiltertestFixture<T2DImage>)
 {
-	const int src[6] =   {  0,   1,  2,  3,  4,  5};
-	const int test[6] =  {  0,  -1, -2, -3, -4, -5};
-	C2DBounds size(3,2);
-
-	C2DSIImage input(size, src); 
-
-	auto filter = BOOST_TEST_create_from_plugin<C2DSimpleImageFilterPlugin>("simple:a=-1"); 
-	
-	BOOST_CHECK_THROW(run(size, src, size, test, *filter), invalid_argument); 
+       const int src[6] =   {  0,   1,  2,  3,  4,  5};
+       const int test[6] =  {  0,  -1, -2, -3, -4, -5};
+       C2DBounds size(3, 2);
+       C2DSIImage input(size, src);
+       auto filter = BOOST_TEST_create_from_plugin<C2DSimpleImageFilterPlugin>("simple:a=-1");
+       BOOST_CHECK_THROW(run(size, src, size, test, *filter), invalid_argument);
 }
 
 
 /*
-  This test runs a valid filter.  
+  This test runs a valid filter.
 */
 
 BOOST_FIXTURE_TEST_CASE(test_simple_3, TFiltertestFixture<T2DImage>)
 {
-	const float src[6] =   {  0,  1,  2,  3,  4,  5};
-	const float test[6] =  {  0,  2,  4,  6,  8, 10};
-	C2DBounds size(3,2);
-
-	auto filter = BOOST_TEST_create_from_plugin<C2DSimpleImageFilterPlugin>("simple:a=2"); 
-	
-	run(size, src, size, test, *filter); 
+       const float src[6] =   {  0,  1,  2,  3,  4,  5};
+       const float test[6] =  {  0,  2,  4,  6,  8, 10};
+       C2DBounds size(3, 2);
+       auto filter = BOOST_TEST_create_from_plugin<C2DSimpleImageFilterPlugin>("simple:a=2");
+       run(size, src, size, test, *filter);
 }
 
 /*
-  This test runs another valid filter with different filter parameters.  
+  This test runs another valid filter with different filter parameters.
 */
 
 BOOST_FIXTURE_TEST_CASE(test_simple_2, TFiltertestFixture<T2DImage>)
 {
-	const double src[6] =   {  0,   1,  2,  3,  4,  5};
-	const double test[6] =  {  0,  -1, -2, -3, -4, -5};
-	C2DBounds size(3,2);
-
-	auto filter = BOOST_TEST_create_from_plugin<C2DSimpleImageFilterPlugin>("simple:a=-1"); 
-	
-	run(size, src, size, test, *filter); 
+       const double src[6] =   {  0,   1,  2,  3,  4,  5};
+       const double test[6] =  {  0,  -1, -2, -3, -4, -5};
+       C2DBounds size(3, 2);
+       auto filter = BOOST_TEST_create_from_plugin<C2DSimpleImageFilterPlugin>("simple:a=-1");
+       run(size, src, size, test, *filter);
 }
 

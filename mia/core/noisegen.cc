@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -38,10 +38,10 @@ const char *generator_type::type_descr = "noise";
 
 CNoiseGenerator::CNoiseGenerator(unsigned int seed)
 {
-	if (seed)
-		srand(seed);
-	else
-		srand(time(NULL));
+       if (seed)
+              srand(seed);
+       else
+              srand(time(NULL));
 }
 CNoiseGenerator::~CNoiseGenerator()
 {
@@ -49,20 +49,19 @@ CNoiseGenerator::~CNoiseGenerator()
 
 double CNoiseGenerator::operator ()()const
 {
-	return get();
+       return get();
 }
 
 double CNoiseGenerator::ranf() const
 {
-	double x = rand();
-
-	return x / RAND_MAX;
+       double x = rand();
+       return x / RAND_MAX;
 }
 
-template<> const char * const 
+template<> const char *const
 TPluginHandler<TFactory<CNoiseGenerator>>::m_help = "These plug-ins provide various noise generators.";
 
 
-EXPLICIT_INSTANCE_HANDLER(CNoiseGenerator); 
+EXPLICIT_INSTANCE_HANDLER(CNoiseGenerator);
 
 NS_MIA_END

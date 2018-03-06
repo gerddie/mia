@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,62 +28,66 @@ using std::vector;
 using std::copy;
 
 float EXPORT_2D distance_point_line(const C2DFVector& point,
-				    const C2DFVector& a,
-				    const C2DFVector& b)
+                                    const C2DFVector& a,
+                                    const C2DFVector& b)
 {
-	if (point == a || point == b)
-		return 0.0;
+       if (point == a || point == b)
+              return 0.0;
 
-	const C2DFVector line = a - b;
-	const C2DFVector p_end = point - b;
-	const float nline =  line.norm2();
-	const float npoint = p_end.norm2();
-	if (nline > 0.0 ) {
-		const float dotlplt = dot(line, p_end) / nline;
+       const C2DFVector line = a - b;
+       const C2DFVector p_end = point - b;
+       const float nline =  line.norm2();
+       const float npoint = p_end.norm2();
 
-		// point is "behind" reference end point or other end point
-		if (dotlplt <= 0)
-			return sqrt(npoint);
-		else if (dotlplt >= 1.0)
-			return (point - a).norm();
+       if (nline > 0.0 ) {
+              const float dotlplt = dot(line, p_end) / nline;
 
-		const C2DFVector proj = b + dotlplt * line;
-		return (point - proj).norm();
-	}else // special case: line segment is actually a point
-		return sqrt(npoint);
+              // point is "behind" reference end point or other end point
+              if (dotlplt <= 0)
+                     return sqrt(npoint);
+              else if (dotlplt >= 1.0)
+                     return (point - a).norm();
+
+              const C2DFVector proj = b + dotlplt * line;
+              return (point - proj).norm();
+       } else // special case: line segment is actually a point
+              return sqrt(npoint);
 }
 
 
 struct FDistanceTransform : public TFilter<C2DFImage> {
-	template <typename T> 
-	C2DFImage operator()( const T2DImage<T>& image) const {
+       template <typename T>
+       C2DFImage operator()( const T2DImage<T>& image) const
+       {
+              C2DFImage result(image.get_size(), image);
+              vector<float> buffer(image.get_size().x);
+              vector<T> in_buffer(image.get_size().x);
 
-		C2DFImage result(image.get_size(), image);
-		vector<float> buffer(image.get_size().x); 
-		vector<T> in_buffer(image.get_size().x); 
-		for (size_t y = 0; y < image.get_size().y; ++y) {
-			image.get_data_line_x(y, in_buffer);
-                        copy(in_buffer.begin(), in_buffer.end(), buffer.begin()); 
-			distance_transform_inplace(buffer); 
-			result.put_data_line_x(y, buffer);
-		}
-		buffer.resize(image.get_size().y); 
-		for (size_t x = 0; x < image.get_size().x; ++x) {
-			result.get_data_line_y(x, buffer);
-			distance_transform_inplace(buffer); 
-			result.put_data_line_y(x, buffer);
-		}
-		return result; 
-	}; 
-}; 
+              for (size_t y = 0; y < image.get_size().y; ++y) {
+                     image.get_data_line_x(y, in_buffer);
+                     copy(in_buffer.begin(), in_buffer.end(), buffer.begin());
+                     distance_transform_inplace(buffer);
+                     result.put_data_line_x(y, buffer);
+              }
+
+              buffer.resize(image.get_size().y);
+
+              for (size_t x = 0; x < image.get_size().x; ++x) {
+                     result.get_data_line_y(x, buffer);
+                     distance_transform_inplace(buffer);
+                     result.put_data_line_y(x, buffer);
+              }
+
+              return result;
+       };
+};
 
 
 C2DFImage EXPORT_2D distance_transform(const C2DImage& f)
 {
-
-	TRACE_FUNCTION; 
-	FDistanceTransform df; 
-	return mia::filter(df, f); 
+       TRACE_FUNCTION;
+       FDistanceTransform df;
+       return mia::filter(df, f);
 }
 
 NS_MIA_END

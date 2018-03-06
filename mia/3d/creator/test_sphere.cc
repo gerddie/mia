@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -18,21 +18,18 @@
  *
  */
 
-#include <mia/internal/plugintester.hh> 
+#include <mia/internal/plugintester.hh>
 #include <mia/3d/creator/sphere.hh>
 
 using namespace creator_sphere_3d;
-using namespace mia; 
+using namespace mia;
 
-BOOST_AUTO_TEST_CASE ( test_sphere ) 
+BOOST_AUTO_TEST_CASE ( test_sphere )
 {
-	C3DBounds size(10,20,30); 
-	auto f = BOOST_TEST_create_from_plugin<C3DSphereCreatorPlugin>("sphere:p=2,f=2");
-
-	auto image = (*f)(size, it_float); 
-	BOOST_CHECK_EQUAL(image->get_size(), size); 
-	
-
+       C3DBounds size(10, 20, 30);
+       auto f = BOOST_TEST_create_from_plugin<C3DSphereCreatorPlugin>("sphere:p=2,f=2");
+       auto image = (*f)(size, it_float);
+       BOOST_CHECK_EQUAL(image->get_size(), size);
 }
 
 

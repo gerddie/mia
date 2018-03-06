@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,39 +27,33 @@ NS_MIA_USE
 using namespace std;
 
 
-BOOST_AUTO_TEST_CASE ( test_fixedwidth_writing ) 
+BOOST_AUTO_TEST_CASE ( test_fixedwidth_writing )
 {
-	stringstream out; 
-
-	CFixedWidthOutput ts(out, 50); 
-
-	ts.write("This is the first line"); 
-	ts.push_offset(5); 
-	ts.newline(); 
-	ts.write("Some more text that is really long and doesn't fit on a line");
-	ts.push_offset(5); 
-	ts.newline(); 
-	ts.write("yet some more text that is really long and doesn't fit on a line\n");
-	ts.write("123456789 123456789 123456789 123456789 Let's see.");
-	ts.pop_offset();
-	ts.write("\nAnd another line that shouldn't fit on a line since it is really long");
-	ts.pop_offset();
-	ts.write("\nThe final line\n");
-
-	const string test_text("This is the first line\n"
-			       "     Some more text that is really long and \n"
-			       "     doesn't fit on a line\n"
-			       "          yet some more text that is really long \n"
-			       "          and doesn't fit on a line\n"
-			       "          123456789 123456789 123456789 123456789\n"
-			       "          Let's see.\n"
-			       "     And another line that shouldn't fit on a \n"
-			       "     line since it is really long\n" 
-			       "The final line\n"); 
-
-	cvdebug()  << out.str(); 
-	cvdebug()  << test_text; 
-	
-	BOOST_CHECK_EQUAL(out.str(), test_text); 
-
+       stringstream out;
+       CFixedWidthOutput ts(out, 50);
+       ts.write("This is the first line");
+       ts.push_offset(5);
+       ts.newline();
+       ts.write("Some more text that is really long and doesn't fit on a line");
+       ts.push_offset(5);
+       ts.newline();
+       ts.write("yet some more text that is really long and doesn't fit on a line\n");
+       ts.write("123456789 123456789 123456789 123456789 Let's see.");
+       ts.pop_offset();
+       ts.write("\nAnd another line that shouldn't fit on a line since it is really long");
+       ts.pop_offset();
+       ts.write("\nThe final line\n");
+       const string test_text("This is the first line\n"
+                              "     Some more text that is really long and \n"
+                              "     doesn't fit on a line\n"
+                              "          yet some more text that is really long \n"
+                              "          and doesn't fit on a line\n"
+                              "          123456789 123456789 123456789 123456789\n"
+                              "          Let's see.\n"
+                              "     And another line that shouldn't fit on a \n"
+                              "     line since it is really long\n"
+                              "The final line\n");
+       cvdebug()  << out.str();
+       cvdebug()  << test_text;
+       BOOST_CHECK_EQUAL(out.str(), test_text);
 }

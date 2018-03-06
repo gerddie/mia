@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -36,116 +36,133 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
-class CVista2DImageIOPlugin : public C2DImageIOPlugin {
+class CVista2DImageIOPlugin : public C2DImageIOPlugin
+{
 public:
-	CVista2DImageIOPlugin();
+       CVista2DImageIOPlugin();
 private:
-	PData do_load(const string& fname) const;
-	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const;
-	const std::string do_get_preferred_suffix() const; 
+       PData do_load(const string& fname) const;
+       bool do_save(const string& fname, const Data& data) const;
+       const string do_get_descr() const;
+       const std::string do_get_preferred_suffix() const;
 };
 
 CVista2DImageIOPlugin::CVista2DImageIOPlugin():
-	C2DImageIOPlugin("vista")
+       C2DImageIOPlugin("vista")
 {
-	add_supported_type(it_bit);
-	add_supported_type(it_ubyte);
-	add_supported_type(it_sbyte);
-	add_supported_type(it_sshort);
-	add_supported_type(it_ushort);
-	add_supported_type(it_sint);
-	add_supported_type(it_uint);
-	add_supported_type(it_float);
-	add_supported_type(it_double);
-
-	add_standard_vistaio_properties(*this); 
-
-	add_suffix(".-");
-	add_suffix(".v");
-	add_suffix(".V");
-	add_suffix(".vista");
-	add_suffix(".VISTA");
-
+       add_supported_type(it_bit);
+       add_supported_type(it_ubyte);
+       add_supported_type(it_sbyte);
+       add_supported_type(it_sshort);
+       add_supported_type(it_ushort);
+       add_supported_type(it_sint);
+       add_supported_type(it_uint);
+       add_supported_type(it_float);
+       add_supported_type(it_double);
+       add_standard_vistaio_properties(*this);
+       add_suffix(".-");
+       add_suffix(".v");
+       add_suffix(".V");
+       add_suffix(".vista");
+       add_suffix(".VISTA");
 }
 
 
 template <typename T>
 void read_image(VistaIOImage image, CVista2DImageIOPlugin::Data& result_list, int aqnr)
 {
-	size_t n = VistaIOImageNBands(image);
-	size_t slice_size = VistaIOImageNColumns(image)* VistaIOImageNRows(image);
-	typedef typename vista_repnkind<T>::type O;
-	O *begin = (O*)VistaIOPixelPtr(image,0,0,0);
-	O *end = begin + slice_size;
+       size_t n = VistaIOImageNBands(image);
+       size_t slice_size = VistaIOImageNColumns(image) * VistaIOImageNRows(image);
+       typedef typename vista_repnkind<T>::type O;
+       O *begin = (O *)VistaIOPixelPtr(image, 0, 0, 0);
+       O *end = begin + slice_size;
+       size_t idx = 0;
 
-	size_t idx = 0; 
-	while (idx < n) {
-		T2DImage<T> *result = new T2DImage<T>(C2DBounds(VistaIOImageNColumns(image), VistaIOImageNRows(image)));
-		P2DImage presult(result);
-		std::copy(begin, end, result->begin());
-		copy_attr_list(*result, VistaIOImageAttrList(image));
+       while (idx < n) {
+              T2DImage<T> *result = new T2DImage<T>(C2DBounds(VistaIOImageNColumns(image), VistaIOImageNRows(image)));
+              P2DImage presult(result);
+              std::copy(begin, end, result->begin());
+              copy_attr_list(*result, VistaIOImageAttrList(image));
+              presult->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(idx)));
 
-		presult->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(idx))); 
-		if (!presult->has_attribute(IDAcquisitionNumber))
-			presult->set_attribute(IDAcquisitionNumber, PAttribute(new CIntAttribute(aqnr)));
-		result_list.push_back(presult);
-		begin += slice_size;
-		end   += slice_size;
-		++idx; 
-	}
+              if (!presult->has_attribute(IDAcquisitionNumber))
+                     presult->set_attribute(IDAcquisitionNumber, PAttribute(new CIntAttribute(aqnr)));
+
+              result_list.push_back(presult);
+              begin += slice_size;
+              end   += slice_size;
+              ++idx;
+       }
 }
 
 void copy_from_vista(VistaIOImage image, CVista2DImageIOPlugin::Data& result, int i)
 {
-	VistaIOBoolean is_unsigned = 0; 
-	VistaIOExtractAttr (VistaIOImageAttrList(image), "repn-unsigned",NULL, VistaIOBitRepn, 
-			    &is_unsigned, 0);
+       VistaIOBoolean is_unsigned = 0;
+       VistaIOExtractAttr (VistaIOImageAttrList(image), "repn-unsigned", NULL, VistaIOBitRepn,
+                           &is_unsigned, 0);
 
-	switch (VistaIOPixelRepn(image)) {
-	case VistaIOBitRepn :  read_image<bool>(image, result, i);break;
-	case VistaIOUByteRepn :  read_image<unsigned char>(image, result, i);break;
-	case VistaIOSByteRepn :  read_image<signed char>(image, result, i);break;
-	case VistaIOShortRepn : 
-		if (is_unsigned) 
-			read_image<unsigned short>(image, result, i);
-		else 
-			 read_image<signed short>(image, result, i);
-		break;
-	case VistaIOLongRepn : 
-		if (is_unsigned) 
-			 read_image<unsigned int>(image, result, i);
-		else
-			 read_image<signed int>(image, result, i);
-		break;
-	case VistaIOFloatRepn :  read_image<float>(image, result, i);break;
-	case VistaIODoubleRepn : read_image<double>(image, result, i);break;
-	default:
-		throw invalid_argument("2d vista load: Unknown pixel format");
-	}
+       switch (VistaIOPixelRepn(image)) {
+       case VistaIOBitRepn :
+              read_image<bool>(image, result, i);
+              break;
+
+       case VistaIOUByteRepn :
+              read_image<unsigned char>(image, result, i);
+              break;
+
+       case VistaIOSByteRepn :
+              read_image<signed char>(image, result, i);
+              break;
+
+       case VistaIOShortRepn :
+              if (is_unsigned)
+                     read_image<unsigned short>(image, result, i);
+              else
+                     read_image<signed short>(image, result, i);
+
+              break;
+
+       case VistaIOLongRepn :
+              if (is_unsigned)
+                     read_image<unsigned int>(image, result, i);
+              else
+                     read_image<signed int>(image, result, i);
+
+              break;
+
+       case VistaIOFloatRepn :
+              read_image<float>(image, result, i);
+              break;
+
+       case VistaIODoubleRepn :
+              read_image<double>(image, result, i);
+              break;
+
+       default:
+              throw invalid_argument("2d vista load: Unknown pixel format");
+       }
 }
 
 CVista2DImageIOPlugin::PData  CVista2DImageIOPlugin::do_load(const string& fname) const
 {
-	CInputFile f(fname);
+       CInputFile f(fname);
+       VistaIOImage *images = NULL;
+       VistaIOAttrList attr_list = NULL;
+       int nimages = VistaIOReadImages(f, &attr_list, &images);
 
-	VistaIOImage *images = NULL;
-	VistaIOAttrList attr_list = NULL;
-	int nimages = VistaIOReadImages(f, &attr_list, &images);
-	if (!nimages)
-		return 	CVista2DImageIOPlugin::PData();
+       if (!nimages)
+              return 	CVista2DImageIOPlugin::PData();
 
-	CVista2DImageIOPlugin::PData result(new CVista2DImageIOPlugin::Data());
+       CVista2DImageIOPlugin::PData result(new CVista2DImageIOPlugin::Data());
 
-	for (int i = 0; i < nimages; ++i) {
-		copy_from_vista(images[i], *result, i);
-		VistaIODestroyImage(images[i]);
-	}
+       for (int i = 0; i < nimages; ++i) {
+              copy_from_vista(images[i], *result, i);
+              VistaIODestroyImage(images[i]);
+       }
 
-	VistaIOFree(images);
-	VistaIODestroyAttrList (attr_list);
-
-	return result;
+       VistaIOFree(images);
+       VistaIODestroyAttrList (attr_list);
+       return result;
 }
 
 
@@ -154,57 +171,55 @@ CVista2DImageIOPlugin::PData  CVista2DImageIOPlugin::do_load(const string& fname
 
 
 struct CVImageCreator: public TFilter <VistaIOImage> {
-	template <typename T>
-	VistaIOImage operator ()( const T2DImage<T>& image) const;
+       template <typename T>
+       VistaIOImage operator ()( const T2DImage<T>& image) const;
 };
 
 template <typename T>
 VistaIOImage CVImageCreator::operator ()( const T2DImage<T>& image) const
 {
-	typedef dispatch_creat_vimage<typename T2DImage<T>::const_iterator, T> dispatcher;
-	VistaIOImage result = dispatcher::apply(image.begin(), image.end(), image.get_size().x, image.get_size().y, 1);
-	copy_attr_list(VistaIOImageAttrList(result), image);
-	return result;
+       typedef dispatch_creat_vimage<typename T2DImage<T>::const_iterator, T> dispatcher;
+       VistaIOImage result = dispatcher::apply(image.begin(), image.end(), image.get_size().x, image.get_size().y, 1);
+       copy_attr_list(VistaIOImageAttrList(result), image);
+       return result;
 }
 
 bool CVista2DImageIOPlugin::do_save(const string& fname, const C2DImageVector& data) const
 {
+       COutputFile f(fname);
+       vector<VistaIOImage> images(data.size());
+       CVImageCreator creator;
+       vector<VistaIOImage>::iterator img = images.begin();
 
-	COutputFile f(fname);
+       for (C2DImageVector::const_iterator i = data.begin();
+            i != data.end(); ++i, ++img) {
+              *img = filter(creator, **i);
+       }
 
-	vector<VistaIOImage> images(data.size());
+       bool result = VistaIOWriteImages(f, NULL, data.size(), &images[0]) == TRUE;
 
-	CVImageCreator creator;
-	vector<VistaIOImage>::iterator img = images.begin();
-	for (C2DImageVector::const_iterator i = data.begin();
-	     i != data.end(); ++i, ++img) {
-		*img = filter(creator, **i);
-	}
+       // clean up
+       for (vector<VistaIOImage>::iterator i = images.begin(); i != images.end(); ++i)
+              VistaIODestroyImage(*i);
 
-	bool result = VistaIOWriteImages(f, NULL, data.size(), &images[0]) == TRUE;
-
-	// clean up
-	for (vector<VistaIOImage>::iterator i = images.begin(); i != images.end(); ++i)
-		VistaIODestroyImage(*i);
-
-	return result;
+       return result;
 }
 
 const string CVista2DImageIOPlugin::do_get_descr() const
 {
-	return "a 2dimage io plugin for vista images";
+       return "a 2dimage io plugin for vista images";
 }
 
 const std::string CVista2DImageIOPlugin::do_get_preferred_suffix() const
 {
-	return "v"; 
+       return "v";
 }
 
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	C2DFVectorTranslator::register_for("pixel");
-	return new CVista2DImageIOPlugin();
+       C2DFVectorTranslator::register_for("pixel");
+       return new CVista2DImageIOPlugin();
 }
 
 NS_END

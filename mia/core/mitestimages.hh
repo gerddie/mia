@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -26,20 +26,20 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup test 
-   Simple structure for test images 
+   \ingroup test
+   Simple structure for test images
  */
 
 struct SImageSize {
-	/// image width 
-	int width; 
-	/// image height 
-	int height; 
-}; 
+       /// image width
+       int width;
+       /// image height
+       int height;
+};
 
-extern EXPORT_CORE const SImageSize mi_test_size; 
-extern EXPORT_CORE const float moving_init_data[]; 
-extern EXPORT_CORE const float reference_init_data[]; 
+extern EXPORT_CORE const SImageSize mi_test_size;
+extern EXPORT_CORE const float moving_init_data[];
+extern EXPORT_CORE const float reference_init_data[];
 
 NS_MIA_END
 

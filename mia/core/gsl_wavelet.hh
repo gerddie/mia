@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,31 +25,33 @@
 #include <cstdlib>
 #include <vector>
 
-namespace gsl {
+namespace gsl
+{
 
 enum EWaveletType {
-	wt_haar, 
-	wt_haar_centered, 
-	wt_daubechies, 
-	wt_daubechies_centered, 
-	wt_bspline, 
-	wt_bspline_centered, 
-	wt_none
-}; 
+       wt_haar,
+       wt_haar_centered,
+       wt_daubechies,
+       wt_daubechies_centered,
+       wt_bspline,
+       wt_bspline_centered,
+       wt_none
+};
 
-class EXPORT_GSL C1DWavelet {
+class EXPORT_GSL C1DWavelet
+{
 public:
-	C1DWavelet(EWaveletType wt, size_t k); 
+       C1DWavelet(EWaveletType wt, size_t k);
 
-	~C1DWavelet(); 
+       ~C1DWavelet();
 
-	std::vector<double> backward(const std::vector<double>& x) const; 
-	std::vector<double> forward(const std::vector<double>& x) const; 
-	std::vector<double> forward(const std::vector<float>& x) const; 
+       std::vector<double> backward(const std::vector<double>& x) const;
+       std::vector<double> forward(const std::vector<double>& x) const;
+       std::vector<double> forward(const std::vector<float>& x) const;
 
-private: 
-	struct C1DWaveletImpl *impl; 
-}; 
+private:
+       struct C1DWaveletImpl *impl;
+};
 
 }
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -45,66 +45,67 @@ NS_MIA_BEGIN
    loading from temporarly generated data
 */
 
-class EXPORT_CORE CDatapool {
+class EXPORT_CORE CDatapool
+{
 public:
 
-	/**
-	   add some data to the pool, if the key already exists, the value  is replaced
-	   \param key unique identifier
-	   \param value value to be stored
-	 */
-	void add(const std::string& key, boost::any value);
-	/**
-	   \param key: key of data to be retrieved
-	   \returns value indexed by key, and throws \a invalid argument if value not exists
-	 */
-	boost::any get(const std::string& key) const;
+       /**
+          add some data to the pool, if the key already exists, the value  is replaced
+          \param key unique identifier
+          \param value value to be stored
+        */
+       void add(const std::string& key, boost::any value);
+       /**
+          \param key: key of data to be retrieved
+          \returns value indexed by key, and throws \a invalid argument if value not exists
+        */
+       boost::any get(const std::string& key) const;
 
-	/**
-	   gets some data and remove this data from the pool
-	   \param key key of data to be retrieved
-	   \returns value indexed by key, and throws \a invalid argument if value not exists
-	 */
-	boost::any get_and_remove(const std::string& key);
+       /**
+          gets some data and remove this data from the pool
+          \param key key of data to be retrieved
+          \returns value indexed by key, and throws \a invalid argument if value not exists
+        */
+       boost::any get_and_remove(const std::string& key);
 
-	/**
-	   remove this data from the pool
-	   \param key key of data to be retrieved
-	*/
-	void remove(const std::string& key);
+       /**
+          remove this data from the pool
+          \param key key of data to be retrieved
+       */
+       void remove(const std::string& key);
 
-	
-	/**
-	   \param key 
-	   \returns \a true if key exists in pool and \a false if not
-	*/
-	bool has_key(const std::string& key) const;
-	/**
-	   \returns the unique instance of the data pool
-	 */
-	static CDatapool& instance();
 
-	/**
-	   function to be used for debugging purpouses
-	   \returns true if the pool has some data that was not uses
-	*/
-	bool has_unused_data() const;
+       /**
+          \param key
+          \returns \a true if key exists in pool and \a false if not
+       */
+       bool has_key(const std::string& key) const;
+       /**
+          \returns the unique instance of the data pool
+        */
+       static CDatapool& instance();
 
-	/**
-	   Remove all stored data from the pool. 
-	 */
-	void clear();
+       /**
+          function to be used for debugging purpouses
+          \returns true if the pool has some data that was not uses
+       */
+       bool has_unused_data() const;
+
+       /**
+          Remove all stored data from the pool.
+        */
+       void clear();
 private:
 
-	CDatapool();
-	CDatapool(const CDatapool& other);
-	typedef std::map<std::string, boost::any> Anymap;
-	typedef Anymap::const_iterator const_iterator;
-	const_iterator get_iterator(const std::string& key) const;
-	Anymap m_map;
-	typedef std::map<std::string,bool> Usagemap;
-	mutable Usagemap m_usage;
-	static CRecursiveMutex m_mutex; 
+       CDatapool();
+       CDatapool(const CDatapool& other);
+       typedef std::map<std::string, boost::any> Anymap;
+       typedef Anymap::const_iterator const_iterator;
+       const_iterator get_iterator(const std::string& key) const;
+       Anymap m_map;
+       typedef std::map<std::string, bool> Usagemap;
+       mutable Usagemap m_usage;
+       static CRecursiveMutex m_mutex;
 };
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,11 +28,11 @@
 
 NS_MIA_USE
 using namespace std;
-namespace bfs=boost::filesystem; 
+namespace bfs = boost::filesystem;
 
-BOOST_AUTO_TEST_CASE( test_load_plugins ) 
-{	
-	const C2DImageCombinerPluginHandler::Instance& handler = C2DImageCombinerPluginHandler::instance(); 
-	BOOST_CHECK_EQUAL(handler.size(), 5u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "absdiff add div mul sub ");
+BOOST_AUTO_TEST_CASE( test_load_plugins )
+{
+       const C2DImageCombinerPluginHandler::Instance& handler = C2DImageCombinerPluginHandler::instance();
+       BOOST_CHECK_EQUAL(handler.size(), 5u);
+       BOOST_CHECK_EQUAL(handler.get_plugin_names(), "absdiff add div mul sub ");
 }

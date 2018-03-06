@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -39,116 +39,132 @@ NS_BEGIN(morphological_fifof)
 template <typename T, bool is_float>
 struct DilateCompare {
 
-	static bool apply (T a, T b) {
-		return a < b;
-	}
+       static bool apply (T a, T b)
+       {
+              return a < b;
+       }
 
-	static bool apply (bool v) {
-		return v;
-	}
+       static bool apply (bool v)
+       {
+              return v;
+       }
 
-	static T start_value() {
-		return std::numeric_limits<T>::min();
-	}
+       static T start_value()
+       {
+              return std::numeric_limits<T>::min();
+       }
 };
 
 template <typename T>
-struct DilateCompare<T,true> {
+struct DilateCompare<T, true> {
 
-	static bool apply (T a, T b) {
-		return a < b;
-	}
-	static bool apply (bool v) {
-		return v;
-	}
+       static bool apply (T a, T b)
+       {
+              return a < b;
+       }
+       static bool apply (bool v)
+       {
+              return v;
+       }
 
-	static T start_value() {
-		return 0.0;
-	}
+       static T start_value()
+       {
+              return 0.0;
+       }
 };
 
 
 template <typename T, bool is_float>
 struct ErodeCompare {
-	static bool apply (T a, T b) {
-		return a > b;
-	}
-	static bool apply (bool v) {
-		return !v;
-	}
-	static T start_value() {
-		return std::numeric_limits<T>::max();
-	}
+       static bool apply (T a, T b)
+       {
+              return a > b;
+       }
+       static bool apply (bool v)
+       {
+              return !v;
+       }
+       static T start_value()
+       {
+              return std::numeric_limits<T>::max();
+       }
 };
 
 
 
 template <template <typename, bool> class Compare>
-class PRIVATE C2DMorphFifoFilter : public mia::C2DImageFifoFilter {
- public:
-	C2DMorphFifoFilter(mia::P3DShape shape);
-	typedef mia::C2DImage *result_type;
+class PRIVATE C2DMorphFifoFilter : public mia::C2DImageFifoFilter
+{
+public:
+       C2DMorphFifoFilter(mia::P3DShape shape);
+       typedef mia::C2DImage *result_type;
 
-	template <typename T>
-		mia::C2DImage *operator()(const mia::T2DImage<T>& input);
+       template <typename T>
+       mia::C2DImage *operator()(const mia::T2DImage<T>& input);
 
-	template <typename T>
-		mia::C2DImage *operator()(const mia::T3DImage<T>& input) const;
- private:
+       template <typename T>
+       mia::C2DImage *operator()(const mia::T3DImage<T>& input) const;
+private:
 
-	void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
-	void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x);
-	mia::P2DImage do_filter();
-	void shift_buffer();
+       void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
+       void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x);
+       mia::P2DImage do_filter();
+       void shift_buffer();
 
-	mia::P3DShape m_shape;
-	std::unique_ptr<mia::C3DImage> m_buffer;
+       mia::P3DShape m_shape;
+       std::unique_ptr<mia::C3DImage> m_buffer;
 
-	mia::C2DBounds m_slice_size;
-	CShiftSlices m_shifter;
+       mia::C2DBounds m_slice_size;
+       CShiftSlices m_shifter;
 };
 
-class PRIVATE C2DMorphFifoFilterPluginBase : public mia::C2DFifoFilterPlugin {
- protected:
-	C2DMorphFifoFilterPluginBase(const char *name);
-	virtual const std::string do_get_descr() const;
-	mia::P3DShape get_shape() const;
- private:
-	mia::P3DShape m_shape;
+class PRIVATE C2DMorphFifoFilterPluginBase : public mia::C2DFifoFilterPlugin
+{
+protected:
+       C2DMorphFifoFilterPluginBase(const char *name);
+       virtual const std::string do_get_descr() const;
+       mia::P3DShape get_shape() const;
+private:
+       mia::P3DShape m_shape;
 };
 
 template <template <typename, bool> class Compare>
-class PRIVATE C2DMorphFifoFilterPlugin : public C2DMorphFifoFilterPluginBase {
- protected:
-	C2DMorphFifoFilterPlugin(const char *name);
-	virtual mia::C2DImageFifoFilter *do_create()const;
- private:
-
-};
-
-class PRIVATE C2DDilateFifoFilterPlugin : public C2DMorphFifoFilterPlugin<DilateCompare> {
-public:
-	C2DDilateFifoFilterPlugin();
-};
-
-class PRIVATE C2DErodeFifoFilterPlugin : public C2DMorphFifoFilterPlugin<ErodeCompare> {
-public:
-	C2DErodeFifoFilterPlugin();
-
-};
-
-class PRIVATE C2DOpenFifoFilterPlugin : public C2DMorphFifoFilterPluginBase {
-public:
-	C2DOpenFifoFilterPlugin();
+class PRIVATE C2DMorphFifoFilterPlugin : public C2DMorphFifoFilterPluginBase
+{
+protected:
+       C2DMorphFifoFilterPlugin(const char *name);
+       virtual mia::C2DImageFifoFilter *do_create()const;
 private:
-	virtual mia::C2DImageFifoFilter *do_create()const;
+
 };
 
-class PRIVATE C2DCloseFifoFilterPlugin : public C2DMorphFifoFilterPluginBase {
+class PRIVATE C2DDilateFifoFilterPlugin : public C2DMorphFifoFilterPlugin<DilateCompare>
+{
 public:
-	C2DCloseFifoFilterPlugin();
+       C2DDilateFifoFilterPlugin();
+};
+
+class PRIVATE C2DErodeFifoFilterPlugin : public C2DMorphFifoFilterPlugin<ErodeCompare>
+{
+public:
+       C2DErodeFifoFilterPlugin();
+
+};
+
+class PRIVATE C2DOpenFifoFilterPlugin : public C2DMorphFifoFilterPluginBase
+{
+public:
+       C2DOpenFifoFilterPlugin();
 private:
-	virtual mia::C2DImageFifoFilter *do_create()const;
+       virtual mia::C2DImageFifoFilter *do_create()const;
+};
+
+class PRIVATE C2DCloseFifoFilterPlugin : public C2DMorphFifoFilterPluginBase
+{
+public:
+       C2DCloseFifoFilterPlugin();
+private:
+       virtual mia::C2DImageFifoFilter *do_create()const;
 };
 
 NS_END

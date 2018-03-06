@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,10 +30,10 @@
 
 NS_MIA_BEGIN
 /**
-   \ingroup registration 
-   @brief Specialization of TNonrigidRegister for 3D data 
+   \ingroup registration
+   @brief Specialization of TNonrigidRegister for 3D data
 */
-typedef TNonrigidRegister<3> C3DNonrigidRegister; 
+typedef TNonrigidRegister<3> C3DNonrigidRegister;
 NS_MIA_END
 
 #endif

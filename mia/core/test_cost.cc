@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -35,41 +35,39 @@ using namespace std;
 using namespace boost::unit_test;
 
 
-class TestCost: public TCost<double, double> {
-	double do_value(const double& a, const double& b) const;
-	double do_evaluate_force(const double& a, const double& b, double& force) const;
+class TestCost: public TCost<double, double>
+{
+       double do_value(const double& a, const double& b) const;
+       double do_evaluate_force(const double& a, const double& b, double& force) const;
 };
 
 
 
 double TestCost::do_value(const double& a, const double& b) const
 {
-	double delta = a - b;
-	return 0.5 * delta * delta;
+       double delta = a - b;
+       return 0.5 * delta * delta;
 }
 
 
 double TestCost::do_evaluate_force(const double& a, const double& b, double& force) const
 {
-	double delta = a - b;
-	force  = a * delta;
-	return do_value(a, b); 
+       double delta = a - b;
+       force  = a * delta;
+       return do_value(a, b);
 }
 
 
 
 BOOST_FIXTURE_TEST_CASE( test_cost_basic, TestCost )
 {
-	double a = 2.0;
-	double b = 4.0;
-
-	set_reference(b); 
-	BOOST_CHECK_CLOSE(value(a), 2.0, 0.1);
-
-	double force = 1.0;
-	BOOST_CHECK_CLOSE(evaluate_force(a, force), 2.0, 0.1); 
-
-	BOOST_CHECK_CLOSE(force, -4.0, 0.1);
+       double a = 2.0;
+       double b = 4.0;
+       set_reference(b);
+       BOOST_CHECK_CLOSE(value(a), 2.0, 0.1);
+       double force = 1.0;
+       BOOST_CHECK_CLOSE(evaluate_force(a, force), 2.0, 0.1);
+       BOOST_CHECK_CLOSE(force, -4.0, 0.1);
 }
 
 #include <mia/core/cost.cxx>

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -25,68 +25,74 @@
 
 NS_BEGIN(fastica_deflnonlin)
 
-class CFastICADeflPow3 : public mia::CFastICADeflNonlinearity {
-	virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction); 
-	virtual double do_get_saddle_test_value(const gsl::Vector& ic) const; 
-}; 
+class CFastICADeflPow3 : public mia::CFastICADeflNonlinearity
+{
+       virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction);
+       virtual double do_get_saddle_test_value(const gsl::Vector& ic) const;
+};
 
-class CFastICADeflTanh : public mia::CFastICADeflNonlinearity {
-public: 
-        CFastICADeflTanh(double a); 
-private: 
-	virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction); 
-	virtual double do_get_saddle_test_value(const gsl::Vector& ic) const;
-        double m_a; 
-}; 
+class CFastICADeflTanh : public mia::CFastICADeflNonlinearity
+{
+public:
+       CFastICADeflTanh(double a);
+private:
+       virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction);
+       virtual double do_get_saddle_test_value(const gsl::Vector& ic) const;
+       double m_a;
+};
 
-class CFastICADeflGauss : public mia::CFastICADeflNonlinearity {
-public: 
-        CFastICADeflGauss(double a); 
-private: 
+class CFastICADeflGauss : public mia::CFastICADeflNonlinearity
+{
+public:
+       CFastICADeflGauss(double a);
+private:
 
-	virtual void post_set_signal();
-	virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction); 
-	virtual double do_get_saddle_test_value(const gsl::Vector& ic) const;
-        gsl::Vector m_usquared;
-	gsl::Vector m_ex; 
-        double m_a; 
-}; 
+       virtual void post_set_signal();
+       virtual double get_correction_and_scale(gsl::Vector& XTw, gsl::Vector& correction);
+       virtual double do_get_saddle_test_value(const gsl::Vector& ic) const;
+       gsl::Vector m_usquared;
+       gsl::Vector m_ex;
+       double m_a;
+};
 
-class CFastICADeflPow3Plugin: public mia::CFastICADeflNonlinearityPlugin {
-public: 
-        CFastICADeflPow3Plugin(); 
-        
-        virtual mia::CFastICADeflNonlinearity *do_create() const;
-        
-	virtual const std::string do_get_descr()const;
+class CFastICADeflPow3Plugin: public mia::CFastICADeflNonlinearityPlugin
+{
+public:
+       CFastICADeflPow3Plugin();
 
-}; 
+       virtual mia::CFastICADeflNonlinearity *do_create() const;
+
+       virtual const std::string do_get_descr()const;
+
+};
 
 
-class CFastICADeflTanhPlugin: public mia::CFastICADeflNonlinearityPlugin {
-public: 
-        CFastICADeflTanhPlugin(); 
-private: 
-        virtual mia::CFastICADeflNonlinearity *do_create() const;
-        
-	virtual const std::string do_get_descr()const;
-        double m_a; 
+class CFastICADeflTanhPlugin: public mia::CFastICADeflNonlinearityPlugin
+{
+public:
+       CFastICADeflTanhPlugin();
+private:
+       virtual mia::CFastICADeflNonlinearity *do_create() const;
 
-}; 
+       virtual const std::string do_get_descr()const;
+       double m_a;
 
-class CFastICADeflGaussPlugin: public mia::CFastICADeflNonlinearityPlugin {
-public: 
-        CFastICADeflGaussPlugin(); 
-private:         
-        virtual mia::CFastICADeflNonlinearity *do_create() const;
-        
-	virtual const std::string do_get_descr()const;
-        double m_a; 
+};
 
-}; 
+class CFastICADeflGaussPlugin: public mia::CFastICADeflNonlinearityPlugin
+{
+public:
+       CFastICADeflGaussPlugin();
+private:
+       virtual mia::CFastICADeflNonlinearity *do_create() const;
+
+       virtual const std::string do_get_descr()const;
+       double m_a;
+
+};
 
 NS_END
 
-#endif 
+#endif
 
 

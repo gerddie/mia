@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,38 +30,39 @@ NS_MIA_BEGIN
 
 /**
    \ingroup misc
-   Evaluate the mean and the variance of a series of scalars 
-   \tparam ForwardIterator 
-   \param begin 
-   \param end 
-   \returns mean as .first and variance as .second of the std::pair. 
-   \todo could be extended to vector types 
+   Evaluate the mean and the variance of a series of scalars
+   \tparam ForwardIterator
+   \param begin
+   \param end
+   \returns mean as .first and variance as .second of the std::pair.
+   \todo could be extended to vector types
  */
 
 template <typename ForwardIterator>
-std::pair<double, double> mean_var(ForwardIterator begin, ForwardIterator end) 
+std::pair<double, double> mean_var(ForwardIterator begin, ForwardIterator end)
 {
-	std::pair<double, double> result; 
-	result.first  = 0.0; 
-	result.second = 0.0; 
-	size_t n = 0; 
-	
-	while (begin != end)  {
-		const double help = *begin; 
-		result.first += help; 
-		result.second += help * help; 
-		++n; 
-		++begin; 
-	}
+       std::pair<double, double> result;
+       result.first  = 0.0;
+       result.second = 0.0;
+       size_t n = 0;
 
-	if (n > 0)
-		result.first /= n; 
+       while (begin != end)  {
+              const double help = *begin;
+              result.first += help;
+              result.second += help * help;
+              ++n;
+              ++begin;
+       }
 
-	if (n > 1) 
-		result.second = sqrt((result.second - n * result.first * result.first) / (n - 1));
-	else 
-		result.second = 0.0; 
-	return result; 
+       if (n > 0)
+              result.first /= n;
+
+       if (n > 1)
+              result.second = sqrt((result.second - n * result.first * result.first) / (n - 1));
+       else
+              result.second = 0.0;
+
+       return result;
 }
 
 NS_MIA_END

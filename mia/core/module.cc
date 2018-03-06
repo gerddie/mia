@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -45,41 +45,43 @@
 NS_MIA_BEGIN
 
 CPluginModule::CPluginModule(const char *path):
-	m_loader(path, DLL_FLAGS ), 
-	m_name(path)
+       m_loader(path, DLL_FLAGS ),
+       m_name(path)
 
 {
-	cvdebug() << "loading module '" << path << "'\n";
+       cvdebug() << "loading module '" << path << "'\n";
 }
 
 CPluginModule::~CPluginModule()
 {
-	TRACE("CPluginModule::~CPluginModule()");
+       TRACE("CPluginModule::~CPluginModule()");
 }
 
 const std::string& CPluginModule::get_name() const
 {
-	return m_name; 
+       return m_name;
 }
 
 void CPluginModule::set_unload_library()
 {
-	m_loader.set_unload_library(); 
+       m_loader.set_unload_library();
 }
 
 void CPluginModule::set_keep_library()
 {
-	m_loader.set_keep_library(); 
+       m_loader.set_keep_library();
 }
 
 CPluginBase *CPluginModule::get_interface() const
 {
-	FPluginInterface f = reinterpret_cast<FPluginInterface>(m_loader.get_function("get_plugin_interface"));
-	if (!f) {
-		cvdebug() << "looking up symbol 'get_plugin_interface' in " << m_loader.get_name() << " failed\n";
-		return NULL;
-	}
-	return f();
+       FPluginInterface f = reinterpret_cast<FPluginInterface>(m_loader.get_function("get_plugin_interface"));
+
+       if (!f) {
+              cvdebug() << "looking up symbol 'get_plugin_interface' in " << m_loader.get_name() << " failed\n";
+              return NULL;
+       }
+
+       return f();
 }
 
 

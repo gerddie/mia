@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,36 +27,37 @@
 
 NS_MIA_BEGIN
 /**
-   \ingroup cmdline 
-   \brief command line option that handles a parameter 
+   \ingroup cmdline
+   \brief command line option that handles a parameter
 
-   This command line option handles a parameter that is set to a certain value given 
-   on the command line (contraty to just setting a flag). 
+   This command line option handles a parameter that is set to a certain value given
+   on the command line (contraty to just setting a flag).
 */
-class EXPORT_CORE CParamOption : public CCmdOption {
-public: 
-	/**
-	   Conrtructor to create the command line option. 
-	   \param short_option the single letter option value, can be zero for none 
-	   \param long_opt the long option name 
-	   \param param the actual parameter, this value must be allocated by calling \a new, 
-	   destruction is taken care of by this class. 
-	 */
-	CParamOption(char short_option, const char *long_opt, CParameter *param);
-	
+class EXPORT_CORE CParamOption : public CCmdOption
+{
+public:
+       /**
+          Conrtructor to create the command line option.
+          \param short_option the single letter option value, can be zero for none
+          \param long_opt the long option name
+          \param param the actual parameter, this value must be allocated by calling \a new,
+          destruction is taken care of by this class.
+        */
+       CParamOption(char short_option, const char *long_opt, CParameter *param);
+
 private:
-	virtual void do_post_set(); 
+       virtual void do_post_set();
 
-	virtual const std::string do_get_value_as_string() const; 
-	virtual void do_get_long_help_xml(std::ostream& os, CXMLElement& parent, HandlerHelpMap& handler_map) const; 
-	virtual void do_get_long_help(std::ostream& os) const;
-	virtual bool do_set_value(const char *str_value);
-	virtual size_t do_get_needed_args() const;
-	virtual void do_write_value(std::ostream& os) const;
+       virtual const std::string do_get_value_as_string() const;
+       virtual void do_get_long_help_xml(std::ostream& os, CXMLElement& parent, HandlerHelpMap& handler_map) const;
+       virtual void do_get_long_help(std::ostream& os) const;
+       virtual bool do_set_value(const char *str_value);
+       virtual size_t do_get_needed_args() const;
+       virtual void do_write_value(std::ostream& os) const;
 
-	std::unique_ptr<CParameter> m_param; 
+       std::unique_ptr<CParameter> m_param;
 
-}; 
+};
 
 NS_MIA_END
 

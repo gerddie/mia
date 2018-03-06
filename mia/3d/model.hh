@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -29,34 +29,34 @@
 NS_MIA_BEGIN
 
 /**
-   @cond INTERNAL 
+   @cond INTERNAL
 */
 
-template <> 
+template <>
 struct RegistrationTraits<3> {
-	typedef C3DImage Data;
-	typedef C3DFVectorfield Force; 
-	typedef C3DFVectorfield Transformation; 
-}; 
+       typedef C3DImage Data;
+       typedef C3DFVectorfield Force;
+       typedef C3DFVectorfield Transformation;
+};
 
-/// the 3D registration model base class 
+/// the 3D registration model base class
 typedef TRegModel<3> C3DRegModel;
 
-/// the 3D registration model base class pointer 
+/// the 3D registration model base class pointer
 typedef std::shared_ptr<C3DRegModel > P3DRegModel;
 
-/// the 3D registration model plug-in base class 
+/// the 3D registration model plug-in base class
 typedef TFactory<C3DRegModel>  C3DRegModelPlugin;
 
-template <> const char *  const TPluginHandler<C3DRegModelPlugin>::m_help; 
+template <> const char   *const TPluginHandler<C3DRegModelPlugin>::m_help;
 
-extern template class EXPORT_3D TRegModel<3>; 
-extern template class EXPORT_3D TFactory<C3DRegModel>; 
-extern template class EXPORT_3D THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
-/// the 3D registration model plug-in handler 
-typedef THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> > C3DRegModelPluginHandler;
+extern template class EXPORT_3D TRegModel<3>;
+extern template class EXPORT_3D TFactory<C3DRegModel>;
+extern template class EXPORT_3D THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin>>;
+/// the 3D registration model plug-in handler
+typedef THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin>> C3DRegModelPluginHandler;
 
-/// @endcond 
+/// @endcond
 
 NS_MIA_END
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -28,53 +28,53 @@
 
 
 NS_MIA_BEGIN
-using namespace std; 
+using namespace std;
 
 
 const char *CRGB2DImage::data_descr = "rgbimage";
 
 CRGB2DImage::CRGB2DImage(const C2DBounds& size):
-        m_size(size), 
-	m_pixels(size.x * size.y * 3)
+       m_size(size),
+       m_pixels(size.x * size.y * 3)
 {
-	cvdebug() << "Allocated buffer of " << size.x * size.y * 3 << " bytes\n"; 
+       cvdebug() << "Allocated buffer of " << size.x *size.y * 3 << " bytes\n";
 }
 
 const C2DBounds& CRGB2DImage::get_size() const
 {
-	return m_size; 
+       return m_size;
 }
 
 const unsigned char *CRGB2DImage::pixel() const
 {
-	return &m_pixels[0]; 
+       return &m_pixels[0];
 }
 
 
 unsigned char *CRGB2DImage::pixel()
 {
-	return &m_pixels[0]; 
+       return &m_pixels[0];
 }
 
 CRGB2DImage *CRGB2DImage::clone() const
 {
-	return new CRGB2DImage(*this); 
+       return new CRGB2DImage(*this);
 }
 
-template <> const char *  const 
-	TPluginHandler<C2DRGBImageIOPlugin>::m_help =  
+template <> const char   *const
+TPluginHandler<C2DRGBImageIOPlugin>::m_help =
        "These plug-ins implement the support for (loading?) and storing 2D RGB images to various file types.";
 
-template class TPlugin<CRGB2DImage, io_plugin_type>; 
+template class TPlugin<CRGB2DImage, io_plugin_type>;
 template class TIOPlugin<CRGB2DImage>;
-template class THandlerSingleton<TIOPluginHandler<C2DRGBImageIOPlugin> >;
+template class THandlerSingleton<TIOPluginHandler<C2DRGBImageIOPlugin>>;
 template class TIOPluginHandler<C2DRGBImageIOPlugin>;
 template class TPluginHandler<C2DRGBImageIOPlugin>;
 
 
 bool save_image(const std::string& filename, const CRGB2DImage& image)
 {
-	return C2DRGBImageIOPluginPluginHandler::instance().save(filename, image); 
+       return C2DRGBImageIOPluginPluginHandler::instance().save(filename, image);
 }
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -23,31 +23,33 @@
 
 #include <mia/mesh/triangularMesh.hh>
 
-namespace vtkmia {
+namespace vtkmia
+{
 
-class CVtkMeshIO: public mia::CMeshIOPlugin {
+class CVtkMeshIO: public mia::CMeshIOPlugin
+{
 public:
-	typedef mia::CTriangleMesh::CTrianglefield CTrianglefield; 
-	typedef mia::CTriangleMesh::CVertexfield   CVertexfield; 
-	typedef mia::CTriangleMesh::CNormalfield   CNormalfield; 
-	typedef mia::CTriangleMesh::CColorfield    CColorfield; 
-	typedef mia::CTriangleMesh::CScalefield    CScalefield;  
+       typedef mia::CTriangleMesh::CTrianglefield CTrianglefield;
+       typedef mia::CTriangleMesh::CVertexfield   CVertexfield;
+       typedef mia::CTriangleMesh::CNormalfield   CNormalfield;
+       typedef mia::CTriangleMesh::CColorfield    CColorfield;
+       typedef mia::CTriangleMesh::CScalefield    CScalefield;
 
-	typedef mia::CTriangleMesh::PTrianglefield PTrianglefield; 
-	typedef mia::CTriangleMesh::PVertexfield   PVertexfield; 
-	typedef mia::CTriangleMesh::PNormalfield   PNormalfield; 
-	typedef mia::CTriangleMesh::PColorfield    PColorfield; 
-	typedef mia::CTriangleMesh::PScalefield    PScalefield;  
+       typedef mia::CTriangleMesh::PTrianglefield PTrianglefield;
+       typedef mia::CTriangleMesh::PVertexfield   PVertexfield;
+       typedef mia::CTriangleMesh::PNormalfield   PNormalfield;
+       typedef mia::CTriangleMesh::PColorfield    PColorfield;
+       typedef mia::CTriangleMesh::PScalefield    PScalefield;
 
-	static const char * const  s_scale_array;
-	static const char * const  s_normal_array;
-	static const char * const  s_color_array;
+       static const char *const  s_scale_array;
+       static const char *const  s_normal_array;
+       static const char *const  s_color_array;
 
-	CVtkMeshIO();
+       CVtkMeshIO();
 private:
-        virtual mia::PTriangleMesh do_load(std::string const &  filename) const;
-        virtual bool do_save(std::string const &  filename, const mia::CTriangleMesh& data) const;
-        const std::string  do_get_descr() const;
+       virtual mia::PTriangleMesh do_load(std::string const&   filename) const;
+       virtual bool do_save(std::string const&   filename, const mia::CTriangleMesh& data) const;
+       const std::string  do_get_descr() const;
 
 
 };

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -30,203 +30,169 @@ using namespace IMAGEIO_2D_DICOM;
 
 struct DicomLoaderFixture {
 
-	DicomLoaderFixture();
+       DicomLoaderFixture();
 
-	template <typename T>
-	void check_attribute(const char *name, const T& value)	{
-		TRACE_FUNCTION;
+       template <typename T>
+       void check_attribute(const char *name, const T& value)
+       {
+              TRACE_FUNCTION;
+              cvdebug() << "check if attribute '" << name << "' has value '"
+                        << value << "' of type '"
+                        << typeid(T).name() << "'\n";
+              PAttribute attr = pimage->get_attribute(name);
+              BOOST_REQUIRE(attr);
+              cvdebug() << "Got attribute of type '" << attr->typedescr() << "'\n";
+              cvdebug() << "will cast from'" << typeid(attr.get()).name()
+                        << "' to '" << typeid(TAttribute<T> *).name() << "'\n";
+              const TAttribute<T>& pattr = dynamic_cast<const TAttribute<T>&>(*attr);
+              T attr_val = pattr;
+              BOOST_CHECK_EQUAL(attr_val, value);
+       }
 
-		cvdebug() << "check if attribute '" << name << "' has value '"
-			  << value << "' of type '"
-			  << typeid(T).name() << "'\n";
-		PAttribute attr = pimage->get_attribute(name);
-		BOOST_REQUIRE(attr);
-
-		cvdebug() << "Got attribute of type '" << attr->typedescr() << "'\n";
-
-		cvdebug() << "will cast from'" << typeid(attr.get()).name()
-			  <<"' to '" << typeid(TAttribute<T> *).name() << "'\n";
-
-
-		const TAttribute<T>& pattr = dynamic_cast<const TAttribute<T>&>(*attr);
-		T attr_val = pattr;
-		BOOST_CHECK_EQUAL(attr_val, value);
-	}
-
-	void check_attribute(const char *name, const char *value);
-	CDicom2DImageIOPlugin plugin;
-	P2DImage pimage;
+       void check_attribute(const char *name, const char *value);
+       CDicom2DImageIOPlugin plugin;
+       P2DImage pimage;
 };
 
 DicomLoaderFixture::DicomLoaderFixture()
 {
-        string filename(MIA_SOURCE_ROOT"/testdata/test.dcm");
-        cvdebug() << "open: " << filename << "\n";
-
-        CDicom2DImageIOPlugin::PData images = plugin.load(filename.c_str());
-	BOOST_REQUIRE(images);
-
-	BOOST_REQUIRE(images->size() == 1);
-	pimage = *images->begin();
-
-	BOOST_REQUIRE(pimage);
+       string filename(MIA_SOURCE_ROOT"/testdata/test.dcm");
+       cvdebug() << "open: " << filename << "\n";
+       CDicom2DImageIOPlugin::PData images = plugin.load(filename.c_str());
+       BOOST_REQUIRE(images);
+       BOOST_REQUIRE(images->size() == 1);
+       pimage = *images->begin();
+       BOOST_REQUIRE(pimage);
 }
 
 
 void DicomLoaderFixture::check_attribute(const char *name, const char *value)
 {
-	TRACE_FUNCTION;
-
-	cvdebug() << "check if attribute '" << name << "' has value '"
-		  << value << "' of type 'string'\n";
-
-	string svalue(value);
-	PAttribute attr = pimage->get_attribute(name);
- 	BOOST_REQUIRE(attr);
-	const TAttribute<string> *pattr = dynamic_cast<TAttribute<string> *>(attr.get());
-	BOOST_REQUIRE(pattr);
-	string attr_val = *pattr;
-	BOOST_CHECK_EQUAL(attr_val, svalue);
+       TRACE_FUNCTION;
+       cvdebug() << "check if attribute '" << name << "' has value '"
+                 << value << "' of type 'string'\n";
+       string svalue(value);
+       PAttribute attr = pimage->get_attribute(name);
+       BOOST_REQUIRE(attr);
+       const TAttribute<string> *pattr = dynamic_cast<TAttribute<string> *>(attr.get());
+       BOOST_REQUIRE(pattr);
+       string attr_val = *pattr;
+       BOOST_CHECK_EQUAL(attr_val, svalue);
 }
 
 
 
 BOOST_FIXTURE_TEST_CASE( test_dicom_load, DicomLoaderFixture )
 {
-	check_attribute("StudyDescription", "Cardiovascular^Heart-Cardiac Function");
-	check_attribute("SeriesDescription","cine_retro_aortic arch");
-	check_attribute("Modality", "MR");
-	check_attribute("SeriesNumber", 24);
-	check_attribute("PatientPosition", ipp_hfs);
-	check_attribute("AcquisitionDate", "20041116");
-	check_attribute("AcquisitionNumber", 1);
-	check_attribute("InstanceNumber", 6);
-	check_attribute("StudyID", "4273329");
-	check_attribute("ImageType", "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
-	check_attribute("SliceLocation", 15.088232007086f);
-	check_attribute("MediaStorageSOPClassUID","1.2.840.10008.5.1.4.1.1.4");
-	
-	C2DFVector pixel_size = pimage->get_pixel_size();
-
-	BOOST_CHECK_EQUAL(pixel_size, C2DFVector(1.484375,1.484375));
-
-	// test
-	const C2DUSImage& image = dynamic_cast<const C2DUSImage&>(*pimage);
-
-	BOOST_CHECK_EQUAL(image.get_size(), C2DBounds(224,256));
-	BOOST_CHECK_EQUAL(image(0,0), 0);
-
-	// the next test is not necessarily right
-	BOOST_CHECK_EQUAL(image(128,114), 135);
+       check_attribute("StudyDescription", "Cardiovascular^Heart-Cardiac Function");
+       check_attribute("SeriesDescription", "cine_retro_aortic arch");
+       check_attribute("Modality", "MR");
+       check_attribute("SeriesNumber", 24);
+       check_attribute("PatientPosition", ipp_hfs);
+       check_attribute("AcquisitionDate", "20041116");
+       check_attribute("AcquisitionNumber", 1);
+       check_attribute("InstanceNumber", 6);
+       check_attribute("StudyID", "4273329");
+       check_attribute("ImageType", "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
+       check_attribute("SliceLocation", 15.088232007086f);
+       check_attribute("MediaStorageSOPClassUID", "1.2.840.10008.5.1.4.1.1.4");
+       C2DFVector pixel_size = pimage->get_pixel_size();
+       BOOST_CHECK_EQUAL(pixel_size, C2DFVector(1.484375, 1.484375));
+       // test
+       const C2DUSImage& image = dynamic_cast<const C2DUSImage&>(*pimage);
+       BOOST_CHECK_EQUAL(image.get_size(), C2DBounds(224, 256));
+       BOOST_CHECK_EQUAL(image(0, 0), 0);
+       // the next test is not necessarily right
+       BOOST_CHECK_EQUAL(image(128, 114), 135);
 }
 
 
-template  <typename T> 
+template  <typename T>
 struct DicomSaveLoadFixture {
-	DicomSaveLoadFixture();
-	CDicom2DImageIOPlugin plugin;
+       DicomSaveLoadFixture();
+       CDicom2DImageIOPlugin plugin;
 protected:
-	void fill_attributes();
-	C2DBounds size;
-	T2DImage<T> *org_image;
-	P2DImage porg_image;
+       void fill_attributes();
+       C2DBounds size;
+       T2DImage<T> *org_image;
+       P2DImage porg_image;
 };
 
-template  <typename T> 
+template  <typename T>
 void DicomSaveLoadFixture<T>::fill_attributes()
 {
-	org_image->set_attribute(IDMediaStorageSOPClassUID,  "othervalue");
-	org_image->set_attribute(IDSOPClassUID,  "othervalue");
-	org_image->set_pixel_size(C2DFVector(1.45, 2.34));
-
-
-	org_image->set_attribute("Modality", "MR");
-	org_image->set_attribute("SeriesNumber", "12");
-	org_image->set_attribute("AcquisitionNumber", "23");
-	org_image->set_attribute("InstanceNumber", "7");
-	org_image->set_attribute("SeriesDescription", "T2-pla");
-	org_image->set_attribute("StudyDescription", "PROST");
-	org_image->set_attribute("AcquisitionDate","20090909");
-	org_image->set_attribute("PatientPosition", "HFP");
-	org_image->set_attribute("StudyID", "786755");
-	org_image->set_attribute("SliceLocation", "12.6755");
-	org_image->set_attribute("ImageType", "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
-	org_image->set_attribute(IDRescaleIntercept, -1.0f);
-	org_image->set_attribute(IDRescaleSlope, 2.0f);
-
-
-	org_image->set_attribute(IDSmallestImagePixelValue,"0");
-	org_image->set_attribute(IDLargestImagePixelValue,"119");
-
+       org_image->set_attribute(IDMediaStorageSOPClassUID,  "othervalue");
+       org_image->set_attribute(IDSOPClassUID,  "othervalue");
+       org_image->set_pixel_size(C2DFVector(1.45, 2.34));
+       org_image->set_attribute("Modality", "MR");
+       org_image->set_attribute("SeriesNumber", "12");
+       org_image->set_attribute("AcquisitionNumber", "23");
+       org_image->set_attribute("InstanceNumber", "7");
+       org_image->set_attribute("SeriesDescription", "T2-pla");
+       org_image->set_attribute("StudyDescription", "PROST");
+       org_image->set_attribute("AcquisitionDate", "20090909");
+       org_image->set_attribute("PatientPosition", "HFP");
+       org_image->set_attribute("StudyID", "786755");
+       org_image->set_attribute("SliceLocation", "12.6755");
+       org_image->set_attribute("ImageType", "ORIGINAL\\PRIMARY\\M\\ND\\RETRO");
+       org_image->set_attribute(IDRescaleIntercept, -1.0f);
+       org_image->set_attribute(IDRescaleSlope, 2.0f);
+       org_image->set_attribute(IDSmallestImagePixelValue, "0");
+       org_image->set_attribute(IDLargestImagePixelValue, "119");
 }
 
-template  <typename T> 
+template  <typename T>
 DicomSaveLoadFixture<T>::DicomSaveLoadFixture():
-	size(10,12)
+       size(10, 12)
 {
-	org_image = new T2DImage<T>(size);
-	short k = 0;
-	for (auto i = org_image->begin(); i != org_image->end(); ++i, ++k)
-		*i = k;
+       org_image = new T2DImage<T>(size);
+       short k = 0;
 
-	porg_image.reset(org_image);
+       for (auto i = org_image->begin(); i != org_image->end(); ++i, ++k)
+              *i = k;
+
+       porg_image.reset(org_image);
 }
 
 
 BOOST_FIXTURE_TEST_CASE( test_dicom_ss_save_load, DicomSaveLoadFixture<signed short> )
 {
-
-	fill_attributes();
-
-	CDicom2DImageIOPlugin::Data imagelist;
-	imagelist.push_back(porg_image);
-	BOOST_REQUIRE(plugin.save("testsave-ss.dcm", imagelist));
-
-	CDicom2DImageIOPlugin::PData images = plugin.load("testsave-ss.dcm");
-	BOOST_REQUIRE(images);
-	BOOST_REQUIRE(images->size() == 1);
-	P2DImage pimage = *images->begin();
-	BOOST_REQUIRE(pimage);
-
-	BOOST_CHECK(*pimage ==  *org_image);
-
-	const C2DSSImage& load_image = dynamic_cast<const C2DSSImage&>(*pimage);
-
-	BOOST_CHECK_EQUAL(load_image.get_size(), size);
-
-	BOOST_CHECK(equal(load_image.begin(), load_image.end(), org_image->begin()));
-
+       fill_attributes();
+       CDicom2DImageIOPlugin::Data imagelist;
+       imagelist.push_back(porg_image);
+       BOOST_REQUIRE(plugin.save("testsave-ss.dcm", imagelist));
+       CDicom2DImageIOPlugin::PData images = plugin.load("testsave-ss.dcm");
+       BOOST_REQUIRE(images);
+       BOOST_REQUIRE(images->size() == 1);
+       P2DImage pimage = *images->begin();
+       BOOST_REQUIRE(pimage);
+       BOOST_CHECK(*pimage ==  *org_image);
+       const C2DSSImage& load_image = dynamic_cast<const C2DSSImage&>(*pimage);
+       BOOST_CHECK_EQUAL(load_image.get_size(), size);
+       BOOST_CHECK(equal(load_image.begin(), load_image.end(), org_image->begin()));
 }
 
 BOOST_FIXTURE_TEST_CASE( test_dicom_us_save_load, DicomSaveLoadFixture<unsigned short> )
 {
-
-	fill_attributes();
-
-	CDicom2DImageIOPlugin::Data imagelist;
-	imagelist.push_back(porg_image);
-	BOOST_REQUIRE(plugin.save("testsave-us.dcm", imagelist));
-
-	CDicom2DImageIOPlugin::PData images = plugin.load("testsave-us.dcm");
-	BOOST_REQUIRE(images);
-	BOOST_REQUIRE(images->size() == 1);
-	P2DImage pimage = *images->begin();
-	BOOST_REQUIRE(pimage);
-
-	BOOST_CHECK(*pimage ==  *org_image);
-
-	const C2DUSImage& load_image = dynamic_cast<const C2DUSImage&>(*pimage);
-
-	BOOST_CHECK_EQUAL(load_image.get_size(), size);
-
-	BOOST_CHECK(equal(load_image.begin(), load_image.end(), org_image->begin()));
-
+       fill_attributes();
+       CDicom2DImageIOPlugin::Data imagelist;
+       imagelist.push_back(porg_image);
+       BOOST_REQUIRE(plugin.save("testsave-us.dcm", imagelist));
+       CDicom2DImageIOPlugin::PData images = plugin.load("testsave-us.dcm");
+       BOOST_REQUIRE(images);
+       BOOST_REQUIRE(images->size() == 1);
+       P2DImage pimage = *images->begin();
+       BOOST_REQUIRE(pimage);
+       BOOST_CHECK(*pimage ==  *org_image);
+       const C2DUSImage& load_image = dynamic_cast<const C2DUSImage&>(*pimage);
+       BOOST_CHECK_EQUAL(load_image.get_size(), size);
+       BOOST_CHECK(equal(load_image.begin(), load_image.end(), org_image->begin()));
 }
 
 BOOST_FIXTURE_TEST_CASE( test_dicom_load_nothing, DicomSaveLoadFixture<signed short> )
 {
-	CDicom2DImageIOPlugin plugin;
-	CDicom2DImageIOPlugin::PData images = plugin.load("nonexistence.dcm");
-	BOOST_CHECK(!images.get());
+       CDicom2DImageIOPlugin plugin;
+       CDicom2DImageIOPlugin::PData images = plugin.load("nonexistence.dcm");
+       BOOST_CHECK(!images.get());
 }
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,32 +21,35 @@
 #include <mia/core/module.hh>
 #include <vector>
 
-namespace boost {
-namespace filesystem {
+namespace boost
+{
+namespace filesystem
+{
 class path;
 }
 }
 
 NS_MIA_BEGIN
 
-class EXPORT_CORE CPluginSearchpath {
+class EXPORT_CORE CPluginSearchpath
+{
 public:
-        CPluginSearchpath(bool no_subpath=false);
+       CPluginSearchpath(bool no_subpath = false);
 
-	CPluginSearchpath(const CPluginSearchpath& other); 
-	CPluginSearchpath& operator = (const CPluginSearchpath& other); 
+       CPluginSearchpath(const CPluginSearchpath& other);
+       CPluginSearchpath& operator = (const CPluginSearchpath& other);
 
-        ~CPluginSearchpath();
+       ~CPluginSearchpath();
 
-        void add(const char *path);
-	
-        void add(const boost::filesystem::path& path)__attribute__((deprecated));
-        
-        std::vector<PPluginModule> find_modules(const std::string& data, const std::string& type) const; 
+       void add(const char *path);
+
+       void add(const boost::filesystem::path& path)__attribute__((deprecated));
+
+       std::vector<PPluginModule> find_modules(const std::string& data, const std::string& type) const;
 
 private:
-        struct CPluginSearchpathData *impl; 
-        
-}; 
+       struct CPluginSearchpathData *impl;
+
+};
 
 NS_MIA_END

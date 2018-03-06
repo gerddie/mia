@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,36 +21,39 @@
 
 #include <mia/2d/cost.hh>
 
-namespace mia_2d_gncc {
+namespace mia_2d_gncc
+{
 
 
-class CGNCC2DImageCost: public mia::C2DImageCost {
-public: 	
-	typedef mia::C2DImageCost::Data Data; 
-	typedef mia::C2DImageCost::Force Force; 
+class CGNCC2DImageCost: public mia::C2DImageCost
+{
+public:
+       typedef mia::C2DImageCost::Data Data;
+       typedef mia::C2DImageCost::Force Force;
 
-	CGNCC2DImageCost();
-private: 
-	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const;
-        virtual void post_set_reference(const Data& ref);
+       CGNCC2DImageCost();
+private:
+       virtual double do_value(const Data& a, const Data& b) const;
+       virtual double do_evaluate_force(const Data& a, const Data& b, Force& force) const;
+       virtual void post_set_reference(const Data& ref);
 
-        P2DImage m_convert_to_float; 
-        P2DImage m_sobel_x;
-        P2DImage m_sobel_y;
-        C2DFImage m_grad_x;
-        C2DFImage m_grad_y;
-        
+       P2DImage m_convert_to_float;
+       P2DImage m_sobel_x;
+       P2DImage m_sobel_y;
+       C2DFImage m_grad_x;
+       C2DFImage m_grad_y;
+
 };
 
-class CGNCC2DImageCostPlugin: public mia::C2DImageCostPlugin {
-public: 
-	CGNCC2DImageCostPlugin();
-	mia::C2DImageCost *do_create() const;
-private: 
-	const std::string do_get_descr() const; 
+class CGNCC2DImageCostPlugin: public mia::C2DImageCostPlugin
+{
+public:
+       CGNCC2DImageCostPlugin();
+       mia::C2DImageCost *do_create() const;
+private:
+       const std::string do_get_descr() const;
 };
 
 }
 
-#endif 
+#endif

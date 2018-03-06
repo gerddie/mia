@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,18 +27,18 @@
 
 NS_MIA_BEGIN
 
-template <> const char *  const 
-TPluginHandler<TFactory<C3DMaskedImageCost>>::m_help =  
-	"3D image similarity kernels evaluate the according similarity measure between "
-	"two images by using a mask. These kernels may be used standalone, like e.g. in "
-	"linear registration, or will be called from generalized image similarity cost "
-	"plug-ins that also take care of transforming and scaling the images during the "
-	"image registration process.";
+template <> const char   *const
+TPluginHandler<TFactory<C3DMaskedImageCost>>::m_help =
+                     "3D image similarity kernels evaluate the according similarity measure between "
+                     "two images by using a mask. These kernels may be used standalone, like e.g. in "
+                     "linear registration, or will be called from generalized image similarity cost "
+                     "plug-ins that also take care of transforming and scaling the images during the "
+                     "image registration process.";
 
 template class TMaskedCost<C3DImage, C3DBitImage, C3DFVectorfield>;
 template class TPlugin<C3DImage, masked_cost_type>;
 template class TFactory<C3DMaskedImageCost>;
-template class THandlerSingleton<TFactoryPluginHandler<C3DMaskedImageCostPlugin> >;
+template class THandlerSingleton<TFactoryPluginHandler<C3DMaskedImageCostPlugin>>;
 template class TFactoryPluginHandler<C3DMaskedImageCostPlugin>;
 template class TPluginHandler<C3DMaskedImageCostPlugin>;
 

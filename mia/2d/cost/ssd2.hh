@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -27,21 +27,23 @@
 NS_BEGIN(mia_2dcost_ssd2)
 
 
-class C2DSSDImageCost: public mia::C2DImageCostBase {
+class C2DSSDImageCost: public mia::C2DImageCostBase
+{
 public:
-	C2DSSDImageCost(const mia::C2DImageDataKey& src_key, const mia::C2DImageDataKey& ref_key,
-			mia::P2DInterpolatorFactory ipf,
-			float weight);
+       C2DSSDImageCost(const mia::C2DImageDataKey& src_key, const mia::C2DImageDataKey& ref_key,
+                       mia::P2DInterpolatorFactory ipf,
+                       float weight);
 private:
-	virtual double do_evaluate_with_images(const mia::C2DImage& floating, const mia::C2DImage& ref,
-					       mia::C2DFVectorfield& force) const;
+       virtual double do_evaluate_with_images(const mia::C2DImage& floating, const mia::C2DImage& ref,
+                                              mia::C2DFVectorfield& force) const;
 
 
 };
 
-class C2DSSDCostPlugin: public mia::C2DImageCostBasePlugin {
+class C2DSSDCostPlugin: public mia::C2DImageCostBasePlugin
+{
 private:
-	virtual const std::string do_get_descr()const;
+       virtual const std::string do_get_descr()const;
 };
 
 NS_END

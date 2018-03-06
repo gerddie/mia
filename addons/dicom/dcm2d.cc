@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -35,69 +35,65 @@ using namespace std;
 using namespace boost;
 
 CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
-	C2DImageIOPlugin("dicom")
+       C2DImageIOPlugin("dicom")
 {
-	add_supported_type(it_ushort);
-	add_supported_type(it_sshort);
-
-	CFloatTranslator::register_for("SliceLocation");
-	CFloatTranslator::register_for(IDSpacingBetweenSlices);
-	CDoubleTranslator::register_for("AcquisitionTime"); 
-	CSITranslator::register_for("SeriesNumber");
-	CSITranslator::register_for("AcquisitionNumber");
-	CSITranslator::register_for("InstanceNumber");
-	CPatientPositionTranslator::register_for(IDPatientPosition);
-
-	CFloatTranslator::register_for(IDRescaleSlope);
-	CFloatTranslator::register_for(IDRescaleIntercept); 
-
-	
-	add_suffix(".dcm");
-	add_suffix(".DCM");
+       add_supported_type(it_ushort);
+       add_supported_type(it_sshort);
+       CFloatTranslator::register_for("SliceLocation");
+       CFloatTranslator::register_for(IDSpacingBetweenSlices);
+       CDoubleTranslator::register_for("AcquisitionTime");
+       CSITranslator::register_for("SeriesNumber");
+       CSITranslator::register_for("AcquisitionNumber");
+       CSITranslator::register_for("InstanceNumber");
+       CPatientPositionTranslator::register_for(IDPatientPosition);
+       CFloatTranslator::register_for(IDRescaleSlope);
+       CFloatTranslator::register_for(IDRescaleIntercept);
+       add_suffix(".dcm");
+       add_suffix(".DCM");
 }
 
 C2DImageIOPlugin::PData CDicom2DImageIOPlugin::do_load(const string& fname) const
 {
-	TRACE_FUNCTION;
-	PData result;
+       TRACE_FUNCTION;
+       PData result;
+       CDicomReader reader(fname.c_str());
 
-	CDicomReader reader(fname.c_str());
-	if (!reader.good())
-		return result;
+       if (!reader.good())
+              return result;
 
-	result.reset(new Data);
-	result->push_back(reader.get_image());
-	return result;
+       result.reset(new Data);
+       result->push_back(reader.get_image());
+       return result;
 }
 
 bool CDicom2DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
-	if (data.empty())
-		throw create_exception<runtime_error>("CDicom2DImageIOPlugin: '", fname, 
-					    "', no images to save");
+       if (data.empty())
+              throw create_exception<runtime_error>("CDicom2DImageIOPlugin: '", fname,
+                                                    "', no images to save");
 
-	if (data.size() > 1)
-		throw create_exception<runtime_error>("CDicom2DImageIOPlugin: '", fname, 
-					    "' DICOM writer only supports one image per file");
+       if (data.size() > 1)
+              throw create_exception<runtime_error>("CDicom2DImageIOPlugin: '", fname,
+                                                    "' DICOM writer only supports one image per file");
 
-	CDicomWriter writer(**data.begin());
-	return writer.write(fname.c_str());
+       CDicomWriter writer(**data.begin());
+       return writer.write(fname.c_str());
 }
 
 const string CDicom2DImageIOPlugin::do_get_descr() const
 {
-	return "2D image io for DICOM";
+       return "2D image io for DICOM";
 }
 
 const std::string CDicom2DImageIOPlugin::do_get_preferred_suffix() const
 {
-	return "dcm"; 
+       return "dcm";
 }
 
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	return new CDicom2DImageIOPlugin();
+       return new CDicom2DImageIOPlugin();
 }
 
 NS_END

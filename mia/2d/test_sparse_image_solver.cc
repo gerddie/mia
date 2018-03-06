@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,52 +21,54 @@
 #include <mia/internal/autotest.hh>
 #include <mia/2d/sparse_image_solver.hh>
 
-NS_MIA_USE; 
+NS_MIA_USE;
 
-class C2DTestSolverAmultxNoBoundary: public C2DImageSolverAmultx {
-public: 
-	C2DTestSolverAmultxNoBoundary(const C2DBounds& size); 
-	
-	virtual C2DImageSparseSolver::value_type operator () (C2DImageSparseSolver::const_field_iterator ix) const;
-	
-	virtual int get_boundary_size() const; 
+class C2DTestSolverAmultxNoBoundary: public C2DImageSolverAmultx
+{
+public:
+       C2DTestSolverAmultxNoBoundary(const C2DBounds& size);
 
-}; 
+       virtual C2DImageSparseSolver::value_type operator () (C2DImageSparseSolver::const_field_iterator ix) const;
+
+       virtual int get_boundary_size() const;
+
+};
 
 
 BOOST_AUTO_TEST_CASE( test_mult_A_x )
 {
-	C2DBounds size(2,3); 
-	C2DFImage x(size); 
-	C2DFImage t(size); 
-	int i = -2; 
-	for (auto ix = x.begin(), it = t.begin(); ix != x.end(); ++ix, ++it, ++i) {
-		*ix = i; 
-		*it = 0.5 * i; 
-	}
-	C2DTestSolverAmultxNoBoundary A(size); 
-	
-	C2DFImage r = A * x; 
+       C2DBounds size(2, 3);
+       C2DFImage x(size);
+       C2DFImage t(size);
+       int i = -2;
 
-	BOOST_CHECK_EQUAL(r.get_size(), x.get_size()); 
-	for (auto ir = r.begin(), it = t.begin(); ir != r.end(); ++ir, ++it) {
-		BOOST_CHECK_EQUAL(*ir, *it); 
-	}
+       for (auto ix = x.begin(), it = t.begin(); ix != x.end(); ++ix, ++it, ++i) {
+              *ix = i;
+              *it = 0.5 * i;
+       }
+
+       C2DTestSolverAmultxNoBoundary A(size);
+       C2DFImage r = A * x;
+       BOOST_CHECK_EQUAL(r.get_size(), x.get_size());
+
+       for (auto ir = r.begin(), it = t.begin(); ir != r.end(); ++ir, ++it) {
+              BOOST_CHECK_EQUAL(*ir, *it);
+       }
 }
 
 C2DTestSolverAmultxNoBoundary::C2DTestSolverAmultxNoBoundary(const C2DBounds& size):
-	C2DImageSolverAmultx(size) 
+       C2DImageSolverAmultx(size)
 {
 }
-	
-C2DImageSparseSolver::value_type 
+
+C2DImageSparseSolver::value_type
 C2DTestSolverAmultxNoBoundary::operator () (C2DImageSparseSolver::const_field_iterator ix) const
 {
-	return 0.5 * *ix; 
+       return 0.5 * *ix;
 }
-	
+
 int C2DTestSolverAmultxNoBoundary::get_boundary_size() const
 {
-	return 0; 
+       return 0;
 }
 

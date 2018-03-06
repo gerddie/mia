@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -24,32 +24,34 @@
 NS_BEGIN(mask_2dimage_filter)
 
 
-class C2DMask: public mia::C2DFilter {
+class C2DMask: public mia::C2DFilter
+{
 public:
-	enum EFill {f_unknown, f_min, f_zero, f_max}; 
+       enum EFill {f_unknown, f_min, f_zero, f_max};
 
-	C2DMask(const mia::C2DImageDataKey& mask_image, EFill fill, bool inverse);
+       C2DMask(const mia::C2DImageDataKey& mask_image, EFill fill, bool inverse);
 
-	template <typename T>
-	C2DMask::result_type operator () (const mia::T2DImage<T>& data) const;
+       template <typename T>
+       C2DMask::result_type operator () (const mia::T2DImage<T>& data) const;
 private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+       virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	mia::C2DImageDataKey m_image_key;
-	EFill m_fill; 
-	bool m_inverse; 
+       mia::C2DImageDataKey m_image_key;
+       EFill m_fill;
+       bool m_inverse;
 };
 
 
-class C2DMaskImageFilterFactory: public mia::C2DFilterPlugin {
+class C2DMaskImageFilterFactory: public mia::C2DFilterPlugin
+{
 public:
-	C2DMaskImageFilterFactory();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
+       C2DMaskImageFilterFactory();
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr()const;
 private:
-	std::string m_mask_filename;
-	C2DMask::EFill  m_fill; 
-	bool m_inverse; 
+       std::string m_mask_filename;
+       C2DMask::EFill  m_fill;
+       bool m_inverse;
 };
 
 NS_END

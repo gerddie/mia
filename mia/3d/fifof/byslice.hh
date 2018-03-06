@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -33,15 +33,16 @@ NS_BEGIN(byslice_2dstack_filter)
 
 
 
-class C2DBysliceFifoFilter : public mia::C2DImageFifoFilter {
+class C2DBysliceFifoFilter : public mia::C2DImageFifoFilter
+{
 public:
-	C2DBysliceFifoFilter(mia::P2DFilter filter);
+       C2DBysliceFifoFilter(mia::P2DFilter filter);
 private:
-	void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
-	mia::P2DImage do_filter();
+       void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
+       mia::P2DImage do_filter();
 
-	mia::P2DImage m_last_image;
-	mia::P2DFilter m_filter; 
+       mia::P2DImage m_last_image;
+       mia::P2DFilter m_filter;
 };
 
 NS_END

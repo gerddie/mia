@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * This file is part of MIA - a toolbox for medical image analysis 
+ * This file is part of MIA - a toolbox for medical image analysis
  * Copyright (c) Leipzig, Madrid 1999-2017 Gert Wollny
  *
  * MIA is free software; you can redistribute it and/or modify
@@ -21,65 +21,63 @@
 #include <mia/internal/autotest.hh>
 #include <mia/core/flagstring.hh>
 
-using namespace mia; 
+using namespace mia;
 
 enum ETestFlags {
-	tf_none = 0,
-	tf_one  = 1,
-	tf_two  = 2,
-	tf_four = 4,
-	tf_cb1  = 9,
+       tf_none = 0,
+       tf_one  = 1,
+       tf_two  = 2,
+       tf_four = 4,
+       tf_cb1  = 9,
 };
 
 const CFlagString::Table flag_table[] = {
-	{'o', tf_one},
-	{'t', tf_two},
-	{'h', tf_one |  tf_two},
-	{'f', tf_four},
-	{'c', tf_cb1 },
-	{ 0, tf_none}
+       {'o', tf_one},
+       {'t', tf_two},
+       {'h', tf_one |  tf_two},
+       {'f', tf_four},
+       {'c', tf_cb1 },
+       { 0, tf_none}
 };
 
 struct FlagStringFixture {
-	FlagStringFixture();
+       FlagStringFixture();
 
-	CFlagString flag_trans;
+       CFlagString flag_trans;
 };
 
 
 BOOST_FIXTURE_TEST_CASE ( test_flags, FlagStringFixture )
 {
-	BOOST_CHECK_EQUAL(flag_trans.get("o"), tf_one);
-	BOOST_CHECK_EQUAL(flag_trans.get("t"), tf_two);
-
-	BOOST_CHECK(flag_trans.get("h") & tf_two);
-	BOOST_CHECK(flag_trans.get("h") & tf_one);
+       BOOST_CHECK_EQUAL(flag_trans.get("o"), tf_one);
+       BOOST_CHECK_EQUAL(flag_trans.get("t"), tf_two);
+       BOOST_CHECK(flag_trans.get("h") & tf_two);
+       BOOST_CHECK(flag_trans.get("h") & tf_one);
 }
 
 BOOST_FIXTURE_TEST_CASE ( test_throw, FlagStringFixture )
 {
-	BOOST_CHECK_THROW(flag_trans.get("x"), std::invalid_argument);
+       BOOST_CHECK_THROW(flag_trans.get("x"), std::invalid_argument);
 }
 
 BOOST_FIXTURE_TEST_CASE ( test_names, FlagStringFixture )
 {
-	BOOST_CHECK_EQUAL(flag_trans.get_flagnames(), "cfhot");
+       BOOST_CHECK_EQUAL(flag_trans.get_flagnames(), "cfhot");
 }
 
 
 BOOST_FIXTURE_TEST_CASE ( test_backtranslate, FlagStringFixture )
 {
-	BOOST_CHECK_EQUAL(flag_trans.get(1), "o");
-	BOOST_CHECK_EQUAL(flag_trans.get(2), "t");
-	BOOST_CHECK_EQUAL(flag_trans.get(3), "h");
-	BOOST_CHECK_EQUAL(flag_trans.get(5), "of");
-
-	// combinations may also overlap
-	BOOST_CHECK_EQUAL(flag_trans.get(11), "othc");
+       BOOST_CHECK_EQUAL(flag_trans.get(1), "o");
+       BOOST_CHECK_EQUAL(flag_trans.get(2), "t");
+       BOOST_CHECK_EQUAL(flag_trans.get(3), "h");
+       BOOST_CHECK_EQUAL(flag_trans.get(5), "of");
+       // combinations may also overlap
+       BOOST_CHECK_EQUAL(flag_trans.get(11), "othc");
 }
 
 
 
-FlagStringFixture::FlagStringFixture():flag_trans(flag_table)
+FlagStringFixture::FlagStringFixture(): flag_trans(flag_table)
 {
 }
