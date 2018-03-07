@@ -34,8 +34,6 @@
 namespace mia
 {
 
-
-
 class EXPORT_CORE CIndepCompAnalysis
 {
 public:
