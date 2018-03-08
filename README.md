@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/gerddie/mia.svg?branch=master)](https://travis-ci.org/gerddie/mia)
 [![Coverity Status](https://scan.coverity.com/projects/1013/badge.svg)](https://scan.coverity.com/projects/medical-image-analysis)
 [![Coverage Status](https://coveralls.io/repos/github/gerddie/mia/badge.svg?branch=master)](https://coveralls.io/github/gerddie/mia?branch=master)
+![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=plastic)
 
 This repository is a mirror of the master branch of
 
