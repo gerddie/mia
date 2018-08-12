@@ -43,13 +43,14 @@ void CProgressCallback::pulse()
        do_pulse();
 }
 
-
+#pragma push pack
+#pragma pack(4)
 struct CMsgStreamPrintCallbackImpl {
        CMsgStreamPrintCallbackImpl(const std::string& f);
        boost::format format;
        int range;
 };
-
+#pragma pop pack
 
 CMsgStreamPrintCallback::CMsgStreamPrintCallback(const std::string& format):
        impl(new CMsgStreamPrintCallbackImpl(format))
