@@ -21,6 +21,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/core/filetools.hh>
+#include "config.h"
 
 #include <stdexcept>
 #include <climits>

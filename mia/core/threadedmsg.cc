@@ -18,14 +18,14 @@
  *
  */
 
-#include <iostream>
-#include <iomanip>
 #include <mia/core/threadedmsg.hh>
-#include <sstream>
-
-#include <stdexcept>
 #include <mia/core/parallel.hh>
 #include <mia/core/msgstream.hh>
+
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <stdexcept>
 
 NS_MIA_BEGIN
 using std::setw;
