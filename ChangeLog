@@ -1,3 +1,8 @@
+2.4.7
+
+    * Fix build with g++-10
+    * Move docu generation to python3
+
 2.4.6
 
    * Fix building with boost-1.65
