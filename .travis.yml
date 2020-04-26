@@ -43,7 +43,7 @@ addons:
     - libboost-serialization-dev
     - libboost-system-dev
     - libboost-test-dev
-    - python-lxml
+    - python3-lxml
   coverity_scan:
     project:
       name: gerddie/mia
@@ -57,7 +57,7 @@ before_script:
 - mkdir build
 - cd build
 - echo COVERAGE=$COVERAGE EXTRA=$EXTRA
-- cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DALWAYS_CREATE_DOC=$EXTRA -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=$EXTRA -DMIA_CREATE_NIPYPE_INTERFACES=$EXTRA -DENABLE_COVERAGE=$COVERAGE -DDISABLE_PROGRAMS=$COVERAGE -DUSE_MATHJAX=YES  -DMIA_USE_BOOST_REGEX=YES
+- cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DALWAYS_CREATE_DOC=$EXTRA -DSTRICT_DEPENDECIES=ON -DMIA_CREATE_MANPAGES=$EXTRA -DMIA_CREATE_NIPYPE_INTERFACES=OFF -DENABLE_COVERAGE=$COVERAGE -DDISABLE_PROGRAMS=$COVERAGE -DUSE_MATHJAX=YES  -DMIA_USE_BOOST_REGEX=YES
 script:
 - cat /proc/cpuinfo
 - free -h
