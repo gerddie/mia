@@ -18,7 +18,6 @@
  *
  */
 
-#include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter.hh>
 
