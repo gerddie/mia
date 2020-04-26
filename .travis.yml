@@ -13,8 +13,6 @@ env:
 
 addons:
   apt:
-    sources:
-    - sourceline: 'ppa:gert-die/trusty-mia'
     packages:
     - libmaxflow-dev
     - libdcmtk2-dev
@@ -30,7 +28,7 @@ addons:
     - libpng-dev
     - libtbb-dev
     - libtiff-dev
-    - libvtk6-dev
+    - libvtk7-dev
     - libvistaio-dev
     - libxml2-dev
     - xsltproc
