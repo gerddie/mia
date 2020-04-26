@@ -25,13 +25,22 @@
 
 NS_BEGIN(distance_2d_filter)
 
-class C2DDistance: public mia::C2DFilter
+class C2DDistanceFilter: public mia::C2DFilter
 {
 public:
        template <class T>
-       typename C2DDistance::result_type operator () (const mia::T2DImage<T>& data) const ;
+       typename C2DDistanceFilter::result_type operator () (const mia::T2DImage<T>& data) const ;
 private:
        virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+};
+
+class C2DDistanceImageFilterFactory: public mia::C2DFilterPlugin
+{
+public:
+       C2DDistanceImageFilterFactory();
+private:
+       virtual mia::C2DFilter *do_create()const;
+       virtual const std::string do_get_descr() const;
 };
 
 

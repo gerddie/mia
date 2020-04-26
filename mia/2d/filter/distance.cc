@@ -18,8 +18,10 @@
  *
  */
 
-#include <mia/2d/filter.hh>
 #include <mia/2d/filter/distance.hh>
+#include <mia/core/distance.hh>
+#include <mia/core/parallel.hh>
+
 
 NS_BEGIN(distance_2d_filter)
 
@@ -27,59 +29,47 @@ NS_MIA_USE;
 using namespace std;
 
 
-template <class T>
-typename C2DDistance::result_type
-C2DDistance::operator () (const T2DImage<T>& image) const
+template <typename T>
+typename C2DDistanceFilter::result_type
+C2DDistanceFilter::operator () (const T2DImage<T>& image) const
 {
-       C2DDImage *result = new C2DDImage(image.get_size(), image);
-       fill(result->begin(),   result->end(), numeric_limits<C2DDImage::value_type>::max());
-       // brute force approach, there is a better way ...
-       auto i = image.begin();
+       auto result = new C2DFImage(image.get_size(), image);
+       auto transform_x = [result, &image](const C1DParallelRange & range) {
+              vector<float> buffer(image.get_size().x);
+              vector<T> in_buffer(image.get_size().x);
 
-       for (size_t yi = 0; yi < image.get_size().y; ++yi) {
-              for (size_t xi = 0; xi < image.get_size().x; ++xi, ++i) {
-                     if (!*i)
-                            continue;
+	      for (auto y = range.begin(); y < range.end(); ++y) {
+		      image.get_data_line_x(y, in_buffer);
+		      distance_transform_prepare(in_buffer.begin(), in_buffer.end(), buffer.begin(),
+						 __is_mask_pixel<T>::value);
+		      distance_transform_inplace(buffer);
+		      result->put_data_line_x(y, buffer);
+	      }
+       };
+       auto transform_y = [result](const C1DParallelRange & range) {
+              vector<float> buffer(result->get_size().y);
 
-                     auto r = result->begin();
+	      for (auto x = range.begin(); x < range.end(); ++x) {
+		      result->get_data_line_y(x, buffer);
+		      distance_transform_inplace(buffer);
+		      transform(buffer.begin(), buffer.end(), buffer.begin(),
+				[](float v) {
+					return sqrtf(v);
+				});
 
-                     for (size_t yr = 0; yr < image.get_size().y; ++yr) {
-                            double dy2 = double(yr) - yi;
-                            dy2 *= dy2;
+		      result->put_data_line_y(x, buffer);
+	      }
+       };
+       pfor(C1DParallelRange(0, image.get_size().y, 1), transform_x);
+       pfor(C1DParallelRange(0, image.get_size().x, 1), transform_y);
 
-                            for (int xr = 0; xr < (int)image.get_size().x; ++xr, ++r) {
-                                   const double dx = double(xi) - xr;
-                                   const double d = dx * dx + dy2;
-
-                                   if (*r > d)
-                                          *r = d;
-                            }
-                     }
-              }
-       }
-
-       transform(result->begin(), result->end(), result->begin(),
-       [](double x) {
-              return sqrt(x);
-       });
        return P2DImage(result);
 }
 
-
-P2DImage C2DDistance::do_filter(const C2DImage& image) const
+P2DImage C2DDistanceFilter::do_filter(const C2DImage& image) const
 {
        return ::mia::filter(*this, image);
 }
-
-
-class C2DDistanceImageFilterFactory: public C2DFilterPlugin
-{
-public:
-       C2DDistanceImageFilterFactory();
-private:
-       virtual C2DFilter *do_create()const;
-       virtual const std::string do_get_descr() const;
-};
 
 C2DDistanceImageFilterFactory::C2DDistanceImageFilterFactory():
        C2DFilterPlugin("distance")
@@ -88,7 +78,7 @@ C2DDistanceImageFilterFactory::C2DDistanceImageFilterFactory():
 
 C2DFilter *C2DDistanceImageFilterFactory::do_create() const
 {
-       return new C2DDistance();
+       return new C2DDistanceFilter();
 }
 
 const string C2DDistanceImageFilterFactory::do_get_descr()const

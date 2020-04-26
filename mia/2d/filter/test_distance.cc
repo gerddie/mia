@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/distance.hh>
 #include <mia/2d/imagetest.hh>
 
@@ -34,14 +34,14 @@ BOOST_AUTO_TEST_CASE( test_distance_double )
        fill(input.begin(), input.end(), 0);
        input(1, 2) = 1;
        const C2DImage& filter_input = input;
-       C2DDImage ref(C2DBounds(3, 5));
+       C2DFImage ref(C2DBounds(3, 5));
        ref(0, 0) = ref(2, 0) = ref(0, 4) = ref(2, 4) = sqrt(5);
        ref(0, 1) = ref(2, 1) = ref(0, 3) = ref(2, 3) = sqrt(2);
        ref(1, 1) = ref(1, 3) = ref(0, 2) = ref(2, 2) = 1.0;
        ref(1, 0) = ref(1, 4) = 2;
        ref(1, 2) = 0;
-       C2DDistance filter;
-       P2DImage rwrap = mia::filter( filter, filter_input );
+       C2DDistanceFilter filter;
+       P2DImage rwrap = filter.filter(filter_input);
        test_image_equal(*rwrap, ref);
 }
 
