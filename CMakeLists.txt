@@ -462,9 +462,9 @@ SET(CREATE_USERDOC FALSE)
 
 #if no programs are build, no userdoc can be created 
 IF (NOT DISABLE_PROGRAMS) 
-  FIND_PACKAGE(PythonInterp)
-  IF(PYTHONINTERP_FOUND) 
-    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
+  FIND_PACKAGE(Python3)
+  IF(Python3_FOUND) 
+    EXECUTE_PROCESS(COMMAND ${Python3_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
     IF(LXML_ERR)
       MESSAGE(python found, but no lxml, no user documantation will be created) 
       IF(STRICT_DEPENDECIES)
@@ -474,7 +474,7 @@ IF (NOT DISABLE_PROGRAMS)
         SET(MIA_CREATEUSERDOC FALSE)
       ENDIF(STRICT_DEPENDECIES)
     ENDIF(LXML_ERR) 
-  ENDIF(PYTHONINTERP_FOUND)
+  ENDIF(Python3_FOUND)
 ENDIF()
 
 #############################################

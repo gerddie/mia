@@ -36,10 +36,10 @@ MACRO(MIA_PREPARE_AUTODOC prefix)
   # these targets require python 
   IF(MIA_CREATE_MANPAGES OR MIA_CREATE_NIPYPE_INTERFACES OR MIA_CREATE_USERDOC)
     
-    FIND_PACKAGE(PythonInterp REQUIRED)
-    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
+    FIND_PACKAGE(Python3 REQUIRED)
+    EXECUTE_PROCESS(COMMAND ${Python3_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
     IF(LXML_ERR) 
-      MESSAGE(STATUS  "Python found, but no pythonl-xml, will not build user documentation")
+      MESSAGE(STATUS  "Python found, but no python-xml, will not build user documentation")
       SET(MIA_CREATE_MANPAGES FALSE)
       SET(MIA_CREATE_NIPYPE_INTERFACES FALSE)
       SET(MIA_CREATE_USERDOC FALSE)
@@ -57,17 +57,17 @@ MACRO(MIA_PREPARE_AUTODOC prefix)
     STRING(COMPARE EQUAL "${CMAKE_INSTALL_PREFIX}" "/usr" INSTALLROOT_IS_USR)
     
     IF(INSTALLROOT_IS_USR)
-      EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib\nimport sys\nsys.stdout.write(get_python_lib())"
+      EXECUTE_PROCESS(COMMAND ${Python3_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib\nimport sys\nsys.stdout.write(get_python_lib())"
 	RESULT_VARIABLE SITEPACKGE_ERR
 	OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
     ELSE()
-      EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import site\nimport sys\nsys.stdout.write(site.getusersitepackages())"
+      EXECUTE_PROCESS(COMMAND ${Python3_EXECUTABLE} -c "import site\nimport sys\nsys.stdout.write(site.getusersitepackages())"
 	RESULT_VARIABLE SITEPACKGE_ERR
 	OUTPUT_VARIABLE SITEPACKGE_BASE_PATH)
     ENDIF()
     
     IF(SITEPACKGE_ERR) 
-      MESSAGE(FATAL "Something went wrong identifying the nipype installation loaction") 
+      MESSAGE(FATAL "Something went wrong identifying the nipype installation loaction")
     ENDIF()
     
     SET(NIPYPE_INTERFACE_DIR "${SITEPACKGE_BASE_PATH}/${prefix}/nipype/interfaces/")
@@ -110,7 +110,7 @@ MACRO(MIA_CREATE_NIPYPE_FROM_XML prefix name)
   SET(${prefix}-${name}-nipype-interface ${CMAKE_CURRENT_BINARY_DIR}/${prefix}_${PythonName}.py)
   
   ADD_CUSTOM_COMMAND(OUTPUT ${${prefix}-${name}-nipype-interface} 
-    COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2nipype.py -i ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml -o ${${prefix}-${name}-nipype-interface}
+    COMMAND ${Python3_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2nipype.py -i ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml -o ${${prefix}-${name}-nipype-interface}
     MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml)
 
 
@@ -131,7 +131,7 @@ ENDMACRO(MIA_CREATE_NIPYPE_FROM_XML)
 MACRO(MIA_CREATE_MANPAGE_FROM_XML prefix name)
   SET(${prefix}-${name}-manfile ${CMAKE_CURRENT_BINARY_DIR}/${prefix}-${name}.1)
   ADD_CUSTOM_COMMAND(OUTPUT   ${${prefix}-${name}-manfile}
-    COMMAND ${PYTHON_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2man.py ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml >${${prefix}-${name}-manfile}
+    COMMAND ${Python3_EXECUTABLE} ${MIA_DOCTOOLS_ROOT}/miaxml2man.py ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml >${${prefix}-${name}-manfile}
     MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/${prefix}-${name}.xml
     DEPENDS ${prefix}-${name}-xml
     )
