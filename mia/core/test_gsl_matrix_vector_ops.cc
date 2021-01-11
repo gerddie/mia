@@ -28,7 +28,7 @@
 #define BOOST_TEST_MAIN
 #define BOOST_TEST_ALTERNATIVE_INIT_API
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <iostream>
 #include <cmath>

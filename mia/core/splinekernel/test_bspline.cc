@@ -23,8 +23,6 @@
 #include <mia/core/splinekernel/bspline.hh>
 #include <mia/core/interpolator1d.hh>
 #include <boost/mpl/vector.hpp>
-#include <boost/test/test_case_template.hpp>
-
 
 using namespace mia;
 using namespace mia::bsplinekernel;

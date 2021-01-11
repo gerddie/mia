@@ -21,7 +21,6 @@
 
 #include <mia/internal/plugintester.hh>
 #include <boost/mpl/vector.hpp>
-#include <boost/test/test_case_template.hpp>
 #include <mia/2d/filter/thinning.hh>
 #include <mia/2d/imagetest.hh>
 

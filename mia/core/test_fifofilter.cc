@@ -27,7 +27,7 @@
 
 #include <boost/test/test_tools.hpp>
 #include <boost/test/unit_test_suite.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 
 #include <mia/core/cmdlineparser.hh>

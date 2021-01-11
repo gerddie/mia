@@ -23,7 +23,6 @@
 #include <mia/2d/filter/sortlabel.hh>
 
 #include <boost/mpl/vector.hpp>
-#include <boost/test/test_case_template.hpp>
 namespace bmpl = boost::mpl;
 
 

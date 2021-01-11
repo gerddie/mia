@@ -25,10 +25,9 @@
 #define BOOST_TEST_MAIN
 #define BOOST_TEST_ALTERNATIVE_INIT_API
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <boost/mpl/vector.hpp>
-#include <boost/test/test_case_template.hpp>
 
 #include <mia/core/gsl_vector.hh>
 

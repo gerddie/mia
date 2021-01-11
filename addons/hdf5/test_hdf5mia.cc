@@ -23,7 +23,6 @@
 #include <mia/internal/autotest.hh>
 
 #include <boost/mpl/vector.hpp>
-#include <boost/test/test_case_template.hpp>
 #include <boost/mpl/insert_range.hpp>
 
 #include <addons/hdf5/hdf5a_mia.hh>

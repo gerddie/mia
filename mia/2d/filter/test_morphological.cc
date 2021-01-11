@@ -20,7 +20,6 @@
 
 #include <mia/internal/plugintester.hh>
 #include <boost/mpl/vector.hpp>
-#include <boost/test/test_case_template.hpp>
 #include <mia/2d/filter/morphological.hh>
 
 namespace bmpl = boost::mpl;

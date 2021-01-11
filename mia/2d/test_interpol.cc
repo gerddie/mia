@@ -23,7 +23,6 @@
 
 #include <mia/internal/autotest.hh>
 
-#include <boost/test/test_case_template.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/list.hpp>
 

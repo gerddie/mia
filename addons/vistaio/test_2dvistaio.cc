@@ -23,8 +23,6 @@
 #include <mia/internal/autotest.hh>
 
 #include <boost/mpl/vector.hpp>
-#include <boost/test/test_case_template.hpp>
-
 
 #include <vistaio/2dvistaio.hh>
 #include <unistd.h>

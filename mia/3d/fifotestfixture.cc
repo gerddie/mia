@@ -24,7 +24,7 @@
 
 #include <climits>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/imagetest.hh>
 #include <mia/3d/fifotestfixture.hh>

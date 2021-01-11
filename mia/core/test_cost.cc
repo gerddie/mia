@@ -27,7 +27,7 @@
 #include <mia/core/msgstream.hh>
 
 #include <boost/test/unit_test_suite.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/test/test_tools.hpp>
 
 NS_MIA_USE
