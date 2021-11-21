@@ -26,7 +26,7 @@
 
 #include <boost/type_traits.hpp>
 #include <boost/mpl/list.hpp>
-
+#include <boost/mpl/vector.hpp>
 
 NS_MIA_USE
 using namespace std;

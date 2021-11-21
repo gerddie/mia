@@ -41,6 +41,8 @@
 #include <mia/core/plugin_base.hh>
 #include <mia/internal/main.hh>
 
+#include <boost/mpl/vector.hpp>
+
 const mia::SProgramDescription description = {
        {mia::pdi_group, "Test"},
        {mia::pdi_short, "Unit test."},

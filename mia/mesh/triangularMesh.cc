@@ -508,7 +508,7 @@ struct VertexWithIndex {
 };
 
 struct compare_vertex  {
-       bool operator () (const VertexWithIndex& lhs, const VertexWithIndex& rhs)
+       bool operator () (const VertexWithIndex& lhs, const VertexWithIndex& rhs) const
        {
               return (lhs.v.z < rhs.v.z) ||
                      ((lhs.v.z == rhs.v.z) && ((lhs.v.y < rhs.v.y) ||

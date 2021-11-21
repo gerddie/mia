@@ -34,11 +34,11 @@ namespace bfs = boost::filesystem;
 
 extern const char *testframe_init;
 extern const char *testframe_init2;
-const size_t size = 3;
-const float x_init[size] = {10.0, 20.0, 0.0};
-const float y_init[size] = {20.0, 10.0, 4.0};
-const float x_init2[size] = {11.0, 21.0, 1.0};
-const float y_init2[size] = {21.0, 11.0, 5.0};
+const size_t init_size = 3;
+const float x_init[init_size] = {10.0, 20.0, 0.0};
+const float y_init[init_size] = {20.0, 10.0, 4.0};
+const float x_init2[init_size] = {11.0, 21.0, 1.0};
+const float y_init2[init_size] = {21.0, 11.0, 5.0};
 
 
 BOOST_AUTO_TEST_CASE( test_frame_rename_files )
@@ -389,13 +389,13 @@ BOOST_AUTO_TEST_CASE(segframe_write)
        CSegFrame::Sections sections;
        CSegSection::Points points;
 
-       for (size_t i = 0; i  < size; ++i)
+       for (size_t i = 0; i  < init_size; ++i)
               points.push_back(CSegPoint2D(x_init[i], y_init[i]));
 
        sections.push_back(CSegSection("white", points, 1));
        points.clear();
 
-       for (size_t i = 0; i  < size; ++i)
+       for (size_t i = 0; i  < init_size; ++i)
               points.push_back(CSegPoint2D(x_init2[i], y_init2[i]));
 
        sections.push_back(CSegSection("red", points, 1));

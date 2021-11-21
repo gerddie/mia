@@ -39,7 +39,7 @@ struct DefineMeshFixture {
 
 template <typename T>
 struct compare_vertex_ordered  {
-       bool operator () (const T3DVector<T>& lhs, const T3DVector<T>& rhs)
+       bool operator () (const T3DVector<T>& lhs, const T3DVector<T>& rhs) const
        {
               return (lhs.z < rhs.z) ||
                      ((lhs.z == rhs.z) && ((lhs.y < rhs.y) ||

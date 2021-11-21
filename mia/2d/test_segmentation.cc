@@ -63,16 +63,16 @@ BOOST_AUTO_TEST_CASE(segpoint_write)
        BOOST_CHECK_EQUAL(xmldoc, testdoc);
 }
 
-const size_t size = 3;
-const float x_init[size] = {10.0, 20.0, 0.0};
-const float y_init[size] = {20.0, 10.0, 4.0};
+const size_t init_size = 3;
+const float x_init[init_size] = {10.0, 20.0, 0.0};
+const float y_init[init_size] = {20.0, 10.0, 4.0};
 
-const float x_init_shift[size] = {9.0, 19.0, -1.0};
-const float y_init_shift[size] = {18.0, 8.0, 2.0};
+const float x_init_shift[init_size] = {9.0, 19.0, -1.0};
+const float y_init_shift[init_size] = {18.0, 8.0, 2.0};
 
 
-const float x_init2[size] = {11.0, 21.0, 1.0};
-const float y_init2[size] = {21.0, 11.0, 5.0};
+const float x_init2[init_size] = {11.0, 21.0, 1.0};
+const float y_init2[init_size] = {21.0, 11.0, 5.0};
 
 
 
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(segment_section_write)
 {
        CSegSection::Points points;
 
-       for (size_t i = 0; i  < size; ++i)
+       for (size_t i = 0; i  < init_size; ++i)
               points.push_back(CSegPoint2D(x_init[i], y_init[i]));
 
        CSegSection section("white", points, 1);
@@ -564,7 +564,7 @@ void SectionTestRead::check(const float *x_data, const float *y_data) const
        const CSegSection::Points& points = section.get_points();
        BOOST_REQUIRE(points.size() == 3);
 
-       for (size_t i = 0; i < size; ++i) {
+       for (size_t i = 0; i < init_size; ++i) {
               BOOST_CHECK_EQUAL(points[i].x, x_data[i]);
               BOOST_CHECK_EQUAL(points[i].y, y_data[i]);
        }

@@ -102,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE( test_simple_draw_point_corners, SimpleBitImageDrawFixtu
 
 
 struct compare_coordinate  {
-       bool operator () (const C3DBounds& lhs, const C3DBounds& rhs)
+       bool operator () (const C3DBounds& lhs, const C3DBounds& rhs) const
        {
               return (lhs.z < rhs.z) ||
                      ((lhs.z == rhs.z) && ((lhs.y < rhs.y) ||

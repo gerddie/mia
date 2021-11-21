@@ -29,7 +29,7 @@ const size_t slices = 5;
 const size_t nx = 2;
 const size_t ny = 5;
 const size_t nz = 1;
-const C3DBounds size(nx, ny, nz);
+const C3DBounds img_size(nx, ny, nz);
 
 struct ICA3DSeriesFixture {
        ICA3DSeriesFixture();
@@ -178,7 +178,7 @@ ICA3DSeriesFixture::ICA3DSeriesFixture():
        mean[4] = -4.f;
 
        for (size_t i = 0; i < slices; ++i)
-              image_set.push_back(C3DFImage(size, data_rows[i]));
+              image_set.push_back(C3DFImage(img_size, data_rows[i]));
 }
 
 void ICA3DSeriesFixture::check(const C3DFImage& mixed, const C3DFImage& expect)

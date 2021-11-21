@@ -29,6 +29,8 @@
 #include <mia/core/boundary_conditions.hh>
 
 
+#include <boost/mpl/vector.hpp>
+
 
 NS_MIA_USE
 using namespace std;

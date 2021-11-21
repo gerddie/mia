@@ -34,7 +34,7 @@ const size_t nz = 2;
 const size_t s = nx * ny * nz;
 
 
-const C3DBounds size(nx, ny, nz);
+const C3DBounds img_size(nx, ny, nz);
 
 struct MaskFixture: public TFiltertestFixture<T3DImage> {
        MaskFixture();
@@ -52,8 +52,8 @@ const bool init_mask[s] = { 0, 0, 1, 1, 1, 0, 1, 0, 1,
 
 MaskFixture::MaskFixture()
 {
-       mask.reset(new C3DBitImage(size, init_mask ));
-       src.reset(new C3DUIImage(size, init_src));
+       mask.reset(new C3DBitImage(img_size, init_mask ));
+       src.reset(new C3DUIImage(img_size, init_src));
        CDatapool::instance().add("binary.@", create_image3d_vector(mask));
        CDatapool::instance().add("uint.@", create_image3d_vector(src));
 }
@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE( test_mask, MaskFixture )
                                            0, 10, 11, 12, 0, 14,  0, 16,  0
                                          };
        auto filter = BOOST_TEST_create_from_plugin<C3DMaskImageFilterFactory>("mask:input=binary.@");
-       run(size, init_src, size, test_data, *filter);
+       run(img_size, init_src, img_size, test_data, *filter);
 }
 
 
@@ -74,6 +74,6 @@ BOOST_FIXTURE_TEST_CASE( test_rmask, MaskFixture )
                                            0, 10, 11, 12, 0, 14,  0, 16,  0
                                          };
        auto filter = BOOST_TEST_create_from_plugin<C3DMaskImageFilterFactory>("mask:input=uint.@");
-       run(size, init_mask, size, test_data, *filter);
+       run(img_size, init_mask, img_size, test_data, *filter);
 }
 
